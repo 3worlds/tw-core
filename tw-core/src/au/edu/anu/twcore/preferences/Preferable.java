@@ -29,8 +29,6 @@
 
 package au.edu.anu.twcore.preferences;
 
-import java.util.prefs.BackingStoreException;
-
 /**
  * Author Ian Davies
  *
@@ -68,6 +66,7 @@ public interface Preferable {
 	public String[] getStrings(String key, String... defs);
 	
 	public void remove(String key);
-	public void flush() throws BackingStoreException;
+	public void flush();
+	public boolean isEmpty();
 
 }

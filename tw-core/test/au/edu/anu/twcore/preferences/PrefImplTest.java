@@ -33,11 +33,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Author Ian Davies
+ *
+ * Date Dec 11, 2018
+ */
 class PrefImplTest {
 
 	@Test
 	public void test() {
-		PrefImpl prefs = new PrefImpl(this);
+		PrefImpl prefs = new PrefImpl(this,"_");
 		String key1 = "Test1";
 		String key2 = "Test2";
 		String key3 = "Test3";
@@ -48,11 +53,11 @@ class PrefImplTest {
 		String key8 = "Test8";
 		String key9 = "Test9";
 		String key10 = "Test10";
-		int[] defInts = {0,0,0,0,0};
-		long[] defLongs = {0,0,0,0,0};
-		boolean[] defBooleans = {false,false,false,false};
-		float[] defFloats = {0,0,0,0,0};
-		String[] defStrings = {"s","s","s","s","s"};
+		int[] defInts = { 0, 0, 0, 0, 0 };
+		long[] defLongs = { 0, 0, 0, 0, 0 };
+		boolean[] defBooleans = { false, false, false, false };
+		float[] defFloats = { 0, 0, 0, 0, 0 };
+		String[] defStrings = { "s", "s", "s", "s", "s" };
 
 		prefs.putInt(key1, 0);
 		prefs.putInts(key2, defInts);
@@ -76,6 +81,34 @@ class PrefImplTest {
 		assertTrue(prefs.getString(key9, "s") == "s");
 		assertTrue(prefs.getStrings(key10, defStrings)[0] == "s");
 
+		// make changes
+		prefs.putInt(key1, 1);
+		prefs.putInts(key2, 1, 2, 3, 4, 5);
+		prefs.putLong(key3, 1);
+		prefs.putLongs(key4, 1, 2, 3, 4, 5);
+		prefs.putBoolean(key5, true);
+		prefs.putBooleans(key6, true, false, true, false);
+		prefs.putFloat(key7, 10.5f);
+		prefs.putFloats(key8, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
+		prefs.putString(key9, "ss");
+		prefs.putStrings(key10, "s1", "s2", "s3", "s4", "s5");
+
+		assertTrue(prefs.getInt(key1, 0) == 1);
+		assertTrue(prefs.getInts(key2, defInts)[0] == 1);
+		assertTrue(prefs.getInts(key2, defInts)[4] == 5);
+		assertTrue(prefs.getLong(key3, 0) == 1L);
+		assertTrue(prefs.getLongs(key4, defLongs)[0] == 1L);
+		assertTrue(prefs.getLongs(key4, defLongs)[4] == 5L);
+		assertTrue(prefs.getBoolean(key5, false) == true);
+		assertTrue(prefs.getBooleans(key6, defBooleans)[0] == true);
+		assertTrue(prefs.getBooleans(key6, defBooleans)[3] == false);
+		assertTrue(prefs.getFloat(key7, 0) == 10.5f);
+		assertTrue(prefs.getFloats(key8, defFloats)[0] == 1.1f);
+		assertTrue(prefs.getFloats(key8, defFloats)[4] == 5.5f);
+		assertTrue(prefs.getString(key9, "s") == "ss");
+		assertTrue(prefs.getStrings(key10, defStrings)[0] == "s1");
+		assertTrue(prefs.getStrings(key10, defStrings)[4] == "s5");
+
 		prefs.remove(key1);
 		prefs.remove(key2);
 		prefs.remove(key3);
@@ -87,6 +120,7 @@ class PrefImplTest {
 		prefs.remove(key9);
 		prefs.remove(key10);
 
+		assertTrue(prefs.isEmpty());
 	}
 
 }

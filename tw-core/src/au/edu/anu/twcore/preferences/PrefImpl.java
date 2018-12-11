@@ -39,14 +39,16 @@ import java.util.prefs.Preferences;
  */
 public class PrefImpl implements Preferable {
 	private Preferences prefs;
+	private String sep = "_";
 
-	public PrefImpl(Object item) {
+	public PrefImpl(Object item,String sep) {
 		this.prefs = Preferences.userRoot().node(item.getClass().getName());
+		this.sep = sep;
 		System.out.println(prefs.absolutePath().toString());
 	}
 
 	private String keyAppend(String key, int i) {
-		return key + "_" + i;
+		return key + sep + i;
 	}
 
 	@Override
@@ -170,15 +172,56 @@ public class PrefImpl implements Preferable {
 		return res;
 	}
 
+
 	@Override
-	public void remove(String key) {
-		//if (prefs.keys())
-		prefs.remove(key);		
+	public void remove(String key)  {
+		try {
+			String[] keys = prefs.keys();
+			for (String akey: prefs.keys()) {
+				if (arrayKey(key,akey)) {
+					prefs.remove(akey);
+				}
+			}
+			prefs.remove(key);
+
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private  boolean arrayKey(String key, String akey) {
+		if (!akey.contains(key+sep))
+			return false;
+		String[] items = akey.split(sep);
+		String last = items[items.length-1];
+		try {
+		int i = Integer.parseInt(last);
+		} catch (Exception e){
+			return false;
+		}
+		return true;
 	}
 
 	@Override
-	public void flush() throws BackingStoreException {
-		prefs.flush();
+	public void flush(){
+		try {
+			prefs.flush();
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public boolean isEmpty() {
+		try {
+			return prefs.keys().length==0;
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
+		return true;
 	}
 
 }
