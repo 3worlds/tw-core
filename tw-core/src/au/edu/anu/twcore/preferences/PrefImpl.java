@@ -41,10 +41,11 @@ public class PrefImpl implements Preferable {
 	private Preferences prefs;
 	private String sep = "_";
 
-	public PrefImpl(Object item,String sep) {
+	public PrefImpl(Object item, String sep) {
 		this.prefs = Preferences.userRoot().node(item.getClass().getName());
 		this.sep = sep;
-		System.out.println(prefs.absolutePath().toString());
+		// TODO: Need logging system here
+		// System.out.println(prefs.absolutePath().toString());
 	}
 
 	private String keyAppend(String key, int i) {
@@ -94,6 +95,18 @@ public class PrefImpl implements Preferable {
 	public void putFloats(String key, float... values) {
 		for (int i = 0; i < values.length; i++)
 			prefs.putFloat(keyAppend(key, i), values[i]);
+	}
+
+	@Override
+	public void putDouble(String key, double value) {
+		prefs.putDouble(key, value);
+
+	}
+
+	@Override
+	public void putDoubles(String key, double... values) {
+		for (int i = 0; i < values.length; i++)
+			prefs.putDouble(keyAppend(key, i), values[i]);
 	}
 
 	@Override
@@ -160,6 +173,19 @@ public class PrefImpl implements Preferable {
 	}
 
 	@Override
+	public double getDouble(String key, double def) {
+		return prefs.getDouble(key, def);
+	}
+
+	@Override
+	public double[] getDoubles(String key, double... defs) {
+		double[] res = new double[defs.length];
+		for (int i = 0; i < defs.length; i++)
+			res[i] = prefs.getDouble(keyAppend(key, i), defs[i]);
+		return res;
+	}
+
+	@Override
 	public String getString(String key, String def) {
 		return prefs.get(key, def);
 	}
@@ -172,13 +198,12 @@ public class PrefImpl implements Preferable {
 		return res;
 	}
 
-
 	@Override
-	public void remove(String key)  {
+	public void remove(String key) {
 		try {
 			String[] keys = prefs.keys();
-			for (String akey: prefs.keys()) {
-				if (arrayKey(key,akey)) {
+			for (String akey : prefs.keys()) {
+				if (arrayKey(key, akey)) {
 					prefs.remove(akey);
 				}
 			}
@@ -190,21 +215,21 @@ public class PrefImpl implements Preferable {
 		}
 	}
 
-	private  boolean arrayKey(String key, String akey) {
-		if (!akey.contains(key+sep))
+	private boolean arrayKey(String key, String akey) {
+		if (!akey.contains(key + sep))
 			return false;
 		String[] items = akey.split(sep);
-		String last = items[items.length-1];
+		String last = items[items.length - 1];
 		try {
-		int i = Integer.parseInt(last);
-		} catch (Exception e){
+			int i = Integer.parseInt(last);
+		} catch (Exception e) {
 			return false;
 		}
 		return true;
 	}
 
 	@Override
-	public void flush(){
+	public void flush() {
 		try {
 			prefs.flush();
 		} catch (BackingStoreException e) {
@@ -216,12 +241,14 @@ public class PrefImpl implements Preferable {
 	@Override
 	public boolean isEmpty() {
 		try {
-			return prefs.keys().length==0;
+			return prefs.keys().length == 0;
 		} catch (BackingStoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		};
+		}
+		;
 		return true;
 	}
+
 
 }

@@ -51,6 +51,8 @@ public interface Preferable {
 	public void putBooleans(String key, boolean... values);
 	public void putFloat(String key, float value);
 	public void putFloats(String key, float... values);
+	public void putDouble(String key, double value);
+	public void putDoubles(String key, double... values);
 	public void putString(String key, String value);
 	public void putStrings(String key, String... values);
 
@@ -62,6 +64,8 @@ public interface Preferable {
 	public boolean[] getBooleans(String key, boolean... defs);
 	public float getFloat(String key,float def);
 	public float[] getFloats(String key, float... defs);
+	public double getDouble(String key, double def);
+	public double[] getDoubles(String key, double...defs);
 	public String getString(String key,String def);
 	public String[] getStrings(String key, String... defs);
 	
