@@ -36,7 +36,7 @@ import au.edu.anu.twcore.errorMessaging.ComplianceManager;
  *
  * Date Dec 12, 2018
  */
-public class codeComplianceManager extends ComplianceManager{
+public class CodeComplianceManager extends ComplianceManager{
 	// manages only msgs from Archetype compliance
 
 }
