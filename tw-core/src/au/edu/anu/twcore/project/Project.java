@@ -34,6 +34,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
+import au.edu.anu.rscs.aot.OmhtkException;
+import au.edu.anu.rscs.aot.util.FileUtilities;
+
 /**
  * Author Ian Davies
  *
@@ -46,9 +49,10 @@ public class Project implements ProjectPaths, TWPaths {
 	/* Date time string in human-readable format */
 	private static String projectUid;
 
+	/* Uid format - no blanks */
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss:SSS");
+
 	private static File projectFile;
-	
-	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS");
 
 	private static boolean open;
 
@@ -56,19 +60,23 @@ public class Project implements ProjectPaths, TWPaths {
 		close();
 	}
 
-	public static void create(String name) {
+	public static String create(String name) {
 		open = true;
-		projectName = name;
+		projectName = name.replace(sep, "").replace(" ","");
 		projectUid = createUid();
 		projectFile = new File(TW_ROOT + File.separator + PROJECT_DIR_PREFIX + sep + projectName + sep + projectUid);
-		System.out.println(projectFile.getAbsolutePath());
-		projectFile.mkdirs();
+		if (!projectFile.mkdirs())
+			throw new OmhtkException("Unable to create project directory: " + projectFile.getAbsolutePath());
+		return projectName;
+	}
+
+	public static File getProjectFile() {
+		return projectFile;
 	}
 
 	private static String createUid() {
-		LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);	
+		LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);
 		String res = currentDate.format(formatter);
-		LocalDateTime cd = LocalDateTime.parse(res, formatter);
 		return res;
 	}
 
@@ -82,8 +90,47 @@ public class Project implements ProjectPaths, TWPaths {
 	public static boolean isOpen() {
 		return open;
 	}
-public static void main(String[] args) {
-	Project.create("CRAP");
+
+	private static String[] parseProjectName(File file) {
+		String name = file.getName();
+		String[] items = name.split(sep);
+		if (!(items.length == 3))
+			throw new OmhtkException(name + " is not a project name. Must have Project_<name>_<dateTime>");
+		if (!items[0].equals(PROJECT_DIR_PREFIX))
+			throw new OmhtkException(name + " is not a project name. Must start with key work 'Project'");
+		try {
+			LocalDateTime.parse(items[2], formatter);
+		} catch (Exception e) {
+			throw new OmhtkException(name + " is not a project name. Must contain valid Date");
+		}
+		return items;
+	}
 	
-}
+	public static String getProjectName() {
+		if (open) {
+			String[] items = parseProjectName(projectFile);
+			return items[1];
+		}
+		return null;
+	}
+
+	public static String getProjectDirectory() {
+		if (open) {
+			return projectFile.getAbsolutePath();
+		}
+		return null;
+	}
+	public static String displayName(File file) {
+		String[] items = parseProjectName(file);
+		return items[1] + "(" + items[2] + ")";
+	}
+
+	public static File makeFile(String... pathElements) {
+		if (!open)
+			throw new OmhtkException("Cannot make file from a closed Project");
+		String s1 = projectFile.getAbsolutePath();
+		String s2 = FileUtilities.makePath(pathElements);
+		String s3 = FileUtilities.makePath(s1, s2);
+		return new File(s3);
+	}
 }
