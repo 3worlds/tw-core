@@ -39,6 +39,7 @@ import java.io.File;
 
 // Don't add anything here on speculation. Wait until it's needed.
 public interface ProjectPaths {
+	public static String PROJECT_DIR_PREFIX /*  */ = "project";
 	public static String PROJECT_LOCAL /*       */ = "local";
 	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
 	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";

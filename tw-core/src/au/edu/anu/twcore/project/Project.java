@@ -29,14 +29,61 @@
 
 package au.edu.anu.twcore.project;
 
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+
 /**
  * Author Ian Davies
  *
  * Date 12 Dec. 2018
  */
-public class Project {
-	public static boolean isOpen() {
-		return false;
+public class Project implements ProjectPaths, TWPaths {
+	private static final String sep = "_";
+	/* Just the name - nothing else */
+	private static String projectName;
+	/* Date time string in human-readable format */
+	private static String projectUid;
+
+	private static File projectFile;
+	
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS");
+
+	private static boolean open;
+
+	static {
+		close();
 	}
 
+	public static void create(String name) {
+		open = true;
+		projectName = name;
+		projectUid = createUid();
+		projectFile = new File(TW_ROOT + File.separator + PROJECT_DIR_PREFIX + sep + projectName + sep + projectUid);
+		System.out.println(projectFile.getAbsolutePath());
+		projectFile.mkdirs();
+	}
+
+	private static String createUid() {
+		LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);	
+		String res = currentDate.format(formatter);
+		LocalDateTime cd = LocalDateTime.parse(res, formatter);
+		return res;
+	}
+
+	public static void close() {
+		open = false;
+		projectName = null;
+		projectUid = null;
+		projectFile = null;
+	}
+
+	public static boolean isOpen() {
+		return open;
+	}
+public static void main(String[] args) {
+	Project.create("CRAP");
+	
+}
 }

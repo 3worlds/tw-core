@@ -39,7 +39,7 @@ import java.io.File;
 // Don't add anything here on speculation. Wait until it's needed.
 public interface TWPaths {
 	public static String USER_ROOT/*       */ = System.getProperty("user.home");
-	public static String TW /*             */ = ".3W";
+	public static String TW /*             */ = ".3w";
 	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
 	public static String TW_DEP_JAR /*     */ = "tw-dep.jar";
 }
