@@ -27,22 +27,17 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
+package au.edu.anu.twcore.errorMessaging.archetype;
 
-import java.io.File;
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
-
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+public class PropertyMissingErr extends ErrorMessageAdaptor {
+	public PropertyMissingErr(/*String key, AotNode node, AotNode propertySpec*/) {
+//		msg1 = "Missing property: "+node.displayName() +" requires property "+key;
+	}
 }

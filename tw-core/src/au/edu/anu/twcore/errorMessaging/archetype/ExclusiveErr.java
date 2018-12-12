@@ -27,22 +27,21 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
+package au.edu.anu.twcore.errorMessaging.archetype;
 
-import java.io.File;
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
+public class ExclusiveErr extends ErrorMessageAdaptor{
+public ExclusiveErr(/*AotNode n*/) {
+	String s = "Expected a specification for ";
+//	msg1 = s+n.displayName();
+//	msg2 = s+n.toString();
+//	msg3 = s+n.toDetailedString();
 
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+}
 }

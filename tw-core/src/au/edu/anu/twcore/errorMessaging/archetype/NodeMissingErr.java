@@ -27,22 +27,38 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
+package au.edu.anu.twcore.errorMessaging.archetype;
 
-import java.io.File;
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
+public class NodeMissingErr extends ErrorMessageAdaptor{
+//	private IntegerRange expectedRange;
+	private int foundCount;
+//	private AotNode spec;
+	private String reference;
 
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+public NodeMissingErr(/*String reference, IntegerRange expectedRange, int foundCount, AotNode spec,
+			AotGraph currentGraph*/) {
+//	this.reference = reference;
+//	this.expectedRange = expectedRange;
+//	this.foundCount = foundCount;
+//	this.spec = spec;
+//	String parent = ArchetypeHelper.getParentLabelFromReference(reference);
+//	String[] parents;
+//	if (parent.equals(""))
+//		parents = ArchetypeHelper.getParentLabels(spec);
+//	else {
+//		parents = new String[1];
+//		parents[0] = parent;
+//	}
+//	msg1 = "Missing Node: Add node " + formatParentChildString(reference, spec) + ".";
+//	msg2 = msg1 + " Expected " + expectedRange.toString() + " but found " + foundCount + ".";
+//	msg3 = msg2 + "\nSpecification:\n" + spec.toDetailedString() + "\n";
+
+}
 }

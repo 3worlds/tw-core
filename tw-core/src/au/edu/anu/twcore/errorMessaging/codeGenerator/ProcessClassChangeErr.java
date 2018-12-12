@@ -27,22 +27,21 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
+package au.edu.anu.twcore.errorMessaging.codeGenerator;
 
 import java.io.File;
+
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
-
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+public class ProcessClassChangeErr extends ErrorMessageAdaptor {
+	public ProcessClassChangeErr(String newAncestorClass, String oldAncestorClass, String name) {
+		msg1 = "Refresh and check Java project: Process class has changed ("+name+")";
+		msg2 = msg1 + " Old class: "+oldAncestorClass+" New class: "+newAncestorClass;
+		msg3 = msg2;
+	}
 }

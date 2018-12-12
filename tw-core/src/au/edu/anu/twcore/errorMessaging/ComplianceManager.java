@@ -27,22 +27,39 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
+package au.edu.anu.twcore.errorMessaging;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
+public class ComplianceManager {
+	private static List<ErrorMessageListener> listeners = new ArrayList<>();
 
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+	private static boolean haveErrors;
+
+	public static boolean haveErrors() {
+		return haveErrors;
+	}
+
+	public static void add(ErrorMessagable msg) {
+		haveErrors = true;
+		for (ErrorMessageListener listener : listeners)
+			listener.onReceiveMsg(msg);
+	}
+
+	public static void clear() {
+		haveErrors = false;
+		for (ErrorMessageListener listener : listeners)
+			listener.onClear();
+	}
+
+	public static void addListener(ErrorMessageListener listener) {
+		listeners.add(listener);
+	}
+	
 }

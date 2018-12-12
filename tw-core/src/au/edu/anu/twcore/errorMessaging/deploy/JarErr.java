@@ -27,22 +27,26 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
+package au.edu.anu.twcore.errorMessaging.deploy;
 
-import java.io.File;
+import java.util.Map.Entry;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
-
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+public class JarErr extends ErrorMessageAdaptor{
+	public JarErr(Manifest manifest, String jarPath, Exception e) {
+		msg1 = "Unable to create jar '" + jarPath;
+		msg2 = msg1 + "\n" + e;
+		msg3 = msg2 + "\n";
+		for (Entry<String, Attributes> entry : manifest.getEntries().entrySet()) {
+			msg3+=entry.getKey()+":"+entry.getValue().toString()+"\n";
+		}
+	}
 }

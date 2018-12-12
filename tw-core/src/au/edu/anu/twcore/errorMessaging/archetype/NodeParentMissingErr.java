@@ -27,22 +27,21 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
+package au.edu.anu.twcore.errorMessaging.archetype;
 
-import java.io.File;
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
+public class NodeParentMissingErr extends ErrorMessageAdaptor{
+public NodeParentMissingErr(/*AotNode node, String[] parents*/) {
+		// msg1 = "Parent error: Node " + node.displayName() + " requires a parent of +"
+		// + Arrays.deepToString(parents);
+		// msg2 = msg1;
+		// msg3 = msg1;
 
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+}
 }

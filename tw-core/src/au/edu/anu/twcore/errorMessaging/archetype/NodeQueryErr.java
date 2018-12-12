@@ -27,22 +27,25 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
+package au.edu.anu.twcore.errorMessaging.archetype;
 
-import java.io.File;
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
+public class NodeQueryErr extends ErrorMessageAdaptor{
+public NodeQueryErr(/*AotNode node, ReferenceableDataNode queryNode, Query q*/) {
+//	if (q instanceof CheckSubArchetypeQuery) {
+//		msg1 = "Node requirement: " + node.displayName() + " does not satisfy sub archetype.";
+//	}else {
+//		String qMsg = q.toString().replace(q.stateString() + " ", "");
+//		msg1 = "Node requirement: " + node.displayName() + " " + qMsg;
+//	}
+//	msg2 = msg1+"\n" + q.toString();
+//	msg3 = msg2;
 
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+}
 }

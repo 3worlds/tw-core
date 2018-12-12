@@ -27,22 +27,26 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
-
-import java.io.File;
+package au.edu.anu.twcore.errorMessaging;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
-
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+public class ErrorMessageAdaptor implements ErrorMessagable{
+	protected String msg1;
+	protected String msg2;
+	protected String msg3;
+	@Override
+	public String message(Verbosity level) {
+		switch (level) {
+		case brief:
+			return msg1;
+		case medium:
+			return msg2;
+		default:
+			return msg3;
+		}
+	}
 }

@@ -27,22 +27,24 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.project;
+package au.edu.anu.twcore.errorMessaging.archetype;
 
-import java.io.File;
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
  * Author Ian Davies
  *
- * Date 12 Dec. 2018
+ * Date Dec 12, 2018
  */
+public class EdgeToNodeErr extends ErrorMessageAdaptor{
+public EdgeToNodeErr(/* awaiting nodes etc*/) {
+//	String label = ArchetypeHelper.getChildLabelFromReference(toNodeRef);
+//	msg1 = "Missing Edge:  Add edge FROM "+ node.displayName()+ " TO " +toNodeRef+".";
+//	msg2 = msg1; //TODO
+//	msg3 = "Expected " + node + " to have " + expectedRange 
+//			+ " out edge(s) to nodes that match [" + toNodeRef 
+//			+ "] (found " + foundCount + ") "+e;
+//	}
 
-// Don't add anything here on speculation. Wait until it's needed.
-public interface ProjectPaths {
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+}
 }
