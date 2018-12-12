@@ -44,8 +44,9 @@ class ProjectTest {
 
 	@Test
 	void test() {
-		Project.create("A_Project");
-		assertTrue(Project.getProjectName().equals("AProject"));
+		Project.create("A_Project of crap");
+		// camel hump the name
+		assertTrue(Project.getProjectName().equals("AProjectofcrap"));
 		System.out.println(Project.getProjectDirectory());
 		File f = new File(Project.getProjectDirectory());
 		System.out.println(Project.displayName(f));
