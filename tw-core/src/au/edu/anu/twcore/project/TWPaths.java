@@ -42,4 +42,6 @@ public interface TWPaths {
 	public static String TW /*             */ = ".3w";
 	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
 	public static String TW_DEP_JAR /*     */ = "tw-dep.jar";
+	public static String TW_PREF /*        */ = "MM.xml";
+	public static String TW_LAYOUT /*      */ = "Layout.twg";// get twg from somewhere else
 }

@@ -29,8 +29,6 @@
 
 package au.edu.anu.twcore.errorMessaging.codeGenerator;
 
-import java.io.File;
-
 import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
