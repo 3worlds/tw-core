@@ -62,7 +62,7 @@ public class Project implements ProjectPaths, TWPaths {
 
 	public static String create(String name) {
 		open = true;
-		projectName = name.replace(sep, "").replace(" ","");
+		projectName = name.replace(sep, "").replace(" ", "");
 		projectUid = createUid();
 		projectFile = new File(TW_ROOT + File.separator + PROJECT_DIR_PREFIX + sep + projectName + sep + projectUid);
 		if (!projectFile.mkdirs())
@@ -105,7 +105,24 @@ public class Project implements ProjectPaths, TWPaths {
 		}
 		return items;
 	}
-	
+
+	public static boolean validProjectFile(File file) {
+		if (!file.exists())
+			return false;
+		String name = file.getName();
+		String[] items = name.split(sep);
+		if (!(items.length == 3))
+			return false;
+		if (!items[0].equals(PROJECT_DIR_PREFIX))
+			return false;
+		try {
+			LocalDateTime.parse(items[2], formatter);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+
 	public static String getProjectName() {
 		if (open) {
 			String[] items = parseProjectName(projectFile);
@@ -115,11 +132,11 @@ public class Project implements ProjectPaths, TWPaths {
 	}
 
 	public static String getProjectDirectory() {
-		if (open) {
+		if (open) 
 			return projectFile.getAbsolutePath();
-		}
 		return null;
 	}
+
 	public static String displayName(File file) {
 		String[] items = parseProjectName(file);
 		return items[1] + "(" + items[2] + ")";

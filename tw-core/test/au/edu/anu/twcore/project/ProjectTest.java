@@ -35,11 +35,6 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Author Ian Davies
- *
- * Date Dec 12, 2018
- */
 class ProjectTest {
 
 	@Test
@@ -52,6 +47,7 @@ class ProjectTest {
 		System.out.println(Project.displayName(f));
 		File mk = Project.makeFile("a","b","c");
 		System.out.println(mk.getAbsolutePath());
+		assertTrue(Project.validProjectFile(f));
 	}
 
 }
