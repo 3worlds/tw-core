@@ -34,6 +34,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
+import org.apache.commons.text.WordUtils;
+
 import au.edu.anu.rscs.aot.OmhtkException;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 
@@ -44,6 +46,7 @@ import au.edu.anu.rscs.aot.util.FileUtilities;
  */
 public class Project implements ProjectPaths, TWPaths {
 	private static final String sep = "_";
+	private static final char sepch = '_';
 	/* Just the name - nothing else */
 	private static String projectName;
 	/* Date time string in human-readable format */
@@ -62,7 +65,9 @@ public class Project implements ProjectPaths, TWPaths {
 
 	public static String create(String name) {
 		open = true;
-		projectName = name.replace(sep, "").replace(" ", "");
+		char[] delimiters = {sepch};
+		
+		name =WordUtils.capitalizeFully(name.replaceAll("\\W", sep), delimiters).replaceAll(sep, "");
 		projectUid = createUid();
 		projectFile = new File(TW_ROOT + File.separator + PROJECT_DIR_PREFIX + sep + projectName + sep + projectUid);
 		if (!projectFile.mkdirs())

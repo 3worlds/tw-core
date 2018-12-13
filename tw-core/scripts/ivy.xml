@@ -28,6 +28,9 @@
 		</artifact>
 	</publications>
 
-	<dependencies/>
+	<dependencies>
+			<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>
+	</dependencies>
+
 
 </ivy-module>
