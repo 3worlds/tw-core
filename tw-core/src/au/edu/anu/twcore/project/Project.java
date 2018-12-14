@@ -50,7 +50,7 @@ public class Project implements ProjectPaths, TWPaths {
 	/* Just the name - nothing else */
 	private static String projectName;
 	/* Date time string in human-readable format */
-	private static String projectUid;
+	private static String creationDateTime;
 
 	/* Uid format - no blanks */
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss:SSS");
@@ -65,11 +65,12 @@ public class Project implements ProjectPaths, TWPaths {
 
 	public static String create(String name) {
 		open = true;
-		char[] delimiters = {sepch};
-		
-		name =WordUtils.capitalizeFully(name.replaceAll("\\W", sep), delimiters).replaceAll(sep, "");
-		projectUid = createUid();
-		projectFile = new File(TW_ROOT + File.separator + PROJECT_DIR_PREFIX + sep + projectName + sep + projectUid);
+		char[] delimiters = { sepch };
+
+		name = WordUtils.capitalizeFully(name.replaceAll("\\W", sep), delimiters).replaceAll(sep, "");
+		creationDateTime = createDateTime();
+		projectFile = new File(
+				TW_ROOT + File.separator + PROJECT_DIR_PREFIX + sep + projectName + sep + creationDateTime);
 		if (!projectFile.mkdirs())
 			throw new OmhtkException("Unable to create project directory: " + projectFile.getAbsolutePath());
 		return projectName;
@@ -79,7 +80,7 @@ public class Project implements ProjectPaths, TWPaths {
 		return projectFile;
 	}
 
-	private static String createUid() {
+	private static String createDateTime() {
 		LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);
 		String res = currentDate.format(formatter);
 		return res;
@@ -88,7 +89,7 @@ public class Project implements ProjectPaths, TWPaths {
 	public static void close() {
 		open = false;
 		projectName = null;
-		projectUid = null;
+		creationDateTime = null;
 		projectFile = null;
 	}
 
@@ -137,14 +138,21 @@ public class Project implements ProjectPaths, TWPaths {
 	}
 
 	public static String getProjectDirectory() {
-		if (open) 
+		if (open)
 			return projectFile.getAbsolutePath();
 		return null;
 	}
 
-	public static String displayName(File file) {
+	public static String getDisplayName(File file) {
 		String[] items = parseProjectName(file);
 		return items[1] + "(" + items[2] + ")";
+	}
+
+	public static String[] extractDisplayNames(File[] files) {
+		String[] result = new String[files.length];
+		for (int i = 0; i < files.length; i++)
+			result[i] = getDisplayName(files[i]);
+		return result;
 	}
 
 	public static File makeFile(String... pathElements) {
@@ -154,5 +162,15 @@ public class Project implements ProjectPaths, TWPaths {
 		String s2 = FileUtilities.makePath(pathElements);
 		String s3 = FileUtilities.makePath(s1, s2);
 		return new File(s3);
+	}
+
+	public static String getProjectDateTime() {
+		return creationDateTime;
+	}
+
+	public static File[] getProjectPaths() {
+		String repos = TW_ROOT;
+		File folder = new File(repos);
+		return folder.listFiles(new ProjectFilter());
 	}
 }
