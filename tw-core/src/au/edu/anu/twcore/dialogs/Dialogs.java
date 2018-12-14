@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.dialogs;
 
+import java.io.File;
+
 /**
  * Author Ian Davies
  *
@@ -43,5 +45,8 @@ public class Dialogs {
 	}
 	public static void errorAlert(String title, String header, String content) {
 		impl.errorAlert(title, header, content);
+	}
+	public static File selectDirectory(String title,String currentPath) {
+		return impl.selectDirectory(title,currentPath);
 	}
 }

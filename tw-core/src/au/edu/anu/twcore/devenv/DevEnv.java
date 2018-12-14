@@ -27,22 +27,23 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.dialogs;
+package au.edu.anu.twcore.devenv;
 
 import java.io.File;
 
-/**
- * Author Ian Davies
- *
- * Date 11 Dec. 2018
- */
-/**
- * 
- * Interface for implementation independent dialogs
- */
-public interface Dialogable {
-	public void errorAlert(String title, String header, String content);
+// static singleton class for java IDE-independent info
+public class DevEnv {
+	private static IDevEnv impl;
 
-	public File selectDirectory(String title, String currentPath);
+	public static void initialise(IDevEnv impl) {
+		DevEnv.impl = impl;
+	}
 
+	public static boolean isJavaProject(File dir) {
+		return impl.isJavaProject(dir);
+	}
+
+	public static File srcRoot() {
+		return impl.srcRoot();
+	}
 }
