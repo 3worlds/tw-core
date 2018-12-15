@@ -26,23 +26,42 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
+package au.edu.anu.twcore.exceptions;
 
-package au.edu.anu.twcore.project;
+import java.io.Serializable;
 
-import java.io.File;
-import java.io.FilenameFilter;
+import fr.ens.biologie.generic.Textable;
 
 /**
- * Author Ian Davies
+ * @author shayne.flint@anu.edu.au
  *
- * Date 14 Dec. 2018
+ * 
+ * 
  */
-// List all valid 3W project directories
-public class ProjectFilter implements FilenameFilter {
+// NB: this was AotException before - but Exception have to stay local to their Library
+// The general advice for exceptions is to throw early and catch late.
+public class TwCoreException extends RuntimeException {
 
-	@Override
-	public boolean accept(File dir, String name) {
-		return Project.isValidProjectFile(new File(dir.getAbsolutePath(), name));
+	/**
+	 * Serializable
+	 */
+	private static final long serialVersionUID = 5564780178892917526L;
+
+	public TwCoreException(Textable item, String message) {
+		super("[on " + item + "]\n[" + message + "]");
+	}
+
+	public TwCoreException(String message) {
+		super("[" + message + "]");
+	}
+
+	public TwCoreException(Exception e) {
+		super(e);
+	}
+
+	public TwCoreException(String message, Exception e) {
+		super("[" + message + "]\n[original exception: " + e + "]");
+		e.printStackTrace();
 	}
 
 }

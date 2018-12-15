@@ -35,19 +35,88 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
+import au.edu.anu.twcore.exceptions.TwCoreException;
+
 class ProjectTest {
 
 	@Test
 	void test() {
-		Project.create("A_Project of crap");
-		// camel hump the name
-		assertTrue(Project.getProjectName().equals("AProjectofcrap"));
-		System.out.println(Project.getProjectDirectory());
-		File f = new File(Project.getProjectDirectory());
-		System.out.println(Project.displayName(f));
-		File mk = Project.makeFile("a","b","c");
-		System.out.println(mk.getAbsolutePath());
-		assertTrue(Project.validProjectFile(f));
+		Project.create("a*()*(^^:b\t\n");
+		assertTrue(Project.getProjectName().equals("aB"));
+		Project.close();
+		try {
+			Project.getProjectName();
+			fail("Closed but getProjectName() succeeded");
+		} catch (TwCoreException e) {
+			assertTrue(true);
+		}
+		try {
+			Project.close();
+			fail("Closed and already closed Project");
+		} catch (TwCoreException e) {
+			assertTrue(true);
+		}
+		try {
+			Project.getProjectDateTime();
+			fail("Datetime of closed Project");
+		} catch (TwCoreException e) {
+			assertTrue(true);
+		}
+		try {
+			for (int i = 0; i < 2; i++) {
+				Project.create("quick");
+				Project.close();
+			}
+		} catch (TwCoreException e) {
+			assertTrue(true);
+		}
+
+		assertFalse(Project.isOpen());
+
+		File[] files = Project.getAllProjectPaths();
+		for (File f : files) {
+			try {
+				Project.open(f);
+				Project.close();
+				assertTrue(true);
+			} catch (TwCoreException e) {
+				fail("Failed to open " + Project.getProjectDirectory());
+			}
+		}
+		Project.create(" The cat sat on the mat");
+		assertTrue(Project.getProjectName().equals("theCatSatOnTheMat"));
+		Project.close();
+
+		try {
+			Project.create("([{*~!'_^)");
+			fail("Should not have created project ([{*~!'_^)");
+		} catch (TwCoreException e) {
+			assertTrue(true);
+		}
+
+		File crap = new File("SDFCRap");
+		assertTrue(!Project.isValidProjectFile(crap));
+
+		try {
+			Project.extractDateTime(crap);
+			fail("extracted datetime from nonsense file");
+		} catch (TwCoreException e) {
+			assertTrue(true);
+		}
+
+		try {
+			Project.extractDisplayName(crap);
+			fail("extracted displayname from nonsense file");
+		} catch (TwCoreException e) {
+			assertTrue(true);
+		}
+		
+		try{
+			Project.extractDisplayNames(Project.getAllProjectPaths());
+		} catch (TwCoreException e) {
+			fail("extractDisplayNames fail on current .3w projects");
+		}
+
 	}
 
 }
