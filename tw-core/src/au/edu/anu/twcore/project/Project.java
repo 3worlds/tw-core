@@ -38,6 +38,7 @@ import org.apache.commons.text.WordUtils;
 
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.graph.generic.Graph;
 
 /**
  * Author Ian Davies
@@ -188,8 +189,6 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @throws TwcoreException if Project is closed
 	 */
 	public static String getProjectName() throws TwcoreException {
-		if (!isOpen())
-			throw new TwcoreException("Project is closed.");
 		String[] items = parseProjectName(projectDirectory);
 		return items[1];
 	}
@@ -318,6 +317,13 @@ public class Project implements ProjectPaths, TWPaths {
 			throw new TwcoreException("First character of " + items[1] + " must be lower case");
 
 		return items;
+	}
+
+	public static Graph newConfiguration()  throws TwcoreException {
+		String name = Project.getProjectName();
+		File file = Project.makeFile(name+".twg");
+		//Graph g = 
+		return null;
 	}
 
 }
