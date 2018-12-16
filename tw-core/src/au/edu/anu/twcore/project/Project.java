@@ -204,6 +204,10 @@ public class Project implements ProjectPaths, TWPaths {
 		return items[1] + "(" + items[2] + ")";
 	}
 
+	public static String getDisplayName() throws TwCoreException {
+		return extractDisplayName(projectDirectory);
+	}
+
 	/**
 	 * @param directories array of 3Worlds directories
 	 * @return array of display name strings as {@code Name(Date)}
@@ -248,6 +252,14 @@ public class Project implements ProjectPaths, TWPaths {
 		String s2 = FileUtilities.makePath(pathElements);
 		String s3 = FileUtilities.makePath(s1, s2);
 		return new File(s3);
+	}
+
+	public static File getPreferencesFile() {
+		return makeFile(TWPaths.TW_PREF);
+	}
+
+	public static File getLayoutFile() {
+		return makeFile(TWPaths.TW_LAYOUT);
 	}
 
 	/**

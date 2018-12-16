@@ -29,24 +29,6 @@
 
 package au.edu.anu.twcore.dialogs;
 
-import java.io.File;
-
-/**
- * Author Ian Davies
- *
- * Date 11 Dec. 2018
- */
-/**
- * 
- * Interface for implementation independent dialogs
- */
-public interface Dialogable {
-	public void errorAlert(String title, String header, String content);
-
-	public File selectDirectory(String title, String currentPath);
-
-	public YesNoCancel yesNoCancel(String title, String header, String content);
-
-	public String getText(String title, String header, String content, String prompt);
-
+public enum YesNoCancel {
+yes, no, cancel;
 }

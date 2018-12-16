@@ -43,10 +43,20 @@ public class Dialogs {
 	public static void initialise(Dialogable impl) {
 		Dialogs.impl = impl;
 	}
+
 	public static void errorAlert(String title, String header, String content) {
 		impl.errorAlert(title, header, content);
 	}
-	public static File selectDirectory(String title,String currentPath) {
-		return impl.selectDirectory(title,currentPath);
+
+	public static File selectDirectory(String title, String currentPath) {
+		return impl.selectDirectory(title, currentPath);
+	}
+
+	public static YesNoCancel yesNoCancel(String title, String header, String content) {
+		return impl.yesNoCancel(title, header, content);
+	}
+
+	public static String getText(String title, String header, String content, String prompt) {
+		return impl.getText(title, header, content, prompt);
 	}
 }
