@@ -30,6 +30,8 @@
 
 	<dependencies>
 			<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>
+			<dependency org="fr.ens.biologie" name="generics" rev="+"/>
+			<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="0.0.3+"/>
 	</dependencies>
 
 
