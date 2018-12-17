@@ -26,7 +26,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
- 
+
 package au.edu.anu.twcore.project;
 
 import java.io.File;
@@ -79,22 +79,24 @@ public class Project implements ProjectPaths, TWPaths {
 	 * DateTime format - no blanks - it is effectively a unique id. However,it seems
 	 * ":" is a forbidden char in OSX and Windows
 	 */
-//	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss:SSS");
+	// private static DateTimeFormatter formatter =
+	// DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss:SSS");
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
 
 	private static File projectDirectory;
 
 	/**
-	 * @param name any string
+	 * @param name
+	 *            any string
 	 * @return The modified name input string. Name will be modified to camelCase
 	 *         with any whitespace characters then removed. The first character, if
 	 *         alphabetic, will be made lower case to conform with package name
 	 *         conventions.
 	 * 
-	 * @throws TwcoreException if a project is open | there are no valid characters
-	 *                         | the directory cannot be made | directory already
-	 *                         exists (if made within nano second i.e. within a
-	 *                         loop).
+	 * @throws TwcoreException
+	 *             if a project is open | there are no valid characters | the
+	 *             directory cannot be made | directory already exists (if made
+	 *             within nano second i.e. within a loop).
 	 */
 	public static String create(String name) throws TwcoreException {
 		String givenName = name;
@@ -135,7 +137,8 @@ public class Project implements ProjectPaths, TWPaths {
 	/**
 	 * Closes the project
 	 * 
-	 * @throws TwcoreException if not open
+	 * @throws TwcoreException
+	 *             if not open
 	 */
 	public static void close() throws TwcoreException {
 		if (!isOpen())
@@ -144,9 +147,11 @@ public class Project implements ProjectPaths, TWPaths {
 	}
 
 	/**
-	 * @param directory full path of 3Worlds project directory
-	 * @throws TwcoreException when a project is already open | the path is not a
-	 *                         valid 3Worlds project path.
+	 * @param directory
+	 *            full path of 3Worlds project directory
+	 * @throws TwcoreException
+	 *             when a project is already open | the path is not a valid 3Worlds
+	 *             project path.
 	 */
 	public static void open(File directory) throws TwcoreException {
 		if (isOpen())
@@ -159,7 +164,8 @@ public class Project implements ProjectPaths, TWPaths {
 
 	/**
 	 * @return projectDirectory
-	 * @throws TwcoreException if Project is closed.
+	 * @throws TwcoreException
+	 *             if Project is closed.
 	 */
 	public static File getProjectFile() throws TwcoreException {
 		if (!isOpen())
@@ -169,7 +175,8 @@ public class Project implements ProjectPaths, TWPaths {
 
 	/**
 	 * @return Directory path as String
-	 * @throws TwcoreException if Project is closed
+	 * @throws TwcoreException
+	 *             if Project is closed
 	 */
 	public static String getProjectDirectory() throws TwcoreException {
 		return getProjectFile().getAbsolutePath();
@@ -186,7 +193,8 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return The project name part of the project directory. This is used as a
 	 *         java package name in generated java files for this project. It is
 	 *         also used as the name of the 3Worlds configuration graph root
-	 * @throws TwcoreException if Project is closed
+	 * @throws TwcoreException
+	 *             if Project is closed
 	 */
 	public static String getProjectName() throws TwcoreException {
 		String[] items = parseProjectName(projectDirectory);
@@ -194,9 +202,11 @@ public class Project implements ProjectPaths, TWPaths {
 	}
 
 	/**
-	 * @param directory whose path is to be parsed.
+	 * @param directory
+	 *            whose path is to be parsed.
 	 * @return Project path without the "Project" prefix and date/time in parts.
-	 * @throws TwcoreException if the directory string will not parse correctly
+	 * @throws TwcoreException
+	 *             if the directory string will not parse correctly
 	 */
 	public static String extractDisplayName(File directory) throws TwcoreException {
 		String[] items = parseProjectName(directory);
@@ -208,9 +218,11 @@ public class Project implements ProjectPaths, TWPaths {
 	}
 
 	/**
-	 * @param directories array of 3Worlds directories
+	 * @param directories
+	 *            array of 3Worlds directories
 	 * @return array of display name strings as {@code Name(Date)}
-	 * @throws TwcoreException if any of the directories are invalid.
+	 * @throws TwcoreException
+	 *             if any of the directories are invalid.
 	 */
 	public static String[] extractDisplayNames(File[] directories) throws TwcoreException {
 		String[] result = new String[directories.length];
@@ -220,9 +232,11 @@ public class Project implements ProjectPaths, TWPaths {
 	}
 
 	/**
-	 * @param directory containing the date time string
+	 * @param directory
+	 *            containing the date time string
 	 * @return returns the date and time string from the given 3Worlds directory.
-	 * @throws TwcoreException if not a valid 3Worlds directory
+	 * @throws TwcoreException
+	 *             if not a valid 3Worlds directory
 	 */
 	public static String extractDateTime(File directory) throws TwcoreException {
 		String[] items = parseProjectName(directory);
@@ -231,7 +245,8 @@ public class Project implements ProjectPaths, TWPaths {
 
 	/**
 	 * @return String containing the unique date and time of project creation.
-	 * @throws TwcoreException if project is not open
+	 * @throws TwcoreException
+	 *             if project is not open
 	 */
 	public static String getProjectDateTime() throws TwcoreException {
 		if (!isOpen())
@@ -242,7 +257,8 @@ public class Project implements ProjectPaths, TWPaths {
 	/**
 	 * @param pathElements
 	 * @return new file with path elements appended to project path.
-	 * @throws TwcoreException if project is not open
+	 * @throws TwcoreException
+	 *             if project is not open
 	 */
 	public static File makeFile(String... pathElements) throws TwcoreException {
 		if (!isOpen())
@@ -253,11 +269,11 @@ public class Project implements ProjectPaths, TWPaths {
 		return new File(s3);
 	}
 
-	public static File getPreferencesFile() {
+	public static File makePreferencesFile() {
 		return makeFile(TWPaths.TW_PREF);
 	}
 
-	public static File getLayoutFile() {
+	public static File makeLayoutFile() {
 		return makeFile(TWPaths.TW_LAYOUT);
 	}
 
@@ -319,10 +335,39 @@ public class Project implements ProjectPaths, TWPaths {
 		return items;
 	}
 
-	public static Graph newConfiguration()  throws TwcoreException {
+	private static File makeConfigurationFile()  throws TwcoreException {
 		String name = Project.getProjectName();
-		File file = Project.makeFile(name+".twg");
-		//Graph g = 
+		return Project.makeFile(name + ".twg");
+	}
+
+	public static Graph newConfiguration() throws TwcoreException {
+		String name = Project.getProjectName();
+		File file = Project.makeConfigurationFile();
+		// Graph g =
+		return null;
+	}
+	
+	
+	public static Graph newLayout()  throws TwcoreException {
+		File file = Project.makeLayoutFile();
+		// Graph
+		return null;
+		
+	}
+
+
+	public static Graph loadConfiguration() {
+		// TODO Auto-generated method stub
+		File file = Project.makeConfigurationFile();
+		// load graph (file)
+		return null;
+	}
+
+	public static Graph loadLayout() {
+		// TODO Auto-generated method stub
+		File file = Project.makeLayoutFile();
+		// load graph (file)
+		
 		return null;
 	}
 
