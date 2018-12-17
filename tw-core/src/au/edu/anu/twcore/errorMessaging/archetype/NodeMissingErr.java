@@ -38,9 +38,9 @@ import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
  */
 public class NodeMissingErr extends ErrorMessageAdaptor{
 //	private IntegerRange expectedRange;
-	private int foundCount;
+//	private int foundCount;
 //	private AotNode spec;
-	private String reference;
+//	private String reference;
 
 public NodeMissingErr(/*String reference, IntegerRange expectedRange, int foundCount, AotNode spec,
 			AotGraph currentGraph*/) {

@@ -335,37 +335,36 @@ public class Project implements ProjectPaths, TWPaths {
 		return items;
 	}
 
-	private static File makeConfigurationFile()  throws TwcoreException {
-		String name = Project.getProjectName();
-		return Project.makeFile(name + ".twg");
-	}
+//	private static File makeConfigurationFile()  throws TwcoreException {
+//		String name = Project.getProjectName();
+//		return Project.makeFile(name + ".twg");
+//	}
 
-	public static Graph newConfiguration() throws TwcoreException {
-		String name = Project.getProjectName();
-		File file = Project.makeConfigurationFile();
+	public static Graph<?, ?> newConfiguration() throws TwcoreException {
+//		File file = Project.makeConfigurationFile();
 		// Graph g =
 		return null;
 	}
 	
 	
-	public static Graph newLayout()  throws TwcoreException {
-		File file = Project.makeLayoutFile();
+	public static Graph<?, ?> newLayout()  throws TwcoreException {
+//		File file = Project.makeLayoutFile();
 		// Graph
 		return null;
 		
 	}
 
 
-	public static Graph loadConfiguration() {
+	public static Graph<?, ?> loadConfiguration() {
 		// TODO Auto-generated method stub
-		File file = Project.makeConfigurationFile();
+//		File file = Project.makeConfigurationFile();
 		// load graph (file)
 		return null;
 	}
 
-	public static Graph loadLayout() {
+	public static Graph<?, ?> loadLayout() {
 		// TODO Auto-generated method stub
-		File file = Project.makeLayoutFile();
+//		File file = Project.makeLayoutFile();
 		// load graph (file)
 		
 		return null;

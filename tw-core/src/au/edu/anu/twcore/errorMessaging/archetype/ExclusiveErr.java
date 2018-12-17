@@ -38,7 +38,7 @@ import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
  */
 public class ExclusiveErr extends ErrorMessageAdaptor{
 public ExclusiveErr(/*AotNode n*/) {
-	String s = "Expected a specification for ";
+//	String s = "Expected a specification for ";
 //	msg1 = s+n.displayName();
 //	msg2 = s+n.toString();
 //	msg3 = s+n.toDetailedString();
