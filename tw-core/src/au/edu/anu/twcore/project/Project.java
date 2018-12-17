@@ -39,6 +39,8 @@ import org.apache.commons.text.WordUtils;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.generic.Graph;
+import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
 
 /**
  * Author Ian Davies
@@ -335,10 +337,10 @@ public class Project implements ProjectPaths, TWPaths {
 		return items;
 	}
 
-//	private static File makeConfigurationFile()  throws TwcoreException {
-//		String name = Project.getProjectName();
-//		return Project.makeFile(name + ".twg");
-//	}
+	private static File makeConfigurationFile()  throws TwcoreException {
+		String name = Project.getProjectName();
+		return Project.makeFile(name + ".twg");
+	}
 
 	public static Graph<?, ?> newConfiguration() throws TwcoreException {
 //		File file = Project.makeConfigurationFile();
@@ -356,18 +358,13 @@ public class Project implements ProjectPaths, TWPaths {
 
 
 	public static Graph<?, ?> loadConfiguration() {
-		// TODO Auto-generated method stub
-//		File file = Project.makeConfigurationFile();
-		// load graph (file)
-		return null;
+		File file = Project.makeConfigurationFile();
+		return new OmugiGraphImporter(file).getGraph();
 	}
 
 	public static Graph<?, ?> loadLayout() {
-		// TODO Auto-generated method stub
-//		File file = Project.makeLayoutFile();
-		// load graph (file)
-		
-		return null;
+		File file = Project.makeLayoutFile();
+		return new OmugiGraphImporter(file).getGraph();
 	}
 
 }
