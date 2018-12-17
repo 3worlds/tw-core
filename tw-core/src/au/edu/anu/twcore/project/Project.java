@@ -42,7 +42,7 @@ import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.generic.Graph;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
-
+import java.util.logging.Logger;
 /**
  * Author Ian Davies
  *
@@ -80,6 +80,7 @@ import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
 public class Project implements ProjectPaths, TWPaths {
 	private static final String sep = "_";
 	private static final char sepch = '_';
+	private static Logger log = Logger.getLogger(Project.class.getName());
 
 	/*
 	 * DateTime format - no blanks - it is effectively a unique id. However,it seems
@@ -105,6 +106,9 @@ public class Project implements ProjectPaths, TWPaths {
 	 *             directories exist.
 	 */
 	public static String create(String name) throws TwcoreException {
+		log.entering("Project", "create");  
+		log.fine(name);
+
 		checkUniqueness();
 		String givenName = name;
 		if (isOpen())
@@ -137,6 +141,9 @@ public class Project implements ProjectPaths, TWPaths {
 		}
 		if (!projectDirectory.mkdirs())
 			throw new TwcoreException("Unable to create project directory: " + projectDirectory.getAbsolutePath());
+		
+		log.exiting("Project", "create");  
+		log.fine(name);
 		return name;
 	}
 
