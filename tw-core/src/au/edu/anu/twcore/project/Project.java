@@ -42,6 +42,8 @@ import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.generic.Graph;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
+
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -83,6 +85,9 @@ public class Project implements ProjectPaths, TWPaths {
 	private static final char sepch = '_';
 	private static String klassName = Project.class.getName();
 	private static Logger log = Logger.getLogger(klassName);
+	static {
+		log.setLevel(Level.FINE);
+	}
 
 	/*
 	 * DateTime format - no blanks - it is effectively a unique id. However,it seems
