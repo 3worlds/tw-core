@@ -36,14 +36,12 @@ import fr.ens.biologie.generic.Textable;
  * 
  * 
  */
-// NB: this was AotException before - but Exception have to stay local to their Library
-// The general advice for exceptions is to throw early and catch late.
+//NB: this was previously AotException
+//Policy is to make an exception at least for each library
+//The general advice for exceptions is to throw early and catch late.
 public class TwcoreException extends RuntimeException {
 
-	/**
-	 * Serializable TODO Check all these are different!
-	 */
-	private static final long serialVersionUID = 5564780178892917526L;
+	private static final long serialVersionUID = 2585499469212044746L;
 
 	public TwcoreException(Textable item, String message) {
 		super("[on " + item + "]\n[" + message + "]");

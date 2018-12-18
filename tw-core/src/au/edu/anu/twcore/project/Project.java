@@ -33,15 +33,16 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.text.WordUtils;
 
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.generic.Graph;
-import fr.cnrs.iees.graph.io.GraphImporter;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
-
+import java.util.logging.Logger;
 /**
  * Author Ian Davies
  *
@@ -49,25 +50,27 @@ import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
  */
 
 /**
- * TODO improve javadoc here
- * {@code Project} is a singleton static class that contains the directory
- * ({@link java.io.File}) of the project in current use.
- *
+ * {@code Project} Project is a singleton static class containing the directory
+ * path ({@link java.io.File}) of the 3Worlds project in current use. Project directories always reside
+ * within the 3Worlds root directory “home/.3w”.
  * <p>
- * {@code Project} has methods that parse a 3Worlds project path into
- * <em>Project_name_datetime</em>. An underscore ("_") separates these three
- * parts.
+ * The class contains helper methods for creating files relative to this
+ * project. The name of all 3Worlds projects comprise three parts separated by
+ * an underscore:
  * <p>
- * 1. 3Worlds project directories always begin with the key word
- * <em>project</em>.
+ * 1) the keyword “project”;
  * <p>
- * 2. The <em>name</em> uses camelCase format and also forbids characters that
- * would produce valid filename. Further, this part must also begin with a lower
- * case (if alpha).
+ * 2) a user supplied name. This name is reformatted as camel caps for use as:
+ * i) a package name for generated java classes; ii) the name of the
+ * configuration file; and, iii) the name of the root node in the project
+ * configuration file.
  * <p>
- * The <em>datetime</em> string is the creation time in human-readable form with
- * nanos appended to make the directory unique. Thus directories cannot be made
- * in a fast loop as the directory names will collide.
+ * 3) A date and time string "yyyy-MM-dd-HH-mm-ss-SSS"
+ * <p>
+ * Project paths are intended to be unique and an exception will be thrown if
+ * the system finds identical directories. This situation could only arise if,
+ * for some reason, projects were created programmatically (in a rapid loop) or
+ * by editing directory names.
  * <p>
  * 
  * @author Author Ian Davies
@@ -77,6 +80,7 @@ import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
 public class Project implements ProjectPaths, TWPaths {
 	private static final String sep = "_";
 	private static final char sepch = '_';
+	private static Logger log = Logger.getLogger(Project.class.getName());
 
 	/*
 	 * DateTime format - no blanks - it is effectively a unique id. However,it seems
@@ -89,18 +93,23 @@ public class Project implements ProjectPaths, TWPaths {
 	private static File projectDirectory;
 
 	/**
-	 * @param name any string
+	 * @param name
+	 *            any string.
 	 * @return The modified name input string. Name will be modified to camelCase
 	 *         with any whitespace characters then removed. The first character, if
 	 *         alphabetic, will be made lower case to conform with package name
 	 *         conventions.
 	 * 
-	 * @throws TwcoreException if a project is open | there are no valid characters
-	 *                         | the directory cannot be made | directory already
-	 *                         exists (if made within nano second i.e. within a
-	 *                         loop).
+	 * @throws TwcoreException
+	 *             if a project is open | there are no valid characters | the
+	 *             directory cannot be made | directory already exists | duplicate
+	 *             directories exist.
 	 */
 	public static String create(String name) throws TwcoreException {
+		log.entering("Project", "create");  
+		log.fine(name);
+
+		checkUniqueness();
 		String givenName = name;
 		if (isOpen())
 			throw new TwcoreException(
@@ -130,9 +139,11 @@ public class Project implements ProjectPaths, TWPaths {
 			close();
 			throw new TwcoreException("Project directory already exists: " + f.getAbsolutePath());
 		}
-
 		if (!projectDirectory.mkdirs())
 			throw new TwcoreException("Unable to create project directory: " + projectDirectory.getAbsolutePath());
+		
+		log.exiting("Project", "create");  
+		log.fine(name);
 		return name;
 	}
 
@@ -287,6 +298,16 @@ public class Project implements ProjectPaths, TWPaths {
 		return folder.listFiles(new ProjectFilter());
 	}
 
+	public static void checkUniqueness() throws TwcoreException {
+		File[] files = getAllProjectPaths();
+		List<String> ul = new ArrayList<>();
+		for (File f : files) {
+			if (ul.contains(f.getName()))
+				throw new TwcoreException("Identical project directories found: " + f.getName());
+			ul.add(f.getName());
+		}
+	}
+
 	/**
 	 * TODO
 	 * @param directory
@@ -348,10 +369,11 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @throws TwcoreException
 	 */
 	public static Graph<?, ?> newConfiguration() throws TwcoreException {
-//		File file = Project.makeConfigurationFile();
+		// File file = Project.makeConfigurationFile();
 		// Graph g =
 		return null;
 	}
+
 
 	/**
 	 * TODO
@@ -362,8 +384,8 @@ public class Project implements ProjectPaths, TWPaths {
 //		File file = Project.makeLayoutFile();
 		// Graph
 		return null;
-
 	}
+
 
 	/**
 	 * The configuration graph for this directory has the same name as the
@@ -371,6 +393,8 @@ public class Project implements ProjectPaths, TWPaths {
 	 * 
 	 * @return
 	 */
+
+
 	public static Graph<?, ?> loadConfiguration() {
 		File file = Project.makeConfigurationFile();
 		return new OmugiGraphImporter(file).getGraph();
