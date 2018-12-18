@@ -43,6 +43,7 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.generic.Graph;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
 import java.util.logging.Logger;
+
 /**
  * Author Ian Davies
  *
@@ -50,13 +51,13 @@ import java.util.logging.Logger;
  */
 
 /**
- * {@code Project} Project is a singleton static class containing the directory
- * path ({@link java.io.File}) of the 3Worlds project in current use. Project directories always reside
- * within the 3Worlds root directory “home/.3w”.
+ * {@code Project} is a singleton static class containing the directory path
+ * ({@link java.io.File}) of the 3Worlds project in current use. All project
+ * directories reside within the 3Worlds root directory “home/.3w”. The
+ * class contains helper methods for creating files relative to this project.
  * <p>
- * The class contains helper methods for creating files relative to this
- * project. The name of all 3Worlds projects comprise three parts separated by
- * an underscore:
+ * The name of all 3Worlds projects comprise three parts separated by an
+ * underscore:
  * <p>
  * 1) the keyword “project”;
  * <p>
@@ -80,7 +81,8 @@ import java.util.logging.Logger;
 public class Project implements ProjectPaths, TWPaths {
 	private static final String sep = "_";
 	private static final char sepch = '_';
-	private static Logger log = Logger.getLogger(Project.class.getName());
+	private static String klassName = Project.class.getName();
+	private static Logger log = Logger.getLogger(klassName);
 
 	/*
 	 * DateTime format - no blanks - it is effectively a unique id. However,it seems
@@ -93,20 +95,18 @@ public class Project implements ProjectPaths, TWPaths {
 	private static File projectDirectory;
 
 	/**
-	 * @param name
-	 *            any string.
+	 * @param name any string.
 	 * @return The modified name input string. Name will be modified to camelCase
 	 *         with any whitespace characters then removed. The first character, if
 	 *         alphabetic, will be made lower case to conform with package name
 	 *         conventions.
 	 * 
-	 * @throws TwcoreException
-	 *             if a project is open | there are no valid characters | the
-	 *             directory cannot be made | directory already exists | duplicate
-	 *             directories exist.
+	 * @throws TwcoreException if a project is open | there are no valid characters
+	 *                         | the directory cannot be made | directory already
+	 *                         exists | duplicate directories exist.
 	 */
 	public static String create(String name) throws TwcoreException {
-		log.entering("Project", "create");  
+		log.entering(klassName, "create");
 		log.fine(name);
 
 		checkUniqueness();
@@ -141,8 +141,8 @@ public class Project implements ProjectPaths, TWPaths {
 		}
 		if (!projectDirectory.mkdirs())
 			throw new TwcoreException("Unable to create project directory: " + projectDirectory.getAbsolutePath());
-		
-		log.exiting("Project", "create");  
+
+		log.exiting(klassName, "create");
 		log.fine(name);
 		return name;
 	}
@@ -274,6 +274,7 @@ public class Project implements ProjectPaths, TWPaths {
 
 	/**
 	 * TODO
+	 * 
 	 * @return
 	 */
 	public static File makePreferencesFile() {
@@ -282,6 +283,7 @@ public class Project implements ProjectPaths, TWPaths {
 
 	/**
 	 * TODO
+	 * 
 	 * @return
 	 */
 	public static File makeLayoutFile() {
@@ -290,6 +292,7 @@ public class Project implements ProjectPaths, TWPaths {
 
 	/**
 	 * TODO
+	 * 
 	 * @return array of all valid 3Worlds projects
 	 */
 	public static File[] getAllProjectPaths() {
@@ -310,6 +313,7 @@ public class Project implements ProjectPaths, TWPaths {
 
 	/**
 	 * TODO
+	 * 
 	 * @param directory
 	 * @return true if this directory is a valid 3Worlds project directory
 	 */
@@ -365,6 +369,7 @@ public class Project implements ProjectPaths, TWPaths {
 
 	/**
 	 * TODO
+	 * 
 	 * @return
 	 * @throws TwcoreException
 	 */
@@ -374,9 +379,9 @@ public class Project implements ProjectPaths, TWPaths {
 		return null;
 	}
 
-
 	/**
 	 * TODO
+	 * 
 	 * @return
 	 * @throws TwcoreException
 	 */
@@ -386,14 +391,12 @@ public class Project implements ProjectPaths, TWPaths {
 		return null;
 	}
 
-
 	/**
 	 * The configuration graph for this directory has the same name as the
 	 * user-specfied project name.
 	 * 
 	 * @return
 	 */
-
 
 	public static Graph<?, ?> loadConfiguration() {
 		File file = Project.makeConfigurationFile();
@@ -402,6 +405,7 @@ public class Project implements ProjectPaths, TWPaths {
 
 	/**
 	 * TODO
+	 * 
 	 * @return
 	 */
 	public static Graph<?, ?> loadLayout() {
