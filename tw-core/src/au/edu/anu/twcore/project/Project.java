@@ -110,7 +110,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 *                         | the directory cannot be made | directory already
 	 *                         exists | duplicate directories exist.
 	 */
-	public static String create(String name) throws TwcoreException {
+	public static String create(String name) {
 		log.entering(klassName, "create");
 		log.fine(name);
 
@@ -157,7 +157,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * 
 	 * @throws TwcoreException if not open
 	 */
-	public static void close() throws TwcoreException {
+	public static void close() {
 		if (!isOpen())
 			throw new TwcoreException("Project is closed.");
 		projectDirectory = null;
@@ -168,7 +168,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @throws TwcoreException when a project is already open | the path is not a
 	 *                         valid 3Worlds project path.
 	 */
-	public static void open(File directory) throws TwcoreException {
+	public static void open(File directory) {
 		if (isOpen())
 			throw new TwcoreException(
 					"Cannot open an already open project (" + projectDirectory.getAbsolutePath() + ".");
@@ -181,7 +181,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return projectDirectory
 	 * @throws TwcoreException if Project is closed.
 	 */
-	public static File getProjectFile() throws TwcoreException {
+	public static File getProjectFile() {
 		if (!isOpen())
 			throw new TwcoreException("Project is closed.");
 		return projectDirectory;
@@ -191,7 +191,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return Directory path as String
 	 * @throws TwcoreException if Project is closed
 	 */
-	public static String getProjectDirectory() throws TwcoreException {
+	public static String getProjectDirectory()  {
 		return getProjectFile().getAbsolutePath();
 	}
 
@@ -208,7 +208,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 *         also used as the name of the 3Worlds configuration graph root
 	 * @throws TwcoreException if Project is closed
 	 */
-	public static String getProjectName() throws TwcoreException {
+	public static String getProjectName() {
 		String[] items = parseProjectName(projectDirectory);
 		return items[1];
 	}
@@ -218,7 +218,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return Project path without the "Project" prefix and date/time in parts.
 	 * @throws TwcoreException if the directory string will not parse correctly
 	 */
-	public static String extractDisplayName(File directory) throws TwcoreException {
+	public static String extractDisplayName(File directory) {
 		String[] items = parseProjectName(directory);
 		return items[1] + "(" + items[2] + ")";
 	}
@@ -227,7 +227,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 * @throws TwcoreException
 	 */
-	public static String getDisplayName() throws TwcoreException {
+	public static String getDisplayName() {
 		return extractDisplayName(projectDirectory);
 	}
 
@@ -236,7 +236,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return array of display name strings as {@code Name(Date)}
 	 * @throws TwcoreException if any of the directories are invalid.
 	 */
-	public static String[] extractDisplayNames(File[] directories) throws TwcoreException {
+	public static String[] extractDisplayNames(File[] directories) {
 		String[] result = new String[directories.length];
 		for (int i = 0; i < directories.length; i++)
 			result[i] = extractDisplayName(directories[i]);
@@ -248,7 +248,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return returns the date and time string from the given 3Worlds directory.
 	 * @throws TwcoreException if not a valid 3Worlds directory
 	 */
-	public static String extractDateTime(File directory) throws TwcoreException {
+	public static String extractDateTime(File directory){
 		String[] items = parseProjectName(directory);
 		return items[2];
 	}
@@ -257,7 +257,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return String containing the unique date and time of project creation.
 	 * @throws TwcoreException if project is not open
 	 */
-	public static String getProjectDateTime() throws TwcoreException {
+	public static String getProjectDateTime() {
 		if (!isOpen())
 			throw new TwcoreException("Project is closed.");
 		return extractDateTime(projectDirectory);
@@ -268,7 +268,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return new file with path elements appended to project path.
 	 * @throws TwcoreException if project is not open
 	 */
-	public static File makeFile(String... pathElements) throws TwcoreException {
+	public static File makeFile(String... pathElements) {
 		if (!isOpen())
 			throw new TwcoreException("Cannot make file from a closed Project");
 		String s1 = projectDirectory.getAbsolutePath();
@@ -306,7 +306,7 @@ public class Project implements ProjectPaths, TWPaths {
 		return folder.listFiles(new ProjectFilter());
 	}
 
-	public static void checkUniqueness() throws TwcoreException {
+	public static void checkUniqueness(){
 		File[] files = getAllProjectPaths();
 		List<String> ul = new ArrayList<>();
 		for (File f : files) {
@@ -349,7 +349,7 @@ public class Project implements ProjectPaths, TWPaths {
 		return res;
 	}
 
-	private static String[] parseProjectName(File file) throws TwcoreException {
+	private static String[] parseProjectName(File file) {
 		String name = file.getName();
 		String[] items = name.split(sep);
 		if (!(items.length == 3))
@@ -367,7 +367,7 @@ public class Project implements ProjectPaths, TWPaths {
 		return items;
 	}
 
-	private static File makeConfigurationFile() throws TwcoreException {
+	private static File makeConfigurationFile(){
 		String name = Project.getProjectName();
 		return Project.makeFile(name + ".twg");
 	}
@@ -378,7 +378,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 * @throws TwcoreException
 	 */
-	public static Graph<?, ?> newConfiguration() throws TwcoreException {
+	public static Graph<?, ?> newConfiguration()  {
 		// File file = Project.makeConfigurationFile();
 		// Graph g =
 		return null;
@@ -390,7 +390,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 * @throws TwcoreException
 	 */
-	public static Graph<?, ?> newLayout() throws TwcoreException {
+	public static Graph<?, ?> newLayout()  {
 //		File file = Project.makeLayoutFile();
 		// Graph
 		return null;
