@@ -59,7 +59,7 @@ import au.edu.anu.omhtk.jars.Jars;
  *         </p>
  */
 public class SimulatorJar extends Jars {
-	public static final String SimulatorJar = "simulator.jar";
+	public static final String SimJarName = "simulator.jar";
 
 	// This jar contains only a manifest.
 	public SimulatorJar(Set<File> dataFiles, Set<File> userCodeJars, Set<String> userLibraries) {
