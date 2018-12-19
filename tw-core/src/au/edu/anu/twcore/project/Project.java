@@ -282,9 +282,14 @@ public class Project implements ProjectPaths, TWPaths {
 	 * 
 	 * @return
 	 */
-	public static File makePreferencesFile() {
+	public static File makeProjectPreferencesFile() {
 		return makeFile(TWPaths.TW_PREF);
 	}
+	
+	public static File makeRuntimePreferencesFile() {
+		return makeFile(ProjectPaths.RUNTIME,TWPaths.TW_PREF);
+	}
+	
 
 	/**
 	 * TODO
