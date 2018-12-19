@@ -209,6 +209,8 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @throws TwcoreException if Project is closed
 	 */
 	public static String getProjectName() {
+		if (!isOpen())
+			throw new TwcoreException("Project is closed.");
 		String[] items = parseProjectName(projectDirectory);
 		return items[1];
 	}
