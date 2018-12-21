@@ -33,6 +33,7 @@ import java.io.File;
 
 import au.edu.anu.omhtk.jars.Jars;
 
+// import of Jacques' dep jar maker classes
 public class DependencyJar extends Jars{
 	private DependencyJar () {
 		String ivyFile = System.getProperty("user.dir")+File.separator+"scripts"+File.separator+"ivy.xml";

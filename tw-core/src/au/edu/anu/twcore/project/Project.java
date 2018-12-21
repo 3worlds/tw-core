@@ -41,7 +41,10 @@ import org.apache.commons.text.WordUtils;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Graph;
+import fr.cnrs.iees.graph.generic.Edge;
+import fr.cnrs.iees.graph.generic.Node;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
+import fr.cnrs.iees.graph.generic.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,8 +58,8 @@ import java.util.logging.Logger;
 /**
  * {@code Project} is a singleton static class containing the directory path
  * ({@link java.io.File}) of the 3Worlds project in current use. All project
- * directories reside within the 3Worlds root directory “home/.3w”. The
- * class contains helper methods for creating files relative to this project.
+ * directories reside within the 3Worlds root directory “home/.3w”. The class
+ * contains helper methods for creating files relative to this project.
  * <p>
  * The name of all 3Worlds projects comprise three parts separated by an
  * underscore:
@@ -83,7 +86,7 @@ import java.util.logging.Logger;
 public class Project implements ProjectPaths, TWPaths {
 	private static final String sep = "_";
 	private static final char sepch = '_';
-	private static String klassName = Project.class.getName();
+	private static final String klassName = Project.class.getName();
 	private static Logger log = Logger.getLogger(klassName);
 	static {
 		log.setLevel(Level.FINE);
@@ -112,25 +115,29 @@ public class Project implements ProjectPaths, TWPaths {
 	 */
 	public static String create(String name) {
 		log.entering(klassName, "create");
-		log.fine(name);
 
 		checkUniqueness();
 		String givenName = name;
-		if (isOpen())
-			throw new TwcoreException(
-					"Cannot create project " + name + ". Project is open: " + projectDirectory.getName());
-
+		if (isOpen()) {
+			String msg = "Cannot create project " + name + ". Project is open: " + projectDirectory.getName();
+			log.severe(msg);
+			throw new TwcoreException(msg);
+		}
 		char[] delimiters = { sepch };
 		name = WordUtils.capitalizeFully(name.replaceAll("\\W", sep), delimiters).replaceAll(sep, "");
 
-		if (name.equals(""))
-			throw new TwcoreException("Name does not contain any valid characters (" + givenName + ")");
-
+		if (name.equals("")) {
+			String msg = "Name + does not contain any valid characters ( \"" + givenName + "\" )";
+			log.severe(msg);
+			throw new TwcoreException(msg);
+		}
 		try {
 			File f = new File(name);
 			f.getCanonicalFile();
 		} catch (Exception e) {
-			throw new TwcoreException(name + "is not a valid file name on this system", e);
+			String msg = name + "is not a valid file name on this system";
+			log.severe(msg);
+			throw new TwcoreException(msg, e);
 		}
 
 		// lower case first character
@@ -142,13 +149,16 @@ public class Project implements ProjectPaths, TWPaths {
 		if (projectDirectory.exists()) {
 			File f = projectDirectory;
 			close();
-			throw new TwcoreException("Project directory already exists: " + f.getAbsolutePath());
+			String msg = "Project directory already exists: " + f.getAbsolutePath();
+			log.severe(msg);
+			throw new TwcoreException(msg);
 		}
-		if (!projectDirectory.mkdirs())
-			throw new TwcoreException("Unable to create project directory: " + projectDirectory.getAbsolutePath());
-
+		if (!projectDirectory.mkdirs()) {
+			String msg = "Unable to create project directory: " + projectDirectory.getAbsolutePath();
+			log.severe(msg);
+			throw new TwcoreException(msg);
+		}
 		log.exiting(klassName, "create");
-		log.fine(name);
 		return name;
 	}
 
@@ -158,9 +168,11 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @throws TwcoreException if not open
 	 */
 	public static void close() {
+		log.entering(klassName, "Close");
 		if (!isOpen())
 			throw new TwcoreException("Project is closed.");
 		projectDirectory = null;
+		log.exiting(klassName, "Close");
 	}
 
 	/**
@@ -169,12 +181,19 @@ public class Project implements ProjectPaths, TWPaths {
 	 *                         valid 3Worlds project path.
 	 */
 	public static void open(File directory) {
-		if (isOpen())
-			throw new TwcoreException(
-					"Cannot open an already open project (" + projectDirectory.getAbsolutePath() + ".");
-		if (!isValidProjectFile(directory))
-			throw new TwcoreException("Invalid project directory name (" + directory.getName() + ".");
+		log.entering(klassName, "Open");
+		if (isOpen()) {
+			String msg = "Cannot open an already open project (" + projectDirectory.getAbsolutePath() + ".";
+			log.severe(msg);
+			throw new TwcoreException(msg);
+		}
+		if (!isValidProjectFile(directory)) {
+			String msg = "Invalid project directory name (" + directory.getName() + ".";
+			log.severe(msg);
+			throw new TwcoreException(msg);
+		}
 		projectDirectory = directory;
+		log.exiting(klassName, "Open");
 	}
 
 	/**
@@ -191,7 +210,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return Directory path as String
 	 * @throws TwcoreException if Project is closed
 	 */
-	public static String getProjectDirectory()  {
+	public static String getProjectDirectory() {
 		return getProjectFile().getAbsolutePath();
 	}
 
@@ -250,7 +269,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return returns the date and time string from the given 3Worlds directory.
 	 * @throws TwcoreException if not a valid 3Worlds directory
 	 */
-	public static String extractDateTime(File directory){
+	public static String extractDateTime(File directory) {
 		String[] items = parseProjectName(directory);
 		return items[2];
 	}
@@ -287,11 +306,10 @@ public class Project implements ProjectPaths, TWPaths {
 	public static File makeProjectPreferencesFile() {
 		return makeFile(TWPaths.TW_PREF);
 	}
-	
+
 	public static File makeRuntimePreferencesFile() {
-		return makeFile(ProjectPaths.RUNTIME,TWPaths.TW_PREF);
+		return makeFile(ProjectPaths.RUNTIME, TWPaths.TW_PREF);
 	}
-	
 
 	/**
 	 * TODO
@@ -313,7 +331,7 @@ public class Project implements ProjectPaths, TWPaths {
 		return folder.listFiles(new ProjectFilter());
 	}
 
-	public static void checkUniqueness(){
+	public static void checkUniqueness() {
 		File[] files = getAllProjectPaths();
 		List<String> ul = new ArrayList<>();
 		for (File f : files) {
@@ -374,7 +392,7 @@ public class Project implements ProjectPaths, TWPaths {
 		return items;
 	}
 
-	private static File makeConfigurationFile(){
+	private static File makeConfigurationFile() {
 		String name = Project.getProjectName();
 		return Project.makeFile(name + ".twg");
 	}
@@ -385,7 +403,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 * @throws TwcoreException
 	 */
-	public static Graph<?, ?> newConfiguration()  {
+	public static Graph<?, ?> newConfiguration() {
 		// File file = Project.makeConfigurationFile();
 		// Graph g =
 		return null;
@@ -397,7 +415,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 * @throws TwcoreException
 	 */
-	public static Graph<?, ?> newLayout()  {
+	public static Graph<?, ?> newLayout() {
 //		File file = Project.makeLayoutFile();
 		// Graph
 		return null;
@@ -410,9 +428,9 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 */
 
-	public static Graph<?, ?> loadConfiguration() {
+	public static Graph<? extends Node, ? extends Edge> loadConfiguration() {
 		File file = Project.makeConfigurationFile();
-		return new OmugiGraphImporter(file).getGraph();
+		return (Graph<? extends Node, ? extends Edge>) new OmugiGraphImporter(file).getGraph();
 	}
 
 	/**
@@ -420,9 +438,9 @@ public class Project implements ProjectPaths, TWPaths {
 	 * 
 	 * @return
 	 */
-	public static Graph<?, ?> loadLayout() {
+	public static Graph<? extends Node, ? extends Edge> loadLayout() {
 		File file = Project.makeLayoutFile();
-		return new OmugiGraphImporter(file).getGraph();
+		return (Graph<? extends Node, ? extends Edge>) new OmugiGraphImporter(file).getGraph();
 	}
 
 }
