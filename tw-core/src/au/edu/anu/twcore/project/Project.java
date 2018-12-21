@@ -41,10 +41,9 @@ import org.apache.commons.text.WordUtils;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Graph;
-import fr.cnrs.iees.graph.generic.Edge;
-import fr.cnrs.iees.graph.generic.Node;
+import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
-import fr.cnrs.iees.graph.generic.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
