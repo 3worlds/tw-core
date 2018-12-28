@@ -107,10 +107,13 @@ public class VersionManager {
 	 * 
 	 */
 	private static String[][] DEPS = { 
-			{"org.apache.commons", "commons-text", "1.+"},
 			{"fr.ens.biologie", "generics", "+"},
 			{"au.edu.anu.rscs.aot", "omugi", "+"},
-			{"org.apache.ivy", "ivy", "2.2.0"}
+			{"org.apache.commons", "commons-text", "1.+"},
+			{"org.apache.ivy", "ivy", "2.2.0"},
+			{"org.apache.odftoolkit","simple-odf","0.8.2-incubating"},
+			{"org.apache.odftoolkit","odfdom-java","0.8.11-incubating"},
+
 	};
 	// ============================================================================================
 	
