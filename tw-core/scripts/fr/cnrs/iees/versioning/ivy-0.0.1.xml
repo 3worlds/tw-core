@@ -1,5 +1,5 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-core> version 0.0.3 (Wed Dec 26 09:11:02 AEDT 2018)
+ ant and ivy scripts for project <tw-core> version 0.0.1 (Tue Dec 11 09:06:30 AEDT 2018)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -12,7 +12,7 @@
 
 	<info	organisation="fr.cnrs.iees.tw-core"
 			module="tw-core"
-			revision="0.0.3"
+			revision="0.0.1"
 			status="integration">
 		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
 		<description>This module brings together all components required for 3Worlds including archetype</description>
@@ -28,11 +28,13 @@
 		</artifact>
 	</publications>
 
+
 	<dependencies>
-		<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>
-		<dependency org="fr.ens.biologie" name="generics" rev="+"/>
-		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="0.0.+"/>
-		<dependency org="org.apache.ivy" name="ivy" rev="2.2.0"/>
+			<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>
+			<dependency org="fr.ens.biologie" name="generics" rev="+"/>
+			<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="0.0.+"/>
+			<dependency org="org.apache.ivy" name="ivy" rev ="2.2.0"/>
 	</dependencies>
+
 
 </ivy-module>
