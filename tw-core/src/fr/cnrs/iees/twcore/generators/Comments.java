@@ -27,7 +27,7 @@
  *                                                                        *
  **************************************************************************/
 
-package fr.cnrs.iees.twcore.generator;
+package fr.cnrs.iees.twcore.generators;
 
 import java.util.Date;
 
@@ -40,17 +40,27 @@ import java.util.Date;
  */
 public class Comments {
 	
+//	public static String[] general = {
+//			"                   *** 3Worlds - A software for the simulation of ecosystems ***",
+//			"                   *                                                           *",
+//			"                   *        by:  Jacques Gignoux - jacques.gignoux@upmc.fr     *",
+//			"                   *             Ian D. Davies   - ian.davies@anu.edu.au       *",
+//			"                   *             Shayne R. Flint - shayne.flint@anu.edu.au     *",
+//			"                   *                                                           *",
+//			"                   *         http:// ???                                       *",
+//			"                   *                                                           *",
+//			"                   *************************************************************"
+//		};
 	public static String[] general = {
-		"                   *** 3Worlds - A software for the simulation of ecosystems ***",
-		"                   *                                                           *",
-		"                   *        by:  Jacques Gignoux - jacques.gignoux@upmc.fr     *",
-		"                   *             Ian D. Davies   - ian.davies@anu.edu.au       *",
-		"                   *             Shayne R. Flint - shayne.flint@anu.edu.au     *",
-		"                   *                                                           *",
-		"                   *         http:// ???                                       *",
-		"                   *                                                           *",
-		"                   *************************************************************"
-	};
+			"3Worlds - A software for the simulation of ecosystems",
+			"",
+			"by:  Jacques Gignoux - jacques.gignoux@upmc.fr",
+			"     Ian D. Davies   - ian.davies@anu.edu.au",
+			"     Shayne R. Flint - shayne.flint@anu.edu.au",
+			"",
+			"http:// ???",
+			"\n",
+		};
 	
 	public static String[] citation = {
 		"Feel free to use, but please quote the following paper in any publication based",
@@ -71,7 +81,8 @@ public class Comments {
 	    "GNU General Public License for more details.",
 	    "",
 	    "You should have received a copy of the GNU General Public License",
-	    "along with this program.  If not, see <http://www.gnu.org/licenses/>."
+	    "along with this program. If not, see <http://www.gnu.org/licenses/>.",  
+	    "\n"
 	};
 	
 	public static String[] generated = {

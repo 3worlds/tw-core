@@ -27,7 +27,9 @@
  *                                                                        *
  **************************************************************************/
 
-package fr.cnrs.iees.twcore.generator.resources;
+package fr.cnrs.iees.twcore.generators.resources;
+
+import static fr.cnrs.iees.twcore.generators.Comments.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,8 +42,6 @@ import java.util.Map;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
-
-import static fr.cnrs.iees.twcore.generator.Comments.*;
 
 /**
  * <h1>A utility class to generate core 3worlds components.</h1>
@@ -72,20 +72,38 @@ public class Generator {
 	// versioning
 	private static Date now = null;
 
+	// constants package
+	// constants dir
+	// arch dir
+	// SPEC_FILE
+
 	// packages, dirs and files
-	private static final String SPEC_FILE = "enumConstants.ods";
-	private static final String ARCH_FILE = "archetypeTree.ods";
-	private static final String ROOT_DIR = System.getProperty("user.dir");
-	private static final String ROOT_SRC = "src";
-	private static final String CORE_DIR = "fr.cnrs.iees.twcore.generator.resources".replace('.', File.separatorChar);
-	private static final String CONSTANT_DIR = "fr.cnrs.iees.twcore.generator.resources.constants".replace('.',
-			File.separatorChar);
-	private static final String DOC_DIR = "doc";
-	private static final String INDENT = "  ";
-	private static final String ARCHPATH = ROOT_DIR + File.separator + ROOT_SRC + File.separator + CORE_DIR
-			+ File.separator + ARCH_FILE;
-	private static final String ENUMPATH = ROOT_DIR + File.separator + ROOT_SRC + File.pathSeparator + CORE_DIR
-			+ File.separator + SPEC_FILE;
+	private static final String SPEC_FILENAME = "enumConstants.ods";
+	// TODO awaiting new graph and archetype def.
+//	private static final String ARCH_FILENAME = "archetypeTree.ods";
+
+	private static final String PROJECT_DIR = System.getProperty("user.dir");
+	private static final String SRC_DIR = PROJECT_DIR + File.separator + "src";
+	private static final String RES_DIR = SRC_DIR + File.separator
+			+ "fr.cnrs.iees.twcore.generators.resources".replace('.', File.separatorChar);
+	private static final String CONSTANTS_PACKAGE = "fr.cnrs.iees.twcore.generators.resources.constants";
+	private static final String CONSTANTS_DIR = SRC_DIR + File.separator
+			+ CONSTANTS_PACKAGE.replace('.', File.separatorChar);
+//	private static final String ARCHETYPES_DIR = RES_DIR+File.separator+"archetypes";
+	private static final String ENUM_FILE = RES_DIR + File.separator + SPEC_FILENAME;
+//	private static final String ARCH_FILE = RES_DIR + File.separator + ARCH_FILENAME;
+	private static final String DOC_DIR = PROJECT_DIR + File.separator + "doc";
+//	private static final String INDENT = "  ";
+//	static {
+//		System.out.println(PROJECT_DIR);
+//		System.out.println(SRC_DIR);
+//		System.out.println(RES_DIR);
+//		System.out.println(DOC_DIR);
+//		System.out.println(CONSTANTS_DIR);
+//		System.out.println(ARCHETYPES_DIR);
+//	    System.out.println(ARCH_FILE);
+//		System.out.println(ENUM_FILE);
+//	}
 
 	// row indexing in ods file
 	private static int HEADERS = 0;
@@ -95,7 +113,7 @@ public class Generator {
 	private static int PROPNAME = 0;
 	private static int PROPTYPE = 1;
 	private static int PROPLIST = 2;
-	private static int PROPMULT = 3;
+//	private static int PROPMULT = 3;
 	private static int PROPDESC = 4;
 	private static int PROPCODE = 5;
 	private static int PROPIMPORT = 6;
@@ -105,12 +123,12 @@ public class Generator {
 	private static int DESC = 1;
 
 	// column index for archetype tree
-	private static int AR_HASNODE = 0;
-	private static int AR_PARENT = 1;
-	private static int AR_CHILD = 2;
-	private static int AR_MULT = 3;
-	private static int AR_DESC = 4;
-	private static int AR_CLASS = 5;
+//	private static int AR_HASNODE = 0;
+//	private static int AR_PARENT = 1;
+//	private static int AR_CHILD = 2;
+//	private static int AR_MULT = 3;
+//	private static int AR_DESC = 4;
+//	private static int AR_CLASS = 5;
 
 //=====================================================================================
 	private static void generateNodeDoc(Table nodeSheet) {
@@ -138,8 +156,7 @@ public class Generator {
 		}
 
 		// output file
-		File out = new File(ROOT_DIR + File.separator + DOC_DIR + File.separator + "ArchetypeDoc-"
-				+ nodeSheet.getTableName() + ".adoc");
+		File out = new File(DOC_DIR + File.separator + "ArchetypeDoc-" + nodeSheet.getTableName() + ".adoc");
 		try {
 			PrintStream outp = new PrintStream(out);
 			outp.println(output.toString());
@@ -150,88 +167,88 @@ public class Generator {
 	}
 
 //=====================================================================================
-	private static void generateNodeArchetype(Table nodeSheet) {
-		System.out.println("generating archetype snippet for " + nodeSheet.getTableName());
-		StringBuilder output = new StringBuilder();
-
-		// header comments
-		output.append("// 3Worlds archetype snippet for node ").append(nodeSheet.getTableName()).append('\n');
-		output.append(singleLineComment(editableCode));
-		output.append("// some tweaking needed, indicated by '*****'\n");
-		output.append("// ").append("generated by ").append(Generator.class.getSimpleName()).append(" on ").append(now)
-				.append('\n').append('\n');
-
-		// node spec
-		output.append("hasNode ").append(nodeSheet.getTableName()).append("Spec\n");
-		output.append(INDENT).append("reference: \"*****").append(nodeSheet.getTableName()).append(":\"").append('\n');
-		output.append(INDENT).append("multiplicity: *****").append('\n');
-		List<Column> cols = nodeSheet.getColumnList();
-
-		// property specs
-		for (int i = TYPES + 1; i < cols.get(PROPNAME).getCellCount(); i++) {
-			String propName = cols.get(PROPNAME).getCellByIndex(i).getStringValue();
-			output.append(INDENT).append("hasProperty ").append(propName).append('\n');
-			String propType = cols.get(PROPTYPE).getCellByIndex(i).getStringValue();
-			String propList = cols.get(PROPLIST).getCellByIndex(i).getStringValue();
-			String type = null;
-			if (propList.equals("no")) {
-				try {
-					Class.forName(propType);
-					type = propType; // raw java types
-				} catch (ClassNotFoundException e) {
-					type = CONSTANT_DIR.replace('/', '.') + "." + propType; // enums
-				}
-				if (type != null)
-					output.append(INDENT).append(INDENT).append("type: \"").append(type).append("\"\n");
-			} else if (propList.equals("yes")) {
-				type = null;
-				if (propType.contains("Integer"))
-					type = "au.edu.anu.rscs.aot.collections.tables.IntTable";
-				else if (propType.contains("Long"))
-					type = "au.edu.anu.rscs.aot.collections.tables.LongTable";
-				else if (propType.contains("Double"))
-					type = "au.edu.anu.rscs.aot.collections.tables.DoubleTable";
-				else if (propType.contains("String"))
-					type = "au.edu.anu.rscs.aot.collections.tables.StringTable";
-				else if (propType.contains("Boolean"))
-					type = "au.edu.anu.rscs.aot.collections.tables.BooleanTable";
-				else if (propType.contains("Float"))
-					type = "au.edu.anu.rscs.aot.collections.tables.FloatTable";
-				else if (propType.contains("Char"))
-					type = "au.edu.anu.rscs.aot.collections.tables.CharTable";
-				else if (propType.contains("Byte"))
-					type = "au.edu.anu.rscs.aot.collections.tables.ByteTable";
-				else if (propType.contains("Short"))
-					type = "au.edu.anu.rscs.aot.collections.tables.ShortTable";
-				else {
-					if (propType.contains("."))
-						type = "au.edu.anu.rscs.aot.collections.tables.ObjectTable<" + propType + ">";
-					else
-						type = CONSTANT_DIR.replace('/', '.') + "." + propType + "Table"; // enum tables
-				}
-				if (type != null)
-					output.append(INDENT).append(INDENT).append("type: \"").append(type).append("\"\n");
-			}
-			String propMult = cols.get(PROPMULT).getCellByIndex(i).getStringValue();
-			if (propMult.equals("no"))
-				output.append(INDENT).append(INDENT).append("multiplicity: 1..1").append('\n');
-			else if (propMult.equals("yes"))
-				output.append(INDENT).append(INDENT).append("multiplicity: 0..1").append('\n');
-			// TODO: constraint queries
-		}
-
-		output.append("\n// end generated block\n");
-		// output file
-		File out = new File(ROOT_DIR + File.separator + CORE_DIR + File.separator + "3WA-snippet-"
-				+ nodeSheet.getTableName() + ".dsl");
-		try {
-			PrintStream outp = new PrintStream(out);
-			outp.println(output.toString());
-			outp.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+//	private static void generateNodeArchetype(Table nodeSheet) {
+//		System.out.println("generating archetype snippet for " + nodeSheet.getTableName());
+//		StringBuilder output = new StringBuilder();
+//
+//		// header comments
+//		output.append("// 3Worlds archetype snippet for node ").append(nodeSheet.getTableName()).append('\n');
+//		output.append(singleLineComment(editableCode));
+//		output.append("// some tweaking needed, indicated by '*****'\n");
+//		output.append("// ").append("generated by ").append(Generator.class.getSimpleName()).append(" on ").append(now)
+//				.append('\n').append('\n');
+//
+//		// node spec
+//		output.append("hasNode ").append(nodeSheet.getTableName()).append("Spec\n");
+//		output.append(INDENT).append("reference: \"*****").append(nodeSheet.getTableName()).append(":\"").append('\n');
+//		output.append(INDENT).append("multiplicity: *****").append('\n');
+//		List<Column> cols = nodeSheet.getColumnList();
+//
+//		// property specs
+//		for (int i = TYPES + 1; i < cols.get(PROPNAME).getCellCount(); i++) {
+//			String propName = cols.get(PROPNAME).getCellByIndex(i).getStringValue();
+//			output.append(INDENT).append("hasProperty ").append(propName).append('\n');
+//			String propType = cols.get(PROPTYPE).getCellByIndex(i).getStringValue();
+//			String propList = cols.get(PROPLIST).getCellByIndex(i).getStringValue();
+//			String type = null;
+//			if (propList.equals("no")) {
+//				try {
+//					Class.forName(propType);
+//					type = propType; // raw java types
+//				} catch (ClassNotFoundException e) {
+//					type = CONSTANTS_PACKAGE + "." + propType; // enums
+//				}
+//				if (type != null)
+//					output.append(INDENT).append(INDENT).append("type: \"").append(type).append("\"\n");
+//			} else if (propList.equals("yes")) {
+//				type = null;
+//				if (propType.contains("Integer"))
+//					type = "au.edu.anu.rscs.aot.collections.tables.IntTable";
+//				else if (propType.contains("Long"))
+//					type = "au.edu.anu.rscs.aot.collections.tables.LongTable";
+//				else if (propType.contains("Double"))
+//					type = "au.edu.anu.rscs.aot.collections.tables.DoubleTable";
+//				else if (propType.contains("String"))
+//					type = "au.edu.anu.rscs.aot.collections.tables.StringTable";
+//				else if (propType.contains("Boolean"))
+//					type = "au.edu.anu.rscs.aot.collections.tables.BooleanTable";
+//				else if (propType.contains("Float"))
+//					type = "au.edu.anu.rscs.aot.collections.tables.FloatTable";
+//				else if (propType.contains("Char"))
+//					type = "au.edu.anu.rscs.aot.collections.tables.CharTable";
+//				else if (propType.contains("Byte"))
+//					type = "au.edu.anu.rscs.aot.collections.tables.ByteTable";
+//				else if (propType.contains("Short"))
+//					type = "au.edu.anu.rscs.aot.collections.tables.ShortTable";
+//				else {
+//					if (propType.contains("."))
+//						type = "au.edu.anu.rscs.aot.collections.tables.ObjectTable<" + propType + ">";
+//					else
+//						type = CONSTANT_DIR.replace('/', '.') + "." + propType + "Table"; // enum tables
+//				}
+//				if (type != null)
+//					output.append(INDENT).append(INDENT).append("type: \"").append(type).append("\"\n");
+//			}
+//			String propMult = cols.get(PROPMULT).getCellByIndex(i).getStringValue();
+//			if (propMult.equals("no"))
+//				output.append(INDENT).append(INDENT).append("multiplicity: 1..1").append('\n');
+//			else if (propMult.equals("yes"))
+//				output.append(INDENT).append(INDENT).append("multiplicity: 0..1").append('\n');
+//			// TODO: constraint queries
+//		}
+//
+//		output.append("\n// end generated block\n");
+//		// output file
+//		File out = new File(ARCHETYPE_DIR + File.separator + "3WA-snippet-"
+//				+ nodeSheet.getTableName() + ".dsl");
+//		try {
+//			PrintStream outp = new PrintStream(out);
+//			outp.println(output.toString());
+//			outp.close();
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 //=====================================================================================
 	private static void generateEnumCode(Table enumSheet, Map<String, String> extraCode,
@@ -243,10 +260,9 @@ public class Generator {
 
 		// header comments
 		String[] moreComments = { "generated by " + Generator.class.getSimpleName() + " on " + now };
-		output.append(comment(general, generated, moreComments));
-
+		output.append(comment(license,general, generated, moreComments));
 		// header code
-		output.append("package ").append(CONSTANT_DIR.replace('/', '.')).append(";\n\n");
+		output.append("package ").append(CONSTANTS_PACKAGE).append(";\n\n");
 		output.append("import java.util.Arrays;\n");
 		output.append("import java.util.HashSet;\n");
 		output.append("import java.util.Set;\n\n");
@@ -362,7 +378,7 @@ public class Generator {
 		output.append("}\n");
 
 		// output file
-		File out = new File(ROOT_DIR + File.separator + CONSTANT_DIR + File.separator + propName + ".java");
+		File out = new File(CONSTANTS_DIR + File.separator + propName + ".java");
 		try {
 			PrintStream outp = new PrintStream(out);
 			outp.println(output.toString());
@@ -397,8 +413,8 @@ public class Generator {
 		}
 
 		// output file
-		File out = new File(ROOT_DIR + File.separator + DOC_DIR + File.separator + "ArchetypeDoc-"
-				+ nodeSheet.getTableName() + "-" + propType + ".adoc");
+		File out = new File(
+				DOC_DIR + File.separator + "ArchetypeDoc-" + nodeSheet.getTableName() + "-" + propType + ".adoc");
 		try {
 			PrintStream outp = new PrintStream(out);
 			outp.println(output.toString());
@@ -422,7 +438,7 @@ public class Generator {
 					output.append(comment(general, generated, moreComments));
 
 					// header code
-					output.append("package ").append(CONSTANT_DIR.replace("src", "").replace('/', '.')).append(";\n\n");
+					output.append("package ").append(CONSTANTS_PACKAGE).append(";\n\n");
 					output.append("import java.util.Collection;\n");
 					output.append("import java.util.EnumSet;\n\n");
 					output.append("public class ").append(propType).append("Set {\n\n");
@@ -484,8 +500,7 @@ public class Generator {
 					output.append("}\n");
 
 					// output file
-					File out = new File(
-							ROOT_DIR + File.separator + CONSTANT_DIR + File.separator + propType + "Set.java");
+					File out = new File(CONSTANTS_DIR + File.separator + propType + "Set.java");
 					try {
 						PrintStream outp = new PrintStream(out);
 						outp.println(output.toString());
@@ -498,39 +513,39 @@ public class Generator {
 	}
 
 	// =====================================================================================
-	private static void generateArchetype(Table sheet) {
-		// headers on 1st line: | hasNode | parent | child | multiplicity | description
-		// | class |
-		for (int i = 1; i < sheet.getRowCount(); i++)
-			if (sheet.getCellByPosition(AR_HASNODE, i).getStringValue().length() > 0) {
-				System.out.println("generating Archetype node specifications ");
-				StringBuilder output = new StringBuilder();
-				String ctIndent = "";
-				output.append(ctIndent).append("hasNode ")
-						.append(sheet.getCellByPosition(AR_HASNODE, i).getStringValue()).append("\n");
-				ctIndent += INDENT;
-				output.append(ctIndent).append("reference: \"")
-						.append(sheet.getCellByPosition(AR_PARENT, i).getStringValue()).append(":/")
-						.append(sheet.getCellByPosition(AR_CHILD, i).getStringValue()).append(":\"\n");
-				output.append(ctIndent).append("multiplicity: ")
-						.append(sheet.getCellByPosition(AR_MULT, i).getStringValue()).append("\n");
-				output.append(ctIndent).append("hasProperty name\n").append(ctIndent).append(INDENT)
-						.append("type: String\n").append(ctIndent).append(INDENT).append("multiplicity: 1..1")
-						.append("\n");
-				if (sheet.getCellByPosition(AR_CLASS, i).getStringValue().length() > 0) {
-					output.append(ctIndent).append("hasProperty class\n").append(ctIndent).append(INDENT)
-							.append("type: String\n").append(ctIndent).append(INDENT).append("multiplicity: 1..1")
-							.append("\n");
-					output.append(ctIndent).append(INDENT).append("mustSatisfyQuery\n").append(ctIndent).append(INDENT)
-							.append(INDENT)
-							.append("className: fr.ens.biologie.threeWorlds.ui.configuration.archetype3w.IsInValueSetQuery\n")
-							.append(ctIndent).append(INDENT).append(INDENT).append("values: {\"")
-							.append(sheet.getCellByPosition(AR_CLASS, i).getStringValue()).append("\"}\n");
-				}
-				System.out.println(output.toString());
-			}
-	}
-
+//	private static void generateArchetype(Table sheet) {
+//		// headers on 1st line: | hasNode | parent | child | multiplicity | description
+//		// | class |
+//		for (int i = 1; i < sheet.getRowCount(); i++)
+//			if (sheet.getCellByPosition(AR_HASNODE, i).getStringValue().length() > 0) {
+//				System.out.println("generating Archetype node specifications ");
+//				StringBuilder output = new StringBuilder();
+//				String ctIndent = "";
+//				output.append(ctIndent).append("hasNode ")
+//						.append(sheet.getCellByPosition(AR_HASNODE, i).getStringValue()).append("\n");
+//				ctIndent += INDENT;
+//				output.append(ctIndent).append("reference: \"")
+//						.append(sheet.getCellByPosition(AR_PARENT, i).getStringValue()).append(":/")
+//						.append(sheet.getCellByPosition(AR_CHILD, i).getStringValue()).append(":\"\n");
+//				output.append(ctIndent).append("multiplicity: ")
+//						.append(sheet.getCellByPosition(AR_MULT, i).getStringValue()).append("\n");
+//				output.append(ctIndent).append("hasProperty name\n").append(ctIndent).append(INDENT)
+//						.append("type: String\n").append(ctIndent).append(INDENT).append("multiplicity: 1..1")
+//						.append("\n");
+//				if (sheet.getCellByPosition(AR_CLASS, i).getStringValue().length() > 0) {
+//					output.append(ctIndent).append("hasProperty class\n").append(ctIndent).append(INDENT)
+//							.append("type: String\n").append(ctIndent).append(INDENT).append("multiplicity: 1..1")
+//							.append("\n");
+//					output.append(ctIndent).append(INDENT).append("mustSatisfyQuery\n").append(ctIndent).append(INDENT)
+//							.append(INDENT)
+//							.append("className: fr.ens.biologie.threeWorlds.ui.configuration.archetype3w.IsInValueSetQuery\n")
+//							.append(ctIndent).append(INDENT).append(INDENT).append("values: {\"")
+//							.append(sheet.getCellByPosition(AR_CLASS, i).getStringValue()).append("\"}\n");
+//				}
+//				System.out.println(output.toString());
+//			}
+//	}
+//
 	// =====================================================================================
 	// get the code snippets for enums.
 	private static void getExtraCode(Table sheet, Map<String, String> extraCode) {
@@ -544,7 +559,7 @@ public class Generator {
 		}
 	}
 
-	// =====================================================================================
+//	// =====================================================================================
 	// get the import snippets for enums.
 	private static void getExtraImports(Table sheet, Map<String, String> extraCode) {
 		List<Column> cols = sheet.getColumnList();
@@ -563,13 +578,13 @@ public class Generator {
 		System.out.println("Starting 3Worlds core component generation at " + now + "...");
 		try {
 			// process archetypeTree.ods
-			File archspecs = new File(ARCHPATH);
-			SpreadsheetDocument odf2 = SpreadsheetDocument.loadDocument(archspecs);
-			Table treesheet = odf2.getSheetByIndex(0);
-			generateArchetype(treesheet);
+//			File archspecs = new File(ARCH_FILE);
+//			SpreadsheetDocument odf2 = SpreadsheetDocument.loadDocument(archspecs);
+//			Table treesheet = odf2.getSheetByIndex(0);
+//			generateArchetype(treesheet);
 
 			// process enumConstants.ods
-			File specs = new File(ENUMPATH);
+			File specs = new File(ENUM_FILE);
 			SpreadsheetDocument odf = SpreadsheetDocument.loadDocument(specs);
 			Map<String, String> extraCode = new HashMap<String, String>();
 			Map<String, String> extraImports = new HashMap<String, String>();
@@ -584,7 +599,7 @@ public class Generator {
 						getExtraCode(sheet, extraCode);
 						getExtraImports(sheet, extraImports);
 						generateNodeDoc(sheet);
-						generateNodeArchetype(sheet);
+//						generateNodeArchetype(sheet);
 					}
 			}
 			// second, select all other sheets
