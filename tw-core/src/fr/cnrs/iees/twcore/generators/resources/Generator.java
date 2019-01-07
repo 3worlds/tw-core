@@ -587,8 +587,8 @@ public class Generator {
 			// process enumConstants.ods
 			File specs = new File(ENUM_FILE);
 			SpreadsheetDocument odf = SpreadsheetDocument.loadDocument(specs);
-			Map<String, String> extraCode = new HashMap<String, String>();
-			Map<String, String> extraImports = new HashMap<String, String>();
+			Map<String, String> extraCode = new HashMap<>();
+			Map<String, String> extraImports = new HashMap<>();
 
 			// first, select all sheets that do not have a "." in their name
 			// these are "Node" sheets, i.e. their content describes a list of properties

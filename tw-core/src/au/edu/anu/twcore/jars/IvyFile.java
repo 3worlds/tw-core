@@ -36,7 +36,7 @@ import java.util.List;
 public class IvyFile {
 
 	private PrintStream output; 
-	private List<IvyDependency> dependencies = new ArrayList<IvyDependency>();
+	private List<IvyDependency> dependencies = new ArrayList<>();
 	
 	public IvyFile(PrintStream output) {
 		this.output = output;
