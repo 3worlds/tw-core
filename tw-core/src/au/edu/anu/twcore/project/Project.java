@@ -29,6 +29,8 @@
 
 package au.edu.anu.twcore.project;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -41,9 +43,11 @@ import org.apache.commons.text.WordUtils;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Graph;
+import fr.cnrs.iees.graph.MinimalGraph;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
+import fr.cnrs.iees.io.FileImporter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -420,17 +424,20 @@ public class Project implements ProjectPaths, TWPaths {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	private static Graph<? extends Node, ? extends Edge> loadFromFile(File file) {
+		return (Graph<? extends Node, ? extends Edge>) new FileImporter(file).getGraph();
+	}
+
 	/**
 	 * The configuration graph for this directory has the same name as the
 	 * user-specfied project name.
 	 * 
 	 * @return
 	 */
-
 	@SuppressWarnings("unchecked")
 	public static Graph<? extends Node, ? extends Edge> loadConfiguration() {
-		File file = Project.makeConfigurationFile();
-		return (Graph<? extends Node, ? extends Edge>) new OmugiGraphImporter(file).getGraph();
+		return loadFromFile(Project.makeConfigurationFile());
 	}
 
 	/**
@@ -440,8 +447,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Graph<? extends Node, ? extends Edge> loadLayout() {
-		File file = Project.makeLayoutFile();
-		return (Graph<? extends Node, ? extends Edge>) new OmugiGraphImporter(file).getGraph();
+		return loadFromFile(Project.makeLayoutFile());
 	}
 
 }
