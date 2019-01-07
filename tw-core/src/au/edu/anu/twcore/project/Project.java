@@ -427,6 +427,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 */
 
+	@SuppressWarnings("unchecked")
 	public static Graph<? extends Node, ? extends Edge> loadConfiguration() {
 		File file = Project.makeConfigurationFile();
 		return (Graph<? extends Node, ? extends Edge>) new OmugiGraphImporter(file).getGraph();
@@ -437,6 +438,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static Graph<? extends Node, ? extends Edge> loadLayout() {
 		File file = Project.makeLayoutFile();
 		return (Graph<? extends Node, ? extends Edge>) new OmugiGraphImporter(file).getGraph();
