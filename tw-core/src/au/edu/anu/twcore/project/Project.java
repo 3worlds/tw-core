@@ -48,6 +48,7 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
 import fr.cnrs.iees.io.FileImporter;
+import fr.cnrs.iees.io.GraphFileFormats;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -395,9 +396,10 @@ public class Project implements ProjectPaths, TWPaths {
 		return items;
 	}
 
-	private static File makeConfigurationFile() {
+	public static File makeConfigurationFile() {
 		String name = Project.getProjectName();
-		return Project.makeFile(name + ".twg");
+		// Its a string of several extenstions
+		return Project.makeFile(name + GraphFileFormats.TWG.extension().split(" ")[1]);
 	}
 
 	/**
