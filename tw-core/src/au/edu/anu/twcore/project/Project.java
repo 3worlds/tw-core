@@ -424,30 +424,6 @@ public class Project implements ProjectPaths, TWPaths {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static Graph<? extends Node, ? extends Edge> loadFromFile(File file) {
-		return (Graph<? extends Node, ? extends Edge>) new FileImporter(file).getGraph();
-	}
-
-	/**
-	 * The configuration graph for this directory has the same name as the
-	 * user-specfied project name.
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static Graph<? extends Node, ? extends Edge> loadConfiguration() {
-		return loadFromFile(Project.makeConfigurationFile());
-	}
-
-	/**
-	 * TODO
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static Graph<? extends Node, ? extends Edge> loadLayout() {
-		return loadFromFile(Project.makeLayoutFile());
-	}
+	
 
 }
