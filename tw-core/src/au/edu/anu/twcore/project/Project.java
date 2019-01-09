@@ -29,8 +29,6 @@
 
 package au.edu.anu.twcore.project;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -43,11 +41,6 @@ import org.apache.commons.text.WordUtils;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Graph;
-import fr.cnrs.iees.graph.MinimalGraph;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
-import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.io.GraphFileFormats;
 
 import java.util.logging.Level;
@@ -96,6 +89,8 @@ public class Project implements ProjectPaths, TWPaths {
 		log.setLevel(Level.FINE);
 	}
 
+	// prevent instantiation
+	private Project() {};
 	/*
 	 * DateTime format - no blanks - it is effectively a unique id. However,it seems
 	 * ":" is a forbidden char in OSX and Windows
