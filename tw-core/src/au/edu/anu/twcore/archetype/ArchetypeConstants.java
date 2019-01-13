@@ -29,7 +29,22 @@
 
 package au.edu.anu.twcore.archetype;
 
+/* not sure about naming conventions. 
+To avoid name collisions with uses of this kind of interface, perhaps a prefix: suggest "at" here.
+
+ To clarify the category of each string:
+ 
+ s : specification node
+ 
+ sn: specification name (eg hasProeprty name) = atsnName??
+ 
+ sp: specification property atspReference, atspMultiplicity
+ 
+ sl: specification label eg slHasNode
+ 
+  well not sure about this. See what happens and refactor as required.
+*/
 public interface ArchetypeConstants {
-	public static final String atName = "name";
+	public static final String atspName = "name";
 
 }
