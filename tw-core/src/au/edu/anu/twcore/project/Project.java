@@ -40,9 +40,7 @@ import org.apache.commons.text.WordUtils;
 
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
-import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.io.GraphFileFormats;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -403,11 +401,11 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 * @throws TwcoreException
 	 */
-	public static Graph<?, ?> newConfiguration() {
-		// File file = Project.makeConfigurationFile();
-		// Graph g =
-		return null;
-	}
+//	public static Graph<?, ?> newConfiguration() {
+//		AotGraph graph = new AotGraph(new ArrayList<AotNode>());
+//		graph.makeNode(Configuration.N_ROOT, Project.getProjectName());
+//		return graph;
+//	}
 
 	/**
 	 * TODO
@@ -415,11 +413,11 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 * @throws TwcoreException
 	 */
-	public static Graph<?, ?> newLayout() {
-//		File file = Project.makeLayoutFile();
-		// Graph
-		return null;
-	}
+//	public static Graph<?, ?> newLayout() {
+////VisualGraph graph;
+//		// Graph
+//		return null;
+//	}
 
 	
 
