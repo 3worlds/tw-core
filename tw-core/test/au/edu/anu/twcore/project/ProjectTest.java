@@ -42,6 +42,8 @@ class ProjectTest {
 
 	@Test
 	void test() {
+		Project.create("getText user string");
+		assertTrue(Project.getProjectName().equals("gettextUserString"));
 		Project.create("a*()*(^^:b\t\n");
 		assertTrue(Project.getProjectName().equals("aB"));
 		Project.close();
