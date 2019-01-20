@@ -308,14 +308,6 @@ public class Project implements ProjectPaths, TWPaths {
 		return makeFile(ProjectPaths.RUNTIME, TWPaths.TW_PREF);
 	}
 
-	/**
-	 * TODO
-	 * 
-	 * @return
-	 */
-	public static File makeLayoutFile() {
-		return makeFile(TWPaths.TW_LAYOUT);
-	}
 
 	/**
 	 * TODO
@@ -391,33 +383,18 @@ public class Project implements ProjectPaths, TWPaths {
 
 	public static File makeConfigurationFile() {
 		String name = Project.getProjectName();
-		// Its a string of several extenstions
-		return Project.makeFile(name + GraphFileFormats.TWG.extension().split(" ")[1]);
+		// Its a string of several extensions
+		return Project.makeFile(name + GraphFileFormats.AOT.extension().split(" ")[1]);
 	}
 
 	/**
 	 * TODO
 	 * 
 	 * @return
-	 * @throws TwcoreException
 	 */
-//	public static Graph<?, ?> newConfiguration() {
-//		AotGraph graph = new AotGraph(new ArrayList<AotNode>());
-//		graph.makeNode(Configuration.N_ROOT, Project.getProjectName());
-//		return graph;
-//	}
-
-	/**
-	 * TODO
-	 * 
-	 * @return
-	 * @throws TwcoreException
-	 */
-//	public static Graph<?, ?> newLayout() {
-////VisualGraph graph;
-//		// Graph
-//		return null;
-//	}
+	public static File makeLayoutFile() {
+		return makeFile(TWPaths.TW_LAYOUT);
+	}
 
 	
 

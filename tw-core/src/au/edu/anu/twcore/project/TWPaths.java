@@ -31,6 +31,8 @@ package au.edu.anu.twcore.project;
 
 import java.io.File;
 
+import fr.cnrs.iees.io.GraphFileFormats;
+
 /**
  * Author Ian Davies
  *
@@ -43,5 +45,5 @@ public interface TWPaths {
 	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
 	public static String TW_DEP_JAR /*     */ = "tw-dep.jar";
 	public static String TW_PREF /*        */ = "MM.xml";
-	public static String TW_LAYOUT /*      */ = "Layout.twg";// get twg from somewhere else
+	public static String TW_LAYOUT /*      */ = "Layout"+GraphFileFormats.AOT.extension().split(" ")[1];
 }
