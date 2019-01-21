@@ -37,13 +37,13 @@ import org.junit.jupiter.api.Test;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
-
 class ProjectTest {
 
 	@Test
 	void test() {
 		Project.create("getText user string");
 		assertTrue(Project.getProjectName().equals("gettextUserString"));
+		Project.close();
 		Project.create("a*()*(^^:b\t\n");
 		assertTrue(Project.getProjectName().equals("aB"));
 		Project.close();
@@ -89,7 +89,7 @@ class ProjectTest {
 		Project.create(" The cat sat on the mat");
 		assertTrue(Project.getProjectName().equals("theCatSatOnTheMat"));
 		Project.close();
-
+		// Better if tested separately with annotation "expected = TwCpreException
 		try {
 			Project.create("([{*~!'_^)");
 			fail("Should not have created project ([{*~!'_^)");
@@ -113,8 +113,8 @@ class ProjectTest {
 		} catch (TwcoreException e) {
 			assertTrue(true);
 		}
-		
-		try{
+
+		try {
 			Project.extractDisplayNames(Project.getAllProjectPaths());
 		} catch (TwcoreException e) {
 			fail("extractDisplayNames fail on current .3w projects");

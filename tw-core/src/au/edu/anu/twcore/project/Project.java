@@ -384,7 +384,7 @@ public class Project implements ProjectPaths, TWPaths {
 	public static File makeConfigurationFile() {
 		String name = Project.getProjectName();
 		// Its a string of several extensions
-		return Project.makeFile(name + GraphFileFormats.AOT.extension().split(" ")[1]);
+		return Project.makeFile(name + GraphFileFormats.AOT.extension().split(" ")[0]);
 	}
 
 	/**
