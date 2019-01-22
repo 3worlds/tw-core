@@ -111,7 +111,6 @@ public class Project implements ProjectPaths, TWPaths {
 	 *                         exists | duplicate directories exist.
 	 */
 	public static String create(String name) {
-		System.out.println("ENTERING CREATE FUCKING PROJECT");
 		log.entering(klassName, "create");
 
 		checkUniqueness();
@@ -316,11 +315,8 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return array of all valid 3Worlds projects
 	 */
 	public static File[] getAllProjectPaths() {
-		System.out.println("Entering getAllProjectPaths" );
 		String repos = TW_ROOT;
-		System.out.println("Access TW_ROOT" );
 		File folder = new File(repos);
-		System.out.println("create repos file" );
 		File[] result = folder.listFiles(new ProjectFilter());
 		return result;
 	}

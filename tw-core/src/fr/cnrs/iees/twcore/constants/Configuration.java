@@ -70,6 +70,7 @@ public interface Configuration {
 	public static final String N_TIMEPERIOD = "timePeriod";
 	public static final String N_MODELCHANGE = "modelChange";
 	public static final String N_CODESOURCE = "codeSource";
+	public static final String N_DATAIO = "dataIO";
 	public static final String N_DIMENSIONER = "dimensioner";
 	public static final String N_TABLE = "table";
 	public static final String N_RECORD = "record";
