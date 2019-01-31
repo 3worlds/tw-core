@@ -31,8 +31,6 @@ package au.edu.anu.twcore.project;
 
 import java.io.File;
 
-import fr.cnrs.iees.io.GraphFileFormats;
-
 /**
  * Author Ian Davies
  *
