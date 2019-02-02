@@ -36,13 +36,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.text.WordUtils;
-
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.io.GraphFileFormats;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.lang.WordUtils;
 
 /**
  * Author Ian Davies
