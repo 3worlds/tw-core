@@ -43,7 +43,6 @@ import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.core.report.ResolveReport;
 import org.apache.ivy.core.retrieve.RetrieveOptions;
 
-import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TWPaths;
 
