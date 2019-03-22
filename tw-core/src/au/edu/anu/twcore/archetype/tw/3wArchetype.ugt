@@ -1,0 +1,5 @@
+tree 
+	crap_factory = String("nowhere")
+archetype 3worlds
+	exclusive = Boolean(true)
+	importResource au.edu.anu.twcore.archetype.tw.3wA-root.ugt

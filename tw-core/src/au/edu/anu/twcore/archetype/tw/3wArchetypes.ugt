@@ -1,6 +1,0 @@
-tree 
-	crap_factory = String("nowhere")
-
-archetype 3worlds
-	exclusive = Boolean(true)
-	import dsl fromResource: "3wA-root.ugt" inPackage:  "fr.ens.biologie.threeWorlds.ui.configuration.archetype3w"
