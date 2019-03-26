@@ -9,6 +9,6 @@ hasNode DataDefinitionSpec
 			type = Integer(0) 
 			multiplicity = String("1..1")
     		mustSatisfyQuery dimConstraint
-				className = String("fr.ens.biologie.threeWorlds.ui.configuration.archetype3w.IsInRangeQuery")
-				interval = IntRange({1,2147483647})// int array[2]??  
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable({[2],1,2147483647})//??  
       
