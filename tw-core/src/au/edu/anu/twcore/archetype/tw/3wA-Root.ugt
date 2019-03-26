@@ -1,0 +1,5 @@
+tree
+hasNode twRootSpec
+	reference = String("3worlds:")
+	multiplicity = String("1..1")
+      

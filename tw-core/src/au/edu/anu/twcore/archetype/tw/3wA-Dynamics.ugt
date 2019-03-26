@@ -1,0 +1,5 @@
+tree
+hasNode DynamicsSpec
+	reference = String("System:/Dynamics:")
+	multiplicity = String("1..1")
+      

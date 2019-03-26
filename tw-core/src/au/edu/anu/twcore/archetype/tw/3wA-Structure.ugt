@@ -1,0 +1,5 @@
+tree
+hasNode StructureSpec
+	reference = String("System:/Structure:")
+	multiplicity = String("1..1")
+      

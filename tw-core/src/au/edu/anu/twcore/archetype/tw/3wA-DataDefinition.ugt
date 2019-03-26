@@ -1,0 +1,14 @@
+tree
+hasNode DataDefinitionSpec
+	reference = String("3worlds:/DataDefinition:")
+	multiplicity = String("1..1")
+	hasNode  DimSpec
+		reference = String("DataDefinition:/dimensioner:")
+		multiplicity = String("0..*")
+		hasProperty dim
+			type = Integer(0) 
+			multiplicity = String("1..1")
+    		mustSatisfyQuery dimConstraint
+				className = String("fr.ens.biologie.threeWorlds.ui.configuration.archetype3w.IsInRangeQuery")
+				interval = IntRange({1,2147483647})// int array[2]??  
+      

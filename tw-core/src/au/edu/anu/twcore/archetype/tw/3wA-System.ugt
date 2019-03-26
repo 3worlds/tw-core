@@ -1,0 +1,7 @@
+tree
+hasNode SystemSpec
+	reference = String("3worlds:/System:")
+	multiplicity = String("1..1")
+	importResouce au.edu.anu.twcore.archetype.tw.3wA-Dynamics.ugt
+	importResouce au.edu.anu.twcore.archetype.tw.3wA-3wA-System.ugt
+      
