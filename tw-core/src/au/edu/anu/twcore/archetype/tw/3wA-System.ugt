@@ -2,6 +2,18 @@ tree
 hasNode SystemSpec
 	reference = String("3worlds:/System:")
 	multiplicity = String("1..1")
+	hasProperty systemNameProperty
+		type = String("String")
+		multiplicity = String("1..1")
+	hasProperty systemClassProperty
+		type = String("String")
+		multiplicity = String("1..1")
+		mustSatisfyQuery systemClassPropertyIsInValueSetQuery
+			className = StringTable({[1],"au.edu.anu.twcore.archetype.queries.IsInValueSetQuery"})
+			values = StringTable({[1],"au.edu.anu.twcore.ecology.ecosystem.World"})
+	hasProperty memory
+		type = String("Integer")
+		multiplicity = String("1..1") // can't have optional properties!
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Dynamics.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Structure.ugt
       

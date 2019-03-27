@@ -2,4 +2,15 @@ tree
 hasNode DynamicsSpec
 	reference = String("System:/Dynamics:")
 	multiplicity = String("1..1")
-      
+	hasProperty dynamicsNameProperty
+		type = String("String")
+		multiplicity = String("1..1")
+	hasProperty dyamicsClassProperty
+		type = String("String")
+		multiplicity = String("1..1")
+		mustSatisfyQuery dynamicsClassPropertyIsInValueSetQuery
+			className = StringTable({[1],"au.edu.anu.twcore.archetype.queries.IsInValueSetQuery"})
+			values = StringTable({[1],"xx.yyy.zzz.TimerModelSimulator"})
+	mustSatisfyQuery dynamicsCheckSubArchetypeQuery
+		className = StringTable({[1],"au.edu.anu.twcore.archetype.queries.CheckSubArchetypeQuery"})
+		parameters = StringTable({[3],"class","xx.yyy.zzz.TimerModelSimulator","3wSA-TimerModelSimulator.ugt"})
