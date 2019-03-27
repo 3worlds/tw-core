@@ -1,4 +1,4 @@
-tree
+tree //dataDefinitionSpec must be the root node
 hasNode dataDefinitionSpec
 	reference = String("3worlds:/dataDefinition:")
 	multiplicity = String("1..1")
@@ -23,16 +23,16 @@ hasNode dataDefinitionSpec
 			multiplicity = String("1..*")
 			hasProperty aliasPropertySpec  
 				type = String("String")
-				multiplicity = String("0..1")        
-			mustSatisfyQuery dimElementLabelQuerySpec 
-				className = String("au.edu.anu.twcore.archetype.queries.ElementLabel")
-				edgeLabel = String("sizedBy")
+				multiplicity = String("1..1")  // can't have optional properties unless accompanied by a suitable query    
+				mustSatisfyQuery dimElementLabelQuerySpec 
+					className = String("au.edu.anu.twcore.archetype.queries.ElementLabel")
+					edgeLabel = String("sizedBy")
 		hasProperty tableDataElementTypePropertySpec
 			type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
 			multiplicity = String("0..1")
 		mustSatisfyQuery edgeXorPropertyQuerySpec
-		      className = String("au.edu.anu.twcore.archetype.queries.EdgeXorPropertyQuery")
-              edge_prop = StringTable([2],{"record","dataElementType"})// can we use this class?
+			className = String("au.edu.anu.twcore.archetype.queries.EdgeXorPropertyQuery")
+			edge_prop = StringTable([2],{"record","dataElementType"})// can we use this class?
 		  
 	hasNode recordSpec
 		reference = String("dataDefinition:/record:")
@@ -40,6 +40,9 @@ hasNode dataDefinitionSpec
 		hasProperty recordNameSpec
 			multiplicity = String("1..1")
 			type = String("String")
+		mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
+			className = String("au.edu.anu.twcore.archetype.queries.NodeAtLeastOneChildLabelOfQuery")
+			childLabel = StringTable("[2],"field", "table"})
 			
 	hasNode recordFieldSpec
 		reference = String("record:/field:")  

@@ -4,4 +4,5 @@ archetype 3worlds
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Root.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-System.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-DataDefinition.ugt
+	importResource au.edu.anu.twcore.archetype.tw.3wA-UserInterface.ugt
 	

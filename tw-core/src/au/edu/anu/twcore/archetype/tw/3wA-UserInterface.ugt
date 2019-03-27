@@ -1,0 +1,53 @@
+tree // UserInterfaceSpec must be the root node
+hasNode UserInterfaceSpec
+	reference = String("3worlds:/userInterface:")
+	multiplicity = String("1..*")
+	hasProperty uiNameProperty
+		type = String("String")
+		multiplicity = String("1..1")
+
+	hasNode TopSpec
+		reference = String("userInterface:/top")
+		multiplicity = String("0..1")
+		hasProperty topNameProperty
+			type = String("String")
+			multiplicity = String("1..1")
+
+	hasNode BottomSpec
+		reference = String("userInterface:/bottom")
+		multiplicity = String("0..1")
+		hasProperty bottomNameProperty
+			type = String("String")
+			multiplicity = String("1..1")
+      
+	hasNode CenterSpec
+		reference = String("widget:")		
+		mustSatisfyQuery centerParentLabelQuery
+			className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
+			parentLabel = StringTable("[2],"userInterface","center")
+		multiplicity = String("0..*")
+		hasProperty centerNameProperty
+			type = String("String")
+			multiplicity = String("1..1")
+		hasEdge centerEdgeToCenter
+			toNode = String("center")
+			multiplicity = String("0..1")
+
+	hasNode widgetSpec
+		reference = String("widget:")
+		mustSatisfyQuery widgetParentLabelQuery
+			className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
+			parentLabel = StringTable("[3],"top","bottom","center")
+		multiplicity = String("0..*")	
+		hasProperty widgetOrder
+			type = String("Integer")
+			multiplicity = String("1..1")
+		hasProperty widgetClass
+			type = String("String")
+			multiplicity = String("1..1")
+			mustSatisfyQuery widgetClassInValueSetQuery
+				className = String("au.edu.anu.twcore.archetype.queries.IsInValueSetQuery") // we need a token "+" to concat strings!
+				values = StringTable("[0],"fr.ens.biologie.threeWorlds.ui.widgets.grid.SingleGridWidget","fr.ens.biologie.threeWorlds.ui.widgets.simulation.TimeDisplayWidgetfx", "fr.ens.biologie.threeWorlds.ui.widgets.simulation.SimpleSimCtrlWidget","fr.ens.biologie.threeWorlds.ui.widgets.plot2D.TimeSeriesPlotWidgetfx","fr.ens.biologie.threeWorlds.ui.widgets.labelValue.LabelValuePair"})    
+		
+	
+	      
