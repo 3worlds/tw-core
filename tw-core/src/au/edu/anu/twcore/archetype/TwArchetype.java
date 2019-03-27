@@ -47,19 +47,16 @@ public class TwArchetype {
 				+ File.separator + "au.edu.anu.twcore.archetype.tw".replace('.',File.separatorChar) 
 				+ File.separator + "3wArchetype.ugt";
 		File file = new File(filename);
-		// broken somewhere in imports
 		FileImporter importer = new FileImporter(file);
 		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>)importer.getGraph();
 		String indent = "";
-		printTree(specs.root(),indent);
-		
-		
+		printTree(specs.root(),indent);		
 	}
 
 	private void printTree(TreeNode parent,String indent) {
 		System.out.println(indent+parent.id());
 		for (TreeNode child:parent.getChildren())
-			printTree(child,indent+"\t");
+			printTree(child,indent+"  ");
 		
 	}
 

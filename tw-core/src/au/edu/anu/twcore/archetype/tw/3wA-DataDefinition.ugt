@@ -1,14 +1,54 @@
 tree
-hasNode DataDefinitionSpec
-	reference = String("3worlds:/DataDefinition:")
+hasNode dataDefinitionSpec
+	reference = String("3worlds:/dataDefinition:")
 	multiplicity = String("1..1")
-	hasNode  DimSpec
+	hasNode  dimSpec
 		reference = String("DataDefinition:/dimensioner:")
 		multiplicity = String("0..*")
-		hasProperty dim
-			type = Integer(0) 
+		hasProperty dimPropertiesSpec
+			type = String("Integer") 
 			multiplicity = String("1..1")
-    		mustSatisfyQuery dimConstraint
-				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
-				interval = IntTable({[2],1,2147483647})//??  
+    		mustSatisfyQuery dimIsInRangeQuerySpec
+				className = String("au.edu.anu.twcore.archetype.queries.IsInRangeQuery")
+				interval = IntTable({[2],1,2147483647})// can we use this class?
+				
+	hasNode tableSpec
+		reference = String("record:/table:")
+		multiplicity = String("0..*")
+		hasProperty TableNameSpec 
+			multiplicity = String("1..1")
+			type = String("String")
+		hasEdge dimEdgeSpec
+			toNode = String("dimensioner")
+			multiplicity = String("1..*")
+			hasProperty aliasPropertySpec  
+				type = String("String")
+				multiplicity = String("0..1")        
+			mustSatisfyQuery dimElementLabelQuerySpec 
+				className = String("au.edu.anu.twcore.archetype.queries.ElementLabel")
+				edgeLabel = String("sizedBy")
+		hasProperty tableDataElementTypePropertySpec
+			type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
+			multiplicity = String("0..1")
+		mustSatisfyQuery edgeXorPropertyQuerySpec
+		      className = String("au.edu.anu.twcore.archetype.queries.EdgeXorPropertyQuery")
+              edge_prop = StringTable([2],{"record","dataElementType"})// can we use this class?
+		  
+	hasNode recordSpec
+		reference = String("dataDefinition:/record:")
+		multiplicity = String("0..*")
+		hasProperty recordNameSpec
+			multiplicity = String("1..1")
+			type = String("String")
+			
+	hasNode recordFieldSpec
+		reference = String("record:/field:")  
+ 		multiplicity = String("0..*")
+		hasProperty recordFieldNamePropertySpec
+			multiplicity = String("1..1")
+			type  = String("String")
+		hasProperty recordDataElementTypePropertySpec
+			type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
+			multiplicity = String("1..1")
+	 	
       
