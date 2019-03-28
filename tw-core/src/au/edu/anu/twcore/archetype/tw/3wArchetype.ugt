@@ -1,4 +1,4 @@
-tree 
+tree //3worlds must be the root node in case this file has an import statement
 archetype 3worlds
 	exclusive = Boolean(true)
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Root.ugt

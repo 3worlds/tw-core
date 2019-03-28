@@ -1,16 +1,21 @@
-tree
+tree // DynamicsSpec must be the root node in case this file has an import statement
 hasNode DynamicsSpec
+	hasId = String("hasNode")
 	reference = String("System:/Dynamics:")
 	multiplicity = String("1..1")
 	hasProperty dynamicsNameProperty
+		hasId = String("hasProperty")
 		type = String("String")
 		multiplicity = String("1..1")
 	hasProperty dyamicsClassProperty
+		hasId = String("hasProperty")
 		type = String("String")
 		multiplicity = String("1..1")
 		mustSatisfyQuery dynamicsClassPropertyIsInValueSetQuery
+			hasId = String("mustSatisfyQuery")
 			className = StringTable({[1],"au.edu.anu.twcore.archetype.queries.IsInValueSetQuery"})
 			values = StringTable({[1],"xx.yyy.zzz.TimerModelSimulator"})
 	mustSatisfyQuery dynamicsCheckSubArchetypeQuery
+		hasId = String("mustSatisfyQuery")
 		className = StringTable({[1],"au.edu.anu.twcore.archetype.queries.CheckSubArchetypeQuery"})
 		parameters = StringTable({[3],"class","xx.yyy.zzz.TimerModelSimulator","3wSA-TimerModelSimulator.ugt"})

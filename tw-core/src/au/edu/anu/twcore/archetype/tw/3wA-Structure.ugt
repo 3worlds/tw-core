@@ -1,5 +1,6 @@
-tree
+tree //StructureSpec must be the root node in case this file has an import statement
 hasNode StructureSpec
+	hasId = String("hasNode")
 	reference = String("System:/Structure:")
 	multiplicity = String("1..1")
       

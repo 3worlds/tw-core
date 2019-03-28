@@ -1,17 +1,22 @@
-tree
+tree //SystemSpec must be the root node in case this file has an import statement
 hasNode SystemSpec
+	hasId = String("hasNode")
 	reference = String("3worlds:/System:")
 	multiplicity = String("1..*")
 	hasProperty systemNameProperty
+		hasId = String("hasProperty")
 		type = String("String")
 		multiplicity = String("1..1")
 	hasProperty systemClassProperty
+		hasId = String("hasProperty")
 		type = String("String")
 		multiplicity = String("1..1")
 		mustSatisfyQuery systemClassPropertyIsInValueSetQuery
+			hasId = String("mustSatisfyQuery")
 			className = StringTable({[1],"au.edu.anu.twcore.archetype.queries.IsInValueSetQuery"})
 			values = StringTable({[1],"au.edu.anu.twcore.ecology.ecosystem.World"})
 	hasProperty memory
+		hasId = String("hasProperty")
 		type = String("Integer")
 		multiplicity = String("1..1") // can't have optional properties!
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Dynamics.ugt
