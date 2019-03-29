@@ -1,8 +1,9 @@
-tree //3worlds must be the root node in case this file has an import statement
+tree
 archetype 3worlds
 	exclusive = Boolean(true)
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Root.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-System.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-DataDefinition.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-UserInterface.ugt
+	importResource au.edu.anu.twcore.archetype.tw.3wA-Experiment.ugt
 	

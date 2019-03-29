@@ -1,5 +1,5 @@
-tree // UserInterfaceSpec  must be the root node in case this file has an import statement
-hasNode UserInterfaceSpec
+tree
+hasNode userInterfaceSpec
 	hasId = String("hasNode")
 	reference = String("3worlds:/userInterface:")
 	// label = String("userInterface")
@@ -17,61 +17,61 @@ hasNode UserInterfaceSpec
 		type = String("String")
 		multiplicity = String("1..1")
 
-	hasNode TopSpec
-		hasId = String("hasNode")
-		reference = String("userInterface:/top")
-		multiplicity = String("0..1")
-		hasProperty topNameProperty
-			hasId = String("hasProperty")
-			type = String("String")
-			multiplicity = String("1..1")
+hasNode TopSpec
+	hasId = String("hasNode")
+	reference = String("userInterface:/top")
+	multiplicity = String("0..1")
+	hasProperty topNameProperty
+		hasId = String("hasProperty")
+		type = String("String")
+		multiplicity = String("1..1")
 
-	hasNode BottomSpec
-		hasId = String("hasNode")
-		reference = String("userInterface:/bottom")
-		multiplicity = String("0..1")
-		hasProperty bottomNameProperty
-			hasId = String("hasProperty")
-			type = String("String")
-			multiplicity = String("1..1")
+hasNode BottomSpec
+	hasId = String("hasNode")
+	reference = String("userInterface:/bottom")
+	multiplicity = String("0..1")
+	hasProperty bottomNameProperty
+		hasId = String("hasProperty")
+		type = String("String")
+		multiplicity = String("1..1")
       
-	hasNode CenterSpec
-		hasId = String("hasNode")
-		reference = String("widget:")		
-		mustSatisfyQuery centerParentLabelQuery
-			hasId = String("mustSatisfyQuery")
-			className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
-			parentLabel = StringTable("[2],"userInterface","center")
-		multiplicity = String("0..*")
-		hasProperty centerNameProperty
-			hasId = String("hasProperty")
-			type = String("String")
-			multiplicity = String("1..1")
-		hasEdge centerEdgeToCenter
-			hasId = String("hasEdge")
-			toNode = String("center")
-			multiplicity = String("0..1")
+hasNode CenterSpec
+	hasId = String("hasNode")
+	reference = String("widget:")		
+	mustSatisfyQuery centerParentLabelQuery
+		hasId = String("mustSatisfyQuery")
+		className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
+		parentLabel = StringTable("[2],"userInterface","center")
+	multiplicity = String("0..*")
+	hasProperty centerNameProperty
+		hasId = String("hasProperty")
+		type = String("String")
+		multiplicity = String("1..1")
+	hasEdge centerEdgeToCenter
+		hasId = String("hasEdge")
+		toNode = String("center")
+		multiplicity = String("0..1")
 
-	hasNode widgetSpec
-		hasId = String("hasNode")
-		reference = String("widget:")
-		mustSatisfyQuery widgetParentLabelQuery
+hasNode widgetSpec
+	hasId = String("hasNode")
+	reference = String("widget:")
+	mustSatisfyQuery widgetParentLabelQuery
+		hasId = String("mustSatisfyQuery")
+		className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
+		parentLabel = StringTable("[3],"top","bottom","center")
+	multiplicity = String("0..*")	
+	hasProperty widgetOrder
+		hasId = String("hasProperty")
+		type = String("Integer")
+		multiplicity = String("1..1")
+	hasProperty widgetClass
+		hasId = String("hasProperty")
+		type = String("String")
+		multiplicity = String("1..1")
+		mustSatisfyQuery widgetClassInValueSetQuery
 			hasId = String("mustSatisfyQuery")
-			className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
-			parentLabel = StringTable("[3],"top","bottom","center")
-		multiplicity = String("0..*")	
-		hasProperty widgetOrder
-			hasId = String("hasProperty")
-			type = String("Integer")
-			multiplicity = String("1..1")
-		hasProperty widgetClass
-			hasId = String("hasProperty")
-			type = String("String")
-			multiplicity = String("1..1")
-			mustSatisfyQuery widgetClassInValueSetQuery
-				hasId = String("mustSatisfyQuery")
-				className = String("au.edu.anu.twcore.archetype.queries.IsInValueSetQuery") // we need a token "+" to concat strings!
-				values = StringTable("[0],"fr.ens.biologie.threeWorlds.ui.widgets.grid.SingleGridWidget","fr.ens.biologie.threeWorlds.ui.widgets.simulation.TimeDisplayWidgetfx", "fr.ens.biologie.threeWorlds.ui.widgets.simulation.SimpleSimCtrlWidget","fr.ens.biologie.threeWorlds.ui.widgets.plot2D.TimeSeriesPlotWidgetfx","fr.ens.biologie.threeWorlds.ui.widgets.labelValue.LabelValuePair"})    
+			className = String("au.edu.anu.twcore.archetype.queries.IsInValueSetQuery") // we need a token "+" to concat strings!
+			values = StringTable("[0],"fr.ens.biologie.threeWorlds.ui.widgets.grid.SingleGridWidget","fr.ens.biologie.threeWorlds.ui.widgets.simulation.TimeDisplayWidgetfx", "fr.ens.biologie.threeWorlds.ui.widgets.simulation.SimpleSimCtrlWidget","fr.ens.biologie.threeWorlds.ui.widgets.plot2D.TimeSeriesPlotWidgetfx","fr.ens.biologie.threeWorlds.ui.widgets.labelValue.LabelValuePair"})    
 		
 	
 	      

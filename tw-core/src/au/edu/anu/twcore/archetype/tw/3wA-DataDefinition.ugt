@@ -1,63 +1,64 @@
-tree //dataDefinitionSpec must be the root node in case this file has an import statement
+tree 
 hasNode dataDefinitionSpec
 	hasId = String("hasNode")
 	reference = String("3worlds:/dataDefinition:")
 	multiplicity = String("1..1")
-	hasNode  dimSpec
-		hasId = String("hasNode")
-		reference = String("DataDefinition:/dimensioner:")
-		multiplicity = String("0..*")
-		hasProperty dimPropertiesSpec
-			hasId = String("hasProperty")
-			type = String("Integer") 
-			multiplicity = String("1..1")
-    		mustSatisfyQuery dimIsInRangeQuerySpec
-				hasId = String("mustSatisfyQuery")
-				className = String("au.edu.anu.twcore.archetype.queries.IsInRangeQuery")
-				interval = IntTable({[2],1,2147483647})// can we use this class?
+	
+hasNode  dimSpec
+	hasId = String("hasNode")
+	reference = String("DataDefinition:/dimensioner:")
+	multiplicity = String("0..*")
+	hasProperty dimPropertiesSpec
+		hasId = String("hasProperty")
+		type = String("Integer") 
+		multiplicity = String("1..1")
+   		mustSatisfyQuery dimIsInRangeQuerySpec
+			hasId = String("mustSatisfyQuery")
+			className = String("au.edu.anu.twcore.archetype.queries.IsInRangeQuery")
+			interval = IntTable({[2],1,2147483647})// can we use this class?
 				
-	hasNode tableSpec
-		hasId = String("hasNode")
-		reference = String("record:/table:")
-		multiplicity = String("0..*")
-		hasProperty TableNameSpec 
+hasNode tableSpec
+	hasId = String("hasNode")
+	reference = String("record:/table:")
+	multiplicity = String("0..*")
+	hasProperty TableNameSpec 
+		hasId = String("hasProperty")
+		multiplicity = String("1..1")
+		type = String("String")
+	hasEdge dimEdgeSpec
+		hasId = String("hasEdge")
+		toNode = String("dimensioner")
+		multiplicity = String("1..*")
+		hasProperty aliasPropertySpec  
 			hasId = String("hasProperty")
-			multiplicity = String("1..1")
 			type = String("String")
-		hasEdge dimEdgeSpec
-			hasId = String("hasEdge")
-			toNode = String("dimensioner")
-			multiplicity = String("1..*")
-			hasProperty aliasPropertySpec  
-				hasId = String("hasProperty")
-				type = String("String")
-				multiplicity = String("1..1")  // can't have optional properties unless accompanied by a suitable query    
-				mustSatisfyQuery dimElementLabelQuerySpec 
-					hasId = String("mustSatisfyQuery")
-					className = String("au.edu.anu.twcore.archetype.queries.ElementLabel")
-					edgeLabel = String("sizedBy")
-		hasProperty tableDataElementTypePropertySpec
-			hasId = String("hasProperty")
-			type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
-			multiplicity = String("0..1")
-		mustSatisfyQuery edgeXorPropertyQuerySpec
-			hasId = String("mustSatisfyQuery")
-			className = String("au.edu.anu.twcore.archetype.queries.EdgeXorPropertyQuery")
-			edge_prop = StringTable([2],{"record","dataElementType"})// can we use this class?
+			multiplicity = String("1..1")  // can't have optional properties unless accompanied by a suitable query    
+			mustSatisfyQuery dimElementLabelQuerySpec 
+				hasId = String("mustSatisfyQuery")
+				className = String("au.edu.anu.twcore.archetype.queries.ElementLabel")
+				edgeLabel = String("sizedBy")
+	hasProperty tableDataElementTypePropertySpec
+		hasId = String("hasProperty")
+		type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
+		multiplicity = String("0..1")
+	mustSatisfyQuery edgeXorPropertyQuerySpec
+		hasId = String("mustSatisfyQuery")
+		className = String("au.edu.anu.twcore.archetype.queries.EdgeXorPropertyQuery")
+		edge_prop = StringTable([2],{"record","dataElementType"})// can we use this class?
 		  
-	hasNode recordSpec
-		hasId = String("hasNode")
-		reference = String("dataDefinition:/record:")
-		multiplicity = String("0..*")
-		hasProperty recordNameSpec
-			hasId = String("hasProperty")
-			multiplicity = String("1..1")
-			type = String("String")
-		mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
-			hasId = String("mustSatisfyQuery")
-			className = String("au.edu.anu.twcore.archetype.queries.NodeAtLeastOneChildLabelOfQuery")
-			childLabel = StringTable("[2],"field", "table"})
-			
+hasNode recordSpec
+	hasId = String("hasNode")
+	reference = String("dataDefinition:/record:")
+	multiplicity = String("0..*")
+	hasProperty recordNameSpec
+		hasId = String("hasProperty")
+		multiplicity = String("1..1")
+		type = String("String")
+	mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
+		hasId = String("mustSatisfyQuery")
+		className = String("au.edu.anu.twcore.archetype.queries.NodeAtLeastOneChildLabelOfQuery")
+		childLabel = StringTable("[2],"field", "table"})
+		
 	hasNode recordFieldSpec
 		hasId = String("hasNode")
 		reference = String("record:/field:")  

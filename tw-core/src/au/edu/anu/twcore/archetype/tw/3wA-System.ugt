@@ -1,4 +1,4 @@
-tree //SystemSpec must be the root node in case this file has an import statement
+tree
 hasNode SystemSpec
 	hasId = String("hasNode")
 	reference = String("3worlds:/System:")
@@ -19,6 +19,7 @@ hasNode SystemSpec
 		hasId = String("hasProperty")
 		type = String("Integer")
 		multiplicity = String("1..1") // can't have optional properties!
+		
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Dynamics.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Structure.ugt
       

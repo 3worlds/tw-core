@@ -1,4 +1,4 @@
-tree //StructureSpec must be the root node in case this file has an import statement
+tree
 hasNode StructureSpec
 	hasId = String("hasNode")
 	reference = String("System:/Structure:")

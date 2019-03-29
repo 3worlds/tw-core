@@ -1,5 +1,5 @@
-tree // DynamicsSpec must be the root node in case this file has an import statement
-hasNode DynamicsSpec
+tree
+hasNode dynamicsSpec
 	hasId = String("hasNode")
 	reference = String("System:/Dynamics:")
 	multiplicity = String("1..1")
