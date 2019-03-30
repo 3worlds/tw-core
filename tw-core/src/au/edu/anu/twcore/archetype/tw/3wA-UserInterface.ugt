@@ -32,7 +32,7 @@ hasNode bottomSpec
 		hasId = String("hasProperty")
 		type = String("String")
 		multiplicity = String("1..1")
-      
+
 hasNode centerSpec
 	hasId = String("hasNode")
 	reference = String("widget:")		
