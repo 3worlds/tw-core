@@ -1,15 +1,13 @@
 tree
 hasNode userInterfaceSpec
 	hasId = String("hasNode")
-	reference = String("3worlds:/userInterface:")
-	// label = String("userInterface")
-	//mustSatisfyQuery UserInterfaceParentLabelQuery
-		//hasId = String("mustSatisfyQuery")
-		//className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
-		//parentLabel = StringTable("[1],3worlds")
-		// OR
-		//parentLabel = StringTable("[1],a:/b,c:/b")
-		
+	//reference = String("3worlds:/userInterface:")
+	// I would prefer to have this approach: a label and a parent tree list
+	label = String("userInterface")
+	mustSatisfyQuery UserInterfaceParentLabelQuery
+		hasId = String("mustSatisfyQuery")
+		className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
+		parentLabel = StringTable("[1],3worlds")
 	
 	multiplicity = String("1..*")
 	hasProperty uiNameProperty
@@ -17,7 +15,7 @@ hasNode userInterfaceSpec
 		type = String("String")
 		multiplicity = String("1..1")
 
-hasNode TopSpec
+hasNode topSpec
 	hasId = String("hasNode")
 	reference = String("userInterface:/top")
 	multiplicity = String("0..1")
@@ -26,7 +24,7 @@ hasNode TopSpec
 		type = String("String")
 		multiplicity = String("1..1")
 
-hasNode BottomSpec
+hasNode bottomSpec
 	hasId = String("hasNode")
 	reference = String("userInterface:/bottom")
 	multiplicity = String("0..1")
@@ -35,7 +33,7 @@ hasNode BottomSpec
 		type = String("String")
 		multiplicity = String("1..1")
       
-hasNode CenterSpec
+hasNode centerSpec
 	hasId = String("hasNode")
 	reference = String("widget:")		
 	mustSatisfyQuery centerParentLabelQuery
