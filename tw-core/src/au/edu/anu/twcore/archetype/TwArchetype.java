@@ -50,11 +50,12 @@ public class TwArchetype {
 		FileImporter importer = new FileImporter(file);
 		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>)importer.getGraph();
 		String indent = "";
+		// Somewhere, parent / child links are being created that I didn't ask for!!!
 		printTree(specs.root(),indent);		
 	}
 
 	private void printTree(TreeNode parent,String indent) {
-		System.out.println(indent+parent.id());
+		System.out.println(indent+parent);
 		for (TreeNode child:parent.getChildren())
 			printTree(child,indent+"  ");
 		

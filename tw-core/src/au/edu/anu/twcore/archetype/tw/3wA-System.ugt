@@ -1,7 +1,7 @@
 tree
-hasNode SystemSpec
+hasNode systemSpec
 	hasId = String("hasNode")
-	reference = String("3worlds:/System:")
+	reference = String("3worlds:/system:")
 	multiplicity = String("1..*")
 	hasProperty systemNameProperty
 		hasId = String("hasProperty")
@@ -22,4 +22,3 @@ hasNode SystemSpec
 		
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Dynamics.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Structure.ugt
-      

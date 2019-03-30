@@ -6,13 +6,13 @@ hasNode dataDefinitionSpec
 	
 hasNode  dimSpec
 	hasId = String("hasNode")
-	reference = String("DataDefinition:/dimensioner:")
+	reference = String("dataDefinition:/dimensioner:")
 	multiplicity = String("0..*")
 	hasProperty dimPropertiesSpec
 		hasId = String("hasProperty")
 		type = String("Integer") 
 		multiplicity = String("1..1")
-   		mustSatisfyQuery dimIsInRangeQuerySpec
+		mustSatisfyQuery dimIsInRangeQuerySpec
 			hasId = String("mustSatisfyQuery")
 			className = String("au.edu.anu.twcore.archetype.queries.IsInRangeQuery")
 			interval = IntTable({[2],1,2147483647})// can we use this class?
@@ -21,7 +21,7 @@ hasNode tableSpec
 	hasId = String("hasNode")
 	reference = String("record:/table:")
 	multiplicity = String("0..*")
-	hasProperty TableNameSpec 
+	hasProperty tableNameSpec 
 		hasId = String("hasProperty")
 		multiplicity = String("1..1")
 		type = String("String")
@@ -45,7 +45,7 @@ hasNode tableSpec
 		hasId = String("mustSatisfyQuery")
 		className = String("au.edu.anu.twcore.archetype.queries.EdgeXorPropertyQuery")
 		edge_prop = StringTable([2],{"record","dataElementType"})// can we use this class?
-		  
+
 hasNode recordSpec
 	hasId = String("hasNode")
 	reference = String("dataDefinition:/record:")
@@ -62,7 +62,7 @@ hasNode recordSpec
 	hasNode recordFieldSpec
 		hasId = String("hasNode")
 		reference = String("record:/field:")  
- 		multiplicity = String("0..*")
+		multiplicity = String("0..*")
 		hasProperty recordFieldNamePropertySpec
 			hasId = String("hasProperty")
 			multiplicity = String("1..1")
@@ -71,5 +71,3 @@ hasNode recordSpec
 			hasId = String("hasProperty")
 			type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
 			multiplicity = String("1..1")
-	 	
-      

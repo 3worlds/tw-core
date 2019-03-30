@@ -1,6 +1,5 @@
 tree
-hasNode StructureSpec
+hasNode structureSpec
 	hasId = String("hasNode")
-	reference = String("System:/Structure:")
+	reference = String("system:/structure:")
 	multiplicity = String("1..1")
-      

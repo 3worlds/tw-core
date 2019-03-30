@@ -69,7 +69,4 @@ hasNode widgetSpec
 		mustSatisfyQuery widgetClassInValueSetQuery
 			hasId = String("mustSatisfyQuery")
 			className = String("au.edu.anu.twcore.archetype.queries.IsInValueSetQuery") // we need a token "+" to concat strings!
-			values = StringTable("[0],"fr.ens.biologie.threeWorlds.ui.widgets.grid.SingleGridWidget","fr.ens.biologie.threeWorlds.ui.widgets.simulation.TimeDisplayWidgetfx", "fr.ens.biologie.threeWorlds.ui.widgets.simulation.SimpleSimCtrlWidget","fr.ens.biologie.threeWorlds.ui.widgets.plot2D.TimeSeriesPlotWidgetfx","fr.ens.biologie.threeWorlds.ui.widgets.labelValue.LabelValuePair"})    
-		
-	
-	      
+			values = StringTable("[0],"fr.ens.biologie.threeWorlds.ui.widgets.grid.SingleGridWidget","fr.ens.biologie.threeWorlds.ui.widgets.simulation.TimeDisplayWidgetfx", "fr.ens.biologie.threeWorlds.ui.widgets.simulation.SimpleSimCtrlWidget","fr.ens.biologie.threeWorlds.ui.widgets.plot2D.TimeSeriesPlotWidgetfx","fr.ens.biologie.threeWorlds.ui.widgets.labelValue.LabelValuePair"})	      
