@@ -1,6 +1,6 @@
 tree
-// I think this is redundant now
+	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode rootSpec
-	isOfClass = String("hasNode")
-	reference = String("3worlds:")
+	isOfClass = String("3worlds")
+	hasParent = StringTable("[0]")
 	multiplicity = String("1..1")

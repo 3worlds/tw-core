@@ -1,5 +1,6 @@
 tree
+	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode experimentSpec
-	hasId = String("hasNode")
-	reference = String("3worlds:")
+	isOfClass = String("experiment")
+	hasParent = StringTable("[1]",system")
 	multiplicity = String("1..1")

@@ -1,73 +1,75 @@
 tree 
+	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode dataDefinitionSpec
-	hasId = String("hasNode")
-	reference = String("3worlds:/dataDefinition:")
+	isOfClass = String("dataDefinition")
+	hasParent = StringTable("[1]",3worlds")
 	multiplicity = String("1..1")
 	
 hasNode  dimSpec
-	hasId = String("hasNode")
-	reference = String("dataDefinition:/dimensioner:")
+	isOfClass = String("dimensioner")
+	hasParent = StringTable([1],dataDefinition)
 	multiplicity = String("0..*")
 	hasProperty dimPropertiesSpec
-		hasId = String("hasProperty")
+		isOfClass = String("hasProperty")
+		hasName = String("size")
 		type = String("Integer") 
 		multiplicity = String("1..1")
 		mustSatisfyQuery dimIsInRangeQuerySpec
-			hasId = String("mustSatisfyQuery")
-			className = String("au.edu.anu.twcore.archetype.queries.IsInRangeQuery")
-			interval = IntTable({[2],1,2147483647})// can we use this class?
+			isOfClass = String("mustSatisfyQuery")
+			className = String("IsInRangeQuery")
+			interval = IntTable("[2],1,2147483647")
 				
-hasNode tableSpec
-	hasId = String("hasNode")
-	reference = String("record:/table:")
-	multiplicity = String("0..*")
-	hasProperty tableNameSpec 
-		hasId = String("hasProperty")
-		multiplicity = String("1..1")
-		type = String("String")
-	hasEdge dimEdgeSpec
-		hasId = String("hasEdge")
-		toNode = String("dimensioner")
-		multiplicity = String("1..*")
-		hasProperty aliasPropertySpec  
-			hasId = String("hasProperty")
-			type = String("String")
-			multiplicity = String("1..1")  // can't have optional properties unless accompanied by a suitable query    
-			mustSatisfyQuery dimElementLabelQuerySpec 
-				hasId = String("mustSatisfyQuery")
-				className = String("au.edu.anu.twcore.archetype.queries.ElementLabel")
-				edgeLabel = String("sizedBy")
-	hasProperty tableDataElementTypePropertySpec
-		hasId = String("hasProperty")
-		type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
-		multiplicity = String("0..1")
-	mustSatisfyQuery edgeXorPropertyQuerySpec
-		hasId = String("mustSatisfyQuery")
-		className = String("au.edu.anu.twcore.archetype.queries.EdgeXorPropertyQuery")
-		edge_prop = StringTable([2],{"record","dataElementType"})// can we use this class?
-
 hasNode recordSpec
-	hasId = String("hasNode")
-	reference = String("dataDefinition:/record:")
+	isOfClass = String("record")
+	hasParent = StringTable("[2],table,dataDefinition")
 	multiplicity = String("0..*")
 	hasProperty recordNameSpec
-		hasId = String("hasProperty")
+		isOfClass = String("hasProperty")
+		hasName = String("name")
 		multiplicity = String("1..1")
 		type = String("String")
 	mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
-		hasId = String("mustSatisfyQuery")
-		className = String("au.edu.anu.twcore.archetype.queries.NodeAtLeastOneChildLabelOfQuery")
+		isOfClass = String("mustSatisfyQuery")
+		className = String("NodeAtLeastOneChildLabelOfQuery")
 		childLabel = StringTable("[2],"field", "table"})
 		
-	hasNode recordFieldSpec
-		hasId = String("hasNode")
-		reference = String("record:/field:")  
-		multiplicity = String("0..*")
-		hasProperty recordFieldNamePropertySpec
-			hasId = String("hasProperty")
-			multiplicity = String("1..1")
-			type  = String("String")
-		hasProperty recordDataElementTypePropertySpec
-			hasId = String("hasProperty")
-			type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
-			multiplicity = String("1..1")
+		
+hasNode tableSpec
+	isOfClass = String("table")
+	hasParent = StringTable([1],record)
+	multiplicity = String("0..*")
+	hasProperty tableNameSpec 
+		isOfClass = String("hasProperty")
+		hasName = String("name")
+		multiplicity = String("1..1")
+		type = String("String")
+	hasProperty dataElementTypeSpec
+		isOfClass("hasProperty")
+		hasName = String("dataElementType")
+		multiplicity = String("1..1")
+		type = String("String")
+				
+	hasEdge dimEdgeSpec
+		isOfClass = String("sizedBy")
+		toNode = String("dimensioner")
+		multiplicity = String("1..*")
+	mustSatisfyQuery edgeXorPropertyQuerySpec
+		isOfClass = String("mustSatisfyQuery")
+		className = String("EdgeXorPropertyQuery")
+		edge_prop = StringTable("[2],record,dataElementType")
+
+		
+hasNode recordFieldSpec
+	isOfClass = String("field")
+	hasParent = StringTable([1],record)
+	multiplicity = String("0..*")
+	hasProperty recordFieldNamePropertySpec
+		isOfClass = String("hasProperty")
+		hasName = String("Type")
+		multiplicity = String("1..1")
+		type  = String("String")
+	hasProperty recordDataElementTypePropertySpec
+		isOfClass = String("hasProperty")
+		hasName = String("DataElementType")
+		type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
+		multiplicity = String("1..1")

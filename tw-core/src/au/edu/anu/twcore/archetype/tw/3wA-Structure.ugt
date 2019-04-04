@@ -1,5 +1,6 @@
 tree
+	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode structureSpec
-	hasId = String("hasNode")
-	reference = String("system:/structure:")
+	isOfClass = String("structure")
+	hasParent = StringTable("[1]",system")
 	multiplicity = String("1..1")

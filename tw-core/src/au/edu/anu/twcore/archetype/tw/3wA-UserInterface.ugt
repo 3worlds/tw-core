@@ -1,69 +1,63 @@
 tree
 	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode userInterfaceSpec
-	isOfClass = String("hasNode")
-	hasParent = StringTable("[1],3worlds")
+	isOfClass = String("userInterface")
+	hasParent = StringTable("[1],3worlds") // not clear about this??
 	multiplicity = String("1..1")
 	hasProperty uiNameProperty
 		isOfClass = String("hasProperty")
 		hasName = String("name")
-		hasParent = StringTable("hasNode") // or "userInterfaceSpec"? seems redundant given indents
 		type = String("String")
 		multiplicity = String("1..1")
 
 hasNode topSpec
-	isOfClass = String("hasNode")
-	hasParent = StringTable("[1],3Worlds")// well I'm a bit lost now
-	reference = String("userInterface:/top")
+	isOfClass = String("top")
+	hasParent = StringTable("[1],userInterface")
 	multiplicity = String("0..1")
 	hasProperty topNameProperty
-		hasId = String("hasProperty")
+		isOfClass = String("hasProperty")
+		hasName = String("name")		
 		type = String("String")
 		multiplicity = String("1..1")
 
 hasNode bottomSpec
-	hasId = String("hasNode")
-	reference = String("userInterface:/bottom")
+	isOfClass = String("bottom")
+	hasParent = StringTable("[1],userInterface")
 	multiplicity = String("0..1")
 	hasProperty bottomNameProperty
-		hasId = String("hasProperty")
+		isOfClass = String("hasProperty")
+		hasName = String("name")		
 		type = String("String")
 		multiplicity = String("1..1")
 
-hasNode centerSpec
-	hasId = String("hasNode")
-	reference = String("widget:")		
-	mustSatisfyQuery centerParentLabelQuery
-		hasId = String("mustSatisfyQuery")
-		className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
-		parentLabel = StringTable("[2],"userInterface","center")
-	multiplicity = String("0..*")
+hasNode centerSpec // recursion here either another center and/or a widget??
+	isOfClass = String("center")
+	hasParent = StringTable("[1],userInterface,center")
+	multiplicity = String("0..1")
 	hasProperty centerNameProperty
-		hasId = String("hasProperty")
+		isOfClass = String("hasProperty")
+		hasName = String("name")		
 		type = String("String")
 		multiplicity = String("1..1")
-	hasEdge centerEdgeToCenter
-		hasId = String("hasEdge")
-		toNode = String("center")
-		multiplicity = String("0..1")
 
 hasNode widgetSpec
-	hasId = String("hasNode")
-	reference = String("widget:")
-	mustSatisfyQuery widgetParentLabelQuery
-		hasId = String("mustSatisfyQuery")
-		className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
-		parentLabel = StringTable("[3],"top","bottom","center")
+	isOfClass = String("widget")
+	hasParent = StringTable("[1],top,bottom,center")
 	multiplicity = String("0..*")	
 	hasProperty widgetOrder
-		hasId = String("hasProperty")
+		isOfClass = String("hasProperty")
+		hasName = String("order")		
 		type = String("Integer")
 		multiplicity = String("1..1")
+		
 	hasProperty widgetClass
-		hasId = String("hasProperty")
-		type = String("String")
-		multiplicity = String("1..1")
+		isOfClass = String("hasProperty")
+		multiplicity = String("0..*")
 		mustSatisfyQuery widgetClassInValueSetQuery
-			hasId = String("mustSatisfyQuery")
-			className = String("au.edu.anu.twcore.archetype.queries.IsInValueSetQuery") // we need a token "+" to concat strings!
-			values = StringTable("[0],"fr.ens.biologie.threeWorlds.ui.widgets.grid.SingleGridWidget","fr.ens.biologie.threeWorlds.ui.widgets.simulation.TimeDisplayWidgetfx", "fr.ens.biologie.threeWorlds.ui.widgets.simulation.SimpleSimCtrlWidget","fr.ens.biologie.threeWorlds.ui.widgets.plot2D.TimeSeriesPlotWidgetfx","fr.ens.biologie.threeWorlds.ui.widgets.labelValue.LabelValuePair"})	      
+			isOfClass = String("mustSatisfyQuery")
+			className = String("IsInValueSetQuery") // TODO: we need a token "+" to concat strings i.e in preprocessing
+			values = StringTable("[0],SingleGridWidget,+
+			TimeDisplayWidgetfx,+
+			SimpleSimCtrlWidget,+
+			TimeSeriesPlotWidgetfx,+
+			LabelValuePair"})	      

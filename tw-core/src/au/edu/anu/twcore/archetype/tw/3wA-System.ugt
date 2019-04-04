@@ -1,22 +1,26 @@
 tree
+	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode systemSpec
-	hasId = String("hasNode")
-	reference = String("3worlds:/system:")
+	isOfClass = String("system")
+	hasParent = StringTable("[1],"3worlds")
 	multiplicity = String("1..*")
 	hasProperty systemNameProperty
-		hasId = String("hasProperty")
+		isOfClass = String("hasProperty")
+		hasName = String("name")
 		type = String("String")
 		multiplicity = String("1..1")
 	hasProperty systemClassProperty
-		hasId = String("hasProperty")
+		isOfClass = String("hasProperty")
+		hasName = String("className")
 		type = String("String")
 		multiplicity = String("1..1")
 		mustSatisfyQuery systemClassPropertyIsInValueSetQuery
-			hasId = String("mustSatisfyQuery")
-			className = StringTable({[1],"au.edu.anu.twcore.archetype.queries.IsInValueSetQuery"})
-			values = StringTable({[1],"au.edu.anu.twcore.ecology.ecosystem.World"})
-	hasProperty memory
-		hasId = String("hasProperty")
+			isOfClass = String("mustSatisfyQuery")
+			className = StringTable("[1],IsInValueSetQuery")
+			values = StringTable({[1],"World"})
+	hasProperty memorySpec
+		isOfClass = String("hasProperty")
+		hasName = String("memory")
 		type = String("Integer")
 		multiplicity = String("1..1") // can't have optional properties!
 		
