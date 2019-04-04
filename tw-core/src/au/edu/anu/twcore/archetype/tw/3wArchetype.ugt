@@ -1,8 +1,12 @@
 tree
+	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 archetype 3worlds
 	exclusive = Boolean(true)
+	isOfClass = String("archetype")
+	multiplicity = String("1..1")
+	
 	importResource au.edu.anu.twcore.archetype.tw.3wA-UserInterface.ugt
-	importResource au.edu.anu.twcore.archetype.tw.3wA-Root.ugt
-	importResource au.edu.anu.twcore.archetype.tw.3wA-System.ugt
-	importResource au.edu.anu.twcore.archetype.tw.3wA-DataDefinition.ugt
-	importResource au.edu.anu.twcore.archetype.tw.3wA-Experiment.ugt
+	//importResource au.edu.anu.twcore.archetype.tw.3wA-Root.ugt // redundant?
+	//importResource au.edu.anu.twcore.archetype.tw.3wA-System.ugt
+	//importResource au.edu.anu.twcore.archetype.tw.3wA-DataDefinition.ugt
+	//importResource au.edu.anu.twcore.archetype.tw.3wA-Experiment.ugt

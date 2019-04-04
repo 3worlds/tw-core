@@ -1,5 +1,6 @@
 tree
+// I think this is redundant now
 hasNode rootSpec
-	hasId = String("hasNode")
+	isOfClass = String("hasNode")
 	reference = String("3worlds:")
 	multiplicity = String("1..1")

@@ -1,22 +1,19 @@
 tree
+	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode userInterfaceSpec
-	hasId = String("hasNode")
-	//reference = String("3worlds:/userInterface:")
-	// I would prefer to have this approach: a label and a parent tree list
-	label = String("userInterface")
-	mustSatisfyQuery UserInterfaceParentLabelQuery
-		hasId = String("mustSatisfyQuery")
-		className = String("au.edu.anu.twcore.archetype.queries.ParentLabelQuery")
-		parentLabel = StringTable("[1],3worlds")
-	
-	multiplicity = String("1..*")
+	isOfClass = String("hasNode")
+	hasParent = StringTable("[1],3worlds")
+	multiplicity = String("1..1")
 	hasProperty uiNameProperty
-		hasId = String("hasProperty")
+		isOfClass = String("hasProperty")
+		hasName = String("name")
+		hasParent = StringTable("hasNode") // or "userInterfaceSpec"? seems redundant given indents
 		type = String("String")
 		multiplicity = String("1..1")
 
 hasNode topSpec
-	hasId = String("hasNode")
+	isOfClass = String("hasNode")
+	hasParent = StringTable("[1],3Worlds")// well I'm a bit lost now
 	reference = String("userInterface:/top")
 	multiplicity = String("0..1")
 	hasProperty topNameProperty
