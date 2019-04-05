@@ -1,6 +1,8 @@
 tree
 	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
+	// NB: These imports files are not tested against the archetype until merged 
+	// with their parent. They do not have an "archetype" root at this stage.
 hasNode rootSpec
-	isOfClass = String("ThreeWorlds")
+	isOfClass = String("3worlds")
 	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(null)
 	multiplicity = IntegerRange("1..1")
