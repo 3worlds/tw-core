@@ -1,6 +1,6 @@
 tree
 	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode rootSpec
-	isOfClass = String("3worlds")
-	hasParent = StringTable("[0]")
-	multiplicity = String("1..1")
+	isOfClass = String("ThreeWorlds")
+	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(null)
+	multiplicity = IntegerRange("1..1")

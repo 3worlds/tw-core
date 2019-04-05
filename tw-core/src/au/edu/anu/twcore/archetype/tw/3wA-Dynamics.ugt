@@ -1,19 +1,19 @@
 tree
 	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode dynamicsSpec
-	isOfClass = String("dynamics")
-	hasParent = StringTable("[1]",system")
-	multiplicity = String("1..1")
+	isOfClass = String("Dynamics")
+	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable([1],"System")
+	multiplicity = IntegerRange("1..1")
 	hasProperty dynamicsNameProperty
 		isOfClass = String("hasProperty")
 		hasName = String("name")
 		type = String("String")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 	hasProperty dyamicsClassProperty
 		isOfClass = String("hasProperty")
 		hasName = String("className")
 		type = String("String")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery dynamicsClassPropertyIsInValueSetQuery
 			isOfClass = String("mustSatisfyQuery")
 			className = StringTable("[1],IsInValueSetQuery")

@@ -3,17 +3,17 @@ tree
 hasNode systemSpec
 	isOfClass = String("system")
 	hasParent = StringTable("[1],"3worlds")
-	multiplicity = String("1..*")
+	multiplicity = IntegerRange("1..*")
 	hasProperty systemNameProperty
 		isOfClass = String("hasProperty")
 		hasName = String("name")
 		type = String("String")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 	hasProperty systemClassProperty
 		isOfClass = String("hasProperty")
 		hasName = String("className")
 		type = String("String")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery systemClassPropertyIsInValueSetQuery
 			isOfClass = String("mustSatisfyQuery")
 			className = StringTable("[1],IsInValueSetQuery")
@@ -22,7 +22,7 @@ hasNode systemSpec
 		isOfClass = String("hasProperty")
 		hasName = String("memory")
 		type = String("Integer")
-		multiplicity = String("1..1") // can't have optional properties!
+		multiplicity = IntegerRange("1..1") // can't have optional properties!
 		
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Dynamics.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Structure.ugt

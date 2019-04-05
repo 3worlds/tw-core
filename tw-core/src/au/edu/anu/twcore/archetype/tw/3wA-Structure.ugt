@@ -2,5 +2,5 @@ tree
 	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode structureSpec
 	isOfClass = String("structure")
-	hasParent = StringTable("[1]",system")
-	multiplicity = String("1..1")
+	hasParent = au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"system"))
+	multiplicity = IntegerRange("1..1")

@@ -3,17 +3,17 @@ tree
 hasNode dataDefinitionSpec
 	isOfClass = String("dataDefinition")
 	hasParent = StringTable("[1]",3worlds")
-	multiplicity = String("1..1")
+	multiplicity = IntegerRange("1..1")
 	
 hasNode  dimSpec
 	isOfClass = String("dimensioner")
 	hasParent = StringTable([1],dataDefinition)
-	multiplicity = String("0..*")
+	multiplicity = IntegerRange("0..*")
 	hasProperty dimPropertiesSpec
 		isOfClass = String("hasProperty")
 		hasName = String("size")
 		type = String("Integer") 
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery dimIsInRangeQuerySpec
 			isOfClass = String("mustSatisfyQuery")
 			className = String("IsInRangeQuery")
@@ -22,11 +22,11 @@ hasNode  dimSpec
 hasNode recordSpec
 	isOfClass = String("record")
 	hasParent = StringTable("[2],table,dataDefinition")
-	multiplicity = String("0..*")
+	multiplicity = IntegerRange("0..*")
 	hasProperty recordNameSpec
 		isOfClass = String("hasProperty")
 		hasName = String("name")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 		type = String("String")
 	mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
 		isOfClass = String("mustSatisfyQuery")
@@ -37,22 +37,22 @@ hasNode recordSpec
 hasNode tableSpec
 	isOfClass = String("table")
 	hasParent = StringTable([1],record)
-	multiplicity = String("0..*")
+	multiplicity = IntegerRange("0..*")
 	hasProperty tableNameSpec 
 		isOfClass = String("hasProperty")
 		hasName = String("name")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 		type = String("String")
 	hasProperty dataElementTypeSpec
 		isOfClass("hasProperty")
 		hasName = String("dataElementType")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 		type = String("String")
 				
 	hasEdge dimEdgeSpec
 		isOfClass = String("sizedBy")
 		toNode = String("dimensioner")
-		multiplicity = String("1..*")
+		multiplicity = IntegerRange("1..*")
 	mustSatisfyQuery edgeXorPropertyQuerySpec
 		isOfClass = String("mustSatisfyQuery")
 		className = String("EdgeXorPropertyQuery")
@@ -62,14 +62,14 @@ hasNode tableSpec
 hasNode recordFieldSpec
 	isOfClass = String("field")
 	hasParent = StringTable([1],record)
-	multiplicity = String("0..*")
+	multiplicity = IntegerRange("0..*")
 	hasProperty recordFieldNamePropertySpec
 		isOfClass = String("hasProperty")
 		hasName = String("Type")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 		type  = String("String")
 	hasProperty recordDataElementTypePropertySpec
 		isOfClass = String("hasProperty")
 		hasName = String("DataElementType")
 		type = String("fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")

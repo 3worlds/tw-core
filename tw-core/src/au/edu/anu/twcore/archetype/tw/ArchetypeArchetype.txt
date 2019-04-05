@@ -1,0 +1,131 @@
+tree 
+	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
+
+	//-------------------------------------------------------
+	// an archetype starts with a root node of class *archetype*
+	//-------------------------------------------------------
+archetype ArchetypeForArchetypes 
+	hasNode ArchetypeRootSpec
+		hasProperty exclusivePropertySpec 
+			hasName = String("exclusive")
+			multiplicity = IntegerRange("0..1")
+			type = String("Boolean")
+
+	//-------------------------------------------------------
+	// specification for node specifications:
+	// a node with class *hasNode*, child of *archetype*
+	//-------------------------------------------------------
+	hasNode NodeSpec
+		//-------------------------------------------------------
+		// a node spec may specify the node class (formerly label)
+		// if not present then any label is suitable and will be
+		// be lost during the tree import process, a default 
+		// class (eg TreeNode) will be used to instantiate the node
+		//-------------------------------------------------------
+		hasProperty NodeClassSpec
+			hasName = String("isOfClass")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		//-------------------------------------------------------
+		// a node spec must specify a list of valid parents for the node
+		// for the root node, write hasParent=StringTable(null)
+		//-------------------------------------------------------
+		hasProperty NodeParentSpec
+			hasName = String("hasParent")
+			type = String("StringTable")
+			multiplicity = IntegerRange("1..1")
+		//-------------------------------------------------------
+		// a node spec may specify the node id (formerly name)
+		//-------------------------------------------------------
+		hasProperty NodeIdSpec
+			hasName = String("hasId")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		//-------------------------------------------------------
+		// a node spec optionally has a *multiplicity*  property
+		// defaults to 0..* if not set
+		//-------------------------------------------------------
+		hasProperty NodeMultiplicitySpec 
+			hasName = String("multiplicity")
+			type = String("IntegerRange")
+			multiplicity = IntegerRange("0..1")
+
+	//-------------------------------------------------------
+	// specification for constraint specifications
+	// constraints can apply to node, edge or property specifications
+	//-------------------------------------------------------
+	hasNode ConstraintSpec
+		//-------------------------------------------------------
+		// a constraint spec uses a Query class descendant
+		// which fully qualified name must be provided here
+		//-------------------------------------------------------
+		hasProperty ConstraintClassSpec 
+			hasName = String("className")
+			type = String("String") 
+			multiplicity = IntegerRange("1..1")
+
+	//-------------------------------------------------------
+	// specification for property specifications
+	// properties apply to node or edge specifications
+	//-------------------------------------------------------
+	hasNode PropertySpec
+		//-------------------------------------------------------
+		// a property spec must specify a name for the property
+		//-------------------------------------------------------
+		hasProperty PropertyNameSpec
+			hasName = String("hasName")
+			type = String("String") 
+			multiplicity = IntegerRange("1..1")
+		//-------------------------------------------------------
+		// a property spec must specify a type for the property
+		//-------------------------------------------------------
+		hasProperty PropertyTypeSpec
+			hasName = String("type")
+			type = String("String") 
+			multiplicity = IntegerRange("1..1")
+		//-------------------------------------------------------
+		// a property spec must specify a multiplicity for the property
+		// NB valid values are 0..1 and 1..1
+		//-------------------------------------------------------
+		hasProperty PropertyMultiplicitySpec
+			hasName = String("multiplicity")
+			type = String("String") 
+			multiplicity = IntegerRange("1..1")
+
+	//-------------------------------------------------------
+	// specification for edge specifications
+	//-------------------------------------------------------
+	hasNode EdgeSpec
+		//-------------------------------------------------------
+		// an edge spec may specify the edge id (formerly name)
+		//-------------------------------------------------------
+		hasProperty EdgeIdSpec
+			hasName = String("hasId")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		//-------------------------------------------------------
+		// an edge spec may specify the edge class (formerly label)
+		// if not present then any label is suitable and will be
+		// be lost during the tree import process, a default 
+		// class (eg Edge) will be used to instantiate the edge
+		//-------------------------------------------------------
+		hasProperty EdgeClassSpec
+			hasName = String("isOfClass")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		//-------------------------------------------------------
+		// an edge spec must specify an end node (the start node is
+		// its parent node specification)
+		//-------------------------------------------------------
+		hasProperty EdgeEndNodeSpec
+			hasName = String("toNode")
+			type = String("String")
+			multiplicity = IntegerRange("1..1")
+		//-------------------------------------------------------
+		// an edge spec optionally has a *multiplicity*  property
+		// defaults to 0..* if not set
+		//-------------------------------------------------------
+		hasProperty EdgeMultiplicitySpec 
+			hasName = String("multiplicity")
+			type = String("IntegerRange")
+			multiplicity = IntegerRange("0..1")

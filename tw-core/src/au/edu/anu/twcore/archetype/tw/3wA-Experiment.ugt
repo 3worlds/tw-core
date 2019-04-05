@@ -1,6 +1,6 @@
 tree
 	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode experimentSpec
-	isOfClass = String("experiment")
-	hasParent = StringTable("[1]",system")
-	multiplicity = String("1..1")
+	isOfClass = String("Experiment")
+	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable([1],"System")
+	multiplicity = IntegerRange("1..1")

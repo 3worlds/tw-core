@@ -1,58 +1,57 @@
 tree
 	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
 hasNode userInterfaceSpec
-	isOfClass = String("userInterface")
-	hasParent = StringTable("[1],3worlds") // not clear about this??
-	multiplicity = String("1..1")
+	isOfClass = String("UserInterface")
+	hasParent = au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"ThreeWorlds"))
+	multiplicity = IntegerRange("1..1")
 	hasProperty uiNameProperty
-		isOfClass = String("hasProperty")
 		hasName = String("name")
 		type = String("String")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 
 hasNode topSpec
-	isOfClass = String("top")
+	isOfClass = String("TopBar")
 	hasParent = StringTable("[1],userInterface")
-	multiplicity = String("0..1")
+	multiplicity = IntegerRange("0..1")
 	hasProperty topNameProperty
 		isOfClass = String("hasProperty")
 		hasName = String("name")		
 		type = String("String")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 
 hasNode bottomSpec
 	isOfClass = String("bottom")
 	hasParent = StringTable("[1],userInterface")
-	multiplicity = String("0..1")
+	multiplicity = IntegerRange("0..1")
 	hasProperty bottomNameProperty
 		isOfClass = String("hasProperty")
 		hasName = String("name")		
 		type = String("String")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 
 hasNode centerSpec // recursion here either another center and/or a widget??
 	isOfClass = String("center")
 	hasParent = StringTable("[1],userInterface,center")
-	multiplicity = String("0..1")
+	multiplicity = IntegerRange("0..1")
 	hasProperty centerNameProperty
 		isOfClass = String("hasProperty")
 		hasName = String("name")		
 		type = String("String")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 
 hasNode widgetSpec
 	isOfClass = String("widget")
 	hasParent = StringTable("[1],top,bottom,center")
-	multiplicity = String("0..*")	
+	multiplicity = IntegerRange("0..*")	
 	hasProperty widgetOrder
 		isOfClass = String("hasProperty")
 		hasName = String("order")		
 		type = String("Integer")
-		multiplicity = String("1..1")
+		multiplicity = IntegerRange("1..1")
 		
 	hasProperty widgetClass
 		isOfClass = String("hasProperty")
-		multiplicity = String("0..*")
+		multiplicity = IntegerRange("0..*")
 		mustSatisfyQuery widgetClassInValueSetQuery
 			isOfClass = String("mustSatisfyQuery")
 			className = String("IsInValueSetQuery") // TODO: we need a token "+" to concat strings i.e in preprocessing
