@@ -9,8 +9,9 @@ hasNode userInterfaceSpec
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
+// use rootCenterSpec pattern as per categories??
 hasNode topSpec
-	isOfClass = String("TopBar")
+	isOfClass = String("top")
 	hasParent = StringTable("[1],userInterface")
 	multiplicity = IntegerRange("0..1")
 	hasProperty topNameProperty
@@ -24,7 +25,6 @@ hasNode bottomSpec
 	hasParent = StringTable("[1],userInterface")
 	multiplicity = IntegerRange("0..1")
 	hasProperty bottomNameProperty
-		isOfClass = String("hasProperty")
 		hasName = String("name")		
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
@@ -34,27 +34,23 @@ hasNode centerSpec // recursion here either another center and/or a widget??
 	hasParent = StringTable("[1],userInterface,center")
 	multiplicity = IntegerRange("0..1")
 	hasProperty centerNameProperty
-		isOfClass = String("hasProperty")
 		hasName = String("name")		
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
 hasNode widgetSpec
 	isOfClass = String("widget")
-	hasParent = StringTable("[1],top,bottom,center")
-	multiplicity = IntegerRange("0..*")	
+	hasParent = StringTable([3]"top","bottom","center")
+	multiplicity = IntegerRange("0..*")	"
 	hasProperty widgetOrder
-		isOfClass = String("hasProperty")
 		hasName = String("order")		
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
 		
 	hasProperty widgetClass
-		isOfClass = String("hasProperty")
 		multiplicity = IntegerRange("0..*")
 		mustSatisfyQuery widgetClassInValueSetQuery
-			isOfClass = String("mustSatisfyQuery")
-			className = String("IsInValueSetQuery") // TODO: we need a token "+" to concat strings i.e in preprocessing
+			className = String("IsInValueSetQuery") 
 			values = StringTable("[0],SingleGridWidget,+
 			TimeDisplayWidgetfx,+
 			SimpleSimCtrlWidget,+
