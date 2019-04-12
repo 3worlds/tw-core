@@ -1,6 +1,10 @@
 tree
-	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+	
 hasNode experimentSpec
-	isOfClass = String("Experiment")
-	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable([1],"System")
+	isOfClass = String("experiment")
+	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable([1]"System")
 	multiplicity = IntegerRange("1..1")

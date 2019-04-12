@@ -1,23 +1,22 @@
 tree
-	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
-	// NB: These imports files are not tested against the archetype until merged 
-	// with their parent. They do not have an "archetype" root at this stage.
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+	
 hasNode dynamicsSpec
 	isOfClass = String("dynamics")
 	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable([1]"system")
 	multiplicity = IntegerRange("1..1")
 	hasProperty dynamicsNameProperty
-		isOfClass = String("hasProperty")
 		hasName = String("name")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 	hasProperty dyamicsClassProperty
-		isOfClass = String("hasProperty")
 		hasName = String("className")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery dynamicsClassPropertyIsInValueSetQuery
-			isOfClass = String("mustSatisfyQuery")
 			className = StringTable("[1],IsInValueSetQuery")
 			values = StringTable("[1],TimerModelSimulator")
 	mustSatisfyQuery dynamicsCheckSubArchetypeQuery

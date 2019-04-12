@@ -27,8 +27,8 @@ hasNode recordSpec
 	multiplicity = IntegerRange("0..*")
 	hasProperty recordNameSpec
 		hasName = String("name")
-		multiplicity = IntegerRange("1..1")
 		type = String("String")
+		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
 		className = String("NodeAtLeastOneChildLabelOfQuery")
 		childLabel = StringTable([2]"field", "table"})
@@ -44,8 +44,8 @@ hasNode tableSpec
 		type = String("String")
 	hasProperty dataElementTypeSpec
 		hasName = String("dataElementType")
-		multiplicity = IntegerRange("1..1")
 		type = String("String")				
+		multiplicity = IntegerRange("1..1")
 	hasEdge dimEdgeSpec
 		isOfClass = String("sizedBy")               //??
 		toNode = String("dimensioner")
@@ -61,10 +61,9 @@ hasNode recordFieldSpec
 	multiplicity = IntegerRange("0..*")
 	hasProperty recordFieldNamePropertySpec
 		hasName = String("Type")
-		multiplicity = IntegerRange("1..1")
 		type  = String("String")
+		multiplicity = IntegerRange("1..1")
 	hasProperty recordDataElementTypePropertySpec
-		isOfClass = String("hasProperty")
 		hasName = String("DataElementType")
 		type = String("DataElementType")
 		multiplicity = IntegerRange("1..1")

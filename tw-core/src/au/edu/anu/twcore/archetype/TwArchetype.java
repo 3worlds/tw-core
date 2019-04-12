@@ -40,27 +40,27 @@ import fr.cnrs.iees.io.FileImporter;
  *
  */
 public class TwArchetype {
-	
+
 	public TwArchetype() {
 		super();
 		String filename = System.getProperty("user.dir") //
-				+ File.separator + "src" 
-				+ File.separator + "au.edu.anu.twcore.archetype.tw".replace('.',File.separatorChar) 
-				+ File.separator + "3wArchetype.ugt";
+				+ File.separator + "src" + File.separator
+				+ "au.edu.anu.twcore.archetype.tw".replace('.', File.separatorChar) + File.separator
+				+ "3wArchetype.ugt";
 		File file = new File(filename);
 		FileImporter importer = new FileImporter(file);
-		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>)importer.getGraph();
+		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>) importer.getGraph();
 		String indent = "";
-		
-		printTree((DataTreeNodeImpl) specs.root(),indent);		
+
+		printTree((DataTreeNodeImpl) specs.root(), indent);
 	}
 
-	private void printTree(DataTreeNodeImpl parent,String indent) {
-			System.out.println(indent+parent.classId()+":"+parent.id());
-			System.out.println(indent+parent.properties().toString());
-		for (TreeNode child:parent.getChildren())
-			printTree((DataTreeNodeImpl) child,indent+"  ");
-		
+	private void printTree(DataTreeNodeImpl parent, String indent) {
+		System.out.println(indent + parent.classId() + ":" + parent.id());
+//			System.out.println(indent+parent.properties().toString());
+		for (TreeNode child : parent.getChildren())
+			printTree((DataTreeNodeImpl) child, indent + "  ");
+
 	}
 
 }

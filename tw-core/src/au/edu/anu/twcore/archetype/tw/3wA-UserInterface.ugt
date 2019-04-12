@@ -1,22 +1,25 @@
 tree
-	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
 hasNode userInterfaceSpec
-	isOfClass = String("UserInterface")
-	hasParent = au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"ThreeWorlds"))
+	isOfClass = String("userInterface")
+	hasParent = au.edu.anu.rscs.aot.collections.tables.StringTable([1]"ThreeWorlds")
 	multiplicity = IntegerRange("1..1")
-	hasProperty uiNameProperty
+	hasProperty uiName
 		hasName = String("name")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
-// use rootCenterSpec pattern as per categories??
 hasNode topSpec
 	isOfClass = String("top")
 	hasParent = StringTable("[1],userInterface")
 	multiplicity = IntegerRange("0..1")
-	hasProperty topNameProperty
+	hasProperty topName
 		isOfClass = String("hasProperty")
-		hasName = String("name")		
+		hasName = String("name")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
@@ -24,35 +27,36 @@ hasNode bottomSpec
 	isOfClass = String("bottom")
 	hasParent = StringTable("[1],userInterface")
 	multiplicity = IntegerRange("0..1")
-	hasProperty bottomNameProperty
-		hasName = String("name")		
+	hasProperty bottomName
+		hasName = String("name")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
-hasNode centerSpec // recursion here either another center and/or a widget??
+hasNode centerSpec 
 	isOfClass = String("center")
 	hasParent = StringTable("[1],userInterface,center")
 	multiplicity = IntegerRange("0..1")
-	hasProperty centerNameProperty
-		hasName = String("name")		
+	hasProperty centerName
+		hasName = String("name")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
 hasNode widgetSpec
 	isOfClass = String("widget")
 	hasParent = StringTable([3]"top","bottom","center")
-	multiplicity = IntegerRange("0..*")	"
+	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder
 		hasName = String("order")		
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
-		
 	hasProperty widgetClass
-		multiplicity = IntegerRange("0..*")
-		mustSatisfyQuery widgetClassInValueSetQuery
-			className = String("IsInValueSetQuery") 
-			values = StringTable("[0],SingleGridWidget,+
-			TimeDisplayWidgetfx,+
-			SimpleSimCtrlWidget,+
-			TimeSeriesPlotWidgetfx,+
-			LabelValuePair"})	      
+		hasName = String("className")		
+		type = String("String")
+		multiplicity = IntegerRange("1..1")
+//		mustSatisfyQuery widgetClassInValueSetQuery
+//			className = String("IsInValueSetQuery") 
+//			values = StringTable([0]"SingleGridWidget",+
+//			"TimeDisplayWidgetfx",+
+//			"SimpleSimCtrlWidget",+
+//			"TimeSeriesPlotWidgetfx",+
+//			"LabelValuePair")
