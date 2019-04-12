@@ -32,6 +32,7 @@ import java.io.File;
 
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.DataTreeNodeImpl;
 import fr.cnrs.iees.io.FileImporter;
 
 /**
@@ -50,17 +51,15 @@ public class TwArchetype {
 		FileImporter importer = new FileImporter(file);
 		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>)importer.getGraph();
 		String indent = "";
-		// Parents are getting mixed up!!1
-		printTree(specs.root(),indent);		
+		
+		printTree((DataTreeNodeImpl) specs.root(),indent);		
 	}
 
-	private void printTree(TreeNode parent,String indent) {
-		if (parent.getParent()!=null)
-			System.out.println(indent+parent.getParent().id()+"->"+parent.id());
-		else
-			System.out.println(indent+"null->"+parent.id());
+	private void printTree(DataTreeNodeImpl parent,String indent) {
+			System.out.println(indent+parent.classId()+":"+parent.id());
+			System.out.println(indent+parent.properties().toString());
 		for (TreeNode child:parent.getChildren())
-			printTree(child,indent+"  ");
+			printTree((DataTreeNodeImpl) child,indent+"  ");
 		
 	}
 

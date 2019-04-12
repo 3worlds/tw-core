@@ -1,31 +1,28 @@
 tree
-	tree_factory = String("au.edu.anu.rscs.aot.archetype.ArchetypeFactory")
-	// NB: These imports files are not tested against the archetype until merged 
-	// with their parent. They do not have an "archetype" root at this stage.
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
 hasNode systemSpec
 	isOfClass = String("system")
-	//Would be nicer to have hasParent = StringTable([1]"3worlds")
-	hasParent = au.edu.anu.rscs.aot.collections.tables.StringTable([1]"3worlds")
+	hasParent = StringTable([1]"3worlds")
 	multiplicity = IntegerRange("1..*")
 	hasProperty systemNameProperty
-		isOfClass = String("hasProperty")
 		hasName = String("name")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 	hasProperty systemClassProperty
-		isOfClass = String("hasProperty")
 		hasName = String("className")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery systemClassPropertyIsInValueSetQuery
-			isOfClass = String("mustSatisfyQuery")
 			className = au.edu.anu.rscs.aot.collections.tables.StringTable([1],"IsInValueSetQuery")
 			values = StringTable([1],"xxx.yyy.zzz.World")
 	hasProperty memorySpec
-		isOfClass = String("hasProperty")
 		hasName = String("memory")
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")// should have an integer range constraint
 		
-	importResource au.edu.anu.twcore.archetype.tw.3wA-Dynamics.ugt
-	importResource au.edu.anu.twcore.archetype.tw.3wA-Structure.ugt
+	//importResource au.edu.anu.twcore.archetype.tw.3wA-Dynamics.ugt
+	//importResource au.edu.anu.twcore.archetype.tw.3wA-Structure.ugt
