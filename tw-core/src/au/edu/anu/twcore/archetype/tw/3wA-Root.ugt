@@ -1,7 +1,4 @@
 tree
-	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
-	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
-	
 hasNode rootSpec
 	isOfClass = String("3worlds")
 	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(null)

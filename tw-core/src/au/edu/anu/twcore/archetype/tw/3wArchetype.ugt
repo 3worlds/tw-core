@@ -1,11 +1,10 @@
 tree
-	// the scope for node ids coming from this file
 	scope =            String("3W-archetype")
-	// This is a problem each import should use the same scope and same factory
-	// We should delay the construction of imported graphs until the root graph has created a factory.
-	// Therefore we need a FileImporter that takes a factory in the constructor.
-	// labels used in this file
 	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
 archetype 3worldsArchetype
 	exclusive = Boolean(true)

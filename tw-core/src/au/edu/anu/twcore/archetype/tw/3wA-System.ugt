@@ -1,9 +1,4 @@
 tree
-	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
-	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
-	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
-	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
-
 hasNode systemSpec
 	isOfClass = String("system")
 	hasParent = StringTable([1]"3worlds")
