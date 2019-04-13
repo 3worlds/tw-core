@@ -48,10 +48,10 @@ hasNode widgetSpec
 		hasName = String("className")		
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
-//		mustSatisfyQuery widgetClassInValueSetQuery
-//			className = String("IsInValueSetQuery") 
-//			values = StringTable([0]"SingleGridWidget",+
-//			"TimeDisplayWidgetfx",+
-//			"SimpleSimCtrlWidget",+
-//			"TimeSeriesPlotWidgetfx",+
-//			"LabelValuePair")
+		mustSatisfyQuery widgetClassInValueSetQuery
+			className = String("IsInValueSetQuery") 
+			values = StringTable([0]"SingleGridWidget",+
+			"TimeDisplayWidgetfx",+
+			"SimpleSimCtrlWidget",+
+			"TimeSeriesPlotWidgetfx",+
+			"LabelValuePair")
