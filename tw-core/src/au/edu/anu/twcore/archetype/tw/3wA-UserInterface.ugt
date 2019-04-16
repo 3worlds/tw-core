@@ -10,17 +10,16 @@ hasNode userInterfaceSpec
 
 hasNode topSpec
 	isOfClass = String("top")
-	hasParent = StringTable("[1],userInterface")
+	hasParent = StringTable([1]"userInterface")
 	multiplicity = IntegerRange("0..1")
 	hasProperty topName
-		isOfClass = String("hasProperty")
 		hasName = String("name")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
 hasNode bottomSpec
 	isOfClass = String("bottom")
-	hasParent = StringTable("[1],userInterface")
+	hasParent = StringTable([1]"userInterface")
 	multiplicity = IntegerRange("0..1")
 	hasProperty bottomName
 		hasName = String("name")
@@ -29,7 +28,7 @@ hasNode bottomSpec
 
 hasNode centerSpec 
 	isOfClass = String("center")
-	hasParent = StringTable("[1],userInterface,center")
+	hasParent = StringTable([1]"userInterface,center")
 	multiplicity = IntegerRange("0..1")
 	hasProperty centerName
 		hasName = String("name")

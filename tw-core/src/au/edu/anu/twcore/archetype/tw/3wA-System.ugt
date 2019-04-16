@@ -12,8 +12,8 @@ hasNode systemSpec
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery systemClassIsInValueSetQuery
-			className = au.edu.anu.rscs.aot.collections.tables.StringTable([1],"IsInValueSetQuery")
-			values = StringTable([1],"xxx.yyy.zzz.World")
+			className = au.edu.anu.rscs.aot.collections.tables.StringTable([1]"IsInValueSetQuery")
+			values = StringTable([1]"xxx.yyy.zzz.World")
 	hasProperty memorySpec
 		hasName = String("memory")
 		type = String("Integer")

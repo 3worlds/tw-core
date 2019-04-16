@@ -12,9 +12,8 @@ hasNode dynamicsSpec
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery dynamicsClassPropertyIsInValueSetQuery
-			className = StringTable("[1],IsInValueSetQuery")
-			values = StringTable("[1],TimerModelSimulator")
+			className = StringTable([1]"IsInValueSetQuery")
+			values = StringTable([1]"TimerModelSimulator")
 	mustSatisfyQuery dynamicsCheckSubArchetypeQuery
-		isOfClass = String("mustSatisfyQuery")
 		className = au.edu.anu.rscs.aot.collections.tables.StringTable([1]"xxx.yyy.zzz.CheckSubArchetypeQuery")
 		parameters = au.edu.anu.rscs.aot.collections.tables.StringTable([3]"class","xxx.yyy.zzz.TimerModelSimulator","3wSA-TimerModelSimulator.ugt")

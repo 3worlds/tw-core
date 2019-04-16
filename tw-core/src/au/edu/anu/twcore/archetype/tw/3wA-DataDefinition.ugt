@@ -14,7 +14,7 @@ hasNode  dimSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery dimIsInRangeQuerySpec
 			className = String("IsInRangeQuery")
-			interval = IntTable("[2],1,2147483647")
+			interval = IntTable("[2]1,2147483647")
 				
 hasNode recordSpec
 	isOfClass = String("record")
@@ -47,7 +47,7 @@ hasNode tableSpec
 		multiplicity = IntegerRange("1..*")
 	mustSatisfyQuery edgeXorPropertyQuerySpec
 		className = String("EdgeXorPropertyQuery")
-		edge_prop = StringTable("[2],record,dataElementType")
+		edge_prop = StringTable("[2]"record","dataElementType")
 
 		
 hasNode recordFieldSpec
