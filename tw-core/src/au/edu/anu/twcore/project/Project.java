@@ -43,7 +43,7 @@ import fr.cnrs.iees.io.GraphFileFormats;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.text.WordUtils;
 
 /**
  * Author Ian Davies
