@@ -8,8 +8,8 @@ hasNode userInterfaceSpec
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
-hasNode topSpec
-	isOfClass = String("top")
+hasNode toolBarSpec
+	isOfClass = String("toolBar")
 	hasParent = StringTable([1]"userInterface")
 	multiplicity = IntegerRange("0..1")
 	hasProperty topName
@@ -17,8 +17,8 @@ hasNode topSpec
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
-hasNode bottomSpec
-	isOfClass = String("bottom")
+hasNode statusBarSpec
+	isOfClass = String("statusBar")
 	hasParent = StringTable([1]"userInterface")
 	multiplicity = IntegerRange("0..1")
 	hasProperty bottomName
@@ -26,18 +26,19 @@ hasNode bottomSpec
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
-hasNode centerSpec 
-	isOfClass = String("center")
-	hasParent = StringTable([1]"userInterface,center")
+// TODO: not sure yet how this recursion will be interpreted
+hasNode contentSpec 
+	isOfClass = String("content")
+	hasParent = StringTable([1]"userInterface,content")
 	multiplicity = IntegerRange("0..1")
-	hasProperty centerName
+	hasProperty contentName
 		hasName = String("name")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 
 hasNode widgetSpec
 	isOfClass = String("widget")
-	hasParent = StringTable([3]"top","bottom","center")
+	hasParent = StringTable([3]"toolBar","statusBar","content")
 	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder
 		hasName = String("order")		

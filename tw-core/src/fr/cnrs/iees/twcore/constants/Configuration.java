@@ -47,44 +47,51 @@ package fr.cnrs.iees.twcore.constants;
  */
 public interface Configuration {
 	// 3Worlds Node labels
-	public static final String N_ROOT = "3Worlds";
-	public static final String N_ECOLOGY = "ecology";
-	public static final String N_EVENTQUEUE = "eventQueue";
-	public static final String N_TIMELINE = "timeLine";
-	public static final String N_TIMEMODEL = "timeModel";
-	public static final String N_STOPPINGCONDITION = "stoppingCondition";
-	public static final String N_RELATION = "relation";
-	public static final String N_PROCESS = "process";
-	public static final String N_LIFECYCLE = "lifeCycle";
-	public static final String N_RECRUIT = "recruit";
-	public static final String N_PRODUCE = "produce";
-	public static final String N_INITIALISER = "initialiser";
-	public static final String N_FUNCTION = "function";
-	public static final String N_ENGINE = "engine";
-	public static final String N_PARAMETERVALUES = "parameterValues";
-	public static final String N_DATATRACKER = "dataTracker";
-	public static final String N_INITIALSTATE = "initialState";
-	public static final String N_EXPERIMENT = "experiment";
-	public static final String N_DESIGN = "design";
-	public static final String N_TREATMENT = "treatment";
-	public static final String N_TIMEPERIOD = "timePeriod";
-	public static final String N_MODELCHANGE = "modelChange";
-	public static final String N_CODESOURCE = "codeSource";
-	public static final String N_DATAIO = "dataIO";
+	public static final String N_ROOT = "3worlds";
+	public static final String N_DATADEFINITION = "dataDefinition";
 	public static final String N_DIMENSIONER = "dimensioner";
 	public static final String N_TABLE = "table";
 	public static final String N_RECORD = "record";
 	public static final String N_FIELD = "field";
-	public static final String N_UI = "userInterface";
-	public static final String N_WIDGET = "widget";
 
-	// will need a different approach to this soon
-	public static final String N_TOOLBARTOP = "ToolbarTop";
-	public static final String N_TOOLBARBOTTOM = "ToolbarBottom";
-	public static final String N_TOPLEFTPANEL = "TopLeftPanel";
-	public static final String N_TOPRIGHTPANEL = "TopRightPanel";
-	public static final String N_BOTTOMLEFTPANEL = "BottomLeftPanel";
-	public static final String N_BOTTOMRIGHTPANEL = "BottomRightPanel";
+	public static final String N_SYSTEM = "system";
+	public static final String N_DYNAMICS = "dynamics";
+	public static final String N_TIMELINE = "timeLine";
+	public static final String N_TIMEMODEL = "timeModel";
+	public static final String N_EVENTQUEUE = "eventQueue";
+	public static final String N_PROCESS = "process";
+	public static final String N_FUNCTION = "function";
+
+	public static final String N_STRUCTURE = "structure";
+	public static final String N_CATEGORYSET = "categorySet";
+	public static final String N_CATEGORY = "category";
+	public static final String N_COMPONENT = "component";
+	public static final String N_REALISEDCOMPONENT = "realisedComponent";
+	public static final String N_INITIALISER = "initialiser";
+	public static final String N_RELATIONTYPE = "relationType";
+
+	public static final String N_EXPERIMENT = "experiment";
+	public static final String N_STOPPINGCONDITION = "stoppingCondition";
+	public static final String N_DESIGN = "design";
+	public static final String N_TREATMENT = "treatment";
+	public static final String N_TIMEPERIOD = "timePeriod";
+	public static final String N_MODELCHANGE = "modelChange";
+	
+	public static final String N_UI = "userInterface";
+	public static final String N_UITOP = "top";
+	public static final String N_UIBOTTOM = "bottom";
+	public static final String N_UICENTER = "center";
+	public static final String N_UIWIDGET = "widget";
+
+	//TODO?
+	public static final String N_LIFECYCLE = "lifeCycle";
+	public static final String N_RECRUIT = "recruit";
+	public static final String N_PRODUCE = "produce";
+	public static final String N_PARAMETERVALUES = "parameterValues";
+	public static final String N_DATATRACKER = "dataTracker";
+	public static final String N_INITIALSTATE = "initialState";
+	public static final String N_DATAIO = "dataIO";
+
 
 	// 3Worlds edge labels
 	public static final String E_FROM = "from";
