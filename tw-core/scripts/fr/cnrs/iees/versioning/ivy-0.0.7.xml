@@ -1,5 +1,5 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-core> version 0.0.8 (Mon May 06 11:17:22 CEST 2019)
+ ant and ivy scripts for project <tw-core> version 0.0.7 (Tue Feb 19 09:06:49 CET 2019)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -8,12 +8,11 @@
 ===================================================================================-->
 <ivy-module version="2.0"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:m="http://maven.apache.org/POM/4.0.0"
 		xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
 	<info	organisation="fr.cnrs.iees.tw-core"
 			module="tw-core"
-			revision="0.0.8"
+			revision="0.0.7"
 			status="integration">
 		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
 		<description>This module brings together all components required for 3Worlds including archetype</description>
@@ -30,9 +29,9 @@
 	</publications>
 
 	<dependencies>
-		<dependency org="fr.ens.biologie" name="generics" rev="[0.0.6,)"/>
-		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="[0.0.14,)"/>
-		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="[0.0.10,)"/>
+		<dependency org="fr.ens.biologie" name="generics" rev="+"/>
+		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="+"/>
+		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="+"/>
 		<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>
 		<dependency org="org.apache.ivy" name="ivy" rev="2.2.0"/>
 		<dependency org="org.apache.odftoolkit" name="simple-odf" rev="0.8.2-incubating"/>
