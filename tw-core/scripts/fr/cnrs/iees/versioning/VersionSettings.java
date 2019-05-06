@@ -54,9 +54,9 @@ public class VersionSettings {
 	 * 
 	 */
 	protected static String[][] DEPS = { 
-			{"fr.ens.biologie", "generics", "[0.0.6,)", null},
-			{"au.edu.anu.rscs.aot", "omugi", "[0.0.14,)", null},
-			{"au.edu.anu.rscs.aot", "aot", "[0.0.10,)", null},
+			{"fr.ens.biologie", "generics", "[0.1.0,)", null},
+			{"au.edu.anu.rscs.aot", "omugi", "[0.1.0,)", null},
+			{"au.edu.anu.rscs.aot", "aot", "[0.1.0,)", null},
 			
 			{"org.apache.commons", "commons-text", "1.+", null},
 			{"org.apache.ivy", "ivy", "2.2.0", null},
