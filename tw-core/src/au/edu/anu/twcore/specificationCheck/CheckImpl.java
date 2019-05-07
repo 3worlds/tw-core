@@ -29,17 +29,17 @@
 
 package au.edu.anu.twcore.specificationCheck;
 
-import au.edu.anu.rscs.aot.graph.AotGraph;
+import fr.cnrs.iees.graph.Graph;
 
 /**
  * Author Ian Davies
  *
  * Date 22 Jan. 2019
  */
-// not too sure this is the way to go??
+// TODO not too sure this is the way to go??
 public class CheckImpl implements Checkable{
-	private AotGraph graph;
-	public CheckImpl(AotGraph graph) {
+	private Graph graph;
+	public CheckImpl(Graph graph) {
 		this.graph=graph;
 	}
 
