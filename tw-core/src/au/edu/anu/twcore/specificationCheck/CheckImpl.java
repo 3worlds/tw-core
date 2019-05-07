@@ -36,7 +36,7 @@ import fr.cnrs.iees.graph.Graph;
  *
  * Date 22 Jan. 2019
  */
-// TODO not too sure this is the way to go??
+// TODO not too sure if this is the way to go??
 public class CheckImpl implements Checkable{
 	private Graph graph;
 	public CheckImpl(Graph graph) {
