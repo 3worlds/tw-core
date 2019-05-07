@@ -38,7 +38,8 @@ import fr.cnrs.iees.graph.Graph;
  */
 // TODO not too sure if this is the way to go??
 public class CheckImpl implements Checkable{
-	private Graph graph;
+	private Graph graph;// graph to check
+	// we will need the appropriate archetype for this graph (archetypeArcheytpe or twArchetype)!
 	public CheckImpl(Graph graph) {
 		this.graph=graph;
 	}
