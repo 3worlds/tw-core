@@ -30,6 +30,9 @@ package au.edu.anu.twcore.archetype;
 
 import java.io.File;
 
+import au.edu.anu.rscs.aot.archetype.Archetypes;
+import au.edu.anu.rscs.aot.archetype.CheckMessage;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.io.FileImporter;
@@ -54,13 +57,21 @@ public class TwArchetype {
 		String indent = "";
 
 		printTree(specs.root(), indent);
+		
+		Archetypes rootArch = new Archetypes();
+		if (!rootArch.isArchetype(specs))
+			for (CheckMessage cm: rootArch.errorList())
+				System.out.println(cm.toString());
 	}
 
 	private void printTree(TreeNode parent, String indent) {
 		System.out.println(indent + parent.classId() + ":" + parent.id());
-//			System.out.println(indent+parent.properties().toString());
+		if (parent instanceof ReadOnlyDataHolder)
+			for (String key:((ReadOnlyDataHolder) parent).properties().getKeysAsSet())
+			System.out.println(indent+"    "+"-("+key+"="+
+				((ReadOnlyDataHolder)parent).properties().getPropertyValue(key)+")");
 		for (TreeNode child : parent.getChildren())
-			printTree(child, indent + "  ");
+			printTree(child, indent + "    ");
 
 	}
 
