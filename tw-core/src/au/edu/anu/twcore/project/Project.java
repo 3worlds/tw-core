@@ -79,6 +79,7 @@ import org.apache.commons.text.WordUtils;
  * 
  *         Date 12 Dec. 2018
  */
+// tested OK with version 0.1.1 on 21/5/2019
 public class Project implements ProjectPaths, TWPaths {
 	private static final String sep = "_";
 	private static final char sepch = '_';

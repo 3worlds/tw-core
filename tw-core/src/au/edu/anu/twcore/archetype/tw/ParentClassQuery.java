@@ -6,7 +6,8 @@ import java.util.List;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 
 import au.edu.anu.rscs.aot.queries.Query;
-import fr.cnrs.iees.graph.ReadOnlyDataTreeNode;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
@@ -31,9 +32,10 @@ public class ParentClassQuery extends Query {
 	public Query process(Object input) { // input is a node
 		defaultProcess(input);
 		TreeNode localItem = (TreeNode) input;
-		ReadOnlyDataTreeNode parent = (ReadOnlyDataTreeNode) localItem.getParent();
-		if (parent != null && parent.properties().hasProperty("isOfClass")) {
-			String pKlass = (String) parent.properties().getPropertyValue("isOfClass");
+		Node parent = (Node) localItem.getParent();
+		ReadOnlyDataHolder parentProps = (ReadOnlyDataHolder) parent;
+		if (parent != null && parentProps.properties().hasProperty("isOfClass")) {
+			String pKlass = (String) parentProps.properties().getPropertyValue("isOfClass");
 			for (String klass : klasses)
 				if (pKlass.equals(klass)) {
 					satisfied = true;

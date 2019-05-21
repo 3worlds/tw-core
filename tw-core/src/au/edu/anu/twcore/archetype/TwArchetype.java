@@ -32,15 +32,16 @@ import java.io.File;
 
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.DataTreeNodeImpl;
 import fr.cnrs.iees.io.FileImporter;
 
 /**
  * @author daviesi
  *
  */
+// tested ok with version 0.1.1 on 21/5/2019
 public class TwArchetype {
 
+	@SuppressWarnings("unchecked")
 	public TwArchetype() {
 		super();
 		String filename = System.getProperty("user.dir") //
@@ -52,14 +53,14 @@ public class TwArchetype {
 		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>) importer.getGraph();
 		String indent = "";
 
-		printTree((DataTreeNodeImpl) specs.root(), indent);
+		printTree(specs.root(), indent);
 	}
 
-	private void printTree(DataTreeNodeImpl parent, String indent) {
+	private void printTree(TreeNode parent, String indent) {
 		System.out.println(indent + parent.classId() + ":" + parent.id());
 //			System.out.println(indent+parent.properties().toString());
 		for (TreeNode child : parent.getChildren())
-			printTree((DataTreeNodeImpl) child, indent + "  ");
+			printTree(child, indent + "  ");
 
 	}
 

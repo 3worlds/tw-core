@@ -3,7 +3,8 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.Query;
-import fr.cnrs.iees.graph.ReadOnlyDataTreeNode;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 
@@ -30,12 +31,13 @@ public class TimeUnitValidityQuery extends Query {
 	@Override
 	public Query process(Object input) { // input is a Node with 2 properties, one of them has the time scale
 		defaultProcess(input);
-		ReadOnlyDataTreeNode localItem = (ReadOnlyDataTreeNode) input;
+		ReadOnlyDataHolder localItem = (ReadOnlyDataHolder) input;
+		TreeNode localNode = (TreeNode) input;
 		// search for a property named pscale, which has the time scale type
 		refScale = (TimeScaleType) localItem.properties().getPropertyValue(pscale);
 		// If null, this query should remain silent;
 		if (refScale == null) {
-			ReadOnlyDataTreeNode p = (ReadOnlyDataTreeNode) localItem.getParent();
+			ReadOnlyDataHolder p = (ReadOnlyDataHolder) localNode.getParent();
 			if (p != null) 
 				refScale = (TimeScaleType) p.properties().getPropertyValue(pscale);
 		}

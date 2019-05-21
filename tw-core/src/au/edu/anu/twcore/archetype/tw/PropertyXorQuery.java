@@ -2,7 +2,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.queries.Query;
-import fr.cnrs.iees.graph.ReadOnlyDataElement;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
  * A Query to test that a node, edge or treenode has either of two properties, but not both
@@ -27,7 +27,7 @@ public class PropertyXorQuery extends Query {
 	@Override
 	public Query process(Object input) { // input is a node, treenode or edge
 		defaultProcess(input);
-		ReadOnlyDataElement e = (ReadOnlyDataElement) input;
+		ReadOnlyDataHolder e = (ReadOnlyDataHolder) input;
 		satisfied = e.properties().hasProperty(name1)^e.properties().hasProperty(name2);
 		return this;
 	}

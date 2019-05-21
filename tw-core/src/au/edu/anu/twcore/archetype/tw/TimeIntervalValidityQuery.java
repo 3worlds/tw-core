@@ -2,7 +2,8 @@ package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.queries.Query;
-import fr.cnrs.iees.graph.ReadOnlyDataTreeNode;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import static fr.cnrs.iees.twcore.constants.ThreeWorldsGraphReference.*;
@@ -38,7 +39,8 @@ public class TimeIntervalValidityQuery extends Query {
 	public Query process(Object input) {
 		// input is a Timeline - can't be generalised
 		defaultProcess(input);
-		ReadOnlyDataTreeNode timeLine = (ReadOnlyDataTreeNode) input;
+		ReadOnlyDataHolder timeLine = (ReadOnlyDataHolder) input;
+		TreeNode timeLineNode = (TreeNode) input;
 		refScale = (TimeScaleType) timeLine.properties().getPropertyValue(pscale);
 		minTU = (TimeUnits) timeLine.properties().getProperty(pmin).getValue();
 		maxTU = (TimeUnits) timeLine.properties().getProperty(pmax).getValue();
@@ -52,8 +54,8 @@ public class TimeIntervalValidityQuery extends Query {
 		else
 			satisfied = (minTU.compareTo(maxTU) <= 0);
 		if (satisfied) {
-			Iterable<ReadOnlyDataTreeNode> timeModels = (Iterable<ReadOnlyDataTreeNode>) timeLine.getChildren();
-			for (ReadOnlyDataTreeNode timeModel : timeModels) {
+			Iterable<ReadOnlyDataHolder> timeModels = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
+			for (ReadOnlyDataHolder timeModel : timeModels) {
 				TimeUnits tu = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEUNIT.toString());
 				if (tu.compareTo(modelMin) < 0)
 					modelMin = tu;

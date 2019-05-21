@@ -7,16 +7,11 @@ import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.rscs.aot.util.Resources;
-import fr.cnrs.iees.graph.DataTreeNode;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
-import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
 import java.io.File;
-import java.util.logging.Logger;
 
 /**
  * A Query to be processed while in an archetype - use it to check whole
@@ -60,13 +55,12 @@ public class CheckSubArchetypeQuery extends Query {
 	 * 
 	 * @see au.edu.anu.rscs.aot.queries.Query#process(java.lang.Object)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public Query process(Object input) {
 		// Once these sub-archetypes have been checked they should not
 		// be checked again!
 		defaultProcess(input);
-		DataTreeNode localItem = (DataTreeNode) input;
+		ReadOnlyDataHolder localItem =  (ReadOnlyDataHolder) input;
 		satisfied = true;
 		String givenpValue = (String) localItem.properties().getPropertyValue(pKey);
 		if (pValue.equals(givenpValue)) {
@@ -74,7 +68,7 @@ public class CheckSubArchetypeQuery extends Query {
 			OmugiGraphImporter importer = new OmugiGraphImporter(file);
 		// TODO untested - unsure of use case at the moment.
 			// At the moment loading a sub-archetype is different from importing (importResource statement in utg files)
-			Tree tree = (Tree) importer.getGraph();
+			Tree<?> tree = (Tree<?>) importer.getGraph();
 			Archetypes checker = new Archetypes();
 			// Check the 3worlds archetype is ok
 			if (checker.isArchetype(tree))

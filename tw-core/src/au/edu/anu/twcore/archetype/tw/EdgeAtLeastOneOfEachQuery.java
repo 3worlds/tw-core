@@ -36,7 +36,7 @@ public class EdgeAtLeastOneOfEachQuery extends Query {
 		for (int i=0; i<valueSet.size(); i++) {
 			String edgeLabel = (String) valueSet.getWithFlatIndex(i);
 			boolean found = false;
-			for (Edge e:localItem.getEdges(Direction.OUT)) {
+			for (Edge e:localItem.edges(Direction.OUT)) {
 				if (e.classId().equals(edgeLabel)) {
 					found = true;
 					break;
