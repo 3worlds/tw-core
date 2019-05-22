@@ -6,12 +6,9 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.queries.Query;
-import au.edu.anu.rscs.aot.util.Resources;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
-import fr.cnrs.iees.graph.io.impl.OmugiGraphImporter;
-
-import java.io.File;
+import fr.cnrs.iees.graph.io.GraphImporter;
 
 /**
  * A Query to be processed while in an archetype - use it to check whole
@@ -64,11 +61,14 @@ public class CheckSubArchetypeQuery extends Query {
 		satisfied = true;
 		String givenpValue = (String) localItem.properties().getPropertyValue(pKey);
 		if (pValue.equals(givenpValue)) {
-			File file = Resources.getPackagedFile("au.edu.anu.twcore.archetype.tw." + fileName);
-			OmugiGraphImporter importer = new OmugiGraphImporter(file);
-		// TODO untested - unsure of use case at the moment.
-			// At the moment loading a sub-archetype is different from importing (importResource statement in utg files)
-			Tree<?> tree = (Tree<?>) importer.getGraph();
+//			File file = Resources.getPackagedFile("au.edu.anu.twcore.archetype.tw." + fileName);
+//			OmugiGraphImporter importer = new OmugiGraphImporter(file);
+//		// TODO untested - unsure of use case at the moment.
+//			// At the moment loading a sub-archetype is different from importing (importResource statement in utg files)
+//			Tree<?> tree = (Tree<?>) importer.getGraph();
+			
+			Tree<?> tree = (Tree<?>) GraphImporter.importGraph(fileName,getClass());
+			
 			Archetypes checker = new Archetypes();
 			// Check the 3worlds archetype is ok
 			if (checker.isArchetype(tree))

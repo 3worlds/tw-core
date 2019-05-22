@@ -28,14 +28,13 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype;
 
-import java.io.File;
-
 import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.archetype.CheckMessage;
+import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.io.FileImporter;
+import fr.cnrs.iees.graph.io.GraphImporter;
 
 /**
  * @author daviesi
@@ -47,13 +46,16 @@ public class TwArchetype {
 	@SuppressWarnings("unchecked")
 	public TwArchetype() {
 		super();
-		String filename = System.getProperty("user.dir") //
-				+ File.separator + "src" + File.separator
-				+ "au.edu.anu.twcore.archetype.tw".replace('.', File.separatorChar) + File.separator
-				+ "3wArchetype.ugt";
-		File file = new File(filename);
-		FileImporter importer = new FileImporter(file);
-		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>) importer.getGraph();
+//		String filename = System.getProperty("user.dir") //
+//				+ File.separator + "src" + File.separator
+//				+ "au.edu.anu.twcore.archetype.tw".replace('.', File.separatorChar) + File.separator
+//				+ "3wArchetype.ugt";
+//		File file = new File(filename);
+//		FileImporter importer = new FileImporter(file);
+//		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>) importer.getGraph();
+		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>) 
+			GraphImporter.importGraph("3wArchetype.ugt",IsInValueSetQuery.class);
+		
 		String indent = "";
 
 		printTree(specs.root(), indent);
