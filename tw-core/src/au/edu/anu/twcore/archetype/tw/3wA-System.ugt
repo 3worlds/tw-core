@@ -1,7 +1,7 @@
 tree
 hasNode systemSpec
 	isOfClass = String("system")
-	hasParent = StringTable([1]"3worlds")
+	hasParent = StringTable(([1]"3worlds"))
 	multiplicity = IntegerRange("1..*")
 	hasProperty systemNameSpec
 		hasName = String("name")
@@ -12,8 +12,8 @@ hasNode systemSpec
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery systemClassIsInValueSetQuery
-			className = au.edu.anu.rscs.aot.collections.tables.StringTable([1]"IsInValueSetQuery")
-			values = StringTable([1]"xxx.yyy.zzz.World")
+			className = String("IsInValueSetQuery")
+			values = StringTable(([1]"xxx.yyy.zzz.World"))
 	hasProperty memorySpec
 		hasName = String("memory")
 		type = String("Integer")

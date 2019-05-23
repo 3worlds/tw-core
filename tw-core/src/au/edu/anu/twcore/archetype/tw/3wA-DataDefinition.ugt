@@ -1,12 +1,12 @@
 tree 
 hasNode dataDefinitionSpec
 	isOfClass = String("dataDefinition")
-	hasParent = StringTable([1]"3worlds")//??
+	hasParent = StringTable(([1]"3worlds"))
 	multiplicity = IntegerRange("1..1")
 	
 hasNode  dimSpec
 	isOfClass = String("dimensioner")
-	hasParent = au.edu.anu.rscs.aot.collections.tables.StringTable([1]"dataDefinition")
+	hasParent = StringTable(([1]"dataDefinition"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty dimNameSpec
 		hasName = String("size")
@@ -14,11 +14,11 @@ hasNode  dimSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery dimIsInRangeQuerySpec
 			className = String("IsInRangeQuery")
-			interval = IntTable("[2]1,2147483647")
+			interval = IntTable(("[2]1,2147483647"))
 				
 hasNode recordSpec
 	isOfClass = String("record")
-	hasParent = StringTable([2]"table","dataDefinition")
+	hasParent = StringTable(([2]"table","dataDefinition"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty recordNameSpec
 		hasName = String("name")
@@ -26,12 +26,12 @@ hasNode recordSpec
 		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
 		className = String("NodeAtLeastOneChildLabelOfQuery")
-		childLabel = StringTable([2]"field", "table"})
+		childLabel = StringTable(([2]"field", "table"))
 		
 		
 hasNode tableSpec
 	isOfClass = String("table")
-	hasParent = StringTable([1]"record")
+	hasParent = StringTable(([1]"record"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty tableNameSpec 
 		hasName = String("name")
@@ -47,12 +47,12 @@ hasNode tableSpec
 		multiplicity = IntegerRange("1..*")
 	mustSatisfyQuery edgeXorPropertyQuerySpec
 		className = String("EdgeXorPropertyQuery")
-		edge_prop = StringTable("[2]"record","dataElementType")
+		edge_prop = StringTable(([2]"record","dataElementType"))
 
 		
 hasNode recordFieldSpec
 	isOfClass = String("field")
-	hasParent = StringTable([1]"record")
+	hasParent = StringTable(([1]"record"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty recordFieldNamePropertySpec
 		hasName = String("Type")

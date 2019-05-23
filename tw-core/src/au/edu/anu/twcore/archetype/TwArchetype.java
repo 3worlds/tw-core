@@ -28,6 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.archetype.CheckMessage;
 import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
@@ -42,28 +45,25 @@ import fr.cnrs.iees.graph.io.GraphImporter;
  */
 // tested ok with version 0.1.1 on 21/5/2019
 public class TwArchetype {
+	
+	private Logger log = Logger.getLogger(TwArchetype.class.getName()); 
 
 	@SuppressWarnings("unchecked")
 	public TwArchetype() {
 		super();
-//		String filename = System.getProperty("user.dir") //
-//				+ File.separator + "src" + File.separator
-//				+ "au.edu.anu.twcore.archetype.tw".replace('.', File.separatorChar) + File.separator
-//				+ "3wArchetype.ugt";
-//		File file = new File(filename);
-//		FileImporter importer = new FileImporter(file);
-//		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>) importer.getGraph();
+		log.setLevel(Level.WARNING);
+		// load 3worlds archetype
 		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>) 
 			GraphImporter.importGraph("3wArchetype.ugt",IsInValueSetQuery.class);
-		
-		String indent = "";
-
-		printTree(specs.root(), indent);
-		
+		if (log.getLevel().equals(Level.INFO)) {
+			String indent = "";
+			printTree(specs.root(), indent);
+		}
+		// checks compliance of 3Worlds archetype with the archetype for archetypes
 		Archetypes rootArch = new Archetypes();
 		if (!rootArch.isArchetype(specs))
 			for (CheckMessage cm: rootArch.errorList())
-				System.out.println(cm.toString());
+				log.warning(cm.toString()+"\n");
 	}
 
 	private void printTree(TreeNode parent, String indent) {

@@ -1,5 +1,5 @@
 tree
 hasNode experimentSpec
 	isOfClass = String("experiment")
-	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable([1]"System")
+	hasParent =  StringTable(([1]"System"))
 	multiplicity = IntegerRange("1..1")

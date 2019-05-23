@@ -1,7 +1,7 @@
 tree
 hasNode rootSpec
 	isOfClass = String("3worlds")
-	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable([1]"")
+	hasParent =  StringTable(([1]""))
 	multiplicity = IntegerRange("1..1")
 	hasProperty rootNameSpec
 		hasName = String("name")

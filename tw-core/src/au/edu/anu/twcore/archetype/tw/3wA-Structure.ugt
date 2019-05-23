@@ -1,22 +1,22 @@
 tree
 hasNode structureSpec
 	isOfClass = String("structure")
-	hasParent = StringTable([1]"system")
+	hasParent = StringTable(([1]"system"))
 	multiplicity = IntegerRange("1..1")
 	
 hasNode categorySetRootSpec
 	isOfClass = String("categorySet")
-	hasParent = StringTable([1]"structure")
+	hasParent = StringTable(([1]"structure"))
 	multiplicity = IntegerRange("1..*")
 
 hasNode categorySetSpec
 	isOfClass = String("categorySet")
-	hasParent = StringTable([1]"category")
+	hasParent = StringTable(([1]"category"))
 	multiplicity = IntegerRange("0..*")
 
 hasNode categorySpec
 	isOfClass = String("category")
-	hasParent = StringTable([1]"categorySet")
+	hasParent = StringTable(([1]"categorySet"))
 	multiplicity = IntegerRange("0..*")
 	hasEdge hasEdgeToCategorySetSpec
 		toNode = String("CategorySet")
@@ -29,10 +29,10 @@ hasNode categorySpec
 		multiplicity = IntegerRange("0..*")
 		mustSatisfyQuery toDriverElementLabelQuery
 			className = String("ElementLabel")
-			edgeLabel = StringTable([3]"parameters","drivers","decorators")
+			edgeLabel = StringTable(([3]"parameters","drivers","decorators"))
 		mustSatisfyQuery driverNodeParentLabelQuery
 			className = String("NodeParentLabelQuery")
-			parentLabel = StringTable([1]"dataDefinition")                
+			parentLabel = StringTable(([1]"dataDefinition"))                
 	mustSatisfyQuery parametersZeroOrOneEdgeQuery
 		className = String("ZeroOrOneEdgeQuery")
 		edgeLabel = String("parameters")
@@ -46,23 +46,23 @@ hasNode categorySpec
 		
 hasNode componentSpec
 	isOfClass = String("component")
-	hasParent = StringTable([1]"structure")
+	hasParent = StringTable(([1]"structure"))
 	multiplicity = IntegerRange("0..*") //?
 	// edgeTo lifeCycle transformations
 	
 hasNode realisedComponentpec
 	isOfClass = String("realisedComponent")
-	hasParent = StringTable([1]"component")
+	hasParent = StringTable(([1]"component"))
 	multiplicity = IntegerRange("1..1") //?
 
 hasNode initialisationSpec
 	isOfClass = String("initialiser")
-	hasParent = StringTable([1]"realisation")
+	hasParent = StringTable(([1]"realisation"))
 	multiplicity = IntegerRange("0..1") //?
 
 hasNode relationTypeSpec
 	isOfClass = String("relationType")
-	hasParent = StringTable([1]"structure")
+	hasParent = StringTable(([1]"structure"))
 	multiplicity = IntegerRange("0..*")
 	// from / to edges
 
