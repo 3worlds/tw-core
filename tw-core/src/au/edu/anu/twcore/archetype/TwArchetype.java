@@ -37,6 +37,7 @@ import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.io.GraphImporter;
 
 /**
@@ -47,23 +48,29 @@ import fr.cnrs.iees.graph.io.GraphImporter;
 public class TwArchetype {
 	
 	private Logger log = Logger.getLogger(TwArchetype.class.getName()); 
+	// the 3Worlds archetype
+	private Tree<? extends TreeNode> twArch = null;
+	// the archetype for archetypes, with all the check methods
+	private Archetypes rootArch = null;
 
 	@SuppressWarnings("unchecked")
 	public TwArchetype() {
 		super();
 		log.setLevel(Level.WARNING);
 		// load 3worlds archetype
-		Tree<? extends TreeNode> specs = (Tree<? extends TreeNode>) 
+		twArch = (Tree<? extends TreeNode>) 
 			GraphImporter.importGraph("3wArchetype.ugt",IsInValueSetQuery.class);
 		if (log.getLevel().equals(Level.INFO)) {
 			String indent = "";
-			printTree(specs.root(), indent);
+			printTree(twArch.root(), indent);
 		}
 		// checks compliance of 3Worlds archetype with the archetype for archetypes
-		Archetypes rootArch = new Archetypes();
-		if (!rootArch.isArchetype(specs))
+		rootArch = new Archetypes();
+		if (!rootArch.isArchetype(twArch)) {
+			log.severe("3WORLDS ARCHETYPE HAS ERRORS! (list follows)");
 			for (CheckMessage cm: rootArch.errorList())
-				log.warning(cm.toString()+"\n");
+				log.severe(cm.toString()+"\n");
+		}
 	}
 
 	private void printTree(TreeNode parent, String indent) {
@@ -74,7 +81,12 @@ public class TwArchetype {
 				((ReadOnlyDataHolder)parent).properties().getPropertyValue(key)+")");
 		for (TreeNode child : parent.getChildren())
 			printTree(child, indent + "    ");
-
+	}
+	
+	// I dont know if you need this method, but I need it to debug archetypes
+	public Iterable<CheckMessage> checkSpecifications(TreeGraph<?,?> graph) {
+		rootArch.check(graph, twArch);
+		return rootArch.errorList();
 	}
 
 }

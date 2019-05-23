@@ -1,0 +1,9 @@
+treegraph
+// a test file for 3worlds specifications
+
+	// the scope for node ids coming from this file
+	scope =            String("3Worlds Model 1")
+	// labels used in this file
+	3worlds =          String("java.lang.Object")
+
+3worlds "my model"
