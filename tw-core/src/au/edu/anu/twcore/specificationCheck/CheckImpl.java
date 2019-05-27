@@ -29,25 +29,34 @@
 
 package au.edu.anu.twcore.specificationCheck;
 
-import fr.cnrs.iees.graph.Graph;
+import au.edu.anu.twcore.archetype.TwArchetype;
+import fr.cnrs.iees.graph.impl.TreeGraph;
 
 /**
  * Author Ian Davies
  *
  * Date 22 Jan. 2019
+ * 
+ * NB (JG): this is a bit redundant with the method I wrote in TwArchetype - maybe 
+ * we dont need this class. I suggest you arrange it as you prefer.
+ * Currently, all the checks are performed by class Archetypes (in aot)
+ * class TwArchetype provides a check against the 3w archetype through its
+ * checkSpecification() method.
+ * 
  */
 // TODO not too sure if this is the way to go??
 public class CheckImpl implements Checkable{
-	private Graph graph;// graph to check
+	private TreeGraph<?,?> graph;// graph to check
 	// we will need the appropriate archetype for this graph (archetypeArcheytpe or twArchetype)!
-	public CheckImpl(Graph graph) {
+	public CheckImpl(TreeGraph<?,?> graph) {
 		this.graph=graph;
 	}
 
 	@Override
 	public boolean validateGraph() {
-		// TODO Auto-generated method stub
-		return false;
+		// example of use of TwArchetype as it is currently written
+		TwArchetype arch = new TwArchetype();
+		return arch.checkSpecifications(graph).iterator().hasNext();
 	}
 
 }
