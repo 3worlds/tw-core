@@ -23,7 +23,7 @@ public enum ConfigurationNodeLabels {
 	//----------------------------------------------------------------------------------------
 	N_ROOT 						("3worlds",				World.class,				0),
 		N_DATADEFINITION 		("dataDefinition", 		DataDefinition.class,		0),
-			N_DIMENSIONER 		("dimensioner",			null,						0),
+			N_DIMENSIONER 		("dimensioner",			Object.class,				0),
 			N_TABLE 			("table",				Object.class,				0),
 			N_RECORD 			("record",				Object.class,				0),
 			N_FIELD 			("field",				Object.class,				0),

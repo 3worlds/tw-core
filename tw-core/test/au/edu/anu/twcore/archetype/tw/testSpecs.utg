@@ -2,22 +2,14 @@ treegraph
 // a test file for 3worlds specifications
 
 	// the factory to use for 3Worlds
-	//node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
-	// the scope for node ids coming from this file
-	scope =   String("3Worlds Model 1")
-	// labels used in this file
-	3worlds = String("au.edu.anu.twcore.root.World")
-	dataDefinition = String("au.edu.anu.twcore.data.DataDefinition")
-	system = String("au.edu.anu.twcore.ecosystem.Ecosystem")
-	dynamics = String("au.edu.anu.twcore.ecosystem.dynamics.Simulator")
-	structure = String("au.edu.anu.twcore.ecosystem.structure.Structure")
-	experiment = String("au.edu.anu.twcore.experiment.Experiment")
-	userInterface = String("au.edu.anu.twcore.ui.TwUI")
+	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
 
-3worlds "my model"
-	dataDefinition "my data"
-	system "my ecosystem"
-		structure "anything"
-		dynamics "my simulator"
-	experiment "my experiment"
-	userInterface "my UI"
+3worlds my_model
+	dataDefinition my_data
+	system my_ecosystem
+		structure anything
+		dynamics my_simulator
+	experiment my_experiment
+	userInterface my_UI

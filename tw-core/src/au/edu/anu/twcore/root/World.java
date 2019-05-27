@@ -4,6 +4,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Initialisable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
@@ -16,8 +17,14 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
  */
 public class World extends TreeGraphDataNode implements Initialisable {
 
+	// default constructor
 	public World(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
+	}
+
+	// constructor with no propertoes
+	public World(Identity id, GraphFactory gfactory) {
+		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
 	@Override

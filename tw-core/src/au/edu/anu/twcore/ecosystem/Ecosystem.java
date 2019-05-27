@@ -4,6 +4,8 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import fr.ens.biologie.generic.Initialisable;
 
@@ -18,6 +20,10 @@ public class Ecosystem extends TreeGraphDataNode implements Initialisable {
 
 	public Ecosystem(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
+	}
+
+	public Ecosystem(Identity id, GraphFactory gfactory) {
+		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
 	@Override

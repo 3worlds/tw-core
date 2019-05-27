@@ -13,8 +13,10 @@ class TwarchetypeTest {
 	void test() {
 		TwArchetype a = new TwArchetype();
 		TreeGraph<?,?> specs = (TreeGraph<?, ?>) GraphImporter.importGraph("testSpecs.utg",this.getClass());
-		for (CheckMessage m:a.checkSpecifications(specs))
-			System.out.println(m);
+		Iterable<CheckMessage> errors = a.checkSpecifications(specs);
+		if (errors!=null)
+			for (CheckMessage m:errors)
+				System.out.println(m);
 		System.out.println(specs.toDetailedString());
 	}
 
