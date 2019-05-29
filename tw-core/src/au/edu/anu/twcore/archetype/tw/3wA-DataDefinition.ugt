@@ -19,7 +19,7 @@ hasNode  dimSpec
 hasNode recordSpec
 	isOfClass = String("record")
 	hasParent = StringTable(([2]"table","dataDefinition"))
-	multiplicity = IntegerRange("0..*")
+	multiplicity = IntegerRange("1..*")
 	hasProperty recordNameSpec
 		hasName = String("name")
 		type = String("String")

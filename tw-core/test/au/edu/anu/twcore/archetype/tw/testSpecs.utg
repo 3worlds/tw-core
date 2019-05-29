@@ -7,6 +7,7 @@ treegraph
 	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
 
 3worlds my_model
+	name = Integer(3)
 	dataDefinition my_data
 	system my_ecosystem
 		structure anything

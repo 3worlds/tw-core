@@ -16,5 +16,5 @@ hasNode dynamicsSpec
 			className = String("IsInValueSetQuery")
 			values = StringTable(([1]"TimerModelSimulator"))
 	mustSatisfyQuery dynamicsCheckSubArchetypeQuery
-		className = String("xxx.yyy.zzz.CheckSubArchetypeQuery")
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"class","xxx.yyy.zzz.TimerModelSimulator","3wSA-TimerModelSimulator.ugt"))
