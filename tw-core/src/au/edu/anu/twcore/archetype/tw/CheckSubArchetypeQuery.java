@@ -4,7 +4,7 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.archetype.Archetypes;
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
@@ -40,7 +40,7 @@ public class CheckSubArchetypeQuery extends Query {
 	 *                   property parameters[2] = name of the sub-archetype file to
 	 *                   check the node subtree against.
 	 */
-	public CheckSubArchetypeQuery(ObjectTable<Object> parameters) {
+	public CheckSubArchetypeQuery(StringTable parameters) {
 		super();
 		pKey = (String) parameters.getWithFlatIndex(0);
 		pValue = (String) parameters.getWithFlatIndex(1);

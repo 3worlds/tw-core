@@ -1,21 +1,21 @@
 tree
 hasNode systemSpec
 	isOfClass = String("system")
-	hasParent = StringTable(([1]"3worlds"))
+	hasParent = StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..*")
-	hasProperty systemNameSpec
-		hasName = String("name")
-		type = String("String")
-		multiplicity = IntegerRange("1..1")
-	hasProperty systemClassSpec
-		hasName = String("className")
-		type = String("String")
-		multiplicity = IntegerRange("1..1")
-		mustSatisfyQuery systemClassIsInValueSetQuery
-			className = String("IsInValueSetQuery")
-			values = StringTable(([1]"xxx.yyy.zzz.World"))
-	hasProperty memorySpec
-		hasName = String("memory")
-		type = String("Integer")
-		multiplicity = IntegerRange("1..1")// should have an integer range constraint
+//	hasProperty systemNameSpec
+//		hasName = String("name")
+//		type = String("String")
+//		multiplicity = IntegerRange("1..1")
+//	hasProperty systemClassSpec
+//		hasName = String("className")
+//		type = String("String")
+//		multiplicity = IntegerRange("1..1")
+//		mustSatisfyQuery systemClassIsInValueSetQuery
+//			className = String("IsInValueSetQuery")
+//			values = StringTable(([1]"xxx.yyy.zzz.World"))
+//	hasProperty memorySpec
+//		hasName = String("memory")
+//		type = String("Integer")
+//		multiplicity = IntegerRange("1..1")// should have an integer range constraint
 		

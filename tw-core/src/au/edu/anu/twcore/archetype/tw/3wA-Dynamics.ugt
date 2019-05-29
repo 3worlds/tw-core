@@ -2,19 +2,19 @@ tree
 hasNode dynamicsSpec
 	//TODO: I think this should BE the TimerModelSimulator rather than adding an sa-arch.
 	isOfClass = String("dynamics")
-	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"system"))
+	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"system:"))
 	multiplicity = IntegerRange("1..1")
-	hasProperty dynamicsNameProperty
-		hasName = String("name")
-		type = String("String")
-		multiplicity = IntegerRange("1..1")
-	hasProperty dynamicsClassProperty
-		hasName = String("className")
-		type = String("String")
-		multiplicity = IntegerRange("1..1")
-		mustSatisfyQuery dynamicsClassIsInValueSetQuery
-			className = String("IsInValueSetQuery")
-			values = StringTable(([1]"TimerModelSimulator"))
+//	hasProperty dynamicsNameProperty
+//		hasName = String("name")
+//		type = String("String")
+//		multiplicity = IntegerRange("1..1")
+//	hasProperty dynamicsClassProperty
+//		hasName = String("className")
+//		type = String("String")
+//		multiplicity = IntegerRange("1..1")
+//		mustSatisfyQuery dynamicsClassIsInValueSetQuery
+//			className = String("IsInValueSetQuery")
+//			values = StringTable(([1]"TimerModelSimulator"))
 	mustSatisfyQuery dynamicsCheckSubArchetypeQuery
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"class","xxx.yyy.zzz.TimerModelSimulator","3wSA-TimerModelSimulator.ugt"))

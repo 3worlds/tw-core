@@ -1,68 +1,68 @@
 tree
 hasNode structureSpec
 	isOfClass = String("structure")
-	hasParent = StringTable(([1]"system"))
+	hasParent = StringTable(([1]"system:"))
 	multiplicity = IntegerRange("1..1")
 	
 hasNode categorySetRootSpec
 	isOfClass = String("categorySet")
-	hasParent = StringTable(([1]"structure"))
+	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("1..*")
 
 hasNode categorySetSpec
 	isOfClass = String("categorySet")
-	hasParent = StringTable(([1]"category"))
+	hasParent = StringTable(([1]"category:"))
 	multiplicity = IntegerRange("0..*")
 
 hasNode categorySpec
 	isOfClass = String("category")
-	hasParent = StringTable(([1]"categorySet"))
-	multiplicity = IntegerRange("0..*")
+	hasParent = StringTable(([1]"categorySet:"))
+	multiplicity = IntegerRange("1..*")
 	hasEdge hasEdgeToCategorySetSpec
 		toNode = String("CategorySet")
 		multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery toCategorySetElementLabelQuery
-			className = String("ElementLabel")
+			className = String("au.edu.anu.rscs.aot.queries.graph.element.ElementLabel")
 			edgeLabel = String("includes")
 	hasEdge edgeToRecordSpec
 		toNode = String("record")
 		multiplicity = IntegerRange("0..*")
 		mustSatisfyQuery toDriverElementLabelQuery
-			className = String("ElementLabel")
+			className = String("au.edu.anu.rscs.aot.queries.graph.element.ElementLabel")
 			edgeLabel = StringTable(([3]"parameters","drivers","decorators"))
 		mustSatisfyQuery driverNodeParentLabelQuery
-			className = String("NodeParentLabelQuery")
+			className = String("au.edu.anu.twcore.archetype.tw.NodeParentLabelQuery")
 			parentLabel = StringTable(([1]"dataDefinition"))                
 	mustSatisfyQuery parametersZeroOrOneEdgeQuery
-		className = String("ZeroOrOneEdgeQuery")
+		className = String("au.edu.anu.twcore.archetype.tw.ZeroOrOneEdgeQuery")
 		edgeLabel = String("parameters")
 	mustSatisfyQuery driversZeroOrOneEdgeQuery
-		className = String("ZeroOrOneEdgeQuery")
+		className = String("au.edu.anu.twcore.archetype.tw.ZeroOrOneEdgeQuery")
 		edgeLabel = String("drivers")
 	mustSatisfyQuery decoratorsZeroOrOneEdgeQuery
-		className = String("ZeroOrOneEdgeQuery")
+		className = String("au.edu.anu.twcore.archetype.tw.ZeroOrOneEdgeQuery")
 		edgeLabel = String("decorators")
 		
 		
 hasNode componentSpec
 	isOfClass = String("component")
-	hasParent = StringTable(([1]"structure"))
+	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("0..*") //?
 	// edgeTo lifeCycle transformations
 	
-hasNode realisedComponentpec
-	isOfClass = String("realisedComponent")
-	hasParent = StringTable(([1]"component"))
-	multiplicity = IntegerRange("1..1") //?
+//hasNode realisedComponentpec
+//	isOfClass = String("realisedComponent")
+//	hasParent = StringTable(([1]"component:"))
+//	multiplicity = IntegerRange("1..1") //?
 
 hasNode initialisationSpec
 	isOfClass = String("initialiser")
-	hasParent = StringTable(([1]"realisation"))
+	hasParent = StringTable(([1]"realisation:"))
 	multiplicity = IntegerRange("0..1") //?
 
 hasNode relationTypeSpec
 	isOfClass = String("relationType")
-	hasParent = StringTable(([1]"structure"))
+	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("0..*")
 	// from / to edges
 

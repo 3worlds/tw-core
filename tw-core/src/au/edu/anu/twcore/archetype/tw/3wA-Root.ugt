@@ -3,8 +3,9 @@ hasNode rootSpec
 	isOfClass = String("3worlds")
 	hasParent =  StringTable(([1]""))
 	multiplicity = IntegerRange("1..1")
-	hasProperty rootNameSpec
-		hasName = String("name")
-		type = String("String")
-		multiplicity = IntegerRange("1..1")
+// not needed anymore since name is now classId	
+//	hasProperty rootNameSpec
+//		hasName = String("name")
+//		type = String("String")
+//		multiplicity = IntegerRange("1..1")
 	

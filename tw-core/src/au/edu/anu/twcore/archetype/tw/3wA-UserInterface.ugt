@@ -1,16 +1,16 @@
 tree
 hasNode userInterfaceSpec
 	isOfClass = String("userInterface")
-	hasParent = StringTable(([1]"ThreeWorlds"))
+	hasParent = StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..1")
-	hasProperty uiName
-		hasName = String("name")
-		type = String("String")
-		multiplicity = IntegerRange("1..1")
+//	hasProperty uiName
+//		hasName = String("name")
+//		type = String("String")
+//		multiplicity = IntegerRange("1..1")
 
 hasNode toolBarSpec
 	isOfClass = String("toolBar")
-	hasParent = StringTable(([1]"userInterface"))
+	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
 	hasProperty topName
 		hasName = String("name")
@@ -19,7 +19,7 @@ hasNode toolBarSpec
 
 hasNode statusBarSpec
 	isOfClass = String("statusBar")
-	hasParent = StringTable(([1]"userInterface"))
+	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
 	hasProperty bottomName
 		hasName = String("name")
@@ -29,7 +29,7 @@ hasNode statusBarSpec
 // TODO: not sure yet how this recursion will be interpreted
 hasNode contentSpec 
 	isOfClass = String("content")
-	hasParent = StringTable(([2]"userInterface","content"))
+	hasParent = StringTable(([2]"userInterface:","content:"))
 	multiplicity = IntegerRange("0..1")
 	hasProperty contentName
 		hasName = String("name")
@@ -38,7 +38,7 @@ hasNode contentSpec
 
 hasNode widgetSpec
 	isOfClass = String("widget")
-	hasParent = StringTable(([3]"toolBar","statusBar","content"))
+	hasParent = StringTable(([3]"toolBar:","statusBar:","content:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder
 		hasName = String("order")		
@@ -49,5 +49,5 @@ hasNode widgetSpec
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery widgetClassInValueSetQuery
-			className = String("IsInValueSetQuery") 
+			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery") 
 			values = StringTable(([5]"SingleGridWidget","TimeDisplayWidgetfx","SimpleSimCtrlWidget","TimeSeriesPlotWidgetfx","LabelValuePair"))
