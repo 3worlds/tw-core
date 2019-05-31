@@ -31,6 +31,8 @@ treegraph
 				category my_category
 		dynamics my_simulator
 	experiment my_experiment
+		design myDesign
+			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)
 	userInterface my_UI
 	
 // CROSS-LINKS

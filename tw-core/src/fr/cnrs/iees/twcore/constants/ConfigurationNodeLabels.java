@@ -2,7 +2,7 @@ package fr.cnrs.iees.twcore.constants;
 
 import au.edu.anu.twcore.data.*;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.experiment.Experiment;
+import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.TwUI;
 import au.edu.anu.twcore.ecosystem.structure.Structure;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
@@ -48,7 +48,7 @@ public enum ConfigurationNodeLabels {
 				N_INITIALISER 	("initialiser",			Object.class,				0),
 				N_RELATIONTYPE 	("relationType",		Object.class,				0),
 		N_EXPERIMENT 			("experiment",			Experiment.class,			0),
-			N_DESIGN 			("design",				Object.class,				0),
+			N_DESIGN 			("design",				Design.class,				0),
 			N_TREATMENT 		("treatment",			Object.class,				0),
 			N_TIMEPERIOD 		("timePeriod",			Object.class,				0),
 			N_MODELCHANGE 		("modelChange",			Object.class,				0),

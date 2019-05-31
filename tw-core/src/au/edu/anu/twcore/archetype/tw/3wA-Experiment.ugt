@@ -3,3 +3,20 @@ hasNode experimentSpec
 	isOfClass = String("experiment")
 	hasParent =  StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..1")
+	
+hasNode designSpec
+	isOfClass = String("design")
+	hasParent =  StringTable(([1]"experiment:"))
+	multiplicity = IntegerRange("1..1")
+	hasProperty designTypePropertySpec
+		hasName = String("type")
+		type = String("ExperimentDesignType")
+		multiplicity = IntegerRange("0..1")
+	hasProperty designFilePropertySpec
+		hasName = String("file")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery dimIsInRangeQuerySpec
+		className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
+		proplist = StringTable(([2]file,type))
+	

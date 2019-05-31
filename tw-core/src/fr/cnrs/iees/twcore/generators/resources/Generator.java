@@ -266,7 +266,8 @@ public class Generator {
 		output.append("package ").append(CONSTANTS_PACKAGE).append(";\n\n");
 		output.append("import java.util.Arrays;\n");
 		output.append("import java.util.HashSet;\n");
-		output.append("import java.util.Set;\n\n");
+		output.append("import java.util.Set;\n");
+		output.append("import fr.cnrs.iees.io.parsing.ValidPropertyTypes;\n\n");
 		// import snippets, if any
 		String extraI = extraImports.get(propName);
 		if (extraI != null)
@@ -370,6 +371,12 @@ public class Generator {
 		output.append("\t\treturn ").append(cols.get(VALUE).getCellByIndex(2).getStringValue()).append(";\n");
 		output.append("\t}\n\n");
 
+		// static initialisation block - to record this enum type as a valid property for parsers
+		output.append("\tstatic {\n"); 
+		output.append("\t\tValidPropertyTypes.recordPropertyType(").append(propName).append(".class.getSimpleName(), \n"); 
+		output.append("\t\t").append(propName).append(".class.getName(),defaultValue());\n"); 
+		output.append("\t}\n\n"); 
+		
 		// code snippets, if any
 		String extra = extraCode.get(propName);
 		if (extra != null)

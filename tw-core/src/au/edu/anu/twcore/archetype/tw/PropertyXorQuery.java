@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
@@ -19,9 +19,9 @@ public class PropertyXorQuery extends Query {
 		this.name2 = name2;
 	}
 
-	public PropertyXorQuery(ObjectTable<?> ot) {
-		name1 = (String) ot.getWithFlatIndex(0);
-		name2 = (String) ot.getWithFlatIndex(1);
+	public PropertyXorQuery(StringTable ot) {
+		name1 = ot.getWithFlatIndex(0);
+		name2 = ot.getWithFlatIndex(1);
 	}
 
 	@Override
