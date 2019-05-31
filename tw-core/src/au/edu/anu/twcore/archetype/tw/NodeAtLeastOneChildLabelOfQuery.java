@@ -3,7 +3,7 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.LinkedList;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.TreeNode;
 
@@ -19,10 +19,10 @@ import fr.cnrs.iees.graph.TreeNode;
 public class NodeAtLeastOneChildLabelOfQuery extends Query {
 	private List<String> labels = new LinkedList<String>();
 
-	public NodeAtLeastOneChildLabelOfQuery(ObjectTable<?> table) {
+	public NodeAtLeastOneChildLabelOfQuery(StringTable table) {
 		super();
 		for (int i = 0; i < table.size(); i++)
-			labels.add((String) table.getWithFlatIndex(i));
+			labels.add(table.getWithFlatIndex(i).trim());
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class NodeAtLeastOneChildLabelOfQuery extends Query {
 			for (TreeNode child : children) {
 				if (child.classId().equals(label)) {
 					satisfied = true;
-					break;
+					return this;
 				}
 			}
 		}

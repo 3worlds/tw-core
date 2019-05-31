@@ -45,20 +45,20 @@ hasNode tableSpec
 	isOfClass = String("table")
 	hasParent = StringTable(([1]"record:"))
 	multiplicity = IntegerRange("0..*")
-	hasProperty tableNameSpec 
-		hasName = String("name")
-		multiplicity = IntegerRange("1..1")
-		type = String("String")
+//	hasProperty tableNameSpec 
+//		hasName = String("name")
+//		multiplicity = IntegerRange("1..1")
+//		type = String("String")
 	hasProperty dataElementTypeSpec
 		hasName = String("dataElementType")
 		type = String("String")				
-		multiplicity = IntegerRange("1..1")
+		multiplicity = IntegerRange("0..1")
 	hasEdge dimEdgeSpec
 		isOfClass = String("sizedBy")               //??
 		toNode = String("dimensioner")
 		multiplicity = IntegerRange("1..*")
-	mustSatisfyQuery edgeXorPropertyQuerySpec
-		className = String("au.edu.anu.twcore.archetype.tw.EdgeXorPropertyQuery")
+	mustSatisfyQuery childXorPropertyQuerySpec
+		className = String("au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery")
 		edge_prop = StringTable(([2]"record","dataElementType"))
 
 		
@@ -67,10 +67,16 @@ hasNode recordFieldSpec
 	hasParent = StringTable(([1]"record:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty recordFieldNamePropertySpec
-		hasName = String("Type")
+		hasName = String("type")
 		type  = String("String")
 		multiplicity = IntegerRange("1..1")
-	hasProperty recordDataElementTypePropertySpec
-		hasName = String("DataElementType")
-		type = String("DataElementType")
-		multiplicity = IntegerRange("1..1")
+	// this property is completely redundant with the above
+	// normally type should be any String recognized by
+	// the ValidPropertyTypes class in omugi fr.cnrs.iees.io.parsing	
+	// This class is able to work out java class names from simple
+	// type names. Additional types can be added in there if needed
+	// (eg a file name type or things like that)
+//	hasProperty recordDataElementTypePropertySpec
+//		hasName = String("dataElementType")
+//		type = String("DataElementType")
+//		multiplicity = IntegerRange("1..1")

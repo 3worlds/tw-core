@@ -5,7 +5,7 @@ import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
@@ -20,9 +20,9 @@ public class EdgeOrPropertyQuery extends Query {
 	private String nodeLabel = null;
 	private String propertyName = null;
 	
-	public EdgeOrPropertyQuery(ObjectTable<?> args) {
-		nodeLabel = (String)args.getWithFlatIndex(0);
-		propertyName = (String)args.getWithFlatIndex(1);
+	public EdgeOrPropertyQuery(StringTable args) {
+		nodeLabel = args.getWithFlatIndex(0);
+		propertyName = args.getWithFlatIndex(1);
 	}
 
 	@Override

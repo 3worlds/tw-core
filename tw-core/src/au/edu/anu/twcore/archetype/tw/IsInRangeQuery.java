@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.Query;
 
@@ -17,7 +17,7 @@ public class IsInRangeQuery extends Query {
 	 * Use this constructor if values are provided as a table of 2 values, min first
 	 * @param interval
 	 */
-	public IsInRangeQuery(ObjectTable<?> interval) {
+	public IsInRangeQuery(IntTable interval) {
 		super();
 		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
 		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();

@@ -31,6 +31,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+// NOTE (JG): this class is redundant with ValidPropertyTypes in omugi. It should be replaced
+// by the former (in which new property types should be added)
+@Deprecated
 public enum DataElementType {
 
 // Double: a single precision floating point number (4 10^-38^ to 3.4 10^38^) with 15 significant digits

@@ -6,8 +6,25 @@ treegraph
 	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
 	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
 
+// TREE 
 3worlds my_model
 	dataDefinition my_data
+		dimensioner nsp
+			size = Integer(4)
+		dimensioner n2
+			size = Integer(3)
+		record myRec
+			field x
+				type = String("Double")
+			table tx
+				dataElementType = String("Boolean")
+		record myOtherRec
+			table ty
+				record tableContent
+					field a
+						type = String("integer")
+					field b
+						type = String("String")		
 	system my_ecosystem
 		structure anything
 			categorySet everything
@@ -15,3 +32,8 @@ treegraph
 		dynamics my_simulator
 	experiment my_experiment
 	userInterface my_UI
+	
+// CROSS-LINKS
+[table:tx] sizedBy [dimensioner:nsp]
+[table:ty] sizedBy [dimensioner:nsp]
+[table:ty] sizedBy [dimensioner:n2]

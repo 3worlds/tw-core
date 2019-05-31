@@ -1,6 +1,6 @@
 package fr.cnrs.iees.twcore.constants;
 
-import au.edu.anu.twcore.data.DataDefinition;
+import au.edu.anu.twcore.data.*;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.experiment.Experiment;
 import au.edu.anu.twcore.ui.TwUI;
@@ -25,10 +25,10 @@ public enum ConfigurationNodeLabels {
 	//----------------------------------------------------------------------------------------
 	N_ROOT 						("3worlds",				World.class,				0),
 		N_DATADEFINITION 		("dataDefinition", 		DataDefinition.class,		0),
-			N_DIMENSIONER 		("dimensioner",			Object.class,				0),
-			N_TABLE 			("table",				Object.class,				0),
-			N_RECORD 			("record",				Object.class,				0),
-			N_FIELD 			("field",				Object.class,				0),
+			N_DIMENSIONER 		("dimensioner",			DimNode.class,				0),
+			N_TABLE 			("table",				TableNode.class,			10), // after dimensioners
+			N_RECORD 			("record",				Record.class,				0),
+			N_FIELD 			("field",				Field.class,				0),
 		N_SYSTEM 				("system",				Ecosystem.class,			0),
 			N_DYNAMICS 			("dynamics",			Simulator.class,			0), 
 				N_TIMELINE 		("timeLine",			Object.class,				0), // TimeLine
@@ -65,7 +65,7 @@ public enum ConfigurationNodeLabels {
 	private final String label;
 	private final Class<?> type;
 	private final int initRank;
-	
+		
 	private ConfigurationNodeLabels(String label, Class<?> type, int initRank) {
 		this.label = label;
 		this.type = type;

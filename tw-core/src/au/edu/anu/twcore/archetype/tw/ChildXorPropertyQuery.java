@@ -3,6 +3,7 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.graph.TreeNode;
 
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
@@ -12,30 +13,29 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 
 /**
- * @author Jacques Gignoux - 5/9/2016
- * Constraint: some nodes must have ONE of either a property or an edge 
- * NB the check is made on the edge's endNode label because edges can sometimes have a _child label
+ * @author Jacques Gignoux - 31/5/2019
+ * 
+ * Constraint: some nodes must have ONE of either a property or a child node
  */
-public class EdgeXorPropertyQuery extends Query {
+public class ChildXorPropertyQuery extends Query {
 	
 	private String nodeLabel = null;
 	private String propertyName = null;
 	
-	public EdgeXorPropertyQuery(StringTable args) {
+	public ChildXorPropertyQuery(StringTable args) {
 		nodeLabel = args.getWithFlatIndex(0);
 		propertyName = args.getWithFlatIndex(1);
 	}
 
 	@Override
-	public Query process(Object input) { // NB: input is the Node on which the Query is called		
+	public Query process(Object input) { // NB: input is the TreeNode on which the Query is called		
 		defaultProcess(input);
-		Node localItem = (Node) input;
+		TreeNode localItem = (TreeNode) input;
 		boolean propertyPresent = false;
 		if (localItem instanceof ReadOnlyDataHolder)
 			propertyPresent = (((ReadOnlyDataHolder) localItem).properties().hasProperty(propertyName));
 		Node n = (Node) get(localItem,
-			outEdges(),
-			edgeListEndNodes(),
+			children(),
 			selectZeroOrOne(hasTheLabel(nodeLabel)));
 		boolean edgePresent = (n!=null);
 		satisfied = (propertyPresent^edgePresent);
