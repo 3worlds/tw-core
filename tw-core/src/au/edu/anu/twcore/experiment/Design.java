@@ -5,6 +5,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 import fr.ens.biologie.generic.Initialisable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
@@ -18,6 +19,9 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  */
 public class Design extends TreeGraphDataNode implements Initialisable {
 
+	private ExperimentDesignType type = null;
+	private String fileName = null;
+	
 	public Design(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
@@ -28,6 +32,11 @@ public class Design extends TreeGraphDataNode implements Initialisable {
 
 	@Override
 	public void initialise() {
+		if (properties().hasProperty(P_DESIGN_TYPE.key()))
+			type = ExperimentDesignType.valueOf((String)properties().getPropertyValue(P_DESIGN_TYPE.key()));
+		else if (properties().hasProperty(P_DESIGN_FILE.key()))
+			fileName = (String)properties().getPropertyValue(P_DESIGN_FILE.key());
+		// todo: load the design file
 	}
 
 	@Override
@@ -35,4 +44,12 @@ public class Design extends TreeGraphDataNode implements Initialisable {
 		return N_DESIGN.initRank();
 	}
 
+	public ExperimentDesignType type() {
+		return type;
+	}
+	
+	public String file() {
+		return fileName;
+	}
+	
 }

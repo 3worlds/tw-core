@@ -1,15 +1,18 @@
 package fr.cnrs.iees.twcore.constants;
 
 import au.edu.anu.twcore.data.SizedByEdge;
+import au.edu.anu.twcore.experiment.BaseLineEdge;
+import au.edu.anu.twcore.experiment.ModelSetupEdge;
+import au.edu.anu.twcore.experiment.StopOnEdge;
 
 public enum ConfigurationEdgeLabels {
-
-
-	// TODO: all 'Object.class' must be replaced by a valid Edge descendant
 	//=========================================================================
-	//							| label				| 	class				
+	//			| label				| 	class				
 	//-------------------------------------------------------------------------
-	E_SIZEDBY ("sizedBy",	SizedByEdge.class),
+	E_SIZEDBY 		("sizedBy",			SizedByEdge.class),
+	E_BASELINE 		("baseLine",		BaseLineEdge.class),
+	E_MODELSETUP	("modelSetup",		ModelSetupEdge.class),
+	E_STOPON		("stopOn",			StopOnEdge.class),	
 	;
 	//=========================================================================
 	private final String label;

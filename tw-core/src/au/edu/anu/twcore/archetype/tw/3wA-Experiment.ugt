@@ -3,6 +3,10 @@ hasNode experimentSpec
 	isOfClass = String("experiment")
 	hasParent =  StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..1")
+	hasEdge baseLineSpec
+		isOfClass = String("baseLine")               
+		toNode = String("system")
+		multiplicity = IntegerRange("1..1")
 	
 hasNode designSpec
 	isOfClass = String("design")
@@ -19,4 +23,49 @@ hasNode designSpec
 	mustSatisfyQuery dimIsInRangeQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
 		proplist = StringTable(([2]file,type))
+
+hasNode treatmentSpec
+	isOfClass = String("treatment")
+	hasParent =  StringTable(([1]"experiment:"))
+	multiplicity = IntegerRange("0..*")
+	hasProperty treatmentReplicatesPropertySpec
+		hasName = String("replicates")
+		type = String("Integer")
+		multiplicity = IntegerRange("1..1")
+	hasEdge modelSetupEdgeSpec
+		isOfClass = String("modelSetup")               
+		toNode = String("system")
+		multiplicity = IntegerRange("0..1")
+
+hasNode modelChangeSpec
+	isOfClass = String("modelChange")
+	hasParent =  StringTable(([1]"treatment:"))
+	multiplicity = IntegerRange("0..*")
+	// this may be a flaw: how can you precisely specify a parameter with just a String ?
+	hasProperty modelChangeParameterSpec
+		hasName = String("parameter")
+		type = String("String")
+		multiplicity = IntegerRange("1..1")
+	hasProperty modelChangeValueSpec
+		hasName = String("replaceWith")
+		type = String("DoubleTable")
+		multiplicity = IntegerRange("1..1")
+		
+hasNode timePeriodSpec
+	isOfClass = String("timePeriod")
+	hasParent =  StringTable(([1]"experiment:"))
+	multiplicity = IntegerRange("1..*")
+	// this may be a flaw: how can you precisely specify a parameter with just a String ?
+	hasProperty timePeriodStartSpec
+		hasName = String("start")
+		type = String("Long")
+		multiplicity = IntegerRange("0..1")
+	hasProperty timePeriodEndSpec
+		hasName = String("end")
+		type = String("Long")
+		multiplicity = IntegerRange("0..1")
+	hasEdge timePeriodStopSpec
+		isOfClass = String("stopOn")               
+		toNode = String("stoppingCondition")
+		multiplicity = IntegerRange("0..1")
 	
