@@ -7,6 +7,8 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 import fr.ens.biologie.generic.Initialisable;
+import fr.ens.biologie.generic.Resettable;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -17,13 +19,14 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  * @author Jacques Gignoux - 31 mai 2019
  *
  */
-public class Design extends TreeGraphDataNode implements Initialisable {
+public class Design extends TreeGraphDataNode implements Initialisable, Resettable {
 
 	private ExperimentDesignType type = null;
 	private String fileName = null;
 	
 	public Design(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
+		reset();
 	}
 
 	public Design(Identity id, GraphFactory gfactory) {
@@ -32,10 +35,6 @@ public class Design extends TreeGraphDataNode implements Initialisable {
 
 	@Override
 	public void initialise() {
-		if (properties().hasProperty(P_DESIGN_TYPE.key()))
-			type = ExperimentDesignType.valueOf((String)properties().getPropertyValue(P_DESIGN_TYPE.key()));
-		else if (properties().hasProperty(P_DESIGN_FILE.key()))
-			fileName = (String)properties().getPropertyValue(P_DESIGN_FILE.key());
 		// todo: load the design file
 	}
 
@@ -50,6 +49,14 @@ public class Design extends TreeGraphDataNode implements Initialisable {
 	
 	public String file() {
 		return fileName;
+	}
+
+	@Override
+	public void reset() {
+		if (properties().hasProperty(P_DESIGN_TYPE.key()))
+			type = (ExperimentDesignType) properties().getPropertyValue(P_DESIGN_TYPE.key());
+		else if (properties().hasProperty(P_DESIGN_FILE.key()))
+			fileName = (String)properties().getPropertyValue(P_DESIGN_FILE.key());
 	}
 	
 }

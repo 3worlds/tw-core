@@ -50,3 +50,5 @@ treegraph
 [table:ty] sizedBy [dimensioner:n2]
 [experiment:my_experiment] baseLine [system:my_ecosystem]
 [treatment:B] modelSetup [system:my_ecosystem]
+[category:my_category] parameters [record:myRec]
+[category:my_category] drivers [record:myOtherRec]
