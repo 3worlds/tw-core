@@ -1,7 +1,11 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
+import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
+import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.Query;
 
@@ -16,17 +20,27 @@ import au.edu.anu.rscs.aot.queries.Query;
  */
 public class IsInValueSetQuery extends Query {
 
-	private ObjectTable<Object> valueSet = null;
+//	private ObjectTable<Object> valueSet = null;
+	private Table valueSet = null;
 
 	/**
 	 * build the query from a list of values present in the Archetype
 	 * 
 	 * @param values
 	 */
-	@SuppressWarnings("unchecked")
-	public IsInValueSetQuery(ObjectTable<?> values) {
+	public IsInValueSetQuery(StringTable values) {
 		super();
-		valueSet = (ObjectTable<Object>) values;
+		valueSet = values;
+	}
+
+	public IsInValueSetQuery(IntTable values) {
+		super();
+		valueSet = values;
+	}
+
+	public IsInValueSetQuery(DoubleTable values) {
+		super();
+		valueSet = values;
 	}
 
 	/**
@@ -39,7 +53,7 @@ public class IsInValueSetQuery extends Query {
 		try {
 			Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) Class.forName(enumName);
 			Object[] oo = e.getEnumConstants();
-			valueSet = new ObjectTable<Object>(new Dimensioner(oo.length));
+			valueSet = new StringTable(new Dimensioner(oo.length));
 			for (int i = 0; i < oo.length; i++)
 				valueSet.setWithFlatIndex(oo[i].toString(), i); 
 		} catch (ClassNotFoundException e) {
@@ -48,11 +62,20 @@ public class IsInValueSetQuery extends Query {
 	}
 
 	private boolean valueInSet(Object value) {
-		if (value.getClass().isEnum())
-			value = ((Enum<?>) value).name();// Ian - watch out - dirty Australian trick
 		for (int i = 0; i < valueSet.size(); i++) {
-			if (value.equals(valueSet.getWithFlatIndex(i))) {
-				return true;
+			if (valueSet instanceof StringTable) {
+				if (value.getClass().isEnum())
+					value = ((Enum<?>) value).name();// Ian - watch out - dirty Australian trick
+				if (value.equals(((StringTable) valueSet).getWithFlatIndex(i)))
+					return true;
+			}
+			else if (valueSet instanceof DoubleTable) {
+				if (value.equals(((DoubleTable) valueSet).getWithFlatIndex(i)))
+					return true;
+			}
+			else if (valueSet instanceof IntTable) {
+				if (value.equals(((IntTable) valueSet).getWithFlatIndex(i)))
+					return true;
 			}
 		}
 		return false;

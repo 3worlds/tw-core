@@ -29,8 +29,8 @@ public enum ConfigurationNodeLabels {
 			N_FIELD 			("field",				Field.class,				0),
 		N_SYSTEM 				("system",				Ecosystem.class,			0),
 			N_DYNAMICS 			("dynamics",			Simulator.class,			0), 
-				N_TIMELINE 		("timeLine",			Object.class,				0), // TimeLine
-				N_TIMEMODEL		("timeModel",			Object.class,				0), // TimeModel
+				N_TIMELINE 		("timeLine",			TimeLine.class,				0),
+				N_TIMEMODEL		("timeModel",			TimeModel.class,			0),
 				N_EVENTQUEUE	("eventQueue",			Object.class,				0), // EventQueue
 				N_PROCESS 		("process",				Object.class,				0), // ProcessNode
 				N_FUNCTION 		("function",			Object.class,				0),

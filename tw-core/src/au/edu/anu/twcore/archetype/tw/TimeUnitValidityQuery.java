@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
@@ -22,10 +22,10 @@ public class TimeUnitValidityQuery extends Query {
 	private String pscale = null;
 	private String pname = null;
 
-	public TimeUnitValidityQuery(ObjectTable<?> parameters) {
+	public TimeUnitValidityQuery(StringTable parameters) {
 		super();
-		pname = (String) parameters.getWithFlatIndex(0); // name of the time property
-		pscale = (String) parameters.getWithFlatIndex(1); // name of the time scale prop
+		pname = parameters.getWithFlatIndex(0); // name of the time property
+		pscale = parameters.getWithFlatIndex(1); // name of the time scale prop
 	}
 
 	@Override

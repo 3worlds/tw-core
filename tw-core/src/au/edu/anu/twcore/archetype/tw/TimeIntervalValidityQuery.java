@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
@@ -27,11 +27,11 @@ public class TimeIntervalValidityQuery extends Query {
 	private String pmax;
 	private boolean timeModelRangeError;
 
-	public TimeIntervalValidityQuery(ObjectTable<?> parameters) {
+	public TimeIntervalValidityQuery(StringTable parameters) {
 		super();
-		pmin = (String) parameters.getWithFlatIndex(0); // name of the minimal time unit property
-		pmax = (String) parameters.getWithFlatIndex(1); // name of the maximal time unit property
-		pscale = (String) parameters.getWithFlatIndex(2); // name of the time scale property
+		pmin = parameters.getWithFlatIndex(0); // name of the minimal time unit property
+		pmax = parameters.getWithFlatIndex(1); // name of the maximal time unit property
+		pscale = parameters.getWithFlatIndex(2); // name of the time scale property
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,20 +1,8 @@
 tree	
 hasNode dynamicsSpec
-	//TODO: I think this should BE the TimerModelSimulator rather than adding an sa-arch.
 	isOfClass = String("dynamics")
 	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"system:"))
 	multiplicity = IntegerRange("1..1")
-//	hasProperty dynamicsNameProperty
-//		hasName = String("name")
-//		type = String("String")
-//		multiplicity = IntegerRange("1..1")
-//	hasProperty dynamicsClassProperty
-//		hasName = String("className")
-//		type = String("String")
-//		multiplicity = IntegerRange("1..1")
-//		mustSatisfyQuery dynamicsClassIsInValueSetQuery
-//			className = String("IsInValueSetQuery")
-//			values = StringTable(([1]"TimerModelSimulator"))
 	mustSatisfyQuery dynamicsCheckSubArchetypeQuery
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"class","xxx.yyy.zzz.TimerModelSimulator","3wSA-TimerModelSimulator.ugt"))
@@ -22,6 +10,57 @@ hasNode dynamicsSpec
 hasNode initialisationSpec
 	isOfClass = String("initialiser")
 	hasParent = StringTable(([1]"dynamics:"))
-	multiplicity = IntegerRange("0..1") //?
+	multiplicity = IntegerRange("0..1")
+	
+hasNode timeLineSpec
+	isOfClass = String("timeLine")
+	hasParent = StringTable(([1]"dynamics:"))
+	multiplicity = IntegerRange("1..1")
+	hasProperty scalePropertySpec
+		hasName = String("scale")
+		type =  String("TimeScaleType") 
+		multiplicity = IntegerRange("1..1") 
+	hasProperty shortestTimeUnitPropertySpec
+		hasName = String("shortestTimeUnit")
+		type =  String("TimeUnits") 
+		multiplicity = IntegerRange("1..1") 
+	hasProperty longestTimeUnitPropertySpec
+		hasName = String("longestTimeUnit")
+		type =  String("TimeUnits") 
+		multiplicity = IntegerRange("1..1") 
+	mustSatisfyQuery shortestTimeUnitTimeUnitValidityQuery
+		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
+		values = StringTable(([2]"shortestTimeUnit","scale"))
+	mustSatisfyQuery longestTimeUnitTimeUnitValidityQuery
+		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
+		values = StringTable(([2]"longestTimeUnit","scale"))
+	mustSatisfyQuery TimeIntervalValidityQuery
+		className = String("au.edu.anu.twcore.archetype.tw.TimeIntervalValidityQuery")
+		values = StringTable(([3]shortestTimeUnit,"longestTimeUnit","scale"))
 
-		
+hasNode timeModelSpec
+	isOfClass = String("timeModel")
+	hasParent = StringTable(([1]"timeLine:"))
+	multiplicity = IntegerRange("1..*")
+	hasProperty timeUnitPropertySpec
+		hasName = String("timeUnit")
+		type =  String("TimeUnits")
+		multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery timeUnitTimeUnitValidityQuery
+		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
+		values = StringTable(([2]"timeUnit","scale"))
+	hasProperty 
+		hasName = String("nTimeUnits")
+		type = String("Integer")
+		multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery nTimeUnitsIsInRangeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+			interval = IntTable(([2]1,2147483647))      // Integer.MAX_VALUE = 2^31-1 = 2147483647
+	hasProperty timeModelSubclassPropertySpec
+		hasName = String("subclass")
+		type = String("String")
+		multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery
+			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
+			// TODO: this may become a limit: strings lists cannot be spread over more than one line
+			values = StringTable(([3]"au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer","au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer","au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer"))
