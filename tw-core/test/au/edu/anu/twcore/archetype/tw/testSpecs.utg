@@ -29,6 +29,8 @@ treegraph
 		structure anything
 			categorySet everything
 				category my_category
+			component myAgent
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
 		dynamics my_simulator
 	experiment my_experiment
 		design myDesign
@@ -52,3 +54,4 @@ treegraph
 [treatment:B] modelSetup [system:my_ecosystem]
 [category:my_category] parameters [record:myRec]
 [category:my_category] drivers [record:myOtherRec]
+[component:myAgent] belongsTo [category:my_category]

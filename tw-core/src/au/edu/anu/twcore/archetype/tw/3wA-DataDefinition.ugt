@@ -55,7 +55,7 @@ hasNode tableSpec
 		multiplicity = IntegerRange("0..1")
 	hasEdge dimEdgeSpec
 		isOfClass = String("sizedBy")            
-		toNode = String("dimensioner")
+		toNode = String("dimensioner:")
 		multiplicity = IntegerRange("1..*")
 	mustSatisfyQuery childXorPropertyQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery")

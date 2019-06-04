@@ -8,7 +8,13 @@ import au.edu.anu.twcore.experiment.StopOnEdge;
 import au.edu.anu.twcore.ecosystem.structure.DriverEdge;
 import au.edu.anu.twcore.ecosystem.structure.DecoratorEdge;
 import au.edu.anu.twcore.ecosystem.structure.ParameterEdge;
+import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 
+/**
+ * 
+ * @author Jacques Gignoux - 4 juin 2019
+ *
+ */
 public enum ConfigurationEdgeLabels {
 	//=========================================================================
 	//			| label				| 	class				
@@ -20,6 +26,7 @@ public enum ConfigurationEdgeLabels {
 	E_DRIVERS		("drivers",			DriverEdge.class),
 	E_DECORATORS	("decorators",		DecoratorEdge.class),
 	E_PARAMETERS	("parameters",		ParameterEdge.class),
+	E_BELONGSTO		("belongsTo",		BelongsToEdge.class),
 	;
 	//=========================================================================
 	private final String label;

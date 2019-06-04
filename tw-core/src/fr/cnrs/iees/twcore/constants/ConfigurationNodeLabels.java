@@ -4,9 +4,7 @@ import au.edu.anu.twcore.data.*;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.TwUI;
-import au.edu.anu.twcore.ecosystem.structure.Structure;
-import au.edu.anu.twcore.ecosystem.structure.CategorySet;
-import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.*;
 import au.edu.anu.twcore.ecosystem.dynamics.Simulator;
 import au.edu.anu.twcore.root.World;
 
@@ -42,10 +40,13 @@ public enum ConfigurationNodeLabels {
 				N_STOPPINGCONDITION("stoppingCondition",Object.class,				0),
 			N_STRUCTURE 		("structure",			Structure.class,			0),
 				N_CATEGORYSET 	("categorySet",			CategorySet.class,			0),
-				N_CATEGORY 		("category",			Category.class,				0), // Category
-				N_COMPONENT 	("component",			Object.class,				0), // SystemFactory
+				N_CATEGORY 		("category",			Category.class,				0), 
+				N_COMPONENT 	("component",			SystemFactory.class,		0),
+				// I am not sure this one is needed - for initialisation maybe ?
 				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
+				// TODO later
 				N_INITIALISER 	("initialiser",			Object.class,				0),
+				
 				N_RELATIONTYPE 	("relationType",		Object.class,				0),
 		N_EXPERIMENT 			("experiment",			Experiment.class,			0),
 			N_DESIGN 			("design",				Design.class,				0),

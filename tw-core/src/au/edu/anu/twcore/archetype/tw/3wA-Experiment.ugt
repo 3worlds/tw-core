@@ -5,7 +5,7 @@ hasNode experimentSpec
 	multiplicity = IntegerRange("1..1")
 	hasEdge baseLineSpec
 		isOfClass = String("baseLine")               
-		toNode = String("system")
+		toNode = String("system:")
 		multiplicity = IntegerRange("1..1")
 	
 hasNode designSpec
@@ -34,7 +34,7 @@ hasNode treatmentSpec
 		multiplicity = IntegerRange("1..1")
 	hasEdge modelSetupEdgeSpec
 		isOfClass = String("modelSetup")               
-		toNode = String("system")
+		toNode = String("system:")
 		multiplicity = IntegerRange("0..1")
 
 hasNode modelChangeSpec
@@ -66,6 +66,6 @@ hasNode timePeriodSpec
 		multiplicity = IntegerRange("0..1")
 	hasEdge timePeriodStopSpec
 		isOfClass = String("stopOn")               
-		toNode = String("stoppingCondition")
+		toNode = String("stoppingCondition:")
 		multiplicity = IntegerRange("0..1")
 	

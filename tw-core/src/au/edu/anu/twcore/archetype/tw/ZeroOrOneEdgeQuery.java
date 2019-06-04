@@ -10,7 +10,11 @@ import java.util.List;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
-
+/**
+ * 
+ * @author Ian Davies - ?
+ *
+ */
 public class ZeroOrOneEdgeQuery extends Query {
 
 	private String edgeLabel = null;
