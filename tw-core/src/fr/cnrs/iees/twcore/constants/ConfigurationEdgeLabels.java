@@ -10,7 +10,8 @@ import au.edu.anu.twcore.ecosystem.structure.DecoratorEdge;
 import au.edu.anu.twcore.ecosystem.structure.ParameterEdge;
 import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 import au.edu.anu.twcore.ecosystem.structure.InitialisedByEdge;
-
+import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
+import au.edu.anu.twcore.ecosystem.structure.FromCategoryEdge;
 /**
  * 
  * @author Jacques Gignoux - 4 juin 2019
@@ -29,6 +30,8 @@ public enum ConfigurationEdgeLabels {
 	E_PARAMETERS	("parameters",		ParameterEdge.class),
 	E_BELONGSTO		("belongsTo",		BelongsToEdge.class),
 	E_INITIALISEDBY	("initialisedBy",	InitialisedByEdge.class),
+	E_TOCATEGORY	("toCategory",		ToCategoryEdge.class),
+	E_FROMCATEGORY	("fromCategory",	FromCategoryEdge.class),
 	;
 	//=========================================================================
 	private final String label;

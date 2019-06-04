@@ -18,25 +18,18 @@ hasNode categorySpec
 	isOfClass = String("category")
 	hasParent = StringTable(([1]"categorySet:"))
 	multiplicity = IntegerRange("1..*")
-	// tricky bit - not easy to check that 0..3 of these edges do exist	
-	hasEdge edgeToRecordSpec
-		toNode = String("record:")
-		multiplicity = IntegerRange("0..*")
-		mustSatisfyQuery toDriverElementLabelQuery
-			className = String("au.edu.anu.rscs.aot.queries.graph.element.ElementLabel")
-			edgeLabel = StringTable(([3]"parameters","drivers","decorators"))
-		mustSatisfyQuery driverNodeParentLabelQuery
-			className = String("au.edu.anu.twcore.archetype.tw.NodeParentLabelQuery")
-			parentLabel = String("dataDefinition")                
-	mustSatisfyQuery parametersZeroOrOneEdgeQuery
-		className = String("au.edu.anu.twcore.archetype.tw.ZeroOrOneEdgeQuery")
-		edgeLabel = String("parameters")
-	mustSatisfyQuery driversZeroOrOneEdgeQuery
-		className = String("au.edu.anu.twcore.archetype.tw.ZeroOrOneEdgeQuery")
-		edgeLabel = String("drivers")
-	mustSatisfyQuery decoratorsZeroOrOneEdgeQuery
-		className = String("au.edu.anu.twcore.archetype.tw.ZeroOrOneEdgeQuery")
-		edgeLabel = String("decorators")
+	hasEdge edgeToDriversSpec
+		isOfClass = String("drivers")
+		toNode = String("record")
+		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToDecoratorsSpec
+		isOfClass = String("decorators")
+		toNode = String("record")
+		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToParametersSpec
+		isOfClass = String("parameters")
+		toNode = String("record")
+		multiplicity = IntegerRange("0..1")
 		
 hasNode componentSpec
 	isOfClass = String("component")
@@ -66,6 +59,13 @@ hasNode relationTypeSpec
 	isOfClass = String("relationType")
 	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("0..*")
-	// from / to edges
+	hasEdge toCategoryEdgeSpec
+		isOfClass = String("toCategory")
+		toNode = String("category:")
+		multiplicity = IntegerRange("1..*")
+	hasEdge fromCategoryEdgeSpec
+		isOfClass = String("fromCategory")
+		toNode = String("category:")
+		multiplicity = IntegerRange("1..*")
 
 	

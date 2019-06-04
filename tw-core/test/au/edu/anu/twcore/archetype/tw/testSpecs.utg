@@ -32,6 +32,7 @@ treegraph
 				category my_other_category
 			component myAgent
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			relationType myRelation
 		dynamics my_simulator
 			initialiser my_initialiser
 	experiment my_experiment
@@ -58,3 +59,5 @@ treegraph
 [category:my_category] drivers [record:myOtherRec]
 [component:myAgent] belongsTo [category:my_category]
 [component:myAgent] initialisedBy [initialiser:my_initialiser]
+[relationType:myRelation] fromCategory [category:my_category]
+[relationType:myRelation] toCategory [category:my_other_category]

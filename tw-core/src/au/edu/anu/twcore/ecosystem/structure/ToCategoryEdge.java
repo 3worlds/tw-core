@@ -6,14 +6,14 @@ import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.identity.Identity;
 
 /**
- * Edge for linking system components to categories
- * 
+ * Edge for linking relations to categories
+ *  
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class BelongsToEdge extends ALEdge {
+public class ToCategoryEdge extends ALEdge {
 
-	public BelongsToEdge(Identity id, Node start, Node end, EdgeFactory graph) {
+	public ToCategoryEdge(Identity id, Node start, Node end, EdgeFactory graph) {
 		super(id, start, end, graph);
 	}
 

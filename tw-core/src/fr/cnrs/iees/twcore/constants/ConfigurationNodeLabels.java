@@ -39,11 +39,13 @@ public enum ConfigurationNodeLabels {
 				N_PRODUCE 		("produce",				Object.class,				0),
 				N_STOPPINGCONDITION("stoppingCondition",Object.class,				0),
 				N_INITIALISER 	("initialiser",			Initialiser.class,			0),
+				N_PARAMETERVALUES("parameterValues",	Object.class,				0),
+				N_INITIALSTATE 	("initialState",		Object.class,				0),
 			N_STRUCTURE 		("structure",			Structure.class,			0),
 				N_CATEGORYSET 	("categorySet",			CategorySet.class,			0),
 				N_CATEGORY 		("category",			Category.class,				0), 
 				N_COMPONENT 	("component",			SystemFactory.class,		0),
-				N_RELATIONTYPE 	("relationType",		Object.class,				0),
+				N_RELATIONTYPE 	("relationType",		RelationType.class,			0),
 				// I am not sure this one is needed - for initialisation maybe ?
 				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
 		N_EXPERIMENT 			("experiment",			Experiment.class,			0),
@@ -51,10 +53,10 @@ public enum ConfigurationNodeLabels {
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
 			N_TIMEPERIOD 		("timePeriod",			TimePeriod.class,			0),
 			N_MODELCHANGE 		("modelChange",			ModelChange.class,			0),
+			//TODO
 			N_DATAIO 			("dataIO",				Object.class,				0),
-			N_PARAMETERVALUES 	("parameterValues",		Object.class,				0),
-			N_INITIALSTATE 		("initialState",		Object.class,				0),
 		N_UI 					("userInterface",		TwUI.class,					0),
+			// TODO - for Ian
 			N_UITOP 			("top",					Object.class,				0),
 			N_UIBOTTOM 			("bottom",				Object.class,				0),
 			N_UICENTER 			("center",				Object.class,				0),
