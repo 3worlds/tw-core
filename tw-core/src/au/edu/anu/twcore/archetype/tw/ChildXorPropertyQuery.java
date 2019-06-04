@@ -13,7 +13,7 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 
 /**
- * @author Jacques Gignoux - 31/5/2019
+ * @author Jacques Gignoux - 31/05/2019
  * 
  * Constraint: some nodes must have ONE of either a property or a child node
  */
