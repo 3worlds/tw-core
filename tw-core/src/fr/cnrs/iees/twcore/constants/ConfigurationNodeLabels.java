@@ -51,7 +51,7 @@ public enum ConfigurationNodeLabels {
 			N_DESIGN 			("design",				Design.class,				0),
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
 			N_TIMEPERIOD 		("timePeriod",			TimePeriod.class,			0),
-			N_MODELCHANGE 		("modelChange",			ModelChange.class,			0),
+			N_MODELCHANGE 		("modelChange", 		ModelChange.class,			0),
 			N_DATAIO 			("dataIO",				Object.class,				0),
 			N_PARAMETERVALUES 	("parameterValues",		Object.class,				0),
 			N_INITIALSTATE 		("initialState",		Object.class,				0),
