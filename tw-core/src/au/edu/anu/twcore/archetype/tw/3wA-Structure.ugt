@@ -54,18 +54,13 @@ hasNode componentSpec
 		isOfClass = String("initialisedBy")
 		toNode = String("initialiser:")
 		multiplicity = IntegerRange("0..1")
-	// mustSatisfyQuery exclusive categories within set
-	// edgeTo lifeCycle transformations
+	mustSatisfyQuery exclusiveCategoryCheckSpec
+		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
 	
 //hasNode realisedComponentpec
 //	isOfClass = String("realisedComponent")
 //	hasParent = StringTable(([1]"component:"))
 //	multiplicity = IntegerRange("1..1") //?
-
-hasNode initialisationSpec
-	isOfClass = String("initialiser")
-	hasParent = StringTable(([1]"realisation:"))
-	multiplicity = IntegerRange("0..1") //?
 
 hasNode relationTypeSpec
 	isOfClass = String("relationType")

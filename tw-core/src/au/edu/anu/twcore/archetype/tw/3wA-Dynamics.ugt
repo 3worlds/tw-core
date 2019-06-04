@@ -18,3 +18,10 @@ hasNode dynamicsSpec
 	mustSatisfyQuery dynamicsCheckSubArchetypeQuery
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"class","xxx.yyy.zzz.TimerModelSimulator","3wSA-TimerModelSimulator.ugt"))
+
+hasNode initialisationSpec
+	isOfClass = String("initialiser")
+	hasParent = StringTable(([1]"dynamics:"))
+	multiplicity = IntegerRange("0..1") //?
+
+		

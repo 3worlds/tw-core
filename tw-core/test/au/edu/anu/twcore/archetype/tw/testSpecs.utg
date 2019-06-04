@@ -29,9 +29,11 @@ treegraph
 		structure anything
 			categorySet everything
 				category my_category
+				category my_other_category
 			component myAgent
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
 		dynamics my_simulator
+			initialiser my_initialiser
 	experiment my_experiment
 		design myDesign
 			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)
@@ -55,3 +57,4 @@ treegraph
 [category:my_category] parameters [record:myRec]
 [category:my_category] drivers [record:myOtherRec]
 [component:myAgent] belongsTo [category:my_category]
+[component:myAgent] initialisedBy [initialiser:my_initialiser]

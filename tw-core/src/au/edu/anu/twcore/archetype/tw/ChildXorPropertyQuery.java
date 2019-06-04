@@ -42,6 +42,7 @@ public class ChildXorPropertyQuery extends Query {
 		return this;
 	}
 
+	@Override
 	public String toString() {
 		return "[" + stateString() + " Node must have either property '" + propertyName.toString() + "' or edge to '"+nodeLabel+"']";
 	}
