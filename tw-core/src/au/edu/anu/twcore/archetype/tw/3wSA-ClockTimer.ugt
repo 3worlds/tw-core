@@ -1,0 +1,27 @@
+tree
+// Sub-archetype for 3Worlds for checking ClockTimer specifications
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-ClockTimer
+
+	hasNode ClockTimerSpec
+		isOfClass = String("timeModel")
+		hasParent = StringTable(([1]"timeLine:"))
+		multiplicity = IntegerRange("0..*")
+		hasProperty clockTimerDtPropertySpec
+			hasName = String("dt")
+			type = String("Long")
+			multiplicity = IntegerRange("1..1")
+			mustSatisfyQuery isInRangeQueryDtClockTimerSpec
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = LongTable(([2]1,9223372036854775807))      // Long.MAX_VALUE = 2^63-1 = 9223372036854775807 
+		hasProperty clockTimerRunAtZeroPropertySpec
+			hasName = String("runAtTimeZero")
+			type = String("Boolean")
+			multiplicity = IntegerRange("1..1")
+      

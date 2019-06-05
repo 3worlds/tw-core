@@ -6,8 +6,11 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.SimpleTree;
 import fr.cnrs.iees.graph.io.GraphImporter;
 
 /**
@@ -58,6 +61,7 @@ public class CheckSubArchetypeQuery extends Query {
 		// be checked again!
 		defaultProcess(input);
 		ReadOnlyDataHolder localItem =  (ReadOnlyDataHolder) input;
+		TreeNode node = (TreeNode) input;
 		satisfied = true;
 		String givenpValue = (String) localItem.properties().getPropertyValue(pKey);
 		if (pValue.equals(givenpValue)) {
@@ -68,14 +72,22 @@ public class CheckSubArchetypeQuery extends Query {
 //			Tree<?> tree = (Tree<?>) importer.getGraph();
 			
 			Tree<?> tree = (Tree<?>) GraphImporter.importGraph(fileName,getClass());
+			Tree<TreeNode> treeToCheck = new SimpleTree<TreeNode>(node.factory());
+			treeToCheck.addNode(node);
 			
 			Archetypes checker = new Archetypes();
 			// Check the 3worlds archetype is ok
-			if (checker.isArchetype(tree))
-				satisfied = true;
-			else {
-				satisfied = false;
+			if (checker.isArchetype(tree)) {
+				checker.check(treeToCheck,tree);
+				if (checker.errorList()==null)
+					satisfied = true;
+				else {
+					satisfied = false;
+					result = checker.errorList();
+				}
 			}
+			else
+				throw new TwcoreException("Sub-archetype '"+tree.root().toShortString()+"' is not a valid archetype");
 		}
 		return this;
 	}

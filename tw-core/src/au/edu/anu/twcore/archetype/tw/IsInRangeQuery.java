@@ -1,6 +1,11 @@
 package au.edu.anu.twcore.archetype.tw;
 
+import au.edu.anu.rscs.aot.collections.tables.ByteTable;
+import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
+import au.edu.anu.rscs.aot.collections.tables.FloatTable;
 import au.edu.anu.rscs.aot.collections.tables.IntTable;
+import au.edu.anu.rscs.aot.collections.tables.LongTable;
+import au.edu.anu.rscs.aot.collections.tables.ShortTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.Query;
 
@@ -14,10 +19,35 @@ public class IsInRangeQuery extends Query {
 	private double max;
 
 	/**
-	 * Use this constructor if values are provided as a table of 2 values, min first
+	 * Use this constructors if values are provided as a table of 2 values, min first
 	 * @param interval
 	 */
 	public IsInRangeQuery(IntTable interval) {
+		super();
+		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
+		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();
+	}
+	public IsInRangeQuery(LongTable interval) {
+		super();
+		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
+		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();
+	}
+	public IsInRangeQuery(ShortTable interval) {
+		super();
+		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
+		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();
+	}
+	public IsInRangeQuery(FloatTable interval) {
+		super();
+		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
+		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();
+	}
+	public IsInRangeQuery(DoubleTable interval) {
+		super();
+		min = interval.getWithFlatIndex(0);
+		max = interval.getWithFlatIndex(1);
+	}
+	public IsInRangeQuery(ByteTable interval) {
 		super();
 		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
 		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();
