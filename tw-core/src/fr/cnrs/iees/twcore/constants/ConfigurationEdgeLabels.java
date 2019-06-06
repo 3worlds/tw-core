@@ -12,6 +12,9 @@ import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 import au.edu.anu.twcore.ecosystem.structure.InitialisedByEdge;
 import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
 import au.edu.anu.twcore.ecosystem.structure.FromCategoryEdge;
+
+import au.edu.anu.twcore.ecosystem.dynamics.AppliesToEdge;
+
 /**
  * 
  * @author Jacques Gignoux - 4 juin 2019
@@ -32,6 +35,7 @@ public enum ConfigurationEdgeLabels {
 	E_INITIALISEDBY	("initialisedBy",	InitialisedByEdge.class),
 	E_TOCATEGORY	("toCategory",		ToCategoryEdge.class),
 	E_FROMCATEGORY	("fromCategory",	FromCategoryEdge.class),
+	E_APPLIESTO		("appliesTo",		AppliesToEdge.class),
 	;
 	//=========================================================================
 	private final String label;

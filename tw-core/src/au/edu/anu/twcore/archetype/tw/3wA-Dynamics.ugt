@@ -70,4 +70,22 @@ hasNode timeModelSpec
 	mustSatisfyQuery CheckSubArchetypeQueryEventTimeModel
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer","3wSA-EventTimer.ugt"))
-		
+
+hasNode processSpec
+	isOfClass = String("process")
+	hasParent = StringTable(([1]"timeModel:"))
+	multiplicity = IntegerRange("1..*")
+	hasEdge appliesToCategorySpec
+		isOfClass = String("appliesTo")
+		toNode = String("category")
+		multiplicity = IntegerRange("0..*")
+	hasEdge appliesToRelationSpec
+		isOfClass = String("appliesTo")
+		toNode = String("relation")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery processToRelationOrCategorySpec
+		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
+		nodeLabel1 = String("category")
+		nodeLabel2 = String("relationType")
+
+
