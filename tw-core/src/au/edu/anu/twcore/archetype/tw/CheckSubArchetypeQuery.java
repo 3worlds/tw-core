@@ -65,16 +65,11 @@ public class CheckSubArchetypeQuery extends Query {
 		satisfied = true;
 		String givenpValue = (String) localItem.properties().getPropertyValue(pKey);
 		if (pValue.equals(givenpValue)) {
-//			File file = Resources.getPackagedFile("au.edu.anu.twcore.archetype.tw." + fileName);
-//			OmugiGraphImporter importer = new OmugiGraphImporter(file);
-//		// TODO untested - unsure of use case at the moment.
-//			// At the moment loading a sub-archetype is different from importing (importResource statement in utg files)
-//			Tree<?> tree = (Tree<?>) importer.getGraph();
-			
 			Tree<?> tree = (Tree<?>) GraphImporter.importGraph(fileName,getClass());
+			// maybe this is a flaw to use this factory ?
 			Tree<TreeNode> treeToCheck = new SimpleTree<TreeNode>(node.factory());
-			treeToCheck.addNode(node);
-			
+			for (TreeNode tn:node.subTree())
+				treeToCheck.addNode((TreeNode) tn);
 			Archetypes checker = new Archetypes();
 			// Check the 3worlds archetype is ok
 			if (checker.isArchetype(tree)) {

@@ -7,57 +7,62 @@ treegraph
 	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
 
 // TREE 
-3worlds my_model
-	dataDefinition my_data
-		dimensioner nsp
+3worlds my_model						
+	dataDefinition my_data //2
+		dimensioner nsp //3
 			size = Integer(4)
-		dimensioner n2
+		dimensioner n2 //4
 			size = Integer(3)
-		record myRec
-			field x
+		record myRec  //5
+			field x //6
 				type = String("Double")
-			table tx
+			table tx //7
 				dataElementType = String("Boolean")
-		record myOtherRec
-			table ty
-				record tableContent
-					field a
+		record myOtherRec //8
+			table ty //9
+				record tableContent //10
+					field a //11
 						type = String("integer")
-					field b
+					field b //12
 						type = String("String")		
-	system my_ecosystem
-		structure anything
-			categorySet everything
-				category my_category
-				category my_other_category
-			component myAgent
+	system my_ecosystem //13
+		structure anything //14
+			categorySet everything //15
+				category my_category //16
+				category my_other_category //17
+			component myAgent //18
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
-			relationType myRelation
-		dynamics my_simulator
-			initialiser my_initialiser
-			timeLine my_time_line
+			relationType myRelation //19
+		dynamics my_simulator //20
+			initialiser my_initialiser //21
+			timeLine my_time_line //22
 				scale = fr.cnrs.iees.twcore.constants.TimeScaleType(MONO_UNIT)
 				shortestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
 				longestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
-				timeModel my_timeModel
+				timeModel my_timeModel //23
 					timeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
 					nTimeUnits = Integer(1)
 					subclass = String("au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer")
 					dt = Long(3)
 					runAtTimeZero = Boolean(false)
-	experiment my_experiment
-		design myDesign
+				timeModel my_2ndTimeModel //24
+					timeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+					nTimeUnits = Integer(2)
+					subclass = String("au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer")
+					eventQueue my_queue //25
+	experiment my_experiment //26
+		design myDesign //27
 			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)
-		treatment A
+		treatment A //28
 			replicates = Integer(32)
-			modelChange chgZ
+			modelChange chgZ //29
 				parameter = String("Z")
 				replaceWith = DoubleTable(([3]1.0,7.0,143.2))
-		treatment B
+		treatment B //30
 			replicates = Integer(7)
-		timePeriod oioihfdd
+		timePeriod oioihfdd //31
 			start = Long(21354)
-	userInterface my_UI
+	userInterface my_UI //32
 	
 // CROSS-LINKS
 [table:tx] sizedBy [dimensioner:nsp]

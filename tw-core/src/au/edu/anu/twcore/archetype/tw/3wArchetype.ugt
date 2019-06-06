@@ -7,7 +7,7 @@ tree
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
 archetype 3worldsArchetype
-	exclusive = Boolean(true)
+	exclusive = Boolean(false)
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Root.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-System.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Dynamics.ugt

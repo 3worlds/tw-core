@@ -1,0 +1,24 @@
+tree
+// Sub-archetype for 3Worlds for checking EventTimer specifications
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-EventTimer
+
+	hasNode EventTimeModelSpec
+		isOfClass = String("timeModel")
+		hasParent = StringTable(([1]"timeLine:"))
+		multiplicity = IntegerRange("0..*")
+
+	hasNode eventQueueSpec
+		isOfClass = String("eventQueue")
+		hasParent = StringTable(([1]"timeModel:"))
+		multiplicity = IntegerRange("1..1")
+//		hasEdge eventQueuePopulatorEdgeSpec
+//			isOfClass = String("populatedBy")
+//			toNode = String("function:")
+//			multiplicity = IntegerRange("1..*")
