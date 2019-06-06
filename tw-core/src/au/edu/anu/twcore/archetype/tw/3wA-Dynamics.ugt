@@ -1,4 +1,5 @@
-tree	
+tree
+
 hasNode dynamicsSpec
 	isOfClass = String("dynamics")
 	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"system:"))
@@ -87,5 +88,24 @@ hasNode processSpec
 		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
 		nodeLabel1 = String("category")
 		nodeLabel2 = String("relationType")
+	hasEdge dependsOnSpec
+		isOfClass = String("dependsOn")
+		toNode = String("process")
+		multiplicity = IntegerRange("0..*")
 
-
+hasNode functionSpec
+	isOfClass = String("function")
+	hasParent = StringTable(([2]"process:","process:/function:"))
+	multiplicity = IntegerRange("0..*")
+	mustSatisfyQuery timeUnitTimeUnitValidityQuery
+		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
+	hasProperty functionTypeSpec
+		hasName = String("type")
+		type = String("TwFunctionTypes")
+		multiplicity = IntegerRange("1..1")
+	hasProperty userFunctionSpec
+		hasName = String("userClassName")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+		
+	

@@ -14,6 +14,7 @@ import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
 import au.edu.anu.twcore.ecosystem.structure.FromCategoryEdge;
 
 import au.edu.anu.twcore.ecosystem.dynamics.AppliesToEdge;
+import au.edu.anu.twcore.ecosystem.dynamics.DependsOnEdge;
 
 /**
  * 
@@ -24,10 +25,13 @@ public enum ConfigurationEdgeLabels {
 	//=========================================================================
 	//			| label				| 	class				
 	//-------------------------------------------------------------------------
+	// data definition
 	E_SIZEDBY 		("sizedBy",			SizedByEdge.class),
+	// experiment
 	E_BASELINE 		("baseLine",		BaseLineEdge.class),
 	E_MODELSETUP	("modelSetup",		ModelSetupEdge.class),
-	E_STOPON		("stopOn",			StopOnEdge.class),	
+	E_STOPON		("stopOn",			StopOnEdge.class),
+	// ecosystem / structure
 	E_DRIVERS		("drivers",			DriverEdge.class),
 	E_DECORATORS	("decorators",		DecoratorEdge.class),
 	E_PARAMETERS	("parameters",		ParameterEdge.class),
@@ -35,7 +39,9 @@ public enum ConfigurationEdgeLabels {
 	E_INITIALISEDBY	("initialisedBy",	InitialisedByEdge.class),
 	E_TOCATEGORY	("toCategory",		ToCategoryEdge.class),
 	E_FROMCATEGORY	("fromCategory",	FromCategoryEdge.class),
+	// ecosystem / dynamics
 	E_APPLIESTO		("appliesTo",		AppliesToEdge.class),
+	E_DEPENDSON		("dependsOn",		DependsOnEdge.class),
 	;
 	//=========================================================================
 	private final String label;

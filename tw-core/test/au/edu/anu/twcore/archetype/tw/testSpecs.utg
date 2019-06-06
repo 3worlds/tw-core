@@ -80,7 +80,7 @@ treegraph
 [relationType:myRelation] toCategory [category:my_other_category]
 [process:my_Process] appliesTo [category:my_other_category]
 [process:my_otherProcess] appliesTo [relationType:myRelation]
-
+[process:my_otherProcess] dependsOn [process:my_Process]
 
 
 
