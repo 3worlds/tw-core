@@ -1,0 +1,20 @@
+tree
+// Sub-archetype for 3Worlds for checking SimpleStoppingCondition specifications
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-SimpleStoppingCondition
+
+	hasNode SimpleStoppingConditionSpec
+		isOfClass = String("stoppingCondition")
+		hasParent = StringTable(([1]"dynamics:"))
+		multiplicity = IntegerRange("0..1")
+		hasProperty SimpleStoppingConditionEndtimePropertySpec
+			hasName = String("endTime")
+			type = String("Long") // DateTimeType in original - check with Ian the need for that
+			multiplicity = IntegerRange("1..1")
+      
