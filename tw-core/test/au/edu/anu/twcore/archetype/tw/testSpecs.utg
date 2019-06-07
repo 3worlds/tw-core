@@ -1,7 +1,7 @@
 treegraph
 // a test file for 3worlds specifications
 
-	// the factory to use for 3Worlds
+	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
 	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
 	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
 	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
@@ -46,12 +46,17 @@ treegraph
 					dt = Long(3)
 					runAtTimeZero = Boolean(false)
 					process my_otherProcess // 34
+						function Growth // 35
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeOtherState)
+							function Sleep // 37
+								type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(DeleteDecision)
 				timeModel my_2ndTimeModel //24
 					timeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
 					nTimeUnits = Integer(2)
 					subclass = String("au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer")
 					eventQueue my_queue //25
 					process my_Process // 33
+						dataTracker estupido // 36
 	experiment my_experiment //26
 		design myDesign //27
 			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)

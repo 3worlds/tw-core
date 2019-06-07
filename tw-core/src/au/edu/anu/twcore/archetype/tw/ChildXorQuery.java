@@ -5,7 +5,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.util.List;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.TreeNode;
 
@@ -24,10 +24,10 @@ public class ChildXorQuery extends Query {
 		this.nodeLabel2 = nodeLabel2;
 	}
 	
-	public ChildXorQuery(ObjectTable<?> table) {
+	public ChildXorQuery(StringTable table) {
 		super();
-		nodeLabel1 = (String) table.getWithFlatIndex(0);
-		nodeLabel2 = (String) table.getWithFlatIndex(1);
+		nodeLabel1 = table.getWithFlatIndex(0);
+		nodeLabel2 = table.getWithFlatIndex(1);
 	}
 	
 	@SuppressWarnings("unchecked")

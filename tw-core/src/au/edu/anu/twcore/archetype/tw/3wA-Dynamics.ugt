@@ -76,6 +76,9 @@ hasNode processSpec
 	isOfClass = String("process")
 	hasParent = StringTable(([1]"timeModel:"))
 	multiplicity = IntegerRange("1..*")
+	mustSatisfyQuery processHasFunctionOrDataTrackerChildQuery
+		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
+		labels = StringTable(([2]"function","dataTracker"))
 	hasEdge appliesToCategorySpec
 		isOfClass = String("appliesTo")
 		toNode = String("category")
@@ -97,7 +100,7 @@ hasNode functionSpec
 	isOfClass = String("function")
 	hasParent = StringTable(([2]"process:","process:/function:"))
 	multiplicity = IntegerRange("0..*")
-	mustSatisfyQuery timeUnitTimeUnitValidityQuery
+	mustSatisfyQuery functionNameWithUppercaseQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
 	hasProperty functionTypeSpec
 		hasName = String("type")
