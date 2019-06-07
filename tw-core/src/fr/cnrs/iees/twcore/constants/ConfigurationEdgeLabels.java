@@ -15,6 +15,7 @@ import au.edu.anu.twcore.ecosystem.structure.FromCategoryEdge;
 
 import au.edu.anu.twcore.ecosystem.dynamics.AppliesToEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.DependsOnEdge;
+import au.edu.anu.twcore.ecosystem.dynamics.EffectedByEdge;
 
 /**
  * 
@@ -42,6 +43,7 @@ public enum ConfigurationEdgeLabels {
 	// ecosystem / dynamics
 	E_APPLIESTO		("appliesTo",		AppliesToEdge.class),
 	E_DEPENDSON		("dependsOn",		DependsOnEdge.class),
+	E_EFFECTEDBY	("effectedBy",		EffectedByEdge.class),
 	;
 	//=========================================================================
 	private final String label;

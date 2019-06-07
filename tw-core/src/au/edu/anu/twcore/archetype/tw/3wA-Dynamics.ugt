@@ -4,9 +4,6 @@ hasNode dynamicsSpec
 	isOfClass = String("dynamics")
 	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"system:"))
 	multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery dynamicsCheckSubArchetypeQuery
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"class","xxx.yyy.zzz.TimerModelSimulator","3wSA-TimerModelSimulator.ugt"))
 
 hasNode initialisationSpec
 	isOfClass = String("initialiser")
@@ -61,7 +58,7 @@ hasNode timeModelSpec
 		hasName = String("subclass")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
-		mustSatisfyQuery
+		mustSatisfyQuery validTimeModelSubclassSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
 			// TODO: this may become a limit: strings lists cannot be spread over more than one line
 			values = StringTable(([3]"au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer","au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer","au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer"))
@@ -111,4 +108,48 @@ hasNode functionSpec
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
 		
-	
+// TODO: dataTracker spec		
+
+hasNode lifeCycleSpec
+	isOfClass = String("lifeCycle")
+	hasParent = StringTable(([1]"dynamics:"))
+	multiplicity = IntegerRange("0..*")
+	hasEdge lifeCycleToCategorySetSpec
+		isOfClass = String("appliesTo")
+		toNode = String("categorySet")
+		multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery lifeCycleHasRecruitOrProduceChildQuery
+		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
+		labels = StringTable(([2]"recruit","produce"))
+
+hasNode recruitSpec
+	isOfClass = String("recruit")
+	hasParent = StringTable(([1]"lifeCycle:"))
+	multiplicity = IntegerRange("0..*")
+	hasEdge recruitProcessSpec
+		isOfClass = String("effectedBy")
+		toNode = String("process")
+		multiplicity = IntegerRange("1..1")
+	// TODO: make sure the process applies to the proper categories and has a function of the proper type...
+		
+hasNode produceSpec
+	isOfClass = String("produce")
+	hasParent = StringTable(([1]"lifeCycle:"))
+	multiplicity = IntegerRange("0..*")
+	hasEdge productionProcessSpec
+		isOfClass = String("effectedBy")
+		toNode = String("process")
+		multiplicity = IntegerRange("1..1")
+	// TODO: make sure the process applies to the proper categories and has a function of the proper type...
+
+hasNode stoppingConditionSpec
+	isOfClass = String("stoppingCondition")
+	hasParent = StringTable(([1]"dynamics:"))
+	multiplicity = IntegerRange("0..*")
+	hasProperty stoppingConditionSubclassPropertySpec
+		hasName = String("subclass")
+		type = String("String")
+		multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery validStoppingConditionSubClassSpec
+		className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
+		values = StringTable(([6]"au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition", "au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition", "au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition", "au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition", "au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition", "au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition"))
