@@ -82,7 +82,10 @@ public class CheckSubArchetypeQuery extends Query {
 				}
 			}
 			else
-				throw new TwcoreException("Sub-archetype '"+tree.root().toShortString()+"' is not a valid archetype");
+				if (tree.root()!=null)
+					throw new TwcoreException("Sub-archetype '"+tree.root().toShortString()+"' is not a valid archetype");
+				else
+					throw new TwcoreException("Sub-archetype '"+tree.toShortString()+"' is not a valid archetype");
 		}
 		return this;
 	}

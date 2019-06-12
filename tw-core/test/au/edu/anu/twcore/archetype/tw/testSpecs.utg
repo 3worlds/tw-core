@@ -67,6 +67,7 @@ treegraph
 			stoppingCondition my_other_stop // 43
 				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition")
 				stopVariable = String("x")
+				stopValue = Double(53.2)
 	experiment my_experiment //26
 		design myDesign //27
 			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)
@@ -100,3 +101,4 @@ treegraph
 [produce:lkhds] effectedBy [process:my_Process]
 [recruit:lkhsfd] effectedBy [process:my_otherProcess]
 [recruit:aazedsds] effectedBy [process:my_Process]
+[stoppingCondition:my_other_stop] stopSystem [component:myAgent]

@@ -21,8 +21,7 @@ archetype 3wSA-ValueStoppingCondition
 			hasName = String("stopValue")
 			type = String("Double") // was object in original but this is not going to work
 			multiplicity = IntegerRange("1..1")
-      	hasEdge ValueStoppingConditionSystemSpec
+		hasEdge ValueStoppingConditionSystemSpec
 			isOfClass = String("stopSystem")
 			toNode = String("component")
 			multiplicity = IntegerRange("1..1")
-      
