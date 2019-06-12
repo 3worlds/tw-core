@@ -1,5 +1,5 @@
 tree
-// Sub-archetype for 3Worlds for checking ValueStoppingCondition specifications
+// Sub-archetype for 3Worlds for checking RangeStoppingCondition specifications
 	scope =            String("3W-archetype")
 	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
 	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
@@ -7,22 +7,27 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-ValueStoppingCondition
+archetype 3wSA-RangeStoppingCondition
 
-	hasNode ValueStoppingConditionSpec
+	hasNode RangeStoppingConditionSpec
 		isOfClass = String("stoppingCondition")
 		hasParent = StringTable(([1]"dynamics:"))
 		multiplicity = IntegerRange("0..1")
-		// TODO: check that variable exists in component
-		hasProperty ValueStoppingConditionStopVariablePropertySpec
+		hasProperty RangeStoppingConditionStopVariablePropertySpec
 			hasName = String("stopVariable")
 			type = String("String")
 			multiplicity = IntegerRange("1..1")
-		hasProperty ValueStoppingConditionStopValuePropertySpec
-			hasName = String("stopValue")
-			type = String("Double") // was object in original but this is not going to work
+		// TODO: check that variable exists in component
+		// TODO: replace upper and lower by an interval
+		hasProperty UpperValueStoppingConditionStopRangePropertySpec
+			hasName = String("upper")
+			type = String("Double") 
 			multiplicity = IntegerRange("1..1")
-		hasEdge ValueStoppingConditionSystemSpec
+		hasProperty LowerValueStoppingConditionStopRangePropertySpec
+			hasName = String("lower")
+			type = String("Double") 
+			multiplicity = IntegerRange("1..1")
+		hasEdge RangeStoppingConditionSystemSpec
 			isOfClass = String("stopSystem")
 			toNode = String("component")
 			multiplicity = IntegerRange("1..1")

@@ -1,0 +1,19 @@
+tree
+// Sub-archetype for 3Worlds for checking MultipleStoppingCondition specifications
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-MultipleStoppingCondition
+
+	hasNode MultipleStoppingConditionSpec
+		isOfClass = String("stoppingCondition")
+		hasParent = StringTable(([1]"dynamics:"))
+		multiplicity = IntegerRange("0..1")
+		hasEdge componentStoppingConditionsSpec
+			isOfClass = String("condition")
+			toNode = String("stoppingCondition")
+			multiplicity = IntegerRange("1..*")
