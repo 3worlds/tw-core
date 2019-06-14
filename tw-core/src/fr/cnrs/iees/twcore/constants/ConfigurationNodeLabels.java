@@ -3,7 +3,7 @@ package fr.cnrs.iees.twcore.constants;
 import au.edu.anu.twcore.data.*;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.experiment.*;
-import au.edu.anu.twcore.ui.TwUI;
+import au.edu.anu.twcore.ui.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
 import au.edu.anu.twcore.ecosystem.dynamics.*;
 import au.edu.anu.twcore.root.World;
@@ -48,7 +48,7 @@ public enum ConfigurationNodeLabels {
 				N_COMPONENT 	("component",			SystemFactory.class,		0),
 				N_RELATIONTYPE 	("relationType",		RelationType.class,			0),
 				// I am not sure this one is needed - for initialisation maybe ?
-				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
+//				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
 		N_EXPERIMENT 			("experiment",			Experiment.class,			0),
 			N_DESIGN 			("design",				Design.class,				0),
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
@@ -57,11 +57,14 @@ public enum ConfigurationNodeLabels {
 			//TODO
 			N_DATAIO 			("dataIO",				Object.class,				0),
 		N_UI 					("userInterface",		TwUI.class,					0),
-			// TODO - for Ian
-			N_UITOP 			("top",					Object.class,				0),
-			N_UIBOTTOM 			("bottom",				Object.class,				0),
-			N_UICENTER 			("center",				Object.class,				0),
-			N_UIWIDGET 			("widget",				Object.class,				0), // GridNode + ElementUserInterface
+			// TODO - Ian, I dont know how this fits with your work - I just defined these node classes
+		// to get the configuration load correctly, but feel free to merge them with your classes as needed
+		// NB you can also use the Singleton<T> interface if you want them to just be a node producing
+		// a class doing the real job
+			N_UITOP 			("top",					TopPanel.class,				0),
+			N_UIBOTTOM 			("bottom",				BottomPanel.class,			0),
+			N_UICENTER 			("center",				CentralPanel.class,			0),
+			N_UIWIDGET 			("widget",				Widget.class,				0), 
 	;
 	//========================================================================================
 	private final String label;

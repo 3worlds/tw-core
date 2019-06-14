@@ -3,38 +3,22 @@ hasNode userInterfaceSpec
 	isOfClass = String("userInterface")
 	hasParent = StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..1")
-//	hasProperty uiName
-//		hasName = String("name")
-//		type = String("String")
-//		multiplicity = IntegerRange("1..1")
 
 hasNode toolBarSpec
-	isOfClass = String("toolBar")
+	isOfClass = String("top")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
-	hasProperty topName
-		hasName = String("name")
-		type = String("String")
-		multiplicity = IntegerRange("1..1")
 
 hasNode statusBarSpec
-	isOfClass = String("statusBar")
+	isOfClass = String("bottom")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
-	hasProperty bottomName
-		hasName = String("name")
-		type = String("String")
-		multiplicity = IntegerRange("1..1")
 
 // TODO: not sure yet how this recursion will be interpreted
 hasNode contentSpec 
-	isOfClass = String("content")
+	isOfClass = String("center")
 	hasParent = StringTable(([2]"userInterface:","content:"))
 	multiplicity = IntegerRange("0..1")
-	hasProperty contentName
-		hasName = String("name")
-		type = String("String")
-		multiplicity = IntegerRange("1..1")
 
 hasNode widgetSpec
 	isOfClass = String("widget")

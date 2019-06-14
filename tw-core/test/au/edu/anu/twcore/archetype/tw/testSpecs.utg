@@ -87,6 +87,10 @@ treegraph
 		timePeriod oioihfdd //31
 			start = Long(21354)
 	userInterface my_UI //32
+		top my_top // 46
+			widget widget1 // 47
+				order = Integer(1)
+				widgetClass = String("SingleGridWidget")
 	
 // CROSS-LINKS
 [table:tx] sizedBy [dimensioner:nsp]
