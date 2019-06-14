@@ -18,14 +18,9 @@ archetype 3wSA-RangeStoppingCondition
 			type = String("String")
 			multiplicity = IntegerRange("1..1")
 		// TODO: check that variable exists in component
-		// TODO: replace upper and lower by an interval
-		hasProperty UpperValueStoppingConditionStopRangePropertySpec
-			hasName = String("upper")
-			type = String("Double") 
-			multiplicity = IntegerRange("1..1")
-		hasProperty LowerValueStoppingConditionStopRangePropertySpec
-			hasName = String("lower")
-			type = String("Double") 
+		hasProperty StoppingConditionStopRangePropertySpec
+			hasName = String("range")
+			type = String("Interval") 
 			multiplicity = IntegerRange("1..1")
 		hasEdge RangeStoppingConditionSystemSpec
 			isOfClass = String("stopSystem")
