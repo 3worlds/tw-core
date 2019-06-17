@@ -45,6 +45,7 @@ package fr.cnrs.iees.twcore.constants;
  * always require a castingClass property) then make a separate class/enum that
  * associates these constants with casting class strings etc
  */
+@Deprecated
 public interface Configuration {
 	// 3Worlds Node labels
 	public static final String N_ROOT = "3worlds";

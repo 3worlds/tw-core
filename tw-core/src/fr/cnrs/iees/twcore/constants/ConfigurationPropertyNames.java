@@ -4,6 +4,9 @@ package fr.cnrs.iees.twcore.constants;
  * 
  * @author Jacques Gignoux - 31 mai 2019
  *
+ * NB at the moment I only listed the property names I needed in the code. More will probably
+ * come in later.
+ *
  */
 public enum ConfigurationPropertyNames {
 	

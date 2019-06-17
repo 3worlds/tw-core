@@ -91,6 +91,15 @@ treegraph
 			widget widget1 // 47
 				order = Integer(1)
 				widgetClass = String("SingleGridWidget")
+		bottom statusBar // 48
+		center theCentre // 49
+			widget widget1 // 50
+				order = Integer(2)
+				widgetClass = String("SimpleSimCtrlWidget")
+			widget widget1 // 51
+				order = Integer(12)
+				widgetClass = String("TimeDisplayWidgetfx")
+			
 	
 // CROSS-LINKS
 [table:tx] sizedBy [dimensioner:nsp]

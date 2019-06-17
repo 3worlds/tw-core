@@ -16,8 +16,6 @@ import au.edu.anu.twcore.root.World;
  *
  */
 public enum ConfigurationNodeLabels {
-
-	// TODO: all 'Object.class' must be replaced by a valid Node descendant
 	//========================================================================================
 	//							| label				| 	class					| initialisation rank
 	//----------------------------------------------------------------------------------------
@@ -40,8 +38,8 @@ public enum ConfigurationNodeLabels {
 				N_PRODUCE 		("produce",				Produce.class,				0),
 				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,0),
 				N_INITIALISER 	("initialiser",			Initialiser.class,			0),
-				N_PARAMETERVALUES("parameterValues",	Object.class,				0),
-				N_INITIALSTATE 	("initialState",		Object.class,				0),
+				N_PARAMETERVALUES("parameterValues",	ParameterValues.class,		0),
+				N_INITIALSTATE 	("initialState",		InitialState.class,			0),
 			N_STRUCTURE 		("structure",			Structure.class,			0),
 				N_CATEGORYSET 	("categorySet",			CategorySet.class,			0),
 				N_CATEGORY 		("category",			Category.class,				0), 
@@ -55,7 +53,7 @@ public enum ConfigurationNodeLabels {
 			N_TIMEPERIOD 		("timePeriod",			TimePeriod.class,			0),
 			N_MODELCHANGE 		("modelChange",			ModelChange.class,			0),
 			//TODO
-			N_DATAIO 			("dataIO",				Object.class,				0),
+//			N_DATAIO 			("dataIO",				Object.class,				0),
 		N_UI 					("userInterface",		TwUI.class,					0),
 			// TODO - Ian, I dont know how this fits with your work - I just defined these node classes
 		// to get the configuration load correctly, but feel free to merge them with your classes as needed
