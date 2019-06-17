@@ -1,12 +1,12 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.Initialisable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
+import au.edu.anu.twcore.InitialisableNode;
 
 /**
  * Class matching the "ecosystem/dynamics/timeLine/timeModel/process/dataTracker" node label in the 
@@ -15,7 +15,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
  * @author Jacques Gignoux - 7 juin 2019
  *
  */
-public class DataTracker extends TreeGraphDataNode implements Initialisable {
+public class DataTracker extends InitialisableNode {
 
 	public DataTracker(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -27,6 +27,7 @@ public class DataTracker extends TreeGraphDataNode implements Initialisable {
 
 	@Override
 	public void initialise() {
+		super.initialise();
 	}
 
 	@Override

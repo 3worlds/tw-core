@@ -1,14 +1,13 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.Initialisable;
 import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
+import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 
 /**
@@ -19,8 +18,8 @@ import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
  *
  */
 public class StoppingConditionNode 
-		extends TreeGraphDataNode 
-		implements Initialisable, Singleton<StoppingCondition> {
+		extends InitialisableNode 
+		implements Singleton<StoppingCondition> {
 
 	public StoppingConditionNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -32,6 +31,7 @@ public class StoppingConditionNode
 
 	@Override
 	public void initialise() {
+		super.initialise();
 	}
 
 	@Override

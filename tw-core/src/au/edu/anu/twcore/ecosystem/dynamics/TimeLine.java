@@ -1,12 +1,12 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.Initialisable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
+import au.edu.anu.twcore.InitialisableNode;
 
 /**
  * Time line common to all time models within a simulation. Internally time is
@@ -16,7 +16,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class TimeLine extends TreeGraphDataNode implements Initialisable {
+public class TimeLine extends InitialisableNode {
 
 	public TimeLine(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -28,6 +28,7 @@ public class TimeLine extends TreeGraphDataNode implements Initialisable {
 
 	@Override
 	public void initialise() {
+		super.initialise();
 	}
 
 	@Override

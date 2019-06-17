@@ -1,15 +1,14 @@
 package au.edu.anu.twcore.experiment;
 
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.Initialisable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
+import au.edu.anu.twcore.InitialisableNode;
 
 /**
  * Class matching the "experiment/treatment/modelChange" node label in the 3Worlds configuration tree.
@@ -18,7 +17,7 @@ import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
  * @author Jacques Gignoux - 31 mai 2019
  *
  */
-public class ModelChange extends TreeGraphDataNode implements Initialisable {
+public class ModelChange extends InitialisableNode {
 
 	public ModelChange(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -30,6 +29,7 @@ public class ModelChange extends TreeGraphDataNode implements Initialisable {
 
 	@Override
 	public void initialise() {
+		super.initialise();
 	}
 
 	@Override

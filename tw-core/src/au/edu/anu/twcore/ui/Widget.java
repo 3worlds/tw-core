@@ -1,12 +1,12 @@
 package au.edu.anu.twcore.ui;
 
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.Initialisable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
+import au.edu.anu.twcore.InitialisableNode;
 
 /**
  * A class matching the "widget" node of the 3Worlds configuration
@@ -14,7 +14,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-public class Widget extends TreeGraphDataNode implements Initialisable {
+public class Widget extends InitialisableNode {
 
 	public Widget(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -26,6 +26,7 @@ public class Widget extends TreeGraphDataNode implements Initialisable {
 
 	@Override
 	public void initialise() {
+		super.initialise();
 	}
 
 	@Override

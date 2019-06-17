@@ -1,12 +1,11 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
+import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.Initialisable;
 import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
@@ -16,7 +15,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class TimeModel extends TreeGraphDataNode implements Initialisable, Singleton<Timer> {
+public class TimeModel extends InitialisableNode implements Singleton<Timer> {
 
 	public TimeModel(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -28,6 +27,7 @@ public class TimeModel extends TreeGraphDataNode implements Initialisable, Singl
 
 	@Override
 	public void initialise() {
+		super.initialise();
 	}
 
 	@Override

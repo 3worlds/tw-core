@@ -1,10 +1,11 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
+import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
-import fr.ens.biologie.generic.Initialisable;
+import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
@@ -16,15 +17,22 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
  *
  */
 public class ProcessNode 
-		extends TreeGraphNode 
-		implements Initialisable, Singleton<TwProcess> {
+		extends InitialisableNode 
+		implements Singleton<TwProcess> {
 
+	// default constructor
+	public ProcessNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+		super(id, props, gfactory);
+	}
+
+	// constructor with no properties
 	public ProcessNode(Identity id, GraphFactory gfactory) {
-		super(id, gfactory);
+		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
 	@Override
 	public void initialise() {
+		super.initialise();
 	}
 
 	@Override

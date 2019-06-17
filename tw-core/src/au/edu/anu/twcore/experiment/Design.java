@@ -1,16 +1,16 @@
 package au.edu.anu.twcore.experiment;
 
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
-import fr.ens.biologie.generic.Initialisable;
 import fr.ens.biologie.generic.Resettable;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+
+import au.edu.anu.twcore.InitialisableNode;
 
 /**
  * Class matching the "experiment/design" node label in the 3Worlds configuration tree.
@@ -19,7 +19,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  * @author Jacques Gignoux - 31 mai 2019
  *
  */
-public class Design extends TreeGraphDataNode implements Initialisable, Resettable {
+public class Design extends InitialisableNode implements Resettable {
 
 	private ExperimentDesignType type = null;
 	private String fileName = null;
@@ -35,6 +35,7 @@ public class Design extends TreeGraphDataNode implements Initialisable, Resettab
 
 	@Override
 	public void initialise() {
+		super.initialise();
 		// todo: load the design file
 	}
 

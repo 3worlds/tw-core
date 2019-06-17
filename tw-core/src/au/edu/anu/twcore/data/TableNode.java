@@ -2,12 +2,10 @@ package au.edu.anu.twcore.data;
 
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Factory;
-import fr.ens.biologie.generic.Initialisable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -20,6 +18,7 @@ import static fr.cnrs.iees.io.parsing.ValidPropertyTypes.*;
 
 import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.rscs.aot.util.StringUtils;
+import au.edu.anu.twcore.InitialisableNode;
 
 /**
  * Class matching the "table" node label in the 3Worlds configuration tree.
@@ -31,8 +30,8 @@ import au.edu.anu.rscs.aot.util.StringUtils;
  *
  */
 public class TableNode 
-		extends TreeGraphDataNode 
-		implements Initialisable, Factory<Table> {
+		extends InitialisableNode 
+		implements Factory<Table> {
 
 	private Dimensioner[] dims = null;
 	private String dataType = null;
@@ -42,13 +41,15 @@ public class TableNode
 	}
 	
 	public TableNode(Identity id, GraphFactory gfactory) {
-		super(id, new ExtendablePropertyListImpl(), gfactory);
+		super(id, new ExtendablePropertyListImpl(), gfactory);		super.initialise();
+
 	}
 
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
+		super.initialise();
 		List<DimNode> d = (List<DimNode>) get(this.edges(Direction.OUT),
 			selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
 			edgeListEndNodes());
