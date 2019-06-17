@@ -22,14 +22,14 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  * Time line common to all time models within a simulation. Internally time is
  * represented as longs, simulation start occurs at t=0 and one tick matches one
  * timeGrain.
- * 
+ *
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
 public class TimeLine extends InitialisableNode implements Sealable {
-	
+
 	private boolean sealed = false;
-	
+
 	/** the type of time scale used for this time line */
 	private TimeScaleType timeScale;
 	/** the set of time units compatible with this time scale type */
@@ -94,7 +94,7 @@ public class TimeLine extends InitialisableNode implements Sealable {
 		}
 		sealed = true;
 	}
-	
+
 
 	@Override
 	public int initRank() {
@@ -113,29 +113,29 @@ public class TimeLine extends InitialisableNode implements Sealable {
 	}
 
 	// all these methods are valid only after initialise() has been called;
-	
+
 	public final TimeScaleType getTimeScale() {
-		if (!sealed)
+		if (sealed)
 			return timeScale;
-		throw new TwcoreException("attempt to access sealed data");
+		throw new TwcoreException("attempt to access uninitialised data");
 	}
 
 	public final Set<TimeUnits> timeUnits() {
-		if (!sealed)
+		if (sealed)
 			return timeUnits;
-		throw new TwcoreException("attempt to access sealed data");
+		throw new TwcoreException("attempt to access uninitialised data");
 	}
-	
+
 	public final TimeUnits shortestTimeUnit() {
-		if (!sealed)
+		if (sealed)
 			return timeUnits.first();
-		throw new TwcoreException("attempt to access sealed data");
+		throw new TwcoreException("attempt to access uninitialised data");
 	}
 
 	public final TimeUnits longestTimeUnit() {
-		if (!sealed)
+		if (sealed)
 			return timeUnits.last();
-		throw new TwcoreException("attempt to access sealed data");
+		throw new TwcoreException("attempt to access uninitialised data");
 	}
 
 

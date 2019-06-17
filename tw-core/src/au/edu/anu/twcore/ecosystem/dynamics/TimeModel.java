@@ -3,35 +3,46 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
+import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
+import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.TimeUtil;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
+import fr.ens.biologie.generic.Resettable;
+import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 /**
  * Class matching the "ecosystem/dynamics/timeLine/timeModel" node label in the 3Worlds configuration tree.
- * 
+ *
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class TimeModel extends InitialisableNode implements Singleton<Timer> {
+public class TimeModel
+		extends InitialisableNode
+		implements Singleton<Timer>, Sealable, Resettable {
+
+	private boolean sealed = false;
 
 	/** the reference time scale, normally belonging to the TimerModelSimulator */
 	protected TimeLine timeLine;
-	
+
 	private TimeUnits timeUnit;
 
 	private int nTimeUnits;
 
 	protected boolean isExact;
-	
+
 	/** if isExact is false grainsPerBaseUnit will be zero */
 	protected long grainsPerBaseUnit;
-	
+
 	private Timer timer = null;
 
 
@@ -46,6 +57,7 @@ public class TimeModel extends InitialisableNode implements Singleton<Timer> {
 	@Override
 	public void initialise() {
 		super.initialise();
+		sealed = false;
 		timeLine = (TimeLine) getParent();
 		timeUnit = (TimeUnits) properties().getPropertyValue("timeUnit");
 		nTimeUnits = (Integer) properties().getPropertyValue("nTimeUnits");
@@ -55,9 +67,24 @@ public class TimeModel extends InitialisableNode implements Singleton<Timer> {
 			grainsPerBaseUnit = nTimeUnits;
 		else
 			grainsPerBaseUnit = nTimeUnits * unitConversionFactor;
-		if (properties().getPropertyValue("subclass").equals("au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer")) {
+		// Clock timer
+		if (properties().getPropertyValue("subclass")
+				.equals("au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer")) {
 			timer = new ClockTimer(this);
 		}
+		// event-driven timer
+		else if (properties().getPropertyValue("subclass")
+				.equals("au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer")) {
+			EventQueue eq = (EventQueue) get(this.getChildren(),
+				selectOne(hasTheLabel(N_EVENTQUEUE.label())));
+			timer = new EventTimer(eq);
+		}
+		// scenario timer
+		else if (properties().getPropertyValue("subclass")
+				.equals("au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer")) {
+			timer = new ScenarioTimer();
+		}
+		sealed = true;
 	}
 
 	@Override
@@ -67,7 +94,51 @@ public class TimeModel extends InitialisableNode implements Singleton<Timer> {
 
 	@Override
 	public Timer getInstance() {
-		return timer;
+		if (sealed)
+			return timer;
+		throw new TwcoreException("attempt to access uninitialised data");
 	}
-	
+
+	public int nTimeUnits() {
+		if (sealed)
+			return nTimeUnits;
+		throw new TwcoreException("attempt to access uninitialised data");
+	}
+
+	public TimeUnits timeUnit() {
+		if (sealed)
+			return timeUnit;
+		throw new TwcoreException("attempt to access uninitialised data");
+	}
+
+	public TimeLine timeLine() {
+		if (sealed)
+			return timeLine;
+		throw new TwcoreException("attempt to access uninitialised data");
+	}
+
+	public boolean isExact() {
+		if (sealed)
+			return isExact;
+		throw new TwcoreException("attempt to access uninitialised data");
+	}
+
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
+	}
+
+	@Override
+	public void reset() {
+		if (sealed)
+			timer.reset();
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
+	}
 }
