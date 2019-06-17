@@ -19,6 +19,9 @@ public enum ConfigurationPropertyNames {
 	P_MODELCHANGE_REPLACEWITH	("replaceWith"),
 	P_TIMEPERIOD_START			("start"),
 	P_TIMEPERIOD_END			("end"),
+	P_TIMELINE_SCALE			("scale"),
+	P_TIMELINE_SHORTTU			("shortestTimeUnit"),
+	P_TIMELINE_LONGTU			("longestTimeUnit"),
 	;
 
 	private final String pname;
