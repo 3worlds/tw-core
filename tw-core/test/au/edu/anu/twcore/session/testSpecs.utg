@@ -1,0 +1,126 @@
+treegraph
+// a test file for 3worlds specifications
+
+	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
+	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+
+// TREE 
+3worlds my_model						
+	dataDefinition my_data //2
+		dimensioner nsp //3
+			size = Integer(4)
+		dimensioner n2 //4
+			size = Integer(3)
+		record myRec  //5
+			field x //6
+				type = String("Double")
+			table tx //7
+				dataElementType = String("Boolean")
+		record myOtherRec //8
+			table ty //9
+				record tableContent //10
+					field a //11
+						type = String("integer")
+					field b //12
+						type = String("String")		
+	system my_ecosystem //13
+		structure anything //14
+			categorySet everything //15
+				category my_category //16
+				category my_other_category //17
+			component myAgent //18
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			relationType myRelation //19
+		dynamics my_simulator //20
+			initialiser my_initialiser //21
+			timeLine my_time_line //22
+				scale = fr.cnrs.iees.twcore.constants.TimeScaleType(MONO_UNIT)
+				shortestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+				longestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+				timeModel my_timeModel //23
+					timeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+					nTimeUnits = Integer(1)
+					subclass = String("au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer")
+					dt = Long(3)
+					runAtTimeZero = Boolean(false)
+					process my_otherProcess // 34
+						function Growth // 35
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeOtherState)
+							function Sleep // 37
+								type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(DeleteDecision)
+				timeModel my_2ndTimeModel //24
+					timeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+					nTimeUnits = Integer(2)
+					subclass = String("au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer")
+					eventQueue my_queue //25
+					process my_Process // 33
+						dataTracker estupido // 36
+			lifeCycle my_hapy_life // 38
+				produce lkhds // 39
+				recruit lkhsfd // 40
+				recruit aazedsds // 41
+			stoppingCondition my_stop // 42
+				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition")
+				endTime = Long(12)
+			stoppingCondition my_other_stop // 43
+				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition")
+				stopVariable = String("x")
+				stopValue = Double(53.2)
+			stoppingCondition another_stop // 44
+				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition")
+				stopVariable = String("x")
+				range = Interval([25.2,53.2])
+			stoppingCondition one_more_another_stop // 45
+				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition")
+	experiment my_experiment //26
+		design myDesign //27
+			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)
+		treatment A //28
+			replicates = Integer(32)
+			modelChange chgZ //29
+				parameter = String("Z")
+				replaceWith = DoubleTable(([3]1.0,7.0,143.2))
+		treatment B //30
+			replicates = Integer(7)
+		timePeriod oioihfdd //31
+			start = Long(21354)
+	userInterface my_UI //32
+		top my_top // 46
+			widget widget1 // 47
+				order = Integer(1)
+				widgetClass = String("SingleGridWidget")
+		bottom statusBar // 48
+		center theCentre // 49
+			widget widget1 // 50
+				order = Integer(2)
+				widgetClass = String("SimpleSimCtrlWidget")
+			widget widget1 // 51
+				order = Integer(12)
+				widgetClass = String("TimeDisplayWidgetfx")
+			
+	
+// CROSS-LINKS
+[table:tx] sizedBy [dimensioner:nsp]
+[table:ty] sizedBy [dimensioner:nsp]
+[table:ty] sizedBy [dimensioner:n2]
+[experiment:my_experiment] baseLine [system:my_ecosystem]
+[treatment:B] modelSetup [system:my_ecosystem]
+[category:my_category] parameters [record:myRec]
+[category:my_category] drivers [record:myOtherRec]
+[component:myAgent] belongsTo [category:my_category]
+[component:myAgent] initialisedBy [initialiser:my_initialiser]
+[relationType:myRelation] fromCategory [category:my_category]
+[relationType:myRelation] toCategory [category:my_other_category]
+[process:my_Process] appliesTo [category:my_other_category]
+[process:my_otherProcess] appliesTo [relationType:myRelation]
+[process:my_otherProcess] dependsOn [process:my_Process]
+[lifeCycle:my_hapy_life] appliesTo [categorySet:everything]
+[produce:lkhds] effectedBy [process:my_Process]
+[recruit:lkhsfd] effectedBy [process:my_otherProcess]
+[recruit:aazedsds] effectedBy [process:my_Process]
+[stoppingCondition:my_other_stop] stopSystem [component:myAgent]
+[stoppingCondition:another_stop] stopSystem [component:myAgent]
+[stoppingCondition:one_more_another_stop] condition [stoppingCondition:my_stop]
+[stoppingCondition:one_more_another_stop] condition [stoppingCondition:my_other_stop]
