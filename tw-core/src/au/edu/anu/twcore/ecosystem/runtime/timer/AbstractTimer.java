@@ -1,14 +1,17 @@
 package au.edu.anu.twcore.ecosystem.runtime.timer;
 
+import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 
 public abstract class AbstractTimer implements Timer {
 
 	/** The last time at which this time model was activated */
 	protected long lastTime = 0L;
+	protected TimeModel timeModel;
 
-	public AbstractTimer() {
-		// TODO Auto-generated constructor stub
+	public AbstractTimer(TimeModel timeModel) {
+		super();
+		this.timeModel = timeModel;
 	}
 
 	/**

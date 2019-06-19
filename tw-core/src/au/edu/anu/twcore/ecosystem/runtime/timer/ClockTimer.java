@@ -16,13 +16,12 @@ public class ClockTimer extends AbstractTimer {
 	private long dt;
 // TODO: get rid of this - looks like a flaw
 //	private boolean runAtTimeZero;
-	private TimeModel timeModel;
 	// for calendar-based timers
 	private TimeUnits baseUnit  = TimeUnits.UNSPECIFIED;
 	private long startTime = 0L;
 
 	public ClockTimer(TimeModel timeModel) {
-		super();
+		super(timeModel);
 		this.timeModel = timeModel;
 		dt = (long) timeModel.properties().getPropertyValue("dt");
 //		runAtTimeZero = (boolean) timeModel.properties().getPropertyValue("runAtTimeZero");

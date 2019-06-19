@@ -11,11 +11,13 @@ import fr.ens.biologie.generic.Sealable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.runtime.timer.TimeUtil;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
@@ -34,6 +36,10 @@ public class TimeLine extends InitialisableNode implements Sealable {
 	private TimeScaleType timeScale;
 	/** the set of time units compatible with this time scale type */
 	private SortedSet<TimeUnits> timeUnits;
+	/** time origin in shortestTimeUnit units*/
+	private long timeOrigin = 0L;
+	/** Calendar value at originTime (0L = 1970/1/1 midnight) */
+	private LocalDateTime startDateTime;
 
 	public TimeLine(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -50,6 +56,8 @@ public class TimeLine extends InitialisableNode implements Sealable {
 		timeScale = (TimeScaleType) properties().getPropertyValue(P_TIMELINE_SCALE.key());
 		TimeUnits minTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_SHORTTU.key());
 		TimeUnits maxTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_LONGTU.key());
+		if (properties().hasProperty(P_TIMELINE_TIMEORIGIN.key()))
+			timeOrigin = (long) properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
 		// This is now in the TimeScaleType.validTimeUnits() BUT should be made static
 		timeUnits = new TreeSet<TimeUnits>();
 		if (timeScale.equals(TimeScaleType.ARBITRARY))
@@ -92,9 +100,15 @@ public class TimeLine extends InitialisableNode implements Sealable {
 					if (u.compareTo(minTU) >= 0)
 						timeUnits.add(u);
 		}
+		startDateTime = TimeUtil.longToDate(timeOrigin,shortestTimeUnit());
 		sealed = true;
 	}
 
+	public LocalDateTime getTimeOrigin() {
+		if (sealed)
+			return startDateTime;
+		throw new TwcoreException("attempt to access uninitialised data");
+	}
 
 	@Override
 	public int initRank() {

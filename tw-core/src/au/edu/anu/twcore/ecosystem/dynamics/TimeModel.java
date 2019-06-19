@@ -77,12 +77,12 @@ public class TimeModel
 				.equals("au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer")) {
 			EventQueue eq = (EventQueue) get(this.getChildren(),
 				selectOne(hasTheLabel(N_EVENTQUEUE.label())));
-			timer = new EventTimer(eq);
+			timer = new EventTimer(eq,this);
 		}
 		// scenario timer
 		else if (properties().getPropertyValue("subclass")
 				.equals("au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer")) {
-			timer = new ScenarioTimer();
+			timer = new ScenarioTimer(this);
 		}
 		sealed = true;
 	}
@@ -141,4 +141,30 @@ public class TimeModel
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
+	
+	/**
+	 * Utility to convert user time of this time unit to base time in timeLine time
+	 * grains.
+	 * 
+	 * Watch out for this now: if you want the value of a time segment between t1
+	 * and t2 you need to call this function for each t1 and t2 and take the
+	 * difference to get the time line segment value.
+	 * 
+	 * 
+	 * 
+	 * @param modelTime
+	 *            the user time to convert from
+	 * @return internal time (= number of timegrains)
+	 */
+	public final long modelToBaseTime(double modelTime) {
+		if (isExact)
+			return Math.round(modelTime * grainsPerBaseUnit);
+		else {
+			double result = TimeUtil.convertTime(modelTime, timeUnit, timeLine.shortestTimeUnit(),
+					timeLine.getTimeOrigin());
+			result = result * nTimeUnits;
+			return Math.round(result);
+		}
+	}
+
 }

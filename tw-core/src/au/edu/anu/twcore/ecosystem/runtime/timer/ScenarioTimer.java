@@ -1,5 +1,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.timer;
 
+import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
+
 /**
  * Implementation of Timer with a scenario time model
  *
@@ -8,8 +10,8 @@ package au.edu.anu.twcore.ecosystem.runtime.timer;
  */
 public class ScenarioTimer extends AbstractTimer {
 
-	public ScenarioTimer() {
-		// TODO Auto-generated constructor stub
+	public ScenarioTimer(TimeModel timeModel) {
+		super(timeModel);
 	}
 
 	@Override

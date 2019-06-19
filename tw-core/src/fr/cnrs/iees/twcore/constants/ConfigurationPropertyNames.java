@@ -22,6 +22,7 @@ public enum ConfigurationPropertyNames {
 	P_TIMELINE_SCALE			("scale"),
 	P_TIMELINE_SHORTTU			("shortestTimeUnit"),
 	P_TIMELINE_LONGTU			("longestTimeUnit"),
+	P_TIMELINE_TIMEORIGIN		("timeOrigin"),
 	;
 
 	private final String pname;
