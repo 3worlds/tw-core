@@ -100,7 +100,7 @@ public class TimeLine extends InitialisableNode implements Sealable {
 					if (u.compareTo(minTU) >= 0)
 						timeUnits.add(u);
 		}
-		startDateTime = TimeUtil.longToDate(timeOrigin,shortestTimeUnit());
+		startDateTime = TimeUtil.longToDate(timeOrigin,minTU);
 		sealed = true;
 	}
 

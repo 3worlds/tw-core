@@ -15,7 +15,7 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 29 mai 2019
  *
  */
-public class Category extends InitialisableNode {
+public class Category extends InitialisableNode implements Comparable<Category> {
 
 	// default constructor
 	public Category(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -35,6 +35,19 @@ public class Category extends InitialisableNode {
 	@Override
 	public int initRank() {
 		return N_CATEGORY.initRank();
+	}
+
+	public String name() {
+		return classId();
+	}
+	
+	public CategorySet categorySet() {
+		return (CategorySet) getParent();
+	}
+
+	@Override
+	public int compareTo(Category other) {
+		return this.classId().compareTo(other.classId());
 	}
 
 }

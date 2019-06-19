@@ -55,7 +55,6 @@ hasNode timePeriodSpec
 	isOfClass = String("timePeriod")
 	hasParent =  StringTable(([1]"experiment:"))
 	multiplicity = IntegerRange("1..*")
-	// this may be a flaw: how can you precisely specify a parameter with just a String ?
 	hasProperty timePeriodStartSpec
 		hasName = String("start")
 		type = String("Long")

@@ -22,6 +22,8 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 /**
  * Class matching the "ecosystem/dynamics/timeLine/timeModel" node label in the 3Worlds configuration tree.
  *
+ * NB grain has been removed (now equals 1)
+ *
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
@@ -38,10 +40,10 @@ public class TimeModel
 
 	private int nTimeUnits;
 
-	protected boolean isExact;
+	protected boolean isExact = false;
 
 	/** if isExact is false grainsPerBaseUnit will be zero */
-	protected long grainsPerBaseUnit;
+	protected long grainsPerBaseUnit = 0L;
 
 	private Timer timer = null;
 

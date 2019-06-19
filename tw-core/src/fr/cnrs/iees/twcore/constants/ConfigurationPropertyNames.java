@@ -23,6 +23,11 @@ public enum ConfigurationPropertyNames {
 	P_TIMELINE_SHORTTU			("shortestTimeUnit"),
 	P_TIMELINE_LONGTU			("longestTimeUnit"),
 	P_TIMELINE_TIMEORIGIN		("timeOrigin"),
+	P_COMPONENT_LIFESPAN		("lifeSpan"),
+	P_PARAMETERCLASS			("parameterClass"),
+	P_DRIVERCLASS				("driverClass"), 
+	P_DECORATORCLASS			("decoratorClass"), 
+
 	;
 
 	private final String pname;

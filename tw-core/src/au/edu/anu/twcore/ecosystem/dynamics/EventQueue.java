@@ -62,6 +62,7 @@ public class EventQueue extends InitialisableNode {
 	@Override
 	public void initialise() {
 		super.initialise();
+		// NB: initialised after TimeModel
 		TimeModel timeModel = (TimeModel) getParent();
 		startDateTime = timeModel.timeLine.getTimeOrigin();
 		to = (TimeUnits) timeModel.properties().getPropertyValue("timeUnit");

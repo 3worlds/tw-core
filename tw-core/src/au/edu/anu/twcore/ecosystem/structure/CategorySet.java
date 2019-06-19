@@ -37,4 +37,13 @@ public class CategorySet extends InitialisableNode {
 		return N_CATEGORYSET.initRank();
 	}
 
+	@SuppressWarnings("unchecked")
+	public Iterable<Category> categories() {
+		return (Iterable<Category>) getChildren();
+	}
+	
+	public String name() {
+		return classId();
+	}
+
 }

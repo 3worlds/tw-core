@@ -8,6 +8,7 @@ package fr.cnrs.iees.twcore.constants;
  * @author J.Gignoux - 8 févr. 2017
  *
  */
+@Deprecated  // replaced by ConfigurationNodeLabels, ConfigurationEdgeLabels and ConfigurationPropertyNames
 public enum ThreeWorldsGraphReference {
 	/*-constant             name in archetype       class associated to node (for casting*/
 	N_GRAPHROOT/*-			*/("3worlds",/*-		*/null), //

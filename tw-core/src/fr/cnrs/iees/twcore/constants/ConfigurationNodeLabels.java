@@ -43,7 +43,7 @@ public enum ConfigurationNodeLabels {
 			N_STRUCTURE 		("structure",			Structure.class,			0),
 				N_CATEGORYSET 	("categorySet",			CategorySet.class,			0),
 				N_CATEGORY 		("category",			Category.class,				0), 
-				N_COMPONENT 	("component",			SystemFactory.class,		0),
+				N_COMPONENT 	("component",			SystemFactory.class,		10), // after category and categorySet
 				N_RELATIONTYPE 	("relationType",		RelationType.class,			0),
 				// I am not sure this one is needed - for initialisation maybe ?
 //				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
