@@ -1,4 +1,4 @@
-package au.edu.anu.twcore.ecosystem.runtime;
+package au.edu.anu.twcore.ecosystem.structure.system;
 
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;

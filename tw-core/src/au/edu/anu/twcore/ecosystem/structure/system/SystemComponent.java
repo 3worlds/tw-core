@@ -1,4 +1,4 @@
-package au.edu.anu.twcore.ecosystem.runtime;
+package au.edu.anu.twcore.ecosystem.structure.system;
 
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALDataNode;
@@ -14,7 +14,12 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  */
 public class SystemComponent extends ALDataNode {
 
-	public SystemComponent(Identity id, SimplePropertyList props, GraphFactory factory) {
+	/** indexes to access state variable table */
+	protected static int CURRENT = 1;
+	protected static int NEXT = CURRENT - 1;
+	protected static int PAST0 = CURRENT + 1;
+	
+	protected SystemComponent(Identity id, SimplePropertyList props, GraphFactory factory) {
 		super(id, props, factory);
 	}
 

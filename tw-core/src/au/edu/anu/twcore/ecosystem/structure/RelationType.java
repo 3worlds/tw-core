@@ -8,7 +8,7 @@ import fr.ens.biologie.generic.Factory;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.ecosystem.runtime.SystemRelation;
+import au.edu.anu.twcore.ecosystem.structure.system.SystemRelation;
 
 /**
  * 

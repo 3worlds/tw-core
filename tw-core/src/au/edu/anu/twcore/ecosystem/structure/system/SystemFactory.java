@@ -1,20 +1,22 @@
-package au.edu.anu.twcore.ecosystem.structure;
+package au.edu.anu.twcore.ecosystem.structure.system;
 
 import au.edu.anu.rscs.aot.collections.DynamicList;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.SystemComponent;
+import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.ALNode;
+import fr.cnrs.iees.graph.impl.ALGraphFactory;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.LifespanType;
-import fr.cnrs.iees.twcore.constants.ThreeWorldsGraphReference;
 import fr.ens.biologie.generic.Factory;
 import fr.ens.biologie.generic.Sealable;
 
@@ -22,10 +24,13 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.twcore.ecosystem.structure.system.SystemComponentPropertyListImpl.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -41,6 +46,15 @@ public class SystemFactory
 		extends InitialisableNode 
 		implements Factory<SystemComponent>, Categorized, Sealable {
 	
+	// the factory for SystemComponents and SystemRelations
+	private static GraphFactory SCfactory = null;
+	static {
+		Map<String,String> labels = new HashMap<>();
+		labels.put("component", "au.edu.anu.twcore.ecosystem.runtime.SystemComponent");
+		labels.put("relation", "au.edu.anu.twcore.ecosystem.runtime.SystemRelation");
+		SCfactory = new ALGraphFactory("3w",labels);
+	}
+	
 	private SortedSet<Category> categories = new TreeSet<>();
 	private boolean sealed = false;
 	private boolean permanent;
@@ -48,6 +62,7 @@ public class SystemFactory
 	private TwData parameterTemplate = null;
 	private TwData driverTemplate = null;
 	private TwData decoratorTemplate = null;
+	private Map<String, Integer> propertyMap = new HashMap<String, Integer>();
 
 	public SystemFactory(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -85,10 +100,18 @@ public class SystemFactory
 		}
 		if (generateDataClasses) {
 			// we reach here only if no data has been specified or no data class has been generated
-			getDataTree(E_PARAMETERS);
-			getDataTree(E_DRIVERS);
-			getDataTree(E_DECORATORS);
+			buildUniqueDataList(E_PARAMETERS.label());
+			buildUniqueDataList(E_DRIVERS.label());
+			buildUniqueDataList(E_DECORATORS.label());
 		}
+		if (driverTemplate != null)
+			for (String key : driverTemplate.getKeysAsSet())
+				propertyMap.put(key, DRIVERS);
+		for (String key : SystemData.keySet)
+			propertyMap.put(key, AUTO);
+		if (decoratorTemplate != null)
+			for (String key : decoratorTemplate.getKeysAsSet())
+				propertyMap.put(key, DECO);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -102,7 +125,6 @@ public class SystemFactory
 			newData = dataConstructor.newInstance();
 			newData.clear();
 		} catch (Exception e) {
-			// return null;
 			e.printStackTrace();
 		}
 		return newData;
@@ -113,12 +135,25 @@ public class SystemFactory
 		return N_COMPONENT.initRank();
 	}
 
+	/**
+	 * 
+	 * @return a new SystemComponent with the proper data structure
+	 */
 	@Override
-	public SystemComponent newInstance() {
-		// TODO Auto-generated method stub
-		return null;
+	public final SystemComponent newInstance() {
+		SimplePropertyList props = new SystemComponentPropertyListImpl(driverTemplate,
+			decoratorTemplate,2,propertyMap);
+		return (SystemComponent) SCfactory.makeNode(SystemComponent.class,"C0",props);
 	}
 
+	/** returns a new parameterSet of the proper structure for this SystemFactory */
+	public final TwData newParameterSet() {
+		if (parameterTemplate != null)
+			return parameterTemplate.clone().clear();
+		else
+			return null;
+	}
+	
 	@Override
 	public Set<Category> categories() {
 		if (sealed)
@@ -144,7 +179,6 @@ public class SystemFactory
 	public boolean isSealed() {
 		return sealed;
 	}
-
 	
 	/**
 	 * climbs up the category tree to get all the categories this system is nested
@@ -186,12 +220,11 @@ public class SystemFactory
 	 *            structure is built
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	private ALNode buildUniqueDataList(String dataGroup) {
-		ALNode mergedRoot = null;
-		DynamicList<ALNode> roots = new DynamicList<ALNode>();
+	private TreeGraphDataNode buildUniqueDataList(String dataGroup) {
+		TreeGraphDataNode mergedRoot = null;
+		DynamicList<TreeGraphDataNode> roots = new DynamicList<TreeGraphDataNode>();
 		for (Category cat : categories) {
-			ALNode n = (ALNode) get(cat.edges(Direction.OUT), 
+			TreeGraphDataNode n = (TreeGraphDataNode) get(cat.edges(Direction.OUT), 
 				selectZeroOrOne(hasTheLabel(dataGroup)), 
 				endNode());
 			if (n != null)
@@ -199,48 +232,27 @@ public class SystemFactory
 		}
 		if (roots.size() == 1)
 			mergedRoot = roots.iterator().next();
-		
-// TODO: work in progress		
-		
-//		else if (roots.size() > 1) {
-//			mergedRoot = new AotNode().setLabel(N_RECORD.toString());
-//			mergedRoot = new Record();
-//			mergedRoot.addProperty("generated", true);
-//			String mergedRootName = "";
-//			for (AotNode n : roots) {
-//				mergedRootName += n.getName() + " ";
-//				if (n.getLabel().equals(N_RECORD.toString())) {
-//					Iterable<AotNode> nl = (Iterable<AotNode>) get(n.getEdges(Direction.OUT), edgeListEndNodes(),
-//							selectZeroOrMany(orQuery(hasTheLabel(N_RECORD.toString()), hasTheLabel(N_FIELD.toString()),
-//									hasTheLabel(N_TABLE.toString()))));
-//					for (AotNode nn : nl)
-//						new AotEdge(mergedRoot, nn).setLabel(Trees.CHILD_LABEL);
-//				} else {
-//					new AotEdge(mergedRoot, n).setLabel(Trees.CHILD_LABEL);
-//				}
-//			}
-//			mergedRoot.setName(NameUtils.wordUpperCaseName(mergedRootName + " " + dataGroup));
-//		}
-//		if (mergedRoot != null)
-//			if (dataGroup.equals(E_DRIVERS.toString()))
-//				mergedRoot.addProperty(P_DYNAMIC.toString(), true);
-//			else
-//				mergedRoot.addProperty(P_DYNAMIC.toString(), false);
+		else if (roots.size() > 1) {
+			// work out merged root name
+			StringBuilder mergedRootName = new StringBuilder();
+			for (TreeGraphDataNode n : roots)
+				mergedRootName.append(n.id()).append('_');
+			mergedRootName.append(dataGroup);
+			// make a single root record and merge data requirements into it
+			mergedRoot = (TreeGraphDataNode) factory().makeNode(Record.class,mergedRootName.toString());
+			for (TreeGraphDataNode n:roots)
+				if (n.classId().equals(N_RECORD.label()))
+					mergedRoot.connectChildren(n.getChildren()); // caution: this changes the graph
+				else
+					mergedRoot.connectChild(n);
+			((ExtendablePropertyList)mergedRoot.properties()).addProperty("generated", true);
+		}
+		if (mergedRoot != null)
+			if (dataGroup.equals(E_DRIVERS.label()))
+				((ExtendablePropertyList)mergedRoot).addProperty(P_DYNAMIC.key(), true);
+			else
+				((ExtendablePropertyList)mergedRoot).addProperty(P_DYNAMIC.key(), false);
 		return mergedRoot;
 	}
-
-	/**
-	 * assembles a tree describing the data structure needed for
-	 * parameters/drivers/decorators for this system, based on its category
-	 * membership and on the hierarchy between categories
-	 * 
-	 * @return the root node of the data structure tree
-	 */
-	private ALNode getDataTree(ConfigurationEdgeLabels edgeLabel) {
-		ALNode tree = null;
-		tree = buildUniqueDataList(edgeLabel.label());
-		return tree;
-	}
-
 	
 }

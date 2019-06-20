@@ -27,7 +27,7 @@ public enum ConfigurationPropertyNames {
 	P_PARAMETERCLASS			("parameterClass"),
 	P_DRIVERCLASS				("driverClass"), 
 	P_DECORATORCLASS			("decoratorClass"), 
-
+	P_DYNAMIC					("dynamic"), 
 	;
 
 	private final String pname;
