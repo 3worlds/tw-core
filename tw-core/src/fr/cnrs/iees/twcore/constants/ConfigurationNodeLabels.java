@@ -38,14 +38,14 @@ public enum ConfigurationNodeLabels {
 				N_RECRUIT 		("recruit",				Recruit.class,				0),
 				N_PRODUCE 		("produce",				Produce.class,				0),
 				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,0),
-				N_INITIALISER 	("initialiser",			Initialiser.class,			0),
+				N_INITIALISER 	("initialiser",			Initialiser.class,			20), // after relation
 				N_PARAMETERVALUES("parameterValues",	ParameterValues.class,		0),
 				N_INITIALSTATE 	("initialState",		InitialState.class,			0),
 			N_STRUCTURE 		("structure",			Structure.class,			0),
 				N_CATEGORYSET 	("categorySet",			CategorySet.class,			0),
 				N_CATEGORY 		("category",			Category.class,				0), 
 				N_COMPONENT 	("component",			SystemFactory.class,		10), // after category and categorySet
-				N_RELATIONTYPE 	("relationType",		RelationType.class,			0),
+				N_RELATIONTYPE 	("relationType",		RelationType.class,			10), // after category
 				// I am not sure this one is needed - for initialisation maybe ?
 //				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
 		N_EXPERIMENT 			("experiment",			Experiment.class,			0),

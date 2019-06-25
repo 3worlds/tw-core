@@ -10,6 +10,7 @@ import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALGraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
@@ -188,10 +189,13 @@ public class SystemFactory
 	 */
 	private void getSuperCategories(Category cat) {
 		CategorySet partition = (CategorySet) cat.getParent();
-		Category superCategory = (Category) partition.getParent();
-		if (superCategory!=null) {
-			categories.add(superCategory);
-			getSuperCategories(superCategory);
+		TreeNode tgn = partition.getParent();
+		if (tgn instanceof Category) {
+			Category superCategory = (Category) tgn;
+			if (superCategory!=null) {
+				categories.add(superCategory);
+				getSuperCategories(superCategory);
+		}
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -249,9 +253,9 @@ public class SystemFactory
 		}
 		if (mergedRoot != null)
 			if (dataGroup.equals(E_DRIVERS.label()))
-				((ExtendablePropertyList)mergedRoot).addProperty(P_DYNAMIC.key(), true);
+				((ExtendablePropertyList)mergedRoot.properties()).addProperty(P_DYNAMIC.key(), true);
 			else
-				((ExtendablePropertyList)mergedRoot).addProperty(P_DYNAMIC.key(), false);
+				((ExtendablePropertyList)mergedRoot.properties()).addProperty(P_DYNAMIC.key(), false);
 		return mergedRoot;
 	}
 	
