@@ -1,4 +1,4 @@
-package rendezvous;
+package rendezvous2;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -29,45 +29,47 @@ public class Simulator implements Runnable {
 					if (k==id) {
 						command = controlQueue.take();
 						String c = command.substring(0,command.length()-1);
-						if (c.equals("start simulation")) {
+						if (c.equals("start")) {
 							state="running";
 							System.out.println(Thread.currentThread().getName() + " Simulator "+id+" received start simulation");
 						}
-						if (c.equals("pause simulation")) {
+						if (c.equals("pause")) {
 							state="stopped";
 							System.out.println(Thread.currentThread().getName() + " Simulator "+id+" received pause simulation");
 						}
-						if (c.equals("resume simulation")) {
+						if (c.equals("resume")) {
 							state="running";
 							System.out.println(Thread.currentThread().getName() + " Simulator "+id+" received resume simulation");
 						}
-						if (c.equals("reset simulation")) {
+						if (c.equals("reset")) {
 							step = 0;
 							state="running";
 							System.out.println(Thread.currentThread().getName() + " Simulator "+id+" received reset simulation");
 						}
-						if (c.equals("stop simulation")) {
+						if (c.equals("stop")) {
 							state="stopped";
 							System.out.println(Thread.currentThread().getName() + " Simulator "+id+" received stop simulation");
 						}
 						if (c.equals("quit")) {
 							state="finished";
-							outputQueue.put("quit");
 							System.out.println(Thread.currentThread().getName() + " Simulator "+id+" received quit");
-					        return;
+							return;
 						}
 					}
 				}
 				if (state.equals("running"))
 					step();
+				else if (state.equals("finished"))
+					return;
 			}
 	    } catch (InterruptedException e) {
 	        Thread.currentThread().interrupt();
 	    }
 	}
 
-	private void step() {
+	private void step() throws InterruptedException {
 		step++;
+		Thread.sleep(100); // otherwise it's too fast 
 		System.out.println(Thread.currentThread().getName() + " Simulator " + id + " computing step "+step);
 		if (step % 5 == 0) {
 			try {
@@ -76,7 +78,9 @@ public class Simulator implements Runnable {
 		        Thread.currentThread().interrupt();
 		    }
 		}
-		if (step>=MAXITER)
+		if (step>=MAXITER) {
 			state="finished";
+			System.out.println("Simulation "+id+" finished");
+		}
 	}
 }

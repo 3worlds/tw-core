@@ -17,6 +17,7 @@ public class Main {
 		new Thread(new DisplayWidget(outputQueue)).start();
 		for (int i=0; i<nsim; i++)
 			new Thread(new Simulator(simControlQueue,outputQueue,i)).start();
+		System.out.println("finished");
 	}
 
 }

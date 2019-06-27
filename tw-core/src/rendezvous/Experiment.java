@@ -23,15 +23,14 @@ public class Experiment implements Runnable {
 	        while (true) {
 	            String command = controlQueue.take();
 	            System.out.println(Thread.currentThread().getName() + " Experiment received " + command);
+            	// nb this will only work for 0<=i<=9
+            	for (int i=0; i<repeat; i++) {
+    	            System.out.println(Thread.currentThread().getName() + " Experiment sent " + command+ " "+i);
+            		simControlQueue.put(command+i);
+            	}
 	            if (command.equals("quit")) {
+					System.out.println(Thread.currentThread().getName() + " Experiment received quit");
 	                return;
-	            }
-	            else {
-	            	// nb this will only work for 0<=i<=9
-	            	for (int i=0; i<repeat; i++) {
-	    	            System.out.println(Thread.currentThread().getName() + " Experiment sent " + command+ " "+i);
-	            		simControlQueue.put(command+i);
-	            	}
 	            }
 	        }
 	    } catch (InterruptedException e) {

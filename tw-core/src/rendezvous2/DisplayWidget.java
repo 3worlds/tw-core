@@ -1,4 +1,4 @@
-package rendezvous;
+package rendezvous2;
 
 import java.util.concurrent.BlockingQueue;
 
