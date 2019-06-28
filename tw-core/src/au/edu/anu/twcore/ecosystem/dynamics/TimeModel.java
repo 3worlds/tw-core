@@ -168,5 +168,15 @@ public class TimeModel
 			return Math.round(result);
 		}
 	}
+	
+    /**
+     * Utility to convert internal time to this Time Model's time units
+     * @return
+     */
+    public final double userTime(long t) {
+    	return (1.0*t)/grainsPerBaseUnit;
+//    	return (t-timeOrigin)/timeGrain; // time origin is gone: it's either 0 or a date depending on the calendar system
+    }
+
 
 }

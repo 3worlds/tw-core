@@ -1,24 +1,42 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
+import au.edu.anu.rscs.aot.collections.DynamicList;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
+import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
+import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
+import au.edu.anu.twcore.ecosystem.runtime.process.RelationProcess;
+import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
+import java.util.Collection;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 /**
  * Class matching the "ecosystem/dynamics/timeLine/timeModel/Process" node label in the 
  * 3Worlds configuration tree. Has no properties. 
  * 
- * @author Jacques Gignoux - 6 juin 2019
+ * @author Jacques Gignoux - 10 mars 2017
  *
  */
 public class ProcessNode 
 		extends InitialisableNode 
-		implements Singleton<TwProcess> {
+		implements Singleton<TwProcess>, Sealable {
+	
+	private boolean sealed = false;
+	private TimeModel timeModel = null;
+	private AbstractProcess process = null;
 
 	// default constructor
 	public ProcessNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -30,11 +48,45 @@ public class ProcessNode
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		super.initialise();
+		super.initialise();		
+		sealed = false;					// timeModel  timeLine    dynamics    ecosystem
+		Ecosystem ecosystem = (Ecosystem) getParent().getParent().getParent().getParent();
+		timeModel = (TimeModel)getParent();
+		// 1 - setting up simulation code execution 
+		DynamicList<? extends Node> applies = (DynamicList<? extends Node>) get(edges(Direction.OUT),
+			selectOneOrMany(hasTheLabel("appliesTo")),
+			edgeListEndNodes());
+		Node first = applies.getFirst();
+		// process applies to a set of categories
+		if (first.classId().equals(N_CATEGORY.label())) {
+			process = new ComponentProcess(ecosystem,(Collection<Category>)applies);
+			DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
+				selectZeroOrMany(hasTheLabel("function")));
+			for (FunctionNode func:functions)
+				process.addFunction(func.getInstance());
+		}
+		// process applies to a single relation (a relation links two sets of categories so no
+		// need for multiple relations)
+		else if (first.classId().equals(N_RELATIONTYPE.label())) {
+			DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(children(),
+				selectZeroOrMany(hasTheLabel("function")));
+			for (FunctionNode func:functions ){
+				if (process == null) {
+// TODO: fix this					
+//					if (RelateToDecisionFunction.class.isAssignableFrom(function.getClass())) 
+//						process = new IndexedSearchProcess(world,(RelationType)first,null,null);
+//					else
+						process = new RelationProcess(ecosystem,(RelationType)first);
+				}
+				process.addFunction(func.getInstance());
+			}
+		}
+		sealed = true;
 	}
-
+	
 	@Override
 	public int initRank() {
 		return N_PROCESS.initRank();
@@ -42,8 +94,22 @@ public class ProcessNode
 
 	@Override
 	public TwProcess getInstance() {
-		// TODO Auto-generated method stub
-		return null;
+		return process;
+	}
+
+	public final void execute(long t, long dt) {		
+		process.execute(timeModel.userTime(t), timeModel.userTime(dt));
+	}
+
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 
 }

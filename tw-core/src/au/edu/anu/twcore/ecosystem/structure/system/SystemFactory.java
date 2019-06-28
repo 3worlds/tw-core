@@ -47,6 +47,7 @@ public class SystemFactory
 		extends InitialisableNode 
 		implements Factory<SystemComponent>, Categorized, Sealable {
 	
+	
 	// the factory for SystemComponents and SystemRelations
 	private static GraphFactory SCfactory = null;
 	static {
@@ -57,6 +58,7 @@ public class SystemFactory
 	}
 	
 	private SortedSet<Category> categories = new TreeSet<>();
+	private String categoryId = null;
 	private boolean sealed = false;
 	private boolean permanent;
 	/** TwData templates to clone to create new systems */
@@ -83,6 +85,7 @@ public class SystemFactory
 			edgeListEndNodes());
 		categories.addAll(nl);
 		getSuperCategories();
+		categoryId = buildCategorySignature();
 		permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
 		sealed = true;
 		// These ARE optional - inserted by codeGenerator!
@@ -113,6 +116,7 @@ public class SystemFactory
 		if (decoratorTemplate != null)
 			for (String key : decoratorTemplate.getKeysAsSet())
 				propertyMap.put(key, DECO);
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -144,7 +148,9 @@ public class SystemFactory
 	public final SystemComponent newInstance() {
 		SimplePropertyList props = new SystemComponentPropertyListImpl(driverTemplate,
 			decoratorTemplate,2,propertyMap);
-		return (SystemComponent) SCfactory.makeNode(SystemComponent.class,"C0",props);
+		SystemComponent result = (SystemComponent) SCfactory.makeNode(SystemComponent.class,"C0",props);
+		result.setCategorized(this);
+		return result;
 	}
 
 	/** returns a new parameterSet of the proper structure for this SystemFactory */
@@ -257,6 +263,14 @@ public class SystemFactory
 			else
 				((ExtendablePropertyList)mergedRoot.properties()).addProperty(P_DYNAMIC.key(), false);
 		return mergedRoot;
+	}
+
+	@Override
+	public String categoryId() {
+		if (sealed)
+			return categoryId;
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
 	}
 	
 }

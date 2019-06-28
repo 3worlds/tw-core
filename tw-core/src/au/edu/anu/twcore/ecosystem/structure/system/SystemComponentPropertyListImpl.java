@@ -66,7 +66,9 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	 *            the depth in past (could be zero)
 	 * @param propertyMap
 	 */
-	protected SystemComponentPropertyListImpl(TwData driverVariables, TwData decoratorVariables, int depth,
+	protected SystemComponentPropertyListImpl(TwData driverVariables, 
+			TwData decoratorVariables, 
+			int depth,
 			Map<String, Integer> propertyMap) {
 		super();
 		// 3worlds side
@@ -156,5 +158,5 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	protected TwData[] drivers() {
 		return drivers;
 	}
-
+	
 }
