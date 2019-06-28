@@ -8,6 +8,7 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
@@ -42,7 +43,7 @@ public class FunctionNode
 		super.initialise();
 		sealed = false;
 		// this is for generating code
-		String ftype = (String) properties().getPropertyValue(P_FUNCTIONTYPE.key());
+		String ftype = (String) ((TwFunctionTypes)properties().getPropertyValue(P_FUNCTIONTYPE.key())).name();
 		// this is once code has been generated and edited by the user
 		String className = (String) properties().getPropertyValue(P_FUNCTIONCLASS.key());
 		if (className!=null) {

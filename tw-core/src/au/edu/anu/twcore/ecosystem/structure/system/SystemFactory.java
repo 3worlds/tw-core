@@ -85,7 +85,6 @@ public class SystemFactory
 			edgeListEndNodes());
 		categories.addAll(nl);
 		getSuperCategories();
-		categoryId = buildCategorySignature();
 		permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
 		sealed = true;
 		// These ARE optional - inserted by codeGenerator!
@@ -116,7 +115,8 @@ public class SystemFactory
 		if (decoratorTemplate != null)
 			for (String key : decoratorTemplate.getKeysAsSet())
 				propertyMap.put(key, DECO);
-		
+		sealed = true;
+		categoryId = buildCategorySignature();
 	}
 
 	@SuppressWarnings("unchecked")

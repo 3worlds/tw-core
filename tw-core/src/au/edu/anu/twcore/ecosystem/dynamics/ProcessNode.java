@@ -71,7 +71,7 @@ public class ProcessNode
 		// process applies to a single relation (a relation links two sets of categories so no
 		// need for multiple relations)
 		else if (first.classId().equals(N_RELATIONTYPE.label())) {
-			DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(children(),
+			DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
 				selectZeroOrMany(hasTheLabel("function")));
 			for (FunctionNode func:functions ){
 				if (process == null) {
