@@ -35,6 +35,7 @@ import fr.ens.biologie.generic.Resettable;
  * @author Jacques Gignoux - 1 juil. 2019
  *
  */
+// Tested OK with version 0.1.3 on 1/7/2019
 public class CategorizedContainer<T extends Identity> 
 		implements Population, Identity, Resettable {
 
@@ -43,12 +44,14 @@ public class CategorizedContainer<T extends Identity>
 	private static final String COUNT = "population.size";
 	private static final String NADDED = "population.births";
 	private static final String NREMOVED = "population.deaths";
+	private static final String TCOUNT = "total.population.size";
+	private static final String TADDED = "total.population.births";
+	private static final String TREMOVED = "total.population.deaths";
 	private static final Set<String> props = new HashSet<String>();
 	private static final PropertyKeys propsPK;
 	static { 
-		props.add(COUNT); 
-		props.add(NADDED);
-		props.add(NREMOVED);
+		props.add(COUNT);	props.add(NADDED);	props.add(NREMOVED);
+		props.add(TCOUNT); 	props.add(TADDED);	props.add(TREMOVED);
 		propsPK = new PropertyKeys(props);
 	}
 			
@@ -79,9 +82,12 @@ public class CategorizedContainer<T extends Identity>
 		@Override
 		public Object getPropertyValue(String key) {
 			switch (key) {
-				case COUNT: return count;
-				case NADDED: return nAdded;
-				case NREMOVED: return nRemoved;
+				case COUNT: 	return count;
+				case NADDED: 	return nAdded;
+				case NREMOVED: 	return nRemoved;
+				case TCOUNT: 	return totalCount();
+				case TADDED: 	return totalAdded();
+				case TREMOVED: 	return totalRemoved();
 			}
 			return null;
 		}
@@ -173,8 +179,8 @@ public class CategorizedContainer<T extends Identity>
 		return items.values();
 	}
 	
-	public CategorizedContainer<T> subContainer(String categories) {
-		return subContainers.get(categories);
+	public CategorizedContainer<T> subContainer(String containerId) {
+		return subContainers.get(containerId);
 	}
 	
 	public Iterable<CategorizedContainer<T>> subContainers() {
@@ -210,6 +216,39 @@ public class CategorizedContainer<T extends Identity>
 		itemsToAdd.clear();
 	}
 	
+	private int totalCount(CategorizedContainer<T> container,int cumulator) {
+		cumulator += container.populationData.count;
+		for (CategorizedContainer<T> subc:container.subContainers.values())
+			cumulator += totalCount(subc,cumulator);
+		return cumulator;
+	}
+	/** counts the total number of items, including those of subContainers  */
+	public int totalCount() {
+		return totalCount(this,0);
+	}
+	
+	private int totalAdded(CategorizedContainer<T> container,int cumulator) {
+		cumulator += container.populationData.nAdded;
+		for (CategorizedContainer<T> subc:container.subContainers.values())
+			cumulator += totalCount(subc,cumulator);
+		return cumulator;
+	}
+	/** counts the total number of added items, including those of subContainers  */
+	public int totalAdded() {
+		return totalAdded(this,0);
+	}
+	
+	private int totalRemoved(CategorizedContainer<T> container,int cumulator) {
+		cumulator += container.populationData.nRemoved;
+		for (CategorizedContainer<T> subc:container.subContainers.values())
+			cumulator += totalCount(subc,cumulator);
+		return cumulator;
+	}
+	/** counts the total number of added items, including those of subContainers  */
+	public int totalRemoved() {
+		return totalRemoved(this,0);
+	}
+
 	// Population methods
 	
 	@Override

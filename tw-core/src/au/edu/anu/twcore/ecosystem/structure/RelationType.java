@@ -22,6 +22,7 @@ import java.util.TreeSet;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 
 /**
@@ -34,7 +35,7 @@ public class RelationType
 		implements Factory<SystemRelation>, Related {
 	
 	// a little class to record the from and to category lists
-	private class cat implements Categorized {
+	private class cat implements Categorized<SystemComponent> {
 		private SortedSet<Category> categories = new TreeSet<>();
 		private String categoryId = null;
 		private cat(Collection<Category>cats) {
@@ -49,6 +50,11 @@ public class RelationType
 		@Override
 		public String categoryId() {
 			return categoryId;
+		}
+		@Override
+		public SystemComponent clone(SystemComponent item) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 	// from and to category lists

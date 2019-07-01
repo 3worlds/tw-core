@@ -77,7 +77,6 @@ public class SystemFactory
 		Collection<Category> nl = (Collection<Category>) get(edges(Direction.OUT),
 			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
 			edgeListEndNodes());
-//		categories.addAll(nl);
 		categories.addAll(getSuperCategories(nl));
 		permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
 		sealed = true;
@@ -181,84 +180,6 @@ public class SystemFactory
 		return sealed;
 	}
 	
-//	/**
-//	 * climbs up the category tree to get all the categories this system is nested
-//	 * in 
-//	 *  
-//	 * RECURSIVE
-//	 */
-//	private void getSuperCategories(Category cat) {
-//		CategorySet partition = (CategorySet) cat.getParent();
-//		TreeNode tgn = partition.getParent();
-//		if (tgn instanceof Category) {
-//			Category superCategory = (Category) tgn;
-//			if (superCategory!=null) {
-//				categories.add(superCategory);
-//				getSuperCategories(superCategory);
-//		}
-//		}
-//	}
-//	@SuppressWarnings("unchecked")
-//	private void getSuperCategories() {
-//		for (Category cat:(Collection<Category>) get(edges(Direction.OUT),
-//			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
-//			edgeListEndNodes()))
-//		getSuperCategories(cat);
-//	}
-
-//	/**
-//	 * <p>
-//	 * returns the root node of the (tree) data structure constructed by merging all
-//	 * categories. The recipe is: if only one root node, return it, if no root node,
-//	 * return null; if more than one root node, create a root record put into it
-//	 * every non-record sub-data node and for every record sub-data node, put all
-//	 * its components in.
-//	 * </p>
-//	 * 
-//	 * @param system
-//	 *            the system for which the data merging is made
-//	 * @param categoryList
-//	 *            the list of categories to merge
-//	 * @param dataGroup
-//	 *            "drivers", "parameters" or "decorators" to specify which data
-//	 *            structure is built
-//	 * @return
-//	 */
-//	private TreeGraphDataNode buildUniqueDataList(String dataGroup) {
-//		TreeGraphDataNode mergedRoot = null;
-//		DynamicList<TreeGraphDataNode> roots = new DynamicList<TreeGraphDataNode>();
-//		for (Category cat : categories) {
-//			TreeGraphDataNode n = (TreeGraphDataNode) get(cat.edges(Direction.OUT), 
-//				selectZeroOrOne(hasTheLabel(dataGroup)), 
-//				endNode());
-//			if (n != null)
-//				roots.add(n);
-//		}
-//		if (roots.size() == 1)
-//			mergedRoot = roots.iterator().next();
-//		else if (roots.size() > 1) {
-//			// work out merged root name
-//			StringBuilder mergedRootName = new StringBuilder();
-//			for (TreeGraphDataNode n : roots)
-//				mergedRootName.append(n.id()).append('_');
-//			mergedRootName.append(dataGroup);
-//			// make a single root record and merge data requirements into it
-//			mergedRoot = (TreeGraphDataNode) factory().makeNode(Record.class,mergedRootName.toString());
-//			for (TreeGraphDataNode n:roots)
-//				if (n.classId().equals(N_RECORD.label()))
-//					mergedRoot.connectChildren(n.getChildren()); // caution: this changes the graph
-//				else
-//					mergedRoot.connectChild(n);
-//			((ExtendablePropertyList)mergedRoot.properties()).addProperty("generated", true);
-//		}
-//		if (mergedRoot != null)
-//			if (dataGroup.equals(E_DRIVERS.label()))
-//				((ExtendablePropertyList)mergedRoot.properties()).addProperty(P_DYNAMIC.key(), true);
-//			else
-//				((ExtendablePropertyList)mergedRoot.properties()).addProperty(P_DYNAMIC.key(), false);
-//		return mergedRoot;
-//	}
-
 	@Override
 	public String categoryId() {
 		if (sealed)
