@@ -39,7 +39,7 @@ import java.util.TreeSet;
  */
 public class SystemFactory 
 		extends InitialisableNode 
-		implements Factory<SystemComponent>, Categorized, Sealable {
+		implements Factory<SystemComponent>, Categorized<SystemComponent>, Sealable {
 	
 	
 	// the factory for SystemComponents and SystemRelations
@@ -265,6 +265,13 @@ public class SystemFactory
 			return categoryId;
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
+	}
+
+	@Override
+	public SystemComponent clone(SystemComponent item) {
+		SystemComponent result = newInstance();
+		result.properties().setProperties(item.properties());
+		return result;
 	}
 	
 }

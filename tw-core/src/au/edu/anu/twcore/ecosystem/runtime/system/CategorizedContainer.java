@@ -53,7 +53,7 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 	// unique id for this container (matches the parameter set)
 	private Identity id = null;
 	// category info (shared)
-	private Categorized categoryInfo = null;
+	private Categorized<T> categoryInfo = null;
 	// parameters (unique, owned)
 	private ReadOnlyPropertyList parameters = null;
 	// variables (unique, owned)
@@ -104,7 +104,7 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 	}
 	private popData populationData = new popData();
 	
-	public CategorizedContainer(Categorized cats, String proposedId) {
+	public CategorizedContainer(Categorized<T> cats, String proposedId) {
 		super();
 		categoryInfo = cats;
 		id = scope.newId(proposedId);
@@ -114,7 +114,7 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 		variables = populationData;
 	}
 	
-	public Categorized categoryInfo() {
+	public Categorized<T> categoryInfo() {
 		return categoryInfo;
 	}
 	
@@ -203,7 +203,7 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 		itemsToRemove.clear();
 		itemsToAdd.clear();
 		for (T item:initialItems) {
-			T c = (T) ((Cloneable)item).clone();
+			T c = categoryInfo.clone(item);
 			items.put(c.id(),c);
 		}
 		resetCounters();

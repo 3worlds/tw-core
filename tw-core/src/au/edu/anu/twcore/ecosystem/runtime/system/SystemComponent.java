@@ -21,14 +21,14 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 	protected static int CURRENT = 1;
 	protected static int NEXT = CURRENT - 1;
 	protected static int PAST0 = CURRENT + 1;
-	private Categorized cats = null;
+	private Categorized<SystemComponent> cats = null;
 	
 	protected SystemComponent(Identity id, SimplePropertyList props, GraphFactory factory) {
 		super(id, props, factory);
 	}
 	
 	// used only once at init time
-	public void setCategorized(Categorized cat) {
+	public void setCategorized(Categorized<SystemComponent> cat) {
 		if (cats==null)
 			cats = cat;
 	}
@@ -37,7 +37,7 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 	 * 
 	 * @return all the category information relevant to this component
 	 */
-	public Categorized membership() {
+	public Categorized<SystemComponent> membership() {
 		return cats;
 	}
 	

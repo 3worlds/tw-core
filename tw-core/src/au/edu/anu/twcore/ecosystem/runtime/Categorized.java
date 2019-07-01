@@ -20,16 +20,17 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.ens.biologie.generic.SaveableAsText;
 
 /**
- * To be associated to objects sorted by category
+ * To be associated to objects of class T sorted by category
  * 
  * @author Jacques Gignoux - 23 avr. 2013
  *
  */
-public interface Categorized {
+public interface Categorized<T extends Identity> {
 
 	public static final char CATEGORY_SEPARATOR = SaveableAsText.COLON;
 	
@@ -43,6 +44,9 @@ public interface Categorized {
 	
 	/** returns a string representation of the category set */
 	public String categoryId();
+	
+	/** returns a clone of an object of class T, ie categorized by this class */
+	public T clone(T item);
 	
 	/** utility to work out a signature from a category list */
 	public default String buildCategorySignature() {
@@ -59,7 +63,7 @@ public interface Categorized {
 	}
 
 	/**
-	 * climbs up the category tree to get all the categories this object is nested
+	 * Climbs up the category tree to get all the categories this object is nested
 	 * in (helper method for below).
 	 *  
 	 * RECURSIVE
@@ -80,6 +84,7 @@ public interface Categorized {
 	 * Given a list of {@link Category} objects, gets all the super-categories in which they are nested
 	 * and returns the full list of all categories. Use this to setup the category list associated
 	 * to a Categorized object.
+	 * 
 	 * @param cats the initial category list 
 	 * @return the final category list, including all nesting super-categories
 	 */
@@ -91,8 +96,8 @@ public interface Categorized {
 	}
 
 	/**
-	 * <p>
-	 * returns the root node of the (tree) data structure constructed by merging all
+	 * <p>Utility to build a data structure from the category list of this Categorized object.
+	 * Returns the root node of the (tree) data structure constructed by merging all
 	 * categories. The recipe is: if only one root node, return it, if no root node,
 	 * return null; if more than one root node, create a root record put into it
 	 * every non-record sub-data node and for every record sub-data node, put all
