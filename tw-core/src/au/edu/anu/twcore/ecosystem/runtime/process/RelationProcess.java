@@ -39,52 +39,52 @@ public class RelationProcess extends AbstractProcess implements Related {
 
 	@Override
 	public void execute(double t, double dt) {
-		// loop on this:
-		Iterable<Edge> relations = myRelation.relations();
-		for (Edge e:relations) {
-			SystemComponent focal = (SystemComponent) e.startNode();
-			SystemComponent target = (SystemComponent) e.endNode();
-			focal.currentState().writeDisable();
-			target.currentState().writeDisable();
-			focal.nextState().writeDisable();
-			target.nextState().writeEnable();
-			// change state of another SystemComponent
-			for (ChangeOtherStateFunction function:COSfunctions) {
-				function.changeOtherState(t, dt, focal, target);
-			}			
-			target.nextState().writeDisable();
-			// change stage of another SystemComponent
-			for (ChangeOtherCategoryDecisionFunction function:COCfunctions) {
-				String result = function.changeCategory(t, dt, focal, target);
-				if (result!=null) {
-					SystemComponent newRecruit = target.lifeCycle().newRecruit(target,result);
-					for (ChangeOtherStateFunction func:function.getConsequences())
-						func.changeOtherState(t, dt, target, newRecruit);
-					// TODO: there may be changes due to focal ??
-					tagSystemForDeletion(target);
-					tagSystemForInsertion(newRecruit);
-				}
-			}
-			// delete another SystemComponent
-			for (DeleteOtherDecisionFunction function:DOfunctions) {
-				if (function.delete(t, dt, focal, target)) {
-					focal.nextState().writeEnable();
-					for (ChangeOtherStateFunction func:function.getConsequences())
-						func.changeOtherState(t, dt, target, focal);
-					tagSystemForDeletion(target);	
-				}
-			}
-			// maintain a relation
-			for (MaintainRelationDecisionFunction function:MRfunctions) {
-				if (!function.maintainRelation(t, dt, e, focal, target))
-					myRelation.tagRelationForDeletion(e);
-			}
-			// change relation state
-			//TODO: make Edge write enabled
-			for (ChangeRelationStateFunction function:CRfunctions) {
-				function.changeRelationState(t, dt, focal, target, e);
-			}
-		}
+//		// loop on this:
+//		Iterable<Edge> relations = myRelation.relations();
+//		for (Edge e:relations) {
+//			SystemComponent focal = (SystemComponent) e.startNode();
+//			SystemComponent target = (SystemComponent) e.endNode();
+//			focal.currentState().writeDisable();
+//			target.currentState().writeDisable();
+//			focal.nextState().writeDisable();
+//			target.nextState().writeEnable();
+//			// change state of another SystemComponent
+//			for (ChangeOtherStateFunction function:COSfunctions) {
+//				function.changeOtherState(t, dt, focal, target);
+//			}			
+//			target.nextState().writeDisable();
+//			// change stage of another SystemComponent
+//			for (ChangeOtherCategoryDecisionFunction function:COCfunctions) {
+//				String result = function.changeCategory(t, dt, focal, target);
+//				if (result!=null) {
+//					SystemComponent newRecruit = target.lifeCycle().newRecruit(target,result);
+//					for (ChangeOtherStateFunction func:function.getConsequences())
+//						func.changeOtherState(t, dt, target, newRecruit);
+//					// TODO: there may be changes due to focal ??
+//					tagSystemForDeletion(target);
+//					tagSystemForInsertion(newRecruit);
+//				}
+//			}
+//			// delete another SystemComponent
+//			for (DeleteOtherDecisionFunction function:DOfunctions) {
+//				if (function.delete(t, dt, focal, target)) {
+//					focal.nextState().writeEnable();
+//					for (ChangeOtherStateFunction func:function.getConsequences())
+//						func.changeOtherState(t, dt, target, focal);
+//					tagSystemForDeletion(target);	
+//				}
+//			}
+//			// maintain a relation
+//			for (MaintainRelationDecisionFunction function:MRfunctions) {
+//				if (!function.maintainRelation(t, dt, e, focal, target))
+//					myRelation.tagRelationForDeletion(e);
+//			}
+//			// change relation state
+//			//TODO: make Edge write enabled
+//			for (ChangeRelationStateFunction function:CRfunctions) {
+//				function.changeRelationState(t, dt, focal, target, e);
+//			}
+//		}
 	}
 
 	@Override
