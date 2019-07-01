@@ -11,8 +11,8 @@ import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.ecosystem.structure.system.SystemComponent;
 
 /**
  * A TwProcess that loops on a list of SystemComponents and executes methods on

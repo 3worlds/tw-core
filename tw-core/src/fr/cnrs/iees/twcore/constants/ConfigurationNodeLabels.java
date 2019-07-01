@@ -5,8 +5,8 @@ import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
-import au.edu.anu.twcore.ecosystem.structure.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.dynamics.*;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.root.World;
 
 /**

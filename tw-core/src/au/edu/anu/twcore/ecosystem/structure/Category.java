@@ -11,6 +11,9 @@ import au.edu.anu.twcore.InitialisableNode;
 /**
  * Class matching the "category" node label in the 3Worlds configuration tree.
  * Has no properties.
+ * Categories are singleton, ie only one category of a given type can exist. This is normally
+ * guaranteed by the fact that category name = category id, and since ids are unique
+ * no duplication is possible.
  * 
  * @author Jacques Gignoux - 29 mai 2019
  *
@@ -38,7 +41,7 @@ public class Category extends InitialisableNode implements Comparable<Category> 
 	}
 
 	public String name() {
-		return classId();
+		return id();
 	}
 	
 	public CategorySet categorySet() {
@@ -47,7 +50,7 @@ public class Category extends InitialisableNode implements Comparable<Category> 
 
 	@Override
 	public int compareTo(Category other) {
-		return this.classId().compareTo(other.classId());
+		return this.id().compareTo(other.id());
 	}
 
 }

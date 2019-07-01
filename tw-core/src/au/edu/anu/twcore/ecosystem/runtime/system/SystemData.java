@@ -1,4 +1,4 @@
-package au.edu.anu.twcore.ecosystem.structure.system;
+package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Arrays;
 import java.util.HashSet;

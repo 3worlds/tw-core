@@ -1,11 +1,31 @@
 package au.edu.anu.twcore.ecosystem.runtime;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.endNode;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrOne;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_DRIVERS;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_RECORD;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DYNAMIC;
+
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Set;
+
+import au.edu.anu.rscs.aot.collections.DynamicList;
+import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.CategorySet;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.ens.biologie.generic.SaveableAsText;
 
 /**
  * To be associated to objects sorted by category
+ * 
  * @author Jacques Gignoux - 23 avr. 2013
  *
  */
@@ -38,4 +58,92 @@ public interface Categorized {
 		return sb.toString();
 	}
 
+	/**
+	 * climbs up the category tree to get all the categories this object is nested
+	 * in (helper method for below).
+	 *  
+	 * RECURSIVE
+	 */
+	private void getSuperCategories(Category cat,Collection<Category> result) {
+		CategorySet partition = (CategorySet) cat.getParent();
+		TreeNode tgn = partition.getParent();
+		if (tgn instanceof Category) {
+			Category superCategory = (Category) tgn;
+			if (superCategory!=null) {
+				result.add(superCategory);
+				getSuperCategories(superCategory,result);
+			}
+		}
+	}
+
+	/**
+	 * Given a list of {@link Category} objects, gets all the super-categories in which they are nested
+	 * and returns the full list of all categories. Use this to setup the category list associated
+	 * to a Categorized object.
+	 * @param cats the initial category list 
+	 * @return the final category list, including all nesting super-categories
+	 */
+	public default Collection<Category> getSuperCategories(Collection<Category> cats) {
+		Collection<Category> result = new LinkedList<Category>();
+		for (Category cat:cats)
+			getSuperCategories(cat,result);
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * returns the root node of the (tree) data structure constructed by merging all
+	 * categories. The recipe is: if only one root node, return it, if no root node,
+	 * return null; if more than one root node, create a root record put into it
+	 * every non-record sub-data node and for every record sub-data node, put all
+	 * its components in.
+	 * </p>
+	 * 
+	 * @param system
+	 *            the system for which the data merging is made
+	 * @param categoryList
+	 *            the list of categories to merge
+	 * @param dataGroup
+	 *            "drivers", "parameters" or "decorators" to specify which data
+	 *            structure is built
+	 * @return
+	 */
+	public default TreeGraphDataNode buildUniqueDataList(String dataGroup) {
+		TreeGraphDataNode mergedRoot = null;
+		DynamicList<TreeGraphDataNode> roots = new DynamicList<TreeGraphDataNode>();
+		for (Category cat : categories()) {
+			TreeGraphDataNode n = (TreeGraphDataNode) get(cat.edges(Direction.OUT), 
+				selectZeroOrOne(hasTheLabel(dataGroup)), 
+				endNode());
+			if (n != null)
+				roots.add(n);
+		}
+		NodeFactory factory = null;
+		if (roots.size() >= 1) {
+			mergedRoot = roots.iterator().next();
+			factory = mergedRoot.factory();
+		}
+		if (roots.size() > 1) {
+			// work out merged root name
+			StringBuilder mergedRootName = new StringBuilder();
+			for (TreeGraphDataNode n : roots)
+				mergedRootName.append(n.id()).append('_');
+			mergedRootName.append(dataGroup);
+			// make a single root record and merge data requirements into it
+			mergedRoot = (TreeGraphDataNode) factory.makeNode(Record.class,mergedRootName.toString());
+			for (TreeGraphDataNode n:roots)
+				if (n.classId().equals(N_RECORD.label()))
+					mergedRoot.connectChildren(n.getChildren()); // caution: this changes the graph
+				else
+					mergedRoot.connectChild(n);
+			((ExtendablePropertyList)mergedRoot.properties()).addProperty("generated", true);
+		}
+		if (mergedRoot != null)
+			if (dataGroup.equals(E_DRIVERS.label()))
+				((ExtendablePropertyList)mergedRoot.properties()).addProperty(P_DYNAMIC.key(), true);
+			else
+				((ExtendablePropertyList)mergedRoot.properties()).addProperty(P_DYNAMIC.key(), false);
+		return mergedRoot;
+	}
+	
 }

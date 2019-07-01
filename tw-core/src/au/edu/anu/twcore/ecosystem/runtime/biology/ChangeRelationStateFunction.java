@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import au.edu.anu.twcore.ecosystem.structure.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.graph.Edge;
 
 /**

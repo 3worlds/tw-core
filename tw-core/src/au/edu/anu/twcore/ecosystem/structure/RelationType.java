@@ -22,7 +22,7 @@ import java.util.TreeSet;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
-import au.edu.anu.twcore.ecosystem.structure.system.SystemRelation;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 
 /**
  * This is equivalent to the SystemFactory, but for SystemRelation

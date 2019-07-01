@@ -8,8 +8,8 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import au.edu.anu.twcore.ecosystem.structure.system.SystemComponent;
 import fr.cnrs.iees.graph.Edge;
 
 /**

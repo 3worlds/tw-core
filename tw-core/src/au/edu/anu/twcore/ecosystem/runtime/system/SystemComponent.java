@@ -1,4 +1,4 @@
-package au.edu.anu.twcore.ecosystem.structure.system;
+package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
@@ -15,7 +15,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class SystemComponent extends ALDataNode implements DynamicSystem {
+public class SystemComponent extends ALDataNode implements DynamicSystem, Cloneable {
 
 	/** indexes to access state variable table */
 	protected static int CURRENT = 1;
@@ -106,6 +106,11 @@ public class SystemComponent extends ALDataNode implements DynamicSystem {
 	public void interpolateState(long time) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public SystemComponent clone() {
+		return null;
 	}
 
 }

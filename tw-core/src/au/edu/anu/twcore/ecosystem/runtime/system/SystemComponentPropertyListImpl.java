@@ -1,6 +1,6 @@
-package au.edu.anu.twcore.ecosystem.structure.system;
+package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import static au.edu.anu.twcore.ecosystem.structure.system.SystemComponent.*;
+import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent.*;
 
 import java.util.Map;
 import java.util.Set;

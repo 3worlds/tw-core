@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
-import au.edu.anu.twcore.ecosystem.structure.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 
 /**
  * @author Jacques Gignoux - 4/8/2014
