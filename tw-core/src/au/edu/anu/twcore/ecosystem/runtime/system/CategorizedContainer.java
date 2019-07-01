@@ -1,10 +1,12 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import au.edu.anu.rscs.aot.collections.QuickListOfLists;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Population;
@@ -33,7 +35,7 @@ import fr.ens.biologie.generic.Resettable;
  * @author Jacques Gignoux - 1 juil. 2019
  *
  */
-public class CategorizedContainer<T extends Identity & Cloneable> 
+public class CategorizedContainer<T extends Identity> 
 		implements Population, Identity, Resettable {
 
 	// class-level constants
@@ -62,6 +64,8 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 	private Map<String,T> items = new HashMap<>();
 	// items contained at lower levels
 	private Map<String,CategorizedContainer<T>> subContainers = new HashMap<>();
+	// my container, if any
+	private CategorizedContainer<T> superContainer = null;
 	// initial state
 	private Set<T> initialItems = new HashSet<>();
 	// data for housework
@@ -114,6 +118,30 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 		variables = populationData;
 	}
 	
+	public CategorizedContainer(Categorized<T> cats, String proposedId,CategorizedContainer<T> parent) {
+		this(cats,proposedId);
+		if (parent!=null) {
+			superContainer = parent;
+			superContainer.subContainers.put(id(),this);
+		}
+	}
+	
+	// three ways to add items to the initialItems list
+	public void setInitialItems(T[] items) {
+		initialItems.clear();
+		for (T item:items)
+			initialItems.add(item);
+	}
+	public void setInitialItems(Collection<T> items) {
+		initialItems.clear();
+		initialItems.addAll(items);
+	}
+	public void setInitialItems(Iterable<T> items) {
+		initialItems.clear();
+		for (T item:items)
+			initialItems.add(item);
+	}
+
 	public Categorized<T> categoryInfo() {
 		return categoryInfo;
 	}
@@ -136,12 +164,35 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 		itemsToRemove.add(id);
 	}
 	
+	public T item(String id) {
+		return items.get(id);
+	}
+	
+	/** gets all items contained in this container only, without those contained in sub-containers */
 	public Iterable<T> items() {
 		return items.values();
 	}
 	
 	public CategorizedContainer<T> subContainer(String categories) {
 		return subContainers.get(categories);
+	}
+	
+	public Iterable<CategorizedContainer<T>> subContainers() {
+		return subContainers.values();
+	}
+	
+	// Recursive
+	private void addItems(QuickListOfLists<T> result,CategorizedContainer<T> container) {
+		result.addList(container.items());
+		for (CategorizedContainer<T> sc:container.subContainers.values())
+			addItems(result,sc);
+	}
+	
+	/** gets all items contained in this container, including those contained in sub-containers */
+	public Iterable<T> allItems() {
+		QuickListOfLists<T> l = new QuickListOfLists<T>();
+		addItems(l,this);
+		return l;
 	}
 	
 	public void effectChanges() {
@@ -152,7 +203,7 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 		}
 		itemsToRemove.clear();
 		for (T item:itemsToAdd)
-			if (items.put(item.id(),item)!=null) {
+			if (items.put(item.id(),item)==null) {
 				populationData.count++;
 				populationData.nAdded++;
 		}
@@ -197,6 +248,7 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 
 	// Resettable methods
 	
+	// NB: Recursive on sub-containers
 	@Override
 	public void reset() {
 		items.clear();
@@ -207,6 +259,8 @@ public class CategorizedContainer<T extends Identity & Cloneable>
 			items.put(c.id(),c);
 		}
 		resetCounters();
+		for (CategorizedContainer<T> sc:subContainers.values())
+			sc.reset();
 	}
 	
 }

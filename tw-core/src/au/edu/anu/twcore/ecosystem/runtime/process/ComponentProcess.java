@@ -21,7 +21,7 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
  * @author gignoux - 10 mars 2017
  *
  */
-public class ComponentProcess extends AbstractProcess implements Categorized {
+public class ComponentProcess extends AbstractProcess implements Categorized<SystemComponent> {
 
 	private SortedSet<Category> focalCategories = new TreeSet<>();
 	private String categoryId = null;
@@ -134,6 +134,12 @@ public class ComponentProcess extends AbstractProcess implements Categorized {
 	@Override
 	public String categoryId() {
 		return categoryId;
+	}
+
+	@Override
+	public SystemComponent clone(SystemComponent item) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
