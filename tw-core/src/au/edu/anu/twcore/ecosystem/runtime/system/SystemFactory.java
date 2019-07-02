@@ -45,8 +45,8 @@ public class SystemFactory
 	private static GraphFactory SCfactory = null;
 	static {
 		Map<String,String> labels = new HashMap<>();
-		labels.put("component", "au.edu.anu.twcore.ecosystem.runtime.SystemComponent");
-		labels.put("relation", "au.edu.anu.twcore.ecosystem.runtime.SystemRelation");
+		labels.put("component", SystemComponent.class.getName());
+		labels.put("relation", SystemRelation.class.getName());
 		SCfactory = new ALGraphFactory("3w",labels);
 	}
 	
