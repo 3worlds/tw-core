@@ -22,7 +22,6 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentPropertyListImpl.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
-import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +78,6 @@ public class SystemFactory
 			edgeListEndNodes());
 		categories.addAll(getSuperCategories(nl));
 		permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
-		sealed = true;
 		// These ARE optional - inserted by codeGenerator!
 		boolean generateDataClasses = true;
 		if (properties().hasProperty(P_PARAMETERCLASS.key())) {
@@ -105,6 +103,7 @@ public class SystemFactory
 		sealed = true; // important - next statement access this class methods
 		if (generateDataClasses) {
 			// we reach here only if no data has been specified or no data class has been generated
+			// TODO: get this result to generate code !
 			buildUniqueDataList(E_PARAMETERS.label());
 			buildUniqueDataList(E_DRIVERS.label());
 			buildUniqueDataList(E_DECORATORS.label());
@@ -112,21 +111,6 @@ public class SystemFactory
 		categoryId = buildCategorySignature();
 	}
 
-	@SuppressWarnings("unchecked")
-	private TwData loadDataClass(String className) {
-		TwData newData = null;
-		ClassLoader c = Thread.currentThread().getContextClassLoader();
-		Class<? extends TwData> dataClass;
-		try {
-			dataClass = (Class<? extends TwData>) Class.forName(className, false, c);
-			Constructor<? extends TwData> dataConstructor = dataClass.getDeclaredConstructor();
-			newData = dataConstructor.newInstance();
-			newData.clear();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return newData;
-	}
 
 	@Override
 	public int initRank() {
@@ -188,11 +172,11 @@ public class SystemFactory
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
 
-	@Override
-	public SystemComponent clone(SystemComponent item) {
-		SystemComponent result = newInstance();
-		result.properties().setProperties(item.properties());
-		return result;
-	}
+//	@Override
+//	public SystemComponent clone(SystemComponent item) {
+//		SystemComponent result = newInstance();
+//		result.properties().setProperties(item.properties());
+//		return result;
+//	}
 	
 }

@@ -8,12 +8,14 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_DRIVERS;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_RECORD;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DYNAMIC;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.DynamicList;
 import au.edu.anu.twcore.data.Record;
+import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import fr.cnrs.iees.graph.Direction;
@@ -22,6 +24,7 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.ens.biologie.generic.SaveableAsText;
 
 /**
@@ -44,10 +47,7 @@ public interface Categorized<T extends Identity> {
 	
 	/** returns a string representation of the category set */
 	public String categoryId();
-	
-	/** returns a clone of an object of class T, ie categorized by this class */
-	public T clone(T item);
-	
+		
 	/** utility to work out a signature from a category list */
 	public default String buildCategorySignature() {
 		StringBuilder sb = new StringBuilder();
@@ -60,6 +60,13 @@ public interface Categorized<T extends Identity> {
 			i++;
 		}
 		return sb.toString();
+	}
+	
+	/** if data structures are associated to the categories, return them based on a 
+	 * type selector - eg "parameters" and "drivers" or "variables"...
+	 * */
+	public default ReadOnlyPropertyList newDataStructure(String type) {
+		return null;
 	}
 
 	/**
@@ -151,4 +158,21 @@ public interface Categorized<T extends Identity> {
 		return mergedRoot;
 	}
 	
+	// utility for descendants
+	@SuppressWarnings("unchecked")
+	public default TwData loadDataClass(String className) {
+		TwData newData = null;
+		ClassLoader c = Thread.currentThread().getContextClassLoader();
+		Class<? extends TwData> dataClass;
+		try {
+			dataClass = (Class<? extends TwData>) Class.forName(className, false, c);
+			Constructor<? extends TwData> dataConstructor = dataClass.getDeclaredConstructor();
+			newData = dataConstructor.newInstance();
+			newData.clear();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return newData;
+	}
+
 }

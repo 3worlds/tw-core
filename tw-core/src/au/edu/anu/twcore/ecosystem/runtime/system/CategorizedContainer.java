@@ -8,6 +8,7 @@ import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
+import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Population;
 import fr.cnrs.iees.identity.Identity;
@@ -16,6 +17,7 @@ import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
+import fr.ens.biologie.generic.Factory;
 import fr.ens.biologie.generic.Resettable;
 
 /**
@@ -36,8 +38,8 @@ import fr.ens.biologie.generic.Resettable;
  *
  */
 // Tested OK with version 0.1.3 on 1/7/2019
-public class CategorizedContainer<T extends Identity> 
-		implements Population, Identity, Resettable {
+public abstract class CategorizedContainer<T extends Identity> 
+		implements Population, Identity, Resettable, Factory<T> {
 
 	// class-level constants
 	private static final IdentityScope scope = new LocalScope("3w-runtime-container");
@@ -60,9 +62,9 @@ public class CategorizedContainer<T extends Identity>
 	// category info (shared)
 	private Categorized<T> categoryInfo = null;
 	// parameters (unique, owned)
-	private ReadOnlyPropertyList parameters = null;
+	private TwData parameters = null;
 	// variables (unique, owned)
-	private ReadOnlyPropertyList variables = null;
+	private TwData variables = null;
 	// items contained at this level (owned)
 	private Map<String,T> items = new HashMap<>();
 	// items contained at lower levels
@@ -113,19 +115,17 @@ public class CategorizedContainer<T extends Identity>
 		}
 	}
 	private popData populationData = new popData();
-	
-	public CategorizedContainer(Categorized<T> cats, String proposedId) {
+		
+	public CategorizedContainer(Categorized<T> cats, 
+			String proposedId,
+			CategorizedContainer<T> parent,
+			TwData parameters,
+			TwData variables) {
 		super();
 		categoryInfo = cats;
 		id = scope.newId(proposedId);
-		// build parameters and variables from categoryInfo. cf SystemFactory
-		// TODO: change this later? - at the moment variables = population data only
-		// possibly add statistics on contained items...
-		variables = populationData;
-	}
-	
-	public CategorizedContainer(Categorized<T> cats, String proposedId,CategorizedContainer<T> parent) {
-		this(cats,proposedId);
+		this.parameters = parameters;
+		this.variables = variables;
 		if (parent!=null) {
 			superContainer = parent;
 			superContainer.subContainers.put(id(),this);
@@ -152,12 +152,16 @@ public class CategorizedContainer<T extends Identity>
 		return categoryInfo;
 	}
 	
-	public ReadOnlyPropertyList parameters() {
+	public TwData parameters() {
 		return parameters;
 	}
 	
-	public ReadOnlyPropertyList variables() {
+	public TwData variables() {
 		return variables;
+	}
+	
+	public ReadOnlyPropertyList populationData() {
+		return populationData;
 	}
 
 	// delayed addition
@@ -294,12 +298,15 @@ public class CategorizedContainer<T extends Identity>
 		itemsToRemove.clear();
 		itemsToAdd.clear();
 		for (T item:initialItems) {
-			T c = categoryInfo.clone(item);
+			T c = clone(item);
 			items.put(c.id(),c);
 		}
 		resetCounters();
 		for (CategorizedContainer<T> sc:subContainers.values())
 			sc.reset();
 	}
+	
+	// NB tow methods must be overriden in descendants: clone(item) and newInstance();
+	public abstract T clone(T item);
 	
 }

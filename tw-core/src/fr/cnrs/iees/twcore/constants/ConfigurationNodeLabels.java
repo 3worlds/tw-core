@@ -34,7 +34,7 @@ public enum ConfigurationNodeLabels {
 				N_PROCESS 		("process",				ProcessNode.class,			30), // after TimeModel, Function & EventQueue
 				N_FUNCTION 		("function",			FunctionNode.class,			0),
 				N_DATATRACKER 	("dataTracker",			DataTracker.class,			0),
-				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			0),
+				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			10), // after Ecosystem
 				N_RECRUIT 		("recruit",				Recruit.class,				0),
 				N_PRODUCE 		("produce",				Produce.class,				0),
 				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,0),

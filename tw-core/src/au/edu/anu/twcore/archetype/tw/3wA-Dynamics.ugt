@@ -125,6 +125,8 @@ hasNode lifeCycleSpec
 	mustSatisfyQuery lifeCycleHasRecruitOrProduceChildQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
 		labels = StringTable(([2]"recruit","produce"))
+	// TODO: check this category is not used by Systems, ie lifeCycle categories and system
+	// categories should be completely separate
 	hasEdge lifeCycleCategoryBelongsToSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:")
@@ -179,14 +181,41 @@ hasNode stoppingConditionSpec
 	mustSatisfyQuery CheckSubArchetypeQueryMultipleAndStop
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition","3wSA-MultipleStoppingCondition.ugt"))
-		
-// TODO: check these stay here - possibly add subnodes
-hasNode parameterValuesSpec
-	isOfClass = String("parameterValues")
-	hasParent = StringTable(([1]"dynamics:"))
-	multiplicity = IntegerRange("0..1")
-	
+			
+// how to specify initial community:
+
 hasNode initialStateSpec
 	isOfClass = String("initialState")
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("0..1")
+	
+hasNode groupSpec
+	isOfClass = String("group")
+	hasParent = StringTable(([2]"initialState:","group:"))
+	multiplicity = IntegerRange("0..*")
+	
+hasNode individualSpec
+	isOfClass = String("individual")
+	hasParent = StringTable(([2]"initialState:","group:"))
+	multiplicity = IntegerRange("0..*")
+	hasEdge individualToSystemSpec
+		isOfClass = String("instanceOf")
+		toNode = String("component")
+		multiplicity = IntegerRange("1..1")
+
+hasNode parameterValuesSpec
+	isOfClass = String("parameterValues")
+	hasParent = StringTable(([3]"initialState:","group:","individual"))
+	multiplicity = IntegerRange("0..1")
+	// then provide property (name,value) pairs - of course names must match category definitions
+	// caution: if parameter values are associated to an individual, it means it is unique in its
+	// category, its parameters are specific to it and no other individual with the same values
+	// will ever exist. Shared parameter values must be set at the group level
+	
+hasNode variableValuesSpec
+	isOfClass = String("variableValues")
+	hasParent = StringTable(([3]"initialState:","group:","individual"))
+	multiplicity = IntegerRange("0..1")
+	// then provide property (name,value) pairs - of course names must match category definitions
+	
+	

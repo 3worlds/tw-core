@@ -4,6 +4,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Singleton;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
@@ -14,23 +15,28 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * Class matching the "ecosystem" node label in the 3Worlds configuration tree.
- * Has properties.
+ * Has properties. Also, produces the singleton top-container for the community of
+ * SystemComponents which constitute this ecosystem.
  * 
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class Ecosystem extends InitialisableNode implements Categorized<SystemComponent> {
+public class Ecosystem 
+		extends InitialisableNode 
+		implements Categorized<SystemComponent>, Singleton<SystemContainer> {
 	
+	// a singleton root category for all Ecosystem instances
 	private static final String rootCategoryId = ".";
 	private static Category rootCategory = null;
 	private static Set<Category> categories = new TreeSet<Category>(); 
 	
-	private CategorizedContainer<SystemComponent> community = null;
+	// a singleton container for all SystemComponents within an ecosystem
+	private SystemContainer community = null;
 
 	private void initRootCategory() {
 		if (rootCategory==null) {
@@ -52,7 +58,7 @@ public class Ecosystem extends InitialisableNode implements Categorized<SystemCo
 	@Override
 	public void initialise() {
 		super.initialise();
-		community = new CategorizedContainer<>(this,"ecosystem");
+		community = new SystemContainer(this,"ecosystem",null,null,null);
 	}
 
 	@Override
@@ -75,8 +81,8 @@ public class Ecosystem extends InitialisableNode implements Categorized<SystemCo
 	}
 
 	@Override
-	public SystemComponent clone(SystemComponent item) {
-		throw new TwcoreException("Ecosystem cannot instantiate SystemComponents");
+	public SystemContainer getInstance() {
+		return community;
 	}
 
 }
