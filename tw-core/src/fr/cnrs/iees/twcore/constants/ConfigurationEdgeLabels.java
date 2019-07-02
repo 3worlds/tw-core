@@ -19,6 +19,9 @@ import au.edu.anu.twcore.ecosystem.dynamics.EffectedByEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.StopSystemEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.ConditionEdge;
 
+import au.edu.anu.twcore.ecosystem.dynamics.initial.GroupOfEdge;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.CycleEdge;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.InstanceOfEdge;
 /**
  * 
  * @author Jacques Gignoux - 4 juin 2019
@@ -48,6 +51,9 @@ public enum ConfigurationEdgeLabels {
 	E_EFFECTEDBY	("effectedBy",		EffectedByEdge.class),
 	E_STOPSYSTEM	("stopSystem",		StopSystemEdge.class),
 	E_CONDITION		("condition",		ConditionEdge.class),
+	E_GROUPOF		("groupOf",			GroupOfEdge.class),
+	E_CYCLE			("cycle",			CycleEdge.class),
+	E_INSTANCEOF	("instanceOf",		InstanceOfEdge.class),	
 	;
 	//=========================================================================
 	private final String label;
