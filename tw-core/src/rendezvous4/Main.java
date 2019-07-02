@@ -1,5 +1,19 @@
 package rendezvous4;
 
+/**
+ * This is a MINIMAL and rudimentary impl of Shayne's rendezvous system. I use a
+ * hash table to map msg id to the required process for a given msg type.
+ * Rendezvous.java and RendezvousEntry.java are redundant with this approach.
+ * I've removed the timeout system. We still need to deal with crashed
+ * simulators but I don't think this is something specific to this approach.
+ * 
+ * Multi tasking tasks place either because the producer is in its own thread
+ * (simulator) and/or the ui must create a thread to update controls. We should
+ * ensure this is the case for any process that may take a while (a sim
+ * run/timestep or graph/matrix drawing. If not the system will bog down waiting
+ * for a process to finish.
+ */
+
 public class Main {
 	public static int MSG_CTRL_TO_SIM1 = 10;
 	public static int MSG_CTRL_TO_SIM2 = 11;
@@ -11,7 +25,6 @@ public class Main {
 		CtrlNode ctrl = new CtrlNode();
 		ctrl.addCtrlListener(sim);
 		sim.addSimListener(ctrl);
-	
 
 		int nMsgs = 100;
 		Object payload = new Object();
@@ -62,7 +75,6 @@ public class Main {
 		thread3.start();
 		thread4.start();
 		thread2.start();
-
 
 	}
 

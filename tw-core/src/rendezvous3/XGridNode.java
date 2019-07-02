@@ -4,17 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-/**
- * This is a MINIMAL and rudimentary impl of Shayne's rendezvous system. I
- * havn't attempted to factor Gridnode so that it works with descendants. i.e.
- * there are 2 static methods called by each Rendezvous processes in this class
- * rather than methods in some descendant.
- * 
- * TESTING: 1) Looking for race conditions. It seems the rv system requires no
- * threads to run - "synchronised" is sufficient.
- * 
- * 
- */
 public class XGridNode {
 	private List<XRendezvous> rendezvousList = new ArrayList<>();
 	private Queue<XMessage> messageQueue = new LinkedList<>();
