@@ -127,6 +127,7 @@ public class LifeCycle
 
 	@Override
 	public Collection<SystemContainer> newInstances() {
+		
 		return null;
 	}
 

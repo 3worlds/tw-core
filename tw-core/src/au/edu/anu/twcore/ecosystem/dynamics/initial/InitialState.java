@@ -1,4 +1,4 @@
-package au.edu.anu.twcore.ecosystem.dynamics;
+package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
@@ -9,20 +9,19 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
- * A class matching the "ecosystem/dynamics/parameterValues" node of the 3W configuration tree.
- * 
+ * A class matching the "ecosystem/dynamics/initialState" node of the 3w configuration
  * @author Jacques Gignoux - 17 juin 2019
  *
  */
-public class ParameterValues extends InitialisableNode {
+public class InitialState extends InitialisableNode {
 
 	// default constructor
-	public ParameterValues(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public InitialState(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
 	// constructor with no properties
-	public ParameterValues(Identity id, GraphFactory gfactory) {
+	public InitialState(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
@@ -33,7 +32,7 @@ public class ParameterValues extends InitialisableNode {
 
 	@Override
 	public int initRank() {
-		return N_PARAMETERVALUES.initRank();
+		return N_INITIALSTATE.initRank();
 	}
 
 }

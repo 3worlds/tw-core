@@ -135,11 +135,11 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	public String categoryId() {
 		return categoryId;
 	}
-
-	@Override
-	public SystemComponent clone(SystemComponent item) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//
+//	@Override
+//	public SystemComponent clone(SystemComponent item) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }

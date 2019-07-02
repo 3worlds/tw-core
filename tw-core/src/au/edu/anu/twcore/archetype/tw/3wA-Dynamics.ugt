@@ -188,11 +188,27 @@ hasNode initialStateSpec
 	isOfClass = String("initialState")
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("0..1")
+	hasEdge communityToCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category")
+		multiplicity = IntegerRange("0..*")
 	
 hasNode groupSpec
 	isOfClass = String("group")
 	hasParent = StringTable(([2]"initialState:","group:"))
 	multiplicity = IntegerRange("0..*")
+	hasEdge groupToSystemSpec
+		isOfClass = String("groupOf")
+		toNode = String("component")
+		multiplicity = IntegerRange("0..1")
+	hasEdge groupToLifeCycleSpec
+		isOfClass = String("cycle")
+		toNode = String("lifeCycle")
+		multiplicity = IntegerRange("0..1")
+	hasEdge groupToCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category")
+		multiplicity = IntegerRange("0..*")
 	
 hasNode individualSpec
 	isOfClass = String("individual")

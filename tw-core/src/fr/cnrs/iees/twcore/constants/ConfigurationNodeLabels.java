@@ -6,6 +6,7 @@ import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
 import au.edu.anu.twcore.ecosystem.dynamics.*;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.root.World;
 
@@ -39,8 +40,11 @@ public enum ConfigurationNodeLabels {
 				N_PRODUCE 		("produce",				Produce.class,				0),
 				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,0),
 				N_INITIALISER 	("initialiser",			Initialiser.class,			20), // after relation
-				N_PARAMETERVALUES("parameterValues",	ParameterValues.class,		0),
 				N_INITIALSTATE 	("initialState",		InitialState.class,			0),
+				N_GROUP 		("group",				Group.class,				0),
+				N_INDIVIDUAL 	("individual",			Individual.class,			0),
+				N_PARAMETERVALUES("parameterValues",	ParameterValues.class,		0),
+				N_VARIABLEVALUES("variableValues",		VariableValues.class,		0),
 			N_STRUCTURE 		("structure",			Structure.class,			0),
 				N_CATEGORYSET 	("categorySet",			CategorySet.class,			0),
 				N_CATEGORY 		("category",			Category.class,				0), 
