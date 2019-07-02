@@ -125,6 +125,10 @@ hasNode lifeCycleSpec
 	mustSatisfyQuery lifeCycleHasRecruitOrProduceChildQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
 		labels = StringTable(([2]"recruit","produce"))
+	hasEdge lifeCycleCategoryBelongsToSpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:")
+		multiplicity = IntegerRange("1..*")
 
 hasNode recruitSpec
 	isOfClass = String("recruit")
