@@ -1,17 +1,27 @@
 package rendezvous4;
 
 /**
- * This is a MINIMAL and rudimentary impl of Shayne's rendezvous system. I use a
- * hash table to map msg id to the required process for a given msg type.
- * Rendezvous.java and RendezvousEntry.java are redundant with this approach.
- * I've removed the timeout system. We still need to deal with crashed
- * simulators but I don't think this is something specific to this approach.
+ * This is a MINIMAL impl of Shayne's rendezvous system. I use a hash table to
+ * map msg type as the key to map to the required process. This may not always
+ * be correct - wait and see.
  * 
- * Multi tasking tasks place either because the producer is in its own thread
- * (simulator) and/or the ui must create a thread to update controls. We should
- * ensure this is the case for any process that may take a while (a sim
- * run/timestep or graph/matrix drawing. If not the system will bog down waiting
- * for a process to finish.
+ * Rendezvous.java and RendezvousEntry.java are redundant with this approach and
+ * have been removed. I've removed the timeout system (I think its purpose may
+ * have been for ssh to remote systems - no longer envisioned). MessageHeader
+ * just has the type int so it may seem useless to keep this class. I haven't
+ * included the src/target id in the msg header but we may in future (i.e
+ * multi-sim ctrl) - wait and see.
+ * 
+ * We still need to deal with crashed simulators but I don't think this is
+ * something specific to this approach.
+ * 
+ * Multi-tasking takes place when producers/consumers are in they're own thread
+ * (simulator/ui Platform.runLater() or some big data processing task). We just
+ * need to make sure process.execute does not start something that takes a long
+ * time. The approach should be thread-safe simply because callRendezvous is
+ * Synchronized. I don't think it is safe to expect a pause or quit cmd to
+ * interrupt simulations any time other than when a step is complete. Otherwise
+ * its a mess.
  */
 
 public class Main {

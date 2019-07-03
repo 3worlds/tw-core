@@ -54,7 +54,8 @@ public class TwArchetype {
 	private Archetypes rootArch = null;
 
 	@SuppressWarnings("unchecked")
-	public TwArchetype() {
+//	public TwArchetype(boolean checkArchetype) {
+		public TwArchetype() {
 		super();
 		log.setLevel(Level.WARNING);
 		// load 3worlds archetype
@@ -65,7 +66,9 @@ public class TwArchetype {
 			printTree(twArch.root(), indent);
 		}
 		// checks compliance of 3Worlds archetype with the archetype for archetypes
+		// I think this should only occur if a flag is set. Otherwise its a waste of time!
 		rootArch = new Archetypes();
+		// if (checkArchetype)
 		if (!rootArch.isArchetype(twArch)) {
 			log.severe("3WORLDS ARCHETYPE HAS ERRORS! (list follows)");
 			for (CheckMessage cm: rootArch.errorList())
