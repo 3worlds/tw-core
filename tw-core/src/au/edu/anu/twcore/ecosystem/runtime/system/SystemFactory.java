@@ -2,6 +2,8 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.Ecosystem;
+import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
@@ -59,6 +61,9 @@ public class SystemFactory
 	private TwData driverTemplate = null;
 	private TwData decoratorTemplate = null;
 	private Map<String, Integer> propertyMap = new HashMap<String, Integer>();
+	
+	// The SystemComponent containers instantiated by this SystemFactory
+	private Map<String,SystemContainer> containers = new HashMap<String,SystemContainer>();
 
 	public SystemFactory(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -171,12 +176,60 @@ public class SystemFactory
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
-
-//	@Override
-//	public SystemComponent clone(SystemComponent item) {
-//		SystemComponent result = newInstance();
-//		result.properties().setProperties(item.properties());
-//		return result;
-//	}
 	
+	public Collection<SystemContainer> containers() {
+		if (sealed)
+			return containers.values();
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
+	}
+
+	/**
+	 * Either return container matching 'name' or create it if not yet there. This way, only
+	 * one instance of that container will exist.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public SystemContainer container(String name) {
+		if (sealed)
+			return containers.get(name);
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
+	}
+
+	/**
+	 * Returns a new container, either nested in a lifeCycle container or in the Ecosystem
+	 * container, depending on what is found.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public SystemContainer makeContainer(String name) {
+		if (sealed) {
+			SystemContainer result = containers.get(name);
+			if (result==null) {
+				Ecosystem ec = (Ecosystem)getParent().getParent();
+				Collection<LifeCycle> lcl = (Collection<LifeCycle>) get(ec.getChildren(),
+					selectZeroOrMany(hasTheLabel(N_LIFECYCLE.label())));
+				SystemContainer sc = null;
+				for (LifeCycle lc:lcl) {
+					sc = lc.container(name);
+					if (sc!=null)
+						break;
+				}
+				if (sc==null)
+					sc = ec.getInstance();
+				result = new SystemContainer(this, name, sc, 
+					parameterTemplate.clone(), null);
+				if (!result.id().equals(name))
+					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
+				containers.put(result.id(),result);
+			}
+			return result;
+		} else
+			throw new TwcoreException("attempt to access uninitialised data");
+	}
+
 }

@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
@@ -52,6 +51,7 @@ public class LifeCycle
 	private TwData parameterTemplate = null;
 	private TwData variableTemplate = null;
 	
+	// The SystemComponent containers instantiated by this LifeCycle
 	private Map<String,SystemContainer> containers = new HashMap<String,SystemContainer>();
 	
 	// default constructor
@@ -83,22 +83,6 @@ public class LifeCycle
 		if (properties().hasProperty(P_DRIVERCLASS.toString())) {
 			variableTemplate = loadDataClass((String) properties().getPropertyValue(P_DRIVERCLASS.key()));
 			generateDataClasses = false;
-		}
-		// if generated classes are here, build the container list from initial state data
-		if (!generateDataClasses) {
-			Collection<Group> gl = (Collection<Group>) get(edges(Direction.IN),
-				selectZeroOrMany(hasTheLabel(E_CYCLE.label())),
-				edgeListStartNodes());
-			SystemContainer sc = ((Ecosystem)getParent().getParent()).getInstance();
-			for (Group g:gl) {
-				// NB since the group scope and the container scope are not the same
-				// there should not be any problem keeping the ids identical.
-				SystemContainer s = new SystemContainer(this, g.id(), sc, 
-					parameterTemplate.clone(), variableTemplate.clone());
-				if (!s.id().equals(g.id()))
-					log.warning("Unable to instantiate a container with id '"+g.id()+"' - '"+s.id()+"' used instead");
-				containers.put(s.id(),s);
-			}
 		}
 		sealed = true; // important - next statement access this class methods
 		// else produce information to generate data classes
@@ -150,10 +134,36 @@ public class LifeCycle
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
 
+	/**
+	 * returns the container matching the name.
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public SystemContainer container(String name) {
 		if (sealed)
 			return containers.get(name);
 		else
+			throw new TwcoreException("attempt to access uninitialised data");
+	}
+	
+	/**
+	 * Either return container matching 'name' or create it if not yet there. This way, only
+	 * one instance of that container will exist.
+	 * will only make a container if it does not yet exist under that name */
+	public SystemContainer makeContainer(String name) {
+		if (sealed) {
+			SystemContainer result = containers.get(name);
+			if (result==null) {
+				SystemContainer sc = ((Ecosystem)getParent().getParent()).getInstance();
+				result = new SystemContainer(this, name, sc, 
+					parameterTemplate.clone(), variableTemplate.clone());
+				if (!result.id().equals(name))
+					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
+				containers.put(result.id(),result);
+			}
+			return result;
+		} else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
 }
