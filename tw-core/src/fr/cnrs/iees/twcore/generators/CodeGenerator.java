@@ -24,6 +24,8 @@ import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
+import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -45,7 +47,7 @@ public class CodeGenerator {
 	public static final String BIN = "bin";
 
 	private void overWriteReadOnlyFiles(String codePath, List<File> files) {
-		String pp = Project.getProjectRoot().getAbsolutePath();
+		String pp = Project.getProjectDirectory();
 		for (File infile : files) {
 			File outfile = null;
 			if (infile.getAbsolutePath().endsWith(".java"))
@@ -84,7 +86,7 @@ public class CodeGenerator {
 //				getChildrenLabelled(graph.getRoot(), N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
 				File ecologyFiles = new File(
-					Project.getProjectRoot().getAbsoluteFile() + File.separator + wordUpperCaseName(ecology.id()));
+					Project.getProjectDirectory() + File.separator + wordUpperCaseName(ecology.id()));
 			try {
 				deleteFileTree(ecologyFiles);
 			} catch (IOException e) {
@@ -125,7 +127,7 @@ public class CodeGenerator {
 //			JarGenerator jgen = new JarGenerator(model, getInputPath(model), getOutputPath());
 //			jgen.generateJar();
 		}
-		return !CodeCompliance.haveErrors();
+		return !ComplianceManager.haveErrors();
 
 	}
 
@@ -154,7 +156,7 @@ public class CodeGenerator {
 			List<File> files = (List<File>) FileUtils.listFiles(targetDir, extensions, true);
 			for (File inFile : files) {
 				String inName = inFile.getAbsolutePath();
-				String outName = inName.replace(Project.getProjectRoot().getAbsolutePath(), "");
+				String outName = inName.replace(Project.getProjectDirectory(), "");
 				File outFile = new File(codePath + File.separator + CodeGenerator.SRC + File.separator + outName);
 				outFile.mkdirs();
 				Files.copy(inFile.toPath(), outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -184,7 +186,7 @@ public class CodeGenerator {
 		} 
 		else if (system.properties().hasProperty(dataGroup))
 			((ResizeablePropertyList)system.properties()).removeProperty(dataGroup);
-		GraphState.isChanged(true);
+		GraphState.setChanged(true);
 	}
 
 	private List<File> generateDataCode(String codePath, 
@@ -251,11 +253,13 @@ public class CodeGenerator {
 	private static File getInputPath(String model) {
 		// return new File(Project.getProjectRoot().getAbsolutePath() + File.separator +
 		// PROJECT_FILES + File.separator + model);
-		return new File(Project.getProjectRoot().getAbsolutePath() + File.separator + model);
+	return Project.makeFile(model);
+//		return new File(Project.getProjectRoot().getAbsolutePath() + File.separator + model);
 	}
 
 	private static File getOutputPath() {
-		return new File(Project.getProjectRoot().getAbsolutePath());
+		return Project.getProjectFile();
+				//new File(Project.getProjectRoot().getAbsolutePath());
 	}
 
 	@SuppressWarnings("unchecked")
