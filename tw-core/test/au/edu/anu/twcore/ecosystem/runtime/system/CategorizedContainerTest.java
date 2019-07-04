@@ -44,9 +44,21 @@ class CategorizedContainerTest {
 		public String categoryId() {
 			return categoryId;
 		}
+	}
+	// a little test class for CategorizedContainer<Identity>
+	private class icontainer extends CategorizedContainer<Identity> {
+		private icontainer(Categorized<Identity> cats, String proposedId, 
+				CategorizedContainer<Identity> parent) {
+			super(cats,proposedId,parent,null,null);
+		}
+		@Override
+		public Identity newInstance() {
+			return scope().newId();
+		}
 		@Override
 		public Identity clone(Identity item) {
-			return item.scope().newId(item.id());
+			Identity id = scope().newId(item.id());
+			return id;
 		}
 	}
 	
@@ -78,7 +90,7 @@ class CategorizedContainerTest {
 		List<Category> l = new LinkedList<>();
 		l.add(c1); l.add(c3);
 		ca = new categorizedAdapter(l);
-		cc = new CategorizedContainer<Identity>(ca,"bropz");
+		cc = new icontainer(ca,"bropz",null);
 		l.clear(); l.add(c5);
 		ca2 = new categorizedAdapter(l);
 		scope = new LocalScope("test");
@@ -88,7 +100,7 @@ class CategorizedContainerTest {
 	}
 	
 	private void init2(String proposedId) {
-		cc2 = new CategorizedContainer<Identity>(ca2,proposedId,cc);
+		cc2 = new icontainer(ca2,proposedId,cc);
 		for (int i=0; i<4; i++)
 			cc2.addItem(scope.newId("bw_"+i));
 		cc2.effectChanges();

@@ -51,11 +51,6 @@ public class RelationType
 		public String categoryId() {
 			return categoryId;
 		}
-		@Override
-		public SystemComponent clone(SystemComponent item) {
-			// TODO Auto-generated method stub
-			return null;
-		}
 	}
 	// from and to category lists
 	private cat fromCat, toCat;
@@ -96,12 +91,12 @@ public class RelationType
 	}
 
 	@Override
-	public Categorized from() {
+	public Categorized<SystemComponent> from() {
 		return fromCat;
 	}
 
 	@Override
-	public Categorized to() {
+	public Categorized<SystemComponent> to() {
 		return toCat;
 	}
 
