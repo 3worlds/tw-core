@@ -319,6 +319,8 @@ public class Project implements ProjectPaths, TWPaths {
 	public static File[] getAllProjectPaths() {
 		String repos = TW_ROOT;
 		File folder = new File(repos);
+		if (!folder.exists())
+			folder.mkdirs();
 		File[] result = folder.listFiles(new ProjectFilter());
 		return result;
 	}

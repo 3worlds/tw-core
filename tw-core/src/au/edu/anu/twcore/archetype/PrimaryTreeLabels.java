@@ -3,16 +3,15 @@ package au.edu.anu.twcore.archetype;
 import java.util.HashSet;
 import java.util.Set;
 
-import fr.cnrs.iees.twcore.constants.Configuration;
+import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 
-public class PrimaryTreeLabels implements Configuration {
+public class PrimaryTreeLabels {
 	private static Set<String> labelSet = new HashSet<>();
 	static {
-		labelSet.add(N_SYSTEM);
-		labelSet.add(N_DATADEFINITION);
-		labelSet.add(N_DATAIO);
-		labelSet.add(N_EXPERIMENT);
-		labelSet.add(N_UI);		
+		labelSet.add(ConfigurationNodeLabels.N_SYSTEM.label());
+		labelSet.add(ConfigurationNodeLabels.N_DATADEFINITION.label());
+		labelSet.add(ConfigurationNodeLabels.N_EXPERIMENT.label());
+		labelSet.add(ConfigurationNodeLabels.N_UI.label());		
 	}
 	public static boolean contains(String label) {
 		return labelSet.contains(label);
