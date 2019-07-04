@@ -59,7 +59,6 @@ public abstract class TwCodeGenerator
 	}
 
 	protected File getModelDataDir(String modelRoot) {
-//		return Project.makeFile(PROJECT_FILES,makeModelJavaName(modelRoot),THREE_WORLDS_DATA);
 		return Project.makeFile(makeModelJavaName(modelRoot),TW_DATA);
 	}
 }

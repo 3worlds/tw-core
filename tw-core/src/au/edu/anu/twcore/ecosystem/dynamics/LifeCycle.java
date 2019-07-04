@@ -75,23 +75,23 @@ public class LifeCycle
 			edgeListEndNodes());
 		categories.addAll(getSuperCategories(nl));
 		// check if user-defined data classes were generated
-		boolean generateDataClasses = true;
+//		boolean generateDataClasses = true;
 		if (properties().hasProperty(P_PARAMETERCLASS.key())) {
 			parameterTemplate = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
-			generateDataClasses = false;
+//			generateDataClasses = false;
 		}
 		if (properties().hasProperty(P_DRIVERCLASS.toString())) {
 			variableTemplate = loadDataClass((String) properties().getPropertyValue(P_DRIVERCLASS.key()));
-			generateDataClasses = false;
+//			generateDataClasses = false;
 		}
 		sealed = true; // important - next statement access this class methods
 		// else produce information to generate data classes
-		if (generateDataClasses) {
-			// we reach here only if no data has been specified or no data class has been generated
-			// TODO: get this result to generate code !
-			buildUniqueDataList(E_PARAMETERS.label());
-			buildUniqueDataList(E_DRIVERS.label());
-		}
+//		if (generateDataClasses) {
+//			// we reach here only if no data has been specified or no data class has been generated
+//			// TODO: get this result to generate code !
+//			buildUniqueDataList(E_PARAMETERS.label());
+//			buildUniqueDataList(E_DRIVERS.label());
+//		}
 		categoryId = buildCategorySignature();
 	}
 

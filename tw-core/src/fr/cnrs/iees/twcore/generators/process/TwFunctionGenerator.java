@@ -1,11 +1,11 @@
-package fr.ens.biologie.threeWorlds.build.codeGeneration.process;
+package fr.cnrs.iees.twcore.generators.process;
 
-import static fr.ens.biologie.threeWorlds.build.codeGeneration.CodeGenerationUtils.writeFile;
-import static fr.ens.biologie.threeWorlds.build.codeGeneration.Comments.*;
-import static fr.ens.biologie.threeWorlds.core.ecology.data.NameUtils.*;
-import static fr.ens.biologie.threeWorlds.resources.core.constants.SnippetLocation.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.SequenceQuery.get;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.ens.biologie.generic.utils.NameUtils.*;
+import static fr.cnrs.iees.twcore.generators.TwComments.*;
+import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,20 +14,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
-import au.edu.anu.rscs.aot.collections.AotList;
-import au.edu.anu.rscs.aot.graph.AotNode;
-import au.edu.anu.rscs.aot.graph.generic.Direction;
-import au.edu.anu.rscs.aot.logging.Logger;
-import au.edu.anu.rscs.aot.logging.LoggerFactory;
-import fr.ens.biologie.threeWorlds.build.JavaCompiler;
-import fr.ens.biologie.threeWorlds.build.codeGeneration.ClassGenerator;
-import fr.ens.biologie.threeWorlds.build.codeGeneration.MethodGenerator;
-import fr.ens.biologie.threeWorlds.build.codeGeneration.TwCodeGenerator;
-import fr.ens.biologie.threeWorlds.core.computingGrid.deployment.Project;
-import fr.ens.biologie.threeWorlds.resources.core.constants.SnippetLocation;
-import fr.ens.biologie.threeWorlds.resources.core.constants.TwFunctionTypes;
-import fr.ens.biologie.threeWorlds.ui.modelMakerfx.model.propertyEditor.fileType.FileType;
+import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.project.Project;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.twcore.constants.FileType;
+import fr.cnrs.iees.twcore.constants.SnippetLocation;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
+import fr.ens.biologie.codeGeneration.ClassGenerator;
+import fr.ens.biologie.codeGeneration.JavaCompiler;
+import fr.ens.biologie.codeGeneration.MethodGenerator;
 
 /**
  * A class to generate a skeleton java file for a single EcologicalProcess
@@ -38,9 +39,9 @@ import fr.ens.biologie.threeWorlds.ui.modelMakerfx.model.propertyEditor.fileType
  */
 public class TwFunctionGenerator extends TwCodeGenerator {
 
-	public static final String FUNCTION_ROOT_PACKAGE = "fr.ens.biologie.threeWorlds.core.ecology.process.biology";
-
-	private Logger log = LoggerFactory.getLogger(TwFunctionGenerator.class, "3Worlds");
+	// the package of all TwFunction ancestors to user-defined functions. eg au.edu.anu.twcore.ecosystem.runtime.biology
+	public static final String FUNCTION_ROOT_PACKAGE =	TwFunctionAdapter.class.getPackageName();
+	private Logger log = Logger.getLogger(TwFunctionGenerator.class.getName());
 	private String name = null;
 	// private String type = null;
 	private TwFunctionTypes type = null;
@@ -50,15 +51,15 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private List<String> inClassCode = null;
 
 	@SuppressWarnings("unchecked")
-	public TwFunctionGenerator(String className, AotNode spec, String modelName) {
+	public TwFunctionGenerator(String className, TreeGraphDataNode spec, String modelName) {
 		super(spec);
 		name = className;
 		// type = (String)spec.getPropertyValue("type");
-		type = (TwFunctionTypes) spec.getPropertyValue("type");
+		type = (TwFunctionTypes) spec.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		model = modelName;
-		AotList<AotNode> snippets = (AotList<AotNode>) get(spec.getEdges(Direction.OUT), edgeListEndNodes(),
-				selectZeroOrMany(hasTheLabel("snippet")));
-		for (AotNode snip : snippets) {
+		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), edgeListEndNodes(),
+			selectZeroOrMany(hasTheLabel("snippet")));
+		for (TreeGraphDataNode snip : snippets) {
 			/*
 			 * (Ian) dont report error here if file is missing. Actually, this can't work
 			 * because these files are relative to PROJECT_MODEL_GRAPH dir There is no way
@@ -71,14 +72,14 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			 * 
 			 *
 			 */
-			if (!snip.hasProperty("file"))
+			if (!snip.properties().hasProperty("file"))
 				// file: java.io.File("local/models/snippet-main-t3.txt")
 				continue;
-			FileType ft = (FileType) snip.getPropertyValue("file");
+			FileType ft = (FileType) snip.properties().getPropertyValue("file");
 			if (!ft.getFile().exists())
 				continue;
-			SnippetLocation insert = (SnippetLocation) snip.getPropertyValue("insertion");
-			if (insert.equals(inClassBody))
+			SnippetLocation insert = (SnippetLocation) snip.properties().getPropertyValue("insertion");
+			if (insert.equals(SnippetLocation.inClassBody))
 				inClassCode = snippetCode(snip);
 			else
 				inBodyCode = snippetCode(snip);
@@ -91,11 +92,11 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		
 	}
 
-	private List<String> snippetCode(AotNode snippet) {
+	private List<String> snippetCode(TreeGraphDataNode snippet) {
 		List<String> code = new LinkedList<String>();
 		// File f =
 		// Project.makeFile(PROJECT_MODEL_GRAPHS,(String)((File)snippet.getPropertyValue("file")).getName());
-		FileType ft = (FileType) snippet.getPropertyValue("file");
+		FileType ft = (FileType) snippet.properties().getPropertyValue("file");
 		File f = ft.getFile();
 		if (!f.isDirectory() & f.exists()) {
 			try {
@@ -110,16 +111,16 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 
 	@Override
 	public boolean generateCode() {
-		log.debug("    generating file " + name + ".java ...");
+		log.info("    generating file " + name + ".java ...");
 		File ctGeneratedCodeDir = getModelCodeDir(model);
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
-		String packageName = ctmodel + "." + THREE_WORLDS_CODE;
+		String packageName = ctmodel + "." + TW_CODE;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(true, model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
-		generator.setImport("fr.ens.biologie.threeWorlds.core.ecology.ecosystem.SystemComponent");
-		generator.setImport("au.edu.anu.rscs.aot.collections.tables.*");
+		generator.setImport(SystemComponent.class.getCanonicalName());
+		generator.setImport(Table.class.getPackageName()+".*");
 		// generator.setImport("java.util.Map");
 		Collection<MethodGenerator> lmg = generator.getMethods();
 		for (MethodGenerator mg : lmg) {
@@ -146,13 +147,13 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			}
 		}
 		generator.setRawMethodCode(inClassCode);
-		File file = Project.makeFile(ctmodel,THREE_WORLDS_CODE, name + ".java");
+		File file = Project.makeFile(ctmodel,TW_CODE, name + ".java");
 		writeFile(generator, file, name);
 		generatedClassName = packageName + "." + name;
-		log.debug("  done.");
+		log.info("  done.");
 
 		JavaCompiler compiler = new JavaCompiler();
-		return compiler.compileCode(file);
+		return compiler.compileCode(file,Project.makeFile());
 	}
 
 	public String generatedClassName() {

@@ -10,6 +10,9 @@ import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
 import java.util.logging.Logger;
 
+import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
+import au.edu.anu.rscs.aot.collections.tables.IntTable;
+import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.TreeNode;
@@ -113,12 +116,12 @@ public abstract class HierarchicalDataGenerator
 			DataElementType tet = (DataElementType) spec.properties().getPropertyValue(P_DATAELEMENTTYPE.toString());
 			String t = tet.name();
 			if (t.equals("Integer")) { 
-				ftype = "IntTable";
-				fpack = "au.edu.anu.rscs.aot.collections.tables.IntTable";
+				ftype = IntTable.class.getSimpleName();
+				fpack = IntTable.class.getCanonicalName();
 			}
 			else {
 				ftype = t+"Table";
-				fpack = "au.edu.anu.rscs.aot.collections.tables."+t+"Table";
+				fpack = Table.class.getPackageName()+"."+ftype;
 			}
 			// no code to generate here ! just use a predefined table ! 
 			log.info("    generating reference to "+fpack+" ...");
@@ -149,7 +152,7 @@ public abstract class HierarchicalDataGenerator
 		}
 		if (parentCG!=null) {
 			parentCG.setImport(fpack);
-			parentCG.setImport("au.edu.anu.rscs.aot.collections.tables.Dimensioner");
+			parentCG.setImport(Dimensioner.class.getCanonicalName());
 			tableInitCode(parentCG,fname,ftype,dims);
 		}		
 		return ftype;

@@ -1,9 +1,12 @@
 package au.edu.anu.twcore.ecosystem.runtime;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.endNode;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOneOrMany;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrOne;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BELONGSTO;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_DRIVERS;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_RECORD;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DYNAMIC;
@@ -75,7 +78,7 @@ public interface Categorized<T extends Identity> {
 	 *  
 	 * RECURSIVE
 	 */
-	private void getSuperCategories(Category cat,Collection<Category> result) {
+	private static void getSuperCategories(Category cat,Collection<Category> result) {
 		CategorySet partition = (CategorySet) cat.getParent();
 		TreeNode tgn = partition.getParent();
 		if (tgn instanceof Category) {
@@ -101,6 +104,25 @@ public interface Categorized<T extends Identity> {
 			getSuperCategories(cat,result);
 		return result;
 	}
+		
+	/**
+	 * Static method to build the full category list of any node having 'belongsTo' edges
+	 * to categories
+	 * 
+	 * @param node
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Collection<Category> getSuperCategories(TreeGraphDataNode node) {
+		Collection<Category> cats = (Collection<Category>) get(node.edges(Direction.OUT),
+			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
+			edgeListEndNodes());
+		Collection<Category> result = new LinkedList<Category>();
+		for (Category cat:cats)
+			getSuperCategories(cat,result);
+		return result;
+	}
+
 
 	/**
 	 * <p>Utility to build a data structure from the category list of this Categorized object.
@@ -120,10 +142,12 @@ public interface Categorized<T extends Identity> {
 	 *            structure is built
 	 * @return
 	 */
-	public default TreeGraphDataNode buildUniqueDataList(String dataGroup) {
+	public static TreeGraphDataNode buildUniqueDataList(TreeGraphDataNode node, 
+			String dataGroup) {
 		TreeGraphDataNode mergedRoot = null;
 		DynamicList<TreeGraphDataNode> roots = new DynamicList<TreeGraphDataNode>();
-		for (Category cat : categories()) {
+		Collection<Category> cats = getSuperCategories(node);
+		for (Category cat:cats) {
 			TreeGraphDataNode n = (TreeGraphDataNode) get(cat.edges(Direction.OUT), 
 				selectZeroOrOne(hasTheLabel(dataGroup)), 
 				endNode());

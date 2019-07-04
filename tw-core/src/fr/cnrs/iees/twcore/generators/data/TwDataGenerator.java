@@ -4,7 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
+import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.twcore.data.runtime.TwData;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
@@ -28,15 +33,14 @@ public class TwDataGenerator
 	
 	@Override
 	protected ClassGenerator getRecordClassGenerator(String className,String comment) {
-		return new ClassGenerator(packageName, comment, className,
-			"fr.ens.biologie.threeWorlds.core.ecology.data.TwData");
+		return new ClassGenerator(packageName, comment, className,TwData.class.getCanonicalName());
 //			"au.edu.anu.rscs.aot.graph.properties.SimplePropertyList"); // doesnt seem required ??
 	}
 
 	@Override
 	protected ClassGenerator getTableClassGenerator(String className, String contentType, String comment) {
 		return new ClassGenerator(packageName, comment, className,
-		"au.edu.anu.rscs.aot.collections.tables.ObjectTable<"+contentType+">");
+			ObjectTable.class.getPackageName()+".ObjectTable<"+contentType+">");
 	}
 	public List<File> getFiles() {
 		List<File> result = new ArrayList<File>();
@@ -49,11 +53,11 @@ public class TwDataGenerator
 	@Override
 	protected void headerCode(ClassGenerator cg, String className) {
 		// imports
-		cg.setImport("au.edu.anu.rscs.aot.graph.properties.SimplePropertyList");
-		cg.setImport("au.edu.anu.rscs.aot.collections.tables.Table");	
+		cg.setImport(SimplePropertyList.class.getCanonicalName());
+		cg.setImport(Table.class.getCanonicalName());	
 		cg.setImport("java.util.Set");
 		cg.setImport("java.util.HashSet");
-		cg.setImport("fr.ens.biologie.threeWorlds.core.ecology.data.TwData");
+		cg.setImport(TwData.class.getCanonicalName());
 		// constructors
 		cg.setConstructor();
 		cg.getConstructor("constructor1").setStatement("super()");
@@ -136,7 +140,7 @@ public class TwDataGenerator
 	@Override
 	protected void tableInitCode(ClassGenerator cg, String fname, String ftype,Iterable<TreeGraphDataNode> dimList) {
 		String dims ="";
-		cg.setImport("au.edu.anu.rscs.aot.collections.tables.Dimensioner");
+		cg.setImport(Dimensioner.class.getCanonicalName());
 		if (isPredefinedTableType(ftype)) {
 			for (TreeGraphDataNode dim:dimList) {
 				if (dim.properties().hasProperty("dim")) 
@@ -150,7 +154,7 @@ public class TwDataGenerator
 	@Override
 	protected void tableCode(ClassGenerator cg, String ftype, String contentType, Iterable<TreeGraphDataNode> dimList) {
 		cg.setImport(packageName+"."+contentType);
-		cg.setImport("au.edu.anu.rscs.aot.collections.tables.Dimensioner");
+		cg.setImport(Dimensioner.class.getCanonicalName());
 		cg.setConstructor();
 		String s = "super(";
 		for (TreeGraphDataNode dim:dimList) {
