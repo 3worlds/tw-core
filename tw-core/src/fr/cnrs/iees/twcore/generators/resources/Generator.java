@@ -29,7 +29,7 @@
 
 package fr.cnrs.iees.twcore.generators.resources;
 
-import static fr.cnrs.iees.twcore.generators.Comments.*;
+import static fr.cnrs.iees.twcore.generators.TwComments.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;

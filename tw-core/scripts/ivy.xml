@@ -30,7 +30,7 @@
 	</publications>
 
 	<dependencies>
-		<dependency org="fr.ens.biologie" name="generics" rev="[0.1.4,)"/>
+		<dependency org="fr.ens.biologie" name="generics" rev="[0.1.5,)"/>
 		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="[0.2.2,)"/>
 		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="[0.1.2,)"/>
 		<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>
