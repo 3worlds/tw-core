@@ -44,7 +44,7 @@ import org.apache.ivy.core.report.ResolveReport;
 import org.apache.ivy.core.retrieve.RetrieveOptions;
 
 import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.project.TWPaths;
+import au.edu.anu.twcore.project.TwPaths;
 
 //import au.edu.anu.rscs.aot.logging.Logger;
 //import au.edu.anu.rscs.aot.logging.LoggerFactory;
@@ -60,7 +60,7 @@ import au.edu.anu.twcore.project.TWPaths;
  * @author Jacques Gignoux - 6 déc. 2017
  *
  */
-public class DependencySolver implements ProjectPaths, TWPaths {
+public class DependencySolver implements ProjectPaths, TwPaths {
 	public static final String destPath= USER_ROOT + File.separator + "tmp"; 
 
 //	private Logger log = LoggerFactory.getLogger(DependencySolver.class);

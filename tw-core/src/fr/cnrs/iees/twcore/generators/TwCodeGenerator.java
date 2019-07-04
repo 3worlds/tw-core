@@ -4,7 +4,8 @@ import java.io.File;
 
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
-import fr.cnrs.iees.graph.Node;
+import au.edu.anu.twcore.project.TwPaths;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.ens.biologie.generic.JavaGenerator;
 import fr.ens.biologie.generic.utils.NameUtils;
 
@@ -39,11 +40,11 @@ import fr.ens.biologie.generic.utils.NameUtils;
  *
  */
 public abstract class TwCodeGenerator 
-	implements ProjectPaths, ThreeWorldsProjectPaths, JavaGenerator {
+	implements ProjectPaths, TwPaths, JavaGenerator {
 	
-	protected Node spec = null;
+	protected TreeGraphDataNode spec = null;
 	
-	protected TwCodeGenerator(Node spec) {
+	protected TwCodeGenerator(TreeGraphDataNode spec) {
 		super();
 		this.spec = spec;
 	}
@@ -53,12 +54,12 @@ public abstract class TwCodeGenerator
 	}
 	
 	protected File getModelCodeDir(String modelRoot) {
-		File result = Project.makeFile(makeModelJavaName(modelRoot),THREE_WORLDS_CODE);
+		File result = Project.makeFile(makeModelJavaName(modelRoot),TW_CODE);
 		return result;
 	}
 
 	protected File getModelDataDir(String modelRoot) {
 //		return Project.makeFile(PROJECT_FILES,makeModelJavaName(modelRoot),THREE_WORLDS_DATA);
-		return Project.makeFile(makeModelJavaName(modelRoot),THREE_WORLDS_DATA);
+		return Project.makeFile(makeModelJavaName(modelRoot),TW_DATA);
 	}
 }

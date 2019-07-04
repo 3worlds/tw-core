@@ -30,6 +30,7 @@ public enum ConfigurationPropertyNames {
 	P_DYNAMIC					("dynamic"),
 	P_FUNCTIONTYPE				("type"),
 	P_FUNCTIONCLASS				("userClassName"), 
+	P_DATAELEMENTTYPE			("dataElementType"),
 	;
 
 	private final String pname;

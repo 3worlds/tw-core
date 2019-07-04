@@ -37,11 +37,15 @@ import java.io.File;
  * Date Dec 12, 2018
  */
 // Don't add anything here on speculation. Wait until it's needed.
-public interface TWPaths {
+public interface TwPaths {
 	public static String USER_ROOT/*       */ = System.getProperty("user.home");
 	public static String TW /*             */ = ".3w";
 	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
 	public static String TW_DEP_JAR /*     */ = "tw-dep.jar";
 	public static String TW_PREF /*        */ = "MM.xml";
 	public static String TW_LAYOUT /*      */ = "Layout.aot";
+	/** the directory for all generated code */
+	public static final String TW_CODE 			= "code";
+	/** the directory for all user-specific data (eg csv files and others stuff) */
+	public static final String TW_DATA 			= "data";
 }

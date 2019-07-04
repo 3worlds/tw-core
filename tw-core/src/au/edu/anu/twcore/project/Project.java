@@ -80,7 +80,7 @@ import org.apache.commons.text.WordUtils;
  *         Date 12 Dec. 2018
  */
 // tested OK with version 0.1.1 on 21/5/2019
-public class Project implements ProjectPaths, TWPaths {
+public class Project implements ProjectPaths, TwPaths {
 	private static final String sep = "_";
 	private static final char sepch = '_';
 	private static final String klassName = Project.class.getName();
@@ -303,11 +303,11 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 */
 	public static File makeProjectPreferencesFile() {
-		return makeFile(TWPaths.TW_PREF);
+		return makeFile(TwPaths.TW_PREF);
 	}
 
 	public static File makeRuntimePreferencesFile() {
-		return makeFile(ProjectPaths.RUNTIME, TWPaths.TW_PREF);
+		return makeFile(ProjectPaths.RUNTIME, TwPaths.TW_PREF);
 	}
 
 
@@ -398,7 +398,7 @@ public class Project implements ProjectPaths, TWPaths {
 	 * @return
 	 */
 	public static File makeLayoutFile() {
-		return makeFile(TWPaths.TW_LAYOUT);
+		return makeFile(TwPaths.TW_LAYOUT);
 	}
 
 	
