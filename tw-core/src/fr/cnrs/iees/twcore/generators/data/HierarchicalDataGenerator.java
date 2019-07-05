@@ -69,9 +69,10 @@ public abstract class HierarchicalDataGenerator
 			TreeGraphDataNode f = (TreeGraphDataNode) ff;
 			String fname = validJavaName(wordUpperCaseName(f.id()));
 			String ftype = null;
-			if (f.properties().hasProperty(P_DATAELEMENTTYPE.toString())) {
-				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_DATAELEMENTTYPE.toString());
-				ftype = det.name();
+			if (f.properties().hasProperty(P_FIELDTYPE.key())) {
+//				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELDTYPE.key());
+//				ftype = det.name();
+				ftype = checkType((String) f.properties().getPropertyValue(P_FIELDTYPE.key()));
 			}
 			if (f.classId().equals(N_TABLE.label())) {
 				ftype = generateTableCode((TreeGraphDataNode) f,cg);
@@ -112,8 +113,8 @@ public abstract class HierarchicalDataGenerator
 			outEdges(),
 			edgeListEndNodes(),
 			selectOneOrMany(hasTheLabel("dimensioner")));
-		if (spec.properties().hasProperty(P_DATAELEMENTTYPE.toString())) {
-			DataElementType tet = (DataElementType) spec.properties().getPropertyValue(P_DATAELEMENTTYPE.toString());
+		if (spec.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
+			DataElementType tet = (DataElementType) spec.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 			String t = tet.name();
 			if (t.equals("Integer")) { 
 				ftype = IntTable.class.getSimpleName();
@@ -131,7 +132,7 @@ public abstract class HierarchicalDataGenerator
 		else { // this must be a record - superclass will be generated from the record name, but doesnt exist yet !			
 			TreeGraphDataNode rec = (TreeGraphDataNode) get(spec, 
 				children(), 
-				selectOne(hasTheLabel(N_RECORD.toString())));
+				selectOne(hasTheLabel(N_RECORD.label())));
 			generateRecordCode(rec);
 			ftype = validJavaName(initialUpperCase(wordUpperCaseName(spec.id())));
 			log.info("    generating file "+ftype+".java ...");
@@ -163,9 +164,9 @@ public abstract class HierarchicalDataGenerator
 
 	@Override
 	public final boolean generateCode() {		
-		if (spec.classId().equals(N_RECORD.toString())) 
+		if (spec.classId().equals(N_RECORD.label())) 
 			className = packageName+"."+generateRecordCode(spec);
-		else if (spec.classId().equals(N_TABLE.toString())) 
+		else if (spec.classId().equals(N_TABLE.label())) 
 			className = packageName+"."+generateTableCode(spec,null);
 		return hadErrors;
 	}

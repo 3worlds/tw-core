@@ -13,6 +13,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
  * A code generator to make descendants of {@link TwData}
@@ -143,8 +144,8 @@ public class TwDataGenerator
 		cg.setImport(Dimensioner.class.getCanonicalName());
 		if (isPredefinedTableType(ftype)) {
 			for (TreeGraphDataNode dim:dimList) {
-				if (dim.properties().hasProperty("dim")) 
-					dims += "new Dimensioner("+dim.properties().getPropertyValue("dim")+"),";
+				if (dim.properties().hasProperty(P_DIMENSIONER_SIZE.key())) 
+					dims += "new Dimensioner("+dim.properties().getPropertyValue(P_DIMENSIONER_SIZE.key())+"),";
 			}
 			dims = dims.substring(0, dims.length()-1);
 		}
@@ -158,8 +159,8 @@ public class TwDataGenerator
 		cg.setConstructor();
 		String s = "super(";
 		for (TreeGraphDataNode dim:dimList) {
-			if (dim.properties().hasProperty("dim")) 
-				s += "new Dimensioner("+dim.properties().getPropertyValue("dim")+"),";
+			if (dim.properties().hasProperty(P_DIMENSIONER_SIZE.key())) 
+				s += "new Dimensioner("+dim.properties().getPropertyValue(P_DIMENSIONER_SIZE.key())+"),";
 		}
 		s = s.substring(0, s.length()-1);
 		s +=")";

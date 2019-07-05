@@ -100,6 +100,7 @@ public interface Categorized<T extends Identity> {
 	 */
 	public default Collection<Category> getSuperCategories(Collection<Category> cats) {
 		Collection<Category> result = new LinkedList<Category>();
+		result.addAll(cats);
 		for (Category cat:cats)
 			getSuperCategories(cat,result);
 		return result;
@@ -118,6 +119,7 @@ public interface Categorized<T extends Identity> {
 			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
 			edgeListEndNodes());
 		Collection<Category> result = new LinkedList<Category>();
+		result.addAll(cats);
 		for (Category cat:cats)
 			getSuperCategories(cat,result);
 		return result;

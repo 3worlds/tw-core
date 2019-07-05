@@ -1,0 +1,42 @@
+treegraph
+// a test file for 3worlds specifications
+
+	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
+	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+
+	// TREE 
+3worlds my_model						
+	dataDefinition my_data
+		dimensioner nsp
+			size = Integer(4)
+		dimensioner n2
+			size = Integer(3)
+		record myRec
+			field x 
+				type = String("Double")
+			table tx 
+				dataElementType = String("Boolean")
+		record myOtherRec
+			table ty
+				record tableContent
+					field a
+						type = String("Integer")
+					field b
+						type = String("String")		
+	system my_ecosystem
+		structure anything
+			categorySet everything
+				category my_category
+			component myAgent
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+		dynamics emptyDynamics
+
+// CROSS-LINKS	
+[table:tx] sizedBy [dimensioner:nsp]
+[table:ty] sizedBy [dimensioner:nsp]
+[table:ty] sizedBy [dimensioner:n2]
+[category:my_category] parameters [record:myRec]
+[category:my_category] drivers [record:myOtherRec]
+[component:myAgent] belongsTo [category:my_category]

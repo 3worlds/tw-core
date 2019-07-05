@@ -9,8 +9,6 @@ import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.Set;
-import java.util.TreeSet;
-
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
@@ -29,20 +27,22 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 public class Ecosystem 
 		extends InitialisableNode 
 		implements Categorized<SystemComponent>, Singleton<SystemContainer> {
+
+	// this is the top of the system, so it doesnt belong to any category	
 	
-	// a singleton root category for all Ecosystem instances
+//	// a singleton root category for all Ecosystem instances
 	private static final String rootCategoryId = ".";
-	private static Category rootCategory = null;
-	private static Set<Category> categories = new TreeSet<Category>(); 
+//	private static Category rootCategory = null;
+//	private static Set<Category> categories = new TreeSet<Category>(); 
 	
 	// a singleton container for all SystemComponents within an ecosystem
 	private SystemContainer community = null;
 
 	private void initRootCategory() {
-		if (rootCategory==null) {
-			rootCategory = (Category) factory().makeNode(Category.class, rootCategoryId);
-			categories.add(rootCategory);
-		}
+//		if (rootCategory==null) {
+//			rootCategory = (Category) factory().makeNode(Category.class, rootCategoryId);
+//			categories.add(rootCategory);
+//		}
 	}
 	
 	public Ecosystem(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -72,7 +72,8 @@ public class Ecosystem
 	
 	@Override
 	public Set<Category> categories() {
-		return categories;
+//		return categories;
+		return null;
 	}
 
 	@Override

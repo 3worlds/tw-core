@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cnrs.iees.twcore.generators;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -23,11 +20,9 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
-import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -79,23 +74,24 @@ public class CodeGenerator {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public boolean generate(String codePath, TreeGraph<TreeGraphDataNode,ALEdge> graph) {
-		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) get(graph.root().getChildren(),
-			selectOneOrMany(hasTheLabel(N_SYSTEM.label()))); 
-//				getChildrenLabelled(graph.getRoot(), N_SYSTEM.label());
+		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(), N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
-				File ecologyFiles = new File(
-					Project.getProjectDirectory() + File.separator + wordUpperCaseName(ecology.id()));
+			File ecologyFiles = new File(
+				Project.getProjectDirectory() + File.separator + wordUpperCaseName(ecology.id()));
 			try {
 				deleteFileTree(ecologyFiles);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			List<TreeGraphDataNode> processes = getChildrenLabelled(ecology, N_PROCESS.label());
-			List<TreeGraphDataNode> initialisers = getChildrenLabelled(ecology, N_INITIALISER.label());
-			List<TreeGraphDataNode> systems = getChildrenLabelled(ecology, N_COMPONENT.label());
+			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(ecology.getChildren(), 
+				selectOne(hasTheLabel(N_DYNAMICS.label())));
+			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(), 
+					selectOne(hasTheLabel(N_STRUCTURE.label())));
+			List<TreeGraphDataNode> processes = getChildrenLabelled(dynamics, N_PROCESS.label());
+			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
+			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENT.label());
 			for (TreeGraphDataNode system : systems) {
 				List<File> files = generateDataCode(codePath, system, ecology.id());
 				if (!codePath.equals(""))
@@ -131,9 +127,7 @@ public class CodeGenerator {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void transferProjectArtifacts(String codePath, File targetDir) {
-	
 		File srcJavaDir = new File(
 				codePath + File.separator + CodeGenerator.SRC + File.separator + targetDir.getName());
 		File srcClassDir = new File(
@@ -186,7 +180,9 @@ public class CodeGenerator {
 		} 
 		else if (system.properties().hasProperty(dataGroup))
 			((ResizeablePropertyList)system.properties()).removeProperty(dataGroup);
-		GraphState.setChanged(true);
+		
+// JG 5/7/2019 - disabled for direct debugging with CodeGeneratorTest - causes a crash.		
+//		GraphState.setChanged(true);
 	}
 
 	private List<File> generateDataCode(String codePath, 
@@ -253,14 +249,14 @@ public class CodeGenerator {
 	private static File getInputPath(String model) {
 		// return new File(Project.getProjectRoot().getAbsolutePath() + File.separator +
 		// PROJECT_FILES + File.separator + model);
-	return Project.makeFile(model);
+		return Project.makeFile(model);
 //		return new File(Project.getProjectRoot().getAbsolutePath() + File.separator + model);
 	}
 
-	private static File getOutputPath() {
-		return Project.getProjectFile();
-				//new File(Project.getProjectRoot().getAbsolutePath());
-	}
+//	private static File getOutputPath() {
+//		return Project.getProjectFile();
+//				//new File(Project.getProjectRoot().getAbsolutePath());
+//	}
 
 	@SuppressWarnings("unchecked")
 	private static List<TreeGraphDataNode> getChildrenLabelled(TreeGraphDataNode root, String label) {

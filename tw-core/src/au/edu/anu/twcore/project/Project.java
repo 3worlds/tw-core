@@ -187,7 +187,7 @@ public class Project implements ProjectPaths, TwPaths {
 			throw new TwcoreException(msg);
 		}
 		if (!isValidProjectFile(directory)) {
-			String msg = "Invalid project directory name (" + directory.getName() + ".";
+			String msg = "Invalid project directory name (" + directory.getName() + ").";
 			log.severe(msg);
 			throw new TwcoreException(msg);
 		}
