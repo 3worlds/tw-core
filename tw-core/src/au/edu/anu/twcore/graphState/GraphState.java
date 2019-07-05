@@ -27,7 +27,6 @@
  *                                                                        *
  **************************************************************************/
 
-
 package au.edu.anu.twcore.graphState;
 
 /**
@@ -42,7 +41,10 @@ public class GraphState {
 	};
 
 	public static void initialise(IGraphState impl) {
-		GraphState.impl = impl;
+		if (impl == null)
+			impl = new SimpleGraphStateImpl();
+		else
+			GraphState.impl = impl;
 	}
 
 	public static boolean hasChanged() {
