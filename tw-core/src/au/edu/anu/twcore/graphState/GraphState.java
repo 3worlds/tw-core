@@ -42,7 +42,7 @@ public class GraphState {
 
 	public static void initialise(IGraphState impl) {
 		if (impl == null)
-			impl = new SimpleGraphStateImpl();
+			GraphState.impl = new SimpleGraphStateImpl();
 		else
 			GraphState.impl = impl;
 	}
