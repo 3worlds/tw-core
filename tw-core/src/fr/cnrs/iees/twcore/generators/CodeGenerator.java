@@ -88,7 +88,7 @@ public class CodeGenerator {
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(ecology.getChildren(), 
 				selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(), 
-					selectOne(hasTheLabel(N_STRUCTURE.label())));
+				selectOne(hasTheLabel(N_STRUCTURE.label())));
 			List<TreeGraphDataNode> processes = getChildrenLabelled(dynamics, N_PROCESS.label());
 			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
 			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENT.label());
@@ -115,7 +115,7 @@ public class CodeGenerator {
 			
 			String model = wordUpperCaseName(ecology.id());
 			if (!codePath.equals(""))
-				transferProjectArtifacts(codePath, getInputPath(model));
+				transferProjectArtifacts(codePath, Project.makeFile(model));
 
 // TODO: generate the jars properly			
 			// This can be moved to MM onDeploy. Also we only need to compile if we don't have a 
@@ -180,9 +180,7 @@ public class CodeGenerator {
 		} 
 		else if (system.properties().hasProperty(dataGroup))
 			((ResizeablePropertyList)system.properties()).removeProperty(dataGroup);
-		
-// JG 5/7/2019 - disabled for direct debugging with CodeGeneratorTest - causes a crash.		
-//		GraphState.setChanged(true);
+		GraphState.setChanged(true);
 	}
 
 	private List<File> generateDataCode(String codePath, 
@@ -246,22 +244,8 @@ public class CodeGenerator {
 			generator.generatedClassName());
 	}
 
-	private static File getInputPath(String model) {
-		// return new File(Project.getProjectRoot().getAbsolutePath() + File.separator +
-		// PROJECT_FILES + File.separator + model);
-		return Project.makeFile(model);
-//		return new File(Project.getProjectRoot().getAbsolutePath() + File.separator + model);
-	}
-
-//	private static File getOutputPath() {
-//		return Project.getProjectFile();
-//				//new File(Project.getProjectRoot().getAbsolutePath());
-//	}
-
 	@SuppressWarnings("unchecked")
 	private static List<TreeGraphDataNode> getChildrenLabelled(TreeGraphDataNode root, String label) {
-//		return (List<TreeGraphDataNode>) get(root.edges(Direction.OUT), edgeListEndNodes(),
-//			selectZeroOrMany(hasTheLabel(label)));
 		return (List<TreeGraphDataNode>) get(root.getChildren(),selectZeroOrMany(hasTheLabel(label)));
 	}
 

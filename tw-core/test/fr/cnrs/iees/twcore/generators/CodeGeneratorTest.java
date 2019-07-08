@@ -25,25 +25,15 @@ class CodeGeneratorTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	final void testGenerate() {
-//		String workDir =
-//		System.getProperty("user.dir") // <home dir>/<eclipse workspace>/<project>
-//		+ File.separator + "test" 
-//		+ File.separator + this.getClass().getPackage().getName().replace('.',File.separatorChar)
-//		+ File.separator + "project_quick_2019-05-21-09-22-39-615";
-		//Project.open(new File(workDir));
-		
 		// IDD: suggestion?
+		// JG: Yup. great!
 		GraphState.initialise(null);
 		Project.create("test");
 		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
-	
-		
 		CodeGenerator gen = new CodeGenerator();
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
 			GraphImporter.importGraph("generateData.utg",this.getClass());
-		//String codePath = this.getClass().getPackageName().replaceAll("\\.", File.separator);
 		gen.generate(codePath, specs);
-		
 		Project.close();
 	}
 

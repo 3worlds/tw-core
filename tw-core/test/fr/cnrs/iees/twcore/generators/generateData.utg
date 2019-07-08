@@ -9,22 +9,32 @@ treegraph
 	// TREE 
 3worlds my_model						
 	dataDefinition my_data
-		dimensioner nsp
+		dimensioner nspecies
 			size = Integer(4)
-		dimensioner n2
+		dimensioner nboxes
 			size = Integer(3)
 		record myRec
-			field x 
+			field biomass 
 				type = String("Double")
-			table tx 
-				dataElementType = String("Boolean")
+			field length
+				type = String("Double")
+			field sex
+				type = String("Boolean")
+			table items 
+				dataElementType = fr.cnrs.iees.twcore.constants.DataElementType("Boolean")
+			field color
+				type = String("String")
 		record myOtherRec
-			table ty
+			table subtable
 				record tableContent
 					field a
 						type = String("Integer")
 					field b
-						type = String("String")		
+						type = String("String")
+					field c
+						type = String("Byte")
+					table subsubtable
+						dataElementType = fr.cnrs.iees.twcore.constants.DataElementType("Float")
 	system my_ecosystem
 		structure anything
 			categorySet everything
@@ -34,9 +44,10 @@ treegraph
 		dynamics emptyDynamics
 
 // CROSS-LINKS	
-[table:tx] sizedBy [dimensioner:nsp]
-[table:ty] sizedBy [dimensioner:nsp]
-[table:ty] sizedBy [dimensioner:n2]
+[table:items] sizedBy [dimensioner:nspecies]
+[table:subtable] sizedBy [dimensioner:nspecies]
+[table:subtable] sizedBy [dimensioner:nboxes]
+[table:subsubtable] sizedBy [dimensioner:nspecies]
 [category:my_category] parameters [record:myRec]
 [category:my_category] drivers [record:myOtherRec]
 [component:myAgent] belongsTo [category:my_category]
