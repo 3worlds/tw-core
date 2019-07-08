@@ -1,0 +1,41 @@
+treegraph
+// a test file for 3worlds specifications
+
+	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
+	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+
+	// TREE 
+3worlds my_model						
+	dataDefinition my_data
+		dimensioner nn
+			size = Integer(12)
+		record lcRec
+			field ageOfCaptain 
+				type = String("Integer")
+			field nRecruits
+				type = String("Long")
+			field nOffspring
+				type = String("Short")
+			table items 
+				dataElementType = fr.cnrs.iees.twcore.constants.DataElementType("Boolean")
+			field color
+				type = String("String")
+		record siteRec
+			field area
+				type = String("Double")
+	system my_ecosystem
+		structure anything
+			categorySet everything
+				category easyLifeCycle
+				category site
+		dynamics systemDynamics
+			lifeCycle my_hapy_life
+
+// CROSS-LINKS	
+[table:items] sizedBy [dimensioner:nn]
+[category:easyLifeCycle] parameters [record:lcRec]
+[category:site] parameters [record:siteRec]
+[lifeCycle:my_hapy_life] belongsTo [category:easyLifeCycle]
+[system:my_ecosystem] belongsTo [category:site]

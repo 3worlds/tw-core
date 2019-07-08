@@ -3,17 +3,12 @@ hasNode systemSpec
 	isOfClass = String("system")
 	hasParent = StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..*")
-//	hasProperty systemNameSpec
-//		hasName = String("name")
-//		type = String("String")
-//		multiplicity = IntegerRange("1..1")
-//	hasProperty systemClassSpec
-//		hasName = String("className")
-//		type = String("String")
-//		multiplicity = IntegerRange("1..1")
-//		mustSatisfyQuery systemClassIsInValueSetQuery
-//			className = String("IsInValueSetQuery")
-//			values = StringTable(([1]"xxx.yyy.zzz.World"))
+	// TODO: check this category is not used by Systems, ie lifeCycle categories and system
+	// categories should be completely separate
+	hasEdge systemCategoryBelongsToSpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:")
+		multiplicity = IntegerRange("0..*")
 //	hasProperty memorySpec
 //		hasName = String("memory")
 //		type = String("Integer")

@@ -24,15 +24,26 @@ class CodeGeneratorTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	final void testGenerate() {
-		// IDD: suggestion?
-		// JG: Yup. great!
+	final void testGenerate1() {
 		GraphState.initialise(null);
-		Project.create("test");
+		Project.create("test1");
 		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
 		CodeGenerator gen = new CodeGenerator();
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
 			GraphImporter.importGraph("generateData.utg",this.getClass());
+		gen.generate(codePath, specs);
+		Project.close();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	final void testGenerate2() {
+		GraphState.initialise(null);
+		Project.create("test2");
+		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+		CodeGenerator gen = new CodeGenerator();
+		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
+			GraphImporter.importGraph("generateData2.utg",this.getClass());
 		gen.generate(codePath, specs);
 		Project.close();
 	}

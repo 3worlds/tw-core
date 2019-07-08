@@ -14,15 +14,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -74,9 +77,11 @@ public class CodeGenerator {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean generate(String codePath, TreeGraph<TreeGraphDataNode,ALEdge> graph) {
 		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(), N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
+			// create directory for code generation
 			File ecologyFiles = new File(
 				Project.getProjectDirectory() + File.separator + wordUpperCaseName(ecology.id()));
 			try {
@@ -89,8 +94,7 @@ public class CodeGenerator {
 				selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(), 
 				selectOne(hasTheLabel(N_STRUCTURE.label())));
-			List<TreeGraphDataNode> processes = getChildrenLabelled(dynamics, N_PROCESS.label());
-			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
+			// generate data classes for SystemComponents
 			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENT.label());
 			for (TreeGraphDataNode system : systems) {
 				List<File> files = generateDataCode(codePath, system, ecology.id());
@@ -99,20 +103,27 @@ public class CodeGenerator {
 					// well actually, why not let them edit if they want??
 					overWriteReadOnlyFiles(codePath, files);
 			}
-			// JG - now code can also be generated for LifeCycle and for Ecosystem
-			List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(ecology, N_LIFECYCLE.label());
+			// generate data classes for LifeCycles, if any
+			List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(dynamics, N_LIFECYCLE.label());
 			for (TreeGraphDataNode lc:lifeCycles) {
 				generateDataCode(codePath, lc, ecology.id());
 			}
-			generateDataCode(codePath, ecology, ecology.id());
-			// end comment above - JG
-			for (TreeGraphDataNode process : processes)
+			// generate data classes for Ecosystem, if any
+			// caution here: Ecosystem may have no category at all
+			Collection<Category> cats = (Collection<Category>) get(ecology.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
+				edgeListEndNodes());
+			if (!cats.isEmpty())
+				generateDataCode(codePath, ecology, ecology.id());
+			// generate TwFunction classes
+			List<TreeGraphDataNode> processes = getChildrenLabelled(dynamics, N_PROCESS.label());
+			for (TreeGraphDataNode process: processes)
 				generateProcessCode(codePath, process, ecology.id());
-
-			for (TreeGraphDataNode initialiser : initialisers)
+			// generate Initialiser classes
+			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
+			for (TreeGraphDataNode initialiser: initialisers)
 				generateInitialiserCode(codePath, initialiser, ecology.id());
-
-			
+			// copy generated files to user project for code editing
 			String model = wordUpperCaseName(ecology.id());
 			if (!codePath.equals(""))
 				transferProjectArtifacts(codePath, Project.makeFile(model));
@@ -124,7 +135,6 @@ public class CodeGenerator {
 //			jgen.generateJar();
 		}
 		return !ComplianceManager.haveErrors();
-
 	}
 
 	private void transferProjectArtifacts(String codePath, File targetDir) {
@@ -135,9 +145,6 @@ public class CodeGenerator {
 		try {
 			srcJavaDir.mkdirs();
 			srcClassDir.mkdirs();
-			// System.out.println("Copy from: "+srcJavaDir.getAbsolutePath());
-			// System.out.println(" to: "+modelDir.getAbsolutePath());
-
 			// copyDirectory copies all children 
 			FileUtils.copyDirectory(srcJavaDir, targetDir);
 			FileUtils.copyDirectory(srcClassDir, targetDir);
