@@ -1,14 +1,23 @@
 package au.edu.anu.twcore.ecosystem;
 
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Singleton;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BELONGSTO;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
+import java.util.Collection;
 import java.util.Set;
+import java.util.TreeSet;
+
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
@@ -32,17 +41,13 @@ public class Ecosystem
 	
 //	// a singleton root category for all Ecosystem instances
 	private static final String rootCategoryId = ".";
-//	private static Category rootCategory = null;
-//	private static Set<Category> categories = new TreeSet<Category>(); 
+	private String categoryId = null;
+	private Set<Category> categories = new TreeSet<Category>(); 
 	
 	// a singleton container for all SystemComponents within an ecosystem
 	private SystemContainer community = null;
 
 	private void initRootCategory() {
-//		if (rootCategory==null) {
-//			rootCategory = (Category) factory().makeNode(Category.class, rootCategoryId);
-//			categories.add(rootCategory);
-//		}
 	}
 	
 	public Ecosystem(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -55,9 +60,19 @@ public class Ecosystem
 		initRootCategory();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
+		Collection<Category> cats = (Collection<Category>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
+			edgeListEndNodes());
+		if (!cats.isEmpty()) {
+			categories.addAll(getSuperCategories(cats));
+			categoryId = buildCategorySignature();
+		}
+		else
+			categoryId = rootCategoryId;
 		community = new SystemContainer(this,"ecosystem",null,null,null);
 	}
 
@@ -72,13 +87,14 @@ public class Ecosystem
 	
 	@Override
 	public Set<Category> categories() {
-//		return categories;
+		if (!categories.isEmpty())
+			return categories;
 		return null;
 	}
 
 	@Override
 	public String categoryId() {
-		return rootCategoryId;
+		return categoryId;
 	}
 
 	@Override
