@@ -2,8 +2,6 @@ package fr.cnrs.iees.twcore.generators;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
-
 import org.junit.jupiter.api.Test;
 
 import au.edu.anu.twcore.graphState.GraphState;
@@ -22,31 +20,33 @@ import fr.cnrs.iees.graph.io.GraphImporter;
  */
 class CodeGeneratorTest {
 
-//	@SuppressWarnings("unchecked")
-//	@Test
-//	final void testGenerate1() {
-//		GraphState.initialise(null);
-//		Project.create("test1");
-//		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
-//		CodeGenerator gen = new CodeGenerator();
-//		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
-//			GraphImporter.importGraph("generateData.utg",this.getClass());
-//		gen.generate(codePath, specs);
-//		Project.close();
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	@Test
-//	final void testGenerate2() {
-//		GraphState.initialise(null);
-//		Project.create("test2");
-//		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
-//		CodeGenerator gen = new CodeGenerator();
-//		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
-//			GraphImporter.importGraph("generateData2.utg",this.getClass());
-//		gen.generate(codePath, specs);
-//		Project.close();
-//	}
+	@SuppressWarnings("unchecked")
+	@Test
+	final void testGenerate1() {
+		GraphState.initialise(null);
+		Project.create("test1");
+		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+		CodeGenerator gen = new CodeGenerator();
+		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
+			GraphImporter.importGraph("generateData.utg",this.getClass());
+		gen.generate(codePath, specs);
+		Project.close();
+		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	final void testGenerate2() {
+		GraphState.initialise(null);
+		Project.create("test2");
+		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+		CodeGenerator gen = new CodeGenerator();
+		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
+			GraphImporter.importGraph("generateData2.utg",this.getClass());
+		gen.generate(codePath, specs);
+		Project.close();
+		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -59,6 +59,7 @@ class CodeGeneratorTest {
 			GraphImporter.importGraph("generateFunction.utg",this.getClass());
 		gen.generate(codePath, specs);
 		Project.close();
+		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
 	}
 
 }

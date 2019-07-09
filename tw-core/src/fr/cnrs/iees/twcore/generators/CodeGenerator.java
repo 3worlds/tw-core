@@ -224,7 +224,6 @@ public class CodeGenerator {
 			for (TreeGraphDataNode csq:consequences)
 				generateFunctionCode(csq,modelName);
 		}
-		String[] bzz = {"a","b"};
 	}
 
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
