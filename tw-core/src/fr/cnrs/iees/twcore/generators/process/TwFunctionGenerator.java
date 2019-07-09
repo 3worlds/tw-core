@@ -124,21 +124,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		// generator.setImport("java.util.Map");
 		Collection<MethodGenerator> lmg = generator.getMethods();
 		for (MethodGenerator mg : lmg) {
-//			mg.insertCodeInsertionComment();
-			// specific problems with arguments of methods.
-			if (mg.name().equals("nNew")) {
-				mg.setArgumentNames("t", "dt", "focal", "newType");
-			} else if (mg.name().equals("maternalEffect")) {
-				// mg.setArgumentType(4, "Map<String,Iterable<ComplexSystem>>");
-				mg.setArgumentNames("t", "dt", "parent", "offspring", "environment");
-			} else if ((mg.name().equals("changeCategory")) | (mg.name().equals("changeState"))
-					| (mg.name().equals("dies"))) {
-				// mg.setArgumentType(3, "Map<String,Iterable<ComplexSystem>>");
-				mg.setArgumentNames("t", "dt", "focal");
-			} else if (mg.name().equals("disturb")) {
-				// mg.setArgumentType(4, "Map<String,Iterable<ComplexSystem>>");
-				mg.setArgumentNames("t", "dt", "focal", "target", "environment");
-			}
+			mg.setArgumentNames(type.argumentNames().split(","));
+			mg.setReturnType(type.returnType());
+			if (type.returnType().equals("void"))
+				mg.setReturnStatement("");
+			else 
+				mg.setReturnStatement("return "+zero(type.returnType()));
 			if (inBodyCode != null) {
 				String ss = "";
 				for (String s : inBodyCode)
