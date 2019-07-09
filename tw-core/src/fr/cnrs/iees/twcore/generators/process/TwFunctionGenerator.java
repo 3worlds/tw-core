@@ -86,7 +86,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		}
 		if (inBodyCode==null) {
 			inBodyCode = new ArrayList<String>();
-			String defLine = "System.out.println(getClass().getName()+\"\tTime\t\"+t);";
+			// TODO: this is useful for debugging only, should be replaced by some 
+			// logging in the final version
+			String defLine = "System.out.println(getClass().getName()+\"\tTime\t\"+t)";
 			inBodyCode.add(defLine);
 		}
 		
@@ -130,12 +132,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				mg.setReturnStatement("");
 			else 
 				mg.setReturnStatement("return "+zero(type.returnType()));
-			if (inBodyCode != null) {
-				String ss = "";
+			if (inBodyCode != null)
 				for (String s : inBodyCode)
-					ss += s + "\n";
-				mg.setStatement(ss);
-			}
+					mg.setStatement(s);
 		}
 		generator.setRawMethodCode(inClassCode);
 		File file = Project.makeFile(ctmodel,TW_CODE, name + ".java");
