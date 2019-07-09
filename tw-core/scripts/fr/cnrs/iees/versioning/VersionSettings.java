@@ -61,7 +61,7 @@ public class VersionSettings {
 			{"org.apache.commons", "commons-text", "1.+", null},
 			{"org.apache.ivy", "ivy", "2.2.0", null},
 			{"org.apache.odftoolkit","simple-odf","0.8.2-incubating", null},
-			{"org.apache.odftoolkit","odfdom-java","0.8.11-incubating", null},
+			{"com.hp.hpl.jena","jena","2.6.4", null},
 
 	};
 	

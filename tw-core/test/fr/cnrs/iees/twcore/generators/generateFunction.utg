@@ -1,0 +1,37 @@
+treegraph
+// a test file for 3worlds specifications
+
+	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
+	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+
+	// TREE 
+3worlds my_model						
+	system my_ecosystem
+		structure anything
+			categorySet everything
+				category my_category
+		dynamics pDyn
+			timeLine time
+				scale = fr.cnrs.iees.twcore.constants.TimeScaleType(MONO_UNIT)
+				shortestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+				longestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+				timeModel theTime
+					timeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+					nTimeUnits = Integer(1)
+					subclass = String("au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer")
+					dt = Long(3)
+					runAtTimeZero = Boolean(false)
+					process processA
+						function Growth 
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeOtherState)
+							function Sleep 
+								type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(DeleteDecision)
+					process processB
+						function Reproduction
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(RelateToDecision)
+
+// CROSS-LINKS	
+[process:processA] appliesTo [category:my_category]
+[process:processB] dependsOn [process:processA]

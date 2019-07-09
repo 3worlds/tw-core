@@ -22,28 +22,41 @@ import fr.cnrs.iees.graph.io.GraphImporter;
  */
 class CodeGeneratorTest {
 
-	@SuppressWarnings("unchecked")
-	@Test
-	final void testGenerate1() {
-		GraphState.initialise(null);
-		Project.create("test1");
-		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
-		CodeGenerator gen = new CodeGenerator();
-		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
-			GraphImporter.importGraph("generateData.utg",this.getClass());
-		gen.generate(codePath, specs);
-		Project.close();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Test
+//	final void testGenerate1() {
+//		GraphState.initialise(null);
+//		Project.create("test1");
+//		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+//		CodeGenerator gen = new CodeGenerator();
+//		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
+//			GraphImporter.importGraph("generateData.utg",this.getClass());
+//		gen.generate(codePath, specs);
+//		Project.close();
+//	}
+//
+//	@SuppressWarnings("unchecked")
+//	@Test
+//	final void testGenerate2() {
+//		GraphState.initialise(null);
+//		Project.create("test2");
+//		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+//		CodeGenerator gen = new CodeGenerator();
+//		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
+//			GraphImporter.importGraph("generateData2.utg",this.getClass());
+//		gen.generate(codePath, specs);
+//		Project.close();
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	final void testGenerate2() {
+	final void testGenerate3() {
 		GraphState.initialise(null);
-		Project.create("test2");
+		Project.create("test3");
 		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
 		CodeGenerator gen = new CodeGenerator();
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
-			GraphImporter.importGraph("generateData2.utg",this.getClass());
+			GraphImporter.importGraph("generateFunction.utg",this.getClass());
 		gen.generate(codePath, specs);
 		Project.close();
 	}

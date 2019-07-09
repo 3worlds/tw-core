@@ -38,26 +38,23 @@ public class Ecosystem
 		implements Categorized<SystemComponent>, Singleton<SystemContainer> {
 
 	// this is the top of the system, so it doesnt belong to any category	
+	// except if we want to attach parameters/variables to it
 	
-//	// a singleton root category for all Ecosystem instances
+	// a 'null' category in case no category is set by the user
 	private static final String rootCategoryId = ".";
+	// a set of categories in case the user set some
 	private String categoryId = null;
 	private Set<Category> categories = new TreeSet<Category>(); 
 	
 	// a singleton container for all SystemComponents within an ecosystem
 	private SystemContainer community = null;
 
-	private void initRootCategory() {
-	}
-	
 	public Ecosystem(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
-		initRootCategory();
 	}
 
 	public Ecosystem(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
-		initRootCategory();
 	}
 
 	@SuppressWarnings("unchecked")

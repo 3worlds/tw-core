@@ -116,9 +116,17 @@ public class CodeGenerator {
 			if (!cats.isEmpty())
 				generateDataCode(codePath, ecology, ecology.id());
 			// generate TwFunction classes
-			List<TreeGraphDataNode> processes = getChildrenLabelled(dynamics, N_PROCESS.label());
-			for (TreeGraphDataNode process: processes)
-				generateProcessCode(codePath, process, ecology.id());
+			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..* enables
+			// to run tests on incomplete specs 
+			List<TreeGraphDataNode> timeModels = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
+				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())),
+				children(),
+				selectZeroOrMany(hasTheLabel( N_TIMEMODEL.label()))); 
+			for (TreeGraphDataNode timeModel: timeModels) {
+				List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
+				for (TreeGraphDataNode process: processes)
+					generateProcessCode(codePath, process, ecology.id());
+			}
 			// generate Initialiser classes
 			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
 			for (TreeGraphDataNode initialiser: initialisers)
@@ -207,8 +215,6 @@ public class CodeGenerator {
 	private void generateProcessCode(String codePath, TreeGraphDataNode process, String modelName) {
 		// crash here is if 0 functions
 		List<TreeGraphDataNode> functions =  getChildrenLabelled(process, N_FUNCTION.label());
-//				(List<TreeGraphDataNode>) get(process.getChildren(),
-//				selectOneOrMany(hasTheLabel(N_FUNCTION.label())));
 		for (TreeGraphDataNode function : functions) {
 			// 1 generate code for this function
 			generateFunctionCode(function,modelName);
@@ -217,16 +223,8 @@ public class CodeGenerator {
 				selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
 			for (TreeGraphDataNode csq:consequences)
 				generateFunctionCode(csq,modelName);
-//			ALEdge espec = (ALEdge) get(function.edges(Direction.OUT),
-//				selectZeroOrOne(hasTheLabel(E_SPEC.toString())));
-//			if (espec != null)
-//				generateFunctionCode(function, (TreeGraphDataNode) espec.endNode(), modelName);
-//			TreeGraphDataNode consequence = (TreeGraphDataNode) get(function.getChildren(),
-//				selectZeroOrOne(hasTheLabel(N_CONSEQUENCE.toString())));
-//			if (consequence != null)
-//				generateProcessCode(codePath, consequence, modelName);
 		}
-
+		String[] bzz = {"a","b"};
 	}
 
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
