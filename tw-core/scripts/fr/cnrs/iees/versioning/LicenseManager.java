@@ -1,31 +1,29 @@
 /**************************************************************************
- *  OMUGI - One More Ultimate Graph Implementation                        *
+ *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
- *  Copyright 2018: Shayne FLint, Jacques Gignoux & Ian D. Davies         *
+ *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
  *       shayne.flint@anu.edu.au                                          * 
  *       jacques.gignoux@upmc.fr                                          *
  *       ian.davies@anu.edu.au                                            * 
  *                                                                        *
- *  OMUGI is an API to implement graphs, as described by graph theory,    *
- *  but also as more commonly used in computing - e.g. dynamic graphs.    *
- *  It interfaces with JGraphT, an API for mathematical graphs, and       *
- *  GraphStream, an API for visual graphs.                                *
+ *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
  **************************************************************************                                       
- *  This file is part of OMUGI (One More Ultimate Graph Implementation).  *
+ *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
- *  OMUGI is free software: you can redistribute it and/or modify         *
+ *  TW-CORE is free software: you can redistribute it and/or modify       *
  *  it under the terms of the GNU General Public License as published by  *
  *  the Free Software Foundation, either version 3 of the License, or     *
  *  (at your option) any later version.                                   *
  *                                                                        *
- *  OMUGI is distributed in the hope that it will be useful,              *
+ *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *  GNU General Public License for more details.                          *                         
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
- *  along with OMUGI.  If not, see <https://www.gnu.org/licenses/gpl.html>*
+ *  along with TW-CORE.                                                   *
+ *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
 package fr.cnrs.iees.versioning;
