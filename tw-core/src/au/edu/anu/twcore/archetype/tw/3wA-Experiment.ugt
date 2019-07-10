@@ -68,3 +68,13 @@ hasNode timePeriodSpec
 		toNode = String("stoppingCondition:")
 		multiplicity = IntegerRange("0..1")
 	
+hasNode dataSourceSpec
+	isOfClass = String("dataSource")
+	hasParent =  StringTable(([1]"experiment:"))
+	multiplicity = IntegerRange("0..*")
+
+hasNode dataSinkSpec
+	isOfClass = String("dataSink")
+	hasParent =  StringTable(([1]"experiment:"))
+	multiplicity = IntegerRange("0..*")
+	

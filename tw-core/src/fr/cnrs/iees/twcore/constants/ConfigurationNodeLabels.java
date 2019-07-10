@@ -85,6 +85,8 @@ public enum ConfigurationNodeLabels {
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
 			N_TIMEPERIOD 		("timePeriod",			TimePeriod.class,			0),
 			N_MODELCHANGE 		("modelChange",			ModelChange.class,			0),
+			N_DATASOURCE 		("dataSource",			DataSource.class,			0),
+			N_DATASINK 			("dataSink",			DataSink.class,				0),
 			//TODO
 //			N_DATAIO 			("dataIO",				Object.class,				0),
 		N_UI 					("userInterface",		TwUI.class,					0),
