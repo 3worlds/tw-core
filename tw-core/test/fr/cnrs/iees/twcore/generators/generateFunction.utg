@@ -4,7 +4,6 @@ treegraph
 	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
 	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
 	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
-	property_list_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
 
 	// TREE 
 3worlds my_model						

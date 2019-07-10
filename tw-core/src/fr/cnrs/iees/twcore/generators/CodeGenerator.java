@@ -122,10 +122,11 @@ public class CodeGenerator {
 				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())),
 				children(),
 				selectZeroOrMany(hasTheLabel( N_TIMEMODEL.label()))); 
-			for (TreeGraphDataNode timeModel: timeModels) {
-				List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
-				for (TreeGraphDataNode process: processes)
-					generateProcessCode(codePath, process, ecology.id());
+			if (timeModels!=null)
+				for (TreeGraphDataNode timeModel: timeModels) {
+					List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
+					for (TreeGraphDataNode process: processes)
+						generateProcessCode(codePath, process, ecology.id());
 			}
 			// generate Initialiser classes
 			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
