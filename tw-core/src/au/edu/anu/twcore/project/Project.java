@@ -389,7 +389,7 @@ public class Project implements ProjectPaths, TwPaths {
 	public static File makeConfigurationFile() {
 		String name = Project.getProjectName();
 		// Its a string of several extensions
-		return Project.makeFile(name + GraphFileFormats.AOT.extension().split(" ")[0]);
+		return Project.makeFile(name + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
 	}
 
 	/**
@@ -398,7 +398,7 @@ public class Project implements ProjectPaths, TwPaths {
 	 * @return
 	 */
 	public static File makeLayoutFile() {
-		return makeFile(TwPaths.TW_LAYOUT);
+		return makeFile(TwPaths.TW_LAYOUT+GraphFileFormats.TOMUGI.extension().split(" ")[0]);
 	}
 
 	
