@@ -32,11 +32,16 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Sealable;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.Ecosystem;
+import au.edu.anu.twcore.ecosystem.runtime.Parameterised;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * A class matching the "ecosystem/dynamics/initialState" node of the 3w configuration
@@ -45,8 +50,12 @@ import au.edu.anu.twcore.InitialisableNode;
  */
 // this is initialised after SystemFactory, Ecosystem and LifeCycle, so that all these
 // classes are up and ready with their containers and data templates
-public class InitialState extends InitialisableNode {
+public class InitialState extends InitialisableNode implements Sealable, Parameterised {
 
+	private boolean sealed = false;
+	private TwData parameters = null;
+	private SystemContainer container = null;
+	
 	// default constructor
 	public InitialState(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -60,12 +69,42 @@ public class InitialState extends InitialisableNode {
 	@Override
 	public void initialise() {
 		super.initialise();
-		
+		sealed = false;
+		Ecosystem ecosystem = (Ecosystem) getParent().getParent();
+		container = ecosystem.getInstance(); 
+		parameters = container.parameters();
+		sealed = true;
+	}
+	
+	@Override
+	public TwData getParameters() {
+		if (sealed)
+			return parameters;
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
 	}
 
 	@Override
 	public int initRank() {
 		return N_INITIALSTATE.initRank();
+	}
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
+	}
+
+	@Override
+	public SystemContainer container() {
+		if (sealed)
+			return container;
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
 	}
 
 }

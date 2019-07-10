@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.dynamics.initial;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.TwData;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -57,6 +58,10 @@ public class VariableValues extends InitialisableNode {
 	@Override
 	public void initialise() {
 		super.initialise();
+		Individual i = (Individual)getParent();
+		TwData variables = i.getVariables();
+		if ((variables!=null) && (properties()!=null) && (properties().size()>0))
+			variables.setProperties(properties());
 	}
 
 	@Override

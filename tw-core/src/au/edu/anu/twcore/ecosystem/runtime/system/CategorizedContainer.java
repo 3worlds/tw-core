@@ -161,7 +161,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 	
 	// three ways to add items to the initialItems list
-	public void setInitialItems(T[] items) {
+	@SuppressWarnings("unchecked")
+	public void setInitialItems(T... items) {
 		initialItems.clear();
 		for (T item:items)
 			initialItems.add(item);

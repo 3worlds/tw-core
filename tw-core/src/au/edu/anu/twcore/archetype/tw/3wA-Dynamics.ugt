@@ -208,6 +208,10 @@ hasNode groupSpec
 		isOfClass = String("cycle")
 		toNode = String("lifeCycle")
 		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery groupObjectSpec
+		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
+		nodeLabel1 = String("component")
+		nodeLabel2 = String("lifeCycle")
 	
 hasNode individualSpec
 	isOfClass = String("individual")

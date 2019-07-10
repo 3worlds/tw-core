@@ -158,6 +158,16 @@ public class SystemFactory
 			return null;
 	}
 	
+	/** returns a new variableSet of the proper structure for this SystemFactory 
+	 * NB for use at initialisation only*/
+	public final TwData newVariableSet() {
+		if (driverTemplate != null)
+			return driverTemplate.clone().clear();
+		else
+			return null;
+	}
+
+	
 	@Override
 	public Set<Category> categories() {
 		if (sealed)

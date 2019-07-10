@@ -98,11 +98,11 @@ public class Ecosystem
 		}
 		else
 			categoryId = rootCategoryId;
-		TwData parameterTemplate = null;
+		TwData parameters = null;
 		if (properties().hasProperty(P_PARAMETERCLASS.key()))
-			parameterTemplate = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
+			parameters = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
 		// TODO: automatic variables as variableTemplate
-		community = new SystemContainer(this,"ecosystem",null,parameterTemplate,null);
+		community = new SystemContainer(this,"ecosystem",null,parameters,null);
 	}
 
 	@Override
@@ -128,6 +128,11 @@ public class Ecosystem
 
 	@Override
 	public SystemContainer getInstance() {
+		return community;
+	}
+
+	// for compatibility with LifeCycle and Systemfactory 
+	public SystemContainer container(String name) {
 		return community;
 	}
 

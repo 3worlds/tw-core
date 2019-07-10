@@ -33,8 +33,9 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.Parameterised;
 
 /**
  * A class matching the "ecosystem/dynamics/.../parameterValues" node of the 3W configuration tree.
@@ -57,6 +58,10 @@ public class ParameterValues extends InitialisableNode {
 	@Override
 	public void initialise() {
 		super.initialise();
+		TwData paramSet = null;
+		paramSet = ((Parameterised)getParent()).getParameters();
+		if ((paramSet!=null) && (properties()!=null) && (properties().size()>0))
+			paramSet.setProperties(properties());
 	}
 
 	@Override

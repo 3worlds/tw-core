@@ -28,20 +28,34 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_INSTANCEOF;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.Parameterised;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
+import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Sealable;
 
 /**
  * 
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class Individual extends InitialisableNode {
+public class Individual extends InitialisableNode implements Sealable {
+
+	private boolean sealed = false;
+	private TwData variables = null;
+	private SystemFactory factory = null;
 
 	// default constructor
 	public Individual(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -56,11 +70,38 @@ public class Individual extends InitialisableNode {
 	@Override
 	public void initialise() {
 		super.initialise();
+		sealed = false;
+		factory = (SystemFactory) get(edges(Direction.OUT),
+			selectOne(hasTheLabel(E_INSTANCEOF.label())),
+			endNode());
+		SystemComponent sc = factory.newInstance();
+		variables = sc.currentState();
+		Parameterised p = (Parameterised) getParent();
+		p.container().setInitialItems(sc);
+		sealed = true;
 	}
 
 	@Override
 	public int initRank() {
 		return N_INDIVIDUAL.initRank();
 	}
+	
+	public TwData getVariables() {
+		if (sealed)
+			return variables;
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
+	}
 
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
+	}
+	
 }

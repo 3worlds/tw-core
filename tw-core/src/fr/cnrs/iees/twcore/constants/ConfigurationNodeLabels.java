@@ -68,11 +68,11 @@ public enum ConfigurationNodeLabels {
 				N_PRODUCE 		("produce",				Produce.class,				0),
 				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,0),
 				N_INITIALISER 	("initialiser",			Initialiser.class,			20), // after relation
-				N_INITIALSTATE 	("initialState",		InitialState.class,			20), // after Ecosystem, LifeCycle and SystemComponent
-				N_GROUP 		("group",				Group.class,				0),
-				N_INDIVIDUAL 	("individual",			Individual.class,			0),
-				N_PARAMETERVALUES("parameterValues",	ParameterValues.class,		0),
-				N_VARIABLEVALUES("variableValues",		VariableValues.class,		0),
+				N_INITIALSTATE 	("initialState",		InitialState.class,			10), // after Ecosystem
+				N_GROUP 		("group",				Group.class,				20), // after LifeCycle and SystemFactory
+				N_INDIVIDUAL 	("individual",			Individual.class,			30), // after Group 
+				N_PARAMETERVALUES("parameterValues",	ParameterValues.class,		40), // after InitialState, Group and Individual
+				N_VARIABLEVALUES("variableValues",		VariableValues.class,		50), // after ParameterValues
 			N_STRUCTURE 		("structure",			Structure.class,			0),
 				N_CATEGORYSET 	("categorySet",			CategorySet.class,			0),
 				N_CATEGORY 		("category",			Category.class,				0), 
