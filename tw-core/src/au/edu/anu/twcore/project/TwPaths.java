@@ -43,7 +43,7 @@ public interface TwPaths {
 	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
 	public static String TW_DEP_JAR /*     */ = "tw-dep.jar";
 	public static String TW_PREF /*        */ = "MM.xml";
-	public static String TW_LAYOUT /*      */ = "Layout.aot";
+	public static String TW_LAYOUT /*      */ = "Layout";
 	/** the directory for all generated code */
 	public static final String TW_CODE 			= "code";
 	/** the directory for all user-specific data (eg csv files and others stuff) */
