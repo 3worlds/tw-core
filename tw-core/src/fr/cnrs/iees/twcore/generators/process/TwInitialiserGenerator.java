@@ -44,8 +44,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.Table;
-import au.edu.anu.rscs.aot.init.Initialiser;
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.init.SecondaryParametersInitialiser;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.Direction;
@@ -66,7 +66,7 @@ import fr.ens.biologie.codeGeneration.MethodGenerator;
  */
 public class TwInitialiserGenerator extends TwCodeGenerator {
 
-	private static String INITIALISER_ROOT_PACKAGE = Initialiser.class.getPackageName(); 
+	private static String INITIALISER_ROOT_PACKAGE = SecondaryParametersInitialiser.class.getPackageName(); 
 	
 	private Logger log = Logger.getLogger(TwInitialiserGenerator.class.getName());
 	private String name = null;
@@ -132,7 +132,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		for (MethodGenerator mg:lmg) {
 			mg.insertCodeInsertionComment();
 			if  (mg.name().equals("setSecondaryParameters")) {
-				mg.setArgumentNames("speciesParameters","stageParameters","timeGrain","timeOrigin","timeUnit");
+				mg.setArgumentNames("speciesParameters","stageParameters","timeOrigin","timeUnit");
 			}
 			if (inBodyCode!=null) {
 				String ss = "";

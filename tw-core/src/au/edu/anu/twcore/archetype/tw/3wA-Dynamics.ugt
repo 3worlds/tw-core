@@ -9,6 +9,9 @@ hasNode initialisationSpec
 	isOfClass = String("initialiser")
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery initialiserNameWithUppercaseQuery
+		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
+	
 	
 hasNode timeLineSpec
 	isOfClass = String("timeLine")

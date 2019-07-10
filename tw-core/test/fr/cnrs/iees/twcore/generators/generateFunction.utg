@@ -30,6 +30,7 @@ treegraph
 					process processB
 						function Reproduction
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(RelateToDecision)
+			initialiser My_initialiser
 
 // CROSS-LINKS	
 [process:processA] appliesTo [category:my_category]
