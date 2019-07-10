@@ -33,7 +33,7 @@ treegraph
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
 			relationType myRelation //19
 		dynamics my_simulator //20
-			initialiser my_initialiser //21
+			initialiser My_initialiser //21
 			timeLine my_time_line //22
 				scale = fr.cnrs.iees.twcore.constants.TimeScaleType(MONO_UNIT)
 				shortestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)

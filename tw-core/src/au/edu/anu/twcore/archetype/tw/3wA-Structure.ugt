@@ -49,6 +49,18 @@ hasNode componentSpec
 		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery exclusiveCategoryCheckSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
+	hasProperty componentParameterSpec
+		hasName = String("parameterClass")
+		type =  String("String") 
+		multiplicity = IntegerRange("0..1") 
+	hasProperty componentDecoratorSpec
+		hasName = String("decoratorClass")
+		type =  String("String") 
+		multiplicity = IntegerRange("0..1") 
+	hasProperty componentDriverSpec
+		hasName = String("driverClass")
+		type =  String("String") 
+		multiplicity = IntegerRange("0..1") 
 	
 //hasNode realisedComponentpec
 //	isOfClass = String("realisedComponent")

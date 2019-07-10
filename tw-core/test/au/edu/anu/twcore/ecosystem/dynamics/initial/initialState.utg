@@ -1,0 +1,61 @@
+treegraph
+// a test file for 3worlds specifications
+
+	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
+	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+
+	// TREE 
+3worlds my_model						
+	dataDefinition my_data
+		dimensioner nspecies
+			size = Integer(4)
+		dimensioner nboxes
+			size = Integer(3)
+		record myRec
+			field biomass 
+				type = String("Double")
+			field length
+				type = String("Double")
+			field sex
+				type = String("Boolean")
+			table items 
+				dataElementType = fr.cnrs.iees.twcore.constants.DataElementType("Boolean")
+			field color
+				type = String("String")
+		record myOtherRec
+			table subtable
+				record tableContent
+					field a
+						type = String("Integer")
+					field b
+						type = String("String")
+					field c
+						type = String("Byte")
+					table subsubtable
+						dataElementType = fr.cnrs.iees.twcore.constants.DataElementType("Float")
+	system my_ecosystem
+		structure anything
+			categorySet everything
+				category my_category
+			component myAgent
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+		dynamics emptyDynamics
+			initialState i1
+				group A
+					individual A1
+				individual i1-1
+				individual i1-2
+
+// CROSS-LINKS	
+[table:items] sizedBy [dimensioner:nspecies]
+[table:subtable] sizedBy [dimensioner:nspecies]
+[table:subtable] sizedBy [dimensioner:nboxes]
+[table:subsubtable] sizedBy [dimensioner:nspecies]
+[category:my_category] parameters [record:myRec]
+[category:my_category] drivers [record:myOtherRec]
+[component:myAgent] belongsTo [category:my_category]
+[individual:i1-1] instanceOf [component:myAgent]
+[individual:i1-2] instanceOf [component:myAgent]
+[individual:A1] instanceOf [component:myAgent]
+[group:A] groupOf [component:myAgent]

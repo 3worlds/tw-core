@@ -39,7 +39,6 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DRIVERCLASS;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_PARAMETERCLASS;
 
 import java.util.Collection;
@@ -77,7 +76,6 @@ public class LifeCycle
 	private String categoryId = null;
 	
 	private TwData parameterTemplate = null;
-	private TwData variableTemplate = null;
 	
 	// The SystemComponent containers instantiated by this LifeCycle
 	private Map<String,SystemContainer> containers = new HashMap<String,SystemContainer>();
@@ -103,23 +101,9 @@ public class LifeCycle
 			edgeListEndNodes());
 		categories.addAll(getSuperCategories(nl));
 		// check if user-defined data classes were generated
-//		boolean generateDataClasses = true;
-		if (properties().hasProperty(P_PARAMETERCLASS.key())) {
+		if (properties().hasProperty(P_PARAMETERCLASS.key()))
 			parameterTemplate = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
-//			generateDataClasses = false;
-		}
-		if (properties().hasProperty(P_DRIVERCLASS.toString())) {
-			variableTemplate = loadDataClass((String) properties().getPropertyValue(P_DRIVERCLASS.key()));
-//			generateDataClasses = false;
-		}
 		sealed = true; // important - next statement access this class methods
-		// else produce information to generate data classes
-//		if (generateDataClasses) {
-//			// we reach here only if no data has been specified or no data class has been generated
-//			// TODO: get this result to generate code !
-//			buildUniqueDataList(E_PARAMETERS.label());
-//			buildUniqueDataList(E_DRIVERS.label());
-//		}
 		categoryId = buildCategorySignature();
 	}
 
@@ -185,7 +169,7 @@ public class LifeCycle
 			if (result==null) {
 				SystemContainer sc = ((Ecosystem)getParent().getParent()).getInstance();
 				result = new SystemContainer(this, name, sc, 
-					parameterTemplate.clone(), variableTemplate.clone());
+					parameterTemplate.clone(), null);
 				if (!result.id().equals(name))
 					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
 				containers.put(result.id(),result);

@@ -33,6 +33,8 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import au.edu.anu.twcore.InitialisableNode;
 
@@ -41,6 +43,8 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 17 juin 2019
  *
  */
+// this is initialised after SystemFactory, Ecosystem and LifeCycle, so that all these
+// classes are up and ready with their containers and data templates
 public class InitialState extends InitialisableNode {
 
 	// default constructor
@@ -56,6 +60,7 @@ public class InitialState extends InitialisableNode {
 	@Override
 	public void initialise() {
 		super.initialise();
+		
 	}
 
 	@Override

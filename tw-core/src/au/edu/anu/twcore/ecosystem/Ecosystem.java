@@ -35,18 +35,18 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Singleton;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BELONGSTO;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_PARAMETERCLASS;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -98,7 +98,11 @@ public class Ecosystem
 		}
 		else
 			categoryId = rootCategoryId;
-		community = new SystemContainer(this,"ecosystem",null,null,null);
+		TwData parameterTemplate = null;
+		if (properties().hasProperty(P_PARAMETERCLASS.key()))
+			parameterTemplate = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
+		// TODO: automatic variables as variableTemplate
+		community = new SystemContainer(this,"ecosystem",null,parameterTemplate,null);
 	}
 
 	@Override

@@ -121,6 +121,10 @@ hasNode lifeCycleSpec
 	isOfClass = String("lifeCycle")
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("0..*")
+	hasProperty lifeCycleParameterSpec
+		hasName = String("parameterClass")
+		type =  String("String") 
+		multiplicity = IntegerRange("0..1") 
 	hasEdge lifeCycleToCategorySetSpec
 		isOfClass = String("appliesTo")
 		toNode = String("categorySet")
@@ -191,10 +195,6 @@ hasNode initialStateSpec
 	isOfClass = String("initialState")
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("0..1")
-	hasEdge communityToCategorySpec
-		isOfClass = String("belongsTo")
-		toNode = String("category")
-		multiplicity = IntegerRange("0..*")
 	
 hasNode groupSpec
 	isOfClass = String("group")
@@ -208,10 +208,6 @@ hasNode groupSpec
 		isOfClass = String("cycle")
 		toNode = String("lifeCycle")
 		multiplicity = IntegerRange("0..1")
-	hasEdge groupToCategorySpec
-		isOfClass = String("belongsTo")
-		toNode = String("category")
-		multiplicity = IntegerRange("0..*")
 	
 hasNode individualSpec
 	isOfClass = String("individual")
@@ -233,7 +229,7 @@ hasNode parameterValuesSpec
 	
 hasNode variableValuesSpec
 	isOfClass = String("variableValues")
-	hasParent = StringTable(([3]"initialState:","group:","individual"))
+	hasParent = StringTable(([1]"individual"))
 	multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
 	

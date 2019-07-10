@@ -113,19 +113,12 @@ public class SystemFactory
 		categories.addAll(getSuperCategories(nl));
 		permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
 		// These ARE optional - inserted by codeGenerator!
-//		boolean generateDataClasses = true;
-		if (properties().hasProperty(P_PARAMETERCLASS.key())) {
+		if (properties().hasProperty(P_PARAMETERCLASS.key()))
 			parameterTemplate = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
-//			generateDataClasses = false;
-		}
-		if (properties().hasProperty(P_DRIVERCLASS.toString())) {
+		if (properties().hasProperty(P_DRIVERCLASS.toString())) 
 			driverTemplate = loadDataClass((String) properties().getPropertyValue(P_DRIVERCLASS.key()));
-//			generateDataClasses = false;
-		}
-		if (properties().hasProperty(P_DECORATORCLASS.toString())) {
+		if (properties().hasProperty(P_DECORATORCLASS.toString())) 
 			decoratorTemplate = loadDataClass((String) properties().getPropertyValue(P_DECORATORCLASS.key()));
-//			generateDataClasses = false;
-		}
 		if (driverTemplate != null)
 			for (String key : driverTemplate.getKeysAsSet())
 				propertyMap.put(key, DRIVERS);
@@ -135,13 +128,6 @@ public class SystemFactory
 			for (String key : decoratorTemplate.getKeysAsSet())
 				propertyMap.put(key, DECO);
 		sealed = true; // important - next statement access this class methods
-//		if (generateDataClasses) {
-//			// we reach here only if no data has been specified or no data class has been generated
-//			// TODO: get this result to generate code !
-//			buildUniqueDataList(E_PARAMETERS.label());
-//			buildUniqueDataList(E_DRIVERS.label());
-//			buildUniqueDataList(E_DECORATORS.label());
-//		}
 		categoryId = buildCategorySignature();
 	}
 

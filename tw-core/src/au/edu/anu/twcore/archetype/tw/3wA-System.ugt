@@ -3,6 +3,10 @@ hasNode systemSpec
 	isOfClass = String("system")
 	hasParent = StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..*")
+	hasProperty systemParameterSpec
+		hasName = String("parameterClass")
+		type =  String("String") 
+		multiplicity = IntegerRange("0..1") 
 	// TODO: check this category is not used by Systems, ie lifeCycle categories and system
 	// categories should be completely separate
 	hasEdge systemCategoryBelongsToSpec
