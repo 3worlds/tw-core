@@ -246,8 +246,10 @@ public class SystemFactory
 				}
 				if (sc==null)
 					sc = ec.getInstance();
-				result = new SystemContainer(this, name, sc, 
-					parameterTemplate.clone(), null);
+				if (parameterTemplate!=null)
+					result = new SystemContainer(this, name, sc, parameterTemplate.clone(), null);
+				else
+					result = new SystemContainer(this, name, sc, null, null);
 				if (!result.id().equals(name))
 					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
 				containers.put(result.id(),result);

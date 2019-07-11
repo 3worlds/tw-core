@@ -41,7 +41,7 @@ import fr.cnrs.iees.identity.Identity;
  */
 public class GroupOfEdge extends ALEdge {
 
-	protected GroupOfEdge(Identity id, Node start, Node end, EdgeFactory graph) {
+	public GroupOfEdge(Identity id, Node start, Node end, EdgeFactory graph) {
 		super(id, start, end, graph);
 	}
 
