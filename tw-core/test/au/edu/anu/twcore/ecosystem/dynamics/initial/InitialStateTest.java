@@ -25,4 +25,15 @@ class InitialStateTest {
 		assertNotNull(s);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	final void testInitialise2() {
+		TreeGraph<TreeGraphNode,ALEdge> specs = (TreeGraph<TreeGraphNode,ALEdge>) 
+			GraphImporter.importGraph("initialState2.utg",this.getClass());
+		SimulationSession s = new SimulationSession(specs);
+		Ecosystem eco = (Ecosystem) specs.findNode("my_ecosystem");
+		System.out.println(eco.getInstance().toString());	
+		assertNotNull(s);
+	}
+
 }

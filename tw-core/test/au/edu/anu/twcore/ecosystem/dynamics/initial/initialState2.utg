@@ -1,0 +1,163 @@
+treegraph
+// a test file for 3worlds specifications
+
+	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
+	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+
+	// TREE 
+3worlds my_model						
+	dataDefinition my_data
+		record var_animal
+			field bodySize 
+				type = String("Double")
+			field tailLength
+				type = String("Double")
+			field sex
+				type = String("Boolean")
+		record par_animal
+			field ageFirstReproduction 
+				type = String("Integer")
+			field ageMax
+				type = String("Integer")
+		record var_plant
+			field biomass
+				type = String("Double")
+			field leafArea
+				type = String("Double")
+			field rootBiomass
+				type = String("Double")
+		record par_plant
+			field growthRate
+				type = String("Double")
+			field evergreen
+				type = String("Boolean")
+		record var_bird
+			field clutchSize
+				type = String("Integer")
+		record var_mammal
+			field litterSize
+				type = String("Integer")
+		record par_C3
+			field Jmax
+				type = String("Double")
+		record par_C4
+			field VCmax
+				type = String("Double")
+		record par_grass
+			field flamability
+				type = String("Double")
+		record var_tree
+			field dbh			
+				type = String("Double")
+			field canopyExtent
+				type = String("Double")
+		record par_herbivore
+			field intakeRate
+				type = String("Double")
+			field digestionType
+				type = String("String")
+		record var_browser
+			field height
+				type = String("Double")
+	system my_ecosystem
+		structure anything
+			categorySet everything
+				category animal
+					categorySet taxon
+						category mammal
+						category bird
+					categorySet diet
+						category herbivore
+							categorySet plantDiet
+								category browser
+								category grazer
+						category carnivore
+						category granivore
+				category plant
+					categorySet photosynthesisType
+						category C3
+						category C4
+					categorySet lifeForm
+						category tree
+						category grass
+						category forb 
+			component tiger
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component sheep
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component whale
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component squirrel
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component eucalypt
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component arabidopsis
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component grasstree
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component andropogon
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component sparrow
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component ostrich
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+		dynamics emptyDynamics
+			initialState eden
+				group plants
+					individual plant-1
+					individual plant-2
+				individual plant-3
+				individual plant-4
+				individual plant-5
+				individual plant-6
+				individual plant-7
+				individual plant-8
+				group animals
+				individual whale-1
+				individual whale-2
+
+// CROSS-LINKS	
+[category:animal] parameters [record:par_animal]
+[category:animal] drivers [record:var_animal]
+[category:plant] drivers [record:var_plant]
+[category:plant] parameters [record:par_plant]
+[category:mammal] drivers [record:var_mammal]
+[category:bird] drivers [record:var_bird]
+[category:C3] parameters [record:par_C3]
+[category:C4] parameters [record:par_C4]
+[category:herbivore] parameters [record:par_herbivore]
+[category:browser] drivers [record:var_browser]
+
+[component:tiger] belongsTo [category:mammal]
+[component:tiger] belongsTo [category:carnivore]
+[component:sheep] belongsTo [category:mammal]
+[component:sheep] belongsTo [category:grazer]
+[component:whale] belongsTo [category:mammal]
+[component:squirrel] belongsTo [category:mammal]
+[component:squirrel] belongsTo [category:granivore]
+[component:sparrow] belongsTo [category:bird]
+[component:sparrow] belongsTo [category:granivore]
+[component:ostrich] belongsTo [category:browser]
+[component:ostrich] belongsTo [category:bird]
+[component:eucalypt] belongsTo [category:tree]
+[component:eucalypt] belongsTo [category:C3]
+[component:arabidopsis] belongsTo [category:forb]
+[component:arabidopsis] belongsTo [category:C3]
+[component:grasstree] belongsTo [category:forb]
+[component:grasstree] belongsTo [category:C3]
+[component:andropogon] belongsTo [category:grass]
+[component:andropogon] belongsTo [category:C4]
+
+
+[individual:whale-1] instanceOf [component:whale]
+[individual:whale-2] instanceOf [component:whale]
+[group:plants] groupOf [component:eucalypt]
+[individual:plant-1] instanceOf [component:eucalypt]
+[individual:plant-2] instanceOf [component:eucalypt]
+[individual:plant-3] instanceOf [component:arabidopsis]
+[individual:plant-4] instanceOf [component:grasstree]
+[individual:plant-5] instanceOf [component:grasstree]
+[individual:plant-6] instanceOf [component:andropogon]
+[individual:plant-7] instanceOf [component:andropogon]
+[individual:plant-8] instanceOf [component:andropogon]
