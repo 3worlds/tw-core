@@ -172,6 +172,19 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 		return this;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(1024);
+		boolean first = true;
+		for (String key: propertyMap.keySet())
+			if (first) {
+				sb.append(key).append("=").append(getPropertyValue(key));
+				first = false;
+			} else
+				sb.append(' ').append(key).append("=").append(getPropertyValue(key));
+		return sb.toString();
+	}
+	
 	// 3Worlds Side - for user & simulator interaction.
 	// ======================================================
 

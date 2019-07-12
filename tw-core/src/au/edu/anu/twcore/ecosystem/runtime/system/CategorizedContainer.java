@@ -141,6 +141,18 @@ public abstract class CategorizedContainer<T extends Identity>
 			pl.setProperties(this);
 			return pl;
 		}
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder(1024);
+			boolean first = true;
+			for (String key: props)
+				if (first) {
+					sb.append(key).append("=").append(getPropertyValue(key));
+					first = false;
+				} else
+					sb.append(' ').append(key).append("=").append(getPropertyValue(key));
+			return sb.toString();
+		}
 	}
 	private popData populationData = new popData();
 		
@@ -160,7 +172,7 @@ public abstract class CategorizedContainer<T extends Identity>
 		}
 	}
 	
-	// three ways to add items to the initialItems list
+	// four ways to add items to the initialItems list
 	@SuppressWarnings("unchecked")
 	public void setInitialItems(T... items) {
 		initialItems.clear();
@@ -175,6 +187,9 @@ public abstract class CategorizedContainer<T extends Identity>
 		initialItems.clear();
 		for (T item:items)
 			initialItems.add(item);
+	}
+	public void addInitialItem(T item) {
+		initialItems.add(item);
 	}
 
 	public Categorized<T> categoryInfo() {
@@ -335,7 +350,52 @@ public abstract class CategorizedContainer<T extends Identity>
 			sc.reset();
 	}
 	
-	// NB tow methods must be overriden in descendants: clone(item) and newInstance();
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		sb.append("container:");
+		sb.append(id().toString());
+		sb.append('[');
+		if (categoryInfo.categories()!=null) {
+			if (first) first = false;
+			else sb.append(' ');
+			sb.append("categories:");
+			sb.append(categoryInfo.categories().toString());
+		}
+		if (parameters!=null)  {
+			if (first) first = false;
+			else sb.append(' ');
+			sb.append("parameters:(");
+			sb.append(parameters.toString());
+			sb.append(')');
+		}
+		if (first) first = false;
+		else sb.append(' ');
+		sb.append("variables:(");
+		sb.append(populationData.toString());
+		sb.append(')');
+		if (!initialItems.isEmpty()) {
+			sb.append(" initial_items:");
+			sb.append(initialItems.toString());
+		}
+		if (!items.isEmpty()) {
+			sb.append(" local_items:");
+			sb.append(items.toString());
+		}
+		if (superContainer!=null) {
+			sb.append(" super_container:");
+			sb.append(superContainer.id());
+		}
+		if (!subContainers.isEmpty()) {
+			sb.append(" sub_containers:");
+			sb.append(subContainers.keySet().toString());
+		}
+		sb.append(']');
+		return sb.toString();
+	}
+	
+	// NB two methods must be overriden in descendants: clone(item) and newInstance();
 	public abstract T clone(T item);
 	
 }
