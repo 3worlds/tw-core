@@ -28,16 +28,18 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime;
 
+import fr.cnrs.iees.identity.Identity;
+
 /**
  * To be associated to relation instances
  * 
  * @author Jacques Gignoux - 28 juin 2019
  *
  */
-public interface Related {
+public interface Related<T extends Identity> {
 	
-	public Categorized from();
+	public Categorized<T> from();
 	
-	public Categorized to();
+	public Categorized<T> to();
 
 }

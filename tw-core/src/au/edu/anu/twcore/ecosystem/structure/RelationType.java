@@ -60,7 +60,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
  */
 public class RelationType 
 		extends InitialisableNode 
-		implements Factory<SystemRelation>, Related {
+		implements Factory<SystemRelation>, Related<SystemComponent> {
 	
 	// a little class to record the from and to category lists
 	private class cat implements Categorized<SystemComponent> {

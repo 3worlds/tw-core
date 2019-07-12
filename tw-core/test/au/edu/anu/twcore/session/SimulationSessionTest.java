@@ -54,6 +54,7 @@ class SimulationSessionTest {
 		Iterable<CheckMessage> errors = a.checkSpecifications(specs);
 		if (errors==null) {
 			SimulationSession s = new SimulationSession(specs);
+			assertNotNull(s);
 		}
 	}
 

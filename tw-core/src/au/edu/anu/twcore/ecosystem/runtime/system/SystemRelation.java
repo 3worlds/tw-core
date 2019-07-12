@@ -44,18 +44,18 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  */
 public class SystemRelation extends ALDataEdge {
 	
-	private Related relation = null;
+	private Related<SystemComponent> relation = null;
 
 	public SystemRelation(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
 		super(id, start, end, props, graph);
 	}
 	
-	public void setRelated(Related rel) {
+	public void setRelated(Related<SystemComponent> rel) {
 		if (relation==null)
 			relation = rel;
 	}
 	
-	public Related membership() {
+	public Related<SystemComponent> membership() {
 		return relation;
 	}
 
