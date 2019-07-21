@@ -39,6 +39,7 @@ import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.cnrs.iees.identity.impl.PairIdentity;
 
 /**
  * @author daviesi
@@ -46,8 +47,8 @@ import fr.cnrs.iees.graph.io.GraphImporter;
  */
 // tested ok with version 0.1.1 on 21/5/2019
 public class TwArchetype {
-	
-	private Logger log = Logger.getLogger(TwArchetype.class.getName()); 
+
+	private Logger log = Logger.getLogger(TwArchetype.class.getName());
 	// the 3Worlds archetype
 	private Tree<? extends TreeNode> twArch = null;
 	// the archetype for archetypes, with all the check methods
@@ -55,41 +56,50 @@ public class TwArchetype {
 
 	@SuppressWarnings("unchecked")
 //	public TwArchetype(boolean checkArchetype) {
-		public TwArchetype() {
+	public TwArchetype() {
 		super();
 		log.setLevel(Level.WARNING);
 		// load 3worlds archetype
-		twArch = (Tree<? extends TreeNode>) 
-			GraphImporter.importGraph("3wArchetype.ugt",IsInValueSetQuery.class);
+		twArch = (Tree<? extends TreeNode>) GraphImporter.importGraph("3wArchetype.ugt", IsInValueSetQuery.class);
 		if (log.getLevel().equals(Level.INFO)) {
 			String indent = "";
 			printTree(twArch.root(), indent);
 		}
 		// checks compliance of 3Worlds archetype with the archetype for archetypes
-		// I think this should only occur if a flag is set. Otherwise its a waste of time!
+		// I think this should only occur if a flag is set. Otherwise its a waste of
+		// time!
 		rootArch = new Archetypes();
 		// if (checkArchetype)
 		if (!rootArch.isArchetype(twArch)) {
 			log.severe("3WORLDS ARCHETYPE HAS ERRORS! (list follows)");
-			for (CheckMessage cm: rootArch.errorList())
-				log.severe(cm.toString()+"\n");
+			for (CheckMessage cm : rootArch.errorList())
+				log.severe(cm.toString() + "\n");
 		}
 	}
 
 	private void printTree(TreeNode parent, String indent) {
 		System.out.println(indent + parent.classId() + ":" + parent.id());
 		if (parent instanceof ReadOnlyDataHolder)
-			for (String key:((ReadOnlyDataHolder) parent).properties().getKeysAsSet())
-			System.out.println(indent+"    "+"-("+key+"="+
-				((ReadOnlyDataHolder)parent).properties().getPropertyValue(key)+")");
+			for (String key : ((ReadOnlyDataHolder) parent).properties().getKeysAsSet())
+				System.out.println(indent + "    " + "-(" + key + "="
+						+ ((ReadOnlyDataHolder) parent).properties().getPropertyValue(key) + ")");
 		for (TreeNode child : parent.getChildren())
 			printTree(child, indent + "    ");
 	}
-	
+
 	// I dont know if you need this method, but I need it to debug archetypes
-	public Iterable<CheckMessage> checkSpecifications(TreeGraph<?,?> graph) {
+	public Iterable<CheckMessage> checkSpecifications(TreeGraph<?, ?> graph) {
 		rootArch.check(graph, twArch);
 		return rootArch.errorList();
+	}
+
+	// Static helper methods??
+	public static String getLabel(String id) {
+		return id.split(PairIdentity.LABEL_NAME_STR_SEPARATOR)[0];
+	}
+
+	public static String getName(String id) {
+		return id.split(PairIdentity.LABEL_NAME_STR_SEPARATOR)[1];
 	}
 
 }
