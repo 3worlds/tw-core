@@ -93,13 +93,5 @@ public class TwArchetype {
 		return rootArch.errorList();
 	}
 
-	// Static helper methods??
-	public static String getLabel(String id) {
-		return id.split(PairIdentity.LABEL_NAME_STR_SEPARATOR)[0];
-	}
-
-	public static String getName(String id) {
-		return id.split(PairIdentity.LABEL_NAME_STR_SEPARATOR)[1];
-	}
 
 }
