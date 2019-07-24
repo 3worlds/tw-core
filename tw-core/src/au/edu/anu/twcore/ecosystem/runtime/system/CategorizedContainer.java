@@ -163,7 +163,7 @@ public abstract class CategorizedContainer<T extends Identity>
 			TwData variables) {
 		super();
 		categoryInfo = cats;
-		id = scope.newId(proposedId);
+		id = scope.newId(true,proposedId);
 		this.parameters = parameters;
 		this.variables = variables;
 		if (parent!=null) {

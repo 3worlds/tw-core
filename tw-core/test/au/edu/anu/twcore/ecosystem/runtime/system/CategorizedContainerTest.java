@@ -85,7 +85,7 @@ class CategorizedContainerTest {
 		}
 		@Override
 		public Identity clone(Identity item) {
-			Identity id = scope().newId(item.id());
+			Identity id = scope().newId(true,item.id());
 			return id;
 		}
 	}
@@ -123,14 +123,14 @@ class CategorizedContainerTest {
 		ca2 = new categorizedAdapter(l);
 		scope = new LocalScope("test");
 		for (int i=0; i<3; i++)
-			cc.addItem(scope.newId("whale_"+i));
+			cc.addItem(scope.newId(true,"whale_"+i));
 		cc.effectChanges();
 	}
 	
 	private void init2(String proposedId) {
 		cc2 = new icontainer(ca2,proposedId,cc);
 		for (int i=0; i<4; i++)
-			cc2.addItem(scope.newId("bw_"+i));
+			cc2.addItem(scope.newId(true,"bw_"+i));
 		cc2.effectChanges();
 
 	}
@@ -164,7 +164,7 @@ class CategorizedContainerTest {
 	final void testAddItem() {
 		int currentCount = cc.count();
 		for (int i=0; i<10; i++)
-			cc.addItem(scope.newId("whale "+i));
+			cc.addItem(scope.newId(true,"whale "+i));
 		assertEquals(cc.count(),currentCount);
 		cc.effectChanges();
 		assertEquals(cc.count(),currentCount+10);
@@ -228,7 +228,7 @@ class CategorizedContainerTest {
 	@Test
 	final void testEffectChanges() {
 		cc.resetCounters();
-		cc.addItem(scope.newId("whale 127"));
+		cc.addItem(scope.newId(true,"whale 127"));
 		assertEquals(cc.nAdded(),0);
 		assertEquals(cc.count(),3);
 		assertEquals(cc.nRemoved(),0);
@@ -252,7 +252,7 @@ class CategorizedContainerTest {
 	final void testNAdded() {
 		cc.resetCounters();
 		for (int i=0; i<2; i++) {
-			cc.addItem(scope.newId("whale "+i));
+			cc.addItem(scope.newId(true,"whale "+i));
 			cc.effectChanges();
 			show("testNAdded",Integer.toString(cc.nAdded())+"/"+Integer.toString(cc.count()));
 		}
