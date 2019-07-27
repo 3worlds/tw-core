@@ -37,20 +37,20 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
- * A class matching the "userInterface/bottom" node of the 3Worlds configuration
+ * A class matching the "userInterface/top" node of the 3WOrlds configuration
  * 
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-public class StatusBar extends InitialisableNode {
+public class Top extends InitialisableNode {
 
 	// default constructor
-	public StatusBar(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public Top(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 	
 	// constructor with no properties
-	public StatusBar(Identity id, GraphFactory gfactory) {
+	public Top(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
@@ -61,7 +61,7 @@ public class StatusBar extends InitialisableNode {
 
 	@Override
 	public int initRank() {
-		return N_UIBOTTOM.initRank();
+		return N_UITOP.initRank();
 	}
 
 }

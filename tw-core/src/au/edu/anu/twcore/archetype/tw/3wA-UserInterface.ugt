@@ -4,13 +4,13 @@ hasNode userInterfaceSpec
 	hasParent = StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..1")
 
-hasNode toolBarSpec
-	isOfClass = String("toolBar")
+hasNode topSpec
+	isOfClass = String("top")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
 
-hasNode statusBarSpec
-	isOfClass = String("statusBar")
+hasNode bottomSpec
+	isOfClass = String("bottom")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
 
@@ -32,7 +32,7 @@ hasNode gridgridSpec
 
 hasNode widgetSpec
 	isOfClass = String("widget")
-	hasParent = StringTable(([3]"toolBar:","statusBar:","grid:"))
+	hasParent = StringTable(([3]"top:","bottom:","grid:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder
 		hasName = String("order")		
