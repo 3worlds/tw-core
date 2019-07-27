@@ -31,6 +31,8 @@ package au.edu.anu.twcore.data;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -47,6 +49,10 @@ public class Field extends InitialisableNode {
 
 	public Field(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
+	}
+	
+	public Field(Identity id, GraphFactory gfactory) {
+		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
 	@Override
