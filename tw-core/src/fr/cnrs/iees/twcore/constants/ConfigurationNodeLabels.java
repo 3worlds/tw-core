@@ -94,9 +94,10 @@ public enum ConfigurationNodeLabels {
 		// to get the configuration load correctly, but feel free to merge them with your classes as needed
 		// NB you can also use the Singleton<T> interface if you want them to just be a node producing
 		// a class doing the real job
-			N_UITOP 			("top",					TopPanel.class,				0),
-			N_UIBOTTOM 			("bottom",				BottomPanel.class,			0),
-			N_UICENTER 			("center",				CentralPanel.class,			0),
+			N_UITOP 			("toolBar",				ToolBar.class,				0),
+			N_UIBOTTOM 			("statusBar",			StatusBar.class,			0),
+			N_UITAB 			("tab",					Tab.class,					0),
+			N_UIGRID 			("grid",				Grid.class,					0),
 			N_UIWIDGET 			("widget",				Widget.class,				0), 
 	;
 	//========================================================================================

@@ -37,21 +37,20 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
- * A class matching the "userInterface/center" node of the 3Worlds configuration
+ * A class matching the "userInterface/bottom" node of the 3Worlds configuration
  * 
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-
-public class CentralPanel extends InitialisableNode {
+public class StatusBar extends InitialisableNode {
 
 	// default constructor
-	public CentralPanel(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public StatusBar(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
-
+	
 	// constructor with no properties
-	public CentralPanel(Identity id, GraphFactory gfactory) {
+	public StatusBar(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
@@ -62,7 +61,7 @@ public class CentralPanel extends InitialisableNode {
 
 	@Override
 	public int initRank() {
-		return N_UICENTER.initRank();
+		return N_UIBOTTOM.initRank();
 	}
 
 }

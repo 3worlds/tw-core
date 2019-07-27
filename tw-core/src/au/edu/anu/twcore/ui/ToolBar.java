@@ -42,15 +42,15 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-public class TopPanel extends InitialisableNode {
+public class ToolBar extends InitialisableNode {
 
 	// default constructor
-	public TopPanel(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public ToolBar(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 	
 	// constructor with no properties
-	public TopPanel(Identity id, GraphFactory gfactory) {
+	public ToolBar(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 

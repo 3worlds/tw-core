@@ -5,24 +5,34 @@ hasNode userInterfaceSpec
 	multiplicity = IntegerRange("1..1")
 
 hasNode toolBarSpec
-	isOfClass = String("top")
+	isOfClass = String("toolBar")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
 
 hasNode statusBarSpec
-	isOfClass = String("bottom")
+	isOfClass = String("statusBar")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
 
-// TODO: not sure yet how this recursion will be interpreted
-hasNode contentSpec 
-	isOfClass = String("center")
-	hasParent = StringTable(([2]"userInterface:","content:"))
-	multiplicity = IntegerRange("0..1")
+// TODO: not sure yet how to arrange all this recursively - more or less along the lines of category sets and categories
+hasNode tabSpec 
+	isOfClass = String("tab")
+	hasParent = StringTable(([1]"userInterface:"))
+	multiplicity = IntegerRange("1..*")
+	
+hasNode gridRootSpec
+	isOfClass = String("grid")
+	hasParent = StringTable(([1]"tab:"))
+	multiplicity = IntegerRange("1..1")
+	
+hasNode gridgridSpec
+	isOfClass = String("grid")
+	hasParent = StringTable(([1]"grid:"))
+	multiplicity = IntegerRange("0..*")
 
 hasNode widgetSpec
 	isOfClass = String("widget")
-	hasParent = StringTable(([3]"toolBar:","statusBar:","content:"))
+	hasParent = StringTable(([3]"toolBar:","statusBar:","grid:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder
 		hasName = String("order")		
