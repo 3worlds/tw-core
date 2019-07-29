@@ -2,6 +2,7 @@ tree
 hasNode systemSpec
 	isOfClass = String("system")
 	hasParent = StringTable(([1]"3worlds:"))
+	// not sure how many systems will work out? - IDD
 	multiplicity = IntegerRange("1..*")
 	hasProperty systemParameterSpec
 		hasName = String("parameterClass")
