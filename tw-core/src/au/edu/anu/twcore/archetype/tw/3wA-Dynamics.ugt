@@ -68,7 +68,11 @@ hasNode timeModelSpec
 		mustSatisfyQuery validTimeModelSubclassSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
 			// TODO: this may become a limit: strings lists cannot be spread over more than one line
-			values = StringTable(([3]"au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer","au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer","au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer"))
+			// yes they can - string concat:
+			values = StringTable(([3]+
+			"au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer",+
+			"au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer",+
+			"au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer"))
 	mustSatisfyQuery CheckSubArchetypeQueryClockTimeModel
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer","3wSA-ClockTimer.ugt"))
@@ -169,7 +173,13 @@ hasNode stoppingConditionSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery validStoppingConditionSubClassSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
-			values = StringTable(([6]"au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition","au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition","au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition","au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition"))
+			values = StringTable(([6]+
+			"au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition",+
+			"au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition",+
+			"au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition",+
+			"au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition",+
+			"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition",+
+			"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition"))
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleStop
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition","3wSA-SimpleStoppingCondition.ugt"))
