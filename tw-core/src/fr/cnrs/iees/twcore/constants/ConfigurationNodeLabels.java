@@ -80,6 +80,7 @@ public enum ConfigurationNodeLabels {
 				N_RELATIONTYPE 	("relationType",		RelationType.class,			10), // after category
 				// I am not sure this one is needed - for initialisation maybe ?
 //				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
+				// IDD: As i understood it, component was "species" and realisedComponent was "Stage"
 		N_EXPERIMENT 			("experiment",			Experiment.class,			0),
 			N_DESIGN 			("design",				Design.class,				0),
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
