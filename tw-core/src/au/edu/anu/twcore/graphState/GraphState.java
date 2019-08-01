@@ -54,5 +54,9 @@ public class GraphState {
 	public static void setChanged(boolean state) {
 		impl.setChanged(state);
 	}
+	
+	public static void addListener (IGraphStateListener l) {
+		impl.addListener(l);
+	}
 
 }

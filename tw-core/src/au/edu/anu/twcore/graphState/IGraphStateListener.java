@@ -28,39 +28,12 @@
  **************************************************************************/
 package au.edu.anu.twcore.graphState;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import au.edu.anu.twcore.graphState.IGraphState;
 
 /**
  * @author Ian Davies
  *
  * @date 1 Aug 2019
  */
-public class SimpleGraphStateImpl implements IGraphState{
-
-	private boolean changed = false;
-	private List<IGraphStateListener> listeners = new ArrayList<>();
-	@Override
-	public boolean hasChanged() {
-		return changed;
-	}
-
-	@Override
-	public void setChanged(boolean state) {
-		changed = state;
-	}
-
-	@Override
-	public void addListener(IGraphStateListener l) {
-		listeners.add(l);
-	}
-
-	@Override
-	public void onChange() {
-		for (IGraphStateListener l: listeners)
-			l.onStateChange(changed);	
-	}
-
+public interface IGraphStateListener {
+	public void onStateChange(boolean state);
 }
