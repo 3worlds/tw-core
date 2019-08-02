@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import au.edu.anu.rscs.aot.archetype.CheckMessage;
 import au.edu.anu.twcore.archetype.TwArchetype;
+import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.io.GraphImporter;
 
@@ -47,6 +48,10 @@ class TwarchetypeTest {
 	void test() {
 		TwArchetype a = new TwArchetype();
 		TreeGraph<?,?> specs = (TreeGraph<?, ?>) GraphImporter.importGraph("testSpecs.utg",this.getClass());
+		for (Node n: specs.nodes()) {
+			System.out.println(n.id()+", "+n.getClass().getName());
+			
+		}
 		Iterable<CheckMessage> errors = a.checkSpecifications(specs);
 		if (errors!=null) {
 			System.out.println("There were errors in specifications: ");
