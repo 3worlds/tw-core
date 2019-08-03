@@ -33,6 +33,7 @@ import java.io.File;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.project.Project;
+import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
 /**
  * Author Ian Davies
@@ -40,7 +41,7 @@ import au.edu.anu.twcore.project.Project;
  * Date 28 Jan. 2019
  */
 public class FileType {
-	private String relativePath;
+	private String relativePath="";
 
 	public String getRelativePath() {
 		return relativePath;
@@ -60,6 +61,14 @@ public class FileType {
 		else
 			return Project.makeFile(relativePath);
 	}
-	// we need to define an fx independent list of file extensions
+	public static FileType defaultValue() {
+		return new FileType();
+	}
+
+	static {
+		ValidPropertyTypes.recordPropertyType(FileType.class.getSimpleName(), 
+		FileType.class.getName(),defaultValue());
+	}
+
 
 }

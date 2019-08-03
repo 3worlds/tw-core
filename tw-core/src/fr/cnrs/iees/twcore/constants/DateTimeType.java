@@ -31,8 +31,7 @@ package fr.cnrs.iees.twcore.constants;
 
 import java.time.LocalDateTime;
 
-
-
+import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
 /*
  * Class with a  long value representing a DateTime for use with dsls and for use
@@ -47,7 +46,7 @@ import java.time.LocalDateTime;
  */
 public class DateTimeType {
 	private long dateTime;
-	//private TimeUnits unit;// TODO not sure about this.
+	// private TimeUnits unit;// TODO not sure about this.
 
 	public DateTimeType(long dateTime) {
 		this.dateTime = dateTime;
@@ -64,7 +63,6 @@ public class DateTimeType {
 	public long getDateTime() {
 		return dateTime;
 	}
-	
 
 	public LocalDateTime getLocalDateTime(TimeUnits unit) {
 //		return TimeUtil.longToDate(dateTime, unit);
@@ -75,9 +73,18 @@ public class DateTimeType {
 	public String toString() {
 		return Long.toString(dateTime);
 	}
-	
+
 	public static DateTimeType valueOf(String string) {
 		return new DateTimeType(string);
+	}
+
+	public static DateTimeType defaultValue() {
+		return new DateTimeType(0L);
+	}
+
+	static {
+		ValidPropertyTypes.recordPropertyType(DateTimeType.class.getSimpleName(), DateTimeType.class.getName(),
+				defaultValue());
 	}
 
 }
