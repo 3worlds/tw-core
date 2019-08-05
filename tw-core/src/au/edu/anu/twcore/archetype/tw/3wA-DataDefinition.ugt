@@ -69,7 +69,8 @@ hasNode recordFieldSpec
 	multiplicity = IntegerRange("0..*")
 	hasProperty recordFieldNamePropertySpec
 		hasName = String("type")
-		type  = String("String")
+		type = String("DataElementType")
+		//type  = String("String")
 		multiplicity = IntegerRange("1..1")
 	// this property is completely redundant with the above
 	// normally type should be any String recognized by

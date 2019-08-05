@@ -172,6 +172,7 @@ hasNode stoppingConditionSpec
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery validStoppingConditionSubClassSpec
+		// TODO none of these classes exits yet.
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
 			values = StringTable(([6]+
 			"au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition",+

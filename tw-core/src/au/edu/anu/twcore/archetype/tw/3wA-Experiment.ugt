@@ -18,7 +18,7 @@ hasNode designSpec
 		multiplicity = IntegerRange("0..1")
 	hasProperty designFilePropertySpec
 		hasName = String("file")
-		type = String("String")
+		type = String("FileType")
 		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery dimIsInRangeQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
@@ -57,11 +57,11 @@ hasNode timePeriodSpec
 	multiplicity = IntegerRange("1..*")
 	hasProperty timePeriodStartSpec
 		hasName = String("start")
-		type = String("Long")
+		type = String("DateTimeType")
 		multiplicity = IntegerRange("0..1")
 	hasProperty timePeriodEndSpec
 		hasName = String("end")
-		type = String("Long")
+		type = String("DateTimeType")
 		multiplicity = IntegerRange("0..1")
 	hasEdge timePeriodStopSpec
 		isOfClass = String("stopOn")               
