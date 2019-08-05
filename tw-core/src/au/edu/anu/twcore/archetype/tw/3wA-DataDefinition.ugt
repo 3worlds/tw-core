@@ -51,7 +51,8 @@ hasNode tableSpec
 //		type = String("String")
 	hasProperty dataElementTypeSpec
 		hasName = String("dataElementType")
-		type = String("String")				
+		type = String("DataElementType")
+		//type = String("String")				
 		multiplicity = IntegerRange("0..1")
 	hasEdge dimEdgeSpec
 		isOfClass = String("sizedBy")            
