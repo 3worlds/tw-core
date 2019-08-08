@@ -36,6 +36,8 @@ package fr.cnrs.iees.twcore.constants;
  * come in later.
  *
  */
+import static au.edu.anu.twcore.archetype.TwArchetypeConstants.*;
+
 public enum ConfigurationPropertyNames {
 	
 	P_DIMENSIONER_SIZE 			("size"),
@@ -60,7 +62,7 @@ public enum ConfigurationPropertyNames {
 	P_FUNCTIONCLASS				("userClassName"), 
 	P_DATAELEMENTTYPE			("dataElementType"),
 	P_FIELDTYPE					("type"),
-	P_STOPCD_SUBCLASS			("subClass"),
+	P_STOPCD_SUBCLASS			(twaSubclass),// not subClass: to align with TwArchetypeConstants(IDD)
 	;
 
 	private final String pname;

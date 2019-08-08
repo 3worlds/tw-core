@@ -29,6 +29,8 @@
 
 package au.edu.anu.twcore.archetype;
 
+import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
+
 /**
  * @author Ian Davies
  *

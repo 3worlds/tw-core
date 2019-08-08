@@ -70,6 +70,7 @@ public class StoppingConditionNode
 				long endTime = (long) properties().getPropertyValue("endTime");
 				stopcd = new SimpleStoppingCondition(sim,endTime);
 				break;
+				// TODO: (IDD) replace literals with class.getName() when classes exist;?
 			case "au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition":
 				break;
 			case "au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition":
