@@ -41,18 +41,21 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
  * Date 28 Jan. 2019
  */
 public class FileType {
-	private String relativePath="";
+	private String relativePath = "";
 
 	public String getRelativePath() {
 		return relativePath;
 	}
+
 	@Override
 	public String toString() {
 		return relativePath;
 	}
+
 	public void setRelativePath(String newValue) {
 		relativePath = newValue;
 	}
+
 	public File getFile() {
 		if (!Project.isOpen())
 			throw new TwcoreException("Project must be open.");
@@ -61,14 +64,19 @@ public class FileType {
 		else
 			return Project.makeFile(relativePath);
 	}
+
+	public static FileType valueOf(String string) {
+		FileType result = new FileType();
+		result.setRelativePath(string);
+		return result;
+	}
+
 	public static FileType defaultValue() {
 		return new FileType();
 	}
 
 	static {
-		ValidPropertyTypes.recordPropertyType(FileType.class.getSimpleName(), 
-		FileType.class.getName(),defaultValue());
+		ValidPropertyTypes.recordPropertyType(FileType.class.getSimpleName(), FileType.class.getName(), defaultValue());
 	}
-
 
 }

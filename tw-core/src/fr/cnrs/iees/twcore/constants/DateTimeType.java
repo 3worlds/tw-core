@@ -45,7 +45,7 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
  * Date 28 Jan. 2019
  */
 public class DateTimeType {
-	private long dateTime=0;
+	private long dateTime=0L;
 	// private TimeUnits unit;// TODO not sure about this.
 
 	public DateTimeType(long dateTime) {
