@@ -32,12 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import au.edu.anu.rscs.aot.archetype.CheckMessage;
-import au.edu.anu.twcore.archetype.TwArchetype;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.graph.io.GraphImporter;
+import au.edu.anu.twcore.archetype.TWA;
 
 /**
  * 
@@ -46,16 +41,16 @@ import fr.cnrs.iees.graph.io.GraphImporter;
  */
 class SimulationSessionTest {
 
-	@SuppressWarnings("unchecked")
 	@Test
 	final void testSimulationSession() {
-		TreeGraph<TreeGraphNode,ALEdge> specs = (TreeGraph<TreeGraphNode,ALEdge>) GraphImporter.importGraph("testSpecs.utg",this.getClass());
-		TwArchetype a = new TwArchetype();
-		Iterable<CheckMessage> errors = a.checkSpecifications(specs);
-		if (errors==null) {
-			SimulationSession s = new SimulationSession(specs);
-			assertNotNull(s);
-		}
+		assertTrue(TWA.validArchetype());
+//		TreeGraph<TreeGraphNode,ALEdge> specs = (TreeGraph<TreeGraphNode,ALEdge>) GraphImporter.importGraph("testSpecs.utg",this.getClass());
+//		TWA a = new TWA();
+//		Iterable<CheckMessage> errors = a.checkSpecifications(specs);
+//		if (errors==null) {
+//			SimulationSession s = new SimulationSession(specs);
+//			assertNotNull(s);
+//		}
 	}
 
 }

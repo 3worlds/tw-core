@@ -29,7 +29,7 @@
 
 package au.edu.anu.twcore.specificationCheck;
 
-import au.edu.anu.twcore.archetype.TwArchetype;
+import au.edu.anu.twcore.archetype.TWA;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 
 /**
@@ -54,9 +54,7 @@ public class CheckImpl implements Checkable{
 
 	@Override
 	public boolean validateGraph() {
-		// example of use of TwArchetype as it is currently written
-		TwArchetype arch = new TwArchetype();
-		return arch.checkSpecifications(graph).iterator().hasNext();
+		return TWA.checkSpecifications(graph).iterator().hasNext();
 	}
 
 }

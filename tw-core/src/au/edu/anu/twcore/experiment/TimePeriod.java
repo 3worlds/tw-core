@@ -32,6 +32,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.ens.biologie.generic.Resettable;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
@@ -48,8 +49,8 @@ import au.edu.anu.twcore.InitialisableNode;
  */
 public class TimePeriod extends InitialisableNode implements Resettable {
 
-	private long start;
-	private long end;
+	private DateTimeType start;
+	private DateTimeType end;
 	// TODO: 
 //	private StoppingCondition stopOn = null;
 	
@@ -74,23 +75,23 @@ public class TimePeriod extends InitialisableNode implements Resettable {
 	}
 
 	public long start() {
-		return start;
+		return start.getDateTime();
 	}
 	
 	public long end() {
-		return end;
+		return end.getDateTime();
 	}
 
 	// call this every time properties are edited
 	@Override
 	public void reset() {
 		if (properties().hasProperty(P_TIMEPERIOD_START.key()))
-			start = (long) properties().getPropertyValue(P_TIMEPERIOD_START.key());
+			start = (DateTimeType) properties().getPropertyValue(P_TIMEPERIOD_START.key());
 		else
-			start = 0L;
+			start = new DateTimeType(0L);
 		if (properties().hasProperty(P_TIMEPERIOD_END.key()))
-			end = (long) properties().getPropertyValue(P_TIMEPERIOD_END.key());
+			end = (DateTimeType) properties().getPropertyValue(P_TIMEPERIOD_END.key());
 		else
-			end = Long.MAX_VALUE;
+			end = new DateTimeType(Long.MAX_VALUE);
 	}
 }

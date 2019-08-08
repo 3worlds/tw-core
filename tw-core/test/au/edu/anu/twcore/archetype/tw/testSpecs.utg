@@ -14,16 +14,16 @@ treegraph
 			size = Integer(3)
 		record myRec  //5
 			field x //6
-				type = String("Double")
+				type = DataElementType("Double")
 			table tx //7
-				dataElementType = String("Boolean")
+				dataElementType = DataElementType("Boolean")
 		record myOtherRec //8
 			table ty //9
 				record tableContent //10
 					field a //11
-						type = String("integer")
+						type = DataElementType("Integer")
 					field b //12
-						type = String("String")		
+						type = DataElementType("String")		
 	system my_ecosystem //13
 		structure anything //14
 			categorySet everything //15
@@ -84,20 +84,21 @@ treegraph
 		treatment B //30
 			replicates = Integer(7)
 		timePeriod oioihfdd //31
-			start = Long(21354)
+			start = DateTimeType("21354")
 	userInterface my_UI //32
 		top my_top // 46
 			widget widget1 // 47
 				order = Integer(1)
-				widgetClass = String("SingleGridWidget")
+				subClass = String("au.edu.anu.twuifx.widgets.SingleGridWidget")
 		bottom statusBar // 48
-		center theCentre // 49
-			widget widget1 // 50
-				order = Integer(2)
-				widgetClass = String("SimpleSimCtrlWidget")
-			widget widget1 // 51
-				order = Integer(12)
-				widgetClass = String("TimeDisplayWidgetfx")
+		tab theCentre // 49
+			grid thegrid // 52
+				widget widget1 // 50
+					order = Integer(2)
+					subClass = String("au.edu.anu.twuifx.widgets.SimpleSimCtrlWidget")
+				widget widget1 // 51
+					order = Integer(12)
+					subClass = String("au.edu.anu.twuifx.widgets.TimeDisplayWidget")
 			
 	
 // CROSS-LINKS
