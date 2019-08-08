@@ -60,6 +60,7 @@ public enum ConfigurationPropertyNames {
 	P_FUNCTIONCLASS				("userClassName"), 
 	P_DATAELEMENTTYPE			("dataElementType"),
 	P_FIELDTYPE					("type"),
+	P_STOPCD_SUBCLASS			("subClass"),
 	;
 
 	private final String pname;

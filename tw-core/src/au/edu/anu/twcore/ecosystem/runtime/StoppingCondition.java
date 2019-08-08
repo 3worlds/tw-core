@@ -43,4 +43,5 @@ public interface StoppingCondition extends Resettable {
 	public default void reset() {
 		// DEFAULT: nothing to do
 	}
+	
 }

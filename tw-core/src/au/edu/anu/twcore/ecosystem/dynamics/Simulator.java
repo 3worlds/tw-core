@@ -66,4 +66,13 @@ public class Simulator extends InitialisableNode {
 		return N_DYNAMICS.initRank();
 	}
 
+	/**
+	 * Returns the current simulation time but does NOT compute it (read-only method)
+	 * @return
+	 */
+	public long currentTime() {
+		// TODO: implement this
+		return 0;
+	}
+	
 }

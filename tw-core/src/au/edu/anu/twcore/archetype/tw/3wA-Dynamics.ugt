@@ -168,7 +168,7 @@ hasNode stoppingConditionSpec
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty stoppingConditionSubclassPropertySpec
-		hasName = String("subclass")
+		hasName = String("subClass")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery validStoppingConditionSubClassSpec

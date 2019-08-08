@@ -43,12 +43,12 @@ import fr.cnrs.iees.graph.io.GraphImporter;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 
 /**
+ * Global singleton instance of the 3Warchetype: thread safe and lazy load
+ * 
  * @author Ian Davies
  *
  * @date 20 Jul 2019
  */
-// Global singleton instance of the 3Warchetype: thread safe and lazy load
-// TODO make use of the Singleton functional interface?
 public class TWA {
 	
 	/** the 3Worlds archetype (= "The Instance")*/

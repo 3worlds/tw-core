@@ -34,9 +34,11 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
+import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 
 /**
  * Class matching the "ecosystem/dynamics/stoppingCondition" node label in the 3Worlds configuration tree.
@@ -48,6 +50,8 @@ import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 public class StoppingConditionNode 
 		extends InitialisableNode 
 		implements Singleton<StoppingCondition> {
+	
+	private StoppingCondition stopcd = null;
 
 	public StoppingConditionNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -60,6 +64,24 @@ public class StoppingConditionNode
 	@Override
 	public void initialise() {
 		super.initialise();
+		Simulator sim = (Simulator) getParent();
+		switch ((String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key())) {
+			case "au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition":
+				long endTime = (long) properties().getPropertyValue("endTime");
+				stopcd = new SimpleStoppingCondition(sim,endTime);
+				break;
+			case "au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition":
+				break;
+			case "au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition":
+				break;
+			case "au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition":
+				break;
+			case "au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition":
+				break;
+			case "au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition":
+				break;
+			default:;
+		};
 	}
 
 	@Override
@@ -69,8 +91,7 @@ public class StoppingConditionNode
 
 	@Override
 	public StoppingCondition getInstance() {
-		// TODO Auto-generated method stub
-		return null;
+		return stopcd;
 	}
 
 }

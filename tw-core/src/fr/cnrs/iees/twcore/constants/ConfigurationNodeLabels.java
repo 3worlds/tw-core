@@ -66,7 +66,7 @@ public enum ConfigurationNodeLabels {
 				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			10), // after Ecosystem
 				N_RECRUIT 		("recruit",				Recruit.class,				0),
 				N_PRODUCE 		("produce",				Produce.class,				0),
-				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,0),
+				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,10), // after Simulator
 				N_INITIALISER 	("initialiser",			Initialiser.class,			20), // after relation
 				N_INITIALSTATE 	("initialState",		InitialState.class,			10), // after Ecosystem
 				N_GROUP 		("group",				Group.class,				20), // after LifeCycle and SystemFactory
