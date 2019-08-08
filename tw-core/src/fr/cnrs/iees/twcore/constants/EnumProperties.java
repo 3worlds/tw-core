@@ -15,6 +15,7 @@ public class EnumProperties {
 	// this method must be called early in application setup
 	// TODO: a cleaner coding by scanning the directory, finding all the class names
 	// and invoking any method but this seems non trivial
+	// Its possible that compiler optimisation will prevent calling these statements - check.
 	public static void recordEnums() {
 		DataElementType.defaultValue();
 		DateTimeType.defaultValue();
@@ -26,11 +27,11 @@ public class EnumProperties {
 		SnippetLocation.defaultValue();
 		StatisticalAggregates.defaultValue();
 //		StatisticalAggregatesSet.
-		TabLayoutTypes.defaultValue();
+//		TabLayoutTypes.defaultValue();
 		TimeScaleType.defaultValue();
 		TimeUnits.defaultValue();
 		TwFunctionTypes.defaultValue();
-		UIContainers.defaultValue();
+//		UIContainers.defaultValue();
 		
 	}
 
