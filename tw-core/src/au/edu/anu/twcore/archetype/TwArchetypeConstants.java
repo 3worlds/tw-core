@@ -29,23 +29,24 @@
 
 package au.edu.anu.twcore.archetype;
 
-/* not sure about naming conventions. 
-To avoid name collisions with uses of this kind of interface, perhaps a prefix: suggest "at" here.
-
- To clarify the category of each string:
- 
- s : specification node
- 
- sn: specification name (eg hasProeprty name) = atsnName??
- 
- sp: specification property atspReference, atspMultiplicity
- 
- sl: specification label eg slHasNode
- 
-  well not sure about this. See what happens and refactor as required.
-*/
-@Deprecated
-public interface ArchetypeConstants {
-	public static final String atspName = "name";
+/**
+ * @author Ian Davies
+ *
+ * @date 8 Aug 2019
+ */
+/*
+ * See about naming conventions as this develops. Refactoring is easy. For the
+ * moment I just prefix these with twa (tw archetype) to distinguish from aa (archetype
+ * archetype contants cf:
+ */
+public interface TwArchetypeConstants {
+	public final static String twaName = "name";
+	public final static String twaClassName = "className";
+	public final static String twaToNode = "toNode";
+	public final static String twaHasName = "hasName";
+	public final static String twaSubclass = "subclass";
+	public final static String twaValues = "values";
+	public final static String twaParameters = "parameters";
+	public final static String twaType = "type";
 
 }
