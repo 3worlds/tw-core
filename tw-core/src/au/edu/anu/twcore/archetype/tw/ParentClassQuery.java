@@ -31,6 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.LinkedList;
 import java.util.List;
 
+import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 
 import au.edu.anu.rscs.aot.queries.Query;
@@ -42,7 +43,7 @@ import fr.cnrs.iees.graph.TreeNode;
  * @author Jacques Gignoux - 6/9/2016 Constraint on a node's parent class
  *
  */
-public class ParentClassQuery extends Query {
+public class ParentClassQuery extends Query implements ArchetypeArchetypeConstants {
 
 	private List<String> klasses = new LinkedList<String>();
 
@@ -62,8 +63,8 @@ public class ParentClassQuery extends Query {
 		TreeNode localItem = (TreeNode) input;
 		Node parent = (Node) localItem.getParent();
 		ReadOnlyDataHolder parentProps = (ReadOnlyDataHolder) parent;
-		if (parent != null && parentProps.properties().hasProperty("isOfClass")) {
-			String pKlass = (String) parentProps.properties().getPropertyValue("isOfClass");
+		if (parent != null && parentProps.properties().hasProperty(aaIsOfClass)) {
+			String pKlass = (String) parentProps.properties().getPropertyValue(aaIsOfClass);
 			for (String klass : klasses)
 				if (pKlass.equals(klass)) {
 					satisfied = true;

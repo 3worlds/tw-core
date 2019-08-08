@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
@@ -57,7 +58,7 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
  */
 public class TimeModel
 		extends InitialisableNode
-		implements Singleton<Timer>, Sealable, Resettable {
+		implements Singleton<Timer>, Sealable, Resettable,TwArchetypeConstants {
 
 	private boolean sealed = false;
 
@@ -98,20 +99,20 @@ public class TimeModel
 		else
 			grainsPerBaseUnit = nTimeUnits * unitConversionFactor;
 		// Clock timer
-		if (properties().getPropertyValue("subclass")
-				.equals("au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer")) {
+		if (properties().getPropertyValue(twaSubclass)
+				.equals(ClockTimer.class.getName())) {
 			timer = new ClockTimer(this);
 		}
 		// event-driven timer
-		else if (properties().getPropertyValue("subclass")
-				.equals("au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer")) {
+		else if (properties().getPropertyValue(twaSubclass)
+				.equals(EventTimer.class.getName())) {
 			EventQueue eq = (EventQueue) get(this.getChildren(),
 				selectOne(hasTheLabel(N_EVENTQUEUE.label())));
 			timer = new EventTimer(eq,this);
 		}
 		// scenario timer
-		else if (properties().getPropertyValue("subclass")
-				.equals("au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer")) {
+		else if (properties().getPropertyValue(twaSubclass)
+				.equals(ScenarioTimer.class.getName())) {
 			timer = new ScenarioTimer(this);
 		}
 		sealed = true;

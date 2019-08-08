@@ -46,6 +46,7 @@ import fr.cnrs.iees.identity.impl.PairIdentity;
  *
  */
 // tested ok with version 0.1.1 on 21/5/2019
+@Deprecated
 public class TwArchetype {
 
 	private Logger log = Logger.getLogger(TwArchetype.class.getName());
