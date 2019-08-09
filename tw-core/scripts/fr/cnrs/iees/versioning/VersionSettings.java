@@ -90,7 +90,7 @@ public class VersionSettings {
 			{"org.apache.ivy", "ivy", "2.2.0", null},
 			{"org.apache.odftoolkit","simple-odf","0.8.2-incubating", null},
 			{"com.hp.hpl.jena","jena","2.6.4", null},
-
+			{"org.apache.commons","commons-math3","[3.6.1,)",null}
 	};
 	
 	/** The name of the main class to put in the jar manifest, if any. This enables users to
