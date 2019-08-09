@@ -13,7 +13,51 @@ archetype 3wSA-MultipleStoppingCondition
 		isOfClass = String("stoppingCondition")
 		hasParent = StringTable(([1]"dynamics:"))
 		multiplicity = IntegerRange("0..1")
-		hasEdge componentStoppingConditionsSpec
-			isOfClass = String("condition")
-			toNode = String("stoppingCondition")
-			multiplicity = IntegerRange("1..*")
+// former system - flawed		
+//		hasEdge componentStoppingConditionsSpec
+//			isOfClass = String("condition")
+//			toNode = String("stoppingCondition")
+//			multiplicity = IntegerRange("1..*")
+			
+	hasNode SubConditionSpec
+		isOfClass = String("stoppingCondition")
+		hasParent = StringTable(([1]"stoppingCondition:"))
+		multiplicity = IntegerRange("1..*")
+		mustSatisfyQuery parentMustBeMultipleStoppingCondition
+			className = String("au.edu.anu.twcore.archetype.tw.ParentHasPropertyValueQuery")
+			property = String("subclass")
+			values = StringTable(([2]"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition",+
+			"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition"))
+			
+		// not sure this works properly: induces a recursion in sub-archetypes...
+		hasProperty substoppingConditionSubclassPropertySpec
+			hasName = String("subclass")
+			type = String("String")
+			multiplicity = IntegerRange("1..1")
+			mustSatisfyQuery subvalidStoppingConditionSubClassSpec
+				className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
+				values = StringTable(([6]+
+				"au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition",+
+				"au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition",+
+				"au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition",+
+				"au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition",+
+				"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition",+
+				"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition"))
+		mustSatisfyQuery subCheckSubArchetypeQuerySimpleStop
+			className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+			parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition","3wSA-SimpleStoppingCondition.ugt"))
+		mustSatisfyQuery subCheckSubArchetypeQueryValueStop
+			className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+			parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition","3wSA-ValueStoppingCondition.ugt"))
+		mustSatisfyQuery subCheckSubArchetypeQueryInRangeStop
+			className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+			parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition","3wSA-RangeStoppingCondition.ugt"))
+		mustSatisfyQuery subCheckSubArchetypeQueryOutRangeStop
+			className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+			parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition","3wSA-RangeStoppingCondition.ugt"))
+		mustSatisfyQuery subCheckSubArchetypeQueryMultipleOrStop
+			className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+			parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition","3wSA-MultipleStoppingCondition.ugt"))
+		mustSatisfyQuery subCheckSubArchetypeQueryMultipleAndStop
+			className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+			parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition","3wSA-MultipleStoppingCondition.ugt"))

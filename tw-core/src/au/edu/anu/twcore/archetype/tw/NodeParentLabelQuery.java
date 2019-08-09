@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.Edge;
 
@@ -39,7 +39,7 @@ import fr.cnrs.iees.graph.Edge;
  */
 public class NodeParentLabelQuery extends ParentLabelQuery {
 
-	public NodeParentLabelQuery(ObjectTable<?> ot) {
+	public NodeParentLabelQuery(StringTable ot) {
 		super(ot);
 	}
 
