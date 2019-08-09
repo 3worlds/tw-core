@@ -23,4 +23,15 @@ public class InRangeStoppingCondition extends RangeStoppingCondition {
 		return range.contains(getVariable());
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('(')
+			.append(pname)
+			.append(" \u2208 ")
+			.append(range.toString())
+			.append(')');
+		return sb.toString();
+	}
+
 }

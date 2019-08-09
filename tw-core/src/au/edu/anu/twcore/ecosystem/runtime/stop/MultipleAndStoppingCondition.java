@@ -24,4 +24,15 @@ public class MultipleAndStoppingCondition extends MultipleStoppingCondition {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('(');
+		sb.append(conditions[0].toString());
+		for (int i=1; i<conditions.length; i++)
+			sb.append(" & ").append(conditions[i].toString());
+		sb.append(')');
+		return sb.toString();
+	}
+
 }

@@ -30,4 +30,18 @@ public class ValueStoppingCondition extends PropertyStoppingCondition {
 			return true;
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('(')
+			.append(pname)
+			.append(" = ")
+			.append(stopCriterion)
+			.append(" ± ")
+			.append(RELATIVE_EPSILON)
+			.append(')');
+		return sb.toString();
+	}
+
 }

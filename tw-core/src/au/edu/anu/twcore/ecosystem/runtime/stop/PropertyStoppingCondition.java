@@ -12,7 +12,7 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
  */
 public abstract class PropertyStoppingCondition extends AbstractStoppingCondition {
 
-	private String pname = null;
+	protected String pname = null;
 	private ReadOnlyPropertyList plist = null;
 	
 	public PropertyStoppingCondition(Simulator sim, 
