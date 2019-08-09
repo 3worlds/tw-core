@@ -66,7 +66,6 @@ public enum ConfigurationPropertyNames {
 	P_STOPCD_ENDTIME			("endTime"),
 	P_STOPCD_STOPVAR			("stopVariable"),
 	P_STOPCD_STOPVAL			("stopValue"),
-	P_STOPCD_STOPSYS			("stopSystem"),
 	P_STOPCD_RANGE				("range"),
 	;
 

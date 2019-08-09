@@ -28,21 +28,27 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.properties.impl.ReadOnlyPropertyListImpl;
 import fr.ens.biologie.generic.Singleton;
 import fr.ens.biologie.generic.utils.Interval;
 
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_STOPSYSTEM;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition;
@@ -89,15 +95,25 @@ public class StoppingConditionNode
 	// (for all descendants of PropertyStoppingCondition)
 	private ReadOnlyPropertyList getStoppingSystem() {
 		// TODO: implement this properly
-		properties().getPropertyValue(P_STOPCD_STOPSYS.key()); // what do we do with this ?
-		ReadOnlyPropertyList system = null; // dummy - will cause crashes
+		get(edges(Direction.OUT),
+			selectOne(hasTheLabel(E_STOPSYSTEM.label())),
+			endNode()); // what do we do with this ? this is a SystemFactory.
+		// dummy - THIS IS ONLY FOR TESTING !
+		ReadOnlyPropertyList system = new ReadOnlyPropertyListImpl(new Property("x",2),new Property("y",12),new Property("z","AA")); 
 		return system;
+	}
+	
+	private Simulator getSimulator(StoppingConditionNode sc) {
+		if (sc.getParent() instanceof Simulator)
+			return (Simulator) sc.getParent();
+		else
+			return getSimulator((StoppingConditionNode) sc.getParent());
 	}
 	
 	@Override
 	public void initialise() {
 		super.initialise();
-		Simulator sim = (Simulator) getParent();
+		Simulator sim = getSimulator(this);
 		String subClass = (String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key());
 		if (SimpleStoppingCondition.class.getName().equals(subClass))
 			stopcd = new SimpleStoppingCondition(sim,

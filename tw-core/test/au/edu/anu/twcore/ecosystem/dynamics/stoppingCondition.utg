@@ -1,0 +1,57 @@
+treegraph
+// a test file for 3worlds specifications
+
+	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
+	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+
+// TREE 
+3worlds my_model						
+	system my_ecosystem
+		structure anything
+			categorySet everything
+				category my_category
+			component myAgent
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(permanent)
+		dynamics emptyDynamics
+			stoppingCondition A
+				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition")
+				endTime = Long(1200)
+			stoppingCondition B
+				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition")
+				stopVariable = String("x")
+				stopValue = Double(12.3)
+			stoppingCondition C
+				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition")
+				stoppingCondition D
+					subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition")
+					range = Interval([0.5,12.5[)
+					stopVariable = String("y")
+				stoppingCondition E
+					subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition")
+					endTime = Long(375)
+					stopVariable = String("z")
+				stoppingCondition F
+					subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition")
+					stoppingCondition G
+						subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition")
+						stopVariable = String("w")
+						stopValue = Double(1E78)
+					stoppingCondition H
+						subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition")
+						stopVariable = String("t")
+						stopValue = Double(-0.6)
+			stoppingCondition I
+				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition")
+				range = Interval([3,5])
+				stopVariable = String("y")
+		
+	
+// CROSS-LINKS	
+[component:myAgent] belongsTo [category:my_category]
+[stoppingCondition:B] stopSystem [component:myAgent]
+[stoppingCondition:D] stopSystem [component:myAgent]
+[stoppingCondition:E] stopSystem [component:myAgent]
+[stoppingCondition:G] stopSystem [component:myAgent]
+[stoppingCondition:H] stopSystem [component:myAgent]
+[stoppingCondition:I] stopSystem [component:myAgent]
