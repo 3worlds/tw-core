@@ -31,7 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.LinkedList;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.TreeNode;
 
@@ -49,11 +49,10 @@ public class ParentLabelQuery extends Query {
 	 * must be an ObjectTable
 	 * @param ot
 	 */
-	// Would StringTable work, actually ?
-	public ParentLabelQuery(ObjectTable<?> ot) {
+	public ParentLabelQuery(StringTable ot) {
 		super();
 		for (int i=0; i<ot.size(); i++)
-			labels.add((String)ot.getWithFlatIndex(i));
+			labels.add(ot.getWithFlatIndex(i));
 	}
 
 	/**

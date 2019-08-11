@@ -81,7 +81,7 @@ public enum ConfigurationEdgeLabels {
 	E_CONDITION		("condition",		ConditionEdge.class),
 	E_GROUPOF		("groupOf",			GroupOfEdge.class),
 	E_CYCLE			("cycle",			CycleEdge.class),
-	E_INSTANCEOF	("instanceOf",		InstanceOfEdge.class),	
+	E_INSTANCEOF	("instanceOf",		InstanceOfEdge.class),
 	;
 	//=========================================================================
 	private final String label;

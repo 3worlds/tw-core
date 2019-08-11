@@ -52,7 +52,11 @@ public enum ConfigurationPropertyNames {
 	P_FUNCTIONCLASS				("userClassName"), 
 	P_DATAELEMENTTYPE			("dataElementType"),
 	P_FIELDTYPE					("type"),
-	P_STOPCD_SUBCLASS			("subclass"),// one word?
+	P_STOPCD_SUBCLASS			("subclass"),// one word
+	P_STOPCD_ENDTIME			("endTime"),
+	P_STOPCD_STOPVAR			("stopVariable"),
+	P_STOPCD_STOPVAL			("stopValue"),
+	P_STOPCD_RANGE				("range"),
 	;
 
 	private final String pname;
