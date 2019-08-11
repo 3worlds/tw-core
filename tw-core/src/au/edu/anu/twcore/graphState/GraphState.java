@@ -47,16 +47,20 @@ public class GraphState {
 			GraphState.impl = impl;
 	}
 
-	public static boolean hasChanged() {
-		return impl.hasChanged();
+	public static boolean changed() {
+		return impl.changed();
 	}
 
-	public static void setChanged(boolean state) {
-		impl.setChanged(state);
+	public static void setChanged() {
+		impl.setChanged();
 	}
 	
 	public static void addListener (IGraphStateListener l) {
 		impl.addListener(l);
+	}
+	
+	public static void clear() {
+		impl.clear();
 	}
 
 }

@@ -43,13 +43,13 @@ public class SimpleGraphStateImpl implements IGraphState{
 	private boolean changed = false;
 	private List<IGraphStateListener> listeners = new ArrayList<>();
 	@Override
-	public boolean hasChanged() {
+	public boolean changed() {
 		return changed;
 	}
 
 	@Override
-	public void setChanged(boolean state) {
-		changed = state;
+	public void setChanged() {
+		changed = true;
 	}
 
 	@Override
@@ -61,6 +61,12 @@ public class SimpleGraphStateImpl implements IGraphState{
 	public void onChange() {
 		for (IGraphStateListener l: listeners)
 			l.onStateChange(changed);	
+	}
+
+	@Override
+	public void clear() {
+		changed = false;
+		
 	}
 
 }

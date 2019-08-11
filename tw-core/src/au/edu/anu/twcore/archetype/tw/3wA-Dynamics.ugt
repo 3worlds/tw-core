@@ -168,12 +168,10 @@ hasNode stoppingConditionSpec
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty stoppingConditionSubclassPropertySpec
-	// not subClass: to align with all other uses of this property name
 		hasName = String("subclass")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery validStoppingConditionSubClassSpec
-		// TODO none of these classes exits yet.
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
 			values = StringTable(([6]+
 			"au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition",+

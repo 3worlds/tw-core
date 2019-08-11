@@ -28,16 +28,6 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.constants;
 
-/**
- * 
- * @author Jacques Gignoux - 31 mai 2019
- *
- * NB at the moment I only listed the property names I needed in the code. More will probably
- * come in later.
- *
- */
-import static au.edu.anu.twcore.archetype.TwArchetypeConstants.*;
-
 public enum ConfigurationPropertyNames {
 	
 	P_DIMENSIONER_SIZE 			("size"),
@@ -62,7 +52,7 @@ public enum ConfigurationPropertyNames {
 	P_FUNCTIONCLASS				("userClassName"), 
 	P_DATAELEMENTTYPE			("dataElementType"),
 	P_FIELDTYPE					("type"),
-	P_STOPCD_SUBCLASS			(twaSubclass),// not subClass: to align with TwArchetypeConstants(IDD)
+	P_STOPCD_SUBCLASS			("subclass"),// one word?
 	;
 
 	private final String pname;

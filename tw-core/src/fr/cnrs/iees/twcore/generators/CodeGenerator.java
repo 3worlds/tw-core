@@ -224,7 +224,7 @@ public class CodeGenerator {
 		} 
 		else if (system.properties().hasProperty(dataGroup))
 			((ResizeablePropertyList)system.properties()).removeProperty(dataGroup);
-		GraphState.setChanged(true);
+		GraphState.setChanged();
 	}
 
 	private List<File> generateDataCode(String codePath, 

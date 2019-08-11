@@ -39,7 +39,7 @@ hasNode widgetSpec
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
 	hasProperty widgetClass
-		hasName = String("subClass")		
+		hasName = String("subclass")		
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery widgetClassInValueSetQuery

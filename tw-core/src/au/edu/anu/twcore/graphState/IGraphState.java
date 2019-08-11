@@ -35,8 +35,9 @@ package au.edu.anu.twcore.graphState;
  * @date May 6, 2019
  */
 public interface IGraphState {
-	public boolean hasChanged();
-	public void setChanged(boolean state);
+	public boolean changed();
+	public void setChanged();
+	public void clear();
 	public void addListener(IGraphStateListener l);
 	public void onChange();
 
