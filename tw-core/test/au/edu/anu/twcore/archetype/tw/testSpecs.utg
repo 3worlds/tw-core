@@ -71,8 +71,8 @@ treegraph
 				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition")
 				stopVariable = String("x")
 				range = Interval([25.2,53.2])
-			stoppingCondition one_more_another_stop // 45
-				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition")
+//			stoppingCondition one_more_another_stop // 45
+//				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition")
 	experiment my_experiment //26
 		design myDesign //27
 			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)
@@ -89,16 +89,16 @@ treegraph
 		top my_top // 46
 			widget widget1 // 47
 				order = Integer(1)
-				subClass = String("au.edu.anu.twuifx.widgets.SingleGridWidget")
+				subclass = String("au.edu.anu.twuifx.widgets.SingleGridWidget")
 		bottom statusBar // 48
 		tab theCentre // 49
 			grid thegrid // 52
-				widget widget1 // 50
+				widget widget2 // 50
 					order = Integer(2)
-					subClass = String("au.edu.anu.twuifx.widgets.SimpleSimCtrlWidget")
-				widget widget1 // 51
+					subclass = String("au.edu.anu.twuifx.widgets.SimpleSimCtrlWidget")
+				widget widget3 // 51
 					order = Integer(12)
-					subClass = String("au.edu.anu.twuifx.widgets.TimeDisplayWidget")
+					subclass = String("au.edu.anu.twuifx.widgets.TimeDisplayWidget")
 			
 	
 // CROSS-LINKS
@@ -110,7 +110,7 @@ treegraph
 [category:my_category] parameters [record:myRec]
 [category:my_category] drivers [record:myOtherRec]
 [component:myAgent] belongsTo [category:my_category]
-[component:myAgent] initialisedBy [initialiser:my_initialiser]
+[component:myAgent] initialisedBy [initialiser:My_initialiser]
 [relationType:myRelation] fromCategory [category:my_category]
 [relationType:myRelation] toCategory [category:my_other_category]
 [process:my_Process] appliesTo [category:my_other_category]

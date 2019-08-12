@@ -11,6 +11,11 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.GraphImporter;
 
+/**
+ * 
+ * @author Jacques Gignoux - 12 août 2019
+ *
+ */
 class InitialStateTest {
 
 	@SuppressWarnings("unchecked")

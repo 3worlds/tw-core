@@ -34,7 +34,7 @@ import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
-import static fr.cnrs.iees.twcore.constants.ThreeWorldsGraphReference.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMEMODEL_TU;
 
 /**
  * A Query to check that minimal time unit and maximal time unit are consistent
@@ -84,7 +84,7 @@ public class TimeIntervalValidityQuery extends Query {
 		if (satisfied) {
 			Iterable<ReadOnlyDataHolder> timeModels = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
 			for (ReadOnlyDataHolder timeModel : timeModels) {
-				TimeUnits tu = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEUNIT.toString());
+				TimeUnits tu = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
 				if (tu.compareTo(modelMin) < 0)
 					modelMin = tu;
 				if (tu.compareTo(modelMax) > 0)

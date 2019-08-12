@@ -193,10 +193,10 @@ hasNode stoppingConditionSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition","3wSA-RangeStoppingCondition.ugt"))
 	mustSatisfyQuery CheckSubArchetypeQueryMultipleOrStop
-		xxxxxxxxxxxxxx = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition","3wSA-MultipleStoppingCondition.ugt"))
 	mustSatisfyQuery CheckSubArchetypeQueryMultipleAndStop
-		xxxxxxxxxxxxxx = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition","3wSA-MultipleStoppingCondition.ugt"))
 			
 // how to specify initial community:
@@ -206,6 +206,7 @@ hasNode initialStateSpec
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("0..1")
 	
+// set of values for a parameter set linked to a group of components or a life cycle	
 hasNode groupSpec
 	isOfClass = String("group")
 	hasParent = StringTable(([2]"initialState:","group:"))
@@ -223,6 +224,7 @@ hasNode groupSpec
 		nodeLabel1 = String("component")
 		nodeLabel2 = String("lifeCycle")
 	
+// initial state for an individual component 	
 hasNode individualSpec
 	isOfClass = String("individual")
 	hasParent = StringTable(([2]"initialState:","group:"))
@@ -232,6 +234,7 @@ hasNode individualSpec
 		toNode = String("component")
 		multiplicity = IntegerRange("1..1")
 
+// parameter values for a group as specified in groupSpec above
 hasNode parameterValuesSpec
 	isOfClass = String("parameterValues")
 	hasParent = StringTable(([3]"initialState:","group:","individual"))

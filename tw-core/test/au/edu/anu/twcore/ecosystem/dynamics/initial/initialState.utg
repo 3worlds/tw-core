@@ -40,10 +40,15 @@ treegraph
 				category my_category
 			component myAgent
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+				driverClass = String("my_ecosystem.code.MyRec")
 		dynamics emptyDynamics
 			initialState i1
 				group A
 					individual A1
+						variableValues vv
+							biomass = Double(24)
+							sex = Boolean(true)
+//							items = ???
 				individual i1-1
 				individual i1-2
 
@@ -52,8 +57,8 @@ treegraph
 [table:subtable] sizedBy [dimensioner:nspecies]
 [table:subtable] sizedBy [dimensioner:nboxes]
 [table:subsubtable] sizedBy [dimensioner:nspecies]
-[category:my_category] parameters [record:myRec]
-[category:my_category] drivers [record:myOtherRec]
+[category:my_category] parameters [record:myOtherRec]
+[category:my_category] drivers [record:myRec]
 [component:myAgent] belongsTo [category:my_category]
 [individual:i1-1] instanceOf [component:myAgent]
 [individual:i1-2] instanceOf [component:myAgent]

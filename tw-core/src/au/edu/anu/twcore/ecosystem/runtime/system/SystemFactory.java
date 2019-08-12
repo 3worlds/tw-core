@@ -115,9 +115,9 @@ public class SystemFactory
 		// These ARE optional - inserted by codeGenerator!
 		if (properties().hasProperty(P_PARAMETERCLASS.key()))
 			parameterTemplate = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
-		if (properties().hasProperty(P_DRIVERCLASS.toString())) 
+		if (properties().hasProperty(P_DRIVERCLASS.key())) 
 			driverTemplate = loadDataClass((String) properties().getPropertyValue(P_DRIVERCLASS.key()));
-		if (properties().hasProperty(P_DECORATORCLASS.toString())) 
+		if (properties().hasProperty(P_DECORATORCLASS.key())) 
 			decoratorTemplate = loadDataClass((String) properties().getPropertyValue(P_DECORATORCLASS.key()));
 		if (driverTemplate != null)
 			for (String key : driverTemplate.getKeysAsSet())
