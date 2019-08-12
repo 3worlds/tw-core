@@ -177,9 +177,9 @@ hasNode stoppingConditionSpec
 			"au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition",+
 			"au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition",+
 			"au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition",+
-			"au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition",+
-			"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition",+
-			"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition"))
+			"au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition"))
+			//"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition",+
+			//"au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition"))
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleStop
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition","3wSA-SimpleStoppingCondition.ugt"))
@@ -193,10 +193,10 @@ hasNode stoppingConditionSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition","3wSA-RangeStoppingCondition.ugt"))
 	mustSatisfyQuery CheckSubArchetypeQueryMultipleOrStop
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		xxxxxxxxxxxxxx = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition","3wSA-MultipleStoppingCondition.ugt"))
 	mustSatisfyQuery CheckSubArchetypeQueryMultipleAndStop
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		xxxxxxxxxxxxxx = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition","3wSA-MultipleStoppingCondition.ugt"))
 			
 // how to specify initial community:
