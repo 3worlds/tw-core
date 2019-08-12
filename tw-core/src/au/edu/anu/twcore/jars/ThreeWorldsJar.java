@@ -31,7 +31,22 @@ package au.edu.anu.twcore.jars;
 
 import au.edu.anu.omhtk.jars.Jars;
 
+/**
+ * The jar-making class for 3Worlds.
+ * 
+ * @author Jacques Gignoux - 12 août 2019
+ * 
+ * NB: this is completely different from the previous version of this class.
+ *
+ */
 public class ThreeWorldsJar extends Jars{
-	public static final String ThreeWorldsJar = "threeworlds.jar";
 
+	public ThreeWorldsJar(String major, String minor, String micro) {
+		super();
+		version = major+"."+minor+"."+micro;
+		specVendor = "Gignoux, Davies & Flint";
+		specTitle = "3Worlds";
+	}
+
+	
 }
