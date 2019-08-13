@@ -38,6 +38,8 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.identity.IdentityScope;
+import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.io.GraphFileFormats;
 
 import java.util.logging.Level;
@@ -85,18 +87,24 @@ public class Project implements ProjectPaths, TwPaths {
 	private static final char sepch = '_';
 	private static final String klassName = Project.class.getName();
 	private static Logger log = Logger.getLogger(klassName);
+	private static final IdentityScope pScope = new LocalScope("Projects");
 	static {
 		log.setLevel(Level.FINE);
+		initialiseScope();
+	}
+
+	public static String proposeId() {
+		return pScope.newId(false, "myProject1").id();
 	}
 
 	// prevent instantiation
-	private Project() {};
+	private Project() {
+	};
+
 	/*
-	 * DateTime format - no blanks - it is effectively a unique id. However,it seems
-	 * ":" is a forbidden char in OSX and Windows
+	 * DateTime format - no blanks - it is effectively a unique id. Avoid ":" as it
+	 * is a forbidden char in OSX and Windows
 	 */
-	// private static DateTimeFormatter formatter =
-	// DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss:SSS");
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
 
 	private static File projectDirectory;
@@ -157,6 +165,7 @@ public class Project implements ProjectPaths, TwPaths {
 			log.severe(msg);
 			throw new TwcoreException(msg);
 		}
+		pScope.newId(true, projectDirectory.getName().split(sep)[1]);
 		log.exiting(klassName, "create");
 		return name;
 	}
@@ -234,43 +243,11 @@ public class Project implements ProjectPaths, TwPaths {
 	}
 
 	/**
-	 * @param directory whose path is to be parsed.
-	 * @return Project path without the "Project" prefix and date/time in parts.
-	 * @throws TwcoreException if the directory string will not parse correctly
-	 */
-	public static String extractDisplayName(File directory) {
-		String[] items = parseProjectName(directory);
-		return items[1] + "(" + items[2] + ")";
-	}
-
-	/**
 	 * @return
 	 * @throws TwcoreException
 	 */
 	public static String getDisplayName() {
 		return extractDisplayName(projectDirectory);
-	}
-
-	/**
-	 * @param directories array of 3Worlds directories
-	 * @return array of display name strings as {@code Name(Date)}
-	 * @throws TwcoreException if any of the directories are invalid.
-	 */
-	public static String[] extractDisplayNames(File[] directories) {
-		String[] result = new String[directories.length];
-		for (int i = 0; i < directories.length; i++)
-			result[i] = extractDisplayName(directories[i]);
-		return result;
-	}
-
-	/**
-	 * @param directory containing the date time string
-	 * @return returns the date and time string from the given 3Worlds directory.
-	 * @throws TwcoreException if not a valid 3Worlds directory
-	 */
-	public static String extractDateTime(File directory) {
-		String[] items = parseProjectName(directory);
-		return items[2];
 	}
 
 	/**
@@ -310,7 +287,6 @@ public class Project implements ProjectPaths, TwPaths {
 		return makeFile(ProjectPaths.RUNTIME, TwPaths.TW_PREF);
 	}
 
-
 	/**
 	 * TODO
 	 * 
@@ -325,18 +301,8 @@ public class Project implements ProjectPaths, TwPaths {
 		return result;
 	}
 
-	public static void checkUniqueness() {
-		File[] files = getAllProjectPaths();
-		List<String> ul = new ArrayList<>();
-		for (File f : files) {
-			if (ul.contains(f.getName()))
-				throw new TwcoreException("Identical project directories found: " + f.getName());
-			ul.add(f.getName());
-		}
-	}
-
 	/**
-	 * TODO
+	 * TODO Used to filter directories
 	 * 
 	 * @param directory
 	 * @return true if this directory is a valid 3Worlds project directory
@@ -362,12 +328,22 @@ public class Project implements ProjectPaths, TwPaths {
 		return true;
 	}
 
-	private static String createDateTime() {
-		LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);
-		String res = currentDate.format(formatter);
-		return res;
+	public static File makeConfigurationFile() {
+		String name = Project.getProjectName();
+		// Its a string of several extensions
+		return Project.makeFile(name + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
 	}
 
+	/**
+	 * TODO
+	 * 
+	 * @return
+	 */
+	public static File makeLayoutFile() {
+		return makeFile(TwPaths.TW_LAYOUT + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
+	}
+
+	// ------------------ private
 	private static String[] parseProjectName(File file) {
 		String name = file.getName();
 		String[] items = name.split(sep);
@@ -386,21 +362,38 @@ public class Project implements ProjectPaths, TwPaths {
 		return items;
 	}
 
-	public static File makeConfigurationFile() {
-		String name = Project.getProjectName();
-		// Its a string of several extensions
-		return Project.makeFile(name + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
+	private static String createDateTime() {
+		LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);
+		String res = currentDate.format(formatter);
+		return res;
 	}
 
-	/**
-	 * TODO
-	 * 
-	 * @return
-	 */
-	public static File makeLayoutFile() {
-		return makeFile(TwPaths.TW_LAYOUT+GraphFileFormats.TOMUGI.extension().split(" ")[0]);
+	private static void checkUniqueness() {
+		File[] files = getAllProjectPaths();
+		List<String> ul = new ArrayList<>();
+		for (File f : files) {
+			if (ul.contains(f.getName()))
+				throw new TwcoreException("Identical project directories found: " + f.getName());
+			ul.add(f.getName());
+		}
 	}
 
-	
+	private static String extractDisplayName(File directory) {
+		String[] items = parseProjectName(directory);
+		return items[1] + "(" + items[2] + ")";
+	}
+
+	private static void initialiseScope() {
+		File[] dirs = getAllProjectPaths();
+		for (File dir : dirs) {
+			String name = dir.getName();
+			pScope.newId(true, name.split(sep)[1]);
+		}
+	}
+
+	private static String extractDateTime(File directory) {
+		String[] items = parseProjectName(directory);
+		return items[2];
+	}
 
 }
