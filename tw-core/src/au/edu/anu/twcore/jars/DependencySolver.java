@@ -45,6 +45,7 @@ import org.apache.ivy.core.retrieve.RetrieveOptions;
 
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
+import static au.edu.anu.rscs.aot.util.FileUtilities.*;
 
 //import au.edu.anu.rscs.aot.logging.Logger;
 //import au.edu.anu.rscs.aot.logging.LoggerFactory;
@@ -61,7 +62,7 @@ import au.edu.anu.twcore.project.TwPaths;
  *
  */
 public class DependencySolver implements ProjectPaths, TwPaths {
-	public static final String destPath= USER_ROOT + File.separator + "tmp"; 
+	public static final String destPath= TW_ROOT + File.separator + "tmp"; 
 
 //	private Logger log = LoggerFactory.getLogger(DependencySolver.class);
 	private static String klassName = DependencySolver.class.getName();
@@ -78,7 +79,15 @@ public class DependencySolver implements ProjectPaths, TwPaths {
 	 */
 	public DependencySolver(String depFile) {
 		super();
-		ivySettingsXmlFile = new File(USER_ROOT + File.separator + "tmp" + File.separator + "ivy-settings.xml");
+		File dir = new File(destPath);
+		if (dir.exists())
+			try {
+				deleteTree(dir);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}		
+		dir.mkdirs();
+		ivySettingsXmlFile = new File(TW_ROOT + File.separator + "tmp" + File.separator + "ivy-settings.xml");
 		ivySettingsXmlFile.getParentFile().mkdirs();
 		dependencyFile = new File(depFile);
 		if (ivySettingsXmlFile.exists())
@@ -203,9 +212,9 @@ public class DependencySolver implements ProjectPaths, TwPaths {
 	 *         solver
 	 */
 	public Collection<String> getJars() {
+		File dir = new File(destPath);
 		resolveDependencies();
 		Collection<String> jarPaths = new LinkedList<>();
-		File dir = new File(destPath);
 		recurseDir(dir, jarPaths);
 		return jarPaths;
 	}
