@@ -102,25 +102,8 @@ class ProjectTest {
 		File crap = new File("SDFCRap");
 		assertTrue(!Project.isValidProjectFile(crap));
 
-		try {
-			Project.extractDateTime(crap);
-			fail("extracted datetime from nonsense file");
-		} catch (TwcoreException e) {
-			assertTrue(true);
-		}
 
-		try {
-			Project.extractDisplayName(crap);
-			fail("extracted displayname from nonsense file");
-		} catch (TwcoreException e) {
-			assertTrue(true);
-		}
 
-		try {
-			Project.extractDisplayNames(Project.getAllProjectPaths());
-		} catch (TwcoreException e) {
-			fail("extractDisplayNames fail on current .3w projects");
-		}
 
 	}
 
