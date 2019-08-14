@@ -220,7 +220,8 @@ public class TwSetup implements ProjectPaths, TwPaths {
 	 * Creates the .3w directory and the dependency jar for 3Worlds if they do not exist
 	 * @param args
 	 */
-	public static void main(String... args) throws IOException {
+//	public static void main(String... args) throws IOException { : NB String... can cause problems with finding main signature! Should be String[]
+		public static void main(String[] args) throws IOException {
 		// 1) create /.3w
 		//       		|-->/lib
 		System.out.println("Setting up 3Worlds environment:");
