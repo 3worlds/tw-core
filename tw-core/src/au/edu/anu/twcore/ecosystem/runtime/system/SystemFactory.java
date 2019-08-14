@@ -224,7 +224,7 @@ public class SystemFactory
 	}
 
 	/**
-	 * Returns a new container, either nested in a lifeCycle container or in the Ecosystem
+	 * Returns a new container, either nested in a group container or in the Ecosystem
 	 * container, depending on what is found.
 	 * 
 	 * @param name
