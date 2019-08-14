@@ -34,6 +34,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.util.FileUtilities;
@@ -298,6 +300,22 @@ public class Project implements ProjectPaths, TwPaths {
 		if (!folder.exists())
 			folder.mkdirs();
 		File[] result = folder.listFiles(new ProjectFilter());
+		// sort by date
+		Arrays.parallelSort(result, new Comparator<File>() {
+
+			@Override
+			public int compare(File o1, File o2) {
+				long m1 = o1.lastModified();
+				long m2 = o2.lastModified();
+				if (m1 > m2)
+					return 1;
+				else if (m1 < m2)
+					return -1;
+				else
+					return 0;
+			}
+
+		});
 		return result;
 	}
 
@@ -343,6 +361,28 @@ public class Project implements ProjectPaths, TwPaths {
 		return makeFile(TwPaths.TW_LAYOUT + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
 	}
 
+// used for menu creation
+	public static String extractDisplayName(File directory) {
+		String[] items = parseProjectName(directory);
+		return items[1] + "(" + items[2] + ")";
+	}
+
+	public static String extractDateTime(File directory) {
+		String[] items = parseProjectName(directory);
+		return items[2];
+	}
+	/**
+	 * @param directories array of 3Worlds directories
+	 * @return array of display name strings as {@code Name(Date)}
+	 * @throws TwcoreException if any of the directories are invalid.
+	 */
+	public static String[] extractDisplayNames(File[] directories) {
+		String[] result = new String[directories.length];
+		for (int i = 0; i < directories.length; i++)
+			result[i] = extractDisplayName(directories[i]);
+		return result;
+	}
+
 	// ------------------ private
 	private static String[] parseProjectName(File file) {
 		String name = file.getName();
@@ -378,22 +418,12 @@ public class Project implements ProjectPaths, TwPaths {
 		}
 	}
 
-	private static String extractDisplayName(File directory) {
-		String[] items = parseProjectName(directory);
-		return items[1] + "(" + items[2] + ")";
-	}
-
 	private static void initialiseScope() {
 		File[] dirs = getAllProjectPaths();
 		for (File dir : dirs) {
 			String name = dir.getName();
 			pScope.newId(true, name.split(sep)[1]);
 		}
-	}
-
-	private static String extractDateTime(File directory) {
-		String[] items = parseProjectName(directory);
-		return items[2];
 	}
 
 }
