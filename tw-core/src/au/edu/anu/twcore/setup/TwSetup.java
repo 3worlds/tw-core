@@ -237,6 +237,7 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		// 4) make jar of 3worlds
 //		System.out.println("Installing the 3Worlds ModelMaker");
 		packModelMaker();
+		packModelRunner();
 		System.out.println("FINISHED");
 		// 5) zip ModelMaker = .3w dir for distribution to end users
 		// do it from the system - it's easier !
