@@ -85,31 +85,31 @@ import org.apache.commons.text.WordUtils;
  */
 // tested OK with version 0.1.1 on 21/5/2019
 public class Project implements ProjectPaths, TwPaths {
+	/*
+	 * DateTime format - no blanks - it is effectively a unique id. Avoid ":" as it
+	 * is a forbidden char in OSX and Windows
+	 */
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
+	private static File projectDirectory;
 	private static final String sep = "_";
 	private static final char sepch = '_';
 	private static final String klassName = Project.class.getName();
 	private static Logger log = Logger.getLogger(klassName);
 	private static final IdentityScope pScope = new LocalScope("Projects");
+	// important that this comes last here
 	static {
 		log.setLevel(Level.FINE);
 		initialiseScope();
 	}
 
-	public static String proposeId() {
-		return pScope.newId(false, "myProject1").id();
+	public static String proposeId(String proposedId) {
+		return pScope.newId(false, proposedId).id();
 	}
 
 	// prevent instantiation
 	private Project() {
 	};
 
-	/*
-	 * DateTime format - no blanks - it is effectively a unique id. Avoid ":" as it
-	 * is a forbidden char in OSX and Windows
-	 */
-	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
-
-	private static File projectDirectory;
 
 	/**
 	 * @param name any string.
@@ -132,14 +132,7 @@ public class Project implements ProjectPaths, TwPaths {
 			log.severe(msg);
 			throw new TwcoreException(msg);
 		}
-		char[] delimiters = { sepch };
-		name = WordUtils.capitalizeFully(name.replaceAll("\\W", sep), delimiters).replaceAll(sep, "");
 
-		if (name.equals("")) {
-			String msg = "Name + does not contain any valid characters ( \"" + givenName + "\" )";
-			log.severe(msg);
-			throw new TwcoreException(msg);
-		}
 		try {
 			File f = new File(name);
 			f.getCanonicalFile();
@@ -149,8 +142,6 @@ public class Project implements ProjectPaths, TwPaths {
 			throw new TwcoreException(msg, e);
 		}
 
-		// lower case first character
-		name = WordUtils.uncapitalize(name);
 		String creationDateTime = createDateTime();
 
 		projectDirectory = new File(
@@ -172,6 +163,12 @@ public class Project implements ProjectPaths, TwPaths {
 		return name;
 	}
 
+	public static String formatName(String name) {
+		char[] delimiters = { sepch };
+		String result = WordUtils.capitalizeFully(name.replaceAll("\\W", sep), delimiters).replaceAll(sep, "");
+		result = WordUtils.uncapitalize(result);
+		return result;
+	}
 	/**
 	 * Closes the project
 	 * 

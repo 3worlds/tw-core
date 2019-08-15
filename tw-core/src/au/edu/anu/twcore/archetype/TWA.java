@@ -63,7 +63,7 @@ public class TWA {
 	/** a logger for getting information */
 	private static Logger log = Logger.getLogger(TWA.class.getName());
 	// Use this to adjust the logging level
-	static { log.setLevel(Level.WARNING); }
+	static { log.setLevel(Level.OFF); }
 
 	/** all the sub-archetypes found in the 3Worlds archetype */
 	private static Map<String, Tree<? extends TreeNode>> subGraphs = new HashMap<>();
