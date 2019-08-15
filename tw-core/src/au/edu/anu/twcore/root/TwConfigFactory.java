@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.PropertyListFactory;
@@ -51,6 +52,11 @@ import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 public class TwConfigFactory extends TreeGraphFactory {
 
 	private static Map<String,String> twLabels = new HashMap<>();
+	
+	// Sorry - but how else to i clean up when edition graphs?
+	public void removeEdgeId(Edge edge) {
+		this.scope.removeId(edge.id());
+	}
 	
 	private static PropertyListFactory plf = new PropertyListFactory () {
 		@Override
