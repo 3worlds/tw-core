@@ -33,7 +33,13 @@ import java.util.Map;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
 import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.ALGraph;
+import fr.cnrs.iees.graph.impl.ALNode;
+import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.PropertyListFactory;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -49,7 +55,7 @@ import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class TwConfigFactory extends TreeGraphFactory {
+public class TwConfigFactory extends TreeGraphFactory implements ExpungeableFactory {
 
 	private static Map<String,String> twLabels = new HashMap<>();
 	
@@ -96,5 +102,19 @@ public class TwConfigFactory extends TreeGraphFactory {
 	@Override
 	public PropertyListFactory nodePropertyFactory() {
 		return plf;
+	}
+
+	@Override
+	public void expungeNode(Node node) {
+		scope.removeId(node.id());
+		for (Edge edge:node.edges())
+			expungeEdge(edge);	
+		for (TreeGraph<TreeGraphNode, ALEdge> g:graphs)
+			g.removeNode( (TreeGraphNode) node);	
+	}
+
+	@Override
+	public void expungeEdge(Edge edge) {
+		scope.removeId(edge.id());
 	}
 }
