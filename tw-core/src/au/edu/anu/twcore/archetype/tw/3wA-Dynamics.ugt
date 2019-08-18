@@ -93,7 +93,8 @@ hasNode processSpec
 		multiplicity = IntegerRange("0..*")
 	hasEdge appliesToRelationSpec
 		isOfClass = String("appliesTo")
-		toNode = String("relation")
+		//toNode = String("relation")
+		toNode = String("relationType")
 		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery processToRelationOrCategorySpec
 		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
