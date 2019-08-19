@@ -35,6 +35,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 
@@ -45,7 +46,7 @@ import fr.cnrs.iees.graph.Node;
  * Constraint: either 1..* nodes with label1 or 1..* nodes with label2
  * 
  */
-public class OutNodeXorQuery extends Query {
+public class OutNodeXorQuery extends Query implements TwArchetypeConstants{
 
 	private String nodeLabel1 = null;
 	private String nodeLabel2 = null;
@@ -69,17 +70,17 @@ public class OutNodeXorQuery extends Query {
 		List<Node> nl1 = (List<Node>) get(localItem, 
 			edges(Direction.OUT),
 			edgeListEndNodes(),
-			selectZeroOrMany(hasTheLabel(nodeLabel1)));
+			selectZeroOrMany(hasTheLabel(twaNodeLabel1)));
 		List<Node> nl2 = (List<Node>) get(localItem,
 			edges(Direction.OUT),
 			edgeListEndNodes(),
-			selectZeroOrMany(hasTheLabel(nodeLabel2)));
+			selectZeroOrMany(hasTheLabel(twaNodeLabel2)));
 		satisfied = (nl1.size()>0)^(nl2.size()>0);
 		return this;
 	}
 
 	public String toString() {
-		return "[" + stateString() + " There must be at least one out node with either label '" + nodeLabel1 + "' or '"+nodeLabel2+"']";
+		return "[" + stateString() + " There must be at least one out node with either label '" + twaNodeLabel1 + "' or '"+twaNodeLabel2+"']";
 	}
 
 }

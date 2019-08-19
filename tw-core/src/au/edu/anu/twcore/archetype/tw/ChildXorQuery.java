@@ -35,6 +35,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
@@ -42,7 +43,7 @@ import fr.cnrs.iees.graph.TreeNode;
  * @author Jacques Gignoux - 5/9/2016
  * Constraint: either 1..* nodes with label1 or 1..* nodes with label2
  */
-public class ChildXorQuery extends Query {
+public class ChildXorQuery extends Query implements TwArchetypeConstants{
 
 	private String nodeLabel1 = null;
 	private String nodeLabel2 = null;
@@ -65,16 +66,16 @@ public class ChildXorQuery extends Query {
 		TreeNode localItem = (TreeNode) input;
 		List<TreeNode> nl1 = (List<TreeNode>) get(localItem, 
 			children(),
-			selectZeroOrMany(hasTheLabel(nodeLabel1)));
+			selectZeroOrMany(hasTheLabel(twaNodeLabel1)));
 		List<TreeNode> nl2 = (List<TreeNode>) get(localItem,
 			children(),			
-			selectZeroOrMany(hasTheLabel(nodeLabel2)));
+			selectZeroOrMany(hasTheLabel(twaNodeLabel2)));
 		satisfied = (nl1.size()>0)^(nl2.size()>0);
 		return this;
 	}
 
 	public String toString() {
-		return "[" + stateString() + " There must be at least one child node with either label '" + nodeLabel1 + "' or '"+nodeLabel2+"']";
+		return "[" + stateString() + " There must be at least one child node with either label '" + twaNodeLabel1 + "' or '"+twaNodeLabel2+"']";
 	}
 
 }
