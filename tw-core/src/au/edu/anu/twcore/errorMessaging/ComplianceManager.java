@@ -32,6 +32,9 @@ package au.edu.anu.twcore.errorMessaging;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.edu.anu.twcore.errorMessaging.ErrorMessagable;
+import au.edu.anu.twcore.errorMessaging.ErrorMessageListener;
+
 /**
  * Author Ian Davies
  *

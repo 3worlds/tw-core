@@ -29,6 +29,8 @@
 
 package au.edu.anu.twcore.errorMessaging;
 
+import au.edu.anu.twcore.errorMessaging.Verbosity;
+
 /**
  * Author Ian Davies
  *
