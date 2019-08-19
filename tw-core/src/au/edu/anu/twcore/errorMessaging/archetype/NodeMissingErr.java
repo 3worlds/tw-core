@@ -29,7 +29,9 @@
 
 package au.edu.anu.twcore.errorMessaging.archetype;
 
+import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
+import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 
 /**
  * Author Ian Davies
@@ -42,8 +44,7 @@ public class NodeMissingErr extends ErrorMessageAdaptor{
 //	private AotNode spec;
 //	private String reference;
 
-public NodeMissingErr(/*String reference, IntegerRange expectedRange, int foundCount, AotNode spec,
-			AotGraph currentGraph*/) {
+public NodeMissingErr(String reference, IntegerRange expectedRange, int foundCount, SimpleDataTreeNode spec) {
 //	this.reference = reference;
 //	this.expectedRange = expectedRange;
 //	this.foundCount = foundCount;

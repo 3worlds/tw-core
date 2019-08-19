@@ -45,6 +45,7 @@ public class ComplianceManager {
 
 	private static boolean haveErrors;
 
+
 	public static boolean haveErrors() {
 		return haveErrors;
 	}
@@ -64,5 +65,5 @@ public class ComplianceManager {
 	public static void addListener(ErrorMessageListener listener) {
 		listeners.add(listener);
 	}
-	
+
 }
