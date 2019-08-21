@@ -70,17 +70,17 @@ public class OutNodeXorQuery extends Query implements TwArchetypeConstants{
 		List<Node> nl1 = (List<Node>) get(localItem, 
 			edges(Direction.OUT),
 			edgeListEndNodes(),
-			selectZeroOrMany(hasTheLabel(twaNodeLabel1)));
+			selectZeroOrMany(hasTheLabel(nodeLabel1)));
 		List<Node> nl2 = (List<Node>) get(localItem,
 			edges(Direction.OUT),
 			edgeListEndNodes(),
-			selectZeroOrMany(hasTheLabel(twaNodeLabel2)));
+			selectZeroOrMany(hasTheLabel(nodeLabel2)));
 		satisfied = (nl1.size()>0)^(nl2.size()>0);
 		return this;
 	}
 
 	public String toString() {
-		return "[" + stateString() + " There must be at least one out node with either label '" + twaNodeLabel1 + "' or '"+twaNodeLabel2+"']";
+		return "[" + stateString() + " There must be at least one out node with either label '" + nodeLabel1 + "' or '"+nodeLabel2+"']";
 	}
 
 }

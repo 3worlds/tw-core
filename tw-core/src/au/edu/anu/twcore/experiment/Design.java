@@ -33,6 +33,7 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
+import fr.cnrs.iees.twcore.constants.FileType;
 import fr.ens.biologie.generic.Resettable;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
@@ -50,7 +51,7 @@ import au.edu.anu.twcore.InitialisableNode;
 public class Design extends InitialisableNode implements Resettable {
 
 	private ExperimentDesignType type = null;
-	private String fileName = null;
+	private FileType fileType;
 	
 	public Design(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -77,15 +78,17 @@ public class Design extends InitialisableNode implements Resettable {
 	}
 	
 	public String file() {
-		return fileName;
+		return fileType.getFile().getAbsolutePath();
 	}
 
 	@Override
 	public void reset() {
 		if (properties().hasProperty(P_DESIGN_TYPE.key()))
 			type = (ExperimentDesignType) properties().getPropertyValue(P_DESIGN_TYPE.key());
-		else if (properties().hasProperty(P_DESIGN_FILE.key()))
-			fileName = (String)properties().getPropertyValue(P_DESIGN_FILE.key());
+		else if (properties().hasProperty(P_DESIGN_FILE.key())) {
+			FileType fileType = (FileType)properties().getPropertyValue(P_DESIGN_FILE.key());
+//			fileName = (String)properties().getPropertyValue(P_DESIGN_FILE.key());
+		}
 	}
 	
 }

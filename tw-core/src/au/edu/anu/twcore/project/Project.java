@@ -126,7 +126,6 @@ public class Project implements ProjectPaths, TwPaths {
 		log.entering(klassName, "create");
 
 		checkUniqueness();
-		String givenName = name;
 		if (isOpen()) {
 			String msg = "Cannot create project " + name + ". Project is open: " + projectDirectory.getName();
 			log.severe(msg);
