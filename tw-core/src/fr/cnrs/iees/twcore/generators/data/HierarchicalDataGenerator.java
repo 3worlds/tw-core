@@ -41,6 +41,8 @@ import java.util.logging.Logger;
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.TreeNode;
@@ -98,9 +100,9 @@ public abstract class HierarchicalDataGenerator
 			String fname = validJavaName(wordUpperCaseName(f.id()));
 			String ftype = null;
 			if (f.properties().hasProperty(P_FIELDTYPE.key())) {
-//				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELDTYPE.key());
-//				ftype = det.name();
-				ftype = checkType((String) f.properties().getPropertyValue(P_FIELDTYPE.key()));
+				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELDTYPE.key());
+				ftype = det.name();
+//				ftype = checkType((String) f.properties().getPropertyValue(P_FIELDTYPE.key()));
 			}
 			if (f.classId().equals(N_TABLE.label())) {
 				ftype = generateTableCode((TreeGraphDataNode) f,cg);
@@ -115,8 +117,11 @@ public abstract class HierarchicalDataGenerator
 		log.info("    generating file "+cn+".java ...");
 		File file = new File(packagePath+File.separator+cn+".java");
 		writeFile(cg,file,cn);
-		hadErrors = hadErrors | compiler.compileCode(file,rootDir);
-
+		String result =  compiler.compileCode(file,rootDir);
+		hadErrors = hadErrors | result!=null;
+		if (result!=null) 
+			ComplianceManager.add(new CompileErr(file, result));
+		
 		log.info("  ...done.");
 		return cn;
 	}
@@ -174,7 +179,12 @@ public abstract class HierarchicalDataGenerator
 //				ftype+".java");
 			File file = new File(packagePath+File.separator+ftype+".java");
 			writeFile(cg,file,ftype);
-			hadErrors = hadErrors | compiler.compileCode(file,rootDir);
+			String result =  compiler.compileCode(file,rootDir);
+			hadErrors = hadErrors | result!=null;
+			if (result!=null) 
+				ComplianceManager.add(new CompileErr(file, result));
+
+			
 
 //			spec.setProperty("class", packageName+"."+ftype);
 			log.info("  ...done.");

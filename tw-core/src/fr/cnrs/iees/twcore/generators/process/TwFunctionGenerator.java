@@ -47,6 +47,8 @@ import java.util.logging.Logger;
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -171,7 +173,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		log.info("  done.");
 
 		JavaCompiler compiler = new JavaCompiler();
-		return compiler.compileCode(file,Project.makeFile());
+		String result =  compiler.compileCode(file,Project.makeFile());
+		if (result!=null) 
+			ComplianceManager.add(new CompileErr(file, result));
+		return result==null;
 	}
 
 	public String generatedClassName() {
