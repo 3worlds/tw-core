@@ -26,71 +26,20 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package fr.cnrs.iees.twcore.generators;
+package au.edu.anu.twcore.errorMessaging.codeGenerator;
 
-import java.io.File;
-
-import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.project.TwPaths;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.ens.biologie.generic.JavaGenerator;
-import fr.ens.biologie.generic.utils.NameUtils;
-
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
- * An ancestor class to setup the directory hierarchy for Java code generators and compilers.
- * Assumes specification are passed to the constructor as a AotNode - descendants will know how to use
- * this AotNode.
- * 
- * Hierarchy is:
- * 
- * .3w
- * --project_[name]_[uid] 
- * ----distributed				ProjectPaths.PROJECT_DISTRIBUTED
- * ------jars					ProjectPaths.PROJECT_JARS
- * ------graphs					ProjectPaths.PROJECT_GRAPHS
- * ------files					ProjectPaths.PROJECT_FILES
- * --------[model name]
- * ----------data
- * ----------code
- * --------[model name]
- * ----------data
- * ----------code
- * ----local					ProjectPaths.PROJECT_LOCAL
- * ------hardware				ProjectPaths.PROJECT_HARDWARE_GRAPHS
- * ------userInterfaces			ProjectPaths.PROJECT_USER_INTERFACE_GRAPHS
- * ------logs					ProjectPaths.PROJECT_LOGS
- * ------recordings				ProjectPaths.PROJECT_RECORDINGS
- * 
- * I THINK THE ABOVE IS ALL CRAP NOW -IDD
- * 
- * <p>3Worlds: component threeWorlds</p>
- * @author Jacques Gignoux - 23 nov. 2016
+ * @author Ian Davies
  *
+ * @date 22 Aug 2019
  */
-public abstract class TwCodeGenerator 
-	implements ProjectPaths, TwPaths, JavaGenerator {
-	
-	protected TreeGraphDataNode spec = null;
-	
-	protected TwCodeGenerator(TreeGraphDataNode spec) {
-		super();
-		this.spec = spec;
-	}
-	
-	protected String makeModelJavaName(String modelName) {
-		return NameUtils.wordUpperCaseName(modelName);
-	}
-	
-	protected File getModelCodeDir(String modelRoot) {
-		//File result = Project.makeFile(makeModelJavaName(modelRoot),TW_CODE);
-		File result = Project.makeFile(ProjectPaths.CODE,makeModelJavaName(modelRoot));
-		return result;
+public class CompilerMissingErr extends ErrorMessageAdaptor{
+	public CompilerMissingErr() {
+		msg1 = "Java compiler not found.";
+		msg2 = msg1 + " Check installation of Java Development Kit (JDK)";
+		msg3 = msg2;
 	}
 
-	protected File getModelDataDir(String modelRoot) {
-		//File result = Project.makeFile(makeModelJavaName(modelRoot),TW_DATA);
-		return Project.makeFile(ProjectPaths.CODE,makeModelJavaName(modelRoot));
-	}
 }

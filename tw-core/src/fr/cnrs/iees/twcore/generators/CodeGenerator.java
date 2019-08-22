@@ -53,6 +53,7 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -109,6 +110,9 @@ public class CodeGenerator {
 	public boolean generate(String codePath, TreeGraph<TreeGraphDataNode,ALEdge> graph) {
 		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(), N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
+			// I think this should be:
+			//System.out.println(Project.makeFile(ProjectPaths.CODE,wordUpperCaseName(ecology.id())));
+//			File ecologyFiles = Project.makeFile(ProjectPaths.CODE,wordUpperCaseName(ecology.id()));
 			// create directory for code generation
 			File ecologyFiles = new File(
 				Project.getProjectDirectory() + File.separator + wordUpperCaseName(ecology.id()));
