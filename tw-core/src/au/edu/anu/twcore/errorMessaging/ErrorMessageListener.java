@@ -39,4 +39,5 @@ import au.edu.anu.twcore.errorMessaging.ErrorMessagable;
 public interface ErrorMessageListener {
 	public void onReceiveMsg(ErrorMessagable msg);
 	public void onClear();
+	public void state(boolean valid);
 }

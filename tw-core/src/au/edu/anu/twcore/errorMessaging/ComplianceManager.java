@@ -65,5 +65,10 @@ public class ComplianceManager {
 	public static void addListener(ErrorMessageListener listener) {
 		listeners.add(listener);
 	}
+	public static void signalState() {
+		for (ErrorMessageListener listener : listeners)
+			listener.state(!haveErrors);
+
+	}
 
 }
