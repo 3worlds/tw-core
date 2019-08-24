@@ -26,17 +26,22 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-
 package au.edu.anu.twcore.errorMessaging.deploy;
 
-import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import java.io.File;
+
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date Dec 12, 2018
+ * @date 25 Aug 2019
  */
-public class DeployComplianceManager extends ComplianceManager{
-	// manages only msgs from Archetype compliance
+public class DeployClassFileMissing extends ErrorMessageAdaptor {
 
+	public DeployClassFileMissing(File classFile, File sourceFile) {
+		msg1 = "Refresh Java Project: Compiled class file is missing for "+sourceFile.getName();
+		msg2 = msg1+ "\n"+sourceFile.getAbsolutePath();
+		msg3 = msg2+ "\n"+classFile.getAbsolutePath();
+	}
 }

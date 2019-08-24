@@ -29,10 +29,16 @@
 
 package au.edu.anu.twcore.devenv;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import au.edu.anu.twcore.project.TwPaths;
 
 /**
  * @author Ian Davies
@@ -43,7 +49,10 @@ public class EclipseProject implements IDevEnv{
 	File srcDir;
 	File classDir;
 	File projectDir;
-	
+	private static final String libraryFile = ".classpath";
+	private static final String entryPrefix = "<classpathentry kind=\"lib\" path=\"";
+	private static final String entrySuffix = "\"/>";
+
 
 	public EclipseProject(File projectDir/** other non-standard dirs*/) {
 		this.projectDir=projectDir;
@@ -61,15 +70,63 @@ public class EclipseProject implements IDevEnv{
 		return classDir;
 	}
 
+	private boolean pathContains(String line,Set<String>exclusions) {
+		for (String s :exclusions) {
+			if (line.contains(s))
+				return true;			
+		}
+		return false;
+	}
 	@Override
-	public List<File> getUserLibraries() {
-		// TODO Auto-generated method stub
-		return null;
+	public File[] getUserLibraries(Set<String> exclusions) {
+		List<File> fileList = new ArrayList<>();
+		File filename = new File(projectDir.getAbsoluteFile()+File.separator+libraryFile);
+		BufferedReader infile=null;
+		try {
+			infile = new BufferedReader(new FileReader(filename));
+			String line = null;
+			while ((line = infile.readLine()) != null) {
+				if (line.contains(entryPrefix)) {
+					String path = line.replace(entryPrefix, "").replace(entrySuffix, "");
+					if (!pathContains(path,exclusions)) {
+							path = path.replace("\t", "");
+							File libFile = new File(path);
+							if (!libFile.exists())
+								throw new TwcoreException("Attempting to add non-existent library: " + libFile);
+							fileList.add(new File(path));
+						}
+				}
+			}
+			infile.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				infile.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (fileList.isEmpty())
+			return null;
+		else {
+			return fileList.toArray(new File[fileList.size()]);
+		}
 	}
 
 	@Override
 	public File projectRoot() {
 		return projectDir;
+	}
+
+	@Override
+	public File classForSource(File source) {
+		String src = source.getAbsolutePath();
+		String cls = src.replace(srcDir.getAbsolutePath(), classDir.getAbsolutePath());
+		cls = cls.replace(".java", ".class");
+		return new File(cls);
 	}
 
 }

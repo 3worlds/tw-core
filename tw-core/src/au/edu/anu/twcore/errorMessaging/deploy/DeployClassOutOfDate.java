@@ -26,27 +26,25 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-
-package au.edu.anu.twcore.devenv;
+package au.edu.anu.twcore.errorMessaging.deploy;
 
 import java.io.File;
-import java.util.Set;
+import java.nio.file.attribute.FileTime;
+
+import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date 14 Dec. 2018
+ * @date 25 Aug 2019
  */
-// Interface for various Java development environments for linked user projects
-public interface IDevEnv {
+public class DeployClassOutOfDate extends ErrorMessageAdaptor {
 
-	public File srcRoot();
+	public DeployClassOutOfDate(File sourceFile, File classFile, FileTime ageSource, FileTime ageClass) {
+		msg1 = "Refresh Java project: Compiled class file is older than Java source file '" + sourceFile.getName()
+				+ "'.";
+		msg2 = msg1 + "\n" + sourceFile.getName() + "(" + ageSource.toString() + ")";
+		msg2 = msg2 + "\n" + classFile.getName() + "(" + ageClass.toString() + ")";
+	}
 
-	public File classRoot();
-
-	public File projectRoot();
-
-	public File[] getUserLibraries(Set<String> exclusions);
-	
-	public File classForSource(File source);
 }

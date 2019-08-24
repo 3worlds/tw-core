@@ -30,6 +30,7 @@
 package au.edu.anu.twcore.devenv;
 
 import java.io.File;
+import java.util.Set;
 
 // static singleton class for java IDE-independent info
 // Not particularly useful (yet?)
@@ -39,7 +40,6 @@ public class DevEnv {
 	};
 
 	private static IDevEnv impl;
-
 
 	public static void initialise(IDevEnv impl) {
 		DevEnv.impl = impl;
@@ -63,11 +63,19 @@ public class DevEnv {
 		return impl.projectRoot();
 	}
 
-	public static boolean haveEnv() {
+	public static boolean haveUserProject() {
 		return impl != null;
 	}
 
-	public static void close() {
+	public static void unlinkUserProject() {
 		impl = null;
+	}
+
+	public static File[] getUserLibraries(Set<String> exclusions) {
+		return impl.getUserLibraries(exclusions);
+	};
+
+	public static File classForSource(File source) {
+		return impl.classForSource(source);
 	}
 }
