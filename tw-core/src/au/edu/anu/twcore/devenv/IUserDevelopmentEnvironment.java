@@ -32,50 +32,21 @@ package au.edu.anu.twcore.devenv;
 import java.io.File;
 import java.util.Set;
 
-// static singleton class for java IDE-independent info
-// Not particularly useful (yet?)
-// This should be a factory
-public class DevEnv {
-	private DevEnv() {
-	};
+/**
+ * Author Ian Davies
+ *
+ * Date 14 Dec. 2018
+ */
+// Interface for various Java development environments for linked user projects
+public interface IUserDevelopmentEnvironment {
 
-	private static IDevEnv impl;
+	public File srcRoot();
 
-	public static void initialise(IDevEnv impl) {
-		DevEnv.impl = impl;
-	}
+	public File classRoot();
 
-	public static File srcRoot() {
-		if (impl == null)
-			return null;
-		return impl.srcRoot();
-	}
+	public File projectRoot();
 
-	public static File classRoot() {
-		if (impl == null)
-			return null;
-		return impl.classRoot();
-	}
-
-	public static File projectRoot() {
-		if (impl == null)
-			return null;
-		return impl.projectRoot();
-	}
-
-	public static boolean haveUserProject() {
-		return impl != null;
-	}
-
-	public static void unlinkUserProject() {
-		impl = null;
-	}
-
-	public static File[] getUserLibraries(Set<String> exclusions) {
-		return impl.getUserLibraries(exclusions);
-	};
-
-	public static File classForSource(File source) {
-		return impl.classForSource(source);
-	}
+	public File[] getUserLibraries(Set<String> exclusions);
+	
+	public File classForSource(File source);
 }

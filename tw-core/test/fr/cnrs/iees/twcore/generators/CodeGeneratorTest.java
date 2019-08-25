@@ -53,11 +53,11 @@ class CodeGeneratorTest {
 	final void testGenerate1() {
 		GraphState.initialise(null);
 		Project.create("test1");
-		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
 		CodeGenerator gen = new CodeGenerator();
+		//This won't crash because of changes in THIS utg file cf below.
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
-			GraphImporter.importGraph("generateData.utg",this.getClass());
-		gen.generate(codePath, specs);
+			GraphImporter.importGraph("generateData_Ian.utg",this.getClass());
+		gen.generate(specs);
 		Project.close();
 		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
 	}
@@ -67,11 +67,11 @@ class CodeGeneratorTest {
 	final void testGenerate2() {
 		GraphState.initialise(null);
 		Project.create("test2");
-		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
 		CodeGenerator gen = new CodeGenerator();
+		// this will crash on typecasting of "type" as ElementDataType because i've uncommented some code
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
 			GraphImporter.importGraph("generateData2.utg",this.getClass());
-		gen.generate(codePath, specs);
+		gen.generate(specs);
 		Project.close();
 		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
 	}
@@ -81,11 +81,10 @@ class CodeGeneratorTest {
 	final void testGenerate3() {
 		GraphState.initialise(null);
 		Project.create("test3");
-		String codePath =Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
 		CodeGenerator gen = new CodeGenerator();
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
 			GraphImporter.importGraph("generateFunction.utg",this.getClass());
-		gen.generate(codePath, specs);
+		gen.generate(specs);
 		Project.close();
 		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
 	}

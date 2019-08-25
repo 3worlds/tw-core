@@ -45,7 +45,7 @@ import au.edu.anu.twcore.project.TwPaths;
  *
  * @date 23 Aug 2019
  */
-public class EclipseProject implements IDevEnv{
+public class UPLEclipse implements IUserDevelopmentEnvironment{
 	File srcDir;
 	File classDir;
 	File projectDir;
@@ -54,7 +54,7 @@ public class EclipseProject implements IDevEnv{
 	private static final String entrySuffix = "\"/>";
 
 
-	public EclipseProject(File projectDir/** other non-standard dirs*/) {
+	public UPLEclipse(File projectDir/** other non-standard dirs*/) {
 		this.projectDir=projectDir;
 		this.srcDir = new File(projectDir.getAbsoluteFile()+File.separator+"src");
 		this.classDir = new File(projectDir.getAbsoluteFile()+File.separator+"bin");

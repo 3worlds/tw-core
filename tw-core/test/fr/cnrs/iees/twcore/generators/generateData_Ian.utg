@@ -14,24 +14,24 @@ treegraph
 			size = Integer(3)
 		record myRec
 			field biomass 
-				type = String("Double")
+				type = fr.cnrs.iees.twcore.constants.DataElementType(Double)
 			field length
-				type = String("Double")
+				type = fr.cnrs.iees.twcore.constants.DataElementType(Double)
 			field sex
-				type = String("Boolean")
+				type = fr.cnrs.iees.twcore.constants.DataElementType(Boolean)
 			table items 
 				dataElementType = fr.cnrs.iees.twcore.constants.DataElementType(Boolean)
 			field color
-				type = String("String")
+				type = fr.cnrs.iees.twcore.constants.DataElementType(String)
 		record myOtherRec
 			table subtable
 				record tableContent
 					field a
-						type = String("Integer")
+						type = fr.cnrs.iees.twcore.constants.DataElementType(Integer)
 					field b
-						type = String("String")
+						type = fr.cnrs.iees.twcore.constants.DataElementType(String)
 					field c
-						type = String("Byte")
+						type = fr.cnrs.iees.twcore.constants.DataElementType(Byte)
 					table subsubtable
 						dataElementType = fr.cnrs.iees.twcore.constants.DataElementType(Float)
 	system my_ecosystem
