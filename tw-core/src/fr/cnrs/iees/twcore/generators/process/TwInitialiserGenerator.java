@@ -122,7 +122,8 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		File ctGeneratedCodeDir =  getModelCodeDir(model);			
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
-		String packageName = ctmodel+"."+TW_CODE;		
+//		String packageName = ctmodel+"."+TW_CODE;		
+		String packageName = ctmodel;		
 		String ancestorClassName = INITIALISER_ROOT_PACKAGE+".SecondaryParametersInitialiser";		
 		String comment = comment(general,classComment(name),generatedCode(false,model, ""));				
 		ClassGenerator generator = new ClassGenerator(packageName,comment,name,ancestorClassName);
@@ -143,7 +144,8 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 			}
 		}
 		generator.setRawMethodCode(inClassCode);
-		File file = Project.makeFile(ctmodel,TW_CODE,name+".java");
+//		File file = Project.makeFile(ctmodel,TW_CODE,name+".java");
+		File file = Project.makeFile(CODE,ctmodel,name+".java");
 		writeFile(generator,file,name);
 		generatedClassName = packageName+"."+name;
 		log.info("  done.");

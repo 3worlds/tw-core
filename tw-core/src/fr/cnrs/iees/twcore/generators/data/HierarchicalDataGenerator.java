@@ -86,8 +86,10 @@ public abstract class HierarchicalDataGenerator
 	protected HierarchicalDataGenerator(String modelName,TreeGraphDataNode spec) {
 		super(spec);
 		this.modelName = modelName;
-		packageName = validJavaName(wordUpperCaseName(modelName))+"."+TW_CODE;	
-		packagePath = Project.makeFile(validJavaName(wordUpperCaseName(modelName)),TW_CODE).getAbsolutePath();
+//		packageName = validJavaName(wordUpperCaseName(modelName))+"."+TW_CODE;	
+		packageName = validJavaName(wordUpperCaseName(modelName));	
+//		packagePath = Project.makeFile(validJavaName(wordUpperCaseName(modelName)),TW_CODE).getAbsolutePath();
+		packagePath = Project.makeFile(CODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 	}
 	
 	private final String generateRecordCode(TreeGraphDataNode spec) {

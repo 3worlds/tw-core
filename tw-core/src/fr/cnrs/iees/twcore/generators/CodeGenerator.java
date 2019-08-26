@@ -48,13 +48,13 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import au.edu.anu.twcore.devenv.UserProjectLink;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -111,10 +111,10 @@ public class CodeGenerator {
 				N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
 			// I think this should be:
-//			File ecologyFiles = Project.makeFile(ProjectPaths.CODE,wordUpperCaseName(ecology.id()));
+			File ecologyFiles = Project.makeFile(ProjectPaths.CODE,wordUpperCaseName(ecology.id()));
 			// create directory for code generation
-			File ecologyFiles = new File(
-					Project.getProjectDirectory() + File.separator + wordUpperCaseName(ecology.id()));
+//			File ecologyFiles = new File(
+//					Project.getProjectDirectory() + File.separator + wordUpperCaseName(ecology.id()));
 			try {
 				deleteFileTree(ecologyFiles);
 			} catch (IOException e) {

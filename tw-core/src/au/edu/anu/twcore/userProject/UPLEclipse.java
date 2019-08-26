@@ -27,7 +27,7 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.devenv;
+package au.edu.anu.twcore.userProject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,7 +45,7 @@ import au.edu.anu.twcore.project.TwPaths;
  *
  * @date 23 Aug 2019
  */
-public class UPLEclipse implements IUserDevelopmentEnvironment{
+public class UPLEclipse implements IUserProjectLink{
 	File srcDir;
 	File classDir;
 	File projectDir;

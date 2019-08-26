@@ -27,7 +27,7 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.devenv;
+package au.edu.anu.twcore.userProject;
 
 /**
  * @author Ian Davies

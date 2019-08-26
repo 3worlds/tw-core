@@ -44,8 +44,11 @@ public interface TwPaths {
 	public static String TW_DEP_JAR /*     */ = "tw-dep.jar";
 	public static String TW_PREF /*        */ = "MM.xml";
 	public static String TW_LAYOUT /*      */ = "Layout";
+	
+	/** Jacques: we need to talk as I think these are redundant cf ProjectPaths */
 	/** the directory for all generated code */
-	public static final String TW_CODE 			= "code";
+	
+	//public static final String TW_CODE 			= "code";
 	/** the directory for all user-specific data (eg csv files and others stuff) */
-	public static final String TW_DATA 			= "data";
+	//public static final String TW_DATA 			= "data";
 }

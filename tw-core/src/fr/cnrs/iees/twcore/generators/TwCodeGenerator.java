@@ -91,6 +91,6 @@ public abstract class TwCodeGenerator
 
 	protected File getModelDataDir(String modelRoot) {
 		//File result = Project.makeFile(makeModelJavaName(modelRoot),TW_DATA);
-		return Project.makeFile(ProjectPaths.CODE,makeModelJavaName(modelRoot));
+		return Project.makeFile(ProjectPaths.RES,makeModelJavaName(modelRoot));
 	}
 }

@@ -42,8 +42,20 @@ public interface ProjectPaths {
 	public static String PROJECT_DIR_PREFIX /*  */ = "project";
 	public static String PROJECT_LOCAL /*       */ = "local";
 	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
+	/*
+	 * generated code for a project regardless of the existence of a linked user
+	 * project. The sub dir is organised as system.id() which themselves don't need
+	 * further subdirs (i.e /code
+	 */
 	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
+	/*
+	 * User linked project jar files. It will be empty if there is no linked project
+	 */
 	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
+	/*
+	 * data files for a project regardless of the existence of a linked user
+	 * project. I don't think it has any subDirs
+	 */
 	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
 	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
 }
