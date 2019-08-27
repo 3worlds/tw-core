@@ -74,7 +74,9 @@ public class FunctionNode
 		String className = (String) properties().getPropertyValue(P_FUNCTIONCLASS.key());
 		if (className!=null) {
 			// instantiate the user code based function
-			ClassLoader c = OmugiClassLoader.getClassLoader();
+			// we need this here: Class.forName("nameofclass", true, new URLClassLoader(urlarrayofextrajarsordirs));
+			//https://community.oracle.com/thread/4011800
+			ClassLoader c = OmugiClassLoader.getClassLoader(true);
 			Class<? extends TwFunction> functionClass;
 			try {
 				functionClass = (Class<? extends TwFunction>) Class.forName(className,false,c);
