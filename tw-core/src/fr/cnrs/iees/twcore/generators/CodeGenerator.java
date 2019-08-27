@@ -255,8 +255,9 @@ public class CodeGenerator {
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.generateCode();
+		String genClassName=generator.generatedClassName();
 		((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(),
-				generator.generatedClassName());
+				genClassName);
 	}
 
 	private void generateInitialiserCode(TreeGraphDataNode initialiser, String modelName) {

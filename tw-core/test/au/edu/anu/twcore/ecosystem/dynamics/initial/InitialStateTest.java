@@ -8,6 +8,7 @@ import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.session.SimulationSession;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.GraphImporter;
 
@@ -21,7 +22,7 @@ class InitialStateTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	final void testInitialise() {
-		TreeGraph<TreeGraphNode,ALEdge> specs = (TreeGraph<TreeGraphNode,ALEdge>) 
+		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
 			GraphImporter.importGraph("initialState.utg",this.getClass());
 		SimulationSession s = new SimulationSession(specs);
 		Ecosystem eco = (Ecosystem) specs.findNode("my_ecosystem");
@@ -33,7 +34,7 @@ class InitialStateTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	final void testInitialise2() {
-		TreeGraph<TreeGraphNode,ALEdge> specs = (TreeGraph<TreeGraphNode,ALEdge>) 
+		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
 			GraphImporter.importGraph("initialState2.utg",this.getClass());
 		SimulationSession s = new SimulationSession(specs);
 		Ecosystem eco = (Ecosystem) specs.findNode("my_ecosystem");

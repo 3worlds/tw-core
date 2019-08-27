@@ -9,6 +9,7 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.session.SimulationSession;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.GraphImporter;
 
@@ -19,12 +20,12 @@ import fr.cnrs.iees.graph.io.GraphImporter;
  */
 class StoppingConditionNodeTest {
 	
-	private TreeGraph<TreeGraphNode,ALEdge> specs = null;
+	private TreeGraph<TreeGraphDataNode,ALEdge> specs = null;
 	
 	@BeforeEach
 	@SuppressWarnings("unchecked")
 	private void init() {
-		specs = (TreeGraph<TreeGraphNode,ALEdge>) 
+		specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
 				GraphImporter.importGraph("stoppingCondition.utg",this.getClass());
 //		System.out.println(specs.toDetailedString());
 	}

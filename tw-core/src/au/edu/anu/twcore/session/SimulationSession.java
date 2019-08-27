@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.ens.biologie.generic.Initialisable;
 
 /**
@@ -49,14 +49,14 @@ import fr.ens.biologie.generic.Initialisable;
  */
 public class SimulationSession {
 
-	private TreeGraph<TreeGraphNode,ALEdge> configuration = null;
+	private TreeGraph<TreeGraphDataNode,ALEdge> configuration = null;
 	
 	/**
 	 * In this constructor, we assume the graph has been checked and is valid.
 	 * 
 	 * @param config the (valid) configuration graph
 	 */
-	public SimulationSession(TreeGraph<TreeGraphNode,ALEdge> config) {
+	public SimulationSession(TreeGraph<TreeGraphDataNode,ALEdge> config) {
 		super();
 		configuration = config;
 		initialise();
@@ -65,7 +65,7 @@ public class SimulationSession {
 	
 	private void initialise() {
 		Map<Integer,List<Initialisable>> inits = new TreeMap<>();
-		for (TreeGraphNode tgn:configuration.nodes()) {
+		for (TreeGraphDataNode tgn:configuration.nodes()) {
 			if (tgn instanceof Initialisable) {
 				Initialisable i = (Initialisable) tgn;
 				int index = i.initRank();
@@ -77,7 +77,14 @@ public class SimulationSession {
 		// this looping is done in initRank order because it's a TreeMap
 		for (List<Initialisable> l:inits.values()) 
 			for (Initialisable i:l)
-				i.initialise();
+				try {
+					i.initialise();
+				} catch (Exception e) {
+					// I've made Initialise Throwable
+					// TODO Auto-generated catch block hum... what to do here. It is caught by the initialiser in InitialiseMessage
+					// this seems a bit crazy. Its replicating the work done by Initiaiser
+					//e.printStackTrace();
+				}
 	}
 	
 	// TODO: implement the state machine stuff

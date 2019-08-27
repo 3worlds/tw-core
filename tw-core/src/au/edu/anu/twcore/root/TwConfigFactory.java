@@ -35,8 +35,6 @@ import au.edu.anu.rscs.aot.graph.property.Property;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.ALGraph;
-import fr.cnrs.iees.graph.impl.ALNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
