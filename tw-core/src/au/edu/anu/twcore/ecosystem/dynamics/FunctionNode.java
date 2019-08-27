@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
@@ -73,7 +74,7 @@ public class FunctionNode
 		String className = (String) properties().getPropertyValue(P_FUNCTIONCLASS.key());
 		if (className!=null) {
 			// instantiate the user code based function
-			ClassLoader c = Thread.currentThread().getContextClassLoader();
+			ClassLoader c = OmugiClassLoader.getClassLoader();
 			Class<? extends TwFunction> functionClass;
 			try {
 				functionClass = (Class<? extends TwFunction>) Class.forName(className,false,c);

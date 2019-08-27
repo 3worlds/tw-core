@@ -49,6 +49,7 @@ import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
+import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.TreeNode;
@@ -216,7 +217,7 @@ public interface Categorized<T extends Identity> {
 	@SuppressWarnings("unchecked")
 	public default TwData loadDataClass(String className) {
 		TwData newData = null;
-		ClassLoader c = Thread.currentThread().getContextClassLoader();
+		ClassLoader c = OmugiClassLoader.getClassLoader();
 		Class<? extends TwData> dataClass;
 		try {
 			dataClass = (Class<? extends TwData>) Class.forName(className, false, c);

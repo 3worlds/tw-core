@@ -90,7 +90,7 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		return outf;
 	}
 	
-	private static void deleteFileTree(File dir) throws IOException {
+	public static void deleteFileTree(File dir) throws IOException {
 		// TODO: NOT WORKING FROM SOME REASON
 		Path root = dir.toPath();
 		Files.walk(root)

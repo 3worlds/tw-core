@@ -45,6 +45,8 @@ import org.apache.ivy.core.retrieve.RetrieveOptions;
 
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
+import au.edu.anu.twcore.setup.TwSetup;
+
 import static au.edu.anu.rscs.aot.util.FileUtilities.*;
 
 //import au.edu.anu.rscs.aot.logging.Logger;
@@ -82,7 +84,7 @@ public class DependencySolver implements ProjectPaths, TwPaths {
 		File dir = new File(destPath);
 		if (dir.exists())
 			try {
-				deleteTree(dir);
+				TwSetup.deleteFileTree(dir);//???
 			} catch (IOException e) {
 				e.printStackTrace();
 			}		
