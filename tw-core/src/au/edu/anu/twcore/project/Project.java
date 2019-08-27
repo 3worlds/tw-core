@@ -233,7 +233,7 @@ public class Project implements ProjectPaths, TwPaths {
 	 *         also used as the name of the 3Worlds configuration graph root
 	 * @throws TwcoreException if Project is closed
 	 */
-	public static String getProjectName() {
+	public static String getProjectUserName() {
 		if (!isOpen())
 			throw new TwcoreException("Project is closed.");
 		String[] items = parseProjectName(projectDirectory);
@@ -343,7 +343,7 @@ public class Project implements ProjectPaths, TwPaths {
 	}
 
 	public static File makeConfigurationFile() {
-		String name = Project.getProjectName();
+		String name = Project.getProjectUserName();
 		// Its a string of several extensions
 		return Project.makeFile(name + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
 	}

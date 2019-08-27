@@ -44,13 +44,13 @@ class ProjectTest {
 		Project.create("getText user string");
 		System.out.println(Project.makeConfigurationFile());
 		System.out.println(Project.makeLayoutFile());
-		assertTrue(Project.getProjectName().equals("gettextUserString"));
+		assertTrue(Project.getProjectUserName().equals("gettextUserString"));
 		Project.close();
 		Project.create("a*()*(^^:b\t\n");
-		assertTrue(Project.getProjectName().equals("aB"));
+		assertTrue(Project.getProjectUserName().equals("aB"));
 		Project.close();
 		try {
-			Project.getProjectName();
+			Project.getProjectUserName();
 			fail("Closed but getProjectName() succeeded");
 		} catch (TwcoreException e) {
 			assertTrue(true);
@@ -89,7 +89,7 @@ class ProjectTest {
 			}
 		}
 		Project.create(" The cat sat on the mat");
-		assertTrue(Project.getProjectName().equals("theCatSatOnTheMat"));
+		assertTrue(Project.getProjectUserName().equals("theCatSatOnTheMat"));
 		Project.close();
 		// Better if tested separately with annotation "expected = TwCpreException
 		try {
