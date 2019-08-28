@@ -217,7 +217,7 @@ public interface Categorized<T extends Identity> {
 	@SuppressWarnings("unchecked")
 	public default TwData loadDataClass(String className) {
 		TwData newData = null;
-		ClassLoader c = OmugiClassLoader.getClassLoader(true);
+		ClassLoader c = OmugiClassLoader.getClassLoader();
 		Class<? extends TwData> dataClass;
 		try {
 			dataClass = (Class<? extends TwData>) Class.forName(className, false, c);
