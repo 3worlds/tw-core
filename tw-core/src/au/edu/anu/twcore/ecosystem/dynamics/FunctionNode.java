@@ -76,7 +76,7 @@ public class FunctionNode
 			// instantiate the user code based function
 			// we need a URL classLoader here: Class.forName("nameofclass", true, new URLClassLoader(urlarrayofextrajarsordirs));
 			//https://community.oracle.com/thread/4011800
-			ClassLoader classLoader = OmugiClassLoader.getClassLoader();
+			ClassLoader classLoader = OmugiClassLoader.getURLClassLoader();
 			Class<? extends TwFunction> functionClass;
 			try {
 				functionClass = (Class<? extends TwFunction>) Class.forName(className,false,classLoader);

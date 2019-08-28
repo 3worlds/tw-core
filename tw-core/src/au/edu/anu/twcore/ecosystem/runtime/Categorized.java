@@ -218,7 +218,7 @@ public interface Categorized<T extends Identity> {
 	public default TwData loadDataClass(String className) {
 		TwData newData = null;
 		// we need a URL classLoader here
-		ClassLoader classLoader = OmugiClassLoader.getClassLoader();
+		ClassLoader classLoader = OmugiClassLoader.getURLClassLoader();
 		Class<? extends TwData> dataClass;
 		try {
 			dataClass = (Class<? extends TwData>) Class.forName(className, false, classLoader);
