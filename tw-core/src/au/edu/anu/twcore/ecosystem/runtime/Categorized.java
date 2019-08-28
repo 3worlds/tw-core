@@ -217,10 +217,11 @@ public interface Categorized<T extends Identity> {
 	@SuppressWarnings("unchecked")
 	public default TwData loadDataClass(String className) {
 		TwData newData = null;
-		ClassLoader c = OmugiClassLoader.getClassLoader();
+		// we need a URL classLoader here
+		ClassLoader classLoader = OmugiClassLoader.getClassLoader();
 		Class<? extends TwData> dataClass;
 		try {
-			dataClass = (Class<? extends TwData>) Class.forName(className, false, c);
+			dataClass = (Class<? extends TwData>) Class.forName(className, false, classLoader);
 			Constructor<? extends TwData> dataConstructor = dataClass.getDeclaredConstructor();
 			newData = dataConstructor.newInstance();
 			newData.clear();
