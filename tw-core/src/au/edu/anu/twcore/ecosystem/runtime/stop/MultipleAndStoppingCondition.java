@@ -2,7 +2,7 @@ package au.edu.anu.twcore.ecosystem.runtime.stop;
 
 import java.util.List;
 
-import au.edu.anu.twcore.ecosystem.dynamics.Simulator;
+import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 
 /**
@@ -12,7 +12,7 @@ import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
  */
 public class MultipleAndStoppingCondition extends MultipleStoppingCondition {
 
-	public MultipleAndStoppingCondition(Simulator sim, List<StoppingCondition> conds) {
+	public MultipleAndStoppingCondition(SimulatorNode sim, List<StoppingCondition> conds) {
 		super(sim, conds);
 	}
 

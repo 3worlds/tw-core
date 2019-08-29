@@ -103,9 +103,9 @@ public class StoppingConditionNode
 		return system;
 	}
 	
-	private Simulator getSimulator(StoppingConditionNode sc) {
-		if (sc.getParent() instanceof Simulator)
-			return (Simulator) sc.getParent();
+	private SimulatorNode getSimulator(StoppingConditionNode sc) {
+		if (sc.getParent() instanceof SimulatorNode)
+			return (SimulatorNode) sc.getParent();
 		else
 			return getSimulator((StoppingConditionNode) sc.getParent());
 	}
@@ -113,7 +113,7 @@ public class StoppingConditionNode
 	@Override
 	public void initialise() {
 		super.initialise();
-		Simulator sim = getSimulator(this);
+		SimulatorNode sim = getSimulator(this);
 		String subClass = (String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key());
 		if (SimpleStoppingCondition.class.getName().equals(subClass))
 			stopcd = new SimpleStoppingCondition(sim,

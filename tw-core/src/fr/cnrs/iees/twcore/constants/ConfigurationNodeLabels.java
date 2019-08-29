@@ -56,7 +56,7 @@ public enum ConfigurationNodeLabels {
 			N_RECORD 			("record",				Record.class,				0),
 			N_FIELD 			("field",				Field.class,				0),
 		N_SYSTEM 				("system",				Ecosystem.class,			0),
-			N_DYNAMICS 			("dynamics",			Simulator.class,			0), 
+			N_DYNAMICS 			("dynamics",			SimulatorNode.class,			0), 
 				N_TIMELINE 		("timeLine",			TimeLine.class,				0), 
 				N_TIMEMODEL		("timeModel",			TimeModel.class,			10), // after TimeLine
 				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			20), // after TimeModel

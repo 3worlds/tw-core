@@ -46,13 +46,13 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class Simulator extends InitialisableNode {
+public class SimulatorNode extends InitialisableNode {
 
-	public Simulator(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public SimulatorNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 	
-	public Simulator(Identity id, GraphFactory gfactory) {
+	public SimulatorNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 

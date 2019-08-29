@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.stop;
 
-import au.edu.anu.twcore.ecosystem.dynamics.Simulator;
+import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 
@@ -15,7 +15,7 @@ public abstract class PropertyStoppingCondition extends AbstractStoppingConditio
 	protected String pname = null;
 	private ReadOnlyPropertyList plist = null;
 	
-	public PropertyStoppingCondition(Simulator sim, 
+	public PropertyStoppingCondition(SimulatorNode sim, 
 			String stopVariable, 
 			ReadOnlyPropertyList system) {
 		super(sim);

@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.stop;
 
-import au.edu.anu.twcore.ecosystem.dynamics.Simulator;
+import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 
 /**
@@ -11,9 +11,9 @@ import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 
 public abstract class AbstractStoppingCondition implements StoppingCondition {
 
-	protected Simulator sim = null;
+	protected SimulatorNode sim = null;
 	
-	public AbstractStoppingCondition(Simulator sim) {
+	public AbstractStoppingCondition(SimulatorNode sim) {
 		super();
 		this.sim = sim;
 	}

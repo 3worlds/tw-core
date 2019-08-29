@@ -32,19 +32,25 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Singleton;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.experiment.runtime.ExperimentController;
 
 /**
  * Class matching the "experiment" node label in the 3Worlds configuration tree.
  * Has no properties.
+ * Returns a controller to communicate with simulators
  * 
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class Experiment extends InitialisableNode {
+public class Experiment extends InitialisableNode implements Singleton<ExperimentController> {
 
+	private ExperimentController controller = null;
+	
 	// default constructor
 	public Experiment(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -65,11 +71,13 @@ public class Experiment extends InitialisableNode {
 		return N_EXPERIMENT.initRank();
 	}
 	
-	/**
-	 * deploys an experiment and runs it
-	 */
 	public void deploy() {
 		
+	}
+
+	@Override
+	public ExperimentController getInstance() {
+		return controller;
 	}
 
 }

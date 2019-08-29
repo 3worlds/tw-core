@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.stop;
 
-import au.edu.anu.twcore.ecosystem.dynamics.Simulator;
+import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 
 /**
  * Old stuff refurbished in 2017.
@@ -13,7 +13,7 @@ public class SimpleStoppingCondition extends AbstractStoppingCondition {
 	
 	private long endTime = Long.MAX_VALUE;
 	
-	public SimpleStoppingCondition(Simulator sim, long endTime) {
+	public SimpleStoppingCondition(SimulatorNode sim, long endTime) {
 		super(sim);
 		this.endTime = endTime;
 	}
