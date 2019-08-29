@@ -64,5 +64,12 @@ public class Experiment extends InitialisableNode {
 	public int initRank() {
 		return N_EXPERIMENT.initRank();
 	}
+	
+	/**
+	 * deploys an experiment and runs it
+	 */
+	public void deploy() {
+		
+	}
 
 }

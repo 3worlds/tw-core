@@ -85,6 +85,7 @@ public class VersionSettings {
 			{"fr.ens.biologie", "generics", "[0.1.4,)", null},
 			{"au.edu.anu.rscs.aot", "omugi", "[0.2.4,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.1.2,)", null},
+			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.0.1,)", null},
 			
 			{"org.apache.commons", "commons-text", "1.+", null},
 			{"org.apache.ivy", "ivy", "2.2.0", null},
