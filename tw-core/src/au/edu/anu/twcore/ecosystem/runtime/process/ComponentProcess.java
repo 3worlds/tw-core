@@ -66,7 +66,6 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 		categoryId = buildCategorySignature();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public final void execute(double t, double dt) {
 //		// get current systems to work with

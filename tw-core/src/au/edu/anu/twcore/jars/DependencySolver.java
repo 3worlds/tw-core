@@ -47,8 +47,6 @@ import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.setup.TwSetup;
 
-import static au.edu.anu.rscs.aot.util.FileUtilities.*;
-
 //import au.edu.anu.rscs.aot.logging.Logger;
 //import au.edu.anu.rscs.aot.logging.LoggerFactory;
 //import fr.ens.biologie.threeWorlds.resources.core.constants.ProjectPaths;

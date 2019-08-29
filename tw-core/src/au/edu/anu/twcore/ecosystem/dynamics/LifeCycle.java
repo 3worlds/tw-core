@@ -101,8 +101,12 @@ public class LifeCycle
 			edgeListEndNodes());
 		categories.addAll(getSuperCategories(nl));
 		// check if user-defined data classes were generated
-		if (properties().hasProperty(P_PARAMETERCLASS.key()))
-			parameterTemplate = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
+		if (properties().hasProperty(P_PARAMETERCLASS.key())) {
+			String s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
+			if (s!=null)
+				if (!s.trim().isEmpty())
+					parameterTemplate = loadDataClass(s);
+		}
 		sealed = true; // important - next statement access this class methods
 		categoryId = buildCategorySignature();
 	}

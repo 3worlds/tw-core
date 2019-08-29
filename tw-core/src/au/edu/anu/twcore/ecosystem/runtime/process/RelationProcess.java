@@ -38,7 +38,6 @@ import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import fr.cnrs.iees.graph.Edge;
 
 /**
  * A TwProcess that loops on established relations and executes methods on them or on their
@@ -46,7 +45,7 @@ import fr.cnrs.iees.graph.Edge;
  * @author gignoux - 10 mars 2017
  *
  */
-public class RelationProcess extends AbstractProcess implements Related {
+public class RelationProcess extends AbstractProcess implements Related<SystemComponent> {
 	
 	private RelationType myRelation;
     private List<ChangeOtherCategoryDecisionFunction> COCfunctions = 
@@ -132,12 +131,12 @@ public class RelationProcess extends AbstractProcess implements Related {
 	}
 
 	@Override
-	public Categorized from() {
+	public Categorized<SystemComponent> from() {
 		return myRelation.from();
 	}
 
 	@Override
-	public Categorized to() {
+	public Categorized<SystemComponent> to() {
 		return myRelation.to();
 	}
 

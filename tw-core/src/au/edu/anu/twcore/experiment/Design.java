@@ -81,6 +81,7 @@ public class Design extends InitialisableNode implements Resettable {
 		return fileType.getFile().getAbsolutePath();
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void reset() {
 		if (properties().hasProperty(P_DESIGN_TYPE.key()))

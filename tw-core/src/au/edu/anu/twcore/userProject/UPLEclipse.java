@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Set;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
-import au.edu.anu.twcore.project.TwPaths;
 
 /**
  * @author Ian Davies

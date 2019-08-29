@@ -29,7 +29,6 @@
 package rendezvous2;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 
 // producer on controlQueue
 public class UIController implements Runnable {

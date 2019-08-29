@@ -30,6 +30,7 @@ package rendezvous3;
 
 public class XMessage {
 	private XMessageHeader messageHeader;
+	@SuppressWarnings("unused")
 	private Object payload;
 
 	public XMessage(int type,Object payload) {

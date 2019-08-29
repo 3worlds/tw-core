@@ -113,12 +113,25 @@ public class SystemFactory
 		categories.addAll(getSuperCategories(nl));
 		permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
 		// These ARE optional - inserted by codeGenerator!
-		if (properties().hasProperty(P_PARAMETERCLASS.key()))
-			parameterTemplate = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
-		if (properties().hasProperty(P_DRIVERCLASS.key())) 
-			driverTemplate = loadDataClass((String) properties().getPropertyValue(P_DRIVERCLASS.key()));
-		if (properties().hasProperty(P_DECORATORCLASS.key())) 
-			decoratorTemplate = loadDataClass((String) properties().getPropertyValue(P_DECORATORCLASS.key()));
+		String s = null;
+		if (properties().hasProperty(P_PARAMETERCLASS.key())) {
+			s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
+			if (s!=null)
+				if (!s.trim().isEmpty())
+					parameterTemplate = loadDataClass(s);
+		}
+		if (properties().hasProperty(P_DRIVERCLASS.key())) {
+			s = (String) properties().getPropertyValue(P_DRIVERCLASS.key());
+			if (s!=null)
+				if (!s.trim().isEmpty())
+					driverTemplate = loadDataClass(s);
+		}
+		if (properties().hasProperty(P_DECORATORCLASS.key())) {
+			s = (String) properties().getPropertyValue(P_DECORATORCLASS.key());
+			if (s!=null)
+				if (!s.trim().isEmpty())
+					decoratorTemplate = loadDataClass(s);
+		}
 		if (driverTemplate != null)
 			for (String key : driverTemplate.getKeysAsSet())
 				propertyMap.put(key, DRIVERS);

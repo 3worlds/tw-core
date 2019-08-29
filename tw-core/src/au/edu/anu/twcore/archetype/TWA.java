@@ -40,7 +40,6 @@ import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.io.GraphImporter;
-import fr.cnrs.iees.identity.impl.PairIdentity;
 
 /**
  * Global singleton instance of the 3Warchetype: thread safe and lazy load

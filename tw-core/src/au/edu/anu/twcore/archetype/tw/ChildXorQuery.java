@@ -66,10 +66,14 @@ public class ChildXorQuery extends Query implements TwArchetypeConstants{
 		TreeNode localItem = (TreeNode) input;
 		List<TreeNode> nl1 = (List<TreeNode>) get(localItem, 
 			children(),
-			selectZeroOrMany(hasTheLabel(twaNodeLabel1)));
+			selectZeroOrMany(hasTheLabel(nodeLabel1)));
+// this is wrong - at least for the query ???		
+//			selectZeroOrMany(hasTheLabel(twaNodeLabel1)));
 		List<TreeNode> nl2 = (List<TreeNode>) get(localItem,
 			children(),			
-			selectZeroOrMany(hasTheLabel(twaNodeLabel2)));
+			selectZeroOrMany(hasTheLabel(nodeLabel2)));
+		// this is wrong - at least for the query ???		
+//			selectZeroOrMany(hasTheLabel(twaNodeLabel2)));
 		satisfied = (nl1.size()>0)^(nl2.size()>0);
 		return this;
 	}

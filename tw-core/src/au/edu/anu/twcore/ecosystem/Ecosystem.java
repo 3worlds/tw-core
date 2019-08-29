@@ -99,8 +99,12 @@ public class Ecosystem
 		else
 			categoryId = rootCategoryId;
 		TwData parameters = null;
-		if (properties().hasProperty(P_PARAMETERCLASS.key()))
-			parameters = loadDataClass((String) properties().getPropertyValue(P_PARAMETERCLASS.key()));
+		if (properties().hasProperty(P_PARAMETERCLASS.key())) {
+			String s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
+			if (s!=null)
+				if (!s.trim().isEmpty())
+					parameters = loadDataClass(s);
+		}
 		// TODO: automatic variables as variableTemplate
 		community = new SystemContainer(this,"ecosystem",null,parameters,null);
 	}

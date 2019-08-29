@@ -114,7 +114,7 @@ public class RelationType
 	public SystemRelation newInstance() {
 		// TODO finish implementation
 		SystemRelation result = null;
-		result.setRelated(this); 
+//		result.setRelated(this); 
 		return result;
 	}
 
