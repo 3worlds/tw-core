@@ -79,7 +79,7 @@ public class FunctionNode
 			ClassLoader classLoader = OmugiClassLoader.getURLClassLoader();
 			Class<? extends TwFunction> functionClass;
 			try {
-				functionClass = (Class<? extends TwFunction>) Class.forName(className,false,classLoader);
+				functionClass = (Class<? extends TwFunction>) Class.forName(className,true,classLoader);
 				Constructor<? extends TwFunction> nodeConstructor = functionClass.getConstructor();
 				function = nodeConstructor.newInstance();
 			} catch (Exception e) {
