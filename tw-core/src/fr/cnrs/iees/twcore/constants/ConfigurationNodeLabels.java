@@ -56,7 +56,7 @@ public enum ConfigurationNodeLabels {
 			N_RECORD 			("record",				Record.class,				0),
 			N_FIELD 			("field",				Field.class,				0),
 		N_SYSTEM 				("system",				Ecosystem.class,			0),
-			N_DYNAMICS 			("dynamics",			SimulatorNode.class,			0), 
+			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		0), 
 				N_TIMELINE 		("timeLine",			TimeLine.class,				0), 
 				N_TIMEMODEL		("timeModel",			TimeModel.class,			10), // after TimeLine
 				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			20), // after TimeModel
@@ -81,7 +81,7 @@ public enum ConfigurationNodeLabels {
 				// I am not sure this one is needed - for initialisation maybe ?
 //				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
 				// IDD: As i understood it, component was "species" and realisedComponent was "Stage"
-		N_EXPERIMENT 			("experiment",			Experiment.class,			0),
+		N_EXPERIMENT 			("experiment",			Experiment.class,			10), // after Design and Ecosystem and SimulatorNode
 			N_DESIGN 			("design",				Design.class,				0),
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
 			N_TIMEPERIOD 		("timePeriod",			TimePeriod.class,			0),

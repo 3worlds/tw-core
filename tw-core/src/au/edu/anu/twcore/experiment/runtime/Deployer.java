@@ -1,6 +1,10 @@
 package au.edu.anu.twcore.experiment.runtime;
 
-import fr.cnrs.iees.rvgrid.statemachine.State;
+import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
+import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorStates.*;
+
+import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
+import au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorProcedures;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
 import fr.cnrs.iees.rvgrid.statemachine.Transition;
 
@@ -12,16 +16,25 @@ import fr.cnrs.iees.rvgrid.statemachine.Transition;
  * <li>transmits commands to Simulator(s)</li>
  * <li>gets status from simulator(s)</li>
  * </ul>
+ * understands the same commands as the simulator
  * 
  * @author Jacques Gignoux - 29 août 2019
  *
  */
-public class Deployer extends StateMachineEngine<ExperimentController> {
+public abstract class Deployer 
+		extends StateMachineEngine<ExperimentController>
+		implements SimulatorProcedures	{
 
-	public Deployer(Iterable<Transition> initialPseudoStates, Iterable<State> states) {
-		super(initialPseudoStates, states);
-		// TODO Auto-generated constructor stub
+	public Deployer() {
+		super(new Transition(waiting.state(),initialise.event()),stateList());
+	}
+
+	public void attachSimulator(Simulator sim) {
+	}
+
+	public void detachSimulator(Simulator sim) {
 	}
 
 
+	
 }

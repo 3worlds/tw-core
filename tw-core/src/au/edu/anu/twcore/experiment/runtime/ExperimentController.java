@@ -1,7 +1,10 @@
 package au.edu.anu.twcore.experiment.runtime;
 
-import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
-import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
+import static java.util.logging.Level.*;
+
+import java.util.logging.Logger;
+
+import fr.cnrs.iees.rvgrid.statemachine.State;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
 
 /**
@@ -12,9 +15,13 @@ import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
  */
 public class ExperimentController extends StateMachineObserver {
 
-	public ExperimentController(StateMachineEngine<? extends GridNode> observed) {
+	private static Logger log = Logger.getLogger(ExperimentController.class.getName());
+	// set level to WARNING to stop getting debug information
+	static { log.setLevel(INFO); } // debugging info
+
+	public ExperimentController(Deployer observed) {
 		super(observed);
-		// TODO Auto-generated constructor stub
+		observed.addObserver(this);
 	}
 	
 	/**
@@ -23,5 +30,11 @@ public class ExperimentController extends StateMachineObserver {
 	public void deploy() {
 		
 	}
+	
+	@Override
+	public void onStatusMessage(State newState) {
+		log.info("Oh! simulators now in state "+newState.getName());
+	}
+
 
 }

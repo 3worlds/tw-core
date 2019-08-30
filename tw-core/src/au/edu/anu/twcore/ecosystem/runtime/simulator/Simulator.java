@@ -1,14 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
-import au.edu.anu.twcore.experiment.runtime.Deployer;
-import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
-import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
-import fr.cnrs.iees.rvgrid.statemachine.Procedure;
-import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
-import fr.cnrs.iees.rvgrid.statemachine.Transition;
-
-import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorStates.*;
-import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
+import java.util.logging.Logger;
 
 /**
  * The class which runs a single simulation on a single parameter set
@@ -16,25 +8,32 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  * @author Jacques Gignoux - 29 août 2019
  *
  */
-public class Simulator extends StateMachineEngine<Deployer> {
-	
-	private static class StepProcedure extends Procedure {
+public class Simulator {
 
-		@Override
-		public void run(GridNode node, RVMessage message) {
-			// TODO Auto-generated method stub
-			super.run(node, message);
-		}
+	private static Logger log = Logger.getLogger(Simulator.class.getName());
+	
+	// constructors
+
+	public Simulator() {
+//		super(new Transition(waiting.state(),initialise.event()),stateList());
+		super();
+	}
+	
+	// methods
+	
+	// run one simulation step
+	public void step() {
 		
 	}
 	
-	static Procedure stepProc() {
-		return new StepProcedure();
+	// resets a simulation at its initial state
+	public void resetSimulation() {
+//		sendSimTimeMessage(null, lastTime);
 	}
 
-	public Simulator(Deployer deployer) {
-		super(new Transition(waiting.state(),initialise.event()),stateList());
-		
+	// returns true if stopping condition is met
+	public boolean stop() {
+		return false;
 	}
-
+	
 }

@@ -32,9 +32,12 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Factory;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 
 /**
  * Class matching the "ecosystem/dynamics" node label in the 3Worlds configuration tree.
@@ -46,7 +49,7 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class SimulatorNode extends InitialisableNode {
+public class SimulatorNode extends InitialisableNode implements Factory<Simulator> {
 
 	public SimulatorNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -74,5 +77,12 @@ public class SimulatorNode extends InitialisableNode {
 		// TODO: implement this
 		return 0;
 	}
+
+	@Override
+	public Simulator newInstance() {
+		// TODO improve this
+		return new Simulator();
+	}
+	
 	
 }

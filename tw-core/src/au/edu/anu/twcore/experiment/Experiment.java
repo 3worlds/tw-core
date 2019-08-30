@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment;
 
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -35,9 +36,19 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Singleton;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
+import au.edu.anu.twcore.experiment.runtime.Deployer;
 import au.edu.anu.twcore.experiment.runtime.ExperimentController;
+import au.edu.anu.twcore.experiment.runtime.SimpleDeployer;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ExperimentDesignType.*;
+import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 
 /**
  * Class matching the "experiment" node label in the 3Worlds configuration tree.
@@ -50,6 +61,7 @@ import au.edu.anu.twcore.experiment.runtime.ExperimentController;
 public class Experiment extends InitialisableNode implements Singleton<ExperimentController> {
 
 	private ExperimentController controller = null;
+	private Deployer deployer = null;
 	
 	// default constructor
 	public Experiment(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -64,15 +76,30 @@ public class Experiment extends InitialisableNode implements Singleton<Experimen
 	@Override
 	public void initialise() {
 		super.initialise();
+		Design d = (Design) get(getChildren(),selectOne(hasTheLabel(N_DESIGN.label())));
+		// single run experiment
+		if (d.properties().hasProperty(P_DESIGN_TYPE.key()))
+			if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
+				deployer = new SimpleDeployer();
+				SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
+					selectOne(hasTheLabel(E_BASELINE.label())),
+					endNode(),
+					children(),
+					selectOne(hasTheLabel(N_DYNAMICS.label())));
+				deployer.attachSimulator(sim.newInstance());
+				controller = new ExperimentController(deployer);
+				// this puts the deployer in "waiting" state
+				controller.sendEvent(initialise.event());
+			}
+		// multiple simulators, local
+		// TODO
+		// multiple simulators, remote
+		// TODO
 	}
 
 	@Override
 	public int initRank() {
 		return N_EXPERIMENT.initRank();
-	}
-	
-	public void deploy() {
-		
 	}
 
 	@Override
