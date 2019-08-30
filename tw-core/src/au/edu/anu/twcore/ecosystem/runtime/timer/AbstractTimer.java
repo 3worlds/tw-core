@@ -49,6 +49,7 @@ public abstract class AbstractTimer implements Timer {
 	 *            the current time
 	 * @return the next time for this time model
 	 */
+	@Override
 	public final long nextTime(long time) {
 		long adt = dt(time);
 		if (adt != Long.MAX_VALUE)

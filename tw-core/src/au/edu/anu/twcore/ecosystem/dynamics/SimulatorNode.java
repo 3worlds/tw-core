@@ -81,7 +81,7 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 	@Override
 	public Simulator newInstance() {
 		// TODO improve this
-		return new Simulator();
+		return new Simulator(null,null,null);
 	}
 	
 	

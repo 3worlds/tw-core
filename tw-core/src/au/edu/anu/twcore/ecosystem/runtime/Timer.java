@@ -45,7 +45,7 @@ public interface Timer extends Resettable{
 	 *            the current time
 	 * @return the next time step This has to be overriden in descendant time models
 	 */
-	public abstract long dt(long time);
+	public long dt(long time);
 
 	/**
 	 * Advances time for this time model, ie replaces lastTime with newTime in
@@ -53,6 +53,8 @@ public interface Timer extends Resettable{
 	 *
 	 * @param newTime
 	 */
-	public abstract void advanceTime(long newTime);
+	public void advanceTime(long newTime);
+	
+	public long nextTime(long t);
 
 }

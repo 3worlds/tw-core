@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import fr.cnrs.iees.rvgrid.statemachine.State;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
+import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 
 /**
  * The class which communicates with the Deployers (sends commands, receives status)
@@ -25,15 +26,20 @@ public class ExperimentController extends StateMachineObserver {
 	}
 	
 	/**
-	 * deploys an experiment and runs it
+	 * deploys an experiment and runs it. This should be called to run simulators
+	 * Maybe this method is not needed (sendEvent can be called directly)
 	 */
 	public void deploy() {
-		
+		sendEvent(run.event());
 	}
 	
 	@Override
 	public void onStatusMessage(State newState) {
 		log.info("Oh! simulators now in state "+newState.getName());
+		// Ian, FYI: This method receives 'status' messages from
+		// the Deployer, with a msgType=9 and a payload=the current State of the deployer
+		// (argument of this method). Do whatever you need with this information
+		// NB we could pass the current time of the simulator into a payload here
 	}
 
 

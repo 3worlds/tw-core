@@ -2,6 +2,8 @@ package au.edu.anu.twcore.experiment.runtime;
 
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorThread;
+import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
+
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 
 /**
@@ -48,10 +50,22 @@ public class SimpleDeployer extends Deployer {
 		if (sim!=null)
 			if (sim.stop()) {
 				// switch to finished state ? how ?
-				sendMessage(finalise.event().getMessageType(), null);
+				// this only sends a status message
+//				sendMessage(finalise.event().getMessageType(), null);
+				// this sends a message to itself to switch to the finished state (will it work??)
+				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
+				callRendezvous(message);
 			}
-			else
+			else {
 				sim.step();
+				if (sim.isFinished()) {
+					RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
+					callRendezvous(message);
+				}
+				else
+					// send status message with current sim time
+					sendMessage(STATUS_MESSAGE,sim.currentTime());
+			}
 	}
 
 	@Override
@@ -59,7 +73,7 @@ public class SimpleDeployer extends Deployer {
 		if (runnable != null)
 			runnable.quit();
 		// send status message to listeners
-		// isnt this already done by the state machine ?
+		// isnt this already done by the state machine ? yes it is
 	}
 
 	@Override
