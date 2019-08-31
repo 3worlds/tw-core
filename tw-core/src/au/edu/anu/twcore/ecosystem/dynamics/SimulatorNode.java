@@ -36,7 +36,15 @@ import fr.ens.biologie.generic.Factory;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
+import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 
 /**
@@ -81,7 +89,17 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 	@Override
 	public Simulator newInstance() {
 		// TODO improve this
-		return new Simulator(null,null,null);
+		
+		// IDD temp code for today
+		// more than one sc not supported yet but arch says [0..*] (I've changed that to [1..*].
+		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),selectOneOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
+		
+		TimeLine  timeLine = (TimeLine) get(getChildren(),selectOne(hasTheLabel(N_TIMELINE.label())));
+		List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
+		List<Timer> timers= new ArrayList<>();
+		for (TimeModel tm:timeModels)
+			timers.add(tm.getInstance());
+		return new Simulator(scnodes.get(0).getInstance(),timeLine,timers);
 	}
 	
 	

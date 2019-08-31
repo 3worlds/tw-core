@@ -1,5 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -18,7 +19,7 @@ public class Simulator {
 
 	private static Logger log = Logger.getLogger(Simulator.class.getName());
 	
-	private List<Timer> timerList = null;
+	private List<Timer> timerList = null;//new ArrayList<>();
 	private long[] currentTimes;
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private long startTime = 0L;
@@ -36,7 +37,8 @@ public class Simulator {
 		super();
 		this.stoppingCondition = stoppingCondition;
 		this.refTimer = refTimer;
-		timerList.addAll(timers);
+		//this.timerList.addAll(timers);
+		this.timerList=timers;
 		
 	}
 	

@@ -46,6 +46,9 @@ import au.edu.anu.twcore.root.World;
  *
  */
 public enum ConfigurationNodeLabels {
+	// (***) implementers of the Singleton interface
+	// All nodes are 'ready' at anytime (i.e. order indifferent) except potentially those using sealable classes (***)
+	//
 	//========================================================================================
 	//							| label				| 	class					| initialisation rank
 	//----------------------------------------------------------------------------------------
@@ -55,18 +58,21 @@ public enum ConfigurationNodeLabels {
 			N_TABLE 			("table",				TableNode.class,			10), // after dimensioners
 			N_RECORD 			("record",				Record.class,				0),
 			N_FIELD 			("field",				Field.class,				0),
-		N_SYSTEM 				("system",				Ecosystem.class,			0),
-			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		0), 
-				N_TIMELINE 		("timeLine",			TimeLine.class,				0), 
-				N_TIMEMODEL		("timeModel",			TimeModel.class,			10), // after TimeLine
+		N_SYSTEM 				("system",				Ecosystem.class,			0),//***
+			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		2), // after StoppingCondition
+//			N_TIMELINE 		("timeLine",			TimeLine.class,				0), 
+//			N_TIMEMODEL		("timeModel",			TimeModel.class,			10), // after TimeLine
+			N_TIMELINE 		("timeLine",			TimeLine.class,				0), 
+			N_TIMEMODEL		("timeModel",			TimeModel.class,			1), // ***after TimeLine, sim
 				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			20), // after TimeModel
-				N_PROCESS 		("process",				ProcessNode.class,			30), // after TimeModel, Function & EventQueue
-				N_FUNCTION 		("function",			FunctionNode.class,			0),
+				N_PROCESS 		("process",				ProcessNode.class,			30), // *** after TimeModel, Function & EventQueue
+				N_FUNCTION 		("function",			FunctionNode.class,			0), // ***
 				N_DATATRACKER 	("dataTracker",			DataTracker.class,			0),
 				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			10), // after Ecosystem
 				N_RECRUIT 		("recruit",				Recruit.class,				0),
 				N_PRODUCE 		("produce",				Produce.class,				0),
-				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,10), // after Simulator
+//				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,10), // after Simulator
+				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,0), // ***before sim (i.e. SC sealed flag)
 				N_INITIALISER 	("initialiser",			Initialiser.class,			20), // after relation
 				N_INITIALSTATE 	("initialState",		InitialState.class,			10), // after Ecosystem
 				N_GROUP 		("group",				Group.class,				20), // after LifeCycle and SystemFactory
@@ -81,7 +87,7 @@ public enum ConfigurationNodeLabels {
 				// I am not sure this one is needed - for initialisation maybe ?
 //				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
 				// IDD: As i understood it, component was "species" and realisedComponent was "Stage"
-		N_EXPERIMENT 			("experiment",			Experiment.class,			10), // after Design and Ecosystem and SimulatorNode
+		N_EXPERIMENT 			("experiment",			Experiment.class,			10), // ***after Design and Ecosystem and SimulatorNode
 			N_DESIGN 			("design",				Design.class,				0),
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
 			N_TIMEPERIOD 		("timePeriod",			TimePeriod.class,			0),

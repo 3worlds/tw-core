@@ -167,7 +167,8 @@ hasNode produceSpec
 hasNode stoppingConditionSpec
 	isOfClass = String("stoppingCondition")
 	hasParent = StringTable(([1]"dynamics:"))
-	multiplicity = IntegerRange("0..*")
+	// I think we should enforce at least one rather than have a default one if omitted
+	multiplicity = IntegerRange("1..*")
 	hasProperty stoppingConditionSubclassPropertySpec
 		hasName = String("subclass")
 		type = String("String")
