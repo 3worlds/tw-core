@@ -278,11 +278,11 @@ public class Project implements ProjectPaths, TwPaths {
 	 * @return
 	 */
 	public static File makeProjectPreferencesFile() {
-		return makeFile(TwPaths.TW_PREF);
+		return makeFile("MM.xml");
 	}
 
 	public static File makeRuntimePreferencesFile() {
-		return makeFile(ProjectPaths.RUNTIME, TwPaths.TW_PREF);
+		return makeFile(ProjectPaths.RUNTIME, "MR.xml");
 	}
 
 	/**
@@ -354,7 +354,7 @@ public class Project implements ProjectPaths, TwPaths {
 	 * @return
 	 */
 	public static File makeLayoutFile() {
-		return makeFile(TwPaths.TW_LAYOUT + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
+		return makeFile("Layout" + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
 	}
 
 // used for menu creation
