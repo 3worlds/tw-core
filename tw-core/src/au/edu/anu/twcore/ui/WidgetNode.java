@@ -67,6 +67,8 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>{
 	@Override
 	public void initialise() {
 		super.initialise();
+		// not sure if this should be here. When does this method get called
+		// I need widget to be valid when ModelRunner shows it ui.
 		String subclass = (String)properties().getPropertyValue(P_WIDGET_SUBCLASS.key());
 		ClassLoader classLoader = OmugiClassLoader.getAppClassLoader();
 		Class<? extends Widget> widgetClass;
