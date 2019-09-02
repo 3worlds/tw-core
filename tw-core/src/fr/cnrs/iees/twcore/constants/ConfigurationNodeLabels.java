@@ -45,7 +45,7 @@ import au.edu.anu.twcore.root.World;
  * @author Jacques Gignoux - 23 mai 2019
  *
  */
-public enum ConfigurationNodeLabels {
+public enum ConfigurationNodeLabels implements InitialisationRanks {
 	// (***) implementers of the Singleton interface
 	// All nodes are 'ready' at anytime (i.e. order indifferent) except potentially those using sealable classes (***)
 	//
@@ -54,40 +54,37 @@ public enum ConfigurationNodeLabels {
 	//----------------------------------------------------------------------------------------
 	N_ROOT 						("3worlds",				World.class,				0),
 		N_DATADEFINITION 		("dataDefinition", 		DataDefinition.class,		0),
-			N_DIMENSIONER 		("dimensioner",			DimNode.class,				0),
-			N_TABLE 			("table",				TableNode.class,			10), // after dimensioners
+			N_DIMENSIONER 		("dimensioner",			DimNode.class,				DIMBASE),
+			N_TABLE 			("table",				TableNode.class,			DIMBASE+10),
 			N_RECORD 			("record",				Record.class,				0),
 			N_FIELD 			("field",				Field.class,				0),
-		N_SYSTEM 				("system",				Ecosystem.class,			0),//***
-			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		2), // after StoppingCondition
-//			N_TIMELINE 		("timeLine",			TimeLine.class,				0), 
-//			N_TIMEMODEL		("timeModel",			TimeModel.class,			10), // after TimeLine
-			N_TIMELINE 		("timeLine",			TimeLine.class,				0), 
-			N_TIMEMODEL		("timeModel",			TimeModel.class,			1), // ***after TimeLine, sim
-				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			20), // after TimeModel
-				N_PROCESS 		("process",				ProcessNode.class,			30), // *** after TimeModel, Function & EventQueue
+		N_SYSTEM 				("system",				Ecosystem.class,			ECOBASE), 
+			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		SIMBASE), 
+			N_TIMELINE 			("timeLine",			TimeLine.class,				TIMEBASE), 
+			N_TIMEMODEL			("timeModel",			TimeModel.class,			TIMEBASE+10),
+				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			TIMEBASE+20),
+				N_PROCESS 		("process",				ProcessNode.class,			TIMEBASE+30), // after TimeModel, Function & EventQueue
 				N_FUNCTION 		("function",			FunctionNode.class,			0), // ***
 				N_DATATRACKER 	("dataTracker",			DataTracker.class,			0),
-				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			10), // after Ecosystem
+				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			ECOBASE+10), 
 				N_RECRUIT 		("recruit",				Recruit.class,				0),
 				N_PRODUCE 		("produce",				Produce.class,				0),
-//				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,10), // after Simulator
-				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,0), // ***before sim (i.e. SC sealed flag)
-				N_INITIALISER 	("initialiser",			Initialiser.class,			20), // after relation
-				N_INITIALSTATE 	("initialState",		InitialState.class,			10), // after Ecosystem
-				N_GROUP 		("group",				Group.class,				20), // after LifeCycle and SystemFactory
-				N_INDIVIDUAL 	("individual",			Individual.class,			30), // after Group 
-				N_PARAMETERVALUES("parameterValues",	ParameterValues.class,		40), // after InitialState, Group and Individual
-				N_VARIABLEVALUES("variableValues",		VariableValues.class,		50), // after ParameterValues
+				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,SIMBASE+10), // after Simulator
+				N_INITIALISER 	("initialiser",			Initialiser.class,			CATEGORYBASE+20), // after relation
+				N_INITIALSTATE 	("initialState",		InitialState.class,			ECOBASE+10), // after Ecosystem
+				N_GROUP 		("group",				Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
+				N_INDIVIDUAL 	("individual",			Individual.class,			CATEGORYBASE+30), // after Group 
+				N_PARAMETERVALUES("parameterValues",	ParameterValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
+				N_VARIABLEVALUES("variableValues",		VariableValues.class,		CATEGORYBASE+50), // after ParameterValues
 			N_STRUCTURE 		("structure",			Structure.class,			0),
 				N_CATEGORYSET 	("categorySet",			CategorySet.class,			0),
-				N_CATEGORY 		("category",			Category.class,				0), 
-				N_COMPONENT 	("component",			SystemFactory.class,		10), // after category and categorySet
-				N_RELATIONTYPE 	("relationType",		RelationType.class,			10), // after category
+				N_CATEGORY 		("category",			Category.class,				CATEGORYBASE), 
+				N_COMPONENT 	("component",			SystemFactory.class,		CATEGORYBASE+10), // after category and categorySet
+				N_RELATIONTYPE 	("relationType",		RelationType.class,			CATEGORYBASE+10), // after category
 				// I am not sure this one is needed - for initialisation maybe ?
 //				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
 				// IDD: As i understood it, component was "species" and realisedComponent was "Stage"
-		N_EXPERIMENT 			("experiment",			Experiment.class,			10), // ***after Design and Ecosystem and SimulatorNode
+		N_EXPERIMENT 			("experiment",			Experiment.class,			SIMBASE+20),
 			N_DESIGN 			("design",				Design.class,				0),
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
 			N_TIMEPERIOD 		("timePeriod",			TimePeriod.class,			0),
@@ -96,16 +93,16 @@ public enum ConfigurationNodeLabels {
 			N_DATASINK 			("dataSink",			DataSink.class,				0),
 			//TODO
 //			N_DATAIO 			("dataIO",				Object.class,				0),
-		N_UI 					("userInterface",		TwUI.class,					0),
+		N_UI 					("userInterface",		TwUI.class,					UIBASE+10), // after widget
 			// TODO - Ian, I dont know how this fits with your work - I just defined these node classes
 		// to get the configuration load correctly, but feel free to merge them with your classes as needed
 		// NB you can also use the Singleton<T> interface if you want them to just be a node producing
 		// a class doing the real job
-			N_UITOP 			("top",					Top.class,					0),
-			N_UIBOTTOM 			("bottom",				Bottom.class,				0),
-			N_UITAB 			("tab",					Tab.class,					0),
-			N_UIGRID 			("grid",				Grid.class,					0),
-			N_UIWIDGET 			("widget",				WidgetNode.class,			0), 
+			N_UITOP 			("top",					Top.class,					UIBASE),
+			N_UIBOTTOM 			("bottom",				Bottom.class,				UIBASE),
+			N_UITAB 			("tab",					Tab.class,					UIBASE),
+			N_UIGRID 			("grid",				Grid.class,					UIBASE),
+			N_UIWIDGET 			("widget",				WidgetNode.class,			UIBASE), 
 	;
 	//========================================================================================
 	private final String label;

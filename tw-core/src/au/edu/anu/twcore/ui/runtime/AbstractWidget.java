@@ -27,7 +27,7 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.ecosystem.runtime.ui;
+package au.edu.anu.twcore.ui.runtime;
 
 /**
  * @author Ian Davies

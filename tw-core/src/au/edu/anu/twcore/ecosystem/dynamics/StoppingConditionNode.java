@@ -60,7 +60,7 @@ import au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition;
 
 /**
  * Class matching the "ecosystem/dynamics/stoppingCondition" node label in the 3Worlds configuration tree.
- * Has no properties. This <em>is</em> the simulator.
+ * Has no properties. 
  * 
  * @author Jacques Gignoux - 7 juin 2019
  *

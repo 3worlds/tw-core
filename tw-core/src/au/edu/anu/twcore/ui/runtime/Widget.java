@@ -27,7 +27,7 @@
  *                                                                        *
  **************************************************************************/
 
-package au.edu.anu.twcore.ecosystem.runtime.ui;
+package au.edu.anu.twcore.ui.runtime;
 
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.Resettable;

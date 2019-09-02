@@ -47,6 +47,7 @@ import fr.ens.biologie.generic.Initialisable;
  * @author Jacques Gignoux - 17 juin 2019
  *
  */
+@Deprecated // should be replaced by the Experiment class
 public class SimulationSession {
 
 	private TreeGraph<TreeGraphDataNode,ALEdge> configuration = null;

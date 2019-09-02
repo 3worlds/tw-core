@@ -92,7 +92,8 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 		
 		// IDD temp code for today
 		// more than one sc not supported yet but arch says [0..*] (I've changed that to [1..*].
-		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),selectOneOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
+		List<StoppingConditionNode> scnodes = 
+			(List<StoppingConditionNode>) get(getChildren(),selectOneOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
 		
 		TimeLine  timeLine = (TimeLine) get(getChildren(),selectOne(hasTheLabel(N_TIMELINE.label())));
 		List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));

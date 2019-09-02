@@ -4,6 +4,7 @@ import static java.util.logging.Level.*;
 
 import java.util.logging.Logger;
 
+import au.edu.anu.twcore.ui.runtime.StatusProcessor;
 import fr.cnrs.iees.rvgrid.statemachine.State;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
@@ -19,6 +20,8 @@ public class ExperimentController extends StateMachineObserver {
 	private static Logger log = Logger.getLogger(ExperimentController.class.getName());
 	// set level to WARNING to stop getting debug information
 	static { log.setLevel(INFO); } // debugging info
+	
+	private StatusProcessor statusProcessor = null;
 
 	public ExperimentController(Deployer observed) {
 		super(observed);
@@ -40,6 +43,12 @@ public class ExperimentController extends StateMachineObserver {
 		// the Deployer, with a msgType=9 and a payload=the current State of the deployer
 		// (argument of this method). Do whatever you need with this information
 		// NB we could pass the current time of the simulator into a payload here
+		if (statusProcessor!=null)
+			statusProcessor.processStatus(newState);
+	}
+	
+	public void setStatusProcessor(StatusProcessor sp) {
+		statusProcessor = sp;
 	}
 
 
