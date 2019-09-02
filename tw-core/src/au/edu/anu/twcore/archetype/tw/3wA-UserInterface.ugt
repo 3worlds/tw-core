@@ -8,11 +8,13 @@ hasNode topSpec
 	isOfClass = String("top")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
+	// must have at least one child widget
 
 hasNode bottomSpec
 	isOfClass = String("bottom")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
+	// must have at least one child widget
 
 // TODO: not sure yet how to arrange all this recursively - more or less along the lines of category sets and categories
 hasNode tabSpec 

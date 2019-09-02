@@ -105,7 +105,7 @@ public enum ConfigurationNodeLabels {
 			N_UIBOTTOM 			("bottom",				Bottom.class,				0),
 			N_UITAB 			("tab",					Tab.class,					0),
 			N_UIGRID 			("grid",				Grid.class,					0),
-			N_UIWIDGET 			("widget",				Widget.class,				0), 
+			N_UIWIDGET 			("widget",				WidgetNode.class,			0), 
 	;
 	//========================================================================================
 	private final String label;

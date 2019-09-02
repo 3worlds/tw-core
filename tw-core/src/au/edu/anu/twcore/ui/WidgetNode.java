@@ -28,13 +28,20 @@
  **************************************************************************/
 package au.edu.anu.twcore.ui;
 
+import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Singleton;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+
+import java.lang.reflect.Constructor;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.runtime.ui.Widget;
 
 /**
  * A class matching the "widget" node of the 3Worlds configuration
@@ -42,24 +49,45 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-public class Widget extends InitialisableNode {
 
-	public Widget(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+// Copying the StoppingCondition pattern - not sure if this will work
+
+public class WidgetNode extends InitialisableNode implements Singleton<Widget>{
+	private Widget widget;
+
+	public WidgetNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
-	public Widget(Identity id, GraphFactory gfactory) {
+	public WidgetNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
+		String subclass = (String)properties().getPropertyValue(P_WIDGET_SUBCLASS.key());
+		ClassLoader classLoader = OmugiClassLoader.getAppClassLoader();
+		Class<? extends Widget> widgetClass;
+		try {
+			widgetClass = (Class<? extends Widget>) Class.forName(subclass, false, classLoader);
+			Constructor<? extends Widget> widgetConstructor = widgetClass.getDeclaredConstructor();
+			widget = widgetConstructor.newInstance();
+			widget.setProperties(this.properties());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public int initRank() {
 		return N_UIWIDGET.initRank();
+	}
+
+	@Override
+	public Widget getInstance() {
+		return widget;
 	}
 
 }
