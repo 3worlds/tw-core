@@ -22,6 +22,8 @@ public class Simulator {
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private long startTime = 0L;
 	protected long lastTime = 0L;
+	// there is always exactly one stopping condition
+	// when there are many, they are organized as a tree
 	protected StoppingCondition stoppingCondition;
 	private TimeLine refTimer;
 
@@ -36,7 +38,15 @@ public class Simulator {
 		this.stoppingCondition = stoppingCondition;
 		this.refTimer = refTimer;
 		this.timerList=timers;
-		
+		timeModelMasks = new int[timerList.size()];
+		int i = 0;
+		int mask = 0x40000000;
+		for (Timer tm : timerList) {
+			timeModelMasks[i] = mask >> i;
+			i++;
+		}
+		// looping aids
+		currentTimes = new long[timerList.size()];
 	}
 	
 	// run one simulation step

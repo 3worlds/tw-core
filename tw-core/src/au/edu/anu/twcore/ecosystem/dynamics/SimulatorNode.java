@@ -53,9 +53,6 @@ import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
  * Class matching the "ecosystem/dynamics" node label in the 3Worlds configuration tree.
  * Has no properties. This <em>is</em> the simulator.
  * 
- * TODO: this class is a first version, one must add the simulation capability later, probably
- * through another interface
- * 
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
@@ -103,15 +100,6 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 	@Override
 	public int initRank() {
 		return N_DYNAMICS.initRank();
-	}
-
-	/**
-	 * Returns the current simulation time but does NOT compute it (read-only method)
-	 * @return
-	 */
-	public long currentTime() {
-		// TODO: implement this
-		return 0;
 	}
 
 	@Override
