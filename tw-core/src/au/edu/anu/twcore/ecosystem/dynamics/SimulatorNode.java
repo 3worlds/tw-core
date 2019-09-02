@@ -46,6 +46,8 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
+import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
+import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 
 /**
  * Class matching the "ecosystem/dynamics" node label in the 3Worlds configuration tree.
@@ -58,6 +60,10 @@ import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
  *
  */
 public class SimulatorNode extends InitialisableNode implements Factory<Simulator> {
+	
+	private StoppingCondition rootStop = null;
+	private List<Timer> timers = new ArrayList<>();
+	private TimeLine timeLine = null;
 
 	public SimulatorNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -67,9 +73,31 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
+		timeLine = (TimeLine) get(getChildren(),
+			selectOne(hasTheLabel(N_TIMELINE.label())));
+		List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),
+			selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
+		for (TimeModel tm:timeModels)
+			timers.add(tm.getInstance());
+		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
+			selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
+		// when there is no stopping condition, the default one is used (runs to infinite time)
+		if (scnodes.isEmpty())
+			rootStop = SimpleStoppingCondition.defaultStoppingCondition();
+		// when there are many stopping conditions, any of them can stop the simulation
+		else if (scnodes.size()>1) {
+			List<StoppingCondition> lsc = new ArrayList<>();
+			for (StoppingConditionNode scn:scnodes)
+				lsc.add(scn.getInstance());
+			rootStop = new MultipleOrStoppingCondition(lsc);
+		} 
+		// when there is only one stopping condition, then it is used
+		else
+			rootStop = scnodes.get(0).getInstance();
 	}
 
 	@Override
@@ -88,19 +116,9 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 
 	@Override
 	public Simulator newInstance() {
-		// TODO improve this
-		
-		// IDD temp code for today
-		// more than one sc not supported yet but arch says [0..*] (I've changed that to [1..*].
-		List<StoppingConditionNode> scnodes = 
-			(List<StoppingConditionNode>) get(getChildren(),selectOneOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
-		
-		TimeLine  timeLine = (TimeLine) get(getChildren(),selectOne(hasTheLabel(N_TIMELINE.label())));
-		List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
-		List<Timer> timers= new ArrayList<>();
-		for (TimeModel tm:timeModels)
-			timers.add(tm.getInstance());
-		return new Simulator(scnodes.get(0).getInstance(),timeLine,timers);
+		Simulator sim = new Simulator(rootStop,timeLine,timers);
+		rootStop.attachSimulator(sim);
+		return sim;
 	}
 	
 	

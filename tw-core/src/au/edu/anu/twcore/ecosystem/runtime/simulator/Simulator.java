@@ -1,11 +1,9 @@
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
-import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 
@@ -19,7 +17,7 @@ public class Simulator {
 
 	private static Logger log = Logger.getLogger(Simulator.class.getName());
 	
-	private List<Timer> timerList = null;//new ArrayList<>();
+	private List<Timer> timerList = null;
 	private long[] currentTimes;
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private long startTime = 0L;
@@ -37,7 +35,6 @@ public class Simulator {
 		super();
 		this.stoppingCondition = stoppingCondition;
 		this.refTimer = refTimer;
-		//this.timerList.addAll(timers);
 		this.timerList=timers;
 		
 	}

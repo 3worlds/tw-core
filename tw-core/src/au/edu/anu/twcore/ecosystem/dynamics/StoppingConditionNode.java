@@ -103,40 +103,32 @@ public class StoppingConditionNode
 		return system;
 	}
 	
-	private SimulatorNode getSimulator(StoppingConditionNode sc) {
-		if (sc.getParent() instanceof SimulatorNode)
-			return (SimulatorNode) sc.getParent();
-		else
-			return getSimulator((StoppingConditionNode) sc.getParent());
-	}
-	
 	@Override
 	public void initialise() {
 		super.initialise();
-		SimulatorNode sim = getSimulator(this);
 		String subClass = (String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key());
 		if (SimpleStoppingCondition.class.getName().equals(subClass))
-			stopcd = new SimpleStoppingCondition(sim,
+			stopcd = new SimpleStoppingCondition(
 				(long) properties().getPropertyValue(P_STOPCD_ENDTIME.key()));
 		else if (ValueStoppingCondition.class.getName().equals(subClass))
-			stopcd = new ValueStoppingCondition(sim,
+			stopcd = new ValueStoppingCondition(
 				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
 				getStoppingSystem(),
 				(double) properties().getPropertyValue(P_STOPCD_STOPVAL.key()));
 		else if (InRangeStoppingCondition.class.getName().equals(subClass))
-			stopcd = new InRangeStoppingCondition(sim,
+			stopcd = new InRangeStoppingCondition(
 				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
 				getStoppingSystem(),
 				(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
 		else if (OutRangeStoppingCondition.class.getName().equals(subClass))
-			stopcd = new OutRangeStoppingCondition(sim,
+			stopcd = new OutRangeStoppingCondition(
 				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
 				getStoppingSystem(),
 				(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
 		else if (MultipleOrStoppingCondition.class.getName().equals(subClass))
-			stopcd = new MultipleOrStoppingCondition(sim,getComponentConditions());
+			stopcd = new MultipleOrStoppingCondition(getComponentConditions());
 		else if (MultipleAndStoppingCondition.class.getName().equals(subClass))
-			stopcd = new MultipleAndStoppingCondition(sim,getComponentConditions());
+			stopcd = new MultipleAndStoppingCondition(getComponentConditions());
 	}
 
 	@Override

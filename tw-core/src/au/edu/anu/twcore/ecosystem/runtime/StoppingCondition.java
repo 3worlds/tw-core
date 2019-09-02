@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime;
 
+import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import fr.ens.biologie.generic.Resettable;
 
 /**
@@ -43,5 +44,9 @@ public interface StoppingCondition extends Resettable {
 	public default void reset() {
 		// DEFAULT: nothing to do
 	}
+
+	public void attachSimulator(Simulator sim);
+
+	public Simulator simulator();
 	
 }

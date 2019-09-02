@@ -1,6 +1,5 @@
 package au.edu.anu.twcore.ecosystem.runtime.stop;
 
-import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.ens.biologie.generic.utils.Interval;
 
@@ -11,11 +10,10 @@ import fr.ens.biologie.generic.utils.Interval;
  */
 public class InRangeStoppingCondition extends RangeStoppingCondition {
 
-	public InRangeStoppingCondition(SimulatorNode sim, 
-			String stopVariable, 
+	public InRangeStoppingCondition(String stopVariable, 
 			ReadOnlyPropertyList system,
 			Interval range) {
-		super(sim, stopVariable, system, range);
+		super(stopVariable, system, range);
 	}
 
 	@Override

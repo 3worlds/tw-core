@@ -59,7 +59,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_RECORD 			("record",				Record.class,				0),
 			N_FIELD 			("field",				Field.class,				0),
 		N_SYSTEM 				("system",				Ecosystem.class,			ECOBASE), 
-			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		SIMBASE), 
+			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		SIMBASE+10), // after stopping conditions
 			N_TIMELINE 			("timeLine",			TimeLine.class,				TIMEBASE), 
 			N_TIMEMODEL			("timeModel",			TimeModel.class,			TIMEBASE+10),
 				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			TIMEBASE+20),
@@ -69,7 +69,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			ECOBASE+10), 
 				N_RECRUIT 		("recruit",				Recruit.class,				0),
 				N_PRODUCE 		("produce",				Produce.class,				0),
-				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,SIMBASE+10), // after Simulator
+				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,SIMBASE), // before Simulator
 				N_INITIALISER 	("initialiser",			Initialiser.class,			CATEGORYBASE+20), // after relation
 				N_INITIALSTATE 	("initialState",		InitialState.class,			ECOBASE+10), // after Ecosystem
 				N_GROUP 		("group",				Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory

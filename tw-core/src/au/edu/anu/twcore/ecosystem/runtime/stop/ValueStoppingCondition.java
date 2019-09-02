@@ -2,7 +2,6 @@ package au.edu.anu.twcore.ecosystem.runtime.stop;
 
 import org.apache.commons.math3.util.Precision;
 
-import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 
 /**
@@ -16,11 +15,10 @@ public class ValueStoppingCondition extends PropertyStoppingCondition {
 	private static final double RELATIVE_EPSILON = 1E-20;
 	private Double stopCriterion = 0.0;	
 		
-	public ValueStoppingCondition(SimulatorNode sim, 
-			String stopVariable, 
+	public ValueStoppingCondition(String stopVariable, 
 			ReadOnlyPropertyList system,
 			double stopCrit) {
-		super(sim,stopVariable,system);
+		super(stopVariable,system);
 		stopCriterion = stopCrit;
 	}
 	

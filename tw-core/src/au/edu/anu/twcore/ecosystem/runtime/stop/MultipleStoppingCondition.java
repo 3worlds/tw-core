@@ -2,8 +2,8 @@ package au.edu.anu.twcore.ecosystem.runtime.stop;
 
 import java.util.List;
 
-import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
+import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 
 /**
  * 
@@ -14,8 +14,8 @@ public abstract class MultipleStoppingCondition extends AbstractStoppingConditio
 
 	protected StoppingCondition[] conditions = null;
 
-	public MultipleStoppingCondition(SimulatorNode sim, List<StoppingCondition> conds) {
-		super(sim);
+	public MultipleStoppingCondition(List<StoppingCondition> conds) {
+		super();
 		conditions = new StoppingCondition[conds.size()];
 		int i=0;
 		for (StoppingCondition sc:conds) {
@@ -23,5 +23,14 @@ public abstract class MultipleStoppingCondition extends AbstractStoppingConditio
 			i++;
 		}
 	}
+	
+	// recursion to attach the simulator to all component conditions
+	@Override
+	public void attachSimulator(Simulator sim) {
+		for (StoppingCondition stop:conditions)
+			stop.attachSimulator(sim);
+		super.attachSimulator(sim);
+	}
+
 
 }

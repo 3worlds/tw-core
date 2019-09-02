@@ -168,7 +168,8 @@ hasNode stoppingConditionSpec
 	isOfClass = String("stoppingCondition")
 	hasParent = StringTable(([1]"dynamics:"))
 	// I think we should enforce at least one rather than have a default one if omitted
-	multiplicity = IntegerRange("1..*")
+	// No - the default is: run forever. Means no stopping condition
+	multiplicity = IntegerRange("0..*")
 	hasProperty stoppingConditionSubclassPropertySpec
 		hasName = String("subclass")
 		type = String("String")
