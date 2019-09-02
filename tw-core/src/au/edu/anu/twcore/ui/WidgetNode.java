@@ -52,7 +52,7 @@ import au.edu.anu.twcore.ecosystem.runtime.ui.Widget;
 
 // Copying the StoppingCondition pattern - not sure if this will work
 
-public class WidgetNode extends InitialisableNode implements Singleton<Widget>{
+public class WidgetNode extends InitialisableNode implements Singleton<Widget> {
 	private Widget widget;
 
 	public WidgetNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -63,13 +63,27 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>{
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
-		// not sure if this should be here. When does this method get called
-		// I need widget to be valid when ModelRunner shows it ui.
-		String subclass = (String)properties().getPropertyValue(P_WIDGET_SUBCLASS.key());
+	}
+
+	@Override
+	public int initRank() {
+		return N_UIWIDGET.initRank();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Widget getInstance() {
+		// ensure its a Singleton
+		if (widget != null)
+			return widget;
+		/*
+		 * I need widget to be valid when ModelRunner shows it ui regardless of whether
+		 * or not initialise() has been called.
+		 */
+		String subclass = (String) properties().getPropertyValue(P_WIDGET_SUBCLASS.key());
 		ClassLoader classLoader = OmugiClassLoader.getAppClassLoader();
 		Class<? extends Widget> widgetClass;
 		try {
@@ -80,16 +94,8 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public int initRank() {
-		return N_UIWIDGET.initRank();
-	}
-
-	@Override
-	public Widget getInstance() {
 		return widget;
+
 	}
 
 }
