@@ -1,7 +1,7 @@
 package au.edu.anu.twcore.experiment.runtime;
 
 /**
- * The thread in which a simulator is running
+ * The thread in which a (single) simulator is running
  * 
  * @author Jacques Gignoux - 30 août 2019 - copied from Shayne's Simulator$RunningStateThread
  *
