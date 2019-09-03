@@ -17,6 +17,7 @@ public class SimpleDeployer extends Deployer {
 
 	private Simulator sim = null;
 	private SimulatorThread runnable = null;
+	private boolean threadUp = false;
 	
 	public SimpleDeployer() {
 		super();
@@ -35,8 +36,13 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void runProc() {
-		Thread runningStateThread = new Thread(runnable);
-		runningStateThread.start();
+		if (!threadUp) {
+			Thread runningStateThread = new Thread(runnable);
+			runningStateThread.start();
+			threadUp = true;
+		}
+		else 
+			runnable.resume();
 	}
 
 	@Override
@@ -65,7 +71,7 @@ public class SimpleDeployer extends Deployer {
 	@Override
 	public void finishProc() {
 		if (runnable != null)
-			runnable.quit();
+			runnable.stop();
 		// send status message to listeners
 		// isnt this already done by the state machine ? yes it is
 	}
@@ -73,7 +79,7 @@ public class SimpleDeployer extends Deployer {
 	@Override
 	public void pauseProc() {
 		if (runnable != null)
-			runnable.quit();
+			runnable.pause();
 	}
 
 	@Override

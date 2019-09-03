@@ -17,11 +17,11 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 public enum SimulatorStates {
 	
 	waiting 	(new State("waiting",new WaitProcedure())),
-	stepping 	(new State("stepping")),
-	pausing  	(new State("pausing")),
+	stepping 	(new State("stepping",new StepProcedure())),
+	pausing  	(new State("pausing",new PauseProcedure())),
 	running  	(new State("running",new RunProcedure())),
-	quitting  	(new State("quitting")),
-	finished  	(new State("finished")),
+	quitting  	(new State("quitting",new QuitProcedure())),
+	finished  	(new State("finished",new FinishProcedure())),
 	;
 	
 	static {

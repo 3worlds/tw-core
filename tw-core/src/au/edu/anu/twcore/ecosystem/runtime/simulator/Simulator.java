@@ -1,8 +1,10 @@
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -26,6 +28,12 @@ public class Simulator {
 	// when there are many, they are organized as a tree
 	protected StoppingCondition stoppingCondition;
 	private TimeLine refTimer;
+	/**
+	 * the calling order of processes depending on the combination of
+	 * simultaneous time models
+	 */
+	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
+	
 
 	// simulator state
 	private boolean started = false;
@@ -52,6 +60,7 @@ public class Simulator {
 	// run one simulation step
 	public void step() {
 		started = true;
+		System.out.println("time = "+lastTime);
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;
@@ -99,13 +108,13 @@ public class Simulator {
 ////				p.updateState();
 //			
 //		}
-//		// 4 advance time ONLY for those time models that were processed
-//		int i = 0;
-//		for (TimeModel tm : timerList) {
-//			if ((timeModelMasks[i] & mask) != 0)
-//				tm.advanceTime(lastTime);
-//			i++;
-//		}
+		// 4 advance time ONLY for those time models that were processed
+		int i = 0;
+		for (Timer tm : timerList) {
+			if ((timeModelMasks[i] & mask) != 0)
+				tm.advanceTime(lastTime);
+			i++;
+		}
 //		myWorld.update(lastTime);
 //		
 ////		// 7 Send graph data to whoever is listening
@@ -129,6 +138,8 @@ public class Simulator {
 		stoppingCondition.reset();
 		started = false;
 		finished = false;
+		for (Timer t:timerList)
+			t.reset();
 	}
 
 	// returns true if stopping condition is met

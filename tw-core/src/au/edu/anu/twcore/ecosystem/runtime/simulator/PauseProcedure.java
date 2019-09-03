@@ -5,19 +5,18 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.cnrs.iees.rvgrid.statemachine.Procedure;
 
 /**
- * Procedure executed when a simulator or deployer enters the 'running' state
  * 
- * @author Jacques Gignoux - 30 août 2019
+ * @author Jacques Gignoux - 3 sept. 2019
  *
  */
-public class RunProcedure extends Procedure {
+public class PauseProcedure extends Procedure {
 
+	public PauseProcedure() { 	}
+	
 	@Override
 	public void run(GridNode node, RVMessage message) {
-		((SimulatorProcedures)node).runProc();
+		((SimulatorProcedures)node).pauseProc();
 	}
 
-	public RunProcedure() {
-	}
 
 }
