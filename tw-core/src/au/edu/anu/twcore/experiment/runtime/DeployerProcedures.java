@@ -1,11 +1,11 @@
-package au.edu.anu.twcore.ecosystem.runtime.simulator;
+package au.edu.anu.twcore.experiment.runtime;
 
 /**
  * 
  * @author Jacques Gignoux - 30 août 2019
  *
  */
-public interface SimulatorProcedures {
+public interface DeployerProcedures {
 	
 	public void runProc();
 	public void waitProc();

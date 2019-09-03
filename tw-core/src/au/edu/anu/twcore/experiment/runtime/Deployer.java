@@ -4,7 +4,6 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorStates.*;
 
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
-import au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorProcedures;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
 import fr.cnrs.iees.rvgrid.statemachine.Transition;
 
@@ -23,7 +22,7 @@ import fr.cnrs.iees.rvgrid.statemachine.Transition;
  */
 public abstract class Deployer 
 		extends StateMachineEngine<ExperimentController>
-		implements SimulatorProcedures	{
+		implements DeployerProcedures	{
 
 	public Deployer() {
 		super(new Transition(waiting.state(),initialise.event()),stateList());

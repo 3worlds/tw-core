@@ -1,4 +1,4 @@
-package au.edu.anu.twcore.ecosystem.runtime.simulator;
+package au.edu.anu.twcore.experiment.runtime;
 
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
@@ -15,7 +15,7 @@ public class QuitProcedure extends Procedure {
 
 	@Override
 	public void run(GridNode node, RVMessage message) {
-		((SimulatorProcedures)node).quitProc();
+		((DeployerProcedures)node).quitProc();
 	}
 
 }

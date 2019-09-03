@@ -3,6 +3,12 @@ package au.edu.anu.twcore.ecosystem.runtime.simulator;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.edu.anu.twcore.experiment.runtime.FinishProcedure;
+import au.edu.anu.twcore.experiment.runtime.PauseProcedure;
+import au.edu.anu.twcore.experiment.runtime.QuitProcedure;
+import au.edu.anu.twcore.experiment.runtime.RunProcedure;
+import au.edu.anu.twcore.experiment.runtime.StepProcedure;
+import au.edu.anu.twcore.experiment.runtime.WaitProcedure;
 import fr.cnrs.iees.rvgrid.statemachine.State;
 import fr.cnrs.iees.rvgrid.statemachine.Transition;
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
