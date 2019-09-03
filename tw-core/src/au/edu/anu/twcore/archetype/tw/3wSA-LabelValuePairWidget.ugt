@@ -1,0 +1,19 @@
+tree
+// Sub-archetype for 3Worlds for checking ValueStoppingCondition specifications
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-LabelValuePairWidget
+
+	hasNode LabelValuePairWidgetSpec
+		isOfClass = String("widget")
+		hasParent = StringTable(([3]"top:","bottom:","grid:"))
+		multiplicity = IntegerRange("0..*")
+		hasEdge LabelValuePairWidgetToSimSpec
+			isOfClass = String("timeTracker")
+			toNode = String("dynamics")
+			multiplicity = IntegerRange("1..1")
