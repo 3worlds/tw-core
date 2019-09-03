@@ -49,10 +49,7 @@ public class SimpleDeployer extends Deployer {
 	public void stepProc() {
 		if (sim!=null)
 			if (sim.stop()) {
-				// switch to finished state ? how ?
-				// this only sends a status message
-//				sendMessage(finalise.event().getMessageType(), null);
-				// this sends a message to itself to switch to the finished state (will it work??)
+				// this sends a message to itself to switch to the finished state
 				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
 				callRendezvous(message);
 			}
@@ -62,9 +59,6 @@ public class SimpleDeployer extends Deployer {
 					RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
 					callRendezvous(message);
 				}
-				else
-					// send status message with current sim time
-					sendMessage(STATUS_MESSAGE,sim.currentTime());
 			}
 	}
 
