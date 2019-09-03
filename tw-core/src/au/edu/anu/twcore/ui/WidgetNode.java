@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ui;
 
 import fr.cnrs.iees.OmugiClassLoader;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -42,10 +43,12 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.lang.reflect.Constructor;
-
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.Experiment;
 import au.edu.anu.twcore.ui.runtime.ControlWidget;
+import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import au.edu.anu.twcore.ui.runtime.Widget;
 
 /**
@@ -60,7 +63,7 @@ import au.edu.anu.twcore.ui.runtime.Widget;
 public class WidgetNode extends InitialisableNode implements Singleton<Widget> {
 	
 	private Widget widget;
-
+	
 	public WidgetNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
@@ -104,6 +107,11 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel("trackTime")),
+			endNode());
+		if (sim!=null)
+			sim.addObserver((DataReceiver<Property>) widget);
 	}
 
 	@Override

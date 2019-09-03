@@ -53,8 +53,7 @@ public class Simulator {
 
 	public Simulator(StoppingCondition stoppingCondition, 
 			TimeLine refTimer,
-			List<Timer> timers,
-			List<DataReceiver<Property>> ttrackers) {
+			List<Timer> timers) {
 		super();
 		this.stoppingCondition = stoppingCondition;
 		this.refTimer = refTimer;
@@ -70,8 +69,10 @@ public class Simulator {
 		currentTimes = new long[timerList.size()];
 		// data tracking
 		timetracker = new timeTracker();
-		for (DataReceiver<Property> drp:ttrackers)
-			timetracker.addObserver(drp);
+	}
+	
+	public void addObserver(DataReceiver<Property> observer) {
+		timetracker.addObserver(observer);
 	}
 	
 	// run one simulation step
