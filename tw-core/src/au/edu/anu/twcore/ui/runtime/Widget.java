@@ -45,7 +45,7 @@ public interface Widget /*extends Resettable*/{
 
 	// maybe the constructor should always take the propertyList.
 
-	public void setProperties(SimplePropertyList properties);
+	public void setProperties(String id,SimplePropertyList properties);
 
 	public Object getUserInterfaceContainer();
 

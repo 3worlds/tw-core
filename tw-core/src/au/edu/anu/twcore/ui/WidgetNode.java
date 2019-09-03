@@ -100,7 +100,7 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget> {
 				Constructor<? extends Widget> widgetConstructor = widgetClass.getDeclaredConstructor();
 				widget = widgetConstructor.newInstance();
 			}
-			widget.setProperties(this.properties());
+			widget.setProperties(id(),properties());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
