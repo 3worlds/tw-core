@@ -30,7 +30,6 @@
 package au.edu.anu.twcore.ui.runtime;
 
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.ens.biologie.generic.Resettable;
 
 /**
  * @author Ian Davies

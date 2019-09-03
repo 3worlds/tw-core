@@ -39,10 +39,6 @@ public class ExperimentController extends StateMachineObserver {
 	@Override
 	public void onStatusMessage(State newState) {
 		log.info("Oh! simulators now in state "+newState.getName());
-		// Ian, FYI: This method receives 'status' messages from
-		// the Deployer, with a msgType=9 and a payload=the current State of the deployer
-		// (argument of this method). Do whatever you need with this information
-		// NB we could pass the current time of the simulator into a payload here
 		if (statusProcessor!=null)
 			statusProcessor.processStatus(newState);
 	}

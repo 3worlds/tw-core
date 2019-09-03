@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -42,12 +43,15 @@ import java.util.List;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
+import au.edu.anu.twcore.ui.WidgetNode;
+import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
  * Class matching the "ecosystem/dynamics" node label in the 3Worlds configuration tree.
@@ -61,6 +65,7 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 	private StoppingCondition rootStop = null;
 	private List<Timer> timers = new ArrayList<>();
 	private TimeLine timeLine = null;
+	private List<DataReceiver<Property>> timeTrackers = null;
 
 	public SimulatorNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -95,6 +100,12 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 		// when there is only one stopping condition, then it is used
 		else
 			rootStop = scnodes.get(0).getInstance();
+		List<WidgetNode> timetrackers = (List<WidgetNode>) get(edges(Direction.IN),
+			selectZeroOrMany(hasTheLabel("trackTime")),
+			edgeListEndNodes());
+		for (WidgetNode wn:timetrackers) {
+			timeTrackers.add((DataReceiver<Property>)wn.getInstance());
+		}
 	}
 
 	@Override
@@ -104,7 +115,7 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 
 	@Override
 	public Simulator newInstance() {
-		Simulator sim = new Simulator(rootStop,timeLine,timers);
+		Simulator sim = new Simulator(rootStop,timeLine,timers,timeTrackers);
 		rootStop.attachSimulator(sim);
 		return sim;
 	}

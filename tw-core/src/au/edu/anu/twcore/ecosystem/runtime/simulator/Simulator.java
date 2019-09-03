@@ -4,10 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.twcore.data.runtime.AbstractDataTracker;
+import au.edu.anu.twcore.data.runtime.DataMessageTypes;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
+import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
  * The class which runs a single simulation on a single parameter set
@@ -18,6 +22,13 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 public class Simulator {
 
 	private static Logger log = Logger.getLogger(Simulator.class.getName());
+	
+	// a data tracker to send time data
+	private class timeTracker extends AbstractDataTracker<Property> {
+		private timeTracker() {
+			super(DataMessageTypes.VALUE_PAIR);
+		}
+	}
 	
 	private List<Timer> timerList = null;
 	private long[] currentTimes;
@@ -33,7 +44,8 @@ public class Simulator {
 	 * simultaneous time models
 	 */
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
-	
+	private timeTracker timetracker; 
+	private final String pkey = "t";
 
 	// simulator state
 	private boolean started = false;
@@ -41,7 +53,8 @@ public class Simulator {
 
 	public Simulator(StoppingCondition stoppingCondition, 
 			TimeLine refTimer,
-			List<Timer> timers) {
+			List<Timer> timers,
+			List<DataReceiver<Property>> ttrackers) {
 		super();
 		this.stoppingCondition = stoppingCondition;
 		this.refTimer = refTimer;
@@ -55,6 +68,10 @@ public class Simulator {
 		}
 		// looping aids
 		currentTimes = new long[timerList.size()];
+		// data tracking
+		timetracker = new timeTracker();
+		for (DataReceiver<Property> drp:ttrackers)
+			timetracker.addObserver(drp);
 	}
 	
 	// run one simulation step
@@ -72,7 +89,6 @@ public class Simulator {
 		// advance main timer clock 
 		if (nexttime == Long.MAX_VALUE)
 			finished = true;
-		// setState(SimulatorState.FINISHED);
 		else {
 			long step = nexttime - lastTime;
 			lastTime = nexttime;
@@ -87,7 +103,7 @@ public class Simulator {
 				i++;
 			}
 			runSelectedProcesses(ctmask, nexttime, step);
-//			sendSimTimeMessage(null, nexttime/refTimer.timeGrain());
+			timetracker.sendData(new Property(pkey,lastTime));
 		}
 	}
 	
