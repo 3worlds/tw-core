@@ -27,11 +27,11 @@ public class EnumProperties {
 		SnippetLocation.defaultValue();
 		StatisticalAggregates.defaultValue();
 //		StatisticalAggregatesSet.
-//		TabLayoutTypes.defaultValue();
 		TimeScaleType.defaultValue();
 		TimeUnits.defaultValue();
 		TwFunctionTypes.defaultValue();
-//		UIContainers.defaultValue();
+		UIOrder.defaultValue();
+		UIContainerOrientation.defaultValue();
 		
 	}
 

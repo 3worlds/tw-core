@@ -49,6 +49,6 @@ hasNode widgetSpec
 			values = StringTable(([5]+
 			"au.edu.anu.twuifx.widgets.SingleGridWidget",+
 			"au.edu.anu.twuifx.widgets.TimeDisplayWidget",+
-			"au.edu.anu.twuifx.widgets.SimpleSimCtrlWidget",+
+			"au.edu.anu.twuifx.widgets.ExperimentControlWidget",+
 			"au.edu.anu.twuifx.widgets.TimeSeriesPlotWidget",+
 			"au.edu.anu.twuifx.widgets.LabelValuePair"))

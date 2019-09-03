@@ -37,15 +37,22 @@ import fr.ens.biologie.generic.Resettable;
  *
  * @date 2 Sep 2019
  */
-public interface Widget extends Resettable{
+/*
+ * I don't think this should extend Resettable. Widgets respond to a reset msg
+ * (which may have initial state data). They don't know what to do otherwise.
+ */
+public interface Widget /*extends Resettable*/{
 
 	// maybe the constructor should always take the propertyList.
-	
-	public void setProperties(SimplePropertyList properties);
-	public Object getUserInterfaceContainer();
-	public Object getMenuContainer();
-	public void putPreferences();
-	public void getPreferences();
 
+	public void setProperties(SimplePropertyList properties);
+
+	public Object getUserInterfaceContainer();
+
+	public Object getMenuContainer();
+
+	public void putPreferences();
+
+	public void getPreferences();
 
 }
