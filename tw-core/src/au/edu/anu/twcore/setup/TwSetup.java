@@ -121,7 +121,8 @@ public class TwSetup implements ProjectPaths, TwPaths {
 	}
 	
 	private static File jarFile(String filename) {
-		File file = new File(USER_ROOT+File.separator+filename);
+//		File file = new File(USER_ROOT+File.separator+filename);
+		File file = new File(TW_ROOT+File.separator+filename);
 		if (file.exists()) 
 			file.delete();
 		try {
@@ -182,13 +183,20 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		// get all dependencies of all 3w libraries
 		// and pack them in a single jar
 		// this puts in everything since tw-uifx depends on all libraries
-		for (String s: new DependencySolver(buildTwApplicationIvyFile().toString()).getJars())
+		for (String s: new DependencySolver(buildTwApplicationIvyFile().toString()).getJars()) {
 			packer.addJar(s);
+			if (s.contains("au.") || s.contains("fr."))
+				System.out.println("LOCAL: "+s);
+		}
 		// except the code of tw-core. Why ??? Is this because we are in this project ?
 		// Well, then:
-		packer.addPackageTree("au.edu.anu");
-		packer.addPackageTree("fr.ens.biologie");
-		packer.addPackageTree("fr.cnrs.iees");
+//		packer.addPackageTree("au.edu.anu");
+//		packer.addPackageTree("fr.ens.biologie");
+//		packer.addPackageTree("fr.cnrs.iees");
+		System.out.println("PACKING: fr.cnrs.iees.twcore");
+		packer.addPackageTree("fr.cnrs.iees.twcore");
+		System.out.println("PACKING: au.edu.anu.twcore");
+		packer.addPackageTree("au.edu.anu.twcore");
 //		for (String s:getProjectDependencies("uit")) packer.addJar(s);
 //		for (String s:getProjectDependencies("ymuit")) packer.addJar(s);
 		File outFile = jarFile(filename);
@@ -235,9 +243,10 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		// 3) clean up: delete /.3w/lib
 //		deleteFileTree(f); // ???
 		// 4) make jar of 3worlds
-//		System.out.println("Installing the 3Worlds ModelMaker");
-		packModelMaker();
-		packModelRunner();
+		System.out.println("Skipping ModelMaker,jar");
+//		packModelMaker();
+		System.out.println("Skipping ModelMaker,jar");
+//		packModelRunner();
 		deleteFileTree( new File(DependencySolver.destPath));
 		System.out.println("FINISHED");
 		// 5) zip ModelMaker = .3w dir for distribution to end users
