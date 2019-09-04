@@ -91,7 +91,6 @@ public class TwSetup implements ProjectPaths, TwPaths {
 	}
 	
 	public static void deleteFileTree(File dir) throws IOException {
-		// TODO: NOT WORKING FROM SOME REASON
 		Path root = dir.toPath();
 		Files.walk(root)
 				.sorted(Comparator.reverseOrder())
@@ -227,18 +226,19 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		//       		|-->/lib
 		System.out.println("Setting up 3Worlds environment:");
 		System.out.println("Creating the .3w directory");
-		File f = new File(USER_ROOT + File.separator + TW + File.separator +"lib");
-		f.mkdirs();
+//		File f = new File(USER_ROOT + File.separator + TW + File.separator +"lib");
+//		f.mkdirs();
 		// 2) place jar of ivy dependencies in /.3w
 		System.out.println("Installing required libraries");
 		pack3wDependencies();
 //		pack3wLibraries();
 		// 3) clean up: delete /.3w/lib
-		deleteFileTree(f); // ???
+//		deleteFileTree(f); // ???
 		// 4) make jar of 3worlds
 //		System.out.println("Installing the 3Worlds ModelMaker");
 		packModelMaker();
 		packModelRunner();
+		deleteFileTree( new File(DependencySolver.destPath));
 		System.out.println("FINISHED");
 		// 5) zip ModelMaker = .3w dir for distribution to end users
 		// do it from the system - it's easier !

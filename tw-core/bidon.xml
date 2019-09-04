@@ -1,0 +1,28 @@
+<ivy-module version="2.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:m="http://maven.apache.org/POM/4.0.0"
+		xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+	<info	organisation="fr.cnrs.iees.tw-core"
+			module="tw-core"
+			revision="0.1.7"
+			status="integration">
+		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
+		<description>This module brings together all components required for 3Worlds including archetype</description>
+	</info>
+
+	<configurations>
+		<conf name="java library"/>
+	</configurations>
+
+	<publications>
+		<artifact type="jar" ext="jar">
+			<conf name="java library"/>
+		</artifact>
+	</publications>
+
+	<dependencies>
+		<dependency org="au.edu.anu.tw-uifx" name="tw-uifx" rev="[0.1.4,)"/>
+	</dependencies>
+
+</ivy-module>
