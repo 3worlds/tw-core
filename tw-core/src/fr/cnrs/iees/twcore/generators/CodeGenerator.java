@@ -214,16 +214,25 @@ public class CodeGenerator {
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
 			gen.generateCode();
 			result.addAll(gen.getFiles());
-			if (system.properties().hasProperty(dataGroup))
-				system.properties().setProperty(dataGroup, gen.generatedClassName());
-			else
+			if (system.properties().hasProperty(dataGroup)) {
+				String oldValue = (String) system.properties().getPropertyValue(dataGroup);
+				String newValue =  gen.generatedClassName();
+				if (!newValue.equals(oldValue)) {
+					system.properties().setProperty(dataGroup, newValue);
+					GraphState.setChanged();
+				}
+			}else {
 				((ResizeablePropertyList) system.properties()).addProperty(dataGroup, gen.generatedClassName());
+				GraphState.setChanged();
+			}
 			if (spec.properties().hasProperty("generated"))
 				if (spec.properties().getPropertyValue("generated").equals(true))
 					spec.disconnect();
-		} else if (system.properties().hasProperty(dataGroup))
+		} else if (system.properties().hasProperty(dataGroup)) {
 			((ResizeablePropertyList) system.properties()).removeProperty(dataGroup);
-		GraphState.setChanged();
+			GraphState.setChanged();
+		}
+		
 	}
 
 	private List<File> generateDataCode(TreeGraphDataNode system, String modelName) {
