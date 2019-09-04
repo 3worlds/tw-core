@@ -84,9 +84,9 @@ public class VersionSettings {
 	protected static String[][] DEPS = { 
 			{"fr.ens.biologie", "generics", "[0.1.4,)", null},
 			{"au.edu.anu.rscs.aot", "omugi", "[0.2.4,)", null},
+			{"au.edu.anu.rscs.aot", "qgraph", "[0.1.1,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.1.2,)", null},
-			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.0.1,)", null},
-			
+			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.0.1,)", null},		
 			{"org.apache.commons", "commons-text", "1.+", null},
 			{"org.apache.ivy", "ivy", "2.2.0", null},
 			{"org.apache.odftoolkit","simple-odf","0.8.2-incubating", null},
