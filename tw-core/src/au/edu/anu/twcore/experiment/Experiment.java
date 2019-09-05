@@ -33,6 +33,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
@@ -58,8 +59,11 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class Experiment extends InitialisableNode implements Singleton<ExperimentController> {
+public class Experiment 
+		extends InitialisableNode 
+		implements Singleton<ExperimentController>, Sealable {
 
+	private boolean sealed = false;
 	private ExperimentController controller = null;
 	private Deployer deployer = null;
 	
@@ -75,26 +79,29 @@ public class Experiment extends InitialisableNode implements Singleton<Experimen
 
 	@Override
 	public void initialise() {
-		super.initialise();
-		Design d = (Design) get(getChildren(),selectOne(hasTheLabel(N_DESIGN.label())));
-		// single run experiment
-		if (d.properties().hasProperty(P_DESIGN_TYPE.key()))
-			if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
-				deployer = new SimpleDeployer();
-				SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
-					selectOne(hasTheLabel(E_BASELINE.label())),
-					endNode(),
-					children(),
-					selectOne(hasTheLabel(N_DYNAMICS.label())));
-				deployer.attachSimulator(sim.newInstance());
-				controller = new ExperimentController(deployer);
-				// this puts the deployer in "waiting" state
-				controller.sendEvent(initialise.event());
-			}
-		// multiple simulators, local
-		// TODO
-		// multiple simulators, remote
-		// TODO
+		if (!sealed) {
+			super.initialise();
+			Design d = (Design) get(getChildren(),selectOne(hasTheLabel(N_DESIGN.label())));
+			// single run experiment
+			if (d.properties().hasProperty(P_DESIGN_TYPE.key()))
+				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
+					deployer = new SimpleDeployer();
+					SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
+						selectOne(hasTheLabel(E_BASELINE.label())),
+						endNode(),
+						children(),
+						selectOne(hasTheLabel(N_DYNAMICS.label())));
+					deployer.attachSimulator(sim.newInstance());
+					controller = new ExperimentController(deployer);
+					// this puts the deployer in "waiting" state
+					controller.sendEvent(initialise.event());
+				}
+			// multiple simulators, local
+			// TODO
+			// multiple simulators, remote
+			// TODO
+			sealed = true;
+		}
 	}
 
 	@Override
@@ -104,7 +111,20 @@ public class Experiment extends InitialisableNode implements Singleton<Experimen
 
 	@Override
 	public ExperimentController getInstance() {
+		if (!sealed)
+			initialise();
 		return controller;
+	}
+	
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 
 }

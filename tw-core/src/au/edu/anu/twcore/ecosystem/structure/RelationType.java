@@ -34,6 +34,7 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Factory;
+import fr.ens.biologie.generic.Sealable;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
@@ -60,7 +61,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
  */
 public class RelationType 
 		extends InitialisableNode 
-		implements Factory<SystemRelation>, Related<SystemComponent> {
+		implements Factory<SystemRelation>, Related<SystemComponent>, Sealable {
 	
 	// a little class to record the from and to category lists
 	private class cat implements Categorized<SystemComponent> {
@@ -80,6 +81,7 @@ public class RelationType
 			return categoryId;
 		}
 	}
+	private boolean sealed = false;
 	// from and to category lists
 	private cat fromCat, toCat;
 
@@ -94,15 +96,18 @@ public class RelationType
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		super.initialise();
-		Collection<Category> tocats = (Collection<Category>) get(edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), 
-			edgeListEndNodes());
-		toCat = new cat(tocats);
-		Collection<Category> fromcats = (Collection<Category>) get(edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), 
-			edgeListEndNodes());
-		fromCat = new cat(fromcats);
+		if (!sealed) {
+			super.initialise();
+			Collection<Category> tocats = (Collection<Category>) get(edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), 
+				edgeListEndNodes());
+			toCat = new cat(tocats);
+			Collection<Category> fromcats = (Collection<Category>) get(edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), 
+				edgeListEndNodes());
+			fromCat = new cat(fromcats);
+			sealed = true;
+		}
 	}
 
 	@Override
@@ -112,6 +117,8 @@ public class RelationType
 
 	@Override
 	public SystemRelation newInstance() {
+		if (!sealed)
+			initialise();
 		// TODO finish implementation
 		SystemRelation result = null;
 //		result.setRelated(this); 
@@ -126,6 +133,17 @@ public class RelationType
 	@Override
 	public Categorized<SystemComponent> to() {
 		return toCat;
+	}
+
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 
 }

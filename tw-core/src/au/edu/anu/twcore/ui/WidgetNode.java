@@ -35,10 +35,12 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
+import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
@@ -60,8 +62,11 @@ import au.edu.anu.twcore.ui.runtime.Widget;
 
 // Copying the StoppingCondition pattern - not sure if this will work
 
-public class WidgetNode extends InitialisableNode implements Singleton<Widget> {
+public class WidgetNode 
+		extends InitialisableNode 
+		implements Singleton<Widget>, Sealable {
 	
+	private boolean sealed = false;
 	private Widget widget;
 	
 	public WidgetNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -75,43 +80,46 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		super.initialise();
-		/*
-		 * I need widget to be valid when ModelRunner shows it ui regardless of whether
-		 * or not initialise() has been called.
-		 */
-		// JG: this looks like a flaw to me: there may be important properties that
-		// you must use to construct your singleton.
-		// You can always initialise the graph before making the singleton anyway.
-		String subclass = (String) properties().getPropertyValue(P_WIDGET_SUBCLASS.key());
-		ClassLoader classLoader = OmugiClassLoader.getAppClassLoader();
-		Class<? extends Widget> widgetClass;
-		try {
-			widgetClass = (Class<? extends Widget>) Class.forName(subclass, false, classLoader);
-			// ControlWidgets
-			if (ControlWidget.class.isAssignableFrom(widgetClass)) {
-				Constructor<? extends Widget> widgetConstructor = 
-					widgetClass.getDeclaredConstructor(StateMachineObserver.class);
-				Experiment exp = (Experiment) get(getParent().getParent().getParent(),
-					children(),
-					selectOne(hasTheLabel(N_EXPERIMENT.label())));
-				StateMachineObserver obs = exp.getInstance(); 
-				widget = widgetConstructor.newInstance(obs);
+		if (!sealed) {
+			super.initialise();
+			/*
+			 * I need widget to be valid when ModelRunner shows it ui regardless of whether
+			 * or not initialise() has been called.
+			 */
+			// JG: this looks like a flaw to me: there may be important properties that
+			// you must use to construct your singleton.
+			// You can always initialise the graph before making the singleton anyway.
+			String subclass = (String) properties().getPropertyValue(P_WIDGET_SUBCLASS.key());
+			ClassLoader classLoader = OmugiClassLoader.getAppClassLoader();
+			Class<? extends Widget> widgetClass;
+			try {
+				widgetClass = (Class<? extends Widget>) Class.forName(subclass, false, classLoader);
+				// ControlWidgets
+				if (ControlWidget.class.isAssignableFrom(widgetClass)) {
+					Constructor<? extends Widget> widgetConstructor = 
+						widgetClass.getDeclaredConstructor(StateMachineObserver.class);
+					Experiment exp = (Experiment) get(getParent().getParent().getParent(),
+						children(),
+						selectOne(hasTheLabel(N_EXPERIMENT.label())));
+					StateMachineObserver obs = exp.getInstance(); 
+					widget = widgetConstructor.newInstance(obs);
+				}
+				// Other widgets
+				else {
+					Constructor<? extends Widget> widgetConstructor = widgetClass.getDeclaredConstructor();
+					widget = widgetConstructor.newInstance();
+				}
+				widget.setProperties(id(),properties());
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			// Other widgets
-			else {
-				Constructor<? extends Widget> widgetConstructor = widgetClass.getDeclaredConstructor();
-				widget = widgetConstructor.newInstance();
-			}
-			widget.setProperties(id(),properties());
-		} catch (Exception e) {
-			e.printStackTrace();
+			SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())),
+				endNode());
+			if (sim!=null)
+				sim.addObserver((DataReceiver<Property,SimplePropertyList>) widget);
+			sealed = true;
 		}
-		SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel("trackTime")),
-			endNode());
-		if (sim!=null)
-			sim.addObserver((DataReceiver<Property,SimplePropertyList>) widget);
 	}
 
 	@Override
@@ -121,10 +129,22 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget> {
 
 	@Override
 	public Widget getInstance() {
-		// ensure its a Singleton
-		if (widget != null)
-			return widget;
+		if (!sealed)
+			initialise();
+//		// ensure its a Singleton
+//		if (widget != null)
+//			return widget;
 		return widget;
+	}
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 
 }

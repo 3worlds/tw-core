@@ -34,6 +34,8 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Factory;
+import fr.ens.biologie.generic.Sealable;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -59,8 +61,9 @@ import au.edu.anu.twcore.InitialisableNode;
  */
 public class TableNode 
 		extends InitialisableNode 
-		implements Factory<Table> {
+		implements Factory<Table>, Sealable {
 
+	private boolean sealed = false;
 	private Dimensioner[] dims = null;
 	private String dataType = null;
 	
@@ -77,16 +80,19 @@ public class TableNode
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		super.initialise();
-		List<DimNode> d = (List<DimNode>) get(this.edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
-			edgeListEndNodes());
-		dims = new Dimensioner[d.size()];
-		for (int i=0; i<dims.length; i++)
-			dims[i] = d.get(i).getInstance();
-		if (properties().hasProperty(P_FIELD_TYPE.key()))
-			if (isPrimitiveType((String) properties().getPropertyValue(P_FIELD_TYPE.key())))
-				dataType = StringUtils.cap((String)properties().getPropertyValue(P_FIELD_TYPE.key()));
+		if (!sealed) {
+			super.initialise();
+			List<DimNode> d = (List<DimNode>) get(this.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
+				edgeListEndNodes());
+			dims = new Dimensioner[d.size()];
+			for (int i=0; i<dims.length; i++)
+				dims[i] = d.get(i).getInstance();
+			if (properties().hasProperty(P_FIELD_TYPE.key()))
+				if (isPrimitiveType((String) properties().getPropertyValue(P_FIELD_TYPE.key())))
+					dataType = StringUtils.cap((String)properties().getPropertyValue(P_FIELD_TYPE.key()));
+			sealed = true;
+		}
 	}
 
 	@Override
@@ -100,6 +106,8 @@ public class TableNode
 
 	@Override
 	public Table newInstance() {
+		if (!sealed)
+			initialise();
 		switch (dataType) {
 			case "Byte":
 				return new ByteTable(dims);
@@ -121,6 +129,17 @@ public class TableNode
 				return new StringTable(dims);
 		}
 		return null;
+	}
+
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 
 }

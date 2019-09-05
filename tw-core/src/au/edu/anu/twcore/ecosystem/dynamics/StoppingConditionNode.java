@@ -37,6 +37,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.properties.impl.ReadOnlyPropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
+import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 import fr.ens.biologie.generic.utils.Interval;
 
@@ -68,8 +69,9 @@ import au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition;
  */
 public class StoppingConditionNode 
 		extends InitialisableNode 
-		implements Singleton<StoppingCondition> {
+		implements Singleton<StoppingCondition>, Sealable {
 	
+	private boolean sealed = false;
 	private StoppingCondition stopcd = null;
 	private static final int baseInitRank = N_STOPPINGCONDITION.initRank();
 
@@ -106,30 +108,33 @@ public class StoppingConditionNode
 	
 	@Override
 	public void initialise() {
-		super.initialise();
-		String subClass = (String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key());
-		if (SimpleStoppingCondition.class.getName().equals(subClass)) {
-			DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_STOPCD_ENDTIME.key());
-			stopcd = new SimpleStoppingCondition(dtt.getDateTime());
-		}else if (ValueStoppingCondition.class.getName().equals(subClass))
-			stopcd = new ValueStoppingCondition(
-				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
-				getStoppingSystem(),
-				(double) properties().getPropertyValue(P_STOPCD_STOPVAL.key()));
-		else if (InRangeStoppingCondition.class.getName().equals(subClass))
-			stopcd = new InRangeStoppingCondition(
-				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
-				getStoppingSystem(),
-				(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
-		else if (OutRangeStoppingCondition.class.getName().equals(subClass))
-			stopcd = new OutRangeStoppingCondition(
-				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
-				getStoppingSystem(),
-				(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
-		else if (MultipleOrStoppingCondition.class.getName().equals(subClass))
-			stopcd = new MultipleOrStoppingCondition(getComponentConditions());
-		else if (MultipleAndStoppingCondition.class.getName().equals(subClass))
-			stopcd = new MultipleAndStoppingCondition(getComponentConditions());
+		if (!sealed) {
+			super.initialise();
+			String subClass = (String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key());
+			if (SimpleStoppingCondition.class.getName().equals(subClass)) {
+				DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_STOPCD_ENDTIME.key());
+				stopcd = new SimpleStoppingCondition(dtt.getDateTime());
+			}else if (ValueStoppingCondition.class.getName().equals(subClass))
+				stopcd = new ValueStoppingCondition(
+					(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
+					getStoppingSystem(),
+					(double) properties().getPropertyValue(P_STOPCD_STOPVAL.key()));
+			else if (InRangeStoppingCondition.class.getName().equals(subClass))
+				stopcd = new InRangeStoppingCondition(
+					(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
+					getStoppingSystem(),
+					(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
+			else if (OutRangeStoppingCondition.class.getName().equals(subClass))
+				stopcd = new OutRangeStoppingCondition(
+					(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
+					getStoppingSystem(),
+					(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
+			else if (MultipleOrStoppingCondition.class.getName().equals(subClass))
+				stopcd = new MultipleOrStoppingCondition(getComponentConditions());
+			else if (MultipleAndStoppingCondition.class.getName().equals(subClass))
+				stopcd = new MultipleAndStoppingCondition(getComponentConditions());
+			sealed = true;
+		}
 	}
 
 	@Override
@@ -148,7 +153,20 @@ public class StoppingConditionNode
 
 	@Override
 	public StoppingCondition getInstance() {
+		if (!sealed)
+			initialise();
 		return stopcd;
+	}
+
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 
 }

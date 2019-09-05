@@ -30,7 +30,6 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
@@ -68,40 +67,42 @@ public class FunctionNode
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		super.initialise();
-		sealed = false;
-		// this is once code has been generated and edited by the user
-		String className = (String) properties().getPropertyValue(P_FUNCTIONCLASS.key());
-		if (className!=null) {
-			// instantiate the user code based function
-			// we need a URL classLoader here: Class.forName("nameofclass", true, new URLClassLoader(urlarrayofextrajarsordirs));
-			//https://community.oracle.com/thread/4011800
-			ClassLoader classLoader = OmugiClassLoader.getJarClassLoader();
-			Class<? extends TwFunction> functionClass;
-			try {
-				functionClass = (Class<? extends TwFunction>) Class.forName(className,true,classLoader);
-				Constructor<? extends TwFunction> nodeConstructor = functionClass.getConstructor();
-				function = nodeConstructor.newInstance();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (!sealed) {
+			super.initialise();
+//			sealed = false;
+			// this is once code has been generated and edited by the user
+			String className = (String) properties().getPropertyValue(P_FUNCTIONCLASS.key());
+			if (className!=null) {
+				// instantiate the user code based function
+				// we need a URL classLoader here: Class.forName("nameofclass", true, new URLClassLoader(urlarrayofextrajarsordirs));
+				//https://community.oracle.com/thread/4011800
+				ClassLoader classLoader = OmugiClassLoader.getJarClassLoader();
+				Class<? extends TwFunction> functionClass;
+				try {
+					functionClass = (Class<? extends TwFunction>) Class.forName(className,true,classLoader);
+					Constructor<? extends TwFunction> nodeConstructor = functionClass.getConstructor();
+					function = nodeConstructor.newInstance();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// add the consequences of the function, if any
+				// if my parent is a function, I am a consequence of it
+				if (getParent() instanceof FunctionNode) {
+					FunctionNode parent = (FunctionNode) getParent();
+					if (parent.isSealed())
+						parent.getInstance().addConsequence(function);
+				}
+				// if my children are functions, they are consequences of me
+				else for (TreeNode n:getChildren()) 
+					if (n instanceof FunctionNode){
+						FunctionNode csq = (FunctionNode) n;
+						if (csq.isSealed())
+							function.addConsequence(csq.getInstance());
+				}
 			}
-			// add the consequences of the function, if any
-			// if my parent is a function, I am a consequence of it
-			if (getParent() instanceof FunctionNode) {
-				FunctionNode parent = (FunctionNode) getParent();
-				if (parent.isSealed())
-					parent.getInstance().addConsequence(function);
-			}
-			// if my children are functions, they are consequences of me
-			else for (TreeNode n:getChildren()) 
-				if (n instanceof FunctionNode){
-					FunctionNode csq = (FunctionNode) n;
-					if (csq.isSealed())
-						function.addConsequence(csq.getInstance());
-			}
+			sealed = true;
 		}
-		sealed = true;
 	}
 
 	@Override
@@ -111,10 +112,9 @@ public class FunctionNode
 
 	@Override
 	public TwFunction getInstance() {
-		if (sealed)
-			return function;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
+		if (!sealed)
+			initialise();
+		return function;
 	}
 
 	@Override

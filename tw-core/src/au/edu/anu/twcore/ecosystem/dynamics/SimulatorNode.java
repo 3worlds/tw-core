@@ -33,6 +33,7 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Factory;
+import fr.ens.biologie.generic.Sealable;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
@@ -59,8 +60,11 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class SimulatorNode extends InitialisableNode implements Factory<Simulator> {
+public class SimulatorNode 
+		extends InitialisableNode 
+		implements Factory<Simulator>, Sealable {
 	
+	private boolean sealed = false;
 	private StoppingCondition rootStop = null;
 	private List<Timer> timers = new ArrayList<>();
 	private TimeLine timeLine = null;
@@ -77,28 +81,31 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		super.initialise();
-		timeLine = (TimeLine) get(getChildren(),
-			selectOne(hasTheLabel(N_TIMELINE.label())));
-		List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),
-			selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
-		for (TimeModel tm:timeModels)
-			timers.add(tm.getInstance());
-		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
-			selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
-		// when there is no stopping condition, the default one is used (runs to infinite time)
-		if (scnodes.isEmpty())
-			rootStop = SimpleStoppingCondition.defaultStoppingCondition();
-		// when there are many stopping conditions, any of them can stop the simulation
-		else if (scnodes.size()>1) {
-			List<StoppingCondition> lsc = new ArrayList<>();
-			for (StoppingConditionNode scn:scnodes)
-				lsc.add(scn.getInstance());
-			rootStop = new MultipleOrStoppingCondition(lsc);
-		} 
-		// when there is only one stopping condition, then it is used
-		else
-			rootStop = scnodes.get(0).getInstance();
+		if(!sealed) {
+			super.initialise();
+			timeLine = (TimeLine) get(getChildren(),
+				selectOne(hasTheLabel(N_TIMELINE.label())));
+			List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),
+				selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
+			for (TimeModel tm:timeModels)
+				timers.add(tm.getInstance());
+			List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
+				selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
+			// when there is no stopping condition, the default one is used (runs to infinite time)
+			if (scnodes.isEmpty())
+				rootStop = SimpleStoppingCondition.defaultStoppingCondition();
+			// when there are many stopping conditions, any of them can stop the simulation
+			else if (scnodes.size()>1) {
+				List<StoppingCondition> lsc = new ArrayList<>();
+				for (StoppingConditionNode scn:scnodes)
+					lsc.add(scn.getInstance());
+				rootStop = new MultipleOrStoppingCondition(lsc);
+			} 
+			// when there is only one stopping condition, then it is used
+			else
+				rootStop = scnodes.get(0).getInstance();
+			sealed = true;
+		}
 	}
 
 	@Override
@@ -108,6 +115,8 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 
 	@Override
 	public Simulator newInstance() {
+		if (!sealed)
+			initialise();
 		Simulator sim = new Simulator(rootStop,timeLine,timers);
 		rootStop.attachSimulator(sim);
 		instances.add(sim);
@@ -118,6 +127,17 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 		for (Simulator sim:instances)
 			sim.addObserver(observer);
 		instances.clear();
+	}
+
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 	
 }

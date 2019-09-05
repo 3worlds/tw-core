@@ -79,40 +79,42 @@ public class ProcessNode
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		super.initialise();		
-		sealed = false;					// timeModel  timeLine    dynamics    ecosystem
-		Ecosystem ecosystem = (Ecosystem) getParent().getParent().getParent().getParent();
-		timeModel = (TimeModel)getParent();
-		// 1 - setting up simulation code execution 
-		DynamicList<? extends Node> applies = (DynamicList<? extends Node>) get(edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel("appliesTo")),
-			edgeListEndNodes());
-		Node first = applies.getFirst();
-		// process applies to a set of categories
-		if (first.classId().equals(N_CATEGORY.label())) {
-			process = new ComponentProcess(ecosystem,(Collection<Category>)applies);
-			DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
-				selectZeroOrMany(hasTheLabel("function")));
-			for (FunctionNode func:functions)
-				process.addFunction(func.getInstance());
-		}
-		// process applies to a single relation (a relation links two sets of categories so no
-		// need for multiple relations)
-		else if (first.classId().equals(N_RELATIONTYPE.label())) {
-			DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
-				selectZeroOrMany(hasTheLabel("function")));
-			for (FunctionNode func:functions ){
-				if (process == null) {
-// TODO: fix this					
-//					if (RelateToDecisionFunction.class.isAssignableFrom(function.getClass())) 
-//						process = new IndexedSearchProcess(world,(RelationType)first,null,null);
-//					else
-						process = new RelationProcess(ecosystem,(RelationType)first);
-				}
-				process.addFunction(func.getInstance());
+		if (!sealed) {
+			super.initialise();		
+			sealed = false;					// timeModel  timeLine    dynamics    ecosystem
+			Ecosystem ecosystem = (Ecosystem) getParent().getParent().getParent().getParent();
+			timeModel = (TimeModel)getParent();
+			// 1 - setting up simulation code execution 
+			DynamicList<? extends Node> applies = (DynamicList<? extends Node>) get(edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel("appliesTo")),
+				edgeListEndNodes());
+			Node first = applies.getFirst();
+			// process applies to a set of categories
+			if (first.classId().equals(N_CATEGORY.label())) {
+				process = new ComponentProcess(ecosystem,(Collection<Category>)applies);
+				DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
+					selectZeroOrMany(hasTheLabel("function")));
+				for (FunctionNode func:functions)
+					process.addFunction(func.getInstance());
 			}
+			// process applies to a single relation (a relation links two sets of categories so no
+			// need for multiple relations)
+			else if (first.classId().equals(N_RELATIONTYPE.label())) {
+				DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
+					selectZeroOrMany(hasTheLabel("function")));
+				for (FunctionNode func:functions ){
+					if (process == null) {
+	// TODO: fix this					
+	//					if (RelateToDecisionFunction.class.isAssignableFrom(function.getClass())) 
+	//						process = new IndexedSearchProcess(world,(RelationType)first,null,null);
+	//					else
+							process = new RelationProcess(ecosystem,(RelationType)first);
+					}
+					process.addFunction(func.getInstance());
+				}
+			}
+			sealed = true;
 		}
-		sealed = true;
 	}
 	
 	@Override
@@ -122,6 +124,8 @@ public class ProcessNode
 
 	@Override
 	public TwProcess getInstance() {
+		if (!sealed)
+			initialise();
 		return process;
 	}
 

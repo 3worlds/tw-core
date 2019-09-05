@@ -33,6 +33,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -63,11 +64,11 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
  */
 public class Ecosystem 
 		extends InitialisableNode 
-		implements Categorized<SystemComponent>, Singleton<SystemContainer> {
+		implements Categorized<SystemComponent>, Singleton<SystemContainer>, Sealable {
 
 	// this is the top of the system, so it doesnt belong to any category	
 	// except if we want to attach parameters/variables to it
-	
+	private boolean sealed = false;
 	// a 'null' category in case no category is set by the user
 	private static final String rootCategoryId = ".";
 	// a set of categories in case the user set some
@@ -88,25 +89,28 @@ public class Ecosystem
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		super.initialise();
-		Collection<Category> cats = (Collection<Category>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
-			edgeListEndNodes());
-		if (!cats.isEmpty()) {
-			categories.addAll(getSuperCategories(cats));
-			categoryId = buildCategorySignature();
+		if (!sealed) {
+			super.initialise();
+			Collection<Category> cats = (Collection<Category>) get(edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
+				edgeListEndNodes());
+			if (!cats.isEmpty()) {
+				categories.addAll(getSuperCategories(cats));
+				categoryId = buildCategorySignature();
+			}
+			else
+				categoryId = rootCategoryId;
+			TwData parameters = null;
+			if (properties().hasProperty(P_PARAMETERCLASS.key())) {
+				String s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
+				if (s!=null)
+					if (!s.trim().isEmpty())
+						parameters = loadDataClass(s);
+			}
+			// TODO: automatic variables as variableTemplate
+			community = new SystemContainer(this,"ecosystem",null,parameters,null);
+			sealed = true;
 		}
-		else
-			categoryId = rootCategoryId;
-		TwData parameters = null;
-		if (properties().hasProperty(P_PARAMETERCLASS.key())) {
-			String s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
-			if (s!=null)
-				if (!s.trim().isEmpty())
-					parameters = loadDataClass(s);
-		}
-		// TODO: automatic variables as variableTemplate
-		community = new SystemContainer(this,"ecosystem",null,parameters,null);
 	}
 
 	@Override
@@ -132,12 +136,25 @@ public class Ecosystem
 
 	@Override
 	public SystemContainer getInstance() {
+		if (!sealed)
+			initialise();
 		return community;
 	}
 
 	// for compatibility with LifeCycle and Systemfactory 
 	public SystemContainer container(String name) {
 		return community;
+	}
+
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 
 }

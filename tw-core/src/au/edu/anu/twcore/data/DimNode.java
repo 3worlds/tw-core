@@ -39,7 +39,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * Class matching the "dimensioner" node label in the 3Worlds configuration tree.
@@ -65,10 +64,12 @@ public class DimNode
 	
 	@Override
 	public void initialise() {
-		super.initialise();
-		sealed = false;
-		dimensioner = new Dimensioner((int)properties().getPropertyValue(P_DIMENSIONER_SIZE.key()));
-		sealed = true;
+		if (!sealed) {
+			super.initialise();
+			sealed = false;
+			dimensioner = new Dimensioner((int)properties().getPropertyValue(P_DIMENSIONER_SIZE.key()));
+			sealed = true;
+		}
 	}
 
 	@Override
@@ -86,10 +87,9 @@ public class DimNode
 
 	@Override
 	public Dimensioner getInstance() {
-		if (sealed)
-			return dimensioner;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
+		if (!sealed)
+			initialise();
+		return dimensioner;
 	}
 
 	@Override

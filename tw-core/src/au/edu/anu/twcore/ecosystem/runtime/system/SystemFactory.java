@@ -105,43 +105,45 @@ public class SystemFactory
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		super.initialise();
-		sealed = false;
-		Collection<Category> nl = (Collection<Category>) get(edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
-			edgeListEndNodes());
-		categories.addAll(getSuperCategories(nl));
-		permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
-		// These ARE optional - inserted by codeGenerator!
-		String s = null;
-		if (properties().hasProperty(P_PARAMETERCLASS.key())) {
-			s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
-			if (s!=null)
-				if (!s.trim().isEmpty())
-					parameterTemplate = loadDataClass(s);
+		if (!sealed) {
+			super.initialise();
+			sealed = false;
+			Collection<Category> nl = (Collection<Category>) get(edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
+				edgeListEndNodes());
+			categories.addAll(getSuperCategories(nl));
+			permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
+			// These ARE optional - inserted by codeGenerator!
+			String s = null;
+			if (properties().hasProperty(P_PARAMETERCLASS.key())) {
+				s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
+				if (s!=null)
+					if (!s.trim().isEmpty())
+						parameterTemplate = loadDataClass(s);
+			}
+			if (properties().hasProperty(P_DRIVERCLASS.key())) {
+				s = (String) properties().getPropertyValue(P_DRIVERCLASS.key());
+				if (s!=null)
+					if (!s.trim().isEmpty())
+						driverTemplate = loadDataClass(s);
+			}
+			if (properties().hasProperty(P_DECORATORCLASS.key())) {
+				s = (String) properties().getPropertyValue(P_DECORATORCLASS.key());
+				if (s!=null)
+					if (!s.trim().isEmpty())
+						decoratorTemplate = loadDataClass(s);
+			}
+			if (driverTemplate != null)
+				for (String key : driverTemplate.getKeysAsSet())
+					propertyMap.put(key, DRIVERS);
+			for (String key : SystemData.keySet)
+				propertyMap.put(key, AUTO);
+			if (decoratorTemplate != null)
+				for (String key : decoratorTemplate.getKeysAsSet())
+					propertyMap.put(key, DECO);
+			sealed = true; // important - next statement access this class methods
+			categoryId = buildCategorySignature();
 		}
-		if (properties().hasProperty(P_DRIVERCLASS.key())) {
-			s = (String) properties().getPropertyValue(P_DRIVERCLASS.key());
-			if (s!=null)
-				if (!s.trim().isEmpty())
-					driverTemplate = loadDataClass(s);
-		}
-		if (properties().hasProperty(P_DECORATORCLASS.key())) {
-			s = (String) properties().getPropertyValue(P_DECORATORCLASS.key());
-			if (s!=null)
-				if (!s.trim().isEmpty())
-					decoratorTemplate = loadDataClass(s);
-		}
-		if (driverTemplate != null)
-			for (String key : driverTemplate.getKeysAsSet())
-				propertyMap.put(key, DRIVERS);
-		for (String key : SystemData.keySet)
-			propertyMap.put(key, AUTO);
-		if (decoratorTemplate != null)
-			for (String key : decoratorTemplate.getKeysAsSet())
-				propertyMap.put(key, DECO);
-		sealed = true; // important - next statement access this class methods
-		categoryId = buildCategorySignature();
 	}
 
 
@@ -156,6 +158,8 @@ public class SystemFactory
 	 */
 	@Override
 	public final SystemComponent newInstance() {
+		if (!sealed)
+			initialise();
 		SimplePropertyList props = new SystemComponentPropertyListImpl(driverTemplate,
 			decoratorTemplate,2,propertyMap);
 		SystemComponent result = (SystemComponent) SCfactory.makeNode(SystemComponent.class,"C0",props);

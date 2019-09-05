@@ -87,35 +87,37 @@ public class TimeModel
 
 	@Override
 	public void initialise() {
-		super.initialise();
-		sealed = false;
-		timeLine = (TimeLine) getParent();
-		timeUnit = (TimeUnits) properties().getPropertyValue("timeUnit");
-		nTimeUnits = (Integer) properties().getPropertyValue("nTimeUnits");
-		long unitConversionFactor = TimeUtil.timeUnitExactConversionFactor(timeUnit, timeLine.shortestTimeUnit());
-		isExact = unitConversionFactor > 0L;
-		if (timeUnit.equals(TimeUnits.UNSPECIFIED))
-			grainsPerBaseUnit = nTimeUnits;
-		else
-			grainsPerBaseUnit = nTimeUnits * unitConversionFactor;
-		// Clock timer
-		if (properties().getPropertyValue(twaSubclass)
-				.equals(ClockTimer.class.getName())) {
-			timer = new ClockTimer(this);
+		if (!sealed) {
+			super.initialise();
+//			sealed = false;
+			timeLine = (TimeLine) getParent();
+			timeUnit = (TimeUnits) properties().getPropertyValue("timeUnit");
+			nTimeUnits = (Integer) properties().getPropertyValue("nTimeUnits");
+			long unitConversionFactor = TimeUtil.timeUnitExactConversionFactor(timeUnit, timeLine.shortestTimeUnit());
+			isExact = unitConversionFactor > 0L;
+			if (timeUnit.equals(TimeUnits.UNSPECIFIED))
+				grainsPerBaseUnit = nTimeUnits;
+			else
+				grainsPerBaseUnit = nTimeUnits * unitConversionFactor;
+			// Clock timer
+			if (properties().getPropertyValue(twaSubclass)
+					.equals(ClockTimer.class.getName())) {
+				timer = new ClockTimer(this);
+			}
+			// event-driven timer
+			else if (properties().getPropertyValue(twaSubclass)
+					.equals(EventTimer.class.getName())) {
+				EventQueue eq = (EventQueue) get(this.getChildren(),
+					selectOne(hasTheLabel(N_EVENTQUEUE.label())));
+				timer = new EventTimer(eq,this);
+			}
+			// scenario timer
+			else if (properties().getPropertyValue(twaSubclass)
+					.equals(ScenarioTimer.class.getName())) {
+				timer = new ScenarioTimer(this);
+			}
+			sealed = true;
 		}
-		// event-driven timer
-		else if (properties().getPropertyValue(twaSubclass)
-				.equals(EventTimer.class.getName())) {
-			EventQueue eq = (EventQueue) get(this.getChildren(),
-				selectOne(hasTheLabel(N_EVENTQUEUE.label())));
-			timer = new EventTimer(eq,this);
-		}
-		// scenario timer
-		else if (properties().getPropertyValue(twaSubclass)
-				.equals(ScenarioTimer.class.getName())) {
-			timer = new ScenarioTimer(this);
-		}
-		sealed = true;
 	}
 
 	@Override
@@ -125,9 +127,10 @@ public class TimeModel
 
 	@Override
 	public Timer getInstance() {
-		if (sealed)
-			return timer;
-		throw new TwcoreException("attempt to access uninitialised data");
+		if (!sealed)
+			initialise();
+		return timer;
+//		throw new TwcoreException("attempt to access uninitialised data");
 	}
 
 	public int nTimeUnits() {

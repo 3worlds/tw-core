@@ -47,6 +47,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import fr.ens.biologie.generic.Factory;
 import fr.ens.biologie.generic.Resettable;
+import fr.ens.biologie.generic.Sealable;
 
 /**
  * <p>The class holding the SystemComponents (actually, any object with an Id can be stored 
@@ -67,7 +68,7 @@ import fr.ens.biologie.generic.Resettable;
  */
 // Tested OK with version 0.1.3 on 1/7/2019
 public abstract class CategorizedContainer<T extends Identity> 
-		implements Population, Identity, Resettable, Factory<T> {
+		implements Population, Identity, Resettable, Factory<T>, Sealable {
 
 	// class-level constants
 	private static final IdentityScope scope = new LocalScope("3w-runtime-container");
@@ -85,6 +86,7 @@ public abstract class CategorizedContainer<T extends Identity>
 		propsPK = new PropertyKeys(props);
 	}
 			
+	private boolean sealed = false;
 	// unique id for this container (matches the parameter set)
 	private Identity id = null;
 	// category info (shared)
@@ -393,6 +395,17 @@ public abstract class CategorizedContainer<T extends Identity>
 		}
 		sb.append(']');
 		return sb.toString();
+	}
+	
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 	
 	// NB two methods must be overriden in descendants: clone(item) and newInstance();
