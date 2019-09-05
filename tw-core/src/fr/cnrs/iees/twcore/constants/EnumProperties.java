@@ -30,7 +30,6 @@ public class EnumProperties {
 		TimeScaleType.defaultValue();
 		TimeUnits.defaultValue();
 		TwFunctionTypes.defaultValue();
-		UIOrder.defaultValue();
 		UIContainerOrientation.defaultValue();
 		
 	}

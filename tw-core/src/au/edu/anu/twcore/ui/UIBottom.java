@@ -42,15 +42,15 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-public class Bottom extends InitialisableNode {
+public class UIBottom extends InitialisableNode {
 
 	// default constructor
-	public Bottom(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public UIBottom(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 	
 	// constructor with no properties
-	public Bottom(Identity id, GraphFactory gfactory) {
+	public UIBottom(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 

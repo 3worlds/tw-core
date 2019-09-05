@@ -37,21 +37,20 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
- * A class matching the "userInterface/tab" node of the 3Worlds configuration
+ * A class matching the "userInterface/top" node of the 3WOrlds configuration
  * 
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-
-public class Tab extends InitialisableNode {
+public class UITop extends InitialisableNode {
 
 	// default constructor
-	public Tab(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public UITop(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
-
+	
 	// constructor with no properties
-	public Tab(Identity id, GraphFactory gfactory) {
+	public UITop(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
@@ -62,7 +61,7 @@ public class Tab extends InitialisableNode {
 
 	@Override
 	public int initRank() {
-		return N_UITAB.initRank();
+		return N_UITOP.initRank();
 	}
 
 }

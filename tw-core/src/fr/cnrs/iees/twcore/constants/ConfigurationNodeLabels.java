@@ -98,10 +98,10 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 		// to get the configuration load correctly, but feel free to merge them with your classes as needed
 		// NB you can also use the Singleton<T> interface if you want them to just be a node producing
 		// a class doing the real job
-			N_UITOP 			("top",					Top.class,					UIBASE),
-			N_UIBOTTOM 			("bottom",				Bottom.class,				UIBASE),
-			N_UITAB 			("tab",					Tab.class,					UIBASE),
-			N_UIGRID 			("grid",				Grid.class,					UIBASE),
+			N_UITOP 			("top",					UITop.class,					UIBASE),
+			N_UIBOTTOM 			("bottom",				UIBottom.class,				UIBASE),
+			N_UITAB 			("tab",					UITab.class,					UIBASE),
+			N_UICONTAINER		("container",			UIContainer.class,					UIBASE),
 			N_UIWIDGET 			("widget",				WidgetNode.class,			UIBASE), 
 	;
 	//========================================================================================

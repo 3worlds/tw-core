@@ -36,6 +36,7 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.properties.impl.ReadOnlyPropertyListImpl;
+import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.ens.biologie.generic.Singleton;
 import fr.ens.biologie.generic.utils.Interval;
 
@@ -107,10 +108,10 @@ public class StoppingConditionNode
 	public void initialise() {
 		super.initialise();
 		String subClass = (String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key());
-		if (SimpleStoppingCondition.class.getName().equals(subClass))
-			stopcd = new SimpleStoppingCondition(
-				(long) properties().getPropertyValue(P_STOPCD_ENDTIME.key()));
-		else if (ValueStoppingCondition.class.getName().equals(subClass))
+		if (SimpleStoppingCondition.class.getName().equals(subClass)) {
+			DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_STOPCD_ENDTIME.key());
+			stopcd = new SimpleStoppingCondition(dtt.getDateTime());
+		}else if (ValueStoppingCondition.class.getName().equals(subClass))
 			stopcd = new ValueStoppingCondition(
 				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
 				getStoppingSystem(),

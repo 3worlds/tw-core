@@ -43,15 +43,15 @@ import au.edu.anu.twcore.InitialisableNode;
  *
  */
 
-public class Grid extends InitialisableNode {
+public class UIContainer extends InitialisableNode {
 
 	// default constructor
-	public Grid(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public UIContainer(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
 	// constructor with no properties
-	public Grid(Identity id, GraphFactory gfactory) {
+	public UIContainer(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
@@ -62,7 +62,7 @@ public class Grid extends InitialisableNode {
 
 	@Override
 	public int initRank() {
-		return N_UIGRID.initRank();
+		return N_UICONTAINER.initRank();
 	}
 
 }
