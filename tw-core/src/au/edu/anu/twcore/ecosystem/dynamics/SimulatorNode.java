@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -36,10 +37,15 @@ import fr.ens.biologie.generic.Factory;
 import fr.ens.biologie.generic.Sealable;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -69,6 +75,8 @@ public class SimulatorNode
 	private List<Timer> timers = new ArrayList<>();
 	private TimeLine timeLine = null;
 	private List<Simulator> instances = new LinkedList<>();
+	private int[] timeModelMasks; // bit pattern for every timeModel
+	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
 
 	public SimulatorNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -104,6 +112,7 @@ public class SimulatorNode
 			// when there is only one stopping condition, then it is used
 			else
 				rootStop = scnodes.get(0).getInstance();
+			hierarchiseProcesses(timeModels);
 			sealed = true;
 		}
 	}
@@ -117,7 +126,7 @@ public class SimulatorNode
 	public Simulator newInstance() {
 		if (!sealed)
 			initialise();
-		Simulator sim = new Simulator(rootStop,timeLine,timers);
+		Simulator sim = new Simulator(rootStop,timeLine,timers,timeModelMasks,processCallingOrder);
 		rootStop.attachSimulator(sim);
 		instances.add(sim);
 		return sim;
@@ -139,5 +148,143 @@ public class SimulatorNode
 	public boolean isSealed() {
 		return sealed;
 	}
+	
+	
+	/**
+	 * recursive method to build up the list of all possible simultaneous
+	 * timeModel combinations. NOTE that this must be called with a non-empty
+	 * list, otherwise the recursion will never start. works fine (3 timeModels
+	 * generate 7 sets as expected)
+	 * 
+	 * @param combinationList
+	 *            - the list of timeModel combinations
+	 */
+	private void computeTMCombinations(Set<HashSet<TimeModel>> 
+		combinationList,List<TimeModel> timerList) {
+		int initSize = combinationList.size();
+		Set<HashSet<TimeModel>> addList = new HashSet<HashSet<TimeModel>>();
+		for (Set<TimeModel> stm : combinationList) {
+			for (TimeModel tm : timerList) {
+				HashSet<TimeModel> set = new HashSet<TimeModel>();
+				set.addAll(stm);
+				set.add(tm);
+				addList.add(set);
+			}
+		}
+		combinationList.addAll(addList);
+		if (combinationList.size() != initSize)
+			computeTMCombinations(combinationList,timerList);
+	}
+
+	
+	/**
+	 * compute the dependency rank of a Process - recursive
+	 * 
+	 * @return
+	 */
+	private int dependencyRank(int rank, ProcessNode p,
+			Map<ProcessNode, List<ProcessNode>> deps) {
+		int result = rank;
+		for (ProcessNode dp : deps.get(p))
+			result = Math.max(result, dependencyRank(rank + 1, dp, deps));
+		return result;
+	}
+
+	
+	/**
+	 * computes the order of process calls for any combination of time models
+	 * possibly occurring simultaneously. Results are stored in
+	 * processCallingOrder, which contains a map of lists of (simultaneous)
+	 * processes index by execution rank. Process lists are executed by order of
+	 * execution rank. Within a list, order doesnt matter (and process execution
+	 * could in theory be parallelized here).
+	 * 
+	 * Code checked & tested with procesRankingTest.dsl.
+	 */
+	@SuppressWarnings({ "unchecked", "unused" })
+	private void hierarchiseProcesses(List<TimeModel> timerList) {
+		// compute bit pattern to identify timeModels
+		timeModelMasks = new int[timerList.size()];
+		int i = 0;
+		int mask = 0x40000000;
+		for (TimeModel tm : timerList) {
+			timeModelMasks[i] = mask >> i;
+			i++;
+		}
+		// builds up all the possible combinations of simultaneously occurring
+		// timeModels
+		Set<HashSet<TimeModel>> allTMCombinations = new HashSet<HashSet<TimeModel>>();
+		for (TimeModel tm : timerList) {
+			HashSet<TimeModel> set = new HashSet<TimeModel>();
+			set.add(tm);
+			allTMCombinations.add(set);
+		}
+		computeTMCombinations(allTMCombinations,timerList);
+		Map<HashSet<TimeModel>, Integer> allTMMasks = new Hashtable<HashSet<TimeModel>, Integer>();
+		for (HashSet<TimeModel> stm : allTMCombinations) {
+			mask = 0x00000000;
+			i = 0;
+			// this assumes timeModels are always iterated in the same order in
+			// timeModels
+			for (TimeModel tm : timerList) {
+				if (stm.contains(tm))
+					mask = mask | timeModelMasks[i];
+				i++;
+			}
+			allTMMasks.put(stm, mask);
+		}
+		// for each time model combination, sort out the calling order of
+		// dependent processes
+		processCallingOrder = new Hashtable<Integer, List<List<ProcessNode>>>();
+		for (HashSet<TimeModel> stm : allTMCombinations) {
+			LinkedList<TimeModel> simultaneousTM = new LinkedList<TimeModel>();
+			simultaneousTM.addAll(stm);
+			// get all processes activated by this list of time models
+			LinkedList<ProcessNode> simultaneousProcesses = new LinkedList<ProcessNode>();
+			for (TimeModel tm : simultaneousTM) {
+				List<ProcessNode> simP = (List<ProcessNode>) get(tm.getChildren(),
+					selectOneOrMany(hasTheLabel(N_PROCESS.label())));
+				simultaneousProcesses.addAll(simP);
+			}
+			// find their dependencies
+			List<ProcessNode> spl = new ArrayList<ProcessNode>(
+				simultaneousProcesses.size());
+			Map<ProcessNode, List<ProcessNode>> dependencies = new Hashtable<ProcessNode, List<ProcessNode>>(
+				simultaneousProcesses.size());
+			for (ProcessNode p : simultaneousProcesses)
+				spl.add(p);
+			for (ProcessNode p : simultaneousProcesses) {
+				List<ProcessNode> deps = (List<ProcessNode>) get(p.edges(Direction.OUT), 
+					selectZeroOrMany(hasTheLabel(E_DEPENDSON.label())),
+					edgeListEndNodes());
+				List<ProcessNode> dep = new LinkedList<ProcessNode>();
+				// only store those dependencies that are in the current list of
+				// activated processes
+				for (ProcessNode dp : deps)
+					if (spl.contains(dp))
+						dep.add(dp);
+				dependencies.put(p, dep);
+			}
+			// compute dependency ranks for this set of timeModels
+			Map<ProcessNode, Integer> ranks = new Hashtable<ProcessNode, Integer>();
+			int maxRank = 0;
+			for (ProcessNode p : simultaneousProcesses) {
+				Integer rank = 0;
+				rank = dependencyRank(rank, p, dependencies);
+				maxRank = Math.max(maxRank, rank);
+				ranks.put(p, rank);
+			}
+			// build an array of process lists, indexed by execution rank
+			List<List<ProcessNode>> processesByRank = new ArrayList<List<ProcessNode>>(
+				maxRank + 1);
+			for (int ii = 0; ii < maxRank + 1; ii++)
+				processesByRank.add(new LinkedList<ProcessNode>());
+			for (ProcessNode p : simultaneousProcesses)
+				processesByRank.get(ranks.get(p)).add(p);
+			// add the list into the proper timeModel combination map
+			processCallingOrder.put(allTMMasks.get(stm), processesByRank);
+		}
+	}
+
 	
 }

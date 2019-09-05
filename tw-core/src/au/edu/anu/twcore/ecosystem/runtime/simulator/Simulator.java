@@ -52,21 +52,17 @@ public class Simulator {
 	private boolean started = false;
 	private boolean finished = false;
 
-	@SuppressWarnings("unused")
 	public Simulator(StoppingCondition stoppingCondition, 
 			TimeLine refTimer,
-			List<Timer> timers) {
+			List<Timer> timers,
+			int[] timeModelMasks,
+			Map<Integer, List<List<ProcessNode>>> processCallingOrder) {
 		super();
 		this.stoppingCondition = stoppingCondition;
 		this.refTimer = refTimer;
 		this.timerList=timers;
-		timeModelMasks = new int[timerList.size()];
-		int i = 0;
-		int mask = 0x40000000;
-		for (Timer tm : timerList) {
-			timeModelMasks[i] = mask >> i;
-			i++;
-		}
+		this.timeModelMasks = timeModelMasks;
+		this.processCallingOrder = processCallingOrder;
 		// looping aids
 		currentTimes = new long[timerList.size()];
 		// data tracking
@@ -81,6 +77,7 @@ public class Simulator {
 	}
 	
 	// run one simulation step
+	@SuppressWarnings("unused")
 	public void step() {
 		started = true;
 		System.out.println("time = "+lastTime);
@@ -114,22 +111,22 @@ public class Simulator {
 	}
 	
 	private void runSelectedProcesses(int mask, long nexttime, long step) {
-//		// 3 execute all the processes depending on these time models
-//		List<List<ProcessNode>> currentProcesses = processCallingOrder.get(mask);
-//		// loop on dependency rank
-//		for (int j = 0; j < currentProcesses.size(); j++) {
-//			List<ProcessNode> torun = currentProcesses.get(j);
-//			// execute all processes at the same dependency level
-//			for (ProcessNode p : torun) {
-//				p.execute(nexttime, step); 
-//			}
-//			// update the state of systems depending on processes at the
-//			// same dependency level
-//			//TODO !	
-////			for (ProcessNode p : torun)
-////				p.updateState();
-//			
-//		}
+		// 3 execute all the processes depending on these time models
+		List<List<ProcessNode>> currentProcesses = processCallingOrder.get(mask);
+		// loop on dependency rank
+		for (int j = 0; j < currentProcesses.size(); j++) {
+			List<ProcessNode> torun = currentProcesses.get(j);
+			// execute all processes at the same dependency level
+			for (ProcessNode p : torun) {
+				p.execute(nexttime, step); 
+			}
+			// update the state of systems depending on processes at the
+			// same dependency level
+			//TODO !	
+//			for (ProcessNode p : torun)
+//				p.updateState();
+			
+		}
 		// 4 advance time ONLY for those time models that were processed
 		int i = 0;
 		for (Timer tm : timerList) {
