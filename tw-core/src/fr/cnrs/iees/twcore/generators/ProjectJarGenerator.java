@@ -144,7 +144,7 @@ public class ProjectJarGenerator {
 		File result = new File(file.getAbsolutePath().replace(from.getAbsolutePath(), to.getAbsolutePath()));
 		return result;
 	}
-	@SuppressWarnings("unchecked")
+
 	private void loadModelCode(Set<File> srcFiles, Set<File> resFiles) {
 		File srcRoot = Project.makeFile(ProjectPaths.CODE);
 		File resRoot = Project.makeFile(ProjectPaths.RES);
