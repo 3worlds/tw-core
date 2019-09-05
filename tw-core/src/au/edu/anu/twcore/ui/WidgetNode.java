@@ -111,7 +111,7 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget> {
 			selectZeroOrOne(hasTheLabel("trackTime")),
 			endNode());
 		if (sim!=null)
-			sim.addObserver((DataReceiver<Property>) widget);
+			sim.addObserver((DataReceiver<Property,SimplePropertyList>) widget);
 	}
 
 	@Override

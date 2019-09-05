@@ -19,15 +19,15 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
  *
  * @param <T>
  */
-public abstract class AbstractDataTracker<T> 
+public abstract class AbstractDataTracker<T,M> 
 		extends AbstractGridNode 
-		implements DataTracker<T> {
+		implements DataTracker<T,M> {
 	
 	private static Logger log = Logger.getLogger(AbstractDataTracker.class.getName());
 	// set level to WARNING to stop getting debug information
 	static { log.setLevel(INFO); } // debugging info
 	
-	private Set<DataReceiver<T>> observers = new HashSet<>();
+	private Set<DataReceiver<T,M>> observers = new HashSet<>();
 	private int messageType;
 
 	protected AbstractDataTracker(int messageType) {
@@ -36,13 +36,13 @@ public abstract class AbstractDataTracker<T>
 	}
 
 	@Override
-	public final void addObserver(DataReceiver<T> listener) {
+	public final void addObserver(DataReceiver<T,M> listener) {
 		observers.add(listener);
 	}
 
 	@Override
 	public final void sendMessage(int msgType, Object payload) {
-		for (DataReceiver<T> dr:observers) 
+		for (DataReceiver<T,M> dr:observers) 
 			if (dr instanceof GridNode)	{
 				log.info("Sending data to receiver "+dr.toString());
 				GridNode gn = (GridNode) dr;
@@ -52,7 +52,7 @@ public abstract class AbstractDataTracker<T>
 	}
 
 	@Override
-	public final void removeObserver(DataReceiver<T> observer) {
+	public final void removeObserver(DataReceiver<T,M> observer) {
 		observers.remove(observer);
 	}
 
@@ -60,5 +60,11 @@ public abstract class AbstractDataTracker<T>
 	public final void sendData(T data) {
 		sendMessage(messageType,data);
 	}
+	
+	@Override
+	public void sendMetadata(M meta) {
+		sendMessage(DataMessageTypes.METADATA,meta);
+	}
 
+	
 }

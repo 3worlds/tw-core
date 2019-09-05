@@ -50,6 +50,8 @@ import au.edu.anu.twcore.ecosystem.dynamics.ConditionEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.GroupOfEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.CycleEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InstanceOfEdge;
+
+import au.edu.anu.twcore.ui.TrackTimeEdge;
 /**
  * 
  * @author Jacques Gignoux - 4 juin 2019
@@ -82,6 +84,8 @@ public enum ConfigurationEdgeLabels {
 	E_GROUPOF		("groupOf",			GroupOfEdge.class),
 	E_CYCLE			("cycle",			CycleEdge.class),
 	E_INSTANCEOF	("instanceOf",		InstanceOfEdge.class),
+	// user interface
+	E_TRACKTIME		("trackTime",		TrackTimeEdge.class),
 	;
 	//=========================================================================
 	private final String label;

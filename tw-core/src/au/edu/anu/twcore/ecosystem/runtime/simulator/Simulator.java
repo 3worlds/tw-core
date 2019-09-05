@@ -12,6 +12,8 @@ import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
+import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 
 /**
  * The class which runs a single simulation on a single parameter set
@@ -24,9 +26,9 @@ public class Simulator {
 	private static Logger log = Logger.getLogger(Simulator.class.getName());
 	
 	// a data tracker to send time data
-	private class timeTracker extends AbstractDataTracker<Property> {
+	private class timeTracker extends AbstractDataTracker<Property,SimplePropertyList> {
 		private timeTracker() {
-			super(DataMessageTypes.VALUE_PAIR);
+			super(DataMessageTypes.TIME);
 		}
 	}
 	
@@ -45,12 +47,12 @@ public class Simulator {
 	 */
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
 	private timeTracker timetracker; 
-	private final String pkey = "t";
 
 	// simulator state
 	private boolean started = false;
 	private boolean finished = false;
 
+	@SuppressWarnings("unused")
 	public Simulator(StoppingCondition stoppingCondition, 
 			TimeLine refTimer,
 			List<Timer> timers) {
@@ -71,8 +73,11 @@ public class Simulator {
 		timetracker = new timeTracker();
 	}
 	
-	public void addObserver(DataReceiver<Property> observer) {
+	public void addObserver(DataReceiver<Property,SimplePropertyList> observer) {
 		timetracker.addObserver(observer);
+		// as metadata, send all properties of the reference TimeLine of this simulator.
+		SimplePropertyList meta = new SimplePropertyListImpl(refTimer.properties());
+		timetracker.sendMetadata(meta);
 	}
 	
 	// run one simulation step
@@ -104,7 +109,7 @@ public class Simulator {
 				i++;
 			}
 			runSelectedProcesses(ctmask, nexttime, step);
-			timetracker.sendData(new Property(pkey,lastTime));
+			timetracker.sendData(new Property(toString(),lastTime));
 		}
 	}
 	

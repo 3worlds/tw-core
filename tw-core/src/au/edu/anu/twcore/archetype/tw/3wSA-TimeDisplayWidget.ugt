@@ -1,5 +1,5 @@
 tree
-// Sub-archetype for 3Worlds for checking ValueStoppingCondition specifications
+// Sub-archetype for 3Worlds for checking TimeDisplayWidget specifications
 	scope =            String("3W-archetype")
 	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
 	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
@@ -7,13 +7,13 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-LabelValuePairWidget
+archetype 3wSA-TimeDisplayWidget
 
-	hasNode LabelValuePairWidgetSpec
+	hasNode TimeDisplayWidgetSpec
 		isOfClass = String("widget")
 		hasParent = StringTable(([3]"top:","bottom:","grid:"))
 		multiplicity = IntegerRange("0..*")
-		hasEdge LabelValuePairWidgetToSimSpec
-			isOfClass = String("timeTracker")
+		hasEdge TimeDisplayWidgetToSimSpec
+			isOfClass = String("trackTime")
 			toNode = String("dynamics")
 			multiplicity = IntegerRange("1..1")

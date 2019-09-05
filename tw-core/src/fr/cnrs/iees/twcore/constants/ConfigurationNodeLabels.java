@@ -59,7 +59,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_RECORD 			("record",				Record.class,				0),
 			N_FIELD 			("field",				Field.class,				0),
 		N_SYSTEM 				("system",				Ecosystem.class,			ECOBASE), 
-			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		SIMBASE+10), // after stopping conditions
+			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		Math.max(SIMBASE+10,TIMEBASE+20)), // after stopping conditions AND TimerModels
 			N_TIMELINE 			("timeLine",			TimeLine.class,				TIMEBASE), 
 			N_TIMEMODEL			("timeModel",			TimeModel.class,			TIMEBASE+10),
 				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			TIMEBASE+20),

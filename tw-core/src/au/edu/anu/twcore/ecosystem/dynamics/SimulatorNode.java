@@ -114,7 +114,7 @@ public class SimulatorNode extends InitialisableNode implements Factory<Simulato
 		return sim;
 	}
 	
-	public void addObserver(DataReceiver<Property> observer) {
+	public void addObserver(DataReceiver<Property,SimplePropertyList> observer) {
 		for (Simulator sim:instances)
 			sim.addObserver(observer);
 		instances.clear();
