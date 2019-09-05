@@ -16,5 +16,5 @@ archetype 3wSA-SimpleStoppingCondition
 		hasProperty SimpleStoppingConditionEndtimePropertySpec
 			hasName = String("endTime")
 			type = String("DateTimeType")
-  			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("1..1")
       
