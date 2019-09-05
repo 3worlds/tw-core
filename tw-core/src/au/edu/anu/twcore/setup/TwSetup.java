@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Comparator;
 
 import au.edu.anu.omhtk.jars.Jars;
@@ -156,16 +157,16 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		System.out.println("done");
 	}
 	
-//	private static Collection<String> getProjectDependencies(String projectName) {
-//		System.out.println("getting dependencies for library "+projectName);
-//		String ivyFile = CODEROOT+File.separator
-//				+projectName+File.separator
-//				+projectName+File.separator  // yes, twice. eg user.dir = /home/gignoux/git/tw-core/tw-core
-//				+"scripts"+File.separator+"ivy.xml";
-//		DependencySolver solver = new DependencySolver(ivyFile);
-//		Collection<String> result = solver.getJars();
-//		return result;
-//	}
+	private static Collection<String> getProjectDependencies(String projectName) {
+		System.out.println("getting dependencies for library "+projectName);
+		String ivyFile = CODEROOT+File.separator
+				+projectName+File.separator
+				+projectName+File.separator  // yes, twice. eg user.dir = /home/gignoux/git/tw-core/tw-core
+				+"scripts"+File.separator+"ivy.xml";
+		DependencySolver solver = new DependencySolver(ivyFile);
+		Collection<String> result = solver.getJars();
+		return result;
+	}
 	
 	/**
 	 * gets all the dependencies of 3worlds and pack them in a single jar.
@@ -190,9 +191,9 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		}
 		// except the code of tw-core. Why ??? Is this because we are in this project ?
 		// Well, then:
-//		packer.addPackageTree("au.edu.anu");
-//		packer.addPackageTree("fr.ens.biologie");
-//		packer.addPackageTree("fr.cnrs.iees");
+		packer.addPackageTree("au.edu.anu");
+		packer.addPackageTree("fr.ens.biologie");
+		packer.addPackageTree("fr.cnrs.iees");
 		System.out.println("PACKING: fr.cnrs.iees.twcore");
 		packer.addPackageTree("fr.cnrs.iees.twcore");
 		System.out.println("PACKING: au.edu.anu.twcore");

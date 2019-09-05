@@ -29,7 +29,7 @@ public class SimpleStoppingCondition extends AbstractStoppingCondition {
 	
 	@Override
 	public boolean stop() {
-		if (simulator().currentTime() >= endTime)
+		if (simulator().currentTime() > endTime)
 			return true;
 		return false;
 	}
@@ -37,7 +37,7 @@ public class SimpleStoppingCondition extends AbstractStoppingCondition {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("(time ≥ ")
+		sb.append("(time > ")
 			.append(endTime)
 			.append(')');
 		return sb.toString();
