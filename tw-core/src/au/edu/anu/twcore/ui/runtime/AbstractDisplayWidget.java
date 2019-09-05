@@ -34,7 +34,7 @@ public abstract class AbstractDisplayWidget<T,M>
 			@SuppressWarnings("unchecked")
 			@Override
 			public void execute(RVMessage message) {
-				if (message.getMessageHeader().type()==dataType) {
+				if (message.getMessageHeader().type()==DataMessageTypes.METADATA) {
 					M meta = (M) message.payload();
 					onMetaDataMessage(meta);
 				}
