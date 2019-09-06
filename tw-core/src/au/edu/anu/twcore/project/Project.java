@@ -99,7 +99,6 @@ public class Project implements ProjectPaths, TwPaths {
 	private static final IdentityScope pScope = new LocalScope("Projects");
 	// important that this comes last here
 	static {
-		log.setLevel(Level.FINE);
 		initialiseScope();
 	}
 
