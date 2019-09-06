@@ -39,6 +39,7 @@ import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Population;
+import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.LocalScope;
@@ -250,7 +251,24 @@ public abstract class CategorizedContainer<T extends Identity>
 		addItems(l,this);
 		return l;
 	}
-	
+
+	// Recursive
+	private void addItems(QuickListOfLists<T> result,
+			CategorizedContainer<T> container,
+			Set<Category> requestedCats) {
+		if (container.categoryInfo().belongsTo(requestedCats))
+			result.addList(container.items());
+		for (CategorizedContainer<T> sc:container.subContainers.values())
+			addItems(result,sc);
+	}
+
+	/** gets all items matching a particular category signature */
+	public Iterable<T> allItems(Set<Category> requestedCats) {
+		QuickListOfLists<T> l = new QuickListOfLists<T>();
+		addItems(l,this,requestedCats);
+		return l;
+	}
+
 	public void effectChanges() {
 		for (String id:itemsToRemove)
 			if (items.remove(id)!=null) {

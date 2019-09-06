@@ -11,6 +11,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
@@ -52,6 +53,8 @@ public class Simulator {
 	// simulator state
 	private boolean started = false;
 	private boolean finished = false;
+	// container for SystemComponents
+	private SystemContainer community;
 
 	public Simulator(StoppingCondition stoppingCondition, 
 			TimeLine refTimer,

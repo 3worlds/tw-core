@@ -112,6 +112,7 @@ public class SimulatorNode
 			// when there is only one stopping condition, then it is used
 			else
 				rootStop = scnodes.get(0).getInstance();
+			// processes
 			hierarchiseProcesses(timeModels);
 			sealed = true;
 		}

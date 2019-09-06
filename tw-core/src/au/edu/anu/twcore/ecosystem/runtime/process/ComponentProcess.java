@@ -39,6 +39,7 @@ import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 
@@ -65,49 +66,55 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 		focalCategories.addAll(categories);
 		categoryId = buildCategorySignature();
 	}
-
-	@Override
-	public final void execute(double t, double dt) {
-//		// get current systems to work with
-//		Iterable<SystemComponent> focals = (Iterable<SystemComponent>) world().getSystemsByCategory(focalCategories);
-//		// preparing data sampling
-//		for (AggregatorFunction function : Afunctions)
-//			function.prepareForSampling(focals, t);
-//		// apply all functions attached to this Process
-//		for (SystemComponent focal : focals) {
-//			// A model can have no state
-//			boolean haveStates = focal.currentState() != null;
-//			if (haveStates) {
-//				focal.currentState().writeDisable();
-//				focal.nextState().writeEnable();
-//			}
-//			// change state of this SystemComponent - easy
-//			for (ChangeStateFunction function : CSfunctions) {
-//				function.changeState(t, dt, focal);
-//			}
-//			if (haveStates)
-//				focal.nextState().writeDisable();
-//			// change category
-//			for (ChangeCategoryDecisionFunction function : CCfunctions) {
-//				String result = function.changeCategory(t, dt, focal);
-//				if (result != null) {
+	
+	// recursive loop on all sub containers of the community
+	private void loop(CategorizedContainer<SystemComponent> container,
+		double t, double dt) {
+		if (container.categoryInfo().belongsTo(focalCategories))
+			executeFunctions(container,t,dt);
+		for (CategorizedContainer<SystemComponent> subc:container.subContainers())
+			loop(subc,t,dt);
+	}
+	
+	// single loop on a container which matches the process categories
+	private void executeFunctions(CategorizedContainer<SystemComponent> container,
+		double t, double dt) {
+		for (SystemComponent focal:container.items()) {
+			boolean haveStates = focal.currentState() != null;
+			if (haveStates) {
+				focal.currentState().writeDisable();
+				focal.nextState().writeEnable();
+			}
+			// change state of this SystemComponent - easy
+			for (ChangeStateFunction function : CSfunctions) {
+				function.changeState(t, dt, focal);
+			}
+			if (haveStates)
+				focal.nextState().writeDisable();
+			// change category
+			for (ChangeCategoryDecisionFunction function : CCfunctions) {
+				String result = function.changeCategory(t, dt, focal);
+				if (result != null) {
+					// TODO: retrieve the LifeCycle information from the container categoryInfo
+					
 //					SystemComponent newRecruit = focal.stage().species().stage(result).newSystem();
 //					for (ChangeOtherStateFunction func : function.getConsequences())
 //						func.changeOtherState(t, dt, focal, newRecruit);
 //					focal.stage().tagSystemForDeletion(focal);
 //					focal.stage().species().stage(result).tagSystemForInsertion(newRecruit);
-//					// NB id should be preserved !
-//					// NB: what about relations ?
-//				}
-//			}
-//			// delete itself
-//			for (DeleteDecisionFunction function : Dfunctions)
-//				if (function.delete(t, dt, focal))
-//					// missing: to which object should data return to ? this must depend on a
-//					// relation !
-//					focal.stage().tagSystemForDeletion(focal);
-//			// creation of other SystemComponents
-//			for (CreateOtherDecisionFunction function : COfunctions) {
+					// NB id should be preserved !
+					// NB: what about relations ?
+				}
+			}
+			// delete itself
+			for (DeleteDecisionFunction function : Dfunctions)
+				if (function.delete(t, dt, focal))
+					// missing: to which object should data return to ? this must depend on a
+					// relation !
+					container.removeItem(focal.id());
+			// creation of other SystemComponents
+			for (CreateOtherDecisionFunction function : COfunctions) {
+				// TODO: where do we get this info from?
 //				for (String stage : focal.stage().produceStages()) {
 //					double result = function.nNew(t, dt, focal, stage);
 //					double proba = Math.random(); // or self made RNG
@@ -127,7 +134,21 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 //						focal.stage().species().stage(stage).tagSystemForInsertion(newBorn);
 //					}
 //				}
-//			}
+			}
+		}
+	}
+
+	@Override
+	public final void execute(double t, double dt) {
+		loop(ecosystem().community(),t,dt);
+//		// get current systems to work with
+//		Iterable<SystemComponent> focals = (Iterable<SystemComponent>) world().getSystemsByCategory(focalCategories);
+//		// preparing data sampling
+//		for (AggregatorFunction function : Afunctions)
+//			function.prepareForSampling(focals, t);
+//		// apply all functions attached to this Process
+//		for (SystemComponent focal : focals) {
+//			// A model can have no state
 //			// aggregate data for data tracking
 //			for (AggregatorFunction function : Afunctions)
 //				function.aggregate(focal, focal.stage().species().getName(), focal.stage().name());
