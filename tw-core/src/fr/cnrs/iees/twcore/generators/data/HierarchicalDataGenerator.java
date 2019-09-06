@@ -51,6 +51,7 @@ import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 import fr.ens.biologie.codeGeneration.JavaCompiler;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * <p>Implements the recursive generation of nested record and table data classes.
@@ -62,7 +63,7 @@ public abstract class HierarchicalDataGenerator
 	extends TwCodeGenerator
 	implements ProjectPaths {
 	
-	private Logger log = Logger.getLogger(HierarchicalDataGenerator.class.getName()); 
+	private static Logger log = Logging.getLogger(HierarchicalDataGenerator.class); 
 	
 	/** the name of the class to generate */
 	protected String className = null;

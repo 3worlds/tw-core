@@ -30,7 +30,6 @@ package au.edu.anu.twcore.archetype;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.archetype.Archetypes;
@@ -40,6 +39,7 @@ import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * Global singleton instance of the 3Warchetype: thread safe and lazy load
@@ -60,9 +60,7 @@ public class TWA {
 	private static boolean checked = false;
 	
 	/** a logger for getting information */
-	private static Logger log = Logger.getLogger(TWA.class.getName());
-	// Use this to adjust the logging level
-	static { log.setLevel(Level.OFF); }
+	private static Logger log = Logging.getLogger(TWA.class);
 
 	/** all the sub-archetypes found in the 3Worlds archetype */
 	private static Map<String, Tree<? extends TreeNode>> subGraphs = new HashMap<>();

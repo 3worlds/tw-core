@@ -1,7 +1,5 @@
 package au.edu.anu.twcore.data.runtime;
 
-import static java.util.logging.Level.*;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -11,6 +9,7 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.rvgrid.rendezvous.AbstractGridNode;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * An ancestor for all kinds of DataTrackers - implements the messaging capacity
@@ -23,9 +22,7 @@ public abstract class AbstractDataTracker<T,M>
 		extends AbstractGridNode 
 		implements DataTracker<T,M> {
 	
-	private static Logger log = Logger.getLogger(AbstractDataTracker.class.getName());
-	// set level to WARNING to stop getting debug information
-	static { log.setLevel(INFO); } // debugging info
+	private static Logger log = Logging.getLogger(AbstractDataTracker.class);
 	
 	private Set<DataReceiver<T,M>> observers = new HashSet<>();
 	private int messageType;

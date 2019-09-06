@@ -34,6 +34,7 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.Sealable;
+import fr.ens.biologie.generic.utils.Logging;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -69,7 +70,7 @@ public class LifeCycle
 		extends InitialisableNode 
 		implements Categorized<SystemComponent>, Sealable {
 
-	private static Logger log = Logger.getLogger(LifeCycle.class.getName());
+	private static Logger log = Logging.getLogger(LifeCycle.class);
 	
 	private boolean sealed = false;
 	private SortedSet<Category> categories = new TreeSet<>();

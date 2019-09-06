@@ -59,6 +59,7 @@ import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * A class to generate code for secondary parameter initialisation
@@ -70,7 +71,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 
 	private static String INITIALISER_ROOT_PACKAGE = SecondaryParametersInitialiser.class.getPackageName(); 
 	
-	private Logger log = Logger.getLogger(TwInitialiserGenerator.class.getName());
+	private static Logger log = Logging.getLogger(TwInitialiserGenerator.class);
 	private String name = null;
 	private String model = null;
 	private List<String> inBodyCode = null;

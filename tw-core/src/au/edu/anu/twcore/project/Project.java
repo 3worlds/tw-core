@@ -43,6 +43,7 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.io.GraphFileFormats;
+import fr.ens.biologie.generic.utils.Logging;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -94,7 +95,7 @@ public class Project implements ProjectPaths, TwPaths {
 	private static final String sep = "_";
 	private static final char sepch = '_';
 	private static final String klassName = Project.class.getName();
-	private static Logger log = Logger.getLogger(klassName);
+	private static Logger log = Logging.getLogger(Project.class);
 	private static final IdentityScope pScope = new LocalScope("Projects");
 	// important that this comes last here
 	static {

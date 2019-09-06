@@ -14,6 +14,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * The class which runs a single simulation on a single parameter set
@@ -23,7 +24,7 @@ import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
  */
 public class Simulator {
 
-	private static Logger log = Logger.getLogger(Simulator.class.getName());
+	private static Logger log = Logging.getLogger(Simulator.class);
 	
 	// a data tracker to send time data
 	private class timeTracker extends AbstractDataTracker<Property,SimplePropertyList> {

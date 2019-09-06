@@ -59,6 +59,7 @@ import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * A class to generate a skeleton java file for a single EcologicalProcess
@@ -71,7 +72,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 
 	// the package of all TwFunction ancestors to user-defined functions. eg au.edu.anu.twcore.ecosystem.runtime.biology
 	public static final String FUNCTION_ROOT_PACKAGE =	TwFunctionAdapter.class.getPackageName();
-	private Logger log = Logger.getLogger(TwFunctionGenerator.class.getName());
+	private static Logger log = Logging.getLogger(TwFunctionGenerator.class);
 	private String name = null;
 	// private String type = null;
 	private TwFunctionTypes type = null;

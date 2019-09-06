@@ -46,10 +46,7 @@ import org.apache.ivy.core.retrieve.RetrieveOptions;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.setup.TwSetup;
-
-//import au.edu.anu.rscs.aot.logging.Logger;
-//import au.edu.anu.rscs.aot.logging.LoggerFactory;
-//import fr.ens.biologie.threeWorlds.resources.core.constants.ProjectPaths;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * <p>
@@ -64,9 +61,7 @@ import au.edu.anu.twcore.setup.TwSetup;
 public class DependencySolver implements ProjectPaths, TwPaths {
 	public static final String destPath= TW_ROOT + File.separator + "tmp"; 
 
-//	private Logger log = LoggerFactory.getLogger(DependencySolver.class);
-	private static String klassName = DependencySolver.class.getName();
-	private static Logger log = Logger.getLogger(klassName);
+	private static Logger log = Logging.getLogger(DependencySolver.class);
 
 	private File ivySettingsXmlFile = null;
 	private File dependencyFile = null;
