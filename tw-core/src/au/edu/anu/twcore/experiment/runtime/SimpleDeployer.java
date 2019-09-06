@@ -70,9 +70,7 @@ public class SimpleDeployer extends Deployer {
 	@Override
 	public void finishProc() {
 		if (runnable != null)
-			runnable.stop();
-		// send status message to listeners
-		// isnt this already done by the state machine ? yes it is
+			runnable.pause();
 	}
 
 	@Override
@@ -83,7 +81,8 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void quitProc() {
-		// DO NOTHING!
+		if (runnable != null)
+			runnable.stop();
 	}
 
 	
