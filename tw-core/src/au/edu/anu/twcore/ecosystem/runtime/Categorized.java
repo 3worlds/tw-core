@@ -71,6 +71,8 @@ public interface Categorized<T extends Identity> {
 	
 	/** checks if this instance belongs to all categories specified in the argument */
 	public default boolean belongsTo(Set<Category> cs) {
+		if (categories()==null)
+			return false;
 		return categories().containsAll(cs);
 	}
 	

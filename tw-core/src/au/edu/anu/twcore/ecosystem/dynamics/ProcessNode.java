@@ -113,6 +113,7 @@ public class ProcessNode
 					process.addFunction(func.getInstance());
 				}
 			}
+			ecosystem.getInstance();
 			sealed = true;
 		}
 	}
