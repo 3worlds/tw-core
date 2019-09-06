@@ -25,7 +25,7 @@ hasNode tabSpec
 hasNode containerRootSpec
 	isOfClass = String("container")
 	hasParent = StringTable(([1]"tab:"))
-	multiplicity = IntegerRange("1..1")
+	multiplicity = IntegerRange("1..*")
 	hasProperty containerRootOrient
 		hasName = String("orientation")
 		type = String("UIContainerOrientation")
