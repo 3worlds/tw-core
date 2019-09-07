@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Comparator;
 
 import au.edu.anu.omhtk.jars.Jars;
+import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.jars.DependencySolver;
 import au.edu.anu.twcore.jars.ThreeWorldsJar;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -91,14 +92,6 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		return outf;
 	}
 	
-	public static void deleteFileTree(File dir) throws IOException {
-		Path root = dir.toPath();
-		Files.walk(root)
-				.sorted(Comparator.reverseOrder())
-				.map(Path::toFile)
-				.forEach(File::delete);
-		assertFalse("Directory still exists", Files.exists(root));
-	}
 	
 	/**
 	 * <p>For end users: generates a Jar with ModelMaker ready to run.
@@ -248,7 +241,7 @@ public class TwSetup implements ProjectPaths, TwPaths {
 //		packModelMaker();
 		System.out.println("Skipping ModelMaker,jar");
 //		packModelRunner();
-		deleteFileTree( new File(DependencySolver.destPath));
+		FileUtilities.deleteFileTree( new File(DependencySolver.destPath));
 		System.out.println("FINISHED");
 		// 5) zip ModelMaker = .3w dir for distribution to end users
 		// do it from the system - it's easier !

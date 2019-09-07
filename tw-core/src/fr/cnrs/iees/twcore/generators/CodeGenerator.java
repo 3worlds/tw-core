@@ -48,9 +48,11 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -93,34 +95,25 @@ public class CodeGenerator {
 		}
 	}
 
-	private static void deleteFileTree(File dir) throws IOException {
-		if (dir.exists()) {
-			Path root = dir.toPath();
-			Files.walk(root)//
-					.sorted(Comparator.reverseOrder())//
-					.map(Path::toFile)//
-					.forEach(File::delete);
-
-			assertFalse("Directory still exists", Files.exists(root));
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	public boolean generate(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
 			// I think this should be:
-			File ecologyFiles = Project.makeFile(ProjectPaths.CODE,wordUpperCaseName(ecology.id()));
+			File ecologyFiles = Project.makeFile(ProjectPaths.CODE, wordUpperCaseName(ecology.id()));
 			// create directory for code generation
 //			File ecologyFiles = new File(
 //					Project.getProjectDirectory() + File.separator + wordUpperCaseName(ecology.id()));
+
+			if (ecologyFiles.exists())
 			try {
-				deleteFileTree(ecologyFiles);
+				FileUtilities.deleteFileTree(ecologyFiles);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new TwcoreException("Unable to delete ["+ecologyFiles+"]");
 			}
+			ecologyFiles.mkdirs();
+
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(ecology.getChildren(),
 					selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(),
@@ -216,12 +209,12 @@ public class CodeGenerator {
 			result.addAll(gen.getFiles());
 			if (system.properties().hasProperty(dataGroup)) {
 				String oldValue = (String) system.properties().getPropertyValue(dataGroup);
-				String newValue =  gen.generatedClassName();
+				String newValue = gen.generatedClassName();
 				if (!newValue.equals(oldValue)) {
 					system.properties().setProperty(dataGroup, newValue);
 					GraphState.setChanged();
 				}
-			}else {
+			} else {
 				((ResizeablePropertyList) system.properties()).addProperty(dataGroup, gen.generatedClassName());
 				GraphState.setChanged();
 			}
@@ -232,7 +225,7 @@ public class CodeGenerator {
 			((ResizeablePropertyList) system.properties()).removeProperty(dataGroup);
 			GraphState.setChanged();
 		}
-		
+
 	}
 
 	private List<File> generateDataCode(TreeGraphDataNode system, String modelName) {
@@ -264,9 +257,8 @@ public class CodeGenerator {
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.generateCode();
-		String genClassName=generator.generatedClassName();
-		((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(),
-				genClassName);
+		String genClassName = generator.generatedClassName();
+		((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
 	}
 
 	private void generateInitialiserCode(TreeGraphDataNode initialiser, String modelName) {
