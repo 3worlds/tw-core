@@ -11,8 +11,10 @@ archetype 3wSA-TimeDisplayWidget
 
 	hasNode TimeDisplayWidgetSpec
 		isOfClass = String("widget")
-		hasParent = StringTable(([3]"top:","bottom:","grid:"))
+		// TODO would be nice if this overrode the base class hasParent but...?
+		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
+		// archetype allows but does not enforce this edge - why - is it not looking at this file?
 		hasEdge TimeDisplayWidgetToSimSpec
 			isOfClass = String("trackTime")
 			toNode = String("dynamics")

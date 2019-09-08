@@ -60,6 +60,7 @@ public enum ConfigurationPropertyNames {
 	P_STOPCD_STOPVAL			("stopValue"),
 	P_STOPCD_RANGE				("range"),
 	P_UICONTAINER_ORIENT		("orientation"),
+	P_UIORDER					("order")
 	;
 
 	private final String pname;

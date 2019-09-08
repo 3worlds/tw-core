@@ -16,24 +16,19 @@ hasNode bottomSpec
 	multiplicity = IntegerRange("0..1")
 	// must have at least one child widget
 
+// tab is, effectively, the root container
 hasNode tabSpec 
 	isOfClass = String("tab")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..*")
-	
-
-hasNode containerRootSpec
-	isOfClass = String("container")
-	hasParent = StringTable(([1]"tab:"))
-	multiplicity = IntegerRange("1..*")
-	hasProperty containerRootOrient
+	hasProperty tabOrientation
 		hasName = String("orientation")
 		type = String("UIContainerOrientation")
 		multiplicity = IntegerRange("1..1")
-
+	
 hasNode containerSpec
 	isOfClass = String("container")
-	hasParent = StringTable(([1]"container:"))
+	hasParent = StringTable(([2]"tab:","container:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty containerOrient
 		hasName = String("orientation")
@@ -47,7 +42,9 @@ hasNode containerSpec
 	
 hasNode widgetSpec
 	isOfClass = String("widget")
-	hasParent = StringTable(([3]"top:","bottom:","container:"))
+	// This hasParent probably has to be removed so each sub-arch determines what is possible
+	// Still, I'm not sure mm's design would support this at the moment.
+	hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder
 		hasName = String("order")		

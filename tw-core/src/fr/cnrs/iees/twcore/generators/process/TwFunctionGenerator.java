@@ -119,7 +119,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			inBodyCode = new ArrayList<String>();
 			// TODO: this is useful for debugging only, should be replaced by some 
 			// logging in the final version
-			String defLine = "System.out.println(getClass().getName()+\"\tTime\t\"+t)";
+			String defLine = "System.out.println(getClass().getSimpleName()+\"\tTime\t\"+t)";
 			inBodyCode.add(defLine);
 		}
 		
