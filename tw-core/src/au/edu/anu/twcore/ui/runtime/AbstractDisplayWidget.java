@@ -1,7 +1,6 @@
 package au.edu.anu.twcore.ui.runtime;
 
 import au.edu.anu.twcore.data.runtime.DataMessageTypes;
-import fr.cnrs.iees.rvgrid.rendezvous.AbstractGridNode;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.cnrs.iees.rvgrid.rendezvous.RendezvousProcess;
 
@@ -13,11 +12,11 @@ import fr.cnrs.iees.rvgrid.rendezvous.RendezvousProcess;
  * @param <T> The type of data sent in messages
  */
 public abstract class AbstractDisplayWidget<T,M> 
-		extends AbstractGridNode 
-		implements DataReceiver<T,M>, Widget {
+		extends StatusWidget 
+		implements DataReceiver<T,M> {
 
-	protected AbstractDisplayWidget(int dataType) {
-		super();
+	protected AbstractDisplayWidget(int statusType,int dataType) {
+		super(statusType);
 		// RV for data messages
 		addRendezvous(new RendezvousProcess() {
 			@SuppressWarnings("unchecked")

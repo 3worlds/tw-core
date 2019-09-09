@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ui.runtime.StatusProcessor;
 import fr.cnrs.iees.rvgrid.statemachine.State;
-import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
+import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
 import fr.ens.biologie.generic.utils.Logging;
 
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
@@ -15,7 +15,8 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  * @author Jacques Gignoux - 29 août 2019
  *
  */
-public class ExperimentController extends StateMachineObserver {
+@Deprecated
+public class ExperimentController extends StateMachineController {
 
 	private static Logger log = Logging.getLogger(ExperimentController.class);
 	

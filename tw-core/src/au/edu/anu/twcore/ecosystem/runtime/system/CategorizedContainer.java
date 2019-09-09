@@ -316,6 +316,16 @@ public abstract class CategorizedContainer<T extends Identity>
 	public int totalRemoved() {
 		return totalRemoved(this,0);
 	}
+	
+	public int depth() {
+		int result = 0;
+		CategorizedContainer<?> superC = this;
+		while (superC!=null) {
+			result++;
+			superC = superC.superContainer;
+		}
+		return result;
+	}
 
 	// Population methods
 	

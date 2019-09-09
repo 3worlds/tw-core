@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.ui.runtime;
 
-import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
+import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
 
 /**
  * An ancestor for widgets that can control a state machine. The 'controller' field has methods
@@ -11,11 +11,12 @@ import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
  * @author Jacques Gignoux - 2 sept. 2019
  *
  */
-public abstract class ControlWidget extends AbstractWidget implements StatusProcessor {
+@Deprecated
+public abstract class ControlWidget implements StatusProcessor {
 	
-	protected StateMachineObserver controller;
+	protected StateMachineController controller;
 	
-	public ControlWidget(StateMachineObserver controller) {
+	public ControlWidget(StateMachineController controller) {
 		super();
 		this.controller = controller;
 	}

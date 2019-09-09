@@ -34,7 +34,8 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
+import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
+import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 
@@ -49,8 +50,8 @@ import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.Experiment;
-import au.edu.anu.twcore.ui.runtime.ControlWidget;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
+import au.edu.anu.twcore.ui.runtime.StatusWidget;
 import au.edu.anu.twcore.ui.runtime.Widget;
 
 /**
@@ -94,15 +95,25 @@ public class WidgetNode
 			Class<? extends Widget> widgetClass;
 			try {
 				widgetClass = (Class<? extends Widget>) Class.forName(subclass, false, classLoader);
-				// ControlWidgets
-				if (ControlWidget.class.isAssignableFrom(widgetClass)) {
+				// StatusWidgets
+				if (StatusWidget.class.isAssignableFrom(widgetClass)) {
 					Constructor<? extends Widget> widgetConstructor = 
-						widgetClass.getDeclaredConstructor(StateMachineObserver.class);
+						widgetClass.getDeclaredConstructor(int.class);
 					Experiment exp = (Experiment) get(getParent().getParent().getParent(),
 						children(),
 						selectOne(hasTheLabel(N_EXPERIMENT.label())));
-					StateMachineObserver obs = exp.getInstance(); 
-					widget = widgetConstructor.newInstance(obs);
+					StateMachineController obs = exp.getInstance(); 
+					widget = widgetConstructor.newInstance(obs.statusMessageCode());
+				}
+				// StateMachineController widgets
+				else if (StateMachineController.class.isAssignableFrom(widgetClass)) {
+					Constructor<? extends Widget> widgetConstructor = 
+						widgetClass.getDeclaredConstructor(StateMachineEngine.class);
+					Experiment exp = (Experiment) get(getParent().getParent().getParent(),
+						children(),
+						selectOne(hasTheLabel(N_EXPERIMENT.label())));
+					StateMachineController obs = exp.getInstance(); 
+					widget = widgetConstructor.newInstance(obs.stateMachine());
 				}
 				// Other widgets
 				else {

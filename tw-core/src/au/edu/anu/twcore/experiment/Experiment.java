@@ -33,6 +33,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 
@@ -43,7 +44,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
-import au.edu.anu.twcore.experiment.runtime.ExperimentController;
 import au.edu.anu.twcore.experiment.runtime.SimpleDeployer;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -61,10 +61,12 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  */
 public class Experiment 
 		extends InitialisableNode 
-		implements Singleton<ExperimentController>, Sealable {
+//		implements Singleton<ExperimentController>, Sealable {
+		implements Singleton<StateMachineController>, Sealable {
 
 	private boolean sealed = false;
-	private ExperimentController controller = null;
+//	private ExperimentController controller = null;
+	private StateMachineController controller = null;
 	private Deployer deployer = null;
 	
 	// default constructor
@@ -92,7 +94,7 @@ public class Experiment
 						children(),
 						selectOne(hasTheLabel(N_DYNAMICS.label())));
 					deployer.attachSimulator(sim.newInstance());
-					controller = new ExperimentController(deployer);
+					controller = new StateMachineController(deployer);
 					// this puts the deployer in "waiting" state
 					controller.sendEvent(initialise.event());
 				}
@@ -110,7 +112,7 @@ public class Experiment
 	}
 
 	@Override
-	public ExperimentController getInstance() {
+	public StateMachineController getInstance() {
 		if (!sealed)
 			initialise();
 		return controller;

@@ -6,6 +6,7 @@ package au.edu.anu.twcore.ui.runtime;
  * @author Jacques Gignoux - 2 sept. 2019
  *
  */
+@Deprecated
 public interface StatusProcessor {
 	
 	public void processStatus(Object status);

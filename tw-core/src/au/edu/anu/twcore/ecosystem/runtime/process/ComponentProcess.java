@@ -35,13 +35,17 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
+import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 
 /**
  * A TwProcess that loops on a list of SystemComponents and executes methods on
@@ -60,7 +64,18 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	private List<DeleteDecisionFunction> Dfunctions = new LinkedList<DeleteDecisionFunction>();
 	private List<CreateOtherDecisionFunction> COfunctions = new LinkedList<CreateOtherDecisionFunction>();
 //	private List<AggregatorFunction> Afunctions = new LinkedList<AggregatorFunction>();
-
+	
+	// local variables for looping
+	private TwData ecosystemPar = null;
+	private TwData ecosystemVar = null;
+	private ReadOnlyPropertyList ecosystemPop = null;
+	private TwData lifeCyclePar = null;
+	private TwData lifeCycleVar = null;
+	private ReadOnlyPropertyList lifeCyclePop = null;
+	private TwData groupPar = null;
+	private TwData groupVar = null;
+	private ReadOnlyPropertyList groupPop = null;
+	
 	public ComponentProcess(Ecosystem world, Collection<Category> categories) {
 		super(world);
 		focalCategories.addAll(categories);
@@ -70,8 +85,24 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	// recursive loop on all sub containers of the community
 	private void loop(CategorizedContainer<SystemComponent> container,
 		double t, double dt) {
-		if (container.categoryInfo().belongsTo(focalCategories))
+		if (container.categoryInfo().belongsTo(focalCategories)) {
+			if (container.categoryInfo() instanceof LifeCycle) {
+				lifeCyclePar = container.parameters();
+				lifeCycleVar = container.variables();
+				lifeCyclePop = container.populationData();
+			}
+			else if (container.categoryInfo() instanceof Ecosystem) {
+				ecosystemPar = container.parameters();
+				ecosystemVar = container.variables();
+				ecosystemPop = container.populationData();
+			}
+			else if (container.categoryInfo() instanceof SystemFactory) {
+				groupPar = container.parameters();
+				groupVar = container.variables();
+				groupPop = container.populationData();
+			}
 			executeFunctions(container,t,dt);
+		}
 		for (CategorizedContainer<SystemComponent> subc:container.subContainers())
 			loop(subc,t,dt);
 	}
@@ -80,6 +111,12 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	private void executeFunctions(CategorizedContainer<SystemComponent> container,
 		double t, double dt) {
 		for (SystemComponent focal:container.items()) {
+			
+			container.parameters(); // returns the parameters associated to this container
+			container.variables(); // returns the state variables (drivers only) associated to this container
+			container.populationData(); // returns the population data (read only) of this container
+			container.id(); // the name of the container (eg stage name, species name, site name)
+			
 			boolean haveStates = focal.currentState() != null;
 			if (haveStates) {
 				focal.currentState().writeDisable();
