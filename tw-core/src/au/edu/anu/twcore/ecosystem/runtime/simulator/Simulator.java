@@ -163,6 +163,7 @@ public class Simulator {
 		finished = false;
 		for (Timer t:timerList)
 			t.reset();
+		timetracker.sendData(new Property(toString(),lastTime));
 	}
 
 	// returns true if stopping condition is met
