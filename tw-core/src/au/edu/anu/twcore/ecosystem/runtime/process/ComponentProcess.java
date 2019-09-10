@@ -138,7 +138,10 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 				if (result != null) {
 					if (lifeCycle!=null) {
 						// find the next stage !
-						focal.membership(); // categories of focal
+						Set<Category> nextcats= lifeCycle.recruitTo(focal.membership());
+						// how to get the factory ???
+						// must be of the proper parameter set or so... how to know that?
+						// must be in the lifecycle !
 					}
 					
 //					SystemComponent newRecruit = focal.stage().species().stage(result).newSystem();

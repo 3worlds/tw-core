@@ -44,6 +44,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_PARAMET
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -78,6 +79,11 @@ public class LifeCycle
 	
 	private TwData parameterTemplate = null;
 	
+	// the map of category recruitment transitions - key is the 'from' category, value is the 'to' cat.
+	private Map<Category,Category> recruit = new HashMap<Category,Category>();
+	// the map of category recruitment transitions - key is the 'from' category, value is the 'to' cat.
+	private Map<Category,Category> produce = new HashMap<Category,Category>();
+	
 	// The SystemComponent containers instantiated by this LifeCycle
 	private Map<String,SystemContainer> containers = new HashMap<String,SystemContainer>();
 	
@@ -108,11 +114,32 @@ public class LifeCycle
 				if (!s.trim().isEmpty())
 					parameterTemplate = loadDataClass(s);
 		}
-		sealed = true; // important - next statement access this class methods
-		categoryId = buildCategorySignature();
+		// build the recruitment table
 		Collection<Recruit> recs = (Collection<Recruit>) get(getChildren(),
 			selectZeroOrMany(hasTheLabel(N_RECRUIT.label())));
-		
+		for (Recruit r:recs) {
+			Category toc = (Category) get(r.edges(Direction.OUT),
+				selectOne(hasTheLabel(E_TOCATEGORY.label())),
+				endNode());
+			Category froc = (Category) get(r.edges(Direction.OUT),
+				selectOne(hasTheLabel(E_FROMCATEGORY.label())),
+				endNode());
+			recruit.put(froc,toc);
+		}
+		// build the reproduction table
+		Collection<Produce> prods = (Collection<Produce>) get(getChildren(),
+			selectZeroOrMany(hasTheLabel(N_PRODUCE.label())));
+		for (Produce r:prods) {
+			Category toc = (Category) get(r.edges(Direction.OUT),
+				selectOne(hasTheLabel(E_TOCATEGORY.label())),
+				endNode());
+			Category froc = (Category) get(r.edges(Direction.OUT),
+				selectOne(hasTheLabel(E_FROMCATEGORY.label())),
+				endNode());
+			produce.put(froc,toc);
+		}
+		sealed = true; // important - next statement access this class methods
+		categoryId = buildCategorySignature();
 	}
 
 	@Override
@@ -121,18 +148,54 @@ public class LifeCycle
 	}
 	
 	/**
-	 * returns the categoryset in which an object recruits according to thils lifecycle
+	 * returns the categoryset in which an object recruits according to this lifecycle
 	 * 
 	 * @param from
 	 * @return
 	 */
-	public Categorized<?> recruitTo(Categorized<?> from) {
+	public Set<Category> recruitTo(Categorized<?> from) {
+		Category tocat = null;
+		// search if one of the categories of the argument
+		// matches one of the 'from' categories of the recruit table
 		for (Category c:from.categories()) {
-			
+			tocat = recruit.get(c);
+			// if found, construct a category set with c replaced by tocat and all the categories
+			// already present in the argument (we assume the life cycle only changes one category)
+			if (tocat!=null) {
+				Set<Category> result = new HashSet<Category>(from.categories());
+				result.remove(c);
+				result.add(tocat);
+				return result;
+			}
 		}
-		return null; // TODO
+		return null; 
 	}
 
+	/**
+	 * returns the categoryset which an object produces as offspring according to this lifecycle
+	 * 
+	 * @param from
+	 * @return
+	 */
+	public Set<Category> produceTo(Categorized<?> from) {
+		Category tocat = null;
+		// search if one of the categories of the argument
+		// matches one of the 'from' categories of the produce table
+		for (Category c:from.categories()) {
+			tocat = produce.get(c);
+			// if found, construct a category set with c replaced by tocat and all the categories
+			// already present in the argument (we assume the life cycle only changes one category)
+			if (tocat!=null) {
+				Set<Category> result = new HashSet<Category>(from.categories());
+				result.remove(c);
+				result.add(tocat);
+				return result;
+			}
+		}
+		return null; 
+	}
+
+	
 	@Override
 	public Sealable seal() {
 		sealed = true;
