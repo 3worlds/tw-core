@@ -110,11 +110,27 @@ public class LifeCycle
 		}
 		sealed = true; // important - next statement access this class methods
 		categoryId = buildCategorySignature();
+		Collection<Recruit> recs = (Collection<Recruit>) get(getChildren(),
+			selectZeroOrMany(hasTheLabel(N_RECRUIT.label())));
+		
 	}
 
 	@Override
 	public int initRank() {
 		return N_LIFECYCLE.initRank();
+	}
+	
+	/**
+	 * returns the categoryset in which an object recruits according to thils lifecycle
+	 * 
+	 * @param from
+	 * @return
+	 */
+	public Categorized<?> recruitTo(Categorized<?> from) {
+		for (Category c:from.categories()) {
+			
+		}
+		return null; // TODO
 	}
 
 	@Override

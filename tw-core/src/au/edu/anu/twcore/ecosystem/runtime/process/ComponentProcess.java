@@ -69,12 +69,18 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	private TwData ecosystemPar = null;
 	private TwData ecosystemVar = null;
 	private ReadOnlyPropertyList ecosystemPop = null;
+	private String ecosystemName = null;
 	private TwData lifeCyclePar = null;
 	private TwData lifeCycleVar = null;
 	private ReadOnlyPropertyList lifeCyclePop = null;
+	private String lifeCycleName = null;
 	private TwData groupPar = null;
 	private TwData groupVar = null;
 	private ReadOnlyPropertyList groupPop = null;
+	private String groupName = null;
+	private LifeCycle lifeCycle = null;
+	private Ecosystem ecosystem = null;
+	private SystemFactory group = null;
 	
 	public ComponentProcess(Ecosystem world, Collection<Category> categories) {
 		super(world);
@@ -90,16 +96,22 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 				lifeCyclePar = container.parameters();
 				lifeCycleVar = container.variables();
 				lifeCyclePop = container.populationData();
+				lifeCycleName = container.id();
+				lifeCycle = (LifeCycle) container.categoryInfo();
 			}
 			else if (container.categoryInfo() instanceof Ecosystem) {
 				ecosystemPar = container.parameters();
 				ecosystemVar = container.variables();
 				ecosystemPop = container.populationData();
+				ecosystemName = container.id();
+				ecosystem = (Ecosystem) container.categoryInfo();
 			}
 			else if (container.categoryInfo() instanceof SystemFactory) {
 				groupPar = container.parameters();
 				groupVar = container.variables();
 				groupPop = container.populationData();
+				groupName = container.id();
+				group = (SystemFactory) container.categoryInfo();
 			}
 			executeFunctions(container,t,dt);
 		}
@@ -111,28 +123,23 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	private void executeFunctions(CategorizedContainer<SystemComponent> container,
 		double t, double dt) {
 		for (SystemComponent focal:container.items()) {
-			
-			container.parameters(); // returns the parameters associated to this container
-			container.variables(); // returns the state variables (drivers only) associated to this container
-			container.populationData(); // returns the population data (read only) of this container
-			container.id(); // the name of the container (eg stage name, species name, site name)
-			
-			boolean haveStates = focal.currentState() != null;
-			if (haveStates) {
+			if (focal.currentState() != null) { // otherwise no point computing changes!
 				focal.currentState().writeDisable();
 				focal.nextState().writeEnable();
-			}
-			// change state of this SystemComponent - easy
-			for (ChangeStateFunction function : CSfunctions) {
-				function.changeState(t, dt, focal);
-			}
-			if (haveStates)
+				// change state of this SystemComponent - easy
+				for (ChangeStateFunction function : CSfunctions) {
+					function.changeState(t, dt, focal);
+				}
 				focal.nextState().writeDisable();
+			}
 			// change category
 			for (ChangeCategoryDecisionFunction function : CCfunctions) {
 				String result = function.changeCategory(t, dt, focal);
 				if (result != null) {
-					// TODO: retrieve the LifeCycle information from the container categoryInfo
+					if (lifeCycle!=null) {
+						// find the next stage !
+						focal.membership(); // categories of focal
+					}
 					
 //					SystemComponent newRecruit = focal.stage().species().stage(result).newSystem();
 //					for (ChangeOtherStateFunction func : function.getConsequences())

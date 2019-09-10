@@ -153,6 +153,14 @@ hasNode recruitSpec
 		toNode = String("process")
 		multiplicity = IntegerRange("1..1")
 	// TODO: make sure the process applies to the proper categories and has a function of the proper type...
+	hasEdge recruitToCategorySpec
+		isOfClass = String("toCategory")
+		toNode = String("category")
+		multiplicity = IntegerRange("1..1")
+	hasEdge recruitFromCategorySpec
+		isOfClass = String("fromCategory")
+		toNode = String("category")
+		multiplicity = IntegerRange("1..1")
 		
 hasNode produceSpec
 	isOfClass = String("produce")
@@ -163,6 +171,14 @@ hasNode produceSpec
 		toNode = String("process")
 		multiplicity = IntegerRange("1..1")
 	// TODO: make sure the process applies to the proper categories and has a function of the proper type...
+	hasEdge produceToCategorySpec
+		isOfClass = String("toCategory")
+		toNode = String("category")
+		multiplicity = IntegerRange("1..1")
+	hasEdge produceFromCategorySpec
+		isOfClass = String("fromCategory")
+		toNode = String("category")
+		multiplicity = IntegerRange("1..1")
 
 hasNode stoppingConditionSpec
 	isOfClass = String("stoppingCondition")
