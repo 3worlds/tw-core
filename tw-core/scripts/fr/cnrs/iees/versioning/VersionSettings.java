@@ -86,7 +86,7 @@ public class VersionSettings {
 			{"au.edu.anu.rscs.aot", "omugi", "[0.2.11,)", null},
 			{"au.edu.anu.rscs.aot", "qgraph", "[0.1.3,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.1.6,)", null},
-			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.0.2,)", null},		
+			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.0.3,)", null},		
 			{"org.apache.commons", "commons-text", "1.+", null},
 			{"org.apache.ivy", "ivy", "2.2.0", null},
 			{"org.apache.odftoolkit","simple-odf","0.8.2-incubating", null},
