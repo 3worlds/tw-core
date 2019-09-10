@@ -46,8 +46,9 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.lang.reflect.Constructor;
-import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.LabelValuePairData;
+import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.Experiment;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
@@ -109,7 +110,7 @@ public class WidgetNode
 				selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())),
 				endNode());
 			if (sim!=null)
-				sim.addObserver((DataReceiver<Property,SimplePropertyList>) widget);
+				sim.addObserver((DataReceiver<LabelValuePairData,Metadata>) widget);
 			sealed = true;
 		}
 	}

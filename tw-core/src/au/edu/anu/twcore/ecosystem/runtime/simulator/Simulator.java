@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.data.runtime.AbstractDataTracker;
 import au.edu.anu.twcore.data.runtime.DataMessageTypes;
+import au.edu.anu.twcore.data.runtime.LabelValuePairData;
+import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -26,9 +26,12 @@ import fr.ens.biologie.generic.utils.Logging;
 public class Simulator {
 
 	private static Logger log = Logging.getLogger(Simulator.class);
+	private static int N_INSTANCES = 0;
+	private int id = 0;
+	private Metadata metadata;
 	
 	// a data tracker to send time data
-	private class timeTracker extends AbstractDataTracker<Property,SimplePropertyList> {
+	private class timeTracker extends AbstractDataTracker<LabelValuePairData,Metadata> {
 		private timeTracker() {
 			super(DataMessageTypes.TIME);
 		}
@@ -62,6 +65,8 @@ public class Simulator {
 			int[] timeModelMasks,
 			Map<Integer, List<List<ProcessNode>>> processCallingOrder) {
 		super();
+		N_INSTANCES++;
+		id = N_INSTANCES;
 		this.stoppingCondition = stoppingCondition;
 		this.refTimer = refTimer;
 		this.timerList=timers;
@@ -70,14 +75,24 @@ public class Simulator {
 		// looping aids
 		currentTimes = new long[timerList.size()];
 		// data tracking
-		timetracker = new timeTracker();
+		timetracker = new timeTracker();		
 	}
 	
-	public void addObserver(DataReceiver<Property,SimplePropertyList> observer) {
+	private DataTrackerStatus status() {
+		if (started)
+			if (finished)
+				return DataTrackerStatus.Final;
+			else
+				return DataTrackerStatus.Active;
+		else
+			return DataTrackerStatus.Initial;
+	}
+	
+	public void addObserver(DataReceiver<LabelValuePairData,Metadata> observer) {
 		timetracker.addObserver(observer);
 		// as metadata, send all properties of the reference TimeLine of this simulator.
-		SimplePropertyList meta = new SimplePropertyListImpl(refTimer.properties());
-		timetracker.sendMetadata(meta);
+		metadata = new Metadata(status(),id,refTimer.properties());
+		timetracker.sendMetadata(metadata);
 	}
 	
 	// run one simulation step
@@ -110,8 +125,15 @@ public class Simulator {
 				i++;
 			}
 			runSelectedProcesses(ctmask, nexttime, step);
-			timetracker.sendData(new Property(toString(),lastTime));
+			timetracker.sendData(makeTimeRecord());
 		}
+	}
+	
+	private LabelValuePairData makeTimeRecord() {
+		LabelValuePairData output = new LabelValuePairData(status(),id,metadata.type());
+		output.setValue(lastTime);
+		output.setLabel("t");
+		return output;
 	}
 	
 	private void runSelectedProcesses(int mask, long nexttime, long step) {
@@ -157,13 +179,15 @@ public class Simulator {
 	
 	// resets a simulation at its initial state
 	public void resetSimulation() {
-		lastTime = startTime;
-		stoppingCondition.reset();
-		started = false;
-		finished = false;
-		for (Timer t:timerList)
-			t.reset();
-		timetracker.sendData(new Property(toString(),lastTime));
+		if (started) { // otherwise no point to reset
+			lastTime = startTime;
+			stoppingCondition.reset();
+			started = false;
+			finished = false;
+			for (Timer t:timerList)
+				t.reset();
+			timetracker.sendData(makeTimeRecord());
+		}
 	}
 
 	// returns true if stopping condition is met

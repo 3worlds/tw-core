@@ -50,8 +50,9 @@ import java.util.Set;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.LabelValuePairData;
+import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
@@ -133,7 +134,7 @@ public class SimulatorNode
 		return sim;
 	}
 	
-	public void addObserver(DataReceiver<Property,SimplePropertyList> observer) {
+	public void addObserver(DataReceiver<LabelValuePairData,Metadata> observer) {
 		for (Simulator sim:instances)
 			sim.addObserver(observer);
 		instances.clear();

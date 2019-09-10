@@ -11,7 +11,7 @@ import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
 public class LabelValuePairData extends OutputData {
 
 	// the label as a hierarchical name
-	private DataLabel label = new DataLabel(); 
+	private DataLabel label = null; 
 	private Number value = null;
 	private String svalue = null;
 	
@@ -47,6 +47,15 @@ public class LabelValuePairData extends OutputData {
 	public void setValue(String s) {
 		svalue = s;
 	}
+	
+	public void setLabel(String...labelParts) {
+		label = new DataLabel(labelParts);
+	}
+
+	public void setLabel(DataLabel label) {
+		this.label = label;
+	}
+
 	
 	public DataLabel label() {
 		return label;
