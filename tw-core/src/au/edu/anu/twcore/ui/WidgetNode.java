@@ -60,9 +60,6 @@ import au.edu.anu.twcore.ui.runtime.Widget;
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-
-// Copying the StoppingCondition pattern - not sure if this will work
-
 public class WidgetNode 
 		extends InitialisableNode 
 		implements Singleton<Widget>, Sealable {
@@ -83,30 +80,14 @@ public class WidgetNode
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
-			/*
-			 * I need widget to be valid when ModelRunner shows it ui regardless of whether
-			 * or not initialise() has been called.
-			 */
-			// JG: this looks like a flaw to me: there may be important properties that
-			// you must use to construct your singleton.
-			// You can always initialise the graph before making the singleton anyway.
 			String subclass = (String) properties().getPropertyValue(P_WIDGET_SUBCLASS.key());
 			ClassLoader classLoader = OmugiClassLoader.getAppClassLoader();
 			Class<? extends Widget> widgetClass;
 			try {
 				widgetClass = (Class<? extends Widget>) Class.forName(subclass, false, classLoader);
-				// StatusWidgets
-				if (StatusWidget.class.isAssignableFrom(widgetClass)) {
-					Constructor<? extends Widget> widgetConstructor = 
-						widgetClass.getDeclaredConstructor(int.class);
-					Experiment exp = (Experiment) get(getParent().getParent().getParent(),
-						children(),
-						selectOne(hasTheLabel(N_EXPERIMENT.label())));
-					StateMachineController obs = exp.getInstance(); 
-					widget = widgetConstructor.newInstance(obs.statusMessageCode());
-				}
-				// StateMachineController widgets
-				else if (StateMachineController.class.isAssignableFrom(widgetClass)) {
+				// Status & StateMachineController widgets
+				if ((StatusWidget.class.isAssignableFrom(widgetClass)) | 
+					(StateMachineController.class.isAssignableFrom(widgetClass))){
 					Constructor<? extends Widget> widgetConstructor = 
 						widgetClass.getDeclaredConstructor(StateMachineEngine.class);
 					Experiment exp = (Experiment) get(getParent().getParent().getParent(),
@@ -142,9 +123,6 @@ public class WidgetNode
 	public Widget getInstance() {
 		if (!sealed)
 			initialise();
-//		// ensure its a Singleton
-//		if (widget != null)
-//			return widget;
 		return widget;
 	}
 	@Override

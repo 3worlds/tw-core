@@ -4,6 +4,7 @@ import fr.cnrs.iees.rvgrid.rendezvous.AbstractGridNode;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.cnrs.iees.rvgrid.rendezvous.RendezvousProcess;
 import fr.cnrs.iees.rvgrid.statemachine.State;
+import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineObserver;
 
 /**
@@ -16,16 +17,18 @@ public abstract class StatusWidget
 		extends AbstractGridNode 
 		implements StateMachineObserver {
 
-	public StatusWidget(int statusType) {
+	public StatusWidget(StateMachineEngine<StatusWidget> statusSender) {
+		super();
+		statusSender.addObserver(this);
 		addRendezvous(new RendezvousProcess() {
 			@Override
 			public void execute(RVMessage message) {
-				if (message.getMessageHeader().type()==statusType) {
+				if (message.getMessageHeader().type()==statusSender.statusMessageCode()	) {
 					State state = (State) message.payload();
 					onStatusMessage(state);
 				}
 			}
-		},statusType);
+		},statusSender.statusMessageCode());
 	}
 
 }

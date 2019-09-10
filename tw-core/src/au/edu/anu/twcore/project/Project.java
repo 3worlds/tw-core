@@ -45,7 +45,6 @@ import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.io.GraphFileFormats;
 import fr.ens.biologie.generic.utils.Logging;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.text.WordUtils;

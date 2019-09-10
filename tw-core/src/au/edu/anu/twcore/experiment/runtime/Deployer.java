@@ -22,7 +22,6 @@ import fr.cnrs.iees.rvgrid.statemachine.Transition;
  *
  */
 public abstract class Deployer 
-//		extends StateMachineEngine<ExperimentController>
 		extends StateMachineEngine<StateMachineController>
 		implements DeployerProcedures	{
 

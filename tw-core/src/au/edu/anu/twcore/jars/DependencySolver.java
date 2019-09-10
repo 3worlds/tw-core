@@ -46,7 +46,6 @@ import org.apache.ivy.core.retrieve.RetrieveOptions;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
-import au.edu.anu.twcore.setup.TwSetup;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**

@@ -3,17 +3,12 @@
  */
 package au.edu.anu.twcore.setup;
 
-import static org.junit.Assert.assertFalse;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Comparator;
-
 import au.edu.anu.omhtk.jars.Jars;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.jars.DependencySolver;
@@ -150,6 +145,7 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		System.out.println("done");
 	}
 	
+	@SuppressWarnings("unused")
 	private static Collection<String> getProjectDependencies(String projectName) {
 		System.out.println("getting dependencies for library "+projectName);
 		String ivyFile = CODEROOT+File.separator

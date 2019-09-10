@@ -3,6 +3,7 @@ package au.edu.anu.twcore.ui.runtime;
 import au.edu.anu.twcore.data.runtime.DataMessageTypes;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.cnrs.iees.rvgrid.rendezvous.RendezvousProcess;
+import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
 
 /**
  * An ancestor class for widgets displaying data
@@ -15,8 +16,8 @@ public abstract class AbstractDisplayWidget<T,M>
 		extends StatusWidget 
 		implements DataReceiver<T,M> {
 
-	protected AbstractDisplayWidget(int statusType,int dataType) {
-		super(statusType);
+	protected AbstractDisplayWidget(StateMachineEngine<StatusWidget> statusSender,int dataType) {
+		super(statusSender);
 		// RV for data messages
 		addRendezvous(new RendezvousProcess() {
 			@SuppressWarnings("unchecked")
