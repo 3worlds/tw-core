@@ -18,6 +18,8 @@ treegraph
 		record ranimal
 			field bodyweight
 				type = DataElementType("Double")
+				units = String("kg")
+				precision = Double(0.1)
 			field sex
 				type = DataElementType("Boolean")
 		record rcarnivore
