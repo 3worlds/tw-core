@@ -142,7 +142,7 @@ hasNode lifeCycleSpec
 	hasEdge lifeCycleCategoryBelongsToSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:")
-		multiplicity = IntegerRange("1..*")
+		multiplicity = IntegerRange("0..*")
 
 hasNode recruitSpec
 	isOfClass = String("recruit")
@@ -161,6 +161,8 @@ hasNode recruitSpec
 		isOfClass = String("fromCategory")
 		toNode = String("category")
 		multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery recruitCategoryInLifeCycleSet
+		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
 		
 hasNode produceSpec
 	isOfClass = String("produce")
@@ -179,6 +181,8 @@ hasNode produceSpec
 		isOfClass = String("fromCategory")
 		toNode = String("category")
 		multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery produceCategoryInLifeCycleSet
+		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
 
 hasNode stoppingConditionSpec
 	isOfClass = String("stoppingCondition")

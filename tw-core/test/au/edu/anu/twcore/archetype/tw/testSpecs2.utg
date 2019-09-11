@@ -1,0 +1,150 @@
+treegraph
+// a test file for 3worlds specifications focusing on initial state and life cycle
+
+	// the factory to use for 3Worlds - it has the label/class matchings hard-coded
+	node_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+	edge_factory = String("au.edu.anu.twcore.root.TwConfigFactory")
+
+// TREE 
+3worlds my_model						
+	dataDefinition my_data
+		record rplant
+			field biomass
+				type = DataElementType("Double")
+			field dbh
+				type = DataElementType("Double")
+			field height
+				type = DataElementType("Double")
+		record ranimal
+			field bodyweight
+				type = DataElementType("Double")
+			field sex
+				type = DataElementType("Boolean")
+		record rcarnivore
+			field preysize
+				type = DataElementType("Double")
+		record rjuvenile
+			field effectivegrowth
+				type = DataElementType("Double")
+		record rsenescent
+			field weightloss
+				type = DataElementType("Double")
+		record pjuvenile
+			field rgr
+				type = DataElementType("Double")
+			field survival
+				type = DataElementType("Double")
+		record polder
+			field fecundity
+				type = DataElementType("Double")
+			field survival
+				type = DataElementType("Double")
+	system my_ecosystem 
+		structure anything 
+			categorySet living
+				category plant
+				category animal
+					categorySet diet
+						category herbivore
+						category carnivore
+			categorySet development
+				category juvenile
+				category adult
+				category senescent
+			component seedling
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component tree
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component oldtree
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component calf
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component cow
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component sacredcow
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component cub
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component tiger
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+			component oldstripey
+				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
+		dynamics my_simulator
+			timeLine my_time_line
+				scale = fr.cnrs.iees.twcore.constants.TimeScaleType(MONO_UNIT)
+				shortestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+				longestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+				timeModel my_timeModel
+					timeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
+					nTimeUnits = Integer(1)
+					subclass = String("au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer")
+					dt = Long(3)
+					runAtTimeZero = Boolean(false)
+					process someProcess
+						function Growth
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeOtherState)
+			lifeCycle standardLC
+				produce aj
+				produce sj
+				recruit ja
+				recruit as
+			stoppingCondition my_stop 
+				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition")
+				endTime = DateTimeType(15000)
+	experiment my_experiment
+		design myDesign
+			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)
+		timePeriod toolong
+			start = DateTimeType("21354")
+	userInterface my_UI
+		top my_top
+			widget widget1
+				order = Integer(1)
+				subclass = String("au.edu.anu.twuifx.widgets.ExperimentControlWidget")
+			widget widget2 
+				order = Integer(2)
+				subclass = String("au.edu.anu.twuifx.widgets.TimeDisplayWidget")
+	
+// CROSS-LINKS
+[component:seedling] belongsTo [category:plant]
+[component:seedling] belongsTo [category:juvenile]
+[component:tree] belongsTo [category:plant]
+[component:tree] belongsTo [category:adult]
+[component:oldtree] belongsTo [category:plant]
+[component:oldtree] belongsTo [category:senescent]
+[component:calf] belongsTo [category:herbivore]
+[component:calf] belongsTo [category:juvenile]
+[component:cow] belongsTo [category:herbivore]
+[component:cow] belongsTo [category:adult]
+[component:sacredcow] belongsTo [category:herbivore]
+[component:sacredcow] belongsTo [category:senescent]
+[component:cub] belongsTo [category:carnivore]
+[component:cub] belongsTo [category:juvenile]
+[component:tiger] belongsTo [category:carnivore]
+[component:tiger] belongsTo [category:adult]
+[component:oldstripey] belongsTo [category:carnivore]
+[component:oldstripey] belongsTo [category:senescent]
+[category:plant] drivers [record:rplant]
+[category:animal] drivers [record:ranimal]
+[category:juvenile] drivers [record:rjuvenile]
+[category:senescent] drivers [record:rsenescent]
+[category:carnivore] drivers [record:rcarnivore]
+[category:juvenile] parameters [record:pjuvenile]
+[category:adult] parameters [record:polder]
+[category:senescent] parameters [record:polder]
+[lifeCycle:standardLC] appliesTo [categorySet:development]
+[recruit:ja] fromCategory [category:juvenile]
+[recruit:ja] toCategory [category:adult]
+[recruit:as] fromCategory [category:adult]
+[recruit:as] toCategory [category:senescent]
+[produce:aj] fromCategory [category:adult]
+[produce:aj] toCategory [category:juvenile]
+[produce:sj] fromCategory [category:senescent]
+[produce:sj] toCategory [category:juvenile]
+[process:someProcess] appliesTo [category:plant]
+[experiment:my_experiment] baseLine [system:my_ecosystem]
+
+[recruit:ja] effectedBy [process:someProcess]
+[recruit:as] effectedBy [process:someProcess]
+[produce:aj] effectedBy [process:someProcess]
+[produce:sj] effectedBy [process:someProcess]
