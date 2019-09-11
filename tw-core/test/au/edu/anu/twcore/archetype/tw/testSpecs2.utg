@@ -99,6 +99,21 @@ treegraph
 			stoppingCondition my_stop 
 				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition")
 				endTime = DateTimeType(15000)
+			initialState iii
+				group Brassica_repens
+					group BRjuv
+						parameterValues pBRjuv
+							rgr = Double(1.2)
+							survival = Double(0.1)
+					group BRad
+						parameterValues pBRad
+							fecundity = Double(12.5)
+							survival = Double(0.99)
+					group BRsen
+						parameterValues pBRsen
+							fecundity = Double(2.3)
+							survival = Double(0.3)
+					
 	experiment my_experiment
 		design myDesign
 			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)
@@ -163,3 +178,7 @@ treegraph
 [relationType:oldrepro] fromCategory [category:senescent]
 [relationType:oldrepro] toCategory [category:juvenile]
 [process:makeOffspring2] appliesTo [relationType:oldrepro]
+[group:Brassica_repens] cycle [lifeCycle:standardLC]
+[group:BRjuv] groupOf [component:seedling]
+[group:BRad] groupOf [component:tree]
+[group:BRsen] groupOf [component:oldtree]

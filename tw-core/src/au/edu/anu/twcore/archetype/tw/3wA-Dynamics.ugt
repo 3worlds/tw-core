@@ -232,6 +232,10 @@ hasNode initialStateSpec
 	multiplicity = IntegerRange("0..1")
 	
 // set of values for a parameter set linked to a group of components or a life cycle	
+// NB: a group represents either a lifeCycle or just a group of components with the same parameters
+// when a group is a life cycle, then it MUST have a subgroup matching each of its
+// lifecycle categories
+// TODO: implement this constraint as a query
 hasNode groupSpec
 	isOfClass = String("group")
 	hasParent = StringTable(([2]"initialState:","group:"))
@@ -262,7 +266,7 @@ hasNode individualSpec
 // parameter values for a group as specified in groupSpec above
 hasNode parameterValuesSpec
 	isOfClass = String("parameterValues")
-	hasParent = StringTable(([3]"initialState:","group:","individual"))
+	hasParent = StringTable(([3]"initialState:","group:","individual:"))
 	multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
 	// caution: if parameter values are associated to an individual, it means it is unique in its

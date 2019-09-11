@@ -45,10 +45,6 @@ hasNode tableSpec
 	isOfClass = String("table")
 	hasParent = StringTable(([1]"record:"))
 	multiplicity = IntegerRange("0..*")
-//	hasProperty tableNameSpec 
-//		hasName = String("name")
-//		multiplicity = IntegerRange("1..1")
-//		type = String("String")
 	hasProperty dataElementTypeSpec
 		hasName = String("dataElementType")
 		type = String("DataElementType")
@@ -61,7 +57,23 @@ hasNode tableSpec
 	mustSatisfyQuery childXorPropertyQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery")
 		edge_prop = StringTable(([2]"record","dataElementType"))
-
+	// optional metadata - TODO: make sure these are only applied to numeric tables
+	hasProperty NumericTableUnitsSpec
+		hasName = String("units")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+	hasProperty NumericTablePrecSpec
+		hasName = String("precision")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+	hasProperty NumericTableMinSpec
+		hasName = String("min")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+	hasProperty NumericTableMaxSpec
+		hasName = String("max")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
 		
 hasNode recordFieldSpec
 	isOfClass = String("field")
@@ -70,15 +82,22 @@ hasNode recordFieldSpec
 	hasProperty recordFieldNamePropertySpec
 		hasName = String("type")
 		type = String("DataElementType")
-		//type  = String("String")
 		multiplicity = IntegerRange("1..1")
-	// this property is completely redundant with the above
-	// normally type should be any String recognized by
-	// the ValidPropertyTypes class in omugi fr.cnrs.iees.io.parsing	
-	// This class is able to work out java class names from simple
-	// type names. Additional types can be added in there if needed
-	// (eg a file name type or things like that)
-//	hasProperty recordDataElementTypePropertySpec
-//		hasName = String("dataElementType")
-//		type = String("DataElementType")
-//		multiplicity = IntegerRange("1..1")
+	// optional metadata - TODO: make sure these are only applied to numeric fields
+	hasProperty NumericFieldUnitsSpec
+		hasName = String("units")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+	hasProperty NumericFieldPrecSpec
+		hasName = String("precision")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+	hasProperty NumericFieldMinSpec
+		hasName = String("min")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+	hasProperty NumericFieldMaxSpec
+		hasName = String("max")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+		

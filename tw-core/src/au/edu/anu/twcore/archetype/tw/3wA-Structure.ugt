@@ -61,11 +61,6 @@ hasNode componentSpec
 		hasName = String("driverClass")
 		type =  String("String") 
 		multiplicity = IntegerRange("0..1") 
-	
-//hasNode realisedComponentpec
-//	isOfClass = String("realisedComponent")
-//	hasParent = StringTable(([1]"component:"))
-//	multiplicity = IntegerRange("1..1") //?
 
 hasNode relationTypeSpec
 	isOfClass = String("relationType")

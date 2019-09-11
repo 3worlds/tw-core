@@ -81,9 +81,6 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_CATEGORY 		("category",			Category.class,				CATEGORYBASE), 
 				N_COMPONENT 	("component",			SystemFactory.class,		CATEGORYBASE+10), // after category and categorySet
 				N_RELATIONTYPE 	("relationType",		RelationType.class,			CATEGORYBASE+10), // after category
-				// I am not sure this one is needed - for initialisation maybe ?
-//				N_REALISEDCOMPONENT("realisedComponent",Object.class,				0), // ComplexSystem ?
-				// IDD: As i understood it, component was "species" and realisedComponent was "Stage"
 		N_EXPERIMENT 			("experiment",			Experiment.class,			SIMBASE+20),
 			N_DESIGN 			("design",				Design.class,				0),
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
