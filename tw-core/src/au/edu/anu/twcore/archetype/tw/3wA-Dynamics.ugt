@@ -152,7 +152,6 @@ hasNode recruitSpec
 		isOfClass = String("effectedBy")
 		toNode = String("process")
 		multiplicity = IntegerRange("1..1")
-	// TODO: make sure the process applies to the proper categories and has a function of the proper type...
 	hasEdge recruitToCategorySpec
 		isOfClass = String("toCategory")
 		toNode = String("category")
@@ -163,6 +162,8 @@ hasNode recruitSpec
 		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery recruitCategoryInLifeCycleSet
 		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
+	mustSatisfyQuery validRecruitProcess
+		className = String("au.edu.anu.twcore.archetype.tw.ValidLifeCycleProcessQuery")
 		
 hasNode produceSpec
 	isOfClass = String("produce")
@@ -172,7 +173,6 @@ hasNode produceSpec
 		isOfClass = String("effectedBy")
 		toNode = String("process")
 		multiplicity = IntegerRange("1..1")
-	// TODO: make sure the process applies to the proper categories and has a function of the proper type...
 	hasEdge produceToCategorySpec
 		isOfClass = String("toCategory")
 		toNode = String("category")
@@ -183,6 +183,8 @@ hasNode produceSpec
 		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery produceCategoryInLifeCycleSet
 		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
+	mustSatisfyQuery validProduceProcess
+		className = String("au.edu.anu.twcore.archetype.tw.ValidLifeCycleProcessQuery")
 
 hasNode stoppingConditionSpec
 	isOfClass = String("stoppingCondition")

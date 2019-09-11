@@ -51,6 +51,8 @@ treegraph
 				category juvenile
 				category adult
 				category senescent
+			relationType easyrepro
+			relationType oldrepro
 			component seedling
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
 			component tree
@@ -83,6 +85,12 @@ treegraph
 					process someProcess
 						function Growth
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeOtherState)
+					process makeOffspring1
+						function Reproduce
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(CreateOtherDecision)
+					process makeOffspring2
+						function Reproduce
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(CreateOtherDecision)
 			lifeCycle standardLC
 				produce aj
 				produce sj
@@ -143,8 +151,15 @@ treegraph
 [produce:sj] toCategory [category:juvenile]
 [process:someProcess] appliesTo [category:plant]
 [experiment:my_experiment] baseLine [system:my_ecosystem]
-
 [recruit:ja] effectedBy [process:someProcess]
 [recruit:as] effectedBy [process:someProcess]
-[produce:aj] effectedBy [process:someProcess]
-[produce:sj] effectedBy [process:someProcess]
+[produce:aj] effectedBy [process:makeOffspring1]
+[produce:sj] effectedBy [process:makeOffspring2]
+[relationType:easyrepro] fromCategory [category:adult]
+[relationType:easyrepro] fromCategory [category:plant]
+[relationType:easyrepro] toCategory [category:juvenile]
+[relationType:easyrepro] toCategory [category:plant]
+[process:makeOffspring1] appliesTo [relationType:easyrepro]
+[relationType:oldrepro] fromCategory [category:senescent]
+[relationType:oldrepro] toCategory [category:juvenile]
+[process:makeOffspring2] appliesTo [relationType:oldrepro]
