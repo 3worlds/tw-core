@@ -22,6 +22,8 @@ import java.util.List;
  */
 // tested, works ok. 11/9/2019
 public class IsInLifeCycleCategorySetQuery extends Query {
+	
+	private String failedCat = "";
 
 	public IsInLifeCycleCategorySetQuery() {
 		super();
@@ -43,13 +45,23 @@ public class IsInLifeCycleCategorySetQuery extends Query {
 		Category fromCat = (Category) get(node.edges(Direction.OUT),
 			selectOne(hasTheLabel(E_FROMCATEGORY.label())),
 			endNode());
-		satisfied = (cats.contains(fromCat) && cats.contains(toCat));
+		satisfied = cats.contains(fromCat);
+		if (!satisfied)
+			failedCat = fromCat.id();
+		else {
+			satisfied &= cats.contains(toCat);
+			if (!satisfied)
+				if (failedCat.isEmpty())
+					failedCat = toCat.id();
+				else
+					failedCat += ","+toCat.id();
+		}
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "[" + stateString() + " 'to' and 'from' categories must be in the life cycle category set]";
+		return "[" + stateString() + " '"+ failedCat +"' not found in the life cycle category set]";
 	}
 
 }
