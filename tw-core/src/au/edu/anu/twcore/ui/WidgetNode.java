@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ui;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -46,6 +47,8 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.lang.reflect.Constructor;
+
+
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.Metadata;
@@ -61,13 +64,11 @@ import au.edu.anu.twcore.ui.runtime.Widget;
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-public class WidgetNode 
-		extends InitialisableNode 
-		implements Singleton<Widget>, Sealable {
-	
+public class WidgetNode extends InitialisableNode implements Singleton<Widget>, Sealable {
+
 	private boolean sealed = false;
 	private Widget widget;
-	
+
 	public WidgetNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
@@ -87,14 +88,23 @@ public class WidgetNode
 			try {
 				widgetClass = (Class<? extends Widget>) Class.forName(subclass, false, classLoader);
 				// Status & StateMachineController widgets
-				if ((StatusWidget.class.isAssignableFrom(widgetClass)) | 
-					(StateMachineController.class.isAssignableFrom(widgetClass))){
-					Constructor<? extends Widget> widgetConstructor = 
-						widgetClass.getDeclaredConstructor(StateMachineEngine.class);
-					Experiment exp = (Experiment) get(getParent().getParent().getParent(),
-						children(),
-						selectOne(hasTheLabel(N_EXPERIMENT.label())));
-					StateMachineController obs = exp.getInstance(); 
+				if ((StatusWidget.class.isAssignableFrom(widgetClass))
+						| (StateMachineController.class.isAssignableFrom(widgetClass))) {
+					Constructor<? extends Widget> widgetConstructor = widgetClass
+							.getDeclaredConstructor(StateMachineEngine.class);
+					// ah!
+//					Experiment exp = (Experiment) get(getParent().getParent().getParent(),
+//						children(),
+//						selectOne(hasTheLabel(N_EXPERIMENT.label())));
+					TreeNode root = (TreeNode) this;
+
+					// this could be a function of any TreeNode
+					while (root.getParent() != null)
+						root = root.getParent();
+
+					Experiment exp = (Experiment) get(root, children(), selectOne(hasTheLabel(N_EXPERIMENT.label())));
+
+					StateMachineController obs = exp.getInstance();
 					widget = widgetConstructor.newInstance(obs.stateMachine());
 				}
 				// Other widgets
@@ -102,15 +112,14 @@ public class WidgetNode
 					Constructor<? extends Widget> widgetConstructor = widgetClass.getDeclaredConstructor();
 					widget = widgetConstructor.newInstance();
 				}
-				widget.setProperties(id(),properties());
+				widget.setProperties(id(), properties());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())),
-				endNode());
-			if (sim!=null)
-				sim.addObserver((DataReceiver<LabelValuePairData,Metadata>) widget);
+					selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())), endNode());
+			if (sim != null)
+				sim.addObserver((DataReceiver<LabelValuePairData, Metadata>) widget);
 			sealed = true;
 		}
 	}
@@ -126,6 +135,7 @@ public class WidgetNode
 			initialise();
 		return widget;
 	}
+
 	@Override
 	public Sealable seal() {
 		sealed = true;

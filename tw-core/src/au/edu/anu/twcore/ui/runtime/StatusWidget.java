@@ -1,5 +1,6 @@
 package au.edu.anu.twcore.ui.runtime;
 
+import au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorStates;
 import fr.cnrs.iees.rvgrid.rendezvous.AbstractGridNode;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.cnrs.iees.rvgrid.rendezvous.RendezvousProcess;
@@ -30,5 +31,12 @@ public abstract class StatusWidget
 			}
 		},statusSender.statusMessageCode());
 	}
+	
+	// helper method for this slightly confusing classes (one from rvgrid, the other from twcore
+	// Maybe SimulatorStates should be called DeployerStates?
+	public static boolean isSimulatorState(State state, SimulatorStates simState) {
+		return state.getName().equals(simState.name());
+	}
+ 
 
 }
