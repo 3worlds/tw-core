@@ -57,7 +57,7 @@ hasNode widgetSpec
 		mustSatisfyQuery widgetClassInValueSetQuery
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery") 
 			values = StringTable(([5]+
-			"au.edu.anu.twuifx.widgets.SingleGridWidget",+
+			"au.edu.anu.twuifx.widgets.SimpleMapWidget",+
 			"au.edu.anu.twuifx.widgets.TimeDisplayWidget",+
 			"au.edu.anu.twuifx.widgets.ExperimentControlWidget",+
 			"au.edu.anu.twuifx.widgets.TimeSeriesPlotWidget",+
