@@ -55,6 +55,8 @@ treegraph
 				category senescent
 			relationType easyrepro
 			relationType oldrepro
+			relationType recruitJA
+			relationType recruitAS
 			component seedling
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
 			component tree
@@ -93,6 +95,12 @@ treegraph
 					process makeOffspring2
 						function Reproduce
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(CreateOtherDecision)
+					process recruitFromJtoA
+						function Recruit
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeCategoryDecision)
+					process recruitFromAtoS
+						function Recruit
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeCategoryDecision)
 			lifeCycle standardLC
 				produce aj
 				produce sj
@@ -168,18 +176,24 @@ treegraph
 [produce:sj] toCategory [category:juvenile]
 [process:someProcess] appliesTo [category:plant]
 [experiment:my_experiment] baseLine [system:my_ecosystem]
-[recruit:ja] effectedBy [process:someProcess]
-[recruit:as] effectedBy [process:someProcess]
+[recruit:ja] effectedBy [process:recruitFromJtoA]
+[recruit:as] effectedBy [process:recruitFromAtoS]
 [produce:aj] effectedBy [process:makeOffspring1]
 [produce:sj] effectedBy [process:makeOffspring2]
 [relationType:easyrepro] fromCategory [category:adult]
 [relationType:easyrepro] fromCategory [category:plant]
 [relationType:easyrepro] toCategory [category:juvenile]
 [relationType:easyrepro] toCategory [category:plant]
+[relationType:recruitJA] fromCategory [category:juvenile]
+[relationType:recruitJA] toCategory [category:adult]
+[relationType:recruitAS] fromCategory [category:adult]
+[relationType:recruitAS] toCategory [category:senescent]
 [process:makeOffspring1] appliesTo [relationType:easyrepro]
 [relationType:oldrepro] fromCategory [category:senescent]
 [relationType:oldrepro] toCategory [category:juvenile]
 [process:makeOffspring2] appliesTo [relationType:oldrepro]
+[process:recruitFromJtoA] appliesTo [relationType:recruitJA]
+[process:recruitFromAtoS] appliesTo [relationType:recruitAS]
 [group:Brassica_repens] cycle [lifeCycle:standardLC]
 [group:BRjuv] groupOf [component:seedling]
 [group:BRad] groupOf [component:tree]
