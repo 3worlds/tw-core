@@ -53,8 +53,6 @@ treegraph
 				category juvenile
 				category adult
 				category senescent
-			relationType easyrepro
-			relationType oldrepro
 			relationType recruitJA
 			relationType recruitAS
 			component seedling
@@ -123,7 +121,19 @@ treegraph
 						parameterValues pBRsen
 							fecundity = Double(2.3)
 							survival = Double(0.3)
-					
+				group Sequoia_supervirens
+					group SSjuv
+						parameterValues pSSjuv
+							rgr = Double(1.03)
+							survival = Double(0.2)
+					group SSad
+						parameterValues pSSad
+							fecundity = Double(2054)
+							survival = Double(0.998)
+					group SSsen
+						parameterValues pSSsen
+							fecundity = Double(154)
+							survival = Double(0.8)
 	experiment my_experiment
 		design myDesign
 			type = fr.cnrs.iees.twcore.constants.ExperimentDesignType(singleRun)
@@ -180,21 +190,19 @@ treegraph
 [recruit:as] effectedBy [process:recruitFromAtoS]
 [produce:aj] effectedBy [process:makeOffspring1]
 [produce:sj] effectedBy [process:makeOffspring2]
-[relationType:easyrepro] fromCategory [category:adult]
-[relationType:easyrepro] fromCategory [category:plant]
-[relationType:easyrepro] toCategory [category:juvenile]
-[relationType:easyrepro] toCategory [category:plant]
 [relationType:recruitJA] fromCategory [category:juvenile]
 [relationType:recruitJA] toCategory [category:adult]
 [relationType:recruitAS] fromCategory [category:adult]
 [relationType:recruitAS] toCategory [category:senescent]
-[process:makeOffspring1] appliesTo [relationType:easyrepro]
-[relationType:oldrepro] fromCategory [category:senescent]
-[relationType:oldrepro] toCategory [category:juvenile]
-[process:makeOffspring2] appliesTo [relationType:oldrepro]
+[process:makeOffspring1] appliesTo [category:adult]
+[process:makeOffspring2] appliesTo [category:senescent]
 [process:recruitFromJtoA] appliesTo [relationType:recruitJA]
 [process:recruitFromAtoS] appliesTo [relationType:recruitAS]
 [group:Brassica_repens] cycle [lifeCycle:standardLC]
 [group:BRjuv] groupOf [component:seedling]
 [group:BRad] groupOf [component:tree]
 [group:BRsen] groupOf [component:oldtree]
+[group:Sequoia_supervirens] cycle [lifeCycle:standardLC]
+[group:SSjuv] groupOf [component:seedling]
+[group:SSad] groupOf [component:tree]
+[group:SSsen] groupOf [component:oldtree]

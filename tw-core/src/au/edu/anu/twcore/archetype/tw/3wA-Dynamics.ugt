@@ -111,6 +111,8 @@ hasNode functionSpec
 	multiplicity = IntegerRange("0..*")
 	mustSatisfyQuery functionNameWithUppercaseQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
+	mustSatisfyQuery functionMatchesWithProcessTypeSpec
+		className = String("au.edu.anu.twcore.archetype.tw.FunctionMatchProcessTypeQuery")
 	hasProperty functionTypeSpec
 		hasName = String("type")
 		type = String("TwFunctionTypes")

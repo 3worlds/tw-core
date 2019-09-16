@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.process;
 
+import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +48,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * A TwProcess that loops on a list of SystemComponents and executes methods on
@@ -230,6 +233,14 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	public String categoryId() {
 		return categoryId;
 	}
+	
+	public static TwFunctionTypes[] compatibleFunctionTypes = {
+		ChangeCategoryDecision,
+		ChangeState,
+		DeleteDecision,
+		CreateOtherDecision,
+	};
+
 //
 //	@Override
 //	public SystemComponent clone(SystemComponent item) {
