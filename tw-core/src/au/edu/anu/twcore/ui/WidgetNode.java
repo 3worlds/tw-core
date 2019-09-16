@@ -86,7 +86,7 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 			ClassLoader classLoader = OmugiClassLoader.getAppClassLoader();
 			Class<? extends Widget> widgetClass;
 			try {
-				widgetClass = (Class<? extends Widget>) Class.forName(subclass, false, classLoader);
+				widgetClass = (Class<? extends Widget>) Class.forName(subclass, true, classLoader);
 				// Status & StateMachineController widgets
 				if ((StatusWidget.class.isAssignableFrom(widgetClass))
 						| (StateMachineController.class.isAssignableFrom(widgetClass))) {

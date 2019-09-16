@@ -67,7 +67,7 @@ public class RequirePropertyQuery extends Query {
 		isep[Table.TABLEix] = TABLE_ITEM_SEPARATOR;
 		StringTable s = StringTable.valueOf(valueList,bdel,isep);
 		try {
-			Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) Class.forName(type);
+			Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) Class.forName(type,true,Thread.currentThread().getContextClassLoader());
 			Method m = e.getMethod("valueOf", String.class);
 			values = new Object[s.size()];
 			for (int i = 0; i < values.length; i++)

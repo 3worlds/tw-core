@@ -222,7 +222,7 @@ public interface Categorized<T extends Identity> {
 		ClassLoader classLoader = OmugiClassLoader.getJarClassLoader();
 		Class<? extends TwData> dataClass;
 		try {
-			dataClass = (Class<? extends TwData>) Class.forName(className, false, classLoader);
+			dataClass = (Class<? extends TwData>) Class.forName(className, true, classLoader);
 			Constructor<? extends TwData> dataConstructor = dataClass.getDeclaredConstructor();
 			newData = dataConstructor.newInstance();
 			newData.clear();

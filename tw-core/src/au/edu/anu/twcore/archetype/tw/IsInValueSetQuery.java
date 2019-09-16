@@ -79,7 +79,7 @@ public class IsInValueSetQuery extends Query {
 	@SuppressWarnings("unchecked")
 	public IsInValueSetQuery(String enumName) {
 		try {
-			Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) Class.forName(enumName);
+			Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) Class.forName(enumName,true,Thread.currentThread().getContextClassLoader());
 			Object[] oo = e.getEnumConstants();
 			valueSet = new StringTable(new Dimensioner(oo.length));
 			for (int i = 0; i < oo.length; i++)
