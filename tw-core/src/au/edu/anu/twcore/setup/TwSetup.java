@@ -70,7 +70,7 @@ public class TwSetup implements ProjectPaths, TwPaths {
 				"	</publications>\n" + 
 				"\n" + 
 				"	<dependencies>\n" + 
-				"		<dependency org=\"au.edu.anu.tw-uifx\" name=\"tw-uifx\" rev=\"[0.1.4,)\"/>\n" + 
+				"		<dependency org=\"au.edu.anu.tw-uifx\" name=\"tw-uifx\" rev=\"[0.2.5,)\"/>\n" + 
 				"	</dependencies>\n" + 
 				"\n" + 
 				"</ivy-module>\n" + 
@@ -183,9 +183,9 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		packer.addPackageTree("au.edu.anu");
 		packer.addPackageTree("fr.ens.biologie");
 		packer.addPackageTree("fr.cnrs.iees");
-		System.out.println("PACKING: fr.cnrs.iees.twcore");
+//		System.out.println("PACKING: fr.cnrs.iees.twcore");
 		packer.addPackageTree("fr.cnrs.iees.twcore");
-		System.out.println("PACKING: au.edu.anu.twcore");
+//		System.out.println("PACKING: au.edu.anu.twcore");
 		packer.addPackageTree("au.edu.anu.twcore");
 //		for (String s:getProjectDependencies("uit")) packer.addJar(s);
 //		for (String s:getProjectDependencies("ymuit")) packer.addJar(s);
@@ -233,10 +233,10 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		// 3) clean up: delete /.3w/lib
 //		deleteFileTree(f); // ???
 		// 4) make jar of 3worlds
-		System.out.println("Skipping ModelMaker,jar");
-//		packModelMaker();
-		System.out.println("Skipping ModelMaker,jar");
-//		packModelRunner();
+//		System.out.println("Skipping ModelMaker,jar");
+		packModelMaker();
+//		System.out.println("Skipping ModelMaker,jar");
+		packModelRunner();
 		FileUtilities.deleteFileTree( new File(DependencySolver.destPath));
 		System.out.println("FINISHED");
 		// 5) zip ModelMaker = .3w dir for distribution to end users
