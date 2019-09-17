@@ -9,7 +9,6 @@ import au.edu.anu.twcore.session.SimulationSession;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.GraphImporter;
 
 /**
