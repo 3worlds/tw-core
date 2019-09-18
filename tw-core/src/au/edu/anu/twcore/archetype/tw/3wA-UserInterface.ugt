@@ -64,5 +64,5 @@ hasNode widgetSpec
 			"au.edu.anu.twuifx.widgets.LabelValuePairWidget"))
 	mustSatisfyQuery CheckSubArchetypeQueryTimeDisplayWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"widgetClass","au.edu.anu.twuifx.widgets.TimeDisplayWidget","3wSA-TimeDisplayWidget.ugt"))
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.TimeDisplayWidget","3wSA-TimeDisplayWidget.ugt"))
 			
