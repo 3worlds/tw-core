@@ -28,13 +28,19 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALDataNode;
+import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 /**
  * The main runtime object in 3worlds, representing "individuals" or "agents" or "system
@@ -140,5 +146,31 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 	public SystemComponent clone() {
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Iterable<SystemRelation> getRelations() {
+		return (Iterable<SystemRelation>) edges(Direction.OUT);
+	}
+	
+	// why not use queries instead?
+	public Iterable<SystemRelation> getRelations(String relationType) {
+		List<SystemRelation> list = new ArrayList<>();
+		for (ALEdge e:edges(Direction.OUT)) {
+			SystemRelation r = (SystemRelation) e;
+			if (r.properties().getPropertyValue("type").equals(relationType))
+				list.add(r);
+		}
+		return list;
+	}
+	
+//	public SystemRelation relateTo(SystemComponent toComponent, String relationType) {
+//		// should be:
+//		SystemRelation rel = (SystemRelation) connectTo(Direction.OUT,toComponent,
+//			new SharedPropertyListImpl(SystemRelation.DEFAULT_PROPERTIES));
+//		rel.properties().setProperty("type",relationType);
+//		// but this method does not exist yet
+//		return rel;
+//	}
+	
 
 }
