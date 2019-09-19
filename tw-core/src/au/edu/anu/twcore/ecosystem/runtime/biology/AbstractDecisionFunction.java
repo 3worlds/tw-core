@@ -3,6 +3,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 import java.security.SecureRandom;
 import java.util.Random;
 
+import au.edu.anu.omhtk.rng.Pcg32;
 import au.edu.anu.omhtk.rng.RngFactory;
 import au.edu.anu.omhtk.rng.RngFactory.ResetType;
 
@@ -30,7 +31,7 @@ public class AbstractDecisionFunction extends TwFunctionAdapter {
 	 */
 	public AbstractDecisionFunction() {
 		super();
-		RngFactory.makeRandom("default 3wRNG", 0, ResetType.NEVER, new SecureRandom());
+		RngFactory.makeRandom("default 3wRNG", 0, ResetType.NEVER, new Pcg32());
 		this.rng = RngFactory.getRandom("default 3wRNG");
 	}
 
