@@ -30,7 +30,11 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
+import au.edu.anu.omhtk.rng.Pcg32;
+import au.edu.anu.omhtk.rng.RngFactory;
+import au.edu.anu.omhtk.rng.RngFactory.ResetType;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 
@@ -41,7 +45,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
  * result is a number of descendants to create (as a double - fractional part used as a probability)
  * 
  */
-public abstract class CreateOtherDecisionFunction extends TwFunctionAdapter {
+public abstract class CreateOtherDecisionFunction extends TwRandomStreamFunction {
 
     private List<ChangeStateFunction> CSfunctions = 
         	new LinkedList<ChangeStateFunction>();
@@ -50,6 +54,21 @@ public abstract class CreateOtherDecisionFunction extends TwFunctionAdapter {
     private List<RelateToDecisionFunction> RTfunctions = 
         	new LinkedList<RelateToDecisionFunction>();
 	
+	/**
+	 * Constructor using a random number stream
+	 * @param rng
+	 */
+	public CreateOtherDecisionFunction(Random rng) {
+		super(rng);
+	}
+
+	/**
+	 * constructor defining its own randm number stream
+	 */
+	public CreateOtherDecisionFunction() {
+		super();
+	}
+    
     /**
      * 
      * @param t time

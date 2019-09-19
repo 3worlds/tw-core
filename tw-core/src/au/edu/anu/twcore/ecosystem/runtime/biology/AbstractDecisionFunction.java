@@ -1,11 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import java.security.SecureRandom;
 import java.util.Random;
-
-import au.edu.anu.omhtk.rng.Pcg32;
-import au.edu.anu.omhtk.rng.RngFactory;
-import au.edu.anu.omhtk.rng.RngFactory.ResetType;
 
 /**
  * Ancestor class to all functions that make decisions based on probabilities
@@ -13,17 +8,14 @@ import au.edu.anu.omhtk.rng.RngFactory.ResetType;
  * @author Jacques Gignoux - 18 sept. 2019
  *
  */
-public class AbstractDecisionFunction extends TwFunctionAdapter {
+public class AbstractDecisionFunction extends TwRandomStreamFunction {
 
-	private Random rng = null;
-	
 	/**
 	 * Constructor using a random number stream
 	 * @param rng
 	 */
 	public AbstractDecisionFunction(Random rng) {
-		super();
-		this.rng = rng;
+		super(rng);
 	}
 
 	/**
@@ -31,8 +23,6 @@ public class AbstractDecisionFunction extends TwFunctionAdapter {
 	 */
 	public AbstractDecisionFunction() {
 		super();
-		RngFactory.makeRandom("default 3wRNG", 0, ResetType.NEVER, new Pcg32());
-		this.rng = RngFactory.getRandom("default 3wRNG");
 	}
 
 	/**

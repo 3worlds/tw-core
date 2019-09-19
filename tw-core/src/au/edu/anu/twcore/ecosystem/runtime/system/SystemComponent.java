@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.TwData;
@@ -37,14 +36,16 @@ import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALDataNode;
-import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 /**
  * The main runtime object in 3worlds, representing "individuals" or "agents" or "system
  * components".
+ * NB:
  * 
  * @author Jacques Gignoux - 4 juin 2019
  *
@@ -152,14 +153,16 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 		return (Iterable<SystemRelation>) edges(Direction.OUT);
 	}
 	
-	// why not use queries instead?
+	@SuppressWarnings("unchecked")
 	public Iterable<SystemRelation> getRelations(String relationType) {
-		List<SystemRelation> list = new ArrayList<>();
-		for (ALEdge e:edges(Direction.OUT)) {
-			SystemRelation r = (SystemRelation) e;
-			if (r.properties().getPropertyValue("type").equals(relationType))
-				list.add(r);
-		}
+		List<SystemRelation> list = (List<SystemRelation>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasProperty("type",relationType)));
+//		List<SystemRelation> list = new ArrayList<>();
+//		for (ALEdge e:edges(Direction.OUT)) {
+//			SystemRelation r = (SystemRelation) e;
+//			if (r.properties().getPropertyValue("type").equals(relationType))
+//				list.add(r);
+//		}
 		return list;
 	}
 	
@@ -170,5 +173,8 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 		return rel;
 	}
 	
+	public SystemData autoVar() {
+		return ((SystemComponentPropertyListImpl)properties()).auto();
+	}
 
 }

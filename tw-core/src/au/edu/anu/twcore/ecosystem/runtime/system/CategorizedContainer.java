@@ -234,6 +234,29 @@ public abstract class CategorizedContainer<T extends Identity>
 		return subContainers.get(containerId);
 	}
 	
+	// recursive
+	// TODO: test it ! seems to work
+	private CategorizedContainer<T> findContainer(String containerId, 
+		CategorizedContainer<T> container) {
+		CategorizedContainer<T> result = container.subContainers.get(containerId);
+		if (result==null)
+			for (CategorizedContainer<T> c:container.subContainers.values()) {
+				result = findContainer(containerId,c);
+				if (result!=null)
+					break;
+		}
+		return result;
+	}
+	
+	/**
+	 * Finds a container in the sub-container hierachy
+	 * @param containerId
+	 * @return
+	 */
+	public CategorizedContainer<T> findContainer(String containerId) {
+		return findContainer(containerId,this);
+	}
+	
 	public Iterable<CategorizedContainer<T>> subContainers() {
 		return subContainers.values();
 	}

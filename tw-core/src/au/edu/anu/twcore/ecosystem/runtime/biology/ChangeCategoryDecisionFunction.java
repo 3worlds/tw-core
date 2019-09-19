@@ -46,9 +46,17 @@ public abstract class ChangeCategoryDecisionFunction extends TwFunctionAdapter {
 
 	private List<ChangeOtherStateFunction> consequences = new LinkedList<ChangeOtherStateFunction>();
 
-	// this to be overriden by user code
-	// must return a 'stage name', ie a system name
-	// or null if no category change.
+	/**
+	 * Must return the name of a valid group (i.e. a SystemFactory group) into which {@code focal}
+	 * will be transformed, or null if no change.
+	 * Notice that the result is not a set of categories but an instance of a group belonging to
+	 * a set of categories (which must be compatible with this process type)
+	 * 
+	 * @param t
+	 * @param dt
+	 * @param focal
+	 * @return
+	 */
 	public abstract String changeCategory(double t, double dt,	SystemComponent focal);
 
 	public void addConsequence(TwFunction function) {

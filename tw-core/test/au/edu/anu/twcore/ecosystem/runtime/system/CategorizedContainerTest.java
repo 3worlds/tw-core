@@ -145,6 +145,13 @@ class CategorizedContainerTest {
 	}
 
 	@Test
+	final void testFindContainer() {
+		init2("trf");
+		icontainer s = (icontainer) cc.findContainer("trf");
+		show("testFindContainer",s.toString());
+	}
+
+	@Test
 	final void testCategoryInfo() {
 		show("testCategoryInfo",cc.categoryInfo().categoryId());
 		assertEquals(cc.categoryInfo(),ca);

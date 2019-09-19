@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
+import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
 
 /**
  * Ancestor for the class doing the user-defined computation
@@ -40,6 +41,7 @@ import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 public abstract class TwFunctionAdapter implements TwFunction {
 	
 	private AbstractProcess myProcess = null;
+	protected HierarchicalContext focalContext = null;
 	
 	public final void setProcess(AbstractProcess process) {
 		myProcess = process;
@@ -53,4 +55,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 		// do nothing - some descendants have no consequences
 	}
 
+	public void setFocalContext(HierarchicalContext context) {
+		focalContext = context;
+	}
 }

@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime;
 
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
+import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
 
 /**
  * Ancestor for the class doing the user-defined computation
@@ -43,5 +44,7 @@ public interface TwFunction {
 	public AbstractProcess process();
 
 	public void addConsequence(TwFunction function);
+	
+	public void setFocalContext(HierarchicalContext context);
 
 }
