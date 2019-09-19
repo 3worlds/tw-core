@@ -39,7 +39,7 @@ import fr.cnrs.iees.graph.Edge;
  * result is a decision as a boolean.
  * 
  */
-public abstract class MaintainRelationDecisionFunction extends TwFunctionAdapter {
+public abstract class MaintainRelationDecisionFunction extends AbstractDecisionFunction {
 
 	/**
 	 * @param t			current time

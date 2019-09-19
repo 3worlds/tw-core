@@ -206,3 +206,4 @@ treegraph
 [group:SSjuv] groupOf [component:seedling]
 [group:SSad] groupOf [component:tree]
 [group:SSsen] groupOf [component:oldtree]
+[widget:widget2] trackTime [dynamics:my_simulator]

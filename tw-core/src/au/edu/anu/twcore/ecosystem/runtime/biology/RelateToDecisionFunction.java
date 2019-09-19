@@ -38,7 +38,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
  * result is a decision as a boolean.
  * 
  */
-public abstract class RelateToDecisionFunction extends TwFunctionAdapter {
+public abstract class RelateToDecisionFunction extends AbstractDecisionFunction {
 
 	public abstract boolean relate(double t,	
 		double dt,	

@@ -158,10 +158,10 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			}
 			// delete itself
 			for (DeleteDecisionFunction function : Dfunctions)
-				if (function.delete(t, dt, focal))
-					// missing: to which object should data return to ? this must depend on a
-					// relation !
+				if (function.delete(t, dt, focal)) {
 					container.removeItem(focal.id());
+					
+				}
 			// creation of other SystemComponents
 			for (CreateOtherDecisionFunction function : COfunctions) {
 				// TODO: where do we get this info from?

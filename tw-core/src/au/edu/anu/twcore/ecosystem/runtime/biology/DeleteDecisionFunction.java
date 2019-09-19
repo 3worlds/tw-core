@@ -41,7 +41,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
  * result is a decision as a boolean.
  * 
  */
-public abstract class DeleteDecisionFunction extends TwFunctionAdapter {
+public abstract class DeleteDecisionFunction extends AbstractDecisionFunction {
 	
 	private List<ChangeOtherStateFunction> consequences = new LinkedList<ChangeOtherStateFunction>();
 	
