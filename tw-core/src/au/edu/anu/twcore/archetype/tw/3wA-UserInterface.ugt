@@ -58,7 +58,7 @@ hasNode widgetSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery") 
 			values = StringTable(([5]+
 			"au.edu.anu.twuifx.widgets.SimpleMapWidget",+
-			"au.edu.anu.twuifx.widgets.SimpleTimeyWidget",+
+			"au.edu.anu.twuifx.widgets.SimpleTimeWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleControlWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleTimeSeriesWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleWidget"))

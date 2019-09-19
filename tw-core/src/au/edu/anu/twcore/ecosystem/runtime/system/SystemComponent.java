@@ -164,11 +164,9 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 	}
 	
 	public SystemRelation relateTo(SystemComponent toComponent, String relationType) {
-		// should be:
 		SystemRelation rel = (SystemRelation) connectTo(Direction.OUT,toComponent,
 			new SharedPropertyListImpl(SystemRelation.DEFAULT_PROPERTIES));
 		rel.properties().setProperty("type",relationType);
-		// but this method does not exist yet
 		return rel;
 	}
 	
