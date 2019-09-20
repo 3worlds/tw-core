@@ -32,9 +32,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import au.edu.anu.omhtk.rng.Pcg32;
-import au.edu.anu.omhtk.rng.RngFactory;
-import au.edu.anu.omhtk.rng.RngFactory.ResetType;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 
@@ -74,7 +71,7 @@ public abstract class CreateOtherDecisionFunction extends TwRandomStreamFunction
      * @param t time
      * @param dt time interval
      * @param focal the creator component
-     * @param newType the type of the created component
+     * @param newType the type of the created component (as a category signature)
      * @return
      */
 	public abstract double nNew(double t,	

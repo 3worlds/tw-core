@@ -42,9 +42,10 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_PARAMETERCLASS;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -61,8 +62,36 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
- * Class matching the "ecosystem/dynamics/lifeCycle" node label in the 
- * 3Worlds configuration tree. Has no properties.
+ * <p>Class matching the "ecosystem/dynamics/lifeCycle" node label in the 
+ * 3Worlds configuration tree. Has no properties.</p>
+ * 
+ * <p>A life cycle is a graph representing two kinds of links between life <em>stages</em>, i.e.
+ * discrete states that characterize an item with a definite life span:</p>
+ * <dl>
+ * <dt>recruitment</dt>
+ * <dd>items of a stage transform into another stage. This is specified using {@linkplain Recruit}
+ * nodes in the 3worlds specification.</dd>
+ * <dt>reproduction</dt>
+ * <dd>items of a stage produce new items of another stage. This is specified using {@linkplain Produce}
+ * nodes in the 3worlds specification.</dd>
+ * </dl>
+ * 
+ * <p>A {@code LifeCycle} is attached to a single {@linkplain CategorySet} and must use all different
+ * categories appearing in this set in its {@linkplain Recruit} and {@linkplain Produce} child
+ * nodes.
+ * Stages are each characterized by a single {@linkplain Category} matching a particular
+ * {@linkplain SystemComponent} group, and a set of variables and parameters passed at model 
+ * initialisation.</p>
+ * 
+ * <p>Some rules apply to build a life cycle:</p>
+ * <ul>
+ * <li>By definition, it is nonsense to recruit to a stage of the same set of categories.</li>
+ * <li>A single stage can recruit to more than one stage, and can produce items of more than 
+ * one stage.</li>
+ * <li>If no life cycle is defined, it is assumed that there is no recruitment in the model, 
+ * and that reproduction produces items of the same stage of the producing item.</li>
+ * <li>Recruitment and Produce targets must belong to different categories.</li>
+ * </ul>
  * 
  * @author Jacques Gignoux - 7 juin 2019
  *
@@ -148,36 +177,39 @@ public class LifeCycle
 	}
 	
 	/**
-	 * returns the categoryset in which an object recruits according to this lifecycle
+	 * This method returns the list of category signatures of all targets of a recruit
+	 * edge starting from the item passed as argument
 	 * 
 	 * @param from
 	 * @return
 	 */
-	public Set<Category> recruitTo(Categorized<?> from) {
+	public List<String> recruitTo(Categorized<?> from) {
+		List<String> catSignatures = new ArrayList<>();
 		Category tocat = null;
 		// search if one of the categories of the argument
 		// matches one of the 'from' categories of the recruit table
 		for (Category c:from.categories()) {
 			tocat = recruit.get(c);
-			// if found, construct a category set with c replaced by tocat and all the categories
-			// already present in the argument (we assume the life cycle only changes one category)
 			if (tocat!=null) {
-				Set<Category> result = new HashSet<Category>(from.categories());
-				result.remove(c);
-				result.add(tocat);
-				return result;
+				catSignatures.add(tocat.id());
+//				Set<Category> result = new HashSet<Category>(from.categories());
+//				result.remove(c);
+//				result.add(tocat);
+//				return result;
 			}
 		}
-		return null; 
+		return catSignatures; 
 	}
 
 	/**
-	 * returns the categoryset which an object produces as offspring according to this lifecycle
+	 * This method returns the list of category signatures of all targets of a produce
+	 * edge starting from the item passed as argument
 	 * 
 	 * @param from
 	 * @return
 	 */
-	public Set<Category> produceTo(Categorized<?> from) {
+	public List<String> produceTo(Categorized<?> from) {
+		List<String> catSignatures = new ArrayList<>();
 		Category tocat = null;
 		// search if one of the categories of the argument
 		// matches one of the 'from' categories of the produce table
@@ -186,13 +218,14 @@ public class LifeCycle
 			// if found, construct a category set with c replaced by tocat and all the categories
 			// already present in the argument (we assume the life cycle only changes one category)
 			if (tocat!=null) {
-				Set<Category> result = new HashSet<Category>(from.categories());
-				result.remove(c);
-				result.add(tocat);
-				return result;
+				catSignatures.add(tocat.id());
+//				Set<Category> result = new HashSet<Category>(from.categories());
+//				result.remove(c);
+//				result.add(tocat);
+//				return result;
 			}
 		}
-		return null; 
+		return catSignatures; 
 	}
 
 	

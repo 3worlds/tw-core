@@ -47,10 +47,7 @@ public abstract class ChangeCategoryDecisionFunction extends TwFunctionAdapter {
 	private List<ChangeOtherStateFunction> consequences = new LinkedList<ChangeOtherStateFunction>();
 
 	/**
-	 * Must return the name of a valid group (i.e. a SystemFactory group) into which {@code focal}
-	 * will be transformed, or null if no change.
-	 * Notice that the result is not a set of categories but an instance of a group belonging to
-	 * a set of categories (which must be compatible with this process type)
+	 * Must return the name of a valid category name.
 	 * 
 	 * @param t
 	 * @param dt

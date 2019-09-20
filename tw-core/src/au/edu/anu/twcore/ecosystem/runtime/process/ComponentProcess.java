@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +61,12 @@ import fr.ens.biologie.generic.utils.Logging;
  *
  */
 public class ComponentProcess extends AbstractProcess implements Categorized<SystemComponent> {
+	
+	private class newBornSettings {
+		SystemFactory factory = null;
+		SystemContainer container = null;
+		String name = null;
+	}
 
 	private static Logger log = Logging.getLogger(ComponentProcess.class);
 	
@@ -75,12 +82,12 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	// local variables for looping
 	private HierarchicalContext focalContext = new HierarchicalContext();
 	private LifeCycle lifeCycle = null;
-	private Ecosystem ecosystem = null;
+//	private Ecosystem ecosystem = null;
 	private SystemFactory group = null;
 	
 	private SystemContainer lifeCycleContainer = null;
-	private SystemContainer ecosystemContainer = null;
-	private SystemContainer groupContainer = null;
+//	private SystemContainer ecosystemContainer = null;
+//	private SystemContainer groupContainer = null;
 	
 	public ComponentProcess(Ecosystem world, Collection<Category> categories) {
 		super(world);
@@ -105,8 +112,8 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 				focalContext.ecosystemVariables = container.variables();
 				focalContext.ecosystemPopulationData = container.populationData();
 				focalContext.ecosystemName = container.id();
-				ecosystem = (Ecosystem) container.categoryInfo();
-				ecosystemContainer = (SystemContainer) container;
+//				ecosystem = (Ecosystem) container.categoryInfo();
+//				ecosystemContainer = (SystemContainer) container;
 			}
 			else if (container.categoryInfo() instanceof SystemFactory) {
 				focalContext.groupParameters = container.parameters();
@@ -114,7 +121,7 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 				focalContext.groupPopulationData = container.populationData();
 				focalContext.groupName = container.id();
 				group = (SystemFactory) container.categoryInfo();
-				groupContainer = (SystemContainer) container;
+//				groupContainer = (SystemContainer) container;
 				
 			}
 			executeFunctions(container,t,dt);
@@ -141,17 +148,21 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			// recruit to other component type ("change category")
 			for (ChangeCategoryDecisionFunction function : CCfunctions) {
 				function.setFocalContext(focalContext);
-				String newGroup = function.changeCategory(t, dt, focal);
-				if (newGroup != null) {
+				String newCat = function.changeCategory(t, dt, focal);
+				if (newCat != null) {
 					if (lifeCycle!=null) {
 						// find the next stage & instantiate new component
-						SystemContainer recruitContainer = (SystemContainer) lifeCycleContainer.findContainer(newGroup);
+						SystemContainer recruitContainer = null;
+						for (CategorizedContainer<SystemComponent> subContainer:
+							lifeCycleContainer.subContainers()) 
+							if (subContainer.categoryInfo().categoryId().contains(newCat))
+								recruitContainer = (SystemContainer) subContainer;
 						if (recruitContainer==null) {
 							StringBuilder sb = new StringBuilder();
 							sb.append("'")
 								.append(focalContext.groupName)
 								.append("' cannot recruit to '")
-								.append(newGroup)
+								.append(newCat)
 								.append("'");
 							log.severe(sb.toString());
 						}
@@ -206,44 +217,57 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			// creation of other SystemComponents
 			for (CreateOtherDecisionFunction function : COfunctions) {
 				// if there is a life cycle, then it will return the next stage(s)
-				SystemFactory newBornFactory = null;
-				String newBornName = null;
-				SystemContainer newBornContainer = null;
+				List<newBornSettings> newBornSpecs = new ArrayList<>(); 
 				if (lifeCycle!=null ) {
-					// TODO: how to find the newBorn stages ?
+					// search for category signatures of produce targets
+					for (String catSignature:lifeCycle.produceTo(group))
+						for (CategorizedContainer<SystemComponent> subc:
+							lifeCycleContainer.subContainers()) 
+						// since lifeCycle stages only have one category this test should do
+						if (subc.categoryInfo().categoryId().contains(catSignature)) {
+							newBornSettings nbs = new newBornSettings();
+							nbs.name = subc.categoryInfo().categoryId();
+							nbs.factory = (SystemFactory) subc.categoryInfo();
+							nbs.container = (SystemContainer) subc;
+							newBornSpecs.add(nbs);
+					}
 				} 
 				// without a life cycle, only objects of the same type can be created
 				else {
-					newBornFactory = group;
-					newBornName = focalContext.groupName;
-					newBornContainer = (SystemContainer) container;
+					newBornSettings nbs = new newBornSettings();
+					nbs.factory = group;
+					nbs.name = group.categoryId();
+					nbs.container = (SystemContainer) container;
+					newBornSpecs.add(nbs);
 				}
 				function.setFocalContext(focalContext);
-				double result = function.nNew(t, dt, focal, newBornName);
-				// compute effective number of newBorns (taking the decimal part as a probability)
-				double proba = function.rng().nextDouble();
-				long n = (long) Math.floor(result);
-				if (proba < (result - n))
-					n += 1;
-				for (int i = 0; i < n; i++) {
-					SystemComponent newBorn = newBornFactory.newInstance();
-					for (ChangeStateFunction func : function.getChangeStateConsequences()) {
-						function.setFocalContext(focalContext);
-						func.changeState(t, dt, newBorn);
-					}
-					for (ChangeOtherStateFunction func : function.getChangeOtherStateConsequences()) {
-						function.setFocalContext(focalContext);
-						func.changeOtherState(t, dt, focal, newBorn);
-					}
-					for (RelateToDecisionFunction func : function.getRelateToDecisionConsequences()) {
-						function.setFocalContext(focalContext);
-						if (func.relate(t, dt, focal, newBorn)) {
-							// TODO: how to know the type of relation to establish ?
-							focal.relateTo(newBorn,"parentTo");
+				for (newBornSettings nbs:newBornSpecs) {
+					double result = function.nNew(t, dt, focal, nbs.name);
+					// compute effective number of newBorns (taking the decimal part as a probability)
+					double proba = function.rng().nextDouble();
+					long n = (long) Math.floor(result);
+					if (proba < (result - n))
+						n += 1;
+					for (int i = 0; i < n; i++) {
+						SystemComponent newBorn = nbs.factory.newInstance();
+						for (ChangeStateFunction func : function.getChangeStateConsequences()) {
+							function.setFocalContext(focalContext);
+							func.changeState(t, dt, newBorn);
 						}
+						for (ChangeOtherStateFunction func : function.getChangeOtherStateConsequences()) {
+							function.setFocalContext(focalContext);
+							func.changeOtherState(t, dt, focal, newBorn);
+						}
+						for (RelateToDecisionFunction func : function.getRelateToDecisionConsequences()) {
+							function.setFocalContext(focalContext);
+							if (func.relate(t, dt, focal, newBorn)) {
+								// TODO: how to know the type of relation to establish ?
+								focal.relateTo(newBorn,"parentTo");
+							}
+						}
+						// welcome newBorn in container!
+						nbs.container.addItem(newBorn); // safe - delayed addition
 					}
-					// welcome newBorn in container!
-					newBornContainer.addItem(newBorn); // safe - delayed addition
 				}
 			}
 		}
