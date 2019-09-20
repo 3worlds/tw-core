@@ -52,6 +52,7 @@ import java.lang.reflect.Constructor;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.Metadata;
+import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.Experiment;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
@@ -119,7 +120,8 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 			SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
 					selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())), endNode());
 			if (sim != null)
-				sim.addObserver((DataReceiver<LabelValuePairData, Metadata>) widget);
+				sim.addObserver((DataReceiver<TimeData, Metadata>) widget);
+//			sim.addObserver((DataReceiver<LabelValuePairData, Metadata>) widget);
 			sealed = true;
 		}
 	}
