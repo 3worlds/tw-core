@@ -8,7 +8,8 @@ import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
  * @date 19 Sep 2019
  */
 public class TimeData extends OutputData {
-	private long time;
+	/* ensure a known uninitialized value*/
+	private long time=Long.MIN_VALUE;
 
 	public TimeData(DataTrackerStatus status, int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);

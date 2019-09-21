@@ -7,18 +7,14 @@ import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
  *
  * @date 19 Sep 2019
  */
-public class ObjectData extends OutputData {
-	// the label as a hierarchical name
-	private long time;
-	//private DataLabel label = null; 
-	private Object value = null;
-	
-	public ObjectData(DataTrackerStatus status, 
-			int senderId,
-			int metaDataType) {
-		super(status, senderId,metaDataType);
+public class ObjectData extends TimeData {
+	// private DataLabel label = null;
+	private Object value;
+
+	public ObjectData(DataTrackerStatus status, int senderId, int metaDataType) {
+		super(status, senderId, metaDataType);
 	}
-		
+
 	/**
 	 * returns the object
 	 * 
@@ -27,13 +23,11 @@ public class ObjectData extends OutputData {
 	public Object value() {
 		return value;
 	}
-	
+
 	public String text() {
 		return value.toString();
 	}
-	
-	
-	
+
 	/**
 	 * sets object
 	 * 
@@ -42,24 +36,15 @@ public class ObjectData extends OutputData {
 	public void setValue(Object o) {
 		value = o;
 	}
-	
-	
-	public void setTime(long time) {
-		this.time = time;
-	}
-
-	public long time() {
-		return time;
-	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("time=");
-		sb.append(time);
+		sb.append(time());
 		sb.append("; Object = ");
 		sb.append(text());
 		return sb.toString();
 	}
-	
+
 }
