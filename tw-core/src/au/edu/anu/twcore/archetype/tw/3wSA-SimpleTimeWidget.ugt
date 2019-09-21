@@ -19,3 +19,8 @@ archetype 3wSA-SimpleTimeWidget
 			isOfClass = String("trackTime")
 			toNode = String("dynamics")
 			multiplicity = IntegerRange("1..1")
+		hasProperty TestwidgetSenderProperty
+			hasName = String("sender")
+			type = String("Integer")
+			multiplicity = IntegerRange("1..1")
+			
