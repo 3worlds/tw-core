@@ -113,6 +113,8 @@ treegraph
 						parameterValues pBRjuv
 							rgr = Double(1.2)
 							survival = Double(0.1)
+						individual brj1
+						
 					group BRad
 						parameterValues pBRad
 							fecundity = Double(12.5)
@@ -143,10 +145,10 @@ treegraph
 		top my_top
 			widget widget1
 				order = Integer(1)
-				subclass = String("au.edu.anu.twuifx.widgets.ExperimentControlWidget")
+				subclass = String("au.edu.anu.twuifx.widgets.SimpleControlWidget")
 			widget widget2 
 				order = Integer(2)
-				subclass = String("au.edu.anu.twuifx.widgets.TimeDisplayWidget")
+				subclass = String("au.edu.anu.twuifx.widgets.SimpleTimeWidget")
 	
 // CROSS-LINKS
 [component:seedling] belongsTo [category:plant]
@@ -207,3 +209,4 @@ treegraph
 [group:SSad] groupOf [component:tree]
 [group:SSsen] groupOf [component:oldtree]
 [widget:widget2] trackTime [dynamics:my_simulator]
+[individual:brj1] instanceOf [component:seedling]
