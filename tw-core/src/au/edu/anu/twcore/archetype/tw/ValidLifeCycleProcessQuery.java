@@ -6,7 +6,6 @@ import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.Produce;
 import au.edu.anu.twcore.ecosystem.dynamics.Recruit;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
@@ -27,8 +26,10 @@ import java.util.List;
  * @author Jacques Gignoux - 11 sept. 2019
  *
  */
-// checked ok 11/9/2019
+// checked ok 24/9/2019
 public class ValidLifeCycleProcessQuery extends Query {
+	
+	private String message = null;
 
 	public ValidLifeCycleProcessQuery() {
 		super();
@@ -37,57 +38,51 @@ public class ValidLifeCycleProcessQuery extends Query {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Query process(Object input) {  // input is a produce node
+		defaultProcess(input);
 		TwFunctionTypes requiredFunc = null;
+		String s = null;
 		if (input instanceof Produce) {
-			requiredFunc = TwFunctionTypes.CreateOtherDecision;
+			requiredFunc = TwFunctionTypes.CreateOtherDecision; // category function, not relation
+			s = "produce";
 		}
-		else if (input instanceof Recruit)
-			requiredFunc = TwFunctionTypes.ChangeCategoryDecision;
+		else if (input instanceof Recruit) {
+			requiredFunc = TwFunctionTypes.ChangeCategoryDecision; // category function, not relation
+			s = "recruit";
+		}
 		TreeGraphNode pnode = (TreeGraphNode) input;
 		ProcessNode proc = (ProcessNode) get(pnode.edges(Direction.OUT),
 			selectOne(hasTheLabel(E_EFFECTEDBY.label())),
 			endNode());
+		// 1 make sure the process categories contain the produce node one
 		List<Node> apps = (List<Node>) get(proc.edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
 			edgeListEndNodes());
-		if (apps.size()==1) {
-			Node n = apps.get(0);
-			if (n instanceof RelationType) {
-				RelationType rel = (RelationType) n;
-				// 1 make sure the process to and from categories contain the produce node ones
-				List<Category> fromrel = (List<Category>) get(rel.edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
-					edgeListEndNodes());
-				List<Category> torel = (List<Category>) get(rel.edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
-					edgeListEndNodes());
-				Category fromprod = (Category) get(pnode.edges(Direction.OUT),
-					selectOne(hasTheLabel(E_FROMCATEGORY.label())),
-					endNode());
-				Category toprod = (Category) get(pnode.edges(Direction.OUT),
-					selectOne(hasTheLabel(E_TOCATEGORY.label())),
-					endNode());
-				// 2 make sure the process has a function of the proper type
-				List<FunctionNode> funcs = (List<FunctionNode>) get(proc.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
-				boolean ok = false;
-				for (FunctionNode func:funcs)
-					if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key())
-						.equals(requiredFunc)) {
-						ok=true;
-						break;
-					}
-				satisfied = (ok && fromrel.contains(fromprod) && torel.contains(toprod));
-			}
-			else satisfied = false; // it's a component process, we need a relation process
+		Category fromprod = (Category) get(pnode.edges(Direction.OUT),
+			selectOne(hasTheLabel(E_FROMCATEGORY.label())),
+			endNode());
+		if (apps.contains(fromprod))
+			satisfied = true;
+		else
+			message = s+ " node fromCategory '"+fromprod.id()+"' not found in process '"+proc.id()+"'";
+		// 2 make sure the process has a function of the proper type
+		List<FunctionNode> funcs = (List<FunctionNode>) get(proc.getChildren(),
+			selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
+		for (FunctionNode func:funcs)
+			if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key())
+				.equals(requiredFunc)) {
+				satisfied &= true;
+				break;
 		}
-		else satisfied = false; // its a mistake or a component process
+		if ((message==null) && (!satisfied)) // means we didnt fall into the previous trap 
+			message = "missing '"+requiredFunc+"' function type in process '"+proc.id()+"'";
+		if (message==null)
+			message = "checking "+s+" node category and function type";
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "[" + stateString() + " Invalid process (relation or function type) for lifeCycle produce node]";
+		return "[" + stateString() + message+ "]";
 	}
 
 }

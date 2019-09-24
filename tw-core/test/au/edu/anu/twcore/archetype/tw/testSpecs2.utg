@@ -86,7 +86,7 @@ treegraph
 					runAtTimeZero = Boolean(false)
 					process someProcess
 						function Growth
-							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeOtherState)
+							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeState)
 					process makeOffspring1
 						function Reproduce
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(CreateOtherDecision)
@@ -114,7 +114,6 @@ treegraph
 							rgr = Double(1.2)
 							survival = Double(0.1)
 						individual brj1
-						
 					group BRad
 						parameterValues pBRad
 							fecundity = Double(12.5)
@@ -149,6 +148,7 @@ treegraph
 			widget widget2 
 				order = Integer(2)
 				subclass = String("au.edu.anu.twuifx.widgets.SimpleTimeWidget")
+				sender = Integer(12) // what's this used for ???
 	
 // CROSS-LINKS
 [component:seedling] belongsTo [category:plant]
@@ -198,8 +198,8 @@ treegraph
 [relationType:recruitAS] toCategory [category:senescent]
 [process:makeOffspring1] appliesTo [category:adult]
 [process:makeOffspring2] appliesTo [category:senescent]
-[process:recruitFromJtoA] appliesTo [relationType:recruitJA]
-[process:recruitFromAtoS] appliesTo [relationType:recruitAS]
+[process:recruitFromJtoA] appliesTo [category:juvenile]
+[process:recruitFromAtoS] appliesTo [category:adult]
 [group:Brassica_repens] cycle [lifeCycle:standardLC]
 [group:BRjuv] groupOf [component:seedling]
 [group:BRad] groupOf [component:tree]
