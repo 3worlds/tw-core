@@ -150,7 +150,7 @@ public class Simulator {
 //		return output;
 //	}
 	private TimeData makeTimeRecord() {
-		TimeData output = new TimeData(status(),id,metadata.type());
+		TimeData output = new TimeData(status(),id,DataMessageTypes.TIME);
 		output.setTime(lastTime);
 		return output;
 	}
