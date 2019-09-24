@@ -8,9 +8,8 @@ import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-public class MapData extends OutputData {
-	
-	private long time;
+public class MapData extends TimeData {
+
 	private DataLabel zlabel;
 	private Number[][] map;
 
@@ -36,13 +35,6 @@ public class MapData extends OutputData {
 		zlabel = new DataLabel(labelParts);
 	}
 
-	public void setTime(long time) {
-		this.time = time;
-	}
-
-	public long time() {
-		return time;
-	}
 	
 	public Number[][] map() {
 		return map;

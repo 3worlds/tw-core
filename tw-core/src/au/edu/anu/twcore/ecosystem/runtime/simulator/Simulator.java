@@ -8,6 +8,7 @@ import au.edu.anu.twcore.data.runtime.AbstractDataTracker;
 import au.edu.anu.twcore.data.runtime.DataMessageTypes;
 import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.Metadata;
+import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
@@ -31,8 +32,13 @@ public class Simulator {
 	private Metadata metadata;
 	
 	// a data tracker to send time data
-	private class timeTracker extends AbstractDataTracker<LabelValuePairData,Metadata> {
-		private timeTracker() {
+//	private class timeTracker extends AbstractDataTracker<LabelValuePairData,Metadata> {
+//		private timeTracker() {
+//			super(DataMessageTypes.TIME);
+//		}
+//	}
+	private class TimeTracker extends AbstractDataTracker<TimeData,Metadata> {
+		private TimeTracker() {
 			super(DataMessageTypes.TIME);
 		}
 	}
@@ -51,7 +57,8 @@ public class Simulator {
 	 * simultaneous time models
 	 */
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
-	private timeTracker timetracker; 
+	//private timeTracker timetracker; 
+	private TimeTracker timetracker; 
 
 	// simulator state
 	private boolean started = false;
@@ -75,7 +82,8 @@ public class Simulator {
 		// looping aids
 		currentTimes = new long[timerList.size()];
 		// data tracking
-		timetracker = new timeTracker();		
+//		timetracker = new timeTracker();		
+		timetracker = new TimeTracker();		
 	}
 	
 	private DataTrackerStatus status() {
@@ -88,7 +96,13 @@ public class Simulator {
 			return DataTrackerStatus.Initial;
 	}
 	
-	public void addObserver(DataReceiver<LabelValuePairData,Metadata> observer) {
+//	public void addObserver(DataReceiver<LabelValuePairData,Metadata> observer) {
+//		timetracker.addObserver(observer);
+//		// as metadata, send all properties of the reference TimeLine of this simulator.
+//		metadata = new Metadata(status(),id,refTimer.properties());
+//		timetracker.sendMetadata(metadata);
+//	}
+	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		timetracker.addObserver(observer);
 		// as metadata, send all properties of the reference TimeLine of this simulator.
 		metadata = new Metadata(status(),id,refTimer.properties());
@@ -129,10 +143,15 @@ public class Simulator {
 		}
 	}
 	
-	private LabelValuePairData makeTimeRecord() {
-		LabelValuePairData output = new LabelValuePairData(status(),id,metadata.type());
-		output.setValue(lastTime);
-		output.setLabel("t");
+//	private LabelValuePairData makeTimeRecord() {
+//		LabelValuePairData output = new LabelValuePairData(status(),id,metadata.type());
+//		output.setValue(lastTime);
+//		output.setLabel("t");
+//		return output;
+//	}
+	private TimeData makeTimeRecord() {
+		TimeData output = new TimeData(status(),id,DataMessageTypes.TIME);
+		output.setTime(lastTime);
 		return output;
 	}
 	

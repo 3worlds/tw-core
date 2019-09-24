@@ -6,18 +6,14 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-SimpleTimeWidget
+archetype 3wSA-SimpleWidget
 
-	hasNode SimpleTimeWidgetSpec
+	hasNode SimpleWidgetSpec
 		isOfClass = String("widget")
 		// TODO this should override parent when checking
-		hasParent = StringTable(([2]"top:","bottom:"))
+		hasParent = StringTable(([4]"tab:","container:","top:","bottom:"))
 		multiplicity = IntegerRange("0..*")
-		hasEdge SimpleTimeWidgetToSimSpec
-			isOfClass = String("trackTime")
-			toNode = String("dynamics")
-			multiplicity = IntegerRange("1..1")
-		hasProperty TestwidgetSenderProperty
+		hasProperty SimpleWidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
 			multiplicity = IntegerRange("1..1")

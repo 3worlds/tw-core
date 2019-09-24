@@ -32,38 +32,31 @@ package au.edu.anu.twcore.data.runtime;
 import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
 
 /**
- * An ancestor class for data being sent from DataTrackers to DataReceivers
- * 
- * @author Jacques Gignoux - 10 sept. 2019
+ * @author Ian Davies
  *
+ * @date 19 Sep 2019
  */
-public abstract class OutputData {
-	
-	private DataTrackerStatus status = null;
-	private int senderId = -1;
-	private int metadataType = -1;
+public class TimeData extends OutputData {
+	/* ensure a known uninitialized value*/
+	private long time=Long.MIN_VALUE;
 
-	public OutputData(DataTrackerStatus status,int senderId,int metadataType) {
-		super();
-		this.senderId = senderId;
-		this.status = status;
-		this.metadataType = metadataType;
-	}
-	
-	public DataTrackerStatus status() {
-		return status;
+	public TimeData(DataTrackerStatus status, int senderId, int metaDataType) {
+		super(status, senderId, metaDataType);
 	}
 
-	public int sender() {
-		return senderId;
+	public void setTime(long time) {
+		this.time = time;
 	}
 
-	/**
-	 * 
-	 * @return the metadata type matching this data record
-	 */
-	public int type() {
-		return metadataType;
+	public long time() {
+		return time;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("time=").append(time);
+		return sb.toString();
 	}
 
 }
