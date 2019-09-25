@@ -97,6 +97,7 @@ public abstract class HierarchicalDataGenerator
 	@SuppressWarnings("unchecked")
 	private final String generateRecordCode(TreeGraphDataNode spec) {
 		String cn = validJavaName(initialUpperCase(wordUpperCaseName(spec.id())));
+		log.info("Generating data class '"+cn+"'");
 		String comment = comment(general,classComment(cn),generatedCode(false,modelName, ""));		
 		ClassGenerator cg = getRecordClassGenerator(cn,comment);
 		headerCode(cg,cn);

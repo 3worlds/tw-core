@@ -84,18 +84,17 @@ public class CodeGenerator {
 		for (File fromFile : fromFiles) {
 			File toFile = null;
 			if (fromFile.getAbsolutePath().endsWith(".java"))
-				toFile = new File(fromFile.getAbsolutePath().replace(pp, UserProjectLink.srcRoot().getAbsolutePath()));
+				toFile = new File(fromFile.getAbsolutePath().replace(pp, 
+					UserProjectLink.srcRoot().getAbsolutePath()));
 			else
-				toFile = new File(
-						fromFile.getAbsolutePath().replace(pp, UserProjectLink.classRoot().getAbsolutePath()));
-
+				toFile = new File(fromFile.getAbsolutePath().replace(pp, 
+					UserProjectLink.classRoot().getAbsolutePath()));
 			toFile.mkdirs();
 			try {
 				Files.copy(fromFile.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}
 	}
 
