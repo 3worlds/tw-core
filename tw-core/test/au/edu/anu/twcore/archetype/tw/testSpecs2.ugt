@@ -34,12 +34,12 @@ treegraph
 		record pjuvenile
 			field rgr
 				type = DataElementType("Double")
-			field survival
+			field survivalj
 				type = DataElementType("Double")
 		record polder
 			field fecundity
 				type = DataElementType("Double")
-			field survival
+			field survivalo
 				type = DataElementType("Double")
 	system my_ecosystem 
 		structure anything 
@@ -91,13 +91,13 @@ treegraph
 						function Reproduce
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(CreateOtherDecision)
 					process makeOffspring2
-						function Reproduce
+						function Reprod
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(CreateOtherDecision)
 					process recruitFromJtoA
-						function Recruit
+						function RecruitJA
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeCategoryDecision)
 					process recruitFromAtoS
-						function Recruit
+						function RecruitAS
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeCategoryDecision)
 			lifeCycle standardLC
 				produce aj

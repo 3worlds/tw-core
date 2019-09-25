@@ -30,7 +30,8 @@ public abstract class TwRandomStreamFunction extends TwFunctionAdapter {
 	 */
 	public TwRandomStreamFunction() {
 		super();
-		RngFactory.makeRandom("default 3wRNG", 0, ResetType.NEVER, SeedSource.TABLE, new Pcg32());
+		if (!RngFactory.exists("default 3wRNG"))
+			RngFactory.makeRandom("default 3wRNG", 0, ResetType.NEVER, SeedSource.TABLE, new Pcg32());
 		this.rng = RngFactory.getRandom("default 3wRNG");
 	}
 	
