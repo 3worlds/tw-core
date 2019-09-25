@@ -50,29 +50,29 @@ class CodeGeneratorTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	final void testGenerate1() {
-//		GraphState.initialise(null);
-//		Project.create("test1");
-//		CodeGenerator gen = new CodeGenerator();
-//		//This won't crash because of changes in THIS utg file cf below.
-//		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
-//				GraphImporter.importGraph("generateData_Ian.utg",this.getClass());
-//		gen.generate(specs);
-//		Project.close();
-//		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
+		GraphState.initialise(null);
+		Project.create("test1");
+		//This won't crash because of changes in THIS utg file cf below.
+		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
+				GraphImporter.importGraph("generateData_Ian.utg",this.getClass());
+		CodeGenerator gen = new CodeGenerator(specs);
+		gen.generate();
+		Project.close();
+		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	final void testGenerate2() {
-//		GraphState.initialise(null);
-//		Project.create("test2");
-//		CodeGenerator gen = new CodeGenerator();
-//		// this will crash on typecasting of "type" as ElementDataType because i've uncommented some code
-//		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
-//			GraphImporter.importGraph("generateData2.utg",this.getClass());
-//		gen.generate(specs);
-//		Project.close();
-//		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
+		GraphState.initialise(null);
+		Project.create("test2");
+		// this will crash on typecasting of "type" as ElementDataType because i've uncommented some code
+		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
+			GraphImporter.importGraph("generateData2.utg",this.getClass());
+		CodeGenerator gen = new CodeGenerator(specs);
+		gen.generate();
+		Project.close();
+		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
 	}
 
 	@SuppressWarnings("unchecked")
@@ -80,10 +80,10 @@ class CodeGeneratorTest {
 	final void testGenerate3() {
 		GraphState.initialise(null);
 		Project.create("test3");
-		CodeGenerator gen = new CodeGenerator();
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
 			GraphImporter.importGraph("generateFunction.utg",this.getClass());
-		gen.generate(specs);
+		CodeGenerator gen = new CodeGenerator(specs);
+		gen.generate();
 		for (TreeGraphDataNode n: specs.nodes())
 			System.out.println(n);
 		Project.close();

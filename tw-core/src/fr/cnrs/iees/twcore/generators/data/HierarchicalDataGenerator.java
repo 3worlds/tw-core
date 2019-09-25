@@ -45,6 +45,7 @@ import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
@@ -93,12 +94,22 @@ public abstract class HierarchicalDataGenerator
 		packagePath = Project.makeFile(CODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private final String generateRecordCode(TreeGraphDataNode spec) {
 		String cn = validJavaName(initialUpperCase(wordUpperCaseName(spec.id())));
 		String comment = comment(general,classComment(cn),generatedCode(false,modelName, ""));		
 		ClassGenerator cg = getRecordClassGenerator(cn,comment);
 		headerCode(cg,cn);
-		for (TreeNode ff:spec.getChildren()) {
+		Iterable<TreeNode> childrenList = null;
+		// CAUTION: now specs are defined either with child nodes or with specific edges
+		if (spec.hasChildren())
+			childrenList = (Iterable<TreeNode>) spec.getChildren();
+		else
+			childrenList = (Iterable<TreeNode>) get(spec.edges(Direction.OUT),
+				selectZeroOrMany(hasProperty("type","forCodeGeneration")),
+				edgeListEndNodes());
+//		for (TreeNode ff:spec.getChildren()) {
+		for (TreeNode ff:childrenList) {
 			TreeGraphDataNode f = (TreeGraphDataNode) ff;
 			String fname = validJavaName(wordUpperCaseName(f.id()));
 			String ftype = null;
@@ -165,7 +176,8 @@ public abstract class HierarchicalDataGenerator
 //			spec.setProperty("class", fpack);
 			log.info("  ...done.");
 		}
-		else { // this must be a record - superclass will be generated from the record name, but doesnt exist yet !			
+		else { // this must be a record - superclass will be generated from the record name, but doesnt exist yet !
+			// a table is never the root of a data definition, so there should not be problems here
 			TreeGraphDataNode rec = (TreeGraphDataNode) get(spec, 
 				children(), 
 				selectOne(hasTheLabel(N_RECORD.label())));

@@ -28,11 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.endNode;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOneOrMany;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrOne;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BELONGSTO;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_DRIVERS;
@@ -57,6 +53,8 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.ens.biologie.generic.SaveableAsText;
 
 /**
@@ -146,8 +144,9 @@ public interface Categorized<T extends Identity> {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Collection<Category> getSuperCategories(TreeGraphDataNode node) {
+		// there was a bug here caused by selectOneOrMany because lifeCycle may have no belongsTo edge
 		Collection<Category> cats = (Collection<Category>) get(node.edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
+			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
 			edgeListEndNodes());
 		Collection<Category> result = new LinkedList<Category>();
 		result.addAll(cats);
@@ -201,10 +200,21 @@ public interface Categorized<T extends Identity> {
 			// make a single root record and merge data requirements into it
 			mergedRoot = (TreeGraphDataNode) factory.makeNode(Record.class,mergedRootName.toString());
 			for (TreeGraphDataNode n:roots)
-				if (n.classId().equals(N_RECORD.label()))
-					mergedRoot.connectChildren(n.getChildren()); // caution: this changes the graph
-				else
-					mergedRoot.connectChild(n);
+				if (n.classId().equals(N_RECORD.label())) {
+					for (TreeNode c:n.getChildren()) {
+						SimplePropertyList pl = new SimplePropertyListImpl("type");
+						pl.setProperty("type", "forCodeGeneration");
+						mergedRoot.connectTo(Direction.OUT,c, pl);
+					}
+//					// caution: this changes the graph
+//					// and this is a very bad idea ! causes crashes !
+//					mergedRoot.connectChildren(n.getChildren()); 
+				} else {
+					SimplePropertyList pl = new SimplePropertyListImpl("type");
+					pl.setProperty("type", "forCodeGeneration");
+					mergedRoot.connectTo(Direction.OUT,n, pl);
+//					mergedRoot.connectChild(n);
+				}
 			((ExtendablePropertyList)mergedRoot.properties()).addProperty("generated", true);
 		}
 		if (mergedRoot != null)

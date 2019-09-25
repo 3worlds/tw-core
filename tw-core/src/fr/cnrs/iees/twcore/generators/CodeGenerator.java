@@ -71,6 +71,13 @@ import fr.cnrs.iees.properties.ResizeablePropertyList;
  *       code and a linked user project
  */
 public class CodeGenerator {
+	
+	private TreeGraph<TreeGraphDataNode,ALEdge> graph = null;
+	
+	public CodeGenerator(TreeGraph<TreeGraphDataNode,ALEdge> graph) {
+		super();
+		this.graph = graph;
+	}
 
 	private void overWriteReadOnlyFiles(List<File> fromFiles) {
 		String pp = Project.getProjectDirectory();
@@ -93,16 +100,11 @@ public class CodeGenerator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean generate(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+	public boolean generate() {
 		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
-				N_SYSTEM.label());
+			N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
-			// I think this should be:
 			File ecologyFiles = Project.makeFile(ProjectPaths.CODE, wordUpperCaseName(ecology.id()));
-			// create directory for code generation
-//			File ecologyFiles = new File(
-//					Project.getProjectDirectory() + File.separator + wordUpperCaseName(ecology.id()));
-
 			if (ecologyFiles.exists())
 			try {
 				FileUtilities.deleteFileTree(ecologyFiles);
@@ -137,11 +139,10 @@ public class CodeGenerator {
 				generateDataCode(ecology, ecology.id());
 			// generate TwFunction classes
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
-			// enables
-			// to run tests on incomplete specs
+			// enables to run tests on incomplete specs
 			List<TreeGraphDataNode> timeModels = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
-					selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
-					selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
+				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
+				selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
 			if (timeModels != null)
 				for (TreeGraphDataNode timeModel : timeModels) {
 					List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
@@ -156,13 +157,6 @@ public class CodeGenerator {
 			String model = wordUpperCaseName(ecology.id());
 			if (UserProjectLink.haveUserProject())
 				transferProjectArtifacts(Project.makeFile(model));
-
-// TODO: generate the jars properly			
-			// This can be moved to MM onDeploy. Also we only need to compile if we don't
-			// have a
-			// codePath
-//			JarGenerator jgen = new JarGenerator(model, getInputPath(model), getOutputPath());
-//			jgen.generateJar();
 		}
 		return !ComplianceManager.haveErrors();
 	}
@@ -216,13 +210,14 @@ public class CodeGenerator {
 				GraphState.setChanged();
 			}
 			if (spec.properties().hasProperty("generated"))
-				if (spec.properties().getPropertyValue("generated").equals(true))
+				if (spec.properties().getPropertyValue("generated").equals(true)) {
 					spec.disconnect();
+					graph.removeNode(spec);
+				}
 		} else if (system.properties().hasProperty(dataGroup)) {
 			((ResizeablePropertyList) system.properties()).removeProperty(dataGroup);
 			GraphState.setChanged();
 		}
-
 	}
 
 	private List<File> generateDataCode(TreeGraphDataNode system, String modelName) {
