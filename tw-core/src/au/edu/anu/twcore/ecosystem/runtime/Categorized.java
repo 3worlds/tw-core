@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.DynamicList;
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -190,6 +191,8 @@ public interface Categorized<T extends Identity> {
 		if (roots.size() >= 1) {
 			mergedRoot = roots.iterator().next();
 			factory = mergedRoot.factory();
+			((ExtendablePropertyList)mergedRoot.properties()).addProperty(
+				new Property("generatedClassName",mergedRoot.id()) );
 		}
 		if (roots.size() > 1) {
 			// work out merged root name
@@ -199,6 +202,8 @@ public interface Categorized<T extends Identity> {
 			mergedRootName.append(dataGroup);
 			// make a single root record and merge data requirements into it
 			mergedRoot = (TreeGraphDataNode) factory.makeNode(Record.class,mergedRootName.toString());
+			((ExtendablePropertyList)mergedRoot.properties()).addProperty(
+				new Property("generatedClassName",mergedRootName.toString())) ;
 			for (TreeGraphDataNode n:roots)
 				if (n.classId().equals(N_RECORD.label())) {
 					for (TreeNode c:n.getChildren()) {
