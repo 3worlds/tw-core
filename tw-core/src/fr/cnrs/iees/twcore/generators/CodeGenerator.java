@@ -202,7 +202,7 @@ public class CodeGenerator {
 				String newValue = gen.generatedClassName();
 				if (!newValue.equals(oldValue)) {
 					system.properties().setProperty(dataGroup, newValue);
-					GraphState.setChanged();
+					//GraphState.setChanged(); Seems to be secret French business so we won't look
 				}
 			} else {
 				((ResizeablePropertyList) system.properties()).addProperty(dataGroup, gen.generatedClassName());
