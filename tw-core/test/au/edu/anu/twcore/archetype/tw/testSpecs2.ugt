@@ -152,7 +152,7 @@ treegraph
 			widget widget2 
 				order = Integer(2)
 				subclass = String("au.edu.anu.twuifx.widgets.SimpleTimeWidget")
-				sender = Integer(12) // what's this used for ???
+				sender = Integer(1) //  what's this used for ??? this is the sender id. For a SimpleTimeWidget this is the Simulator instance number (id) as per SimpleWidgetPolicy
 	
 // CROSS-LINKS
 [component:seedling] belongsTo [category:plant]
