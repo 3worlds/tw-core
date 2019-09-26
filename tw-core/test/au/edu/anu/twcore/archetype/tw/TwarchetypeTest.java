@@ -50,7 +50,7 @@ class TwarchetypeTest {
 	void test() {
 		EnumProperties.recordEnums();
 		ValidPropertyTypes.listTypes();
-		TreeGraph<?,?> specs = (TreeGraph<?, ?>) GraphImporter.importGraph("testSpecs2.utg",this.getClass());
+		TreeGraph<?,?> specs = (TreeGraph<?, ?>) GraphImporter.importGraph("testSpecs2.ugt",this.getClass());
 		for (Node n: specs.nodes()) {
 			System.out.println(n.id()+", "+n.getClass().getName());
 			

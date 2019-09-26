@@ -133,7 +133,7 @@ public class LifeCycle
 		sealed = false;
 		// manage categories
 		Collection<Category> nl = (Collection<Category>) get(edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
+			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
 			edgeListEndNodes());
 		categories.addAll(getSuperCategories(nl));
 		// check if user-defined data classes were generated
@@ -285,8 +285,11 @@ public class LifeCycle
 			SystemContainer result = containers.get(name);
 			if (result==null) {
 				SystemContainer sc = ((Ecosystem)getParent().getParent()).getInstance();
-				result = new SystemContainer(this, name, sc, 
-					parameterTemplate.clone(), null);
+				if (parameterTemplate!=null)
+					result = new SystemContainer(this, name, sc, 
+						parameterTemplate.clone(), null);
+				else
+					result = new SystemContainer(this, name, sc, null, null);
 				if (!result.id().equals(name))
 					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
 				containers.put(result.id(),result);

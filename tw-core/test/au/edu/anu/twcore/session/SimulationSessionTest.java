@@ -30,9 +30,19 @@ package au.edu.anu.twcore.session;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
+import au.edu.anu.rscs.aot.init.InitialiseMessage;
+import au.edu.anu.rscs.aot.init.Initialiser;
 import au.edu.anu.twcore.archetype.TWA;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.ens.biologie.generic.Initialisable;
 
 /**
  * 
@@ -41,16 +51,22 @@ import au.edu.anu.twcore.archetype.TWA;
  */
 class SimulationSessionTest {
 
+	@SuppressWarnings("unchecked")
 	@Test
 	final void testSimulationSession() {
 		assertTrue(TWA.validArchetype());
-//		TreeGraph<TreeGraphNode,ALEdge> specs = (TreeGraph<TreeGraphNode,ALEdge>) GraphImporter.importGraph("testSpecs.utg",this.getClass());
-//		TWA a = new TWA();
-//		Iterable<CheckMessage> errors = a.checkSpecifications(specs);
-//		if (errors==null) {
-//			SimulationSession s = new SimulationSession(specs);
-//			assertNotNull(s);
-//		}
+		TreeGraph<TreeGraphNode,ALEdge> specs = (TreeGraph<TreeGraphNode,ALEdge>) 
+			GraphImporter.importGraph("testSpecs.utg",this.getClass());
+		TWA.checkSpecifications(specs);
+		List<Initialisable> list = new ArrayList<>();
+		for (TreeGraphNode tgn:specs.nodes())
+			list.add((Initialisable) tgn);
+		Initialiser initer = new Initialiser(list);
+		initer.initialise();
+		if (initer.errorList() != null) {
+			for (InitialiseMessage msg : initer.errorList())
+				System.out.println(msg.getTarget() + msg.getException().getMessage());
+		}
 	}
 
 }

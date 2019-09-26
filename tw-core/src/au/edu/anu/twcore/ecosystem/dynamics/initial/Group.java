@@ -60,6 +60,8 @@ public class Group extends InitialisableNode implements Sealable, Parameterised 
 	private TwData parameters = null;
 	private SystemContainer container = null;
 	
+	private static final int baseInitRank = N_GROUP.initRank();
+	
 	// default constructor
 	public Group(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -101,9 +103,16 @@ public class Group extends InitialisableNode implements Sealable, Parameterised 
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
 
+	// this to call groups in proper dependency order, i.e. higher groups must be initialised first
+	private int initRank(Group g, int rank) {
+		if (g.getParent() instanceof Group)
+			rank = initRank((Group)g.getParent(),rank) + 1;
+		return rank;
+	}
+	
 	@Override
 	public int initRank() {
-		return N_GROUP.initRank();
+		return initRank(this,baseInitRank);
 	}
 
 	@Override
