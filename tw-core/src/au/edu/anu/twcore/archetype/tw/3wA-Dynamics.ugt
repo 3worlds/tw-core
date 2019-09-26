@@ -32,7 +32,7 @@ hasNode timeLineSpec
 	hasProperty timeOriginPropertySpec
 		hasName = String("timeOrigin")
 		type =  String("Long") 
-		multiplicity = IntegerRange("0..1") 
+		multiplicity = IntegerRange("1..1") 
 	mustSatisfyQuery shortestTimeUnitTimeUnitValidityQuery
 		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
 		values = StringTable(([2]"shortestTimeUnit","scale"))
