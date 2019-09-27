@@ -191,8 +191,8 @@ public class CodeGenerator {
 
 	// only to be called by generateDataCode(String codePath, TreeGraphDataNode
 	// system, String modelName)
-	private void generateDataCode(List<File> result, TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
-			String dataGroup) {
+	private void generateDataCode(List<File> result, TreeGraphDataNode spec, 
+			TreeGraphDataNode system, String modelName, String dataGroup) {
 		if (spec != null) {
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
 			gen.generateCode();
@@ -202,7 +202,7 @@ public class CodeGenerator {
 				String newValue = gen.generatedClassName();
 				if (!newValue.equals(oldValue)) {
 					system.properties().setProperty(dataGroup, newValue);
-					//GraphState.setChanged(); Seems to be secret French business so we won't look
+					GraphState.setChanged(); //Seems to be secret French business so we won't look
 				}
 			} else {
 				((ResizeablePropertyList) system.properties()).addProperty(dataGroup, gen.generatedClassName());
@@ -239,7 +239,7 @@ public class CodeGenerator {
 			generateFunctionCode(function, modelName);
 			// 2 generate code for its children (consequence) functions
 			List<TreeGraphDataNode> consequences = (List<TreeGraphDataNode>) get(function.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
+				selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
 			for (TreeGraphDataNode csq : consequences)
 				generateFunctionCode(csq, modelName);
 		}
@@ -250,6 +250,7 @@ public class CodeGenerator {
 		generator.generateCode();
 		String genClassName = generator.generatedClassName();
 		((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
+		GraphState.setChanged();
 	}
 
 	private void generateInitialiserCode(TreeGraphDataNode initialiser, String modelName) {
