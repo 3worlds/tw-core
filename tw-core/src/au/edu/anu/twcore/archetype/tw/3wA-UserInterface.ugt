@@ -25,6 +25,10 @@ hasNode tabSpec
 		hasName = String("orientation")
 		type = String("UIContainerOrientation")
 		multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery TabChildAtLeastOneOfOneOrTwoOfTwoQuery
+		className = String("au.edu.anu.twcore.archetype.tw.ChildAtLeastOneOfOneOrTwoOfTwoQuery")
+		nodeLabel1 = String("widget")
+		nodeLabel2 = String("container")
 	
 hasNode containerSpec
 	isOfClass = String("container")
@@ -38,6 +42,10 @@ hasNode containerSpec
 		hasName = String("order")		
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery ContainerChildAtLeastOneOfOneOrTwoOfTwoQuery
+		className = String("au.edu.anu.twcore.archetype.tw.ChildAtLeastOneOfOneOrTwoOfTwoQuery")
+		nodeLabel1 = String("widget")
+		nodeLabel2 = String("container")
 		
 	
 hasNode widgetSpec
