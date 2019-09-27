@@ -115,10 +115,11 @@ treegraph
 							rgr = Double(1.2)
 							survival = Double(0.1)
 						individual brj1
-							effectivegrowth = Double(0.98)
-							biomass = Double(0.1)
-							dbh = Double(0.32)
-							height = Double(8.76)
+							variableValues brj1v
+								effectivegrowth = Double(0.98)
+								biomass = Double(0.1)
+								dbh = Double(0.32)
+								height = Double(8.76)
 					group BRad
 						parameterValues pBRad
 							fecundity = Double(12.5)

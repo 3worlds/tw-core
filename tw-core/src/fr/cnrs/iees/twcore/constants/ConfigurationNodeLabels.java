@@ -59,14 +59,16 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_RECORD 			("record",				Record.class,				0),
 			N_FIELD 			("field",				Field.class,				0),
 		N_SYSTEM 				("system",				Ecosystem.class,			ECOBASE), 
-			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		Math.max(SIMBASE+10,TIMEBASE+20)), // after stopping conditions AND TimerModels
+			N_DYNAMICS 			("dynamics",			SimulatorNode.class,		Math.max(SIMBASE+10,		// after stopping conditions 
+																						Math.max(TIMEBASE+20,	// AND TimerModels
+																							CATEGORYBASE+60))), // AND a fully initialised ECOSYSTEM
 			N_TIMELINE 			("timeLine",			TimeLine.class,				TIMEBASE), 
-			N_TIMEMODEL			("timeModel",			TimeModel.class,			TIMEBASE+10),
-				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			TIMEBASE+20),
-				N_PROCESS 		("process",				ProcessNode.class,			TIMEBASE+30), // after TimeModel, Function & EventQueue
+			N_TIMEMODEL			("timeModel",			TimeModel.class,			TIMEBASE+10),	// after timeLine
+				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			TIMEBASE+20),	// after timeModel
+				N_PROCESS 		("process",				ProcessNode.class,			TIMEBASE+30), 	// after TimeModel, Function & EventQueue
 				N_FUNCTION 		("function",			FunctionNode.class,			0), // ***
 				N_DATATRACKER 	("dataTracker",			DataTracker.class,			0),
-				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			ECOBASE+10), 
+				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			ECOBASE+10), 	// after Ecosystem
 				N_RECRUIT 		("recruit",				Recruit.class,				0),
 				N_PRODUCE 		("produce",				Produce.class,				0),
 				N_STOPPINGCONDITION("stoppingCondition",StoppingConditionNode.class,SIMBASE), // before Simulator
@@ -81,7 +83,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_CATEGORY 		("category",			Category.class,				CATEGORYBASE), 
 				N_COMPONENT 	("component",			SystemFactory.class,		CATEGORYBASE+10), // after category and categorySet
 				N_RELATIONTYPE 	("relationType",		RelationType.class,			CATEGORYBASE+10), // after category
-		N_EXPERIMENT 			("experiment",			Experiment.class,			SIMBASE+20),
+		N_EXPERIMENT 			("experiment",			Experiment.class,			SIMBASE+20),	// after fully iinitialised simulator
 			N_DESIGN 			("design",				Design.class,				0),
 			N_TREATMENT 		("treatment",			Treatment.class,			0),
 			N_TIMEPERIOD 		("timePeriod",			TimePeriod.class,			0),

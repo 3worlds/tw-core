@@ -6,9 +6,9 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.AbstractDataTracker;
 import au.edu.anu.twcore.data.runtime.DataMessageTypes;
-import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
+import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
@@ -70,7 +70,8 @@ public class Simulator {
 			TimeLine refTimer,
 			List<Timer> timers,
 			int[] timeModelMasks,
-			Map<Integer, List<List<ProcessNode>>> processCallingOrder) {
+			Map<Integer, List<List<ProcessNode>>> processCallingOrder,
+			Ecosystem ecosystem) {
 		super();
 		N_INSTANCES++;
 		id = N_INSTANCES;
@@ -79,11 +80,13 @@ public class Simulator {
 		this.timerList=timers;
 		this.timeModelMasks = timeModelMasks;
 		this.processCallingOrder = processCallingOrder;
+		this.community = (SystemContainer) ecosystem.community();
 		// looping aids
 		currentTimes = new long[timerList.size()];
 		// data tracking
-//		timetracker = new timeTracker();		
-		timetracker = new TimeTracker();		
+		timetracker = new TimeTracker();
+		// copies initial community to current community to start properly
+		community.reset();
 	}
 	
 	private DataTrackerStatus status() {
@@ -96,12 +99,6 @@ public class Simulator {
 			return DataTrackerStatus.Initial;
 	}
 	
-//	public void addObserver(DataReceiver<LabelValuePairData,Metadata> observer) {
-//		timetracker.addObserver(observer);
-//		// as metadata, send all properties of the reference TimeLine of this simulator.
-//		metadata = new Metadata(status(),id,refTimer.properties());
-//		timetracker.sendMetadata(metadata);
-//	}
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		timetracker.addObserver(observer);
 		// as metadata, send all properties of the reference TimeLine of this simulator.
@@ -112,8 +109,10 @@ public class Simulator {
 	// run one simulation step
 	@SuppressWarnings("unused")
 	public void step() {
+		if (!started)
+			resetSimulation();
 		started = true;
-		System.out.println("time = "+lastTime);
+		log.info("Time = "+lastTime);
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;
@@ -198,7 +197,7 @@ public class Simulator {
 	
 	// resets a simulation at its initial state
 	public void resetSimulation() {
-		if (started) { // otherwise no point to reset
+//		if (started) { // otherwise no point to reset
 			lastTime = startTime;
 			stoppingCondition.reset();
 			started = false;
@@ -206,12 +205,14 @@ public class Simulator {
 			for (Timer t:timerList)
 				t.reset();
 			timetracker.sendData(makeTimeRecord());
-		}
+			community.reset();
+//		}
 	}
 
 	// returns true if stopping condition is met
 	public boolean stop() {
-		return stoppingCondition.stop();
+		finished = stoppingCondition.stop(); 
+		return finished;
 	}
 	
 	public boolean isStarted() {

@@ -51,9 +51,9 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
+import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
@@ -129,7 +129,9 @@ public class SimulatorNode
 	public Simulator newInstance() {
 		if (!sealed)
 			initialise();
-		Simulator sim = new Simulator(rootStop,timeLine,timers,timeModelMasks,processCallingOrder);
+		Simulator sim = new Simulator(rootStop,timeLine,timers,timeModelMasks,
+			processCallingOrder,
+			(Ecosystem) getParent());
 		rootStop.attachSimulator(sim);
 		instances.add(sim);
 		return sim;

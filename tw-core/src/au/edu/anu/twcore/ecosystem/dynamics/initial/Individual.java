@@ -77,7 +77,7 @@ public class Individual extends InitialisableNode implements Sealable {
 		SystemComponent sc = factory.newInstance();
 		variables = sc.currentState();
 		Parameterised p = (Parameterised) getParent();
-		p.container().addInitialItem(sc);
+		p.container().addInitialItem(sc);		
 		sealed = true;
 	}
 
