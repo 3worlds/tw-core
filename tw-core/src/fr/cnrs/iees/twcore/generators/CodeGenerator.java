@@ -71,10 +71,10 @@ import fr.cnrs.iees.properties.ResizeablePropertyList;
  *       code and a linked user project
  */
 public class CodeGenerator {
-	
-	private TreeGraph<TreeGraphDataNode,ALEdge> graph = null;
-	
-	public CodeGenerator(TreeGraph<TreeGraphDataNode,ALEdge> graph) {
+
+	private TreeGraph<TreeGraphDataNode, ALEdge> graph = null;
+
+	public CodeGenerator(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		super();
 		this.graph = graph;
 	}
@@ -84,11 +84,10 @@ public class CodeGenerator {
 		for (File fromFile : fromFiles) {
 			File toFile = null;
 			if (fromFile.getAbsolutePath().endsWith(".java"))
-				toFile = new File(fromFile.getAbsolutePath().replace(pp, 
-					UserProjectLink.srcRoot().getAbsolutePath()));
+				toFile = new File(fromFile.getAbsolutePath().replace(pp, UserProjectLink.srcRoot().getAbsolutePath()));
 			else
-				toFile = new File(fromFile.getAbsolutePath().replace(pp, 
-					UserProjectLink.classRoot().getAbsolutePath()));
+				toFile = new File(
+						fromFile.getAbsolutePath().replace(pp, UserProjectLink.classRoot().getAbsolutePath()));
 			toFile.mkdirs();
 			try {
 				Files.copy(fromFile.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -101,15 +100,15 @@ public class CodeGenerator {
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
 		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
-			N_SYSTEM.label());
+				N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
 			File ecologyFiles = Project.makeFile(ProjectPaths.CODE, wordUpperCaseName(ecology.id()));
 			if (ecologyFiles.exists())
-			try {
-				FileUtilities.deleteFileTree(ecologyFiles);
-			} catch (IOException e) {
-				throw new TwcoreException("Unable to delete ["+ecologyFiles+"]");
-			}
+				try {
+					FileUtilities.deleteFileTree(ecologyFiles);
+				} catch (IOException e) {
+					throw new TwcoreException("Unable to delete [" + ecologyFiles + "]");
+				}
 			ecologyFiles.mkdirs();
 
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(ecology.getChildren(),
@@ -140,8 +139,8 @@ public class CodeGenerator {
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
 			List<TreeGraphDataNode> timeModels = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
-				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
-				selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
+					selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
+					selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
 			if (timeModels != null)
 				for (TreeGraphDataNode timeModel : timeModels) {
 					List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
@@ -191,8 +190,8 @@ public class CodeGenerator {
 
 	// only to be called by generateDataCode(String codePath, TreeGraphDataNode
 	// system, String modelName)
-	private void generateDataCode(List<File> result, TreeGraphDataNode spec, 
-			TreeGraphDataNode system, String modelName, String dataGroup) {
+	private void generateDataCode(List<File> result, TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
+			String dataGroup) {
 		if (spec != null) {
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
 			gen.generateCode();
@@ -202,7 +201,7 @@ public class CodeGenerator {
 				String newValue = gen.generatedClassName();
 				if (!newValue.equals(oldValue)) {
 					system.properties().setProperty(dataGroup, newValue);
-					GraphState.setChanged(); //Seems to be secret French business so we won't look
+					GraphState.setChanged(); // Seems to be secret French business so we won't look
 				}
 			} else {
 				((ResizeablePropertyList) system.properties()).addProperty(dataGroup, gen.generatedClassName());
@@ -239,7 +238,7 @@ public class CodeGenerator {
 			generateFunctionCode(function, modelName);
 			// 2 generate code for its children (consequence) functions
 			List<TreeGraphDataNode> consequences = (List<TreeGraphDataNode>) get(function.getChildren(),
-				selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
+					selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
 			for (TreeGraphDataNode csq : consequences)
 				generateFunctionCode(csq, modelName);
 		}
@@ -249,19 +248,32 @@ public class CodeGenerator {
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.generateCode();
 		String genClassName = generator.generatedClassName();
-		((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
-		GraphState.setChanged();
+		if (function.properties().hasProperty(P_FUNCTIONCLASS.key())) {
+			String lastValue = (String) function.properties().getPropertyValue(P_FUNCTIONCLASS.key());
+			if (!lastValue.equals(genClassName)) {
+				function.properties().setProperty(P_FUNCTIONCLASS.key(), genClassName);
+				GraphState.setChanged();
+			}
+		} else {
+			((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
+			GraphState.setChanged();
+		}
 	}
 
 	private void generateInitialiserCode(TreeGraphDataNode initialiser, String modelName) {
-//		TreeGraphDataNode initialiserSpec = (TreeGraphDataNode) get(initialiser, 
-//			outEdges(), 
-//			selectOne(hasTheLabel(E_SPEC.toString())),
-//			endNode());
 		TwInitialiserGenerator generator = new TwInitialiserGenerator(initialiser.id(), initialiser, modelName);
 		generator.generateCode();
-		((ResizeablePropertyList) initialiser.properties()).addProperty(P_FUNCTIONCLASS.key(),
-				generator.generatedClassName());
+		String genClassName = generator.generatedClassName();
+		if (initialiser.properties().hasProperty(P_FUNCTIONCLASS.key())) {
+			String lastValue = (String) initialiser.properties().getPropertyValue(P_FUNCTIONCLASS.key());
+			if (!lastValue.equals(genClassName)) {
+				initialiser.properties().setProperty(P_FUNCTIONCLASS.key(), genClassName);
+				GraphState.setChanged();
+			}
+		} else {
+			((ResizeablePropertyList) initialiser.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
+		}
+
 	}
 
 	@SuppressWarnings("unchecked")
