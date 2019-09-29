@@ -71,13 +71,10 @@ public class TwDataGenerator
 		return new ClassGenerator(packageName, comment, className,
 			ObjectTable.class.getPackageName()+".ObjectTable<"+contentType+">");
 	}
-	public List<File> getFiles() {
-		List<File> result = new ArrayList<File>();
+	public File getFile() {
 		String name = className.replace(this.packageName+".", "");
 		String path = packagePath+File.separator+name;
-		result.add(new File(path+".java"));
-		result.add(new File(path+".class"));
-		return result;
+		return new File(path+".java");
 	}
 	@Override
 	protected void headerCode(ClassGenerator cg, String className) {

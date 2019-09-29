@@ -53,6 +53,7 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import au.edu.anu.twcore.userProject.AbstractUPL.CodeGenTypes;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -79,26 +80,28 @@ public class CodeGenerator {
 		this.graph = graph;
 	}
 
-	private void overWriteReadOnlyFiles(List<File> fromFiles) {
-		String pp = Project.getProjectDirectory();
-		for (File fromFile : fromFiles) {
-			File toFile = null;
-			if (fromFile.getAbsolutePath().endsWith(".java"))
-				toFile = new File(fromFile.getAbsolutePath().replace(pp, UserProjectLink.srcRoot().getAbsolutePath()));
-			else
-				toFile = new File(
-						fromFile.getAbsolutePath().replace(pp, UserProjectLink.classRoot().getAbsolutePath()));
-			toFile.mkdirs();
-			try {
-				Files.copy(fromFile.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+//	private void overWriteReadOnlyFiles(List<File> fromFiles) {
+//		String srcDir = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+//		String dstjDir = UserProjectLink.srcRoot().getAbsolutePath();
+//		String dstcDir = UserProjectLink.classRoot().getAbsolutePath();
+//		for (File fromFile : fromFiles) {
+//			File toFile = null;
+//			if (fromFile.getAbsolutePath().endsWith(".java")) {
+//				toFile = new File(fromFile.getAbsolutePath().replace(srcDir, dstjDir));
+//			} else
+//				toFile = new File(fromFile.getAbsolutePath().replace(srcDir, dstcDir));
+//			toFile.mkdirs();
+//			try {
+//				Files.copy(fromFile.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
+		UserProjectLink.clearFiles();
 		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
@@ -118,11 +121,7 @@ public class CodeGenerator {
 			// generate data classes for SystemComponents
 			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENT.label());
 			for (TreeGraphDataNode system : systems) {
-				List<File> files = generateDataCode(system, ecology.id());
-				if (UserProjectLink.haveUserProject())
-					// ensure new or updated data code cannot be overwritten by user.
-					// well actually, why not let them edit if they want??
-					overWriteReadOnlyFiles(files);
+				generateDataCode(system, ecology.id());
 			}
 			// generate data classes for LifeCycles, if any
 			List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(dynamics, N_LIFECYCLE.label());
@@ -144,8 +143,9 @@ public class CodeGenerator {
 			if (timeModels != null)
 				for (TreeGraphDataNode timeModel : timeModels) {
 					List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
-					for (TreeGraphDataNode process : processes)
+					for (TreeGraphDataNode process : processes) {
 						generateProcessCode(process, ecology.id());
+					}
 				}
 			// generate Initialiser classes
 			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
@@ -153,49 +153,54 @@ public class CodeGenerator {
 				generateInitialiserCode(initialiser, ecology.id());
 			// copy generated files to user project for code editing
 			String model = wordUpperCaseName(ecology.id());
-			if (UserProjectLink.haveUserProject())
-				transferProjectArtifacts(Project.makeFile(model));
+			UserProjectLink.pushFiles();
+//			if (UserProjectLink.haveUserProject())
+//				transferProjectArtifacts(Project.makeFile(ProjectPaths.CODE, model));
 		}
 		return !ComplianceManager.haveErrors();
 	}
 
-	private void transferProjectArtifacts(File toDir) {
-		File fromSrc = UserProjectLink.srcRoot();
-		File fromClass = UserProjectLink.classRoot();
-		try {
-			// why are we doing this?
-			fromSrc.mkdirs();
-			fromClass.mkdirs();
-			// copyDirectory copies all children
-			FileUtils.copyDirectory(fromSrc, toDir);
-			FileUtils.copyDirectory(fromClass, toDir);
-			/**
-			 * Initially, there won't be any java files in the external project. Therefore,
-			 * copy the newly created default ones (or the newly copied) back to the
-			 * external Eclipse project.
-			 */
-			String[] extensions = new String[] { "java" };
-			List<File> files = (List<File>) FileUtils.listFiles(toDir, extensions, true);
-			for (File inFile : files) {
-				String inName = inFile.getAbsolutePath();
-				String outName = inName.replace(Project.getProjectDirectory(), "");
-				File outFile = new File(fromSrc.getAbsoluteFile() + File.separator + outName);
-				outFile.mkdirs();
-				Files.copy(inFile.toPath(), outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+//	private void transferProjectArtifacts(File toDir) {
+//		/*
+//		 * At this point, the user's code should be up to date. I think we have forgotten to manage function files back ups etc
+//		 */
+//
+//		File fromSrc = UserProjectLink.srcRoot();
+//		File fromClass = UserProjectLink.classRoot();
+//		try {
+//			// why are we doing this?
+////			fromSrc.mkdirs();
+////			fromClass.mkdirs();
+//			// copyDirectory copies all children
+//			FileUtils.copyDirectory(fromSrc, toDir);
+//			FileUtils.copyDirectory(fromClass, toDir);
+//			/**
+//			 * Initially, there won't be any java files in the external project. Therefore,
+//			 * copy the newly created default ones (or the newly copied) back to the
+//			 * external Eclipse project.
+//			 */
+//			String[] extensions = new String[] { "java" };
+//			List<File> files = (List<File>) FileUtils.listFiles(toDir, extensions, true);
+//			for (File inFile : files) {
+//				String inName = inFile.getAbsolutePath();
+//				String outName = inName.replace(Project.getProjectDirectory(), "");
+//				File outFile = new File(fromSrc.getAbsoluteFile() + File.separator + outName);
+//				outFile.mkdirs();
+//				Files.copy(inFile.toPath(), outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	// only to be called by generateDataCode(String codePath, TreeGraphDataNode
 	// system, String modelName)
-	private void generateDataCode(List<File> result, TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
+	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
 			String dataGroup) {
 		if (spec != null) {
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
 			gen.generateCode();
-			result.addAll(gen.getFiles());
+			UserProjectLink.addJavaFile(CodeGenTypes.DATA, gen.getFile());
 			if (system.properties().hasProperty(dataGroup)) {
 				String oldValue = (String) system.properties().getPropertyValue(dataGroup);
 				String newValue = gen.generatedClassName();
@@ -218,15 +223,13 @@ public class CodeGenerator {
 		}
 	}
 
-	private List<File> generateDataCode(TreeGraphDataNode system, String modelName) {
-		List<File> result = new ArrayList<File>();
+	private void generateDataCode(TreeGraphDataNode system, String modelName) {
 		TreeGraphDataNode spec = Categorized.buildUniqueDataList(system, E_DRIVERS.label());
-		generateDataCode(result, spec, system, modelName, P_DRIVERCLASS.key());
+		generateDataCode(spec, system, modelName, P_DRIVERCLASS.key());
 		spec = Categorized.buildUniqueDataList(system, E_PARAMETERS.label());
-		generateDataCode(result, spec, system, modelName, P_PARAMETERCLASS.key());
+		generateDataCode(spec, system, modelName, P_PARAMETERCLASS.key());
 		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label());
-		generateDataCode(result, spec, system, modelName, P_DECORATORCLASS.key());
-		return result;
+		generateDataCode(spec, system, modelName, P_DECORATORCLASS.key());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -247,6 +250,7 @@ public class CodeGenerator {
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.generateCode();
+		UserProjectLink.addJavaFile(CodeGenTypes.FUNCTION, generator.getFile());
 		String genClassName = generator.generatedClassName();
 		if (function.properties().hasProperty(P_FUNCTIONCLASS.key())) {
 			String lastValue = (String) function.properties().getPropertyValue(P_FUNCTIONCLASS.key());
@@ -263,6 +267,7 @@ public class CodeGenerator {
 	private void generateInitialiserCode(TreeGraphDataNode initialiser, String modelName) {
 		TwInitialiserGenerator generator = new TwInitialiserGenerator(initialiser.id(), initialiser, modelName);
 		generator.generateCode();
+		UserProjectLink.addJavaFile(CodeGenTypes.INITIALISER, generator.getFile());
 		String genClassName = generator.generatedClassName();
 		if (initialiser.properties().hasProperty(P_FUNCTIONCLASS.key())) {
 			String lastValue = (String) initialiser.properties().getPropertyValue(P_FUNCTIONCLASS.key());

@@ -78,6 +78,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private TwFunctionTypes type = null;
 	private String model = null;
 	private String generatedClassName = null;
+	private String packageName=null;
 	private List<String> inBodyCode = null;
 	private List<String> inClassCode = null;
 
@@ -149,7 +150,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
 //		String packageName = ctmodel + "." + TW_CODE;
-		String packageName = ctmodel;
+		packageName = ctmodel;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(true, model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
@@ -184,6 +185,11 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 
 	public String generatedClassName() {
 		return generatedClassName;
+	}
+	public File getFile() {
+		String name = generatedClassName.replace(this.packageName+".", "");
+		String path = packageName+File.separator+name;
+		return new File(path+".java");
 	}
 
 }

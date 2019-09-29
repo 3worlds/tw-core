@@ -44,7 +44,7 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  *
  * @date 23 Aug 2019
  */
-public class UPLEclipse implements IUserProjectLink{
+public class UPLEclipse extends AbstractUPL{
 	File srcDir;
 	File classDir;
 	File projectDir;

@@ -33,8 +33,11 @@ import java.io.File;
 import java.util.Set;
 
 // static singleton class for java IDE-independent info
-// Not particularly useful (yet?)
-// This should be a factory
+/**
+ * @author Ian Davies
+ *
+ * @date 29 Sep 2019
+ */
 public class UserProjectLink {
 	private UserProjectLink() {
 	};
@@ -77,5 +80,20 @@ public class UserProjectLink {
 
 	public static File classForSource(File source) {
 		return impl.classForSource(source);
+	}
+
+	public static void clearFiles() {
+		if (impl != null)
+			impl.clearFiles();
+	}
+
+	public static void addJavaFile(AbstractUPL.CodeGenTypes t, File f) {
+		if (impl != null)
+			impl.addJavaFile(t, f);
+	}
+
+	public static void pushFiles() {
+		if (impl != null)
+			pushFiles();
 	}
 }

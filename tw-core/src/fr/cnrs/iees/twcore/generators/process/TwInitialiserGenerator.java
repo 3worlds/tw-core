@@ -77,6 +77,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 	private List<String> inBodyCode = null;
 	private List<String> inClassCode = null;
 	private String generatedClassName = null;
+	private String packageName = null;
 	
 	@SuppressWarnings("unchecked")
 	public TwInitialiserGenerator(String className, TreeGraphDataNode spec,String modelName) {
@@ -123,8 +124,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		File ctGeneratedCodeDir =  getModelCodeDir(model);			
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
-//		String packageName = ctmodel+"."+TW_CODE;		
-		String packageName = ctmodel;		
+		packageName = ctmodel;		
 		String ancestorClassName = INITIALISER_ROOT_PACKAGE+".SecondaryParametersInitialiser";		
 		String comment = comment(general,classComment(name),generatedCode(false,model, ""));				
 		ClassGenerator generator = new ClassGenerator(packageName,comment,name,ancestorClassName);
@@ -160,6 +160,11 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 	
 	public String generatedClassName() {
 		return generatedClassName;
+	}
+	public File getFile() {
+		String name = generatedClassName.replace(this.packageName+".", "");
+		String path = packageName+File.separator+name;
+		return new File(path+".java");
 	}
 
 }
