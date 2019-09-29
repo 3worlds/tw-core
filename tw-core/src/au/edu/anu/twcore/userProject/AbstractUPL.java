@@ -50,12 +50,14 @@ import au.edu.anu.twcore.project.ProjectPaths;
  * @date 29 Sep 2019
  */
 public abstract class AbstractUPL implements IUserProjectLink {
-	private List<File> dataFiles = new ArrayList<>();
-	private List<File> functionFiles = new ArrayList<>();
-	private List<File> initialiserFiles = new ArrayList<>();
+	private List<File> dataFiles;
+	private List<File> functionFiles;
+	private List<File> initialiserFiles;
 
-	public enum CodeGenTypes {
-		DATA, FUNCTION, INITIALISER;
+	public AbstractUPL() {
+		dataFiles = new ArrayList<>();
+		functionFiles = new ArrayList<>();
+		initialiserFiles = new ArrayList<>();
 	}
 
 	@Override
@@ -65,47 +67,47 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		initialiserFiles.clear();
 	}
 
-	public void addJavaFile(CodeGenTypes t, File f) {
-		switch (t) {
-		case DATA: {
-			dataFiles.add(f);
-			dataFiles.add(new File(f.getAbsolutePath().replace(".java", ".class")));
-			break;
-		}
-		case FUNCTION: {
-			functionFiles.add(f);
-			break;
-		}
-		default: {
-			initialiserFiles.add(f);
-		}
-		}
+	@Override
+	public void addDataFile(File f) {
+		dataFiles.add(f);
+		dataFiles.add(new File(f.getAbsolutePath().replace(".java", ".class")));
+	}
+
+	@Override
+	public void addFunctionFile(File f) {
+		functionFiles.add(f);
+		functionFiles.add(new File(f.getAbsolutePath().replace(".java", ".class")));
+	}
+
+	@Override
+	public void addInitialiserFile(File f) {
+		initialiserFiles.add(f);
+		initialiserFiles.add(new File(f.getAbsolutePath().replace(".java", ".class")));
 	}
 
 	@Override
 	public void pushFiles() {
-		pushDataFiles();
-		pushFunctionFiles();
-		pushInitialiserFiles();
+		String remoteSrcPath = this.srcRoot().getAbsolutePath();
+		String remoteClsPath = this.classRoot().getAbsolutePath();
+		String localPath = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+		pushDataFiles(localPath, remoteSrcPath, remoteClsPath);
+		pushFunctionFiles(localPath, remoteSrcPath, remoteClsPath);
+		pushInitialiserFiles(localPath, remoteSrcPath, remoteClsPath);
 	}
 
-	private void pushDataFiles() {
-		String codePath = projectRoot().getAbsolutePath();
-		String root = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+	private void pushDataFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File infile : dataFiles) {
 			File outfile = null;
 			if (infile.getAbsolutePath().endsWith(".java"))
-				outfile = new File(
-						infile.getAbsolutePath().replace(root, codePath + File.separator + SRC + File.separator));
+				outfile = new File(infile.getAbsolutePath().replace(localPath, remoteSrcPath));
 			else
-				outfile = new File(infile.getAbsolutePath().replace(root, codePath + File.separator + BIN));
-
+				outfile = new File(infile.getAbsolutePath().replace(localPath, remoteClsPath));
 			new File(outfile.getParent()).mkdirs();
 			FileUtilities.copyFileReplace(infile, outfile);
 		}
 	}
 
-	public void pushFunctionFiles() {
+	public void pushFunctionFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File infile : functionFiles) {
 			File javaProjectFile = makeJavaProjectPair(codePath, rootPackage, infile);
 			File backup = new File(javaProjectFile.getAbsolutePath().replace(".java", extOrig + "0"));
@@ -133,7 +135,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		}
 	}
 
-	public void pushInitialiserFiles() {
+	public void pushInitialiserFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File infile : initialiserFiles) {
 			File prjJava = makeJavaProjectPair(codePath, rootPackage, infile);
 			if (!prjJava.exists()) {
@@ -209,7 +211,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		}
 	}
 
-	public  void show() {
+	public void show() {
 		System.out.println(CodeGenTypes.DATA);
 		for (File f : dataFiles) {
 			System.out.println(f.getName());

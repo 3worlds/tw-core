@@ -87,9 +87,19 @@ public class UserProjectLink {
 			impl.clearFiles();
 	}
 
-	public static void addJavaFile(AbstractUPL.CodeGenTypes t, File f) {
+	public static void addDataFile(File f) {
 		if (impl != null)
-			impl.addJavaFile(t, f);
+			impl.addDataFile(f);
+	}
+
+	public static void addFunctionFile(File f) {
+		if (impl != null)
+			impl.addFunctionFile(f);
+	}
+
+	public static void addInitialiserFile(File f) {
+		if (impl != null)
+			impl.addInitialiserFile(f);
 	}
 
 	public static void pushFiles() {

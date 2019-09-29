@@ -54,6 +54,7 @@ public class UPLEclipse extends AbstractUPL{
 
 
 	public UPLEclipse(File projectDir/** other non-standard dirs*/) {
+		super();
 		this.projectDir=projectDir;
 		this.srcDir = new File(projectDir.getAbsoluteFile()+File.separator+"src");
 		this.classDir = new File(projectDir.getAbsoluteFile()+File.separator+"bin");

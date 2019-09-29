@@ -37,13 +37,8 @@ import static fr.ens.biologie.generic.utils.NameUtils.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
@@ -53,7 +48,6 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.userProject.AbstractUPL.CodeGenTypes;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -200,7 +194,7 @@ public class CodeGenerator {
 		if (spec != null) {
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
 			gen.generateCode();
-			UserProjectLink.addJavaFile(CodeGenTypes.DATA, gen.getFile());
+			UserProjectLink.addDataFile(gen.getFile());
 			if (system.properties().hasProperty(dataGroup)) {
 				String oldValue = (String) system.properties().getPropertyValue(dataGroup);
 				String newValue = gen.generatedClassName();
@@ -250,7 +244,7 @@ public class CodeGenerator {
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.generateCode();
-		UserProjectLink.addJavaFile(CodeGenTypes.FUNCTION, generator.getFile());
+		UserProjectLink.addFunctionFile(generator.getFile());
 		String genClassName = generator.generatedClassName();
 		if (function.properties().hasProperty(P_FUNCTIONCLASS.key())) {
 			String lastValue = (String) function.properties().getPropertyValue(P_FUNCTIONCLASS.key());
@@ -267,7 +261,7 @@ public class CodeGenerator {
 	private void generateInitialiserCode(TreeGraphDataNode initialiser, String modelName) {
 		TwInitialiserGenerator generator = new TwInitialiserGenerator(initialiser.id(), initialiser, modelName);
 		generator.generateCode();
-		UserProjectLink.addJavaFile(CodeGenTypes.INITIALISER, generator.getFile());
+		UserProjectLink.addInitialiserFile(generator.getFile());
 		String genClassName = generator.generatedClassName();
 		if (initialiser.properties().hasProperty(P_FUNCTIONCLASS.key())) {
 			String lastValue = (String) initialiser.properties().getPropertyValue(P_FUNCTIONCLASS.key());

@@ -47,14 +47,17 @@ public interface IUserProjectLink {
 	public File projectRoot();
 
 	public File[] getUserLibraries(Set<String> exclusions);
-	
+
 	public File classForSource(File source);
-	
+
 	public void clearFiles();
-	
-	public void addJavaFile(AbstractUPL.CodeGenTypes t, File f);
-	
+
+	public void addDataFile(File f);
+
+	public void addFunctionFile(File f);
+
+	public void addInitialiserFile(File f);
+
 	public void pushFiles();
-	
-	
+
 }
