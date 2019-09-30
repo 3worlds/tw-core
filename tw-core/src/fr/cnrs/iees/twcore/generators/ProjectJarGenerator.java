@@ -37,7 +37,7 @@ public class ProjectJarGenerator {
 	public static String mainClass = "au.edu.anu.twuifx.mr.Main";
 
 	@SuppressWarnings("unchecked")
-	public void generate(TreeGraph<TreeGraphDataNode, ALEdge>  graph) {
+	public void generate(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		Set<String> userLibraries = new HashSet<>();
 		Set<File> codeFiles = new HashSet<>();
 		Set<File> resFiles = new HashSet<>();
@@ -63,14 +63,14 @@ public class ProjectJarGenerator {
 		}
 		// make one userCodeJar in root of project
 		loadModelCode(codeFiles, resFiles);
-		Jars packer = new SimulatorJar(mainClass,dataFiles,codeFiles,resFiles,userLibraries);
+		Jars packer = new SimulatorJar(mainClass, dataFiles, codeFiles, resFiles, userLibraries);
 //		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);
-		File executableJarFile = Project.makeFile(Project.getProjectUserName()+".jar");
+		File executableJarFile = Project.makeFile(Project.getProjectUserName() + ".jar");
 		packer.saveJar(executableJarFile);
-		//return executableJarFile.getName();
+		// return executableJarFile.getName();
 
 	}
-	
+
 	private Set<String> copyUserLibraries(File[] fJars) {
 		/**
 		 * Copy any libraries used by the Java project to the targetDir. These can then
@@ -97,35 +97,36 @@ public class ProjectJarGenerator {
 		return result;
 
 	}
+
 	private void pullAllCodeFiles() {
 		File fDstRoot = Project.makeFile(ProjectPaths.CODE);
 		String[] extensions = new String[] { "java" };
-		List<File> lstSrcJava = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
-		for (File fSrcJava : lstSrcJava) {
-			if (!fSrcJava.getName().equals("UserCodeRunner.java")) {
-				File fSrcClass = UserProjectLink.classForSource(fSrcJava);
-				File fDstJava = swapDirectory(fSrcJava, UserProjectLink.srcRoot(), fDstRoot);
-				File fDstClass = swapDirectory(fSrcClass, UserProjectLink.classRoot(), fDstRoot);
-				if (!fSrcClass.exists())
-					ComplianceManager.add(new DeployClassFileMissing(fSrcClass, fSrcJava));
+		List<File> remoteSrcFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
+		for (File remoteSrcFile : remoteSrcFiles) {
+			if (!remoteSrcFile.getName().equals("UserCodeRunner.java")) {
+				File remoteClsFile = UserProjectLink.classForSource(remoteSrcFile);
+				File fDstJava = swapDirectory(remoteSrcFile, UserProjectLink.srcRoot(), fDstRoot);
+				File fDstClass = swapDirectory(remoteClsFile, UserProjectLink.classRoot(), fDstRoot);
+				if (!remoteClsFile.exists())
+					ComplianceManager.add(new DeployClassFileMissing(remoteClsFile, remoteSrcFile));
 				else {
 					try {
-						FileTime ftSrc = Files.getLastModifiedTime(fSrcJava.toPath());
-						FileTime ftCls = Files.getLastModifiedTime(fSrcClass.toPath());
+						FileTime ftSrc = Files.getLastModifiedTime(remoteSrcFile.toPath());
+						FileTime ftCls = Files.getLastModifiedTime(remoteClsFile.toPath());
 						Long ageJava = ftSrc.toMillis();
 						Long ageClass = ftCls.toMillis();
 						if (ageJava > ageClass)
-							ComplianceManager.add(new DeployClassOutOfDate(fSrcJava, fSrcClass, ftSrc, ftCls));
+							ComplianceManager.add(new DeployClassOutOfDate(remoteSrcFile, remoteClsFile, ftSrc, ftCls));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					FileUtilities.copyFileReplace(fSrcJava, fDstJava);
-					FileUtilities.copyFileReplace(fSrcClass, fDstClass);
+					FileUtilities.copyFileReplace(remoteSrcFile, fDstJava);
+					FileUtilities.copyFileReplace(remoteClsFile, fDstClass);
 				}
 			}
 		}
 	}
-	
+
 	private void pullAllResources() {
 		File fdstRoot = Project.makeFile(Project.RES);
 		File fSrcRoot = UserProjectLink.srcRoot();

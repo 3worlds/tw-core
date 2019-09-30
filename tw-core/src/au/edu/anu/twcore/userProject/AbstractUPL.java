@@ -206,4 +206,10 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		}
 	}
 
+	@Override
+	public File classForSource(File srcFile) {
+		return new File(srcFile.getAbsolutePath().replace(srcRoot().getAbsolutePath(), classRoot().getAbsolutePath())
+				.replace(".java", ".class"));
+	}
+
 }

@@ -59,6 +59,10 @@ public class UserProjectLink {
 			return null;
 		return impl.classRoot();
 	}
+	
+	public static File classForSource(File srcFile) {
+		return impl.classForSource(srcFile);
+	}
 
 	public static File projectRoot() {
 		if (impl == null)

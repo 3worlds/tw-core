@@ -49,6 +49,8 @@ public interface IUserProjectLink {
 	public File[] getUserLibraries(Set<String> exclusions);
 
 	public void clearFiles();
+	
+	public File classForSource(File srcFile);
 
 	public void addDataFile(File f);
 
