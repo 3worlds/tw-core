@@ -60,5 +60,23 @@ public class SystemContainer extends CategorizedContainer<SystemComponent> {
 		result.properties().setProperties(item.properties());
 		return result;
 	}
+	
+	/**
+	 * Advances state of all SystemComponents contained in this container only.
+	 */
+	public void step() {
+		for (SystemComponent sc:items())
+			sc.stepForward();
+	}
+	
+	/**
+	 * Advances state of all SystemComponents contained in this container and its sub-containers
+	 * (recursive).
+	 */
+	public void stepAll() {
+		step();
+		for (CategorizedContainer<SystemComponent> sc:subContainers())
+			((SystemContainer)sc).stepAll();
+	}
 
 }

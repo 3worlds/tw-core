@@ -292,6 +292,11 @@ public abstract class CategorizedContainer<T extends Identity>
 		return l;
 	}
 
+	/**
+	 * Effectively remove/add items from the container lists (before a call to this method, they are
+	 * just stored into {@code itemsToRemove} and {@code itemsToAdd}). NB: to recursively effect changes
+	 * for all sub-containers, use {@code effectAllChanges()}.
+	 */
 	public void effectChanges() {
 		for (String id:itemsToRemove)
 			if (items.remove(id)!=null) {
@@ -305,6 +310,17 @@ public abstract class CategorizedContainer<T extends Identity>
 				populationData.nAdded++;
 		}
 		itemsToAdd.clear();
+	}
+
+	/**
+	 * Effectively remove/add items from the container lists and from <em>all</em> its 
+	 * sub-containers (before a call to this method, items are
+	 * just stored into {@code itemsToRemove} and {@code itemsToAdd}). Recursive.
+	 */
+	public void effectAllChanges() {
+		effectChanges();
+		for (CategorizedContainer<T> c:subContainers())
+			c.effectAllChanges();
 	}
 	
 	private int totalCount(CategorizedContainer<T> container,int cumulator) {
