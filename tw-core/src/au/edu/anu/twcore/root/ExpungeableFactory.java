@@ -42,6 +42,5 @@ public interface ExpungeableFactory {
 	/* removes edge id from a factory*/
 	public void expungeEdge(Edge edge);
 	
-	public void replaceId(String newId, String existingId);
 
 }

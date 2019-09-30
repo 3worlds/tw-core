@@ -117,9 +117,4 @@ public class TwConfigFactory extends TreeGraphFactory implements ExpungeableFact
 		scope.removeId(edge.id());
 	}
 
-	@Override
-	public void replaceId(String newId, String existingId) {
-		scope.removeId(existingId);
-		scope.newId(true, newId);
-	}
 }
