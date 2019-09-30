@@ -71,23 +71,23 @@ public class ProjectJarGenerator {
 
 	}
 
-	private Set<String> copyUserLibraries(File[] fJars) {
+	private Set<String> copyUserLibraries(File[] remoteJarFiles) {
 		/**
 		 * Copy any libraries used by the Java project to the targetDir. These can then
 		 * be referenced in the simulator.jar
 		 */
 
-		File targetDir = Project.makeFile(ProjectPaths.LIB);
-		targetDir.mkdirs();
+		File localDir = Project.makeFile(ProjectPaths.LIB);
+		localDir.mkdirs();
 		Set<String> result = new HashSet<>();
-		String relativePath = "." + targetDir.getAbsolutePath().replace(Project.makeFile().getAbsolutePath(), "");
-		if (fJars == null)
+		String relativePath = "." + localDir.getAbsolutePath().replace(Project.makeFile().getAbsolutePath(), "");
+		if (remoteJarFiles == null)
 			return result;
-		for (File fJar : fJars) {
-			File outPath = new File(targetDir.getAbsolutePath() + File.separator + fJar.getName());
+		for (File remoteJarFile : remoteJarFiles) {
+			File localJarFile = new File(localDir.getAbsolutePath() + File.separator + remoteJarFile.getName());
 			try {
-				Files.copy(fJar.toPath(), outPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				String entry = relativePath + "/" + outPath.getName();
+				Files.copy(remoteJarFile.toPath(), localJarFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				String entry = relativePath + "/" + localJarFile.getName();
 				result.add(entry.replace("\\", "/"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -99,14 +99,14 @@ public class ProjectJarGenerator {
 	}
 
 	private void pullAllCodeFiles() {
-		File fDstRoot = Project.makeFile(ProjectPaths.CODE);
+		File localDir = Project.makeFile(ProjectPaths.CODE);
 		String[] extensions = new String[] { "java" };
 		List<File> remoteSrcFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
 		for (File remoteSrcFile : remoteSrcFiles) {
 			if (!remoteSrcFile.getName().equals("UserCodeRunner.java")) {
 				File remoteClsFile = UserProjectLink.classForSource(remoteSrcFile);
-				File fDstJava = swapDirectory(remoteSrcFile, UserProjectLink.srcRoot(), fDstRoot);
-				File fDstClass = swapDirectory(remoteClsFile, UserProjectLink.classRoot(), fDstRoot);
+				File localSrcFile = replaceParentPath(remoteSrcFile, UserProjectLink.srcRoot(), localDir);
+				File localClsFile = replaceParentPath(remoteClsFile, UserProjectLink.classRoot(), localDir);
 				if (!remoteClsFile.exists())
 					ComplianceManager.add(new DeployClassFileMissing(remoteClsFile, remoteSrcFile));
 				else {
@@ -120,28 +120,27 @@ public class ProjectJarGenerator {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					FileUtilities.copyFileReplace(remoteSrcFile, fDstJava);
-					FileUtilities.copyFileReplace(remoteClsFile, fDstClass);
+					FileUtilities.copyFileReplace(remoteSrcFile, localSrcFile);
+					FileUtilities.copyFileReplace(remoteClsFile, localClsFile);
 				}
 			}
 		}
 	}
 
 	private void pullAllResources() {
-		File fdstRoot = Project.makeFile(Project.RES);
-		File fSrcRoot = UserProjectLink.srcRoot();
-		List<File> files = (List<File>) FileUtils.listFiles(fSrcRoot, null, true);
-		for (File srcFile : files) {
-			String name = srcFile.getName();
+		File localDir = Project.makeFile(Project.RES);
+		List<File> remoteFiles = (List<File>) FileUtils.listFiles( UserProjectLink.srcRoot(), null, true);
+		for (File remoteFile : remoteFiles) {
+			String name = remoteFile.getName();
 			if (!(name.endsWith("java") || name.endsWith("class"))) {
-				File dstFile = swapDirectory(srcFile, UserProjectLink.srcRoot(), fdstRoot);
-				dstFile.mkdirs();
-				FileUtilities.copyFileReplace(srcFile, dstFile);
+				File localResFile = replaceParentPath(remoteFile, UserProjectLink.srcRoot(), localDir);
+				localResFile.mkdirs();
+				FileUtilities.copyFileReplace(remoteFile, localResFile);
 			}
 		}
 	}
 
-	private static File swapDirectory(File file, File from, File to) {
+	private static File replaceParentPath(File file, File from, File to) {
 		File result = new File(file.getAbsolutePath().replace(from.getAbsolutePath(), to.getAbsolutePath()));
 		return result;
 	}
