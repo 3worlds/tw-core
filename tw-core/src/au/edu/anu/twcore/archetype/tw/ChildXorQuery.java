@@ -79,7 +79,7 @@ public class ChildXorQuery extends Query implements TwArchetypeConstants{
 	}
 
 	public String toString() {
-		return "[" + stateString() + " There must be at least one child node with either label '" + twaNodeLabel1 + "' or '"+twaNodeLabel2+"']";
+		return "[" + stateString() + " There must be at least one child node with either label '" + nodeLabel1 + "' or '"+nodeLabel2+"']";
 	}
 
 }

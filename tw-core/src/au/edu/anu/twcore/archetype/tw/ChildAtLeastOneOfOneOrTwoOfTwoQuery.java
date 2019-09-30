@@ -82,13 +82,15 @@ public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends Query implements TwArch
 			satisfied = true;
 		else if (type1.isEmpty() && type2.size()==2)
 			satisfied = true;
+		else if (type1.size()==1 && type2.size()==1)
+			satisfied = true;
 		else
 			satisfied = false;
 		return this;
 	}
 
 	public String toString() {
-		return "[" + stateString() + " There must be at least one child node with label '" + twaNodeLabel1 + "' or two children with label '"+twaNodeLabel2+"']";
+		return "[" + stateString() + " There must be at least one child node with label '" + nodeLabel1 + "' or two children with label '"+nodeLabel2+"']";
 	}
 
 }
