@@ -9,12 +9,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.logging.Level;
+
 import au.edu.anu.omhtk.jars.Jars;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.jars.DependencySolver;
 import au.edu.anu.twcore.jars.ThreeWorldsJar;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
+import fr.ens.biologie.generic.utils.Logging;
 
 
 /**
@@ -220,6 +223,7 @@ public class TwSetup implements ProjectPaths, TwPaths {
 	 */
 //	public static void main(String... args) throws IOException { : NB String... can cause problems with finding main signature! Should be String[]
 		public static void main(String[] args) throws IOException {
+			Logging.setDefaultLogLevel(Level.OFF);
 		// 1) create /.3w
 		//       		|-->/lib
 		System.out.println("Setting up 3Worlds environment:");
