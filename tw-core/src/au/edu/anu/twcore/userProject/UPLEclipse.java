@@ -121,12 +121,5 @@ public class UPLEclipse extends AbstractUPL{
 		return projectDir;
 	}
 
-	@Override
-	public File classForSource(File source) {
-		String src = source.getAbsolutePath();
-		String cls = src.replace(srcDir.getAbsolutePath(), classDir.getAbsolutePath());
-		cls = cls.replace(".java", ".class");
-		return new File(cls);
-	}
 
 }

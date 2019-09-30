@@ -37,12 +37,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.ProcessClassChangeErr;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * @author Ian Davies
@@ -53,6 +55,8 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	private List<File> dataFiles;
 	private List<File> functionFiles;
 	private List<File> initialiserFiles;
+	private static String extOrig = ".orig";
+	private static Logger log = Logging.getLogger(AbstractUPL.class);
 
 	public AbstractUPL() {
 		dataFiles = new ArrayList<>();
@@ -70,19 +74,19 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	@Override
 	public void addDataFile(File f) {
 		dataFiles.add(f);
-		dataFiles.add(new File(f.getAbsolutePath().replace(".java", ".class")));
+		log.info(f.getAbsolutePath());
 	}
 
 	@Override
 	public void addFunctionFile(File f) {
 		functionFiles.add(f);
-		functionFiles.add(new File(f.getAbsolutePath().replace(".java", ".class")));
+		log.info(f.getAbsolutePath());
 	}
 
 	@Override
 	public void addInitialiserFile(File f) {
 		initialiserFiles.add(f);
-		initialiserFiles.add(new File(f.getAbsolutePath().replace(".java", ".class")));
+		log.info(f.getAbsolutePath());
 	}
 
 	@Override
@@ -90,45 +94,49 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		String remoteSrcPath = this.srcRoot().getAbsolutePath();
 		String remoteClsPath = this.classRoot().getAbsolutePath();
 		String localPath = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+		log.info(localPath + "-> [" + remoteSrcPath + "," + remoteClsPath + "]");
 		pushDataFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushFunctionFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushInitialiserFiles(localPath, remoteSrcPath, remoteClsPath);
 	}
 
 	private void pushDataFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
-		for (File infile : dataFiles) {
-			File outfile = null;
-			if (infile.getAbsolutePath().endsWith(".java"))
-				outfile = new File(infile.getAbsolutePath().replace(localPath, remoteSrcPath));
-			else
-				outfile = new File(infile.getAbsolutePath().replace(localPath, remoteClsPath));
-			new File(outfile.getParent()).mkdirs();
-			FileUtilities.copyFileReplace(infile, outfile);
+		for (File localSrcFile : dataFiles) {
+			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
+			File remoteSrcFile = new File(localSrcFile.getAbsolutePath().replace(localPath, remoteSrcPath));
+			File remoteClsFile = new File(
+					localSrcFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
+			FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
+			FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
 		}
 	}
 
 	public void pushFunctionFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
-		for (File infile : functionFiles) {
-			File javaProjectFile = makeJavaProjectPair(codePath, rootPackage, infile);
-			File backup = new File(javaProjectFile.getAbsolutePath().replace(".java", extOrig + "0"));
-			if (!javaProjectFile.exists()) {
-				FileUtilities.copyFileReplace(infile, javaProjectFile);
-				File modelClass = new File(infile.getAbsolutePath().replace(".java", ".class"));
-				File prjClass = makeClassProjectPair(codePath, modelClass);
-				FileUtilities.copyFileReplace(modelClass, prjClass);
+		for (File localSrcFile : functionFiles) {
+			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
+			File remoteSrcFile = new File(localSrcFile.getAbsolutePath().replace(localPath, remoteSrcPath));
+			File remoteClsFile = new File(
+					localSrcFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
+			// Don't overwrite. This is a user editable file
+			if (!remoteSrcFile.exists()) {
+				FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
+				FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
 			} else {
-				String newAncestorClass = getAncestorName(infile);
-				String oldAncestorClass = getAncestorName(javaProjectFile);
-				if (!newAncestorClass.equals(oldAncestorClass)) {
-					backup = createUniqueBackUp(backup);
-					javaProjectFile.renameTo(backup);
-					FileUtilities.copyFileReplace(infile, javaProjectFile);
-					File modelClass = new File(infile.getAbsolutePath().replace(".java", ".class"));
-					File prjClass = makeClassProjectPair(codePath, modelClass);
-					FileUtilities.copyFileReplace(modelClass, prjClass);
-
-					ComplianceManager
-							.add(new ProcessClassChangeErr(newAncestorClass, oldAncestorClass, infile.getName()));
+				/*
+				 * ... unless the function class has changed. If it has changed, backup the old
+				 * user file with a unique name before overwriting.
+				 */
+				String localAncestorClass = getAncestorName(localSrcFile);
+				String remoteAncestorClass = getAncestorName(remoteSrcFile);
+				if (!localAncestorClass.equals(remoteAncestorClass)) {
+					// Prepare a backup file
+					File backup = createUniqueBackUp(
+							new File(remoteSrcFile.getAbsolutePath().replace(".java", extOrig + "0")));
+					remoteSrcFile.renameTo(backup);
+					FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
+					FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
+					ComplianceManager.add(
+							new ProcessClassChangeErr(localAncestorClass, remoteAncestorClass, localSrcFile.getName()));
 
 				}
 			}
@@ -136,30 +144,17 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	}
 
 	public void pushInitialiserFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
-		for (File infile : initialiserFiles) {
-			File prjJava = makeJavaProjectPair(codePath, rootPackage, infile);
-			if (!prjJava.exists()) {
-				File modelClass = new File(infile.getAbsolutePath().replace(".java", ".class"));
-				File prjClass = makeClassProjectPair(codePath, modelClass);
-				FileUtilities.copyFileReplace(infile, prjJava);
-				FileUtilities.copyFileReplace(modelClass, prjClass);
+		for (File inSrcFile : initialiserFiles) {
+			File inClsFile = new File(inSrcFile.getAbsolutePath().replace(".java", ".class"));
+			File remoteClsFile = new File(
+					inSrcFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
+			File remoteSrcFile = new File(inSrcFile.getAbsolutePath().replace(localPath, remoteSrcPath));
+			// Don't overwrite. This is a user editable file.
+			if (!remoteSrcFile.exists()) {
+				FileUtilities.copyFileReplace(inSrcFile, remoteSrcFile);
+				FileUtilities.copyFileReplace(inClsFile, remoteClsFile);
 			}
 		}
-	}
-
-	private static String extOrig = ".orig";
-
-	private static File makeJavaProjectPair(String codePath, String rootPackage, File template) {
-		String root = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
-		File result = new File(
-				template.getAbsolutePath().replace(root, codePath + File.separator + SRC + File.separator));
-		return result;
-	}
-
-	private static File makeClassProjectPair(String codePath, File template) {
-		String root = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
-		File result = new File(template.getAbsolutePath().replace(root, codePath + File.separator + BIN));
-		return result;
 	}
 
 	private static String getAncestorName(File f) {
@@ -209,22 +204,6 @@ public abstract class AbstractUPL implements IUserProjectLink {
 			File newFile = new File(file.getParent() + File.separator + newName);
 			return createUniqueBackUp(newFile);
 		}
-	}
-
-	public void show() {
-		System.out.println(CodeGenTypes.DATA);
-		for (File f : dataFiles) {
-			System.out.println(f.getName());
-		}
-		System.out.println(CodeGenTypes.FUNCTION);
-		for (File f : functionFiles) {
-			System.out.println(f.getName());
-		}
-		System.out.println(CodeGenTypes.INITIALISER);
-		for (File f : initialiserFiles) {
-			System.out.println(f.getName());
-		}
-
 	}
 
 }

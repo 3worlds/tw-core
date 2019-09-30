@@ -74,24 +74,6 @@ public class CodeGenerator {
 		this.graph = graph;
 	}
 
-//	private void overWriteReadOnlyFiles(List<File> fromFiles) {
-//		String srcDir = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
-//		String dstjDir = UserProjectLink.srcRoot().getAbsolutePath();
-//		String dstcDir = UserProjectLink.classRoot().getAbsolutePath();
-//		for (File fromFile : fromFiles) {
-//			File toFile = null;
-//			if (fromFile.getAbsolutePath().endsWith(".java")) {
-//				toFile = new File(fromFile.getAbsolutePath().replace(srcDir, dstjDir));
-//			} else
-//				toFile = new File(fromFile.getAbsolutePath().replace(srcDir, dstcDir));
-//			toFile.mkdirs();
-//			try {
-//				Files.copy(fromFile.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
@@ -145,12 +127,8 @@ public class CodeGenerator {
 			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
 			for (TreeGraphDataNode initialiser : initialisers)
 				generateInitialiserCode(initialiser, ecology.id());
-			// copy generated files to user project for code editing
-			String model = wordUpperCaseName(ecology.id());
-			UserProjectLink.pushFiles();
-//			if (UserProjectLink.haveUserProject())
-//				transferProjectArtifacts(Project.makeFile(ProjectPaths.CODE, model));
 		}
+		UserProjectLink.pushFiles();
 		return !ComplianceManager.haveErrors();
 	}
 

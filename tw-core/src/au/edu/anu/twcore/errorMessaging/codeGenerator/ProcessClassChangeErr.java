@@ -39,7 +39,7 @@ import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 public class ProcessClassChangeErr extends ErrorMessageAdaptor {
 	public ProcessClassChangeErr(String newAncestorClass, String oldAncestorClass, String name) {
 		msg1 = "Refresh and check Java project: Process class has changed ("+name+")";
-		msg2 = msg1 + " Old class: "+oldAncestorClass+" New class: "+newAncestorClass;
+		msg2 = msg1 + "\nOld class: "+oldAncestorClass+"\nNew class: "+newAncestorClass;
 		msg3 = msg2;
 	}
 }

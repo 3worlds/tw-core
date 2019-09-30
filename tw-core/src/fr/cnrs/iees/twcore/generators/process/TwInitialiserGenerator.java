@@ -78,12 +78,15 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 	private List<String> inClassCode = null;
 	private String generatedClassName = null;
 	private String packageName = null;
+	private String packagePath;
 	
 	@SuppressWarnings("unchecked")
 	public TwInitialiserGenerator(String className, TreeGraphDataNode spec,String modelName) {
 		super(spec);
 		name = className;
 		model = modelName;
+		packagePath = Project.makeFile(CODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+
 		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), 
 			edgeListEndNodes(),
 			selectZeroOrMany(hasTheLabel("snippet")));
@@ -163,7 +166,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 	}
 	public File getFile() {
 		String name = generatedClassName.replace(this.packageName+".", "");
-		String path = packageName+File.separator+name;
+		String path = packagePath+File.separator+name;
 		return new File(path+".java");
 	}
 

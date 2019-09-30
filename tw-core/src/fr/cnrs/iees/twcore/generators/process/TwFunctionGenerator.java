@@ -79,6 +79,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private String model = null;
 	private String generatedClassName = null;
 	private String packageName=null;
+	private String packagePath;
 	private List<String> inBodyCode = null;
 	private List<String> inClassCode = null;
 
@@ -89,6 +90,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		// type = (String)spec.getPropertyValue("type");
 		type = (TwFunctionTypes) spec.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		model = modelName;
+		packagePath = Project.makeFile(CODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+
 		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), edgeListEndNodes(),
 			selectZeroOrMany(hasTheLabel("snippet")));
 		for (TreeGraphDataNode snip : snippets) {
@@ -188,7 +191,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	}
 	public File getFile() {
 		String name = generatedClassName.replace(this.packageName+".", "");
-		String path = packageName+File.separator+name;
+		String path = packagePath+File.separator+name;
 		return new File(path+".java");
 	}
 

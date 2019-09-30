@@ -78,9 +78,6 @@ public class UserProjectLink {
 		return impl.getUserLibraries(exclusions);
 	};
 
-	public static File classForSource(File source) {
-		return impl.classForSource(source);
-	}
 
 	public static void clearFiles() {
 		if (impl != null)
@@ -104,6 +101,6 @@ public class UserProjectLink {
 
 	public static void pushFiles() {
 		if (impl != null)
-			pushFiles();
+			impl.pushFiles();
 	}
 }
