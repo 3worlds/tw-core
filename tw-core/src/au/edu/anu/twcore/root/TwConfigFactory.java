@@ -62,6 +62,7 @@ public class TwConfigFactory extends TreeGraphFactory implements ExpungeableFact
 		this.scope.removeId(edge.id());
 	}
 	
+	
 	private static PropertyListFactory plf = new PropertyListFactory () {
 		@Override
 		public ReadOnlyPropertyList makeReadOnlyPropertyList(Property... properties) {
@@ -114,5 +115,11 @@ public class TwConfigFactory extends TreeGraphFactory implements ExpungeableFact
 	@Override
 	public void expungeEdge(Edge edge) {
 		scope.removeId(edge.id());
+	}
+
+	@Override
+	public void replaceId(String newId, String existingId) {
+		scope.removeId(existingId);
+		scope.newId(true, newId);
 	}
 }
