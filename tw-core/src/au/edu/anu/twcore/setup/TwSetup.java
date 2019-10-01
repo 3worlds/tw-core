@@ -181,6 +181,7 @@ public class TwSetup implements ProjectPaths, TwPaths {
 			if (s.contains("au.") || s.contains("fr."))
 				System.out.println("LOCAL: "+s);
 		}
+		System.out.println("Packing...");
 		// except the code of tw-core. Why ??? Is this because we are in this project ?
 		// Well, then:
 		packer.addPackageTree("au.edu.anu");

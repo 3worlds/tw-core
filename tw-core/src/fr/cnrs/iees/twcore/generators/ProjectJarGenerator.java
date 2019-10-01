@@ -27,6 +27,7 @@ import au.edu.anu.twcore.errorMessaging.deploy.DeployClassOutOfDate;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
+import au.edu.anu.twcore.userProject.AbstractUPL;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -35,6 +36,7 @@ import fr.cnrs.iees.twcore.constants.FileType;
 
 public class ProjectJarGenerator {
 	public static String mainClass = "au.edu.anu.twuifx.mr.Main";
+	public static final String userCodeRunner = "UserCodeRunner.java"; 
 
 	@SuppressWarnings("unchecked")
 	public void generate(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
@@ -103,7 +105,7 @@ public class ProjectJarGenerator {
 		String[] extensions = new String[] { "java" };
 		List<File> remoteSrcFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
 		for (File remoteSrcFile : remoteSrcFiles) {
-			if (!remoteSrcFile.getName().equals("UserCodeRunner.java")) {
+			if (!remoteSrcFile.getName().equals(userCodeRunner)) {
 				File remoteClsFile = UserProjectLink.classForSource(remoteSrcFile);
 				File localSrcFile = replaceParentPath(remoteSrcFile, UserProjectLink.srcRoot(), localDir);
 				File localClsFile = replaceParentPath(remoteClsFile, UserProjectLink.classRoot(), localDir);
@@ -132,7 +134,7 @@ public class ProjectJarGenerator {
 		List<File> remoteFiles = (List<File>) FileUtils.listFiles( UserProjectLink.srcRoot(), null, true);
 		for (File remoteFile : remoteFiles) {
 			String name = remoteFile.getName();
-			if (!(name.endsWith("java") || name.endsWith("class"))) {
+			if (!(name.endsWith("java") || name.endsWith("class") || name.contains(AbstractUPL.extOrig))) {
 				File localResFile = replaceParentPath(remoteFile, UserProjectLink.srcRoot(), localDir);
 				localResFile.mkdirs();
 				FileUtilities.copyFileReplace(remoteFile, localResFile);

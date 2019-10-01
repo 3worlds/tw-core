@@ -31,9 +31,11 @@
 package au.edu.anu.twcore.userProject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,7 @@ import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.ProcessClassChangeErr;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -55,8 +58,20 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	private List<File> dataFiles;
 	private List<File> functionFiles;
 	private List<File> initialiserFiles;
-	private static String extOrig = ".orig";
+	public static String extOrig = ".orig";
 	private static Logger log = Logging.getLogger(AbstractUPL.class);
+	private String userCoderRunnerStr = "public class UserCodeRunner {\n" + //
+			"\n" + //
+			"// example: String[] args1 = {\"<projectPath>\", \"OFF\",\"au.edu.anu.twuifx.widgets.SimpleControlWidget:INFO\"};\n"
+			+ "		public static void main(String[] args) {\n" + //
+			"			String[] args1 = {\"<projectPath>\"};\n" + //
+			"			au.edu.anu.twuifx.mr.Main.main(args1);\n" + //
+			"\n" + //
+			"		}\n" + //
+			"\n" + //
+			"	}";
+
+	private String ppph = "<projectPath>";
 
 	public AbstractUPL() {
 		dataFiles = new ArrayList<>();
@@ -89,17 +104,58 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		log.info(f.getAbsolutePath());
 	}
 
+	private void writeUserCodeRunner() {
+		File ucrFile = new File(this.srcRoot().getAbsolutePath() + File.separator + ProjectJarGenerator.userCodeRunner);
+		if (!ucrFile.exists()) {
+			String ucrStr = userCoderRunnerStr;
+			String contents = ucrStr.replace(ppph, Project.getProjectFile().getName());
+			BufferedWriter outfile;
+			try {
+				outfile = new BufferedWriter(new FileWriter(ucrFile));
+				outfile.write(contents);
+				outfile.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Pushes files from the ThreeWorlds code generator (LOCAL) to an associated
+	 * user java project (REMOTE) (if one exists).
+	 * 
+	 * There are three types of java files generated: Data, Function and
+	 * Initialiser. The rules for pushing and overwriting are as follows:
+	 * 
+	 * Data: LOCAL ALWAYS overwrites REMOTE. It is not intended that remote projects
+	 * modify this code.
+	 * 
+	 * Function: LOCAL NEVER overwrites REMOTE. This is the rule UNLESS the Function
+	 * class has changed. As Function templates all differ, a change in function
+	 * class requires that a new java template file be created. To avoid losing
+	 * work, old files are backed up as *.orig<n> so the developers can move their
+	 * code into the new class as they see fit.
+	 * 
+	 * Initialiser: LOCAL NEVER overwrites REMOTE.
+	 * 
+	 * This method also creates a main class (UserCodeRunner.java) in the default
+	 * package to launch their model from the IDE. This allows break-points to be
+	 * inserted in the developed code for debugging purposes.
+	 */
 	@Override
 	public void pushFiles() {
 		String remoteSrcPath = this.srcRoot().getAbsolutePath();
 		String remoteClsPath = this.classRoot().getAbsolutePath();
 		String localPath = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+		writeUserCodeRunner();
 		log.info(localPath + "-> [" + remoteSrcPath + "," + remoteClsPath + "]");
 		pushDataFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushFunctionFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushInitialiserFiles(localPath, remoteSrcPath, remoteClsPath);
 	}
 
+	// Always overwrite
 	private void pushDataFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File localSrcFile : dataFiles) {
 			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
@@ -111,6 +167,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		}
 	}
 
+	// Never overwrite unless a class change is detected. In this case backup old work.
 	public void pushFunctionFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File localSrcFile : functionFiles) {
 			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
@@ -143,6 +200,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		}
 	}
 
+	// Never overwrite.
 	public void pushInitialiserFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File inSrcFile : initialiserFiles) {
 			File inClsFile = new File(inSrcFile.getAbsolutePath().replace(".java", ".class"));
