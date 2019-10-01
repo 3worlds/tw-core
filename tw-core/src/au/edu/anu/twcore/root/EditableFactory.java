@@ -36,7 +36,7 @@ import fr.cnrs.iees.graph.Node;
  *
  * @date 16 Aug 2019
  */
-public interface ExpungeableFactory {
+public interface EditableFactory {
 	/* removes any traces of a node, its id along with the ids of any edges from a factory*/
 	public void expungeNode(Node node);
 	/* removes edge id from a factory*/

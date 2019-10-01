@@ -53,7 +53,7 @@ import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class TwConfigFactory extends TreeGraphFactory implements ExpungeableFactory {
+public class TwConfigFactory extends TreeGraphFactory implements EditableFactory {
 
 	private static Map<String,String> twLabels = new HashMap<>();
 	
