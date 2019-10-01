@@ -88,6 +88,12 @@ treegraph
 					process someProcess
 						function Growth
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(ChangeState)
+						dataTracker dataTracker
+							subclass = String("au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker")
+							select = SamplingMode(RANDOM)
+							statistics = StatisticalAggregatesSet({MEAN,N})
+							track = StringTable(([2]"biomass","dbh"))
+							groupBy = Grouping(NO_GROUPING)
 					process makeOffspring1
 						function Reproduce
 							type = fr.cnrs.iees.twcore.constants.TwFunctionTypes(CreateOtherDecision)

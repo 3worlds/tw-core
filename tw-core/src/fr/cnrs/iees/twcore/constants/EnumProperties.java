@@ -26,12 +26,11 @@ public class EnumProperties {
 		SamplingMode.defaultValue();
 		SnippetLocation.defaultValue();
 		StatisticalAggregates.defaultValue();
-//		StatisticalAggregatesSet.
+		StatisticalAggregatesSet.defaultValue();
 		TimeScaleType.defaultValue();
 		TimeUnits.defaultValue();
 		TwFunctionTypes.defaultValue();
 		UIContainerOrientation.defaultValue();
-		
 	}
 
 }

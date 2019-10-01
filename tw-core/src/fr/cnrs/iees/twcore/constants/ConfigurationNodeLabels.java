@@ -67,7 +67,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_EVENTQUEUE	("eventQueue",			EventQueue.class,			TIMEBASE+20),	// after timeModel
 				N_PROCESS 		("process",				ProcessNode.class,			TIMEBASE+30), 	// after TimeModel, Function & EventQueue
 				N_FUNCTION 		("function",			FunctionNode.class,			0), // ***
-				N_DATATRACKER 	("dataTracker",			DataTracker.class,			0),
+				N_DATATRACKER 	("dataTracker",			DataTrackerNode.class,			0),
 				N_LIFECYCLE 	("lifeCycle",			LifeCycle.class,			ECOBASE+10), 	// after Ecosystem
 				N_RECRUIT 		("recruit",				Recruit.class,				0),
 				N_PRODUCE 		("produce",				Produce.class,				0),

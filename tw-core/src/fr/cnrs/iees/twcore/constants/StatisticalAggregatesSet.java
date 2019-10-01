@@ -16,6 +16,13 @@ package fr.cnrs.iees.twcore.constants;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+
+/**
+ * 
+ * @author Jacques Gignoux - 1 oct. 2019
+ *
+ */
 public class StatisticalAggregatesSet {
 
 	private EnumSet<StatisticalAggregates> values = null;
@@ -69,6 +76,15 @@ public class StatisticalAggregatesSet {
 		}
 		sb.append('}');
 		return sb.toString();
+	}
+
+	public static StatisticalAggregatesSet defaultValue() {
+		return new StatisticalAggregatesSet(StatisticalAggregates.defaultValue());
+	}
+	
+	static {
+		ValidPropertyTypes.recordPropertyType(StatisticalAggregatesSet.class.getSimpleName(), 
+		StatisticalAggregatesSet.class.getName(),defaultValue());
 	}
 
 }

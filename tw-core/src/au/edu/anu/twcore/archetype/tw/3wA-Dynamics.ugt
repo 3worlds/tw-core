@@ -67,8 +67,6 @@ hasNode timeModelSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery validTimeModelSubclassSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
-			// TODO: this may become a limit: strings lists cannot be spread over more than one line
-			// yes they can - string concat:
 			values = StringTable(([3]+
 			"au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer",+
 			"au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer",+
@@ -122,7 +120,45 @@ hasNode functionSpec
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
 		
-// TODO: dataTracker spec		
+hasNode dataTrackerSpec
+	isOfClass = String("dataTracker")
+	hasParent = StringTable(([1]"process:"))
+	multiplicity = IntegerRange("0..*")
+	hasProperty dataTrackerSubclassSpec
+		hasName = String("subclass")
+		type = String("String")
+		multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery validDataTrackerSubClassSpec
+			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
+			values = StringTable(([3]+
+			"au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker",+
+			"au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker",+
+			"au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker"))
+	hasProperty selectSpec
+		hasName = String("select")
+		type = String("SamplingMode") 
+		multiplicity = IntegerRange("0..1")
+	hasProperty SatisticsSpec
+		hasName = String("statistics")
+		type = String("StatisticalAggregatesSet")
+		multiplicity = IntegerRange("0..1") 
+	hasProperty tableSatisticsSpec
+		hasName = String("tableStatistics")
+		type = String("StatisticalAggregatesSet")
+		multiplicity = IntegerRange("0..1") 
+	hasProperty trackPropSpec
+		hasName = String("track")
+		type = String("StringTable")
+		multiplicity = IntegerRange("1..1")
+		// TODO: check the tracked variables are compatible with this process category
+	hasProperty groupBySpec
+		hasName = String("groupBy")
+		type = String("Grouping")
+		multiplicity = IntegerRange("0..1")
+	hasProperty viewOthersSpec
+		hasName = String(viewOthers)
+		type = String("Boolean")
+		multiplicity = IntegerRange("0..1")
 
 hasNode lifeCycleSpec
 	isOfClass = String("lifeCycle")

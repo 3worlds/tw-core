@@ -1,4 +1,4 @@
-package au.edu.anu.twcore.data.runtime;
+package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -59,7 +59,7 @@ public abstract class AbstractDataTracker<T,M>
 	}
 	
 	@Override
-	public void sendMetadata(M meta) {
+	public final void sendMetadata(M meta) {
 		sendMessage(DataMessageTypes.METADATA,meta);
 	}
 

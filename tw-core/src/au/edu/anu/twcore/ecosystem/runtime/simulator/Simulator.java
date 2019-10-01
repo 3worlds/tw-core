@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import au.edu.anu.twcore.data.runtime.AbstractDataTracker;
-import au.edu.anu.twcore.data.runtime.DataMessageTypes;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
@@ -14,6 +12,8 @@ import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
 import fr.ens.biologie.generic.utils.Logging;
@@ -194,7 +194,8 @@ public class Simulator {
 	}
 	
 	private TimeData makeTimeRecord() {
-		TimeData output = new TimeData(status(),id,DataMessageTypes.TIME);
+//		TimeData output = new TimeData(status(),id,DataMessageTypes.TIME);
+		TimeData output = new TimeData(status(),id,metadata.type());
 		output.setTime(lastTime);
 		return output;
 	}

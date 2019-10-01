@@ -32,9 +32,17 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.Sealable;
+import fr.ens.biologie.generic.Singleton;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
 
 /**
  * Class matching the "ecosystem/dynamics/timeLine/timeModel/process/dataTracker" node label in the 
@@ -43,24 +51,68 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 7 juin 2019
  *
  */
-public class DataTracker extends InitialisableNode {
+public class DataTrackerNode 
+		extends InitialisableNode 
+		implements Singleton<DataTracker<?,?>>, Sealable {
 
-	public DataTracker(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	private DataTracker<?,?> dataTracker = null;
+	private boolean sealed = false;
+	
+	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
-	public DataTracker(Identity id, GraphFactory gfactory) {
+	public DataTrackerNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
 	@Override
 	public void initialise() {
-		super.initialise();
+		if (!sealed) {
+			super.initialise();
+			Object dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
+			if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
+				dataTracker = new TimeSeriesTracker();
+			}		
+			else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
+				dataTracker = new MapTracker();
+			}		
+			else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
+				dataTracker = new LabelValuePairTracker();
+			}		
+			// optional properties - if absent take default value
+			properties().getPropertyValue(P_DATATRACKER_SELECT.key());
+			properties().getPropertyValue(P_DATATRACKER_GROUPBY.key());
+			properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
+			properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
+			// the only required property.
+			properties().getPropertyValue(P_DATATRACKER_TRACK.key());
+			// TODO - implement behaviour...
+			sealed = true;
+		}
 	}
 
 	@Override
 	public int initRank() {
 		return N_DATATRACKER.initRank();
+	}
+
+	@Override
+	public DataTracker<?,?> getInstance() {
+		if (!sealed)
+			initialise();
+		return dataTracker;
+	}
+
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 
 }
