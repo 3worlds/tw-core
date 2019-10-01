@@ -65,6 +65,7 @@ public enum ConfigurationPropertyNames {
 	P_DATATRACKER_SELECT		("select"),
 	P_DATATRACKER_GROUPBY		("groupBy"),
 	P_DATATRACKER_STATISTICS	("statistics"),
+	P_DATATRACKER_TABLESTATS	("tableStatistics"),
 	P_DATATRACKER_VIEWOTHERS	("viewOthers"),
 	P_DATATRACKER_TRACK			("track")
 	;

@@ -32,6 +32,9 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.Grouping;
+import fr.cnrs.iees.twcore.constants.SamplingMode;
+import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 
@@ -70,9 +73,36 @@ public class DataTrackerNode
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
+			// optional properties - if absent take default value
+			SamplingMode selection = null;
+			if (properties().hasProperty(P_DATATRACKER_SELECT.key()))
+				selection= (SamplingMode) properties().getPropertyValue(P_DATATRACKER_SELECT.key());
+			else
+				selection = SamplingMode.defaultValue();
+			Grouping grouping = null;
+			if (properties().hasProperty(P_DATATRACKER_GROUPBY.key()))
+				grouping = (Grouping) properties().getPropertyValue(P_DATATRACKER_GROUPBY.key());
+			else
+				grouping = Grouping.defaultValue();
+			StatisticalAggregatesSet stats = null;
+			if (properties().hasProperty(P_DATATRACKER_STATISTICS.key()))
+				stats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
+			else
+				stats = StatisticalAggregatesSet.defaultValue();
+			StatisticalAggregatesSet tstats = null;
+			if (properties().hasProperty(P_DATATRACKER_TABLESTATS.key()))
+				tstats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_TABLESTATS.key());
+			else
+				tstats = StatisticalAggregatesSet.defaultValue();
+			boolean viewOthers = false;
+			if (properties().hasProperty(P_DATATRACKER_VIEWOTHERS.key()))
+				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
+			// the only required property.
+			properties().getPropertyValue(P_DATATRACKER_TRACK.key());
+			// instantiate the guy really doing the job
 			Object dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
 			if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
-				dataTracker = new TimeSeriesTracker();
+				dataTracker = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers);
 			}		
 			else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
 				dataTracker = new MapTracker();
@@ -80,13 +110,6 @@ public class DataTrackerNode
 			else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
 				dataTracker = new LabelValuePairTracker();
 			}		
-			// optional properties - if absent take default value
-			properties().getPropertyValue(P_DATATRACKER_SELECT.key());
-			properties().getPropertyValue(P_DATATRACKER_GROUPBY.key());
-			properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
-			properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
-			// the only required property.
-			properties().getPropertyValue(P_DATATRACKER_TRACK.key());
 			// TODO - implement behaviour...
 			sealed = true;
 		}
