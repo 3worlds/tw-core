@@ -79,4 +79,10 @@ public class SystemContainer extends CategorizedContainer<SystemComponent> {
 			((SystemContainer)sc).stepAll();
 	}
 
+	@Override
+	public void rename(String oldId, String newId) {
+		throw new TwcoreException ("Renaming of '"+this.getClass().getSimpleName()+"' is not implemented.");
+		
+	}
+
 }

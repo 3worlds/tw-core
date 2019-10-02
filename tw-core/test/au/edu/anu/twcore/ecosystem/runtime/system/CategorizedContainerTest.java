@@ -43,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.IdentityScope;
@@ -87,6 +88,10 @@ class CategorizedContainerTest {
 		public Identity clone(Identity item) {
 			Identity id = scope().newId(true,item.id());
 			return id;
+		}
+		@Override
+		public void rename(String oldId, String newId) {
+			throw new TwcoreException ("Renaming of '"+this.getClass().getSimpleName()+"' is not implemented.");	
 		}
 	}
 	
