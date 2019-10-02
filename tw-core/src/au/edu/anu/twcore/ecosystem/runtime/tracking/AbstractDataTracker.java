@@ -12,7 +12,10 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
- * An ancestor for all kinds of DataTrackers - implements the messaging capacity
+ * An ancestor for all kinds of DataTrackers - implements the messaging capacity. All its methods
+ * inherited from {@link DataTracker} are implemented as {@code final} to prevent erroneous behaviour.
+ * Descendants should just set the {@code T} and {@code M} types, and possibly helper methods for 
+ * constructing these objects from the raw data.
  * 
  * @author Jacques Gignoux - 3 sept. 2019
  *

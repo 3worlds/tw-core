@@ -33,6 +33,7 @@ public class Simulator {
 		private TimeTracker() {
 			super(DataMessageTypes.TIME);
 		}
+		// returns quickly if there are no observers - no point building a TimeData
 		private void sendData(long time) {
 			if (hasObservers()) {
 				TimeData output = new TimeData(status(),id,metadata.type());
