@@ -74,20 +74,20 @@ public class CodeGenerator {
 		this.graph = graph;
 	}
 
-
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
 		UserProjectLink.clearFiles();
 		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
+		File codeDir = Project.makeFile(ProjectPaths.CODE);
+		try {
+			if (codeDir.exists())
+				FileUtilities.deleteFileTree(codeDir);
+		} catch (IOException e1) {
+			throw new TwcoreException("Unable to delete [" + codeDir + "]", e1);
+		}
 		for (TreeGraphDataNode ecology : ecologies) {
 			File ecologyFiles = Project.makeFile(ProjectPaths.CODE, wordUpperCaseName(ecology.id()));
-			if (ecologyFiles.exists())
-				try {
-					FileUtilities.deleteFileTree(ecologyFiles);
-				} catch (IOException e) {
-					throw new TwcoreException("Unable to delete [" + ecologyFiles + "]");
-				}
 			ecologyFiles.mkdirs();
 
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(ecology.getChildren(),
