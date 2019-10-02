@@ -2,9 +2,11 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeSeriesData;
 import au.edu.anu.twcore.data.runtime.TimeSeriesMetadata;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
@@ -30,6 +32,8 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData, Metad
 		TimeSeriesMetadata.TSMETA};
 	private SimplePropertyList metaprops;
 	private TimeSeriesMetadata metadata;
+	private int metadataType = -1;
+	private int senderId = -1;
 
 	public TimeSeriesTracker(Grouping grouping,
 			StatisticalAggregatesSet statistics,
@@ -48,8 +52,50 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData, Metad
 		metaprops.setProperty(TimeSeriesMetadata.TSMETA,metadata);
 	}
 	
-	public Metadata metadata(DataTrackerStatus status, int messageType) {
-		return new Metadata(status,messageType,metaprops);
+	public Metadata metadata(DataTrackerStatus status) {
+		Metadata result = new Metadata(status,senderId,metaprops); 
+		metadataType = result.type();
+		return result;
+	}
+	
+	@Override
+	public void setSender(int id) {
+		senderId = id;
+	}
+	
+	public void record(DataTrackerStatus status, ReadOnlyPropertyList props) {
+		if (hasObservers()) {
+			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
+			for (String key:props.getKeysAsSet()) {
+				for (DataLabel lab:metadata.intNames()) 
+					if (key.equals(lab.getEnd())) {
+						Object o = props.getPropertyValue(key);
+						if (o instanceof Integer)
+							tsd.setValue(lab,(int)o);
+						else if (o instanceof Long)
+							tsd.setValue(lab,(long)o);							
+						else if (o instanceof Boolean)
+							tsd.setValue(lab,(boolean)o);							
+						else if (o instanceof Short)
+							tsd.setValue(lab,(short)o);							
+						else if (o instanceof Byte)
+							tsd.setValue(lab,(byte)o);							
+				}
+				for (DataLabel lab:metadata.doubleNames()) 
+					if (key.equals(lab.getEnd())) {
+						Object o = props.getPropertyValue(key);
+						if (o instanceof Double)
+							tsd.setValue(lab,(double)o);
+						else if (o instanceof Float)
+							tsd.setValue(lab,(float)o);							
+				}
+				for (DataLabel lab:metadata.stringNames()) 
+					if (key.equals(lab.getEnd())) {
+						tsd.setValue(lab,(String)props.getPropertyValue(key));
+				}
+
+			}
+		}
 	}
 
 }

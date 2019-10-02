@@ -48,6 +48,8 @@ import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.Collection;
+import java.util.List;
+
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
@@ -113,7 +115,13 @@ public class ProcessNode
 					process.addFunction(func.getInstance());
 				}
 			}
-			ecosystem.getInstance();
+			ecosystem.getInstance(); /// what's the use of this ????
+			// 2 -  Setting data trackers
+			List<DataTrackerNode> ldt = (List<DataTrackerNode>) get(getChildren(),
+				selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
+			for (DataTrackerNode dt:ldt) {
+				process.addDataTracker(dt.getInstance());
+			}
 			sealed = true;
 		}
 	}

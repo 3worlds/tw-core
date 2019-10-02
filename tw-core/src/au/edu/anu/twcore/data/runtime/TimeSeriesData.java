@@ -28,9 +28,12 @@ public class TimeSeriesData extends TimeData {
 	// this table is used to send String values
 	private String stringValues[];
 
-	public TimeSeriesData(DataTrackerStatus status, int senderId, Metadata metadata) {
-		super(status, senderId, metadata.type());
-		this.meta = (TimeSeriesMetadata)metadata.properties().getPropertyValue(TimeSeriesMetadata.TSMETA);
+	public TimeSeriesData(DataTrackerStatus status, 
+			int senderId, 
+			int metadataType, 
+			TimeSeriesMetadata metadata) {
+		super(status, senderId, metadataType);
+		this.meta = metadata;
 		intValues = new long[meta.nInt()];
 		doubleValues = new double[meta.nDouble()];
 		stringValues = new String[meta.nString()];

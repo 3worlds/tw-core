@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
@@ -49,6 +50,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.ens.biologie.generic.utils.Logging;
@@ -125,6 +127,11 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 				
 			}
 			executeFunctions(container,t,dt);
+			// track group state
+			for (TimeSeriesTracker tracker:tsTrackers) {
+				// TODO! fix this
+//				tracker.record(container.populationData());
+			}
 			focalContext.clear();
 		}
 		for (CategorizedContainer<SystemComponent> subc:container.subContainers())
@@ -269,6 +276,11 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 						nbs.container.addItem(newBorn); // safe - delayed addition
 					}
 				}
+			}
+			// track component state
+			for (TimeSeriesTracker tracker:tsTrackers) {
+				// TODO: fix this
+//				tracker.record(focal.currentState());
 			}
 		}
 	}

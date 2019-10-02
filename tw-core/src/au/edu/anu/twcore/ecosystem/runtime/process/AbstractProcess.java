@@ -28,9 +28,16 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.process;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import au.edu.anu.twcore.ecosystem.Ecosystem;
+import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
 import fr.ens.biologie.generic.Sealable;
 
 /**
@@ -43,6 +50,10 @@ public abstract class AbstractProcess implements TwProcess, Sealable {
 
 	private boolean sealed = false;
     private Ecosystem ecosystem = null;
+    // dataTrackers - common to all process types
+	protected List<TimeSeriesTracker> tsTrackers = new LinkedList<TimeSeriesTracker>();
+	protected List<MapTracker> mapTrackers = new LinkedList<MapTracker>();
+	protected List<LabelValuePairTracker> simpleTrackers = new LinkedList<LabelValuePairTracker>();
     
     public AbstractProcess(Ecosystem world) {
     	super();
@@ -64,5 +75,25 @@ public abstract class AbstractProcess implements TwProcess, Sealable {
 		return ecosystem;
 	}
 	
+	public void setSender(int id) {
+		for (TimeSeriesTracker tracker:tsTrackers)
+			tracker.setSender(id);
+		for (MapTracker tracker:mapTrackers)
+			tracker.setSender(id);
+		for (LabelValuePairTracker tracker:simpleTrackers)
+			tracker.setSender(id);
+	}
+	
 	public abstract void addFunction(TwFunction function);
+	
+	public void addDataTracker(DataTracker<?,?> tracker) {
+		if (!isSealed()) {
+			if (tracker instanceof TimeSeriesTracker)
+				tsTrackers.add((TimeSeriesTracker) tracker);
+			else if (tracker instanceof MapTracker)
+				mapTrackers.add((MapTracker) tracker);
+			else if (tracker instanceof LabelValuePairTracker)
+				simpleTrackers.add((LabelValuePairTracker) tracker);
+		}
+	}
 }

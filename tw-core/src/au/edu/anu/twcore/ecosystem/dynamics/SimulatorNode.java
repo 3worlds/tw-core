@@ -65,6 +65,9 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
  * Class matching the "ecosystem/dynamics" node label in the 3Worlds configuration tree.
  * Has no properties. This <em>is</em> the simulator.
  * 
+ * NB: possible flaw here - Simulator is a factory while processNode is a singleton - does it mean
+ * the same process instance will be used in many simulators ? if yes, that's wrong...
+ * 
  * @author Jacques Gignoux - 27 mai 2019
  *
  */

@@ -71,4 +71,9 @@ public abstract class AbstractDataTracker<T,M>
 		return !observers.isEmpty();
 	}
 	
+	public void setSender(int id) {
+		// do nothing - for descendants
+	}
+
+	
 }
