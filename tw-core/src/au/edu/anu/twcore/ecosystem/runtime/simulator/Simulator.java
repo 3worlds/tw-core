@@ -33,6 +33,13 @@ public class Simulator {
 		private TimeTracker() {
 			super(DataMessageTypes.TIME);
 		}
+		private void sendData(long time) {
+			if (hasObservers()) {
+				TimeData output = new TimeData(status(),id,metadata.type());
+				output.setTime(lastTime);
+				sendData(output);
+			}
+		}
 	}
 	
 	// FIELDS
@@ -102,6 +109,7 @@ public class Simulator {
 		currentTimes = new long[timerList.size()];
 		// data tracking
 		timetracker = new TimeTracker();
+		metadata = new Metadata(status(),id,refTimer.properties());
 		// copies initial community to current community to start properly
 		community.reset();
 	}
@@ -120,8 +128,7 @@ public class Simulator {
 	
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		timetracker.addObserver(observer);
-		// as metadata, send all properties of the reference TimeLine of this simulator.
-		metadata = new Metadata(status(),id,refTimer.properties());
+		// as metadata, send all properties of the reference TimeLine of this simulator.		
 		timetracker.sendMetadata(metadata);
 	}
 	
@@ -189,66 +196,20 @@ public class Simulator {
 ////					p);
 ////				gn.callRendezvous(msg);
 ////			}
-			timetracker.sendData(makeTimeRecord());
+			timetracker.sendData(lastTime);
 		}
 	}
 	
-	private TimeData makeTimeRecord() {
-//		TimeData output = new TimeData(status(),id,DataMessageTypes.TIME);
-		TimeData output = new TimeData(status(),id,metadata.type());
-		output.setTime(lastTime);
-		return output;
-	}
-	
-//	private void runSelectedProcesses(int mask, long nexttime, long step) {
-//		// 3 execute all the processes depending on these time models
-//		List<List<ProcessNode>> currentProcesses = processCallingOrder.get(mask);
-//		// loop on dependency rank
-//		for (int j = 0; j < currentProcesses.size(); j++) {
-//			List<ProcessNode> torun = currentProcesses.get(j);
-//			// execute all processes at the same dependency level
-//			for (ProcessNode p : torun) {
-//				p.execute(nexttime, step); 
-//			}
-//		}
-//		// TODO: replace current by next state ! update age !
-//		community.effectAllChanges();
-//		// 4 advance time ONLY for those time models that were processed
-//		int i = 0;
-//		for (Timer tm : timerList) {
-//			if ((timeModelMasks[i] & mask) != 0)
-//				tm.advanceTime(lastTime);
-//			i++;
-//		}
-////		myWorld.update(lastTime);
-////		
-//////		// 7 Send graph data to whoever is listening
-//////		graphWidgets = getGraphListeners();
-//////		for (GridNode gn:graphWidgets) {
-//////			Payload p = new Payload().startWriting();
-//////			p.writeInt(Sim3wMessageType.GRAPH_NEW);
-//////			p.writeNodeList(configuration);
-//////			p.endWriting();
-//////			GraphMessage msg = new GraphMessage(
-//////				new MessageHeader((Integer)gn.getPropertyValue("messageID")+Sim3wMessageType.GRAPH_NEW,this,gn),
-//////				p);
-//////			gn.callRendezvous(msg);
-//////		}
-//	}
-
-	
 	// resets a simulation at its initial state
 	public void resetSimulation() {
-//		if (started) { // otherwise no point to reset
-			lastTime = startTime;
-			stoppingCondition.reset();
-			started = false;
-			finished = false;
-			for (Timer t:timerList)
-				t.reset();
-			timetracker.sendData(makeTimeRecord());
-			community.reset();
-//		}
+		lastTime = startTime;
+		stoppingCondition.reset();
+		started = false;
+		finished = false;
+		for (Timer t:timerList)
+			t.reset();
+		timetracker.sendData(lastTime);
+		community.reset();
 	}
 
 	// returns true if stopping condition is met

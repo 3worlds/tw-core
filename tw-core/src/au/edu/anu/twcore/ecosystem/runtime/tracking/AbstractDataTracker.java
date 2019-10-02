@@ -63,5 +63,9 @@ public abstract class AbstractDataTracker<T,M>
 		sendMessage(DataMessageTypes.METADATA,meta);
 	}
 
+	@Override
+	public boolean hasObservers() {
+		return !observers.isEmpty();
+	}
 	
 }

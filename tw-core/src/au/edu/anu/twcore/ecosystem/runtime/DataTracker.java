@@ -16,5 +16,7 @@ public interface DataTracker<T,M> extends Observable<DataReceiver<T,M>> {
 	public void sendData (T data);
 	
 	public void sendMetadata(M meta);
+	
+	public boolean hasObservers();
 
 }
