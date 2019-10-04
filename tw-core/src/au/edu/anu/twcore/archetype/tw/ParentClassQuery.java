@@ -33,7 +33,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
-
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
@@ -47,7 +47,7 @@ public class ParentClassQuery extends Query implements ArchetypeArchetypeConstan
 
 	private List<String> klasses = new LinkedList<String>();
 
-	public ParentClassQuery(ObjectTable<?> ot) {
+	public ParentClassQuery(StringTable ot) {
 		super();
 		for (int i = 0; i < ot.size(); i++)
 			klasses.add((String) ot.getWithFlatIndex(i));
@@ -62,11 +62,9 @@ public class ParentClassQuery extends Query implements ArchetypeArchetypeConstan
 		defaultProcess(input);
 		TreeNode localItem = (TreeNode) input;
 		Node parent = (Node) localItem.getParent();
-		ReadOnlyDataHolder parentProps = (ReadOnlyDataHolder) parent;
-		if (parent != null && parentProps.properties().hasProperty(aaIsOfClass)) {
-			String pKlass = (String) parentProps.properties().getPropertyValue(aaIsOfClass);
+		if (parent != null ) {
 			for (String klass : klasses)
-				if (pKlass.equals(klass)) {
+				if (parent.classId().equals(klass)) {
 					satisfied = true;
 					break;
 				}
