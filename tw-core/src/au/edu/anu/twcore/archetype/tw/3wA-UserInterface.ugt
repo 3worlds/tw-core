@@ -50,8 +50,6 @@ hasNode containerSpec
 	
 hasNode widgetSpec
 	isOfClass = String("widget")
-	// This hasParent probably has to be removed so each sub-arch determines what is possible
-	// Still, I'm not sure mm's design would support this at the moment.
 	hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder

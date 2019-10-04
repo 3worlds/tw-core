@@ -48,49 +48,45 @@ import fr.cnrs.iees.graph.TreeNode;
  *
  * @date 27 Sep 2019
  * 
- * Constraint: Either 1 or 2 of nodeLabel1 or just 2 nodelabel2 - for tabs and containers in the UI
+ *       Constraint: Either 1 or 2 of nodeLabel1 or just 2 nodelabel2 - for tabs
+ *       and containers in the UI
  */
 // Great name!
-public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends Query implements TwArchetypeConstants{
+public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends Query implements TwArchetypeConstants {
 
 	private String nodeLabel1 = null;
 	private String nodeLabel2 = null;
-	
+
 	public ChildAtLeastOneOfOneOrTwoOfTwoQuery(String nodeLabel1, String nodeLabel2) {
 		this.nodeLabel1 = nodeLabel1;
 		this.nodeLabel2 = nodeLabel2;
 	}
-	
+
 	public ChildAtLeastOneOfOneOrTwoOfTwoQuery(StringTable table) {
 		super();
 		nodeLabel1 = table.getWithFlatIndex(0);
 		nodeLabel2 = table.getWithFlatIndex(1);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Query process(Object input) {
 		defaultProcess(input);
 		TreeNode parent = (TreeNode) input;
-		List<TreeNode> type1 = (List<TreeNode>) get(parent, 
-			children(),
-			selectZeroOrMany(hasTheLabel(nodeLabel1)));
-		List<TreeNode> type2 = (List<TreeNode>) get(parent,
-			children(),			
-			selectZeroOrMany(hasTheLabel(nodeLabel2)));
+		List<TreeNode> type1 = (List<TreeNode>) get(parent, children(), selectZeroOrMany(hasTheLabel(nodeLabel1)));
+		List<TreeNode> type2 = (List<TreeNode>) get(parent, children(), selectZeroOrMany(hasTheLabel(nodeLabel2)));
 		if (!type1.isEmpty() && type2.isEmpty())
 			satisfied = true;
-		else if (type1.isEmpty() && type2.size()==2)
+		else if (type1.isEmpty() && type2.size() == 2)
 			satisfied = true;
-		else if (type1.size()==1 && type2.size()==1)
+		else if (type1.size() == 1 && type2.size() == 1)
 			satisfied = true;
-		else
-			satisfied = false;
 		return this;
 	}
 
 	public String toString() {
-		return "[" + stateString() + " There must be at least one child node with label '" + nodeLabel1 + "' or two children with label '"+nodeLabel2+"']";
+		return "[" + stateString() + " There must be at least one child node with label '" + nodeLabel1
+				+ "' or two children with label '" + nodeLabel2 + "']";
 	}
 
 }

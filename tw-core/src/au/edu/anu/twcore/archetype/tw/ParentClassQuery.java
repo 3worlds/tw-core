@@ -77,7 +77,7 @@ public class ParentClassQuery extends Query implements ArchetypeArchetypeConstan
 	public String toString() {
 		// return "[" + this.getClass().getSimpleName() + ", satisfied=" + satisfied
 		// + ", labels = " + labels+ "]";
-		return "[" + stateString() + " Parent  must have class one of '" + klasses.toString() + "']";
+		return "[" + stateString() + " Parent must have class one of '" + klasses.toString() + "']";
 	}
 
 }
