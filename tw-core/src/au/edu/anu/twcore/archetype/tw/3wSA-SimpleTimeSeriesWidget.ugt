@@ -29,6 +29,6 @@ archetype 3wSA-SimpleTimeSeriesWidget
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(("[2]10,100"))
 		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
-			className = String("au.edu.anu.twcore.archetype.tw.ParentClassQuery")
+			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
 			

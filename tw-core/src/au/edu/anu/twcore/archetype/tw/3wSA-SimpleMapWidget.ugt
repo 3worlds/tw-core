@@ -21,6 +21,6 @@ archetype 3wSA-SimpleMapWidget
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(("[2]1,2147483647"))
 		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
-			className = String("au.edu.anu.twcore.archetype.tw.ParentClassQuery")
+			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
 			
