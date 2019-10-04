@@ -83,4 +83,8 @@ hasNode widgetSpec
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleWidget","3wSA-SimpleWidget.ugt"))
+
+	mustSatisfyQuery CheckSubArchetypeQuerySimpleControlWidget
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleWidget","3wSA-SimpleControlWidget.ugt"))
 			
