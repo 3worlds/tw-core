@@ -72,7 +72,7 @@ hasNode widgetSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleMapWidget","3wSA-SimpleMapWidget.ugt"))
 
-	mustSatisfyQuery CheckSubArchetypeQueryTimeTimeWidget
+	mustSatisfyQuery CheckSubArchetypeQueryTimeWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleTimeWidget","3wSA-SimpleTimeWidget.ugt"))
 
@@ -86,5 +86,5 @@ hasNode widgetSpec
 
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleControlWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleWidget","3wSA-SimpleControlWidget.ugt"))
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleControlWidget","3wSA-SimpleControlWidget.ugt"))
 			
