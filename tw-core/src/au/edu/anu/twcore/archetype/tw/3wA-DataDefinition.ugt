@@ -27,6 +27,8 @@ hasNode recordRootSpec
 	mustSatisfyQuery recordRootNodeAtLeastOneChildLabelOfQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
 		childLabel = StringTable(([2]"field", "table"))
+	mustSatisfyQuery  recordRootNodeNameWithUppercaseQuery
+		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
 
 hasNode recordTableSpec
 	isOfClass = String("record")
@@ -39,6 +41,8 @@ hasNode recordTableSpec
 	mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
 		childLabel = StringTable(([2]"field", "table"))
+	mustSatisfyQuery  recordOfTableNameWithUppercaseQuery
+		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
 		
 		
 hasNode tableSpec
