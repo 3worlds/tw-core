@@ -10,8 +10,7 @@ archetype 3wSA-SimpleTimeSeriesWidget
 
 	hasNode SimpleTimeSeriesWidgetSpec
 		isOfClass = String("widget")
-		// TODO this should override parent when checking
-		hasParent = StringTable(([2]"tab:","container:"))
+		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
 		hasProperty SimpleTimeSeriesWidgetSenderProperty
 			hasName = String("sender")

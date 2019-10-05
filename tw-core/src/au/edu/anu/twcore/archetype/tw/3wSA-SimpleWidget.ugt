@@ -10,7 +10,6 @@ archetype 3wSA-SimpleWidget
 
 	hasNode SimpleWidgetSpec
 		isOfClass = String("widget")
-		// TODO this should override parent when checking
 		hasParent = StringTable(([4]"tab:","container:","top:","bottom:"))
 		multiplicity = IntegerRange("0..*")
 		hasProperty SimpleWidgetSenderProperty

@@ -68,11 +68,6 @@ public class ParentLabelQuery extends Query {
 		defaultProcess(input);
 		TreeNode localItem = (TreeNode) input;
 		TreeNode parent = localItem.getParent();
-		
-		System.out.println(localItem.classId()+":"+localItem.id());
-		System.out.println(parent.classId()+":"+parent.id());
-		System.out.println(labels);
-		System.out.println("-------------------");
 		if (parent!=null)
 			for (String label:labels) 
 				if (parent.classId().equals(label)) {
@@ -83,8 +78,6 @@ public class ParentLabelQuery extends Query {
 	}
 	
 	public String toString() {
-//		return "[" + this.getClass().getSimpleName() + ", satisfied=" + satisfied 
-//			+ ", labels = " + labels+ "]";
 		return "[" + stateString() + " Parent label must be one of '" + labels.toString() + "']";
 	}
 
