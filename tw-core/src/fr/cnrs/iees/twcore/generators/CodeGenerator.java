@@ -77,17 +77,17 @@ public class CodeGenerator {
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
 		UserProjectLink.clearFiles();
-		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
-				N_SYSTEM.label());
-		File codeDir = Project.makeFile(ProjectPaths.CODE);
+		File codeDir = Project.makeFile(ProjectPaths.JAVAPROJECT);
 		try {
 			if (codeDir.exists())
 				FileUtilities.deleteFileTree(codeDir);
 		} catch (IOException e1) {
 			throw new TwcoreException("Unable to delete [" + codeDir + "]", e1);
 		}
+		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
+				N_SYSTEM.label());
 		for (TreeGraphDataNode ecology : ecologies) {
-			File ecologyFiles = Project.makeFile(ProjectPaths.CODE, wordUpperCaseName(ecology.id()));
+			File ecologyFiles = Project.makeFile(ProjectPaths.LOCALCODE, wordUpperCaseName(ecology.id()));
 			ecologyFiles.mkdirs();
 
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(ecology.getChildren(),
@@ -132,41 +132,7 @@ public class CodeGenerator {
 		return !ComplianceManager.haveErrors();
 	}
 
-//	private void transferProjectArtifacts(File toDir) {
-//		/*
-//		 * At this point, the user's code should be up to date. I think we have forgotten to manage function files back ups etc
-//		 */
-//
-//		File fromSrc = UserProjectLink.srcRoot();
-//		File fromClass = UserProjectLink.classRoot();
-//		try {
-//			// why are we doing this?
-////			fromSrc.mkdirs();
-////			fromClass.mkdirs();
-//			// copyDirectory copies all children
-//			FileUtils.copyDirectory(fromSrc, toDir);
-//			FileUtils.copyDirectory(fromClass, toDir);
-//			/**
-//			 * Initially, there won't be any java files in the external project. Therefore,
-//			 * copy the newly created default ones (or the newly copied) back to the
-//			 * external Eclipse project.
-//			 */
-//			String[] extensions = new String[] { "java" };
-//			List<File> files = (List<File>) FileUtils.listFiles(toDir, extensions, true);
-//			for (File inFile : files) {
-//				String inName = inFile.getAbsolutePath();
-//				String outName = inName.replace(Project.getProjectDirectory(), "");
-//				File outFile = new File(fromSrc.getAbsoluteFile() + File.separator + outName);
-//				outFile.mkdirs();
-//				Files.copy(inFile.toPath(), outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
 
-	// only to be called by generateDataCode(String codePath, TreeGraphDataNode
-	// system, String modelName)
 	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
 			String dataGroup) {
 		if (spec != null) {

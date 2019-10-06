@@ -145,9 +145,9 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	 */
 	@Override
 	public void pushFiles() {
-		String remoteSrcPath = this.srcRoot().getAbsolutePath();
-		String remoteClsPath = this.classRoot().getAbsolutePath();
-		String localPath = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+		String remoteSrcPath = this.srcRoot().getAbsolutePath()+File.separator+ProjectPaths.REMOTECODE;
+		String remoteClsPath = this.classRoot().getAbsolutePath()+File.separator+ProjectPaths.REMOTECODE;
+		String localPath = Project.makeFile(ProjectPaths.LOCALCODE).getAbsolutePath();
 		writeUserCodeRunner();
 		log.info(localPath + "-> [" + remoteSrcPath + "," + remoteClsPath + "]");
 		pushDataFiles(localPath, remoteSrcPath, remoteClsPath);

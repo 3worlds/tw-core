@@ -50,6 +50,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.FileType;
@@ -85,7 +86,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		super(spec);
 		name = className;
 		model = modelName;
-		packagePath = Project.makeFile(CODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 
 		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), 
 			edgeListEndNodes(),
@@ -127,7 +128,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		File ctGeneratedCodeDir =  getModelCodeDir(model);			
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
-		packageName = ctmodel;		
+		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+ctmodel;		
 		String ancestorClassName = INITIALISER_ROOT_PACKAGE+".SecondaryParametersInitialiser";		
 		String comment = comment(general,classComment(name),generatedCode(false,model, ""));				
 		ClassGenerator generator = new ClassGenerator(packageName,comment,name,ancestorClassName);
@@ -149,7 +150,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		}
 		generator.setRawMethodCode(inClassCode);
 //		File file = Project.makeFile(ctmodel,TW_CODE,name+".java");
-		File file = Project.makeFile(CODE,ctmodel,name+".java");
+		File file = Project.makeFile(LOCALCODE,ctmodel,name+".java");
 		writeFile(generator,file,name);
 		generatedClassName = packageName+"."+name;
 		log.info("  done.");

@@ -50,6 +50,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.FileType;
@@ -90,7 +91,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		// type = (String)spec.getPropertyValue("type");
 		type = (TwFunctionTypes) spec.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		model = modelName;
-		packagePath = Project.makeFile(CODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 
 		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), edgeListEndNodes(),
 			selectZeroOrMany(hasTheLabel("snippet")));
@@ -153,7 +154,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
 //		String packageName = ctmodel + "." + TW_CODE;
-		packageName = ctmodel;
+		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+ctmodel;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(true, model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
@@ -174,7 +175,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		}
 		generator.setRawMethodCode(inClassCode);
 //		File file = Project.makeFile(ctmodel,TW_CODE, name + ".java");
-		File file = Project.makeFile(CODE,ctmodel, name + ".java");
+		File file = Project.makeFile(LOCALCODE,ctmodel, name + ".java");
 		writeFile(generator, file, name);
 		generatedClassName = packageName + "." + name;
 		log.info("  done.");

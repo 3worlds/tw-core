@@ -47,7 +47,10 @@ public interface ProjectPaths {
 	 * project. The sub dir is organised as system.id() which themselves don't need
 	 * further subdirs (i.e /code
 	 */
-	public static String CODE /*                */ = JAVAPROJECT + File.separator + "code";
+	public static String LOCALCODE /*                */ = JAVAPROJECT + File.separator + "code";
+
+	/* dir root for generated code in the user's linked project */
+	public static String REMOTECODE/*               */ = "code";
 	/*
 	 * User linked project jar files. It will be empty if there is no linked project
 	 */
@@ -57,5 +60,10 @@ public interface ProjectPaths {
 	 * project. I don't think it has any subDirs
 	 */
 	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
+
+	/*
+	 * root of runtime model. Has runtime preferences and any data files, startup
+	 * files and generated filrs
+	 */
 	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
 }

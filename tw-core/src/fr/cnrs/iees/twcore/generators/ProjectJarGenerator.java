@@ -101,7 +101,7 @@ public class ProjectJarGenerator {
 	}
 
 	private void pullAllCodeFiles() {
-		File localDir = Project.makeFile(ProjectPaths.CODE);
+		File localDir = Project.makeFile(ProjectPaths.LOCALCODE);
 		String[] extensions = new String[] { "java" };
 		List<File> remoteSrcFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
 		for (File remoteSrcFile : remoteSrcFiles) {
@@ -148,7 +148,7 @@ public class ProjectJarGenerator {
 	}
 
 	private void loadModelCode(Set<File> srcFiles, Set<File> resFiles) {
-		File srcRoot = Project.makeFile(ProjectPaths.CODE);
+		File srcRoot = Project.makeFile(ProjectPaths.LOCALCODE);
 		File resRoot = Project.makeFile(ProjectPaths.RES);
 		if (srcRoot.exists())
 			srcFiles.addAll(FileUtils.listFiles(srcRoot, null, true));
