@@ -36,7 +36,7 @@ import fr.ens.biologie.generic.Resettable;
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public interface Timer extends Resettable{
+public interface Timer extends Resettable {
 
 	/**
 	 * The next time step according to this time model.
@@ -56,5 +56,5 @@ public interface Timer extends Resettable{
 	public void advanceTime(long newTime);
 	
 	public long nextTime(long t);
-
+	
 }

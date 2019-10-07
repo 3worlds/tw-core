@@ -46,10 +46,8 @@ public class Simulator {
 	// FIELDS
 	
 	private static Logger log = Logging.getLogger(Simulator.class);
-	/** class constant = number of simulators in this running session */
-	private static int N_INSTANCES = 0;
 	/** this simulator's unique id */ 
-	private int id = 0;
+	private int id = -1;
 	/** helper local field to build up and send metadata to data observers */
 	private Metadata metadata;
 	/** the list of timers (timeModels) in use in this simulator */
@@ -66,8 +64,8 @@ public class Simulator {
 	 There is always exactly one stopping condition.
 	 When there are many, they are organized as a tree */
 	protected StoppingCondition stoppingCondition;
-	/** the time line for this simulator, common to all timers */
-	private TimeLine refTimer;
+//	/** the time line for this simulator, common to all timers */
+//	private TimeLine refTimer;
 	/** the calling order of processes depending on the combination of
 	 * simultaneous time models */
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
@@ -91,17 +89,17 @@ public class Simulator {
 	 * @param processCallingOrder
 	 * @param ecosystem
 	 */
-	public Simulator(StoppingCondition stoppingCondition, 
+	public Simulator(int id,
+			StoppingCondition stoppingCondition, 
 			TimeLine refTimer,
 			List<Timer> timers,
 			int[] timeModelMasks,
 			Map<Integer, List<List<ProcessNode>>> processCallingOrder,
 			Ecosystem ecosystem) {
 		super();
-		N_INSTANCES++;
-		id = N_INSTANCES;
+		this.id = id;
 		this.stoppingCondition = stoppingCondition;
-		this.refTimer = refTimer;
+//		this.refTimer = refTimer;
 		this.timerList=timers;
 		this.timeModelMasks = timeModelMasks;
 		this.processCallingOrder = processCallingOrder;

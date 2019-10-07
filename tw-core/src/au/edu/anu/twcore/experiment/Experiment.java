@@ -44,6 +44,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
+import au.edu.anu.twcore.experiment.runtime.ParallelDeployer;
 import au.edu.anu.twcore.experiment.runtime.SimpleDeployer;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -61,13 +62,13 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  */
 public class Experiment 
 		extends InitialisableNode 
-//		implements Singleton<ExperimentController>, Sealable {
 		implements Singleton<StateMachineController>, Sealable {
 
 	private boolean sealed = false;
-//	private ExperimentController controller = null;
 	private StateMachineController controller = null;
 	private Deployer deployer = null;
+	/** class constant = number of simulators in this running session */
+	private static int N_SIMULATORS = 0;
 	
 	// default constructor
 	public Experiment(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -84,24 +85,30 @@ public class Experiment
 		if (!sealed) {
 			super.initialise();
 			Design d = (Design) get(getChildren(),selectOne(hasTheLabel(N_DESIGN.label())));
-			// single run experiment
-			if (d.properties().hasProperty(P_DESIGN_TYPE.key()))
+			if (d.properties().hasProperty(P_DESIGN_TYPE.key())) {
+				SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
+					selectOne(hasTheLabel(E_BASELINE.label())),
+					endNode(),
+					children(),
+					selectOne(hasTheLabel(N_DYNAMICS.label())));
+				// single run experiment
 				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
 					deployer = new SimpleDeployer();
-					SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
-						selectOne(hasTheLabel(E_BASELINE.label())),
-						endNode(),
-						children(),
-						selectOne(hasTheLabel(N_DYNAMICS.label())));
-					deployer.attachSimulator(sim.newInstance());
-					controller = new StateMachineController(deployer);
-					// this puts the deployer in "waiting" state
-					controller.sendEvent(initialise.event());
+					deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
 				}
-			// multiple simulators, local
-			// TODO
-			// multiple simulators, remote
-			// TODO
+				// multiple simulators, local
+				else { // TODO: there should be a condition here
+					deployer = new ParallelDeployer();
+					// TODO: fix this - it's only fake code
+					for (int i=0; i<10; i++)
+						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
+				}
+				// multiple simulators, remote
+				// TODO
+				controller = new StateMachineController(deployer);
+				// this puts the deployer in "waiting" state
+				controller.sendEvent(initialise.event());
+			}
 			sealed = true;
 		}
 	}

@@ -33,13 +33,14 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.Factory;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -73,13 +74,13 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
  */
 public class SimulatorNode 
 		extends InitialisableNode 
-		implements Factory<Simulator>, Sealable {
+		implements LimitedEdition<Simulator>, Sealable {
 	
 	private boolean sealed = false;
-	private StoppingCondition rootStop = null;
-	private List<Timer> timers = new ArrayList<>();
+//	private StoppingCondition rootStop = null;
+//	private List<Timer> timers = new ArrayList<>();
 	private TimeLine timeLine = null;
-	private List<Simulator> instances = new LinkedList<>();
+	private Map<Integer,Simulator> simulators = new HashMap<>();
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
 
@@ -100,23 +101,6 @@ public class SimulatorNode
 				selectOne(hasTheLabel(N_TIMELINE.label())));
 			List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),
 				selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
-			for (TimeModel tm:timeModels)
-				timers.add(tm.getInstance());
-			List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
-				selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
-			// when there is no stopping condition, the default one is used (runs to infinite time)
-			if (scnodes.isEmpty())
-				rootStop = SimpleStoppingCondition.defaultStoppingCondition();
-			// when there are many stopping conditions, any of them can stop the simulation
-			else if (scnodes.size()>1) {
-				List<StoppingCondition> lsc = new ArrayList<>();
-				for (StoppingConditionNode scn:scnodes)
-					lsc.add(scn.getInstance());
-				rootStop = new MultipleOrStoppingCondition(lsc);
-			} 
-			// when there is only one stopping condition, then it is used
-			else
-				rootStop = scnodes.get(0).getInstance();
 			// processes
 			hierarchiseProcesses(timeModels);
 			sealed = true;
@@ -127,17 +111,53 @@ public class SimulatorNode
 	public int initRank() {
 		return N_DYNAMICS.initRank();
 	}
+	
+	@SuppressWarnings("unchecked")
+	private Simulator makeSimulator(int index) {
+		List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),
+			selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
+		List<Timer> timers = new ArrayList<>();
+		for (TimeModel tm:timeModels)
+			timers.add(tm.getInstance(index));
+		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
+			selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
+		StoppingCondition rootStop = null;
+		// when there is no stopping condition, the default one is used (runs to infinite time)
+		if (scnodes.isEmpty())
+			rootStop = SimpleStoppingCondition.defaultStoppingCondition();
+		// when there are many stopping conditions, any of them can stop the simulation
+		else if (scnodes.size()>1) {
+			List<StoppingCondition> lsc = new ArrayList<>();
+			for (StoppingConditionNode scn:scnodes)
+				lsc.add(scn.getInstance());
+			rootStop = new MultipleOrStoppingCondition(lsc);
+		} 
+		// when there is only one stopping condition, then it is used
+		else
+			rootStop = scnodes.get(0).getInstance();
+		Map<Integer, List<List<ProcessNode>>> pco = new HashMap<>();
+		for (Map.Entry<Integer,List<List<ProcessNode>>> e:processCallingOrder.entrySet()) {
+			List<List<ProcessNode>> nllp = new ArrayList<>();
+			for (List<ProcessNode> lp:e.getValue()) {
+				List<ProcessNode> nlp = new ArrayList<>();
+				nlp.addAll(lp);
+				nllp.add(nlp);
+			}
+			pco.put(e.getKey(),nllp);
+		}
+		Simulator sim = new Simulator(index,rootStop,timeLine,timers,timeModelMasks.clone(),pco,
+			(Ecosystem) getParent()); // TODO caution - this is wrong - must clone the community
+		rootStop.attachSimulator(sim);
+		return sim;
+	}
 
 	@Override
-	public Simulator newInstance() {
+	public Simulator getInstance(int index) {
 		if (!sealed)
 			initialise();
-		Simulator sim = new Simulator(rootStop,timeLine,timers,timeModelMasks,
-			processCallingOrder,
-			(Ecosystem) getParent());
-		rootStop.attachSimulator(sim);
-		instances.add(sim);
-		return sim;
+		if (!simulators.containsKey(index)) 
+			simulators.put(index,makeSimulator(index));
+		return simulators.get(index);
 	}
 	
 //	public void addObserver(DataReceiver<LabelValuePairData,Metadata> observer) {
@@ -146,9 +166,9 @@ public class SimulatorNode
 //		instances.clear();
 //	}
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
-		for (Simulator sim:instances)
+		for (Simulator sim:simulators.values())
 			sim.addObserver(observer);
-		instances.clear();
+		simulators.clear();
 	}
 
 	@Override

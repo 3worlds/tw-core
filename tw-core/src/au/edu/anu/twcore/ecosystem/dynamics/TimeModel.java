@@ -41,10 +41,14 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.Sealable;
-import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
@@ -58,7 +62,7 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
  */
 public class TimeModel
 		extends InitialisableNode
-		implements Singleton<Timer>, Sealable, Resettable,TwArchetypeConstants {
+		implements LimitedEdition<Timer>, Sealable, Resettable,TwArchetypeConstants {
 
 	private boolean sealed = false;
 
@@ -73,9 +77,8 @@ public class TimeModel
 
 	/** if isExact is false grainsPerBaseUnit will be zero */
 	protected long grainsPerBaseUnit = 0L;
-
-	private Timer timer = null;
-
+	
+	private Map<Integer,Timer> timers = new HashMap<>();
 
 	public TimeModel(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -89,7 +92,6 @@ public class TimeModel
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
-//			sealed = false;
 			timeLine = (TimeLine) getParent();
 			timeUnit = (TimeUnits) properties().getPropertyValue("timeUnit");
 			nTimeUnits = (Integer) properties().getPropertyValue("nTimeUnits");
@@ -99,25 +101,30 @@ public class TimeModel
 				grainsPerBaseUnit = nTimeUnits;
 			else
 				grainsPerBaseUnit = nTimeUnits * unitConversionFactor;
-			// Clock timer
-			if (properties().getPropertyValue(twaSubclass)
-					.equals(ClockTimer.class.getName())) {
-				timer = new ClockTimer(this);
-			}
-			// event-driven timer
-			else if (properties().getPropertyValue(twaSubclass)
-					.equals(EventTimer.class.getName())) {
-				EventQueue eq = (EventQueue) get(this.getChildren(),
-					selectOne(hasTheLabel(N_EVENTQUEUE.label())));
-				timer = new EventTimer(eq,this);
-			}
-			// scenario timer
-			else if (properties().getPropertyValue(twaSubclass)
-					.equals(ScenarioTimer.class.getName())) {
-				timer = new ScenarioTimer(this);
-			}
 			sealed = true;
 		}
+	}
+	
+	private Timer makeTimer() {
+		Timer timer = null;
+		// Clock timer
+		if (properties().getPropertyValue(twaSubclass)
+				.equals(ClockTimer.class.getName())) {
+			timer = new ClockTimer(this);
+		}
+		// event-driven timer
+		else if (properties().getPropertyValue(twaSubclass)
+				.equals(EventTimer.class.getName())) {
+			EventQueue eq = (EventQueue) get(this.getChildren(),
+				selectOne(hasTheLabel(N_EVENTQUEUE.label())));
+			timer = new EventTimer(eq,this);
+		}
+		// scenario timer
+		else if (properties().getPropertyValue(twaSubclass)
+				.equals(ScenarioTimer.class.getName())) {
+			timer = new ScenarioTimer(this);
+		}
+		return timer;
 	}
 
 	@Override
@@ -126,12 +133,14 @@ public class TimeModel
 	}
 
 	@Override
-	public Timer getInstance() {
+	public Timer getInstance(int index) {
 		if (!sealed)
 			initialise();
-		return timer;
-//		throw new TwcoreException("attempt to access uninitialised data");
+		if (!timers.containsKey(index))
+			timers.put(index, makeTimer());
+		return timers.get(index);
 	}
+
 
 	public int nTimeUnits() {
 		if (sealed)
@@ -170,10 +179,8 @@ public class TimeModel
 
 	@Override
 	public void reset() {
-		if (sealed)
+		for (Timer timer:timers.values())
 			timer.reset();
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
 	}
 	
 	/**

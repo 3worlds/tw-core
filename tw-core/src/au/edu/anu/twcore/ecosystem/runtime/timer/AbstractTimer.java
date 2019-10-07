@@ -62,5 +62,5 @@ public abstract class AbstractTimer implements Timer {
 	public void reset() {
 		lastTime = 0L;
 	}
-
+	
 }

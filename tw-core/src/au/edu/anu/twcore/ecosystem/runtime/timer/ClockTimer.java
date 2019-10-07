@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.runtime.timer;
 import java.time.LocalDateTime;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
+import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 
@@ -74,6 +75,14 @@ public class ClockTimer extends AbstractTimer {
 	@Override
 	public void advanceTime(long newTime) {
 		lastTime = newTime;
+	}
+
+	@Override
+	protected Timer clone() {
+		ClockTimer ct = new ClockTimer(timeModel);
+		ct.dt = dt;
+		ct.baseUnit = baseUnit;
+		return ct;
 	}
 
 //	public boolean runAtTimeZero() {
