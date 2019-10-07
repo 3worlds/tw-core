@@ -60,6 +60,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
@@ -145,8 +146,8 @@ public class SimulatorNode
 			}
 			pco.put(e.getKey(),nllp);
 		}
-		Simulator sim = new Simulator(index,rootStop,timeLine,timers,timeModelMasks.clone(),pco,
-			(Ecosystem) getParent()); // TODO caution - this is wrong - must clone the community
+		SystemContainer comm = (SystemContainer)((Ecosystem) getParent()).getInstance(index); 
+		Simulator sim = new Simulator(index,rootStop,timeLine,timers,timeModelMasks.clone(),pco,comm);
 		rootStop.attachSimulator(sim);
 		return sim;
 	}

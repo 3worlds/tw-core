@@ -33,6 +33,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 
@@ -43,6 +44,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_PARAMETERCLASS;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -64,7 +67,7 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
  */
 public class Ecosystem 
 		extends InitialisableNode 
-		implements Categorized<SystemComponent>, Singleton<SystemContainer>, Sealable {
+		implements Categorized<SystemComponent>, LimitedEdition<SystemContainer>, Sealable {
 
 	// this is the top of the system, so it doesnt belong to any category	
 	// except if we want to attach parameters/variables to it
@@ -74,9 +77,12 @@ public class Ecosystem
 	// a set of categories in case the user set some
 	private String categoryId = null;
 	private Set<Category> categories = new TreeSet<Category>(); 
+	private TwData parameters = null;
 	
 	// a singleton container for all SystemComponents within an ecosystem
-	private SystemContainer community = null;
+//	private SystemContainer community = null;
+	
+	private Map<Integer,SystemContainer> communities = new HashMap<>();
 
 	public Ecosystem(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -100,7 +106,6 @@ public class Ecosystem
 			}
 			else
 				categoryId = rootCategoryId;
-			TwData parameters = null;
 			if (properties().hasProperty(P_PARAMETERCLASS.key())) {
 				String s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
 				if (s!=null)
@@ -108,7 +113,6 @@ public class Ecosystem
 						parameters = loadDataClass(s);
 			}
 			// TODO: automatic variables as variableTemplate
-			community = new SystemContainer(this,"ecosystem",null,parameters,null);
 			sealed = true;
 		}
 	}
@@ -118,9 +122,9 @@ public class Ecosystem
 		return N_SYSTEM.initRank();
 	}
 
-	public CategorizedContainer<SystemComponent> community() {
-		return community;
-	}
+//	public CategorizedContainer<SystemComponent> community() {
+//		return community;
+//	}
 	
 	@Override
 	public Set<Category> categories() {
@@ -133,18 +137,26 @@ public class Ecosystem
 	public String categoryId() {
 		return categoryId;
 	}
+	
+	private SystemContainer makeCommunity() {
+		SystemContainer community = null;
+		community = new SystemContainer(this,"ecosystem",null,parameters.clone(),null);
+		return community;
+	}
 
 	@Override
-	public SystemContainer getInstance() {
+	public SystemContainer getInstance(int index) {
 		if (!sealed)
 			initialise();
-		return community;
+		if (!communities.containsKey(index))
+			communities.put(index, makeCommunity());
+		return communities.get(index);
 	}
 
-	// for compatibility with LifeCycle and Systemfactory 
-	public SystemContainer container(String name) {
-		return community;
-	}
+//	// for compatibility with LifeCycle and Systemfactory 
+//	public SystemContainer container(String name) {
+//		return community;
+//	}
 
 	@Override
 	public Sealable seal() {

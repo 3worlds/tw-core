@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
@@ -95,7 +94,7 @@ public class Simulator {
 			List<Timer> timers,
 			int[] timeModelMasks,
 			Map<Integer, List<List<ProcessNode>>> processCallingOrder,
-			Ecosystem ecosystem) {
+			SystemContainer ecosystem) {
 		super();
 		this.id = id;
 		this.stoppingCondition = stoppingCondition;
@@ -103,7 +102,7 @@ public class Simulator {
 		this.timerList=timers;
 		this.timeModelMasks = timeModelMasks;
 		this.processCallingOrder = processCallingOrder;
-		this.community = (SystemContainer) ecosystem.community();
+		this.community = ecosystem;
 		// looping aids
 		currentTimes = new long[timerList.size()];
 		// data tracking
@@ -227,5 +226,9 @@ public class Simulator {
 	
 	public long currentTime() {
 		return lastTime;
+	}
+	
+	public SystemContainer community() {
+		return community;
 	}
 }

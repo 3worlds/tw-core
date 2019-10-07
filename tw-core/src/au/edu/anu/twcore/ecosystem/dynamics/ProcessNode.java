@@ -115,7 +115,7 @@ public class ProcessNode
 					process.addFunction(func.getInstance());
 				}
 			}
-			ecosystem.getInstance(); /// what's the use of this ????
+//			ecosystem.getInstance(); /// what's the use of this ????
 			// 2 -  Setting data trackers
 			List<DataTrackerNode> ldt = (List<DataTrackerNode>) get(getChildren(),
 				selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
