@@ -8,35 +8,35 @@ treegraph
 // TREE 
 3worlds testSpecs2						
 	dataDefinition my_data
-		record rplant
+		record Rplant
 			field biomass
 				type = DataElementType("Double")
 			field dbh
 				type = DataElementType("Double")
 			field height
 				type = DataElementType("Double")
-		record ranimal
+		record Ranimal
 			field bodyweight
 				type = DataElementType("Double")
 				units = String("kg")
 				precision = Double(0.1)
 			field sex
 				type = DataElementType("Boolean")
-		record rcarnivore
+		record Rcarnivore
 			field preysize
 				type = DataElementType("Double")
-		record rjuvenile
+		record Rjuvenile
 			field effectivegrowth
 				type = DataElementType("Double")
-		record rsenescent
+		record Rsenescent
 			field weightloss
 				type = DataElementType("Double")
-		record pjuvenile
+		record Pjuvenile
 			field rgr
 				type = DataElementType("Double")
 			field survivalj
 				type = DataElementType("Double")
-		record polder
+		record Polder
 			field fecundity
 				type = DataElementType("Double")
 			field survivalo
