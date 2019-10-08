@@ -170,6 +170,7 @@ public class Simulator {
 				// execute all processes at the same dependency level
 				for (ProcessNode p : torun) {
 //					p.execute(nexttime, step); 
+					// This may be a flaw (to keep ProcessNode here instead of TwProcess)
 					p.getInstance(id).execute(nexttime,step);
 				}
 			}

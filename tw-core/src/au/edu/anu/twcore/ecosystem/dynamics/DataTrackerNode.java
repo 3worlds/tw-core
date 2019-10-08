@@ -45,6 +45,7 @@ import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
@@ -60,7 +61,6 @@ public class DataTrackerNode
 		extends InitialisableNode 
 		implements LimitedEdition<DataTracker<?,?>>, Sealable {
 
-//	private DataTracker<?,?> dataTracker = null;
 	private Map<Integer, DataTracker<?,?>> dataTrackers = new HashMap<>();
 	private boolean sealed = false;
 	private SamplingMode selection = null;
@@ -115,13 +115,6 @@ public class DataTrackerNode
 		return N_DATATRACKER.initRank();
 	}
 
-//	@Override
-//	public DataTracker<?,?> getInstance() {
-//		if (!sealed)
-//			initialise();
-//		return dataTracker;
-//	}
-
 	@Override
 	public Sealable seal() {
 		sealed = true;
@@ -134,7 +127,7 @@ public class DataTrackerNode
 	}
 	
 	private DataTracker<?,?> makeDataTracker(int index) {
-		DataTracker<?,?> result = null;
+		AbstractDataTracker<?,?> result = null;
 		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
 			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers);
 		}		
@@ -143,7 +136,9 @@ public class DataTrackerNode
 		}		
 		else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
 			result = new LabelValuePairTracker();
-		}		
+		}
+		if (result!=null)
+			result.setSender(index);
 		return result;
 	}
 

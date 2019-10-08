@@ -128,8 +128,7 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			executeFunctions(container,t,dt);
 			// track group state
 			for (TimeSeriesTracker tracker:tsTrackers) {
-				// TODO! fix this
-//				tracker.record(container.populationData());
+				tracker.record(container.populationData());
 			}
 			focalContext.clear();
 		}
@@ -278,8 +277,7 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			}
 			// track component state
 			for (TimeSeriesTracker tracker:tsTrackers) {
-				// TODO: fix this
-//				tracker.record(focal.currentState());
+				tracker.record(focal.currentState());
 			}
 		}
 	}
