@@ -39,6 +39,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import au.edu.anu.rscs.aot.AotException;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 
@@ -85,25 +86,65 @@ public class TimeUtil {
 	 *    5) Time management not tested with dataTracker.
 	 */
 
+	public static long[] factorInexactTime(long time, List<TimeUnits> units) {
+		TimeUnits smallest = units.get(units.size() - 1);
+		long[] result = new long[units.size()];
+		LocalDateTime dt = longToDate(time, smallest);
+		for (int i = 0; i < units.size(); i++) {
+			result[i] = getDateTimeField(dt, units.get(i));
+		}
+		return result;
+	}
+
+	private static long getDateTimeField(LocalDateTime dt, TimeUnits timeUnits) {
+		switch (timeUnits) {
+		case MICROSECOND:
+			return dt.getNano();
+		case SECOND:
+			return dt.getSecond();
+		case MINUTE:
+			return dt.getMinute();
+		case HOUR:
+			return dt.getHour();
+		case DAY:
+			return dt.getDayOfMonth();
+		case MONTH:
+			// Careful: 1..12
+			return dt.getMonthValue();
+		case YEAR:
+			return dt.getYear();
+		default:
+			// modify Gregorian TimeScaleType to prevent weeks, millis, decades, centuries and millenniums
+			throw new TwcoreException("Factoring a Gregorian calander into " + timeUnits.name() + " is not supported.");
+		}
+	}
+
+	public static long[] factorExactTime(long time, List<TimeUnits> units) {
+		long absTime = Math.abs(time);
+		TimeUnits smallest = units.get(units.size() - 1);
+		long[] result = new long[units.size()];
+		long remainder = absTime;
+		for (int i = 0; i < units.size(); i++) {
+			TimeUnits unit = units.get(i);
+			result[i] = (long) TimeUtil.convertTime(remainder, smallest, unit, null);
+			if (result[i] > 0) {
+				long wholeUnit = (long) TimeUtil.convertTime(result[i], unit, smallest, null);
+				remainder = remainder - wholeUnit;
+			}
+		}
+		return result;
+	}
 
 	/**
 	 * Non-Gregorian time formatting units assumed sorted from largest to smallest
 	 */
 	public static String formatExactTimeScales(long time, List<TimeUnits> units) {
+		long[] unitTimes = factorExactTime(time, units);
 		int nFields = 0;
-		long absTime = Math.abs(time);
-		TimeUnits smallest = units.get(units.size() - 1);
-		long[] unitTimes = new long[units.size()];
-		long remainder = absTime;
-		for (int i = 0; i < units.size(); i++) {
-			TimeUnits unit = units.get(i);
-			unitTimes[i] = (long) TimeUtil.convertTime(remainder, smallest, unit, null);
-			if (unitTimes[i] > 0) {
-				long wholeUnit = (long) TimeUtil.convertTime(unitTimes[i], unit, smallest, null);
-				remainder = remainder - wholeUnit;
+		for (int i = 0; i < unitTimes.length; i++)
+			if (unitTimes[i] > 0)
 				nFields++;
-			}
-		}
+		TimeUnits smallest = units.get(units.size() - 1);
 		String result = "";
 		for (int i = 0; i < unitTimes.length; i++)
 			if (time >= 0)
@@ -159,37 +200,6 @@ public class TimeUtil {
 		else
 			return nTimeUnits + "-" + n;
 	}
-
-	// @Deprecated
-	// public static long toInternalTime(double realTime, double t0, double unit,
-	// double tgrain) {
-	// // rounding is very important here - do NOT use truncation or
-	// // typecasting
-	// return Math.round((realTime - t0) * unit / tgrain);
-	// }
-	//
-	// /**
-	// * converts an internal simulator time to a real world time (in user defined
-	// * units)
-	// *
-	// * @param internalTime
-	// * @param t0
-	// * @param unit
-	// * a conversion factor between a unit and the simulator reference
-	// * unit
-	// * @param tgrain
-	// * @return
-	// */
-	// @Deprecated
-	// public static double toRealTime(long internalTime, double t0, double unit,
-	// double tgrain) {
-	// return internalTime * tgrain / unit + t0;
-	// }
-
-	// private static void error(TimeUnits from, TimeUnits to) {
-	// throw new AotException("Cannot convert from " + from.toString() + " to " +
-	// to.toString());
-	// }
 
 	/**
 	 * Computes the exact number of smaller time units in a larger time unit (as an
@@ -456,8 +466,7 @@ public class TimeUtil {
 	/**
 	 * 
 	 * @param time
-	 * @param tu
-	 *            : a unit which is a multiple of MILLISECOND
+	 * @param tu   : a unit which is a multiple of MILLISECOND
 	 * @return LocalDateTime (immutable) of this instant without TimeZone offset
 	 *         (UTC).
 	 */
@@ -466,15 +475,15 @@ public class TimeUtil {
 		Instant instant = longToInstant(factor * time);
 		return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
 	}
-	public static Long dateToLong(LocalDateTime dateTime,TimeUnits tu,LocalDateTime timeZero) {
-		 Long seconds = dateTime.toEpochSecond(ZoneOffset.UTC);
-		 return Math.round(TimeUtil.convertTime(seconds, TimeUnits.SECOND, tu, timeZero));
+
+	public static Long dateToLong(LocalDateTime dateTime, TimeUnits tu, LocalDateTime timeZero) {
+		Long seconds = dateTime.toEpochSecond(ZoneOffset.UTC);
+		return Math.round(TimeUtil.convertTime(seconds, TimeUnits.SECOND, tu, timeZero));
 	}
 
 	/**
 	 * 
-	 * @param time
-	 *            in milliseconds (0 = 00:00 01/01/1970)
+	 * @param time in milliseconds (0 = 00:00 01/01/1970)
 	 * @return Instant
 	 */
 	public static Instant longToInstant(long time) {
@@ -650,13 +659,10 @@ public class TimeUtil {
 	}
 
 	/**
-	 * @param time:
-	 *            as a floating point value
+	 * @param time:    as a floating point value
 	 * @param baseDate
-	 * @param from:
-	 *            TimeUnits of 'time'
-	 * @param to:
-	 *            TimeUnits of result
+	 * @param from:    TimeUnits of 'time'
+	 * @param to:      TimeUnits of result
 	 * @return fractional value in units 'to'.
 	 */
 	private static double timeInexactConversionFiner(double time, LocalDateTime baseDate, TimeUnits coarsest,
