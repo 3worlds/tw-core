@@ -55,6 +55,9 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Individual;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
@@ -146,10 +149,37 @@ public class SimulatorNode
 			}
 			pco.put(e.getKey(),nllp);
 		}
-		SystemContainer comm = (SystemContainer)((Ecosystem) getParent()).getInstance(index); 
+		SystemContainer comm = (SystemContainer)((Ecosystem) getParent()).getInstance(index);
+		setInitialCommunity(index);
 		Simulator sim = new Simulator(index,rootStop,timeLine,timers,timeModelMasks.clone(),pco,comm);
 		rootStop.attachSimulator(sim);
 		return sim;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void scanSubGroups(Group group,int index) {
+		List<Individual> li = (List<Individual>) get(group.getChildren(),
+			selectZeroOrMany(hasTheLabel(N_INDIVIDUAL.label())));
+		for (Individual i:li)
+			i.getInstance(index);
+		List<Group> lg = (List<Group>) get(group.getChildren(),
+			selectZeroOrMany(hasTheLabel(N_GROUP.label())));
+		for (Group g:lg)
+			scanSubGroups(g,index);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void setInitialCommunity(int index) {
+		InitialState init = (InitialState) get(getChildren(),
+			selectZeroOrOne(hasTheLabel(N_INITIALSTATE.label())));
+		List<Individual> li = (List<Individual>) get(init.getChildren(),
+			selectZeroOrMany(hasTheLabel(N_INDIVIDUAL.label())));
+		for (Individual i:li)
+			i.getInstance(index);
+		List<Group> lg = (List<Group>) get(init.getChildren(),
+			selectZeroOrMany(hasTheLabel(N_GROUP.label())));
+		for (Group g:lg)
+			scanSubGroups(g,index);
 	}
 
 	@Override

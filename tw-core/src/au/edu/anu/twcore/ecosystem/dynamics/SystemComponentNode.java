@@ -268,9 +268,9 @@ public class SystemComponentNode
 				if (sc==null)
 					sc = ec.getInstance(index);
 				if (parameterTemplate!=null)
-					result = new SystemContainer(this, name, sc, parameterTemplate.clone(), null);
+					result = new SystemContainer(getInstance(index), name, sc, parameterTemplate.clone(), null);
 				else
-					result = new SystemContainer(this, name, sc, null, null);
+					result = new SystemContainer(getInstance(index), name, sc, null, null);
 				if (!result.id().equals(name))
 					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
 				containers.get(index).put(result.id(),result);

@@ -137,7 +137,10 @@ public class Ecosystem
 	
 	private SystemContainer makeCommunity() {
 		SystemContainer community = null;
-		community = new SystemContainer(this,"ecosystem",null,parameters.clone(),null);
+		if (parameters!=null)
+			community = new SystemContainer(this,"ecosystem",null,parameters.clone(),null);
+		else
+			community = new SystemContainer(this,"ecosystem",null,null,null);
 		return community;
 	}
 
