@@ -43,12 +43,14 @@ import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -62,11 +64,18 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
  */
 public class ProcessNode 
 		extends InitialisableNode 
-		implements Singleton<TwProcess>, Sealable {
+		implements LimitedEdition<TwProcess>, Sealable {
 	
 	private boolean sealed = false;
-	private TimeModel timeModel = null;
-	private AbstractProcess process = null;
+//	private TimeModel timeModel = null;
+//	private AbstractProcess process = null;
+	private Ecosystem ecosystem = null;
+	
+	private Collection<Category> categories = null;
+	private RelationType relation = null;
+	
+	private Map<Integer,TwProcess> processes = new HashMap<>();
+	private List<FunctionNode> functions = null;
 
 	// default constructor
 	public ProcessNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -84,44 +93,51 @@ public class ProcessNode
 		if (!sealed) {
 			super.initialise();		
 			sealed = false;					// timeModel  timeLine    dynamics    ecosystem
-			Ecosystem ecosystem = (Ecosystem) getParent().getParent().getParent().getParent();
-			timeModel = (TimeModel)getParent();
+			ecosystem = (Ecosystem) getParent().getParent().getParent().getParent();
+//			timeModel = (TimeModel)getParent();
 			// 1 - setting up simulation code execution 
 			DynamicList<? extends Node> applies = (DynamicList<? extends Node>) get(edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel("appliesTo")),
 				edgeListEndNodes());
 			Node first = applies.getFirst();
 			// process applies to a set of categories
-			if (first.classId().equals(N_CATEGORY.label())) {
-				process = new ComponentProcess(ecosystem,(Collection<Category>)applies);
-				DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
-					selectZeroOrMany(hasTheLabel("function")));
-				for (FunctionNode func:functions)
-					process.addFunction(func.getInstance());
-			}
+			if (first.classId().equals(N_CATEGORY.label()))
+				categories = (Collection<Category>) applies;
+			else if (first.classId().equals(N_RELATIONTYPE.label()))
+				relation = (RelationType) first;
+			functions = (List<FunctionNode>) get(getChildren(),
+				selectZeroOrMany(hasTheLabel("function")));
+
+//			if (first.classId().equals(N_CATEGORY.label())) {
+//				process = new ComponentProcess(ecosystem,(Collection<Category>)applies);
+//				DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
+//					selectZeroOrMany(hasTheLabel("function")));
+//				for (FunctionNode func:functions)
+//					process.addFunction(func.getInstance());
+//			}
 			// process applies to a single relation (a relation links two sets of categories so no
 			// need for multiple relations)
-			else if (first.classId().equals(N_RELATIONTYPE.label())) {
-				DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
-					selectZeroOrMany(hasTheLabel("function")));
-				for (FunctionNode func:functions ){
-					if (process == null) {
-	// TODO: fix this					
-	//					if (RelateToDecisionFunction.class.isAssignableFrom(function.getClass())) 
-	//						process = new IndexedSearchProcess(world,(RelationType)first,null,null);
-	//					else
-							process = new RelationProcess(ecosystem,(RelationType)first);
-					}
-					process.addFunction(func.getInstance());
-				}
-			}
+//			else if (first.classId().equals(N_RELATIONTYPE.label())) {
+//				DynamicList<FunctionNode> functions = (DynamicList<FunctionNode>) get(getChildren(),
+//					selectZeroOrMany(hasTheLabel("function")));
+//				for (FunctionNode func:functions ){
+//					if (process == null) {
+//	// TODO: fix this					
+//	//					if (RelateToDecisionFunction.class.isAssignableFrom(function.getClass())) 
+//	//						process = new IndexedSearchProcess(world,(RelationType)first,null,null);
+//	//					else
+//							process = new RelationProcess(ecosystem,(RelationType)first);
+//					}
+//					process.addFunction(func.getInstance());
+//				}
+//			}
 //			ecosystem.getInstance(); /// what's the use of this ????
 			// 2 -  Setting data trackers
-			List<DataTrackerNode> ldt = (List<DataTrackerNode>) get(getChildren(),
-				selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
-			for (DataTrackerNode dt:ldt) {
-				process.addDataTracker(dt.getInstance());
-			}
+//			List<DataTrackerNode> ldt = (List<DataTrackerNode>) get(getChildren(),
+//				selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
+//			for (DataTrackerNode dt:ldt) {
+//				process.addDataTracker(dt.getInstance());
+//			}
 			sealed = true;
 		}
 	}
@@ -131,16 +147,17 @@ public class ProcessNode
 		return N_PROCESS.initRank();
 	}
 
-	@Override
-	public TwProcess getInstance() {
-		if (!sealed)
-			initialise();
-		return process;
-	}
+//	@Override
+//	public TwProcess getInstance() {
+//		if (!sealed)
+//			initialise();
+//		return process;
+//	}
 
-	public final void execute(long t, long dt) {		
-		process.execute(timeModel.userTime(t), timeModel.userTime(dt));
-	}
+	// this is not going to work - simulator must have TwProcesses in, not ProcessNodes
+//	public final void execute(long t, long dt) {		
+//		process.execute(timeModel.userTime(t), timeModel.userTime(dt));
+//	}
 
 	@Override
 	public Sealable seal() {
@@ -151,6 +168,32 @@ public class ProcessNode
 	@Override
 	public boolean isSealed() {
 		return sealed;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private TwProcess makeProcess(int index) {
+		AbstractProcess result = null;
+		if (categories!=null)
+			result = new ComponentProcess(ecosystem.getInstance(index),categories);
+		else if (relation!=null)
+			result = new RelationProcess(ecosystem.getInstance(index),relation);
+		for (FunctionNode func:functions)
+			result.addFunction(func.getInstance(index));
+		List<DataTrackerNode> ldt = (List<DataTrackerNode>) get(getChildren(),
+			selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
+		for (DataTrackerNode dt:ldt) {
+			result.addDataTracker(dt.getInstance(index));
+		}
+		return result;
+	}
+
+	@Override
+	public TwProcess getInstance(int id) {
+		if (!sealed)
+			initialise();
+		if (!processes.containsKey(id))
+			processes.put(id, makeProcess(id));
+		return processes.get(id);
 	}
 
 }

@@ -56,6 +56,7 @@ public abstract class ChangeOtherCategoryDecisionFunction extends TwFunctionAdap
 		consequences.add((ChangeOtherStateFunction) function);
 	}
 	
+	@Override
 	public List<ChangeOtherStateFunction> getConsequences() {
 		return consequences;
 	}

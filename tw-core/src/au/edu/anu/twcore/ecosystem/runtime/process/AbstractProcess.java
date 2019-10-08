@@ -31,10 +31,10 @@ package au.edu.anu.twcore.ecosystem.runtime.process;
 import java.util.LinkedList;
 import java.util.List;
 
-import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
@@ -49,13 +49,13 @@ import fr.ens.biologie.generic.Sealable;
 public abstract class AbstractProcess implements TwProcess, Sealable {
 
 	private boolean sealed = false;
-    private Ecosystem ecosystem = null;
+    private SystemContainer ecosystem = null;
     // dataTrackers - common to all process types
 	protected List<TimeSeriesTracker> tsTrackers = new LinkedList<TimeSeriesTracker>();
 	protected List<MapTracker> mapTrackers = new LinkedList<MapTracker>();
 	protected List<LabelValuePairTracker> simpleTrackers = new LinkedList<LabelValuePairTracker>();
     
-    public AbstractProcess(Ecosystem world) {
+    public AbstractProcess(SystemContainer world) {
     	super();
     	ecosystem = world;
     }
@@ -71,7 +71,7 @@ public abstract class AbstractProcess implements TwProcess, Sealable {
 		return sealed;
 	}
 	
-	public final Ecosystem ecosystem() {
+	public final SystemContainer ecosystem() {
 		return ecosystem;
 	}
 	

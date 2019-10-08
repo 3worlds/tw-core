@@ -36,12 +36,14 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-import fr.ens.biologie.generic.Singleton;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 /**
  * Class matching the "ecosystem/dynamics/timeLine/timeModel/process/function" node label in the 
  * 3Worlds configuration tree. Has the user class name property or a way to generate this class
@@ -51,10 +53,13 @@ import java.lang.reflect.Constructor;
  */
 public class FunctionNode 
 		extends InitialisableNode 
-		implements Singleton<TwFunction>, Sealable {
+		implements LimitedEdition<TwFunction>, Sealable {
 
 	private boolean sealed = false;
-	private TwFunction function = null;
+	// a template function with the proper consequences
+//	private TwFunction function = null;
+	private Map<Integer,TwFunction> functions = new HashMap<>();
+	private Constructor<? extends TwFunction> fConstructor = null;
 	
 	public FunctionNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -80,26 +85,26 @@ public class FunctionNode
 				Class<? extends TwFunction> functionClass;
 				try {
 					functionClass = (Class<? extends TwFunction>) Class.forName(className,true,classLoader);
-					Constructor<? extends TwFunction> nodeConstructor = functionClass.getConstructor();
-					function = nodeConstructor.newInstance();
+					fConstructor = functionClass.getConstructor();
+//					function = fConstructor.newInstance();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				// add the consequences of the function, if any
-				// if my parent is a function, I am a consequence of it
-				if (getParent() instanceof FunctionNode) {
-					FunctionNode parent = (FunctionNode) getParent();
-					if (parent.isSealed())
-						parent.getInstance().addConsequence(function);
-				}
-				// if my children are functions, they are consequences of me
-				else for (TreeNode n:getChildren()) 
-					if (n instanceof FunctionNode){
-						FunctionNode csq = (FunctionNode) n;
-						if (csq.isSealed())
-							function.addConsequence(csq.getInstance());
-				}
+//				// add the consequences of the function, if any
+//				// if my parent is a function, I am a consequence of it
+//				if (getParent() instanceof FunctionNode) {
+//					FunctionNode parent = (FunctionNode) getParent();
+//					if (parent.isSealed())
+//						parent.getInstance().addConsequence(function);
+//				}
+//				// if my children are functions, they are consequences of me
+//				else for (TreeNode n:getChildren()) 
+//					if (n instanceof FunctionNode){
+//						FunctionNode csq = (FunctionNode) n;
+//						if (csq.isSealed())
+//							function.addConsequence(csq.getInstance());
+//				}
 			}
 			sealed = true;
 		}
@@ -110,12 +115,12 @@ public class FunctionNode
 		return N_FUNCTION.initRank();
 	}
 
-	@Override
-	public TwFunction getInstance() {
-		if (!sealed)
-			initialise();
-		return function;
-	}
+//	@Override
+//	public TwFunction getInstance() {
+//		if (!sealed)
+//			initialise();
+//		return function;
+//	}
 
 	@Override
 	public Sealable seal() {
@@ -126,6 +131,39 @@ public class FunctionNode
 	@Override
 	public boolean isSealed() {
 		return sealed;
+	}
+	
+	private TwFunction makeFunction(int index) {
+		TwFunction result = null;
+		try {
+			result = fConstructor.newInstance();
+			// add the consequences of the function, if any
+			// if my parent is a function, I am a consequence of it
+			if (getParent() instanceof FunctionNode) {
+				FunctionNode parent = (FunctionNode) getParent();
+				parent.getInstance(index).addConsequence(result);
+			}
+			// if my children are functions, they are consequences of me
+			else for (TreeNode n:getChildren()) 
+				if (n instanceof FunctionNode){
+					FunctionNode csq = (FunctionNode) n;
+					if (csq.isSealed())
+						result.addConsequence(csq.getInstance(index));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public TwFunction getInstance(int id) {
+		if (!sealed)
+			initialise();
+		if (!functions.containsKey(id))
+			functions.put(id, makeFunction(id));
+		return functions.get(id);
 	}
 
 }

@@ -67,6 +67,7 @@ public class Simulator {
 //	private TimeLine refTimer;
 	/** the calling order of processes depending on the combination of
 	 * simultaneous time models */
+	// TODO: this should really be a list of TwProcess
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
 	/** the timeTracker, sending time information to whoever is listening */
 	private TimeTracker timetracker; 
@@ -168,7 +169,8 @@ public class Simulator {
 				List<ProcessNode> torun = currentProcesses.get(j);
 				// execute all processes at the same dependency level
 				for (ProcessNode p : torun) {
-					p.execute(nexttime, step); 
+//					p.execute(nexttime, step); 
+					p.getInstance(id).execute(nexttime,step);
 				}
 			}
 			// 4 advance time ONLY for those time models that were processed

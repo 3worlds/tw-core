@@ -8,7 +8,7 @@ import java.util.Random;
  * @author Jacques Gignoux - 18 sept. 2019
  *
  */
-public class AbstractDecisionFunction extends TwRandomStreamFunction {
+public abstract class AbstractDecisionFunction extends TwRandomStreamFunction {
 
 	/**
 	 * Constructor using a random number stream

@@ -29,19 +29,21 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.ecosystem.runtime.Parameterised;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * A class matching the "ecosystem/dynamics/initialState" node of the 3w configuration
@@ -50,11 +52,14 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  */
 // this is initialised after SystemFactory, Ecosystem and LifeCycle, so that all these
 // classes are up and ready with their containers and data templates
-public class InitialState extends InitialisableNode implements Sealable, Parameterised {
+public class InitialState 
+		extends InitialisableNode 
+		implements Sealable, LimitedEdition<SystemContainer> {
 
 	private boolean sealed = false;
-	private TwData parameters = null;
-	private SystemContainer container = null;
+//	private TwData parameters = null;
+//	private SystemContainer container = null;
+	private Map<Integer,SystemContainer> containers = new HashMap<>();
 	
 	// default constructor
 	public InitialState(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -69,20 +74,16 @@ public class InitialState extends InitialisableNode implements Sealable, Paramet
 	@Override
 	public void initialise() {
 		super.initialise();
-		sealed = false;
-		Ecosystem ecosystem = (Ecosystem) getParent().getParent();
-		container = ecosystem.getInstance(); 
-		parameters = container.parameters();
 		sealed = true;
 	}
 	
-	@Override
-	public TwData getParameters() {
-		if (sealed)
-			return parameters;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
-	}
+//	@Override
+//	public TwData getParameters() {
+//		if (sealed)
+//			return parameters;
+//		else
+//			throw new TwcoreException("attempt to access uninitialised data");
+//	}
 
 	@Override
 	public int initRank() {
@@ -99,12 +100,26 @@ public class InitialState extends InitialisableNode implements Sealable, Paramet
 		return sealed;
 	}
 
+//	@Override
+//	public SystemContainer container() {
+//		if (sealed)
+//			return container;
+//		else
+//			throw new TwcoreException("attempt to access uninitialised data");
+//	}
+	
 	@Override
-	public SystemContainer container() {
-		if (sealed)
-			return container;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
+	public SystemContainer getInstance(int id) {
+		if (!sealed)
+			initialise();
+		if (!containers.containsKey(id)) {
+			Ecosystem ecosystem = (Ecosystem) getParent().getParent();
+			containers.put(id,ecosystem.getInstance(id));
+			for (TreeNode tn:getChildren())
+				if (tn instanceof ParameterValues)
+					((ParameterValues) tn).fill(containers.get(id).parameters());
+		}
+		return containers.get(id);
 	}
 
 }

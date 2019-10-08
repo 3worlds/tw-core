@@ -33,17 +33,20 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_INSTANCEOF;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.runtime.Parameterised;
+import au.edu.anu.twcore.ecosystem.dynamics.SystemComponentNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
-import au.edu.anu.twcore.exceptions.TwcoreException;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 
 /**
@@ -51,11 +54,14 @@ import fr.ens.biologie.generic.Sealable;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class Individual extends InitialisableNode implements Sealable {
+public class Individual 
+		extends InitialisableNode 
+		implements Sealable, LimitedEdition<SystemComponent> {
 
 	private boolean sealed = false;
-	private TwData variables = null;
-	private SystemFactory factory = null;
+//	private TwData variables = null;
+	private SystemComponentNode factory = null;
+	private Map<Integer,SystemComponent> individuals = new HashMap<>();
 
 	// default constructor
 	public Individual(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -71,13 +77,9 @@ public class Individual extends InitialisableNode implements Sealable {
 	public void initialise() {
 		super.initialise();
 		sealed = false;
-		factory = (SystemFactory) get(edges(Direction.OUT),
+		factory = (SystemComponentNode) get(edges(Direction.OUT),
 			selectOne(hasTheLabel(E_INSTANCEOF.label())),
 			endNode());
-		SystemComponent sc = factory.newInstance();
-		variables = sc.currentState();
-		Parameterised p = (Parameterised) getParent();
-		p.container().addInitialItem(sc);		
 		sealed = true;
 	}
 
@@ -86,12 +88,12 @@ public class Individual extends InitialisableNode implements Sealable {
 		return N_INDIVIDUAL.initRank();
 	}
 	
-	public TwData getVariables() {
-		if (sealed)
-			return variables;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
-	}
+//	public TwData getVariables() {
+//		if (sealed)
+//			return variables;
+//		else
+//			throw new TwcoreException("attempt to access uninitialised data");
+//	}
 
 	@Override
 	public Sealable seal() {
@@ -102,6 +104,23 @@ public class Individual extends InitialisableNode implements Sealable {
 	@Override
 	public boolean isSealed() {
 		return sealed;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public SystemComponent getInstance(int id) {
+		if (!sealed)
+			initialise();
+		if (!individuals.containsKey(id)) {
+			SystemComponent sc = factory.getInstance(id).newInstance();
+			for (TreeNode tn:getChildren())
+				if (tn instanceof VariableValues)
+					((VariableValues)tn).fill(sc.currentState());
+			// TODO: workout the particular case when an individual has parameters
+			LimitedEdition<SystemContainer> p = (LimitedEdition<SystemContainer>) getParent();
+			p.getInstance(id).addInitialItem(sc);		
+		}
+		return individuals.get(id);
 	}
 	
 }

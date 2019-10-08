@@ -28,31 +28,14 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.exceptions.TwcoreException;
-import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALGraphFactory;
-import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.cnrs.iees.twcore.constants.LifespanType;
 import fr.ens.biologie.generic.Factory;
-import fr.ens.biologie.generic.Sealable;
-
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentPropertyListImpl.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -60,16 +43,13 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Class matching the "ecosystem/structure/component" node label in the 3Worlds configuration tree.
  * Factory for system components, ie the simulated items.
  * 
  * @author Jacques Gignoux - 25 avr. 2013
  *
  */
 public class SystemFactory 
-		extends InitialisableNode 
-		implements Factory<SystemComponent>, Categorized<SystemComponent>, Sealable {
-	
+		implements Factory<SystemComponent>, Categorized<SystemComponent> {
 	
 	// the factory for SystemComponents and SystemRelations
 	private static GraphFactory SCfactory = null;
@@ -82,74 +62,45 @@ public class SystemFactory
 	
 	private SortedSet<Category> categories = new TreeSet<>();
 	private String categoryId = null;
-	private boolean sealed = false;
+//	private boolean sealed = false;
 	private boolean permanent;
 	/** TwData templates to clone to create new systems */
-	private TwData parameterTemplate = null;
+//	private TwData parameterTemplate = null;
 	private TwData driverTemplate = null;
 	private TwData decoratorTemplate = null;
 	private Map<String, Integer> propertyMap = new HashMap<String, Integer>();
 	
 	// The SystemComponent containers instantiated by this SystemFactory
-	private Map<String,SystemContainer> containers = new HashMap<String,SystemContainer>();
+//	private Map<String,SystemContainer> containers = new HashMap<String,SystemContainer>();
 
-	public SystemFactory(Identity id, SimplePropertyList props, GraphFactory gfactory) {
-		super(id, props, gfactory);
-	}
-	
-	public SystemFactory(Identity id, GraphFactory gfactory) {
-		super(id, new ExtendablePropertyListImpl(), gfactory);
-	}
-
-	// assumes user-specific classes have been generated before
-	@SuppressWarnings("unchecked")
-	@Override
-	public void initialise() {
-		if (!sealed) {
-			super.initialise();
-			sealed = false;
-			Collection<Category> nl = (Collection<Category>) get(edges(Direction.OUT),
-				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
-				edgeListEndNodes());
-			categories.addAll(getSuperCategories(nl));
-			permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
-			// These ARE optional - inserted by codeGenerator!
-			String s = null;
-			if (properties().hasProperty(P_PARAMETERCLASS.key())) {
-				s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
-				if (s!=null)
-					if (!s.trim().isEmpty())
-						parameterTemplate = loadDataClass(s);
-			}
-			if (properties().hasProperty(P_DRIVERCLASS.key())) {
-				s = (String) properties().getPropertyValue(P_DRIVERCLASS.key());
-				if (s!=null)
-					if (!s.trim().isEmpty())
-						driverTemplate = loadDataClass(s);
-			}
-			if (properties().hasProperty(P_DECORATORCLASS.key())) {
-				s = (String) properties().getPropertyValue(P_DECORATORCLASS.key());
-				if (s!=null)
-					if (!s.trim().isEmpty())
-						decoratorTemplate = loadDataClass(s);
-			}
-			if (driverTemplate != null)
-				for (String key : driverTemplate.getKeysAsSet())
-					propertyMap.put(key, DRIVERS);
-			for (String key : SystemData.keySet)
-				propertyMap.put(key, AUTO);
-			if (decoratorTemplate != null)
-				for (String key : decoratorTemplate.getKeysAsSet())
-					propertyMap.put(key, DECO);
-			sealed = true; // important - next statement access this class methods
-			categoryId = buildCategorySignature();
-		}
-	}
-
-
-	@Override
-	public int initRank() {
-		return N_COMPONENT.initRank();
+	/**
+	 * Constructor. All arguments to constructors are cloned or copied if immutable
+	 * @param par
+	 * @param drv
+	 * @param dec
+	 * @param categories
+	 * @param categoryId
+	 */
+	public SystemFactory(TwData drv, TwData dec, boolean perm,
+			SortedSet<Category> categories, String categoryId) {
+		super();
+//		if (par!=null)
+//			parameterTemplate = par.clone();
+		if (drv!=null)
+			driverTemplate = drv.clone();
+		if (dec!=null)
+			decoratorTemplate = dec.clone();
+		if (driverTemplate != null)
+			for (String key : driverTemplate.getKeysAsSet())
+				propertyMap.put(key, DRIVERS);
+		for (String key : SystemData.keySet)
+			propertyMap.put(key, AUTO);
+		if (decoratorTemplate != null)
+			for (String key : decoratorTemplate.getKeysAsSet())
+				propertyMap.put(key, DECO);
+		permanent = perm;
+		this.categories.addAll(categories);
+		this.categoryId = categoryId;
 	}
 
 	/**
@@ -158,122 +109,70 @@ public class SystemFactory
 	 */
 	@Override
 	public final SystemComponent newInstance() {
-		if (!sealed)
-			initialise();
 		SimplePropertyList props = new SystemComponentPropertyListImpl(driverTemplate,
 			decoratorTemplate,2,propertyMap);
-		SystemComponent result = (SystemComponent) SCfactory.makeNode(SystemComponent.class,"C0",props);
+		SystemComponent result = (SystemComponent) 
+			SCfactory.makeNode(SystemComponent.class,"C0",props);
 		result.setCategorized(this);
 		return result;
 	}
 
-	/** returns a new parameterSet of the proper structure for this SystemFactory */
-	public final TwData newParameterSet() {
-		if (parameterTemplate != null)
-			return parameterTemplate.clone().clear();
-		else
-			return null;
-	}
-	
-	/** returns a new variableSet of the proper structure for this SystemFactory 
-	 * NB for use at initialisation only*/
-	public final TwData newVariableSet() {
-		if (driverTemplate != null)
-			return driverTemplate.clone().clear();
-		else
-			return null;
-	}
+//	/** returns a new parameterSet of the proper structure for this SystemFactory */
+//	public final TwData newParameterSet() {
+//		if (parameterTemplate != null)
+//			return parameterTemplate.clone().clear();
+//		else
+//			return null;
+//	}
+//	
+//	/** returns a new variableSet of the proper structure for this SystemFactory 
+//	 * NB for use at initialisation only*/
+//	public final TwData newVariableSet() {
+//		if (driverTemplate != null)
+//			return driverTemplate.clone().clear();
+//		else
+//			return null;
+//	}
 
 	
 	@Override
 	public Set<Category> categories() {
-		if (sealed)
-			return categories;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
+		return categories;
 	}
 	
 	public boolean isPermanent() {
-		if (sealed)
-			return permanent;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
+		return permanent;
 	}
 	
-	@Override
-	public Sealable seal() {
-		sealed = true;
-		return this;
-	}
-
-	@Override
-	public boolean isSealed() {
-		return sealed;
-	}
+//	@Override
+//	public Sealable seal() {
+//		sealed = true;
+//		return this;
+//	}
+//
+//	@Override
+//	public boolean isSealed() {
+//		return sealed;
+//	}
 	
 	@Override
 	public String categoryId() {
-		if (sealed)
-			return categoryId;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
+		return categoryId;
 	}
-	
-	public Collection<SystemContainer> containers() {
-		if (sealed)
-			return containers.values();
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
-	}
-
-	/**
-	 * Either return container matching 'name' or create it if not yet there. This way, only
-	 * one instance of that container will exist.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public SystemContainer container(String name) {
-		if (sealed)
-			return containers.get(name);
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
-	}
-
-	/**
-	 * Returns a new container, either nested in a group container or in the Ecosystem
-	 * container, depending on what is found.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public SystemContainer makeContainer(String name) {
-		if (sealed) {
-			SystemContainer result = containers.get(name);
-			if (result==null) {
-				Ecosystem ec = (Ecosystem)getParent().getParent();
-				Collection<LifeCycle> lcl = (Collection<LifeCycle>) get(ec.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_LIFECYCLE.label())));
-				SystemContainer sc = null;
-				for (LifeCycle lc:lcl) {
-					sc = lc.container(name);
-					if (sc!=null)
-						break;
-				}
-				if (sc==null)
-					sc = ec.getInstance();
-				if (parameterTemplate!=null)
-					result = new SystemContainer(this, name, sc, parameterTemplate.clone(), null);
-				else
-					result = new SystemContainer(this, name, sc, null, null);
-				if (!result.id().equals(name))
-					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
-				containers.put(result.id(),result);
-			}
-			return result;
-		} else
-			throw new TwcoreException("attempt to access uninitialised data");
-	}
+//	
+//	public Collection<SystemContainer> containers() {
+//		return containers.values();
+//	}
+//
+//	/**
+//	 * Either return container matching 'name' or create it if not yet there. This way, only
+//	 * one instance of that container will exist.
+//	 * 
+//	 * @param name
+//	 * @return
+//	 */
+//	public SystemContainer container(String name) {
+//		return containers.get(name);
+//	}
 
 }

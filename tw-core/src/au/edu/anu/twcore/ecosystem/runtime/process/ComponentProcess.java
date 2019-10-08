@@ -42,7 +42,6 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
@@ -91,7 +90,7 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 //	private SystemContainer ecosystemContainer = null;
 //	private SystemContainer groupContainer = null;
 	
-	public ComponentProcess(Ecosystem world, Collection<Category> categories) {
+	public ComponentProcess(SystemContainer world, Collection<Category> categories) {
 		super(world);
 		focalCategories.addAll(categories);
 		categoryId = buildCategorySignature();
@@ -287,7 +286,7 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 
 	@Override
 	public final void execute(double t, double dt) {
-		loop(ecosystem().community(),t,dt);
+		loop(ecosystem(),t,dt);
 //		// get current systems to work with
 //		Iterable<SystemComponent> focals = (Iterable<SystemComponent>) world().getSystemsByCategory(focalCategories);
 //		// preparing data sampling

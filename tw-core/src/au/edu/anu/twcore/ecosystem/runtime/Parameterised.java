@@ -9,6 +9,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
  * @author Jacques Gignoux - 10 juil. 2019
  *
  */
+@Deprecated
 public interface Parameterised {
 
 	public TwData getParameters();

@@ -114,7 +114,7 @@ public class LifeCycle
 	private Map<Category,Category> produce = new HashMap<Category,Category>();
 	
 	// The SystemComponent containers instantiated by this LifeCycle
-	private Map<String,SystemContainer> containers = new HashMap<String,SystemContainer>();
+	private Map<Integer,Map<String,SystemContainer>> containers = new HashMap<>();
 	
 	// default constructor
 	public LifeCycle(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -256,9 +256,9 @@ public class LifeCycle
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
 
-	public Collection<SystemContainer> containers() {
+	public Collection<SystemContainer> containers(int simId) {
 		if (sealed)
-			return containers.values();
+			return containers.get(simId).values();
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
@@ -269,9 +269,9 @@ public class LifeCycle
 	 * @param name
 	 * @return
 	 */
-	public SystemContainer container(String name) {
+	public SystemContainer container(int simId, String name) {
 		if (sealed)
-			return containers.get(name);
+			return containers.get(simId).get(name);
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
@@ -279,20 +279,28 @@ public class LifeCycle
 	/**
 	 * Either return container matching 'name' or create it if not yet there. This way, only
 	 * one instance of that container will exist.
-	 * will only make a container if it does not yet exist under that name */
-	public SystemContainer makeContainer(String name) {
+	 * will only make a container if it does not yet exist under that name. 
+	 * 
+	 * @param simId the simulation id
+	 * @param name the name of the container
+	 * @return the container
+	 */
+	public SystemContainer makeContainer(int simId, String name) {
 		if (sealed) {
-			SystemContainer result = containers.get(name);
+			Map<String,SystemContainer> lsc = containers.get(simId);
+			if (lsc==null)
+				containers.put(simId,new HashMap<String,SystemContainer>());
+			SystemContainer result = containers.get(simId).get(name);
 			if (result==null) {
-				SystemContainer sc = ((Ecosystem)getParent().getParent()).getInstance();
+				// get the parent container - for a lifeCycle, it's the ecosystem
+				SystemContainer sc = ((Ecosystem)getParent().getParent()).getInstance(simId);
 				if (parameterTemplate!=null)
-					result = new SystemContainer(this, name, sc, 
-						parameterTemplate.clone(), null);
+					result = new SystemContainer(this,name,sc,parameterTemplate.clone(),null);
 				else
-					result = new SystemContainer(this, name, sc, null, null);
+					result = new SystemContainer(this,name,sc,null,null);
 				if (!result.id().equals(name))
 					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
-				containers.put(result.id(),result);
+				containers.get(simId).put(result.id(),result);
 			}
 			return result;
 		} else

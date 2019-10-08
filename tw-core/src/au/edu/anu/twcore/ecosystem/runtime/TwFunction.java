@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime;
 
+import java.util.List;
+
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
 
@@ -46,5 +48,9 @@ public interface TwFunction {
 	public void addConsequence(TwFunction function);
 	
 	public void setFocalContext(HierarchicalContext context);
+	
+	public default List<? extends TwFunction> getConsequences() {
+		return null;
+	}
 
 }

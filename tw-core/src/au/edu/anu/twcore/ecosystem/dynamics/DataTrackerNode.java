@@ -35,11 +35,13 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.Grouping;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-import fr.ens.biologie.generic.Singleton;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
@@ -56,11 +58,18 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
  */
 public class DataTrackerNode 
 		extends InitialisableNode 
-		implements Singleton<DataTracker<?,?>>, Sealable {
+		implements LimitedEdition<DataTracker<?,?>>, Sealable {
 
-	private DataTracker<?,?> dataTracker = null;
+//	private DataTracker<?,?> dataTracker = null;
+	private Map<Integer, DataTracker<?,?>> dataTrackers = new HashMap<>();
 	private boolean sealed = false;
-	
+	private SamplingMode selection = null;
+	private Grouping grouping = null;
+	private StatisticalAggregatesSet stats = null;
+	private StatisticalAggregatesSet tstats = null;
+	private boolean viewOthers = false;
+	private Object dataTrackerClass;
+
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
@@ -74,42 +83,28 @@ public class DataTrackerNode
 		if (!sealed) {
 			super.initialise();
 			// optional properties - if absent take default value
-			SamplingMode selection = null;
 			if (properties().hasProperty(P_DATATRACKER_SELECT.key()))
 				selection= (SamplingMode) properties().getPropertyValue(P_DATATRACKER_SELECT.key());
 			else
 				selection = SamplingMode.defaultValue();
-			Grouping grouping = null;
 			if (properties().hasProperty(P_DATATRACKER_GROUPBY.key()))
 				grouping = (Grouping) properties().getPropertyValue(P_DATATRACKER_GROUPBY.key());
 			else
 				grouping = Grouping.defaultValue();
-			StatisticalAggregatesSet stats = null;
 			if (properties().hasProperty(P_DATATRACKER_STATISTICS.key()))
 				stats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
 			else
 				stats = StatisticalAggregatesSet.defaultValue();
-			StatisticalAggregatesSet tstats = null;
 			if (properties().hasProperty(P_DATATRACKER_TABLESTATS.key()))
 				tstats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_TABLESTATS.key());
 			else
 				tstats = StatisticalAggregatesSet.defaultValue();
-			boolean viewOthers = false;
 			if (properties().hasProperty(P_DATATRACKER_VIEWOTHERS.key()))
 				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
 			// the only required property.
 			properties().getPropertyValue(P_DATATRACKER_TRACK.key());
 			// instantiate the guy really doing the job
-			Object dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
-			if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
-				dataTracker = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers);
-			}		
-			else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
-				dataTracker = new MapTracker();
-			}		
-			else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
-				dataTracker = new LabelValuePairTracker();
-			}		
+			dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
 			// TODO - implement behaviour...
 			sealed = true;
 		}
@@ -120,12 +115,12 @@ public class DataTrackerNode
 		return N_DATATRACKER.initRank();
 	}
 
-	@Override
-	public DataTracker<?,?> getInstance() {
-		if (!sealed)
-			initialise();
-		return dataTracker;
-	}
+//	@Override
+//	public DataTracker<?,?> getInstance() {
+//		if (!sealed)
+//			initialise();
+//		return dataTracker;
+//	}
 
 	@Override
 	public Sealable seal() {
@@ -136,6 +131,29 @@ public class DataTrackerNode
 	@Override
 	public boolean isSealed() {
 		return sealed;
+	}
+	
+	private DataTracker<?,?> makeDataTracker(int index) {
+		DataTracker<?,?> result = null;
+		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
+			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers);
+		}		
+		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
+			result = new MapTracker();
+		}		
+		else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
+			result = new LabelValuePairTracker();
+		}		
+		return result;
+	}
+
+	@Override
+	public DataTracker<?, ?> getInstance(int id) {
+		if (!sealed)
+			initialise();
+		if (!dataTrackers.containsKey(id))
+			dataTrackers.put(id,makeDataTracker(id));
+		return dataTrackers.get(id);
 	}
 
 }

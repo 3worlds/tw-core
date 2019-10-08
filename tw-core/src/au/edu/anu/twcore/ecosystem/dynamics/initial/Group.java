@@ -29,23 +29,25 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
-import au.edu.anu.twcore.ecosystem.runtime.Parameterised;
+import au.edu.anu.twcore.ecosystem.dynamics.SystemComponentNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 /**
@@ -54,11 +56,15 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class Group extends InitialisableNode implements Sealable, Parameterised {
+public class Group 
+		extends InitialisableNode 
+		implements Sealable, LimitedEdition<SystemContainer> {
 
 	private boolean sealed = false;
-	private TwData parameters = null;
+//	private TwData parameters = null;
 	private SystemContainer container = null;
+	
+	private Map<Integer,SystemContainer> groups = new HashMap<>();
 	
 	private static final int baseInitRank = N_GROUP.initRank();
 	
@@ -76,32 +82,32 @@ public class Group extends InitialisableNode implements Sealable, Parameterised 
 	public void initialise() {
 		super.initialise();
 		sealed = false;
-		Node n = (Node) get(edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
-			endNode());
-		if (n!=null) {
-			SystemFactory sf = (SystemFactory) n;
-			container = sf.makeContainer(id());
-			parameters = container.parameters();
-		}
-		n = (Node) get(edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
-			endNode());
-		if (n!=null) {
-			LifeCycle lc = (LifeCycle) n;
-			container = lc.makeContainer(id());
-			parameters = container.parameters();
-		}
+//		Node n = (Node) get(edges(Direction.OUT),
+//			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+//			endNode());
+//		if (n!=null) {
+//			SystemFactory sf = (SystemFactory) n;
+//			container = sf.makeContainer(id());
+//			parameters = container.parameters();
+//		}
+//		n = (Node) get(edges(Direction.OUT),
+//			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
+//			endNode());
+//		if (n!=null) {
+//			LifeCycle lc = (LifeCycle) n;
+//			container = lc.makeContainer(id());
+//			parameters = container.parameters();
+//		}
 		sealed = true;
 	}
 	
-	@Override
-	public TwData getParameters() {
-		if (sealed)
-			return parameters;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
-	}
+//	@Override
+//	public TwData getParameters() {
+//		if (sealed)
+//			return parameters;
+//		else
+//			throw new TwcoreException("attempt to access uninitialised data");
+//	}
 
 	// this to call groups in proper dependency order, i.e. higher groups must be initialised first
 	private int initRank(Group g, int rank) {
@@ -126,12 +132,42 @@ public class Group extends InitialisableNode implements Sealable, Parameterised 
 		return sealed;
 	}
 
+//	@Override
+//	public SystemContainer container() {
+//		if (sealed)
+//			return container;
+//		else
+//			throw new TwcoreException("attempt to access uninitialised data");
+//	}
+	
+	private SystemContainer makeContainer(int index) {
+		Node n = (Node) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+			endNode());
+		if (n!=null) {
+			SystemComponentNode sf = (SystemComponentNode) n;
+			container = sf.makeContainer(index,id());
+		}
+		n = (Node) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
+			endNode());
+		if (n!=null) {
+			LifeCycle lc = (LifeCycle) n;
+			container = lc.makeContainer(index,id());
+		}
+		for (TreeNode tn:getChildren())
+			if (tn instanceof ParameterValues)
+				((ParameterValues) tn).fill(container.parameters());
+		return container;
+	}
+
 	@Override
-	public SystemContainer container() {
-		if (sealed)
-			return container;
-		else
-			throw new TwcoreException("attempt to access uninitialised data");
+	public SystemContainer getInstance(int id) {
+		if (!sealed)
+			initialise();
+		if (!groups.containsKey(id))
+			groups.put(id,makeContainer(id));
+		return groups.get(id);
 	}
 
 }

@@ -30,12 +30,12 @@ package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import java.util.LinkedList;
 import java.util.List;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
@@ -60,7 +60,7 @@ public class RelationProcess extends AbstractProcess implements Related<SystemCo
     private List<ChangeRelationStateFunction> CRfunctions = 
     	new LinkedList<ChangeRelationStateFunction>();
 
-	public RelationProcess(Ecosystem world, RelationType relation) {
+	public RelationProcess(SystemContainer world, RelationType relation) {
 		super(world);
 		myRelation = relation;
 	}

@@ -25,8 +25,8 @@ class InitialStateTest {
 			GraphImporter.importGraph("initialState.utg",this.getClass());
 		SimulationSession s = new SimulationSession(specs);
 		Ecosystem eco = (Ecosystem) specs.findNode("my_ecosystem");
-		System.out.println(eco.getInstance().toString());	
-		System.out.println(eco.getInstance().subContainer("A").toString());
+		System.out.println(eco.getInstance(0).toString());	
+		System.out.println(eco.getInstance(0).subContainer("A").toString());
 		assertNotNull(s);
 	}
 
@@ -37,7 +37,7 @@ class InitialStateTest {
 			GraphImporter.importGraph("initialState2.utg",this.getClass());
 		SimulationSession s = new SimulationSession(specs);
 		Ecosystem eco = (Ecosystem) specs.findNode("my_ecosystem");
-		System.out.println(eco.getInstance().toString());	
+		System.out.println(eco.getInstance(0).toString());	
 		assertNotNull(s);
 	}
 

@@ -55,6 +55,7 @@ public abstract class DeleteOtherDecisionFunction extends AbstractDecisionFuncti
 		consequences.add((ChangeOtherStateFunction) function);
 	}
 	
+	@Override
 	public List<ChangeOtherStateFunction> getConsequences() {
 		return consequences;
 	}

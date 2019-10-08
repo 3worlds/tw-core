@@ -58,8 +58,13 @@ public class VariableValues extends InitialisableNode {
 	@Override
 	public void initialise() {
 		super.initialise();
-		Individual i = (Individual)getParent();
-		TwData variables = i.getVariables();
+//		Individual i = (Individual)getParent();
+//		TwData variables = i.getVariables();
+//		if ((variables!=null) && (properties()!=null) && (properties().size()>0))
+//			variables.setProperties(properties());
+	}
+	
+	public void fill(TwData variables) {
 		if ((variables!=null) && (properties()!=null) && (properties().size()>0))
 			variables.setProperties(properties());
 	}
