@@ -87,7 +87,7 @@ public class TimeUtil {
 	 */
 
 	public static long[] factorInexactTime(long time, List<TimeUnits> units) {
-		TimeUnits smallest = units.get(units.size() - 1);
+		TimeUnits smallest = units.get(0);
 		long[] result = new long[units.size()];
 		LocalDateTime dt = longToDate(time, smallest);
 		for (int i = 0; i < units.size(); i++) {
@@ -121,10 +121,10 @@ public class TimeUtil {
 
 	public static long[] factorExactTime(long time, List<TimeUnits> units) {
 		long absTime = Math.abs(time);
-		TimeUnits smallest = units.get(units.size() - 1);
+		TimeUnits smallest = units.get(0);
 		long[] result = new long[units.size()];
 		long remainder = absTime;
-		for (int i = 0; i < units.size(); i++) {
+		for (int i = units.size()-1;i>=0; i--) {
 			TimeUnits unit = units.get(i);
 			result[i] = (long) TimeUtil.convertTime(remainder, smallest, unit, null);
 			if (result[i] > 0) {
