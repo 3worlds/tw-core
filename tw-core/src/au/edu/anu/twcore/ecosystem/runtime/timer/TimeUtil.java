@@ -96,7 +96,7 @@ public class TimeUtil {
 		return result;
 	}
 
-	private static long getDateTimeField(LocalDateTime dt, TimeUnits timeUnits) {
+	public static long getDateTimeField(LocalDateTime dt, TimeUnits timeUnits) {
 		switch (timeUnits) {
 		case MICROSECOND:
 			return dt.getNano();
@@ -124,7 +124,7 @@ public class TimeUtil {
 		TimeUnits smallest = units.get(0);
 		long[] result = new long[units.size()];
 		long remainder = absTime;
-		for (int i = units.size()-1;i>=0; i--) {
+		for (int i = units.size()-1;i>=0;i--) {
 			TimeUnits unit = units.get(i);
 			result[i] = (long) TimeUtil.convertTime(remainder, smallest, unit, null);
 			if (result[i] > 0) {

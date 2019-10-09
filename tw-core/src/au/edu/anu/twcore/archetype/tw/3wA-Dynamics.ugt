@@ -31,7 +31,7 @@ hasNode timeLineSpec
 		multiplicity = IntegerRange("1..1") 
 	hasProperty timeOriginPropertySpec
 		hasName = String("timeOrigin")
-		type =  String("Long") 
+		type = String("DateTimeType")
 		multiplicity = IntegerRange("1..1") 
 	mustSatisfyQuery shortestTimeUnitTimeUnitValidityQuery
 		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
