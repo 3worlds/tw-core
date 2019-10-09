@@ -32,6 +32,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.ens.biologie.generic.Sealable;
@@ -64,7 +65,7 @@ public class TimeLine extends InitialisableNode implements Sealable {
 	private TimeScaleType timeScale;
 	/** the set of time units compatible with this time scale type */
 	private SortedSet<TimeUnits> timeUnits;
-	/** time origin in shortestTimeUnit units*/
+	/** time origin in shortestTimeUnit units */
 	private long timeOrigin = 0L;
 	/** Calendar value at originTime (0L = 1970/1/1 midnight) */
 	private LocalDateTime startDateTime;
@@ -84,8 +85,12 @@ public class TimeLine extends InitialisableNode implements Sealable {
 		timeScale = (TimeScaleType) properties().getPropertyValue(P_TIMELINE_SCALE.key());
 		TimeUnits minTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_SHORTTU.key());
 		TimeUnits maxTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_LONGTU.key());
-		if (properties().hasProperty(P_TIMELINE_TIMEORIGIN.key()))
-			timeOrigin = (long) properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
+		timeOrigin = 0L;
+		if (properties().hasProperty(P_TIMELINE_TIMEORIGIN.key())) {
+			DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
+			timeOrigin = dtt.getDateTime();
+		}
+
 		// This is now in the TimeScaleType.validTimeUnits() BUT should be made static
 		timeUnits = new TreeSet<TimeUnits>();
 		if (timeScale.equals(TimeScaleType.ARBITRARY))
@@ -128,7 +133,7 @@ public class TimeLine extends InitialisableNode implements Sealable {
 					if (u.compareTo(minTU) >= 0)
 						timeUnits.add(u);
 		}
-		startDateTime = TimeUtil.longToDate(timeOrigin,minTU);
+		startDateTime = TimeUtil.longToDate(timeOrigin, minTU);
 		sealed = true;
 	}
 
@@ -179,6 +184,5 @@ public class TimeLine extends InitialisableNode implements Sealable {
 			return timeUnits.last();
 		throw new TwcoreException("attempt to access uninitialised data");
 	}
-
 
 }
