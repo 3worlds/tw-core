@@ -59,7 +59,7 @@ public class SimulatorJar extends Jars{
 			addFile(s.getAbsolutePath(), resourceName);
 		}
 		// code files
-		String codeRoot = Project.makeFile(ProjectPaths.LOCALCODE).getAbsolutePath();
+		String codeRoot = Project.makeFile(ProjectPaths.JAVAPROJECT).getAbsolutePath();
 		for (File file : codeFiles) {// both java and class files
 			String fileName = file.getAbsolutePath();
 			String jarDirectory = file.getAbsolutePath().replace(codeRoot, "");
