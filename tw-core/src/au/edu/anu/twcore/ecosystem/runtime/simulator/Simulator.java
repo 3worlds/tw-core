@@ -35,7 +35,7 @@ public class Simulator {
 		// returns quickly if there are no observers - no point building a TimeData
 		private void sendData(long time) {
 			if (hasObservers()) {
-				TimeData output = new TimeData(status(),id,metadata.type());
+				TimeData output = new TimeData(status,id,metadata.type());
 				output.setTime(lastTime);
 				sendData(output);
 			}
@@ -67,16 +67,16 @@ public class Simulator {
 //	private TimeLine refTimer;
 	/** the calling order of processes depending on the combination of
 	 * simultaneous time models */
-	// TODO: this should really be a list of TwProcess
-//	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
 	private Map<Integer, List<List<TwProcess>>> processCallingOrder;
 	/** the timeTracker, sending time information to whoever is listening */
 	private TimeTracker timetracker; 
 	/** simulator state fields */
-	private boolean started = false;
-	private boolean finished = false;
+//	private boolean started = false;
+//	private boolean finished = false;
 	/** container for all SystemComponents */
 	private SystemContainer community;
+	/** simulator status */
+	private SimulatorStatus status = SimulatorStatus.Initial;
 	
 	// CONSTRUCTORS
 
@@ -109,22 +109,22 @@ public class Simulator {
 		currentTimes = new long[timerList.size()];
 		// data tracking
 		timetracker = new TimeTracker();
-		metadata = new Metadata(status(),id,refTimer.properties());
+		metadata = new Metadata(status,id,refTimer.properties());
 		// copies initial community to current community to start properly
 		community.reset();
 	}
 	
 	// METHODS
 	
-	private SimulatorStatus status() {
-		if (started)
-			if (finished)
-				return SimulatorStatus.Final;
-			else
-				return SimulatorStatus.Active;
-		else
-			return SimulatorStatus.Initial;
-	}
+//	private SimulatorStatus status() {
+//		if (started)
+//			if (finished)
+//				return SimulatorStatus.Final;
+//			else
+//				return SimulatorStatus.Active;
+//		else
+//			return SimulatorStatus.Initial;
+//	}
 	
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		timetracker.addObserver(observer);
@@ -135,9 +135,10 @@ public class Simulator {
 	// run one simulation step
 	@SuppressWarnings("unused")
 	public void step() {
-		if (!started)
+		if (!isStarted())
 			resetSimulation();
-		started = true;
+		status = SimulatorStatus.Active;
+//		started = true;
 		log.info("Time = "+lastTime);
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
@@ -149,7 +150,8 @@ public class Simulator {
 		}
 		// advance main timer clock 
 		if (nexttime == Long.MAX_VALUE)
-			finished = true;
+			status = SimulatorStatus.Final;
+//			finished = true;
 		else {
 			long step = nexttime - lastTime;
 			lastTime = nexttime;
@@ -171,7 +173,7 @@ public class Simulator {
 				// execute all processes at the same dependency level
 				for (TwProcess p : torun) {
 //					p.execute(nexttime, step); 
-					p.execute(status(),nexttime,step);
+					p.execute(status,nexttime,step);
 				}
 			}
 			// 4 advance time ONLY for those time models that were processed
@@ -205,8 +207,9 @@ public class Simulator {
 	public void resetSimulation() {
 		lastTime = startTime;
 		stoppingCondition.reset();
-		started = false;
-		finished = false;
+		status = SimulatorStatus.Initial;
+//		started = false;
+//		finished = false;
 		for (Timer t:timerList)
 			t.reset();
 		timetracker.sendData(lastTime);
@@ -215,16 +218,18 @@ public class Simulator {
 
 	// returns true if stopping condition is met
 	public boolean stop() {
-		finished = stoppingCondition.stop(); 
+		boolean finished = stoppingCondition.stop();
+		if (finished)
+			status = SimulatorStatus.Final;
 		return finished;
 	}
 	
 	public boolean isStarted() {
-		return started;
+		return (status != SimulatorStatus.Initial);
 	}
 	
 	public boolean isFinished() {
-		return finished;
+		return (status == SimulatorStatus.Final);
 	}
 	
 	public long currentTime() {

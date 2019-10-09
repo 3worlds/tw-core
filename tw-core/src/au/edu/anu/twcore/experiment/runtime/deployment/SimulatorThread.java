@@ -1,4 +1,6 @@
-package au.edu.anu.twcore.experiment.runtime;
+package au.edu.anu.twcore.experiment.runtime.deployment;
+
+import au.edu.anu.twcore.experiment.runtime.Deployer;
 
 /**
  * The thread in which a (single) simulator is running

@@ -32,6 +32,7 @@ import au.edu.anu.twcore.data.SizedByEdge;
 import au.edu.anu.twcore.experiment.BaseLineEdge;
 import au.edu.anu.twcore.experiment.ModelSetupEdge;
 import au.edu.anu.twcore.experiment.StopOnEdge;
+import au.edu.anu.twcore.experiment.SourceEdge;
 
 import au.edu.anu.twcore.ecosystem.structure.DriverEdge;
 import au.edu.anu.twcore.ecosystem.structure.DecoratorEdge;
@@ -50,6 +51,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.ConditionEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.GroupOfEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.CycleEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InstanceOfEdge;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.LoadFromEdge;
 
 import au.edu.anu.twcore.ui.TrackTimeEdge;
 /**
@@ -67,6 +69,7 @@ public enum ConfigurationEdgeLabels {
 	E_BASELINE 		("baseLine",		BaseLineEdge.class),
 	E_MODELSETUP	("modelSetup",		ModelSetupEdge.class),
 	E_STOPON		("stopOn",			StopOnEdge.class),
+	E_SOURCE		("source",			SourceEdge.class),
 	// ecosystem / structure
 	E_DRIVERS		("drivers",			DriverEdge.class),
 	E_DECORATORS	("decorators",		DecoratorEdge.class),
@@ -84,6 +87,7 @@ public enum ConfigurationEdgeLabels {
 	E_GROUPOF		("groupOf",			GroupOfEdge.class),
 	E_CYCLE			("cycle",			CycleEdge.class),
 	E_INSTANCEOF	("instanceOf",		InstanceOfEdge.class),
+	E_LOADFROM		("loadFrom",		LoadFromEdge.class),
 	// user interface
 	E_TRACKTIME		("trackTime",		TrackTimeEdge.class),
 	;

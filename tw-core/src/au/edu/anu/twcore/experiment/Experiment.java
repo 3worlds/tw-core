@@ -44,8 +44,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
-import au.edu.anu.twcore.experiment.runtime.ParallelDeployer;
-import au.edu.anu.twcore.experiment.runtime.SimpleDeployer;
+import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
+import au.edu.anu.twcore.experiment.runtime.deployment.SimpleDeployer;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;

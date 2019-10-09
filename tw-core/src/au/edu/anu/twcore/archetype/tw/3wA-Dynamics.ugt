@@ -268,6 +268,10 @@ hasNode initialStateSpec
 	isOfClass = String("initialState")
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("0..1")
+	hasEdge ecosystemToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource")
+		multiplicity = IntegerRange("0..*")
 	
 // set of values for a parameter set linked to a group of components or a life cycle	
 // NB: a group represents either a lifeCycle or just a group of components with the same parameters
@@ -286,6 +290,10 @@ hasNode groupSpec
 		isOfClass = String("cycle")
 		toNode = String("lifeCycle")
 		multiplicity = IntegerRange("0..1")
+	hasEdge groupToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource")
+		multiplicity = IntegerRange("0..*")
 	mustSatisfyQuery groupObjectSpec
 		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
 		nodeLabel1 = String("component")
@@ -300,6 +308,10 @@ hasNode individualSpec
 		isOfClass = String("instanceOf")
 		toNode = String("component")
 		multiplicity = IntegerRange("1..1")
+	hasEdge individualToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource")
+		multiplicity = IntegerRange("0..*")
 
 // parameter values for a group as specified in groupSpec above
 hasNode parameterValuesSpec

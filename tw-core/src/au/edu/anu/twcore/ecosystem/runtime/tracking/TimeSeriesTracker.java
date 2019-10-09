@@ -34,7 +34,6 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData, Metad
 	private TimeSeriesMetadata metadata;
 	private int metadataType = -1;
 	private int senderId = -1;
-	private SimulatorStatus currentStatus = SimulatorStatus.Initial;
 
 	public TimeSeriesTracker(Grouping grouping,
 			StatisticalAggregatesSet statistics,
@@ -64,13 +63,9 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData, Metad
 		senderId = id;
 	}
 	
-	public void setStatus(SimulatorStatus status) {
-		currentStatus = status;
-	}
-	
 	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
-			TimeSeriesData tsd = new TimeSeriesData(currentStatus,senderId,metadataType,metadata);
+			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
 			for (String key:props.getKeysAsSet()) {
 				for (DataLabel lab:metadata.intNames()) 
 					if (key.equals(lab.getEnd())) {

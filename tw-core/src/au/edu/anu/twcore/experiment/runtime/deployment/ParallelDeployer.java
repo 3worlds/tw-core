@@ -1,4 +1,6 @@
-package au.edu.anu.twcore.experiment.runtime;
+package au.edu.anu.twcore.experiment.runtime.deployment;
+
+import au.edu.anu.twcore.experiment.runtime.Deployer;
 
 /**
  * A class to deploy a series of simulator on a threadPool

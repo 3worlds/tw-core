@@ -72,9 +72,44 @@ hasNode dataSourceSpec
 	isOfClass = String("dataSource")
 	hasParent =  StringTable(([1]"experiment:"))
 	multiplicity = IntegerRange("0..*")
+	hasProperty dataSourceFileSpec
+		hasName = String("file")
+		type = String("FileType")
+		multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery dataSourceFileExistenceQuery
+			className = String("au.edu.anu.twcore.archetype.tw.InputFileExistQuery")
+	hasProperty dataSourceSubclassPropertySpec
+		hasName = String("subclass")
+		type = String("String")
+		multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery
+			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
+			values = StringTable(([3]+
+			"au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader",+
+			"au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader",+
+			"au.edu.anu.twcore.experiment.runtime.io.BOMWeatherLoader"))
+//	mustSatisfyQuery CheckSubArchetypeQueryCsvFile
+//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+//		parameters = StringTable(([3]"subclass",+
+//		"au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader",+
+//		"3wSA-CsvFileLoader.ugt"))
+//	mustSatisfyQuery CheckSubArchetypeQueryOdfFile
+//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+//		parameters = StringTable(([3]"subclass",+
+//		"au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader",+
+//		"3wSA-OdfFileLoader.ugt"))
 
 hasNode dataSinkSpec
 	isOfClass = String("dataSink")
 	hasParent =  StringTable(([1]"experiment:"))
 	multiplicity = IntegerRange("0..*")
+	hasProperty dataSinkFileSpec
+		hasName = String("file")
+		type = String("FileType")
+		multiplicity = IntegerRange("1..1")
+	hasEdge dataSinkToDataTrackerEdgeSpec
+		isOfClass = String("source")
+		toNode = String("dataTracker")
+		multiplicity = IntegerRange("1..1")
+	// TODO: more is needed to really implement this (ie file format...)
 	
