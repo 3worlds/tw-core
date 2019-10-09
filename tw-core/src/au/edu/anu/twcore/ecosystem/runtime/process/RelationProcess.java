@@ -37,6 +37,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
@@ -66,7 +67,7 @@ public class RelationProcess extends AbstractProcess implements Related<SystemCo
 	}
 
 	@Override
-	public void execute(double t, double dt) {
+	public void execute(SimulatorStatus status, double t, double dt) {
 //		// loop on this:
 //		Iterable<Edge> relations = myRelation.relations();
 //		for (Edge e:relations) {

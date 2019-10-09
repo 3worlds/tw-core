@@ -9,7 +9,7 @@ import au.edu.anu.twcore.data.runtime.TimeSeriesMetadata;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
-import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.Grouping;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
@@ -34,7 +34,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData, Metad
 	private TimeSeriesMetadata metadata;
 	private int metadataType = -1;
 	private int senderId = -1;
-	private DataTrackerStatus currentStatus = DataTrackerStatus.Initial;
+	private SimulatorStatus currentStatus = SimulatorStatus.Initial;
 
 	public TimeSeriesTracker(Grouping grouping,
 			StatisticalAggregatesSet statistics,
@@ -53,7 +53,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData, Metad
 		metaprops.setProperty(TimeSeriesMetadata.TSMETA,metadata);
 	}
 	
-	public Metadata metadata(DataTrackerStatus status) {
+	public Metadata metadata(SimulatorStatus status) {
 		Metadata result = new Metadata(status,senderId,metaprops); 
 		metadataType = result.type();
 		return result;
@@ -64,11 +64,11 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData, Metad
 		senderId = id;
 	}
 	
-	public void setStatus(DataTrackerStatus status) {
+	public void setStatus(SimulatorStatus status) {
 		currentStatus = status;
 	}
 	
-	public void record(ReadOnlyPropertyList props) {
+	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
 			TimeSeriesData tsd = new TimeSeriesData(currentStatus,senderId,metadataType,metadata);
 			for (String key:props.getKeysAsSet()) {

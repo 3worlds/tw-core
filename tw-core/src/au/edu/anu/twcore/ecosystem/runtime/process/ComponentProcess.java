@@ -51,6 +51,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -89,6 +90,7 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	private SystemContainer lifeCycleContainer = null;
 //	private SystemContainer ecosystemContainer = null;
 //	private SystemContainer groupContainer = null;
+	private SimulatorStatus currentStatus = SimulatorStatus.Initial;
 	
 	public ComponentProcess(SystemContainer world, Collection<Category> categories) {
 		super(world);
@@ -128,7 +130,7 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			executeFunctions(container,t,dt);
 			// track group state
 			for (TimeSeriesTracker tracker:tsTrackers) {
-				tracker.record(container.populationData());
+				tracker.record(currentStatus,container.populationData());
 			}
 			focalContext.clear();
 		}
@@ -277,13 +279,14 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			}
 			// track component state
 			for (TimeSeriesTracker tracker:tsTrackers) {
-				tracker.record(focal.currentState());
+				tracker.record(currentStatus,focal.currentState());
 			}
 		}
 	}
 
 	@Override
-	public final void execute(double t, double dt) {
+	public final void execute(SimulatorStatus status, double t, double dt) {
+		currentStatus = status;
 		loop(ecosystem(),t,dt);
 //		// get current systems to work with
 //		Iterable<SystemComponent> focals = (Iterable<SystemComponent>) world().getSystemsByCategory(focalCategories);

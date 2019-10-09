@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.data.runtime;
 
-import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * Data for 2D maps of a single variable
@@ -13,7 +13,7 @@ public class MapData extends TimeData {
 	private DataLabel zlabel;
 	private Number[][] map;
 
-	public MapData(DataTrackerStatus status, 
+	public MapData(SimulatorStatus status, 
 			int senderId, 
 			int metadataType,
 			int nx,

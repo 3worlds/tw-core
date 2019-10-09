@@ -29,7 +29,7 @@
 
 package au.edu.anu.twcore.data.runtime;
 
-import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * @author Ian Davies
@@ -40,7 +40,7 @@ public class TimeData extends OutputData {
 	/* ensure a known uninitialized value*/
 	private long time=Long.MIN_VALUE;
 
-	public TimeData(DataTrackerStatus status, int senderId, int metaDataType) {
+	public TimeData(SimulatorStatus status, int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
 	}
 

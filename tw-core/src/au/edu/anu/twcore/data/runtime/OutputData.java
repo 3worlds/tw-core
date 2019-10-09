@@ -29,7 +29,7 @@
 
 package au.edu.anu.twcore.data.runtime;
 
-import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * An ancestor class for data being sent from DataTrackers to DataReceivers
@@ -39,18 +39,18 @@ import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
  */
 public abstract class OutputData {
 	
-	private DataTrackerStatus status = null;
+	private SimulatorStatus status = null;
 	private int senderId = -1;
 	private int metadataType = -1;
 
-	public OutputData(DataTrackerStatus status,int senderId,int metadataType) {
+	public OutputData(SimulatorStatus status,int senderId,int metadataType) {
 		super();
 		this.senderId = senderId;
 		this.status = status;
 		this.metadataType = metadataType;
 	}
 	
-	public DataTrackerStatus status() {
+	public SimulatorStatus status() {
 		return status;
 	}
 

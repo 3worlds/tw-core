@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime;
 
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+
 /**
  * the ancestor class for things that are run by the Simulator
  * @author gignoux - 10 mars 2017
@@ -36,7 +38,7 @@ package au.edu.anu.twcore.ecosystem.runtime;
 public interface TwProcess {
 	
 	/** execute computation for time t with time interval dt */
-	public void execute(double t, double dt);
+	public void execute(SimulatorStatus status, double t, double dt);
 
 	
 }

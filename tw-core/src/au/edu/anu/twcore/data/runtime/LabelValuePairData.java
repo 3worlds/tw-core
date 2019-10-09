@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.data.runtime;
 
-import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * The class for sending just a value with a label. Value can be a number or a String
@@ -15,7 +15,7 @@ public class LabelValuePairData extends OutputData {
 	private Number value = null;
 	private String svalue = null;
 	
-	public LabelValuePairData(DataTrackerStatus status, 
+	public LabelValuePairData(SimulatorStatus status, 
 			int senderId,
 			int metaDataType) {
 		super(status, senderId,metaDataType);

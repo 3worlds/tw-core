@@ -3,7 +3,7 @@ package au.edu.anu.twcore.data.runtime;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
-import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * The class to send metadata from DataTrackers to DataReceivers
@@ -28,7 +28,7 @@ public class Metadata extends OutputData {
 	 * @param senderId   the id of the DataTracker
 	 * @param properties all the metadata as a property list
 	 */
-	public Metadata(DataTrackerStatus status, int senderId, ReadOnlyPropertyList properties) {
+	public Metadata(SimulatorStatus status, int senderId, ReadOnlyPropertyList properties) {
 		super(status, senderId, N_INSTANCES++);
 		// make a copy of properties
 		this.properties = new SimplePropertyListImpl(properties.getKeysAsSet());

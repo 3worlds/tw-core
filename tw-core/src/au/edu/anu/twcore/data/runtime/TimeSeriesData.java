@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.data.runtime;
 
-import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * Data for time series.
@@ -28,7 +28,7 @@ public class TimeSeriesData extends TimeData {
 	// this table is used to send String values
 	private String stringValues[];
 
-	public TimeSeriesData(DataTrackerStatus status, 
+	public TimeSeriesData(SimulatorStatus status, 
 			int senderId, 
 			int metadataType, 
 			TimeSeriesMetadata metadata) {

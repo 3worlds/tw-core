@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.data.runtime;
 
-import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * @author Ian Davies
@@ -11,7 +11,7 @@ public class ObjectData extends TimeData {
 	// private DataLabel label = null;
 	private Object value;
 
-	public ObjectData(DataTrackerStatus status, int senderId, int metaDataType) {
+	public ObjectData(SimulatorStatus status, int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
 	}
 

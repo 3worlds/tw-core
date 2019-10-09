@@ -14,7 +14,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
-import fr.cnrs.iees.twcore.constants.DataTrackerStatus;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -116,14 +116,14 @@ public class Simulator {
 	
 	// METHODS
 	
-	private DataTrackerStatus status() {
+	private SimulatorStatus status() {
 		if (started)
 			if (finished)
-				return DataTrackerStatus.Final;
+				return SimulatorStatus.Final;
 			else
-				return DataTrackerStatus.Active;
+				return SimulatorStatus.Active;
 		else
-			return DataTrackerStatus.Initial;
+			return SimulatorStatus.Initial;
 	}
 	
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
@@ -171,7 +171,7 @@ public class Simulator {
 				// execute all processes at the same dependency level
 				for (TwProcess p : torun) {
 //					p.execute(nexttime, step); 
-					p.execute(nexttime,step);
+					p.execute(status(),nexttime,step);
 				}
 			}
 			// 4 advance time ONLY for those time models that were processed
