@@ -6,10 +6,10 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
-import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
+import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
@@ -68,7 +68,8 @@ public class Simulator {
 	/** the calling order of processes depending on the combination of
 	 * simultaneous time models */
 	// TODO: this should really be a list of TwProcess
-	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
+//	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
+	private Map<Integer, List<List<TwProcess>>> processCallingOrder;
 	/** the timeTracker, sending time information to whoever is listening */
 	private TimeTracker timetracker; 
 	/** simulator state fields */
@@ -94,7 +95,7 @@ public class Simulator {
 			TimeLine refTimer,
 			List<Timer> timers,
 			int[] timeModelMasks,
-			Map<Integer, List<List<ProcessNode>>> processCallingOrder,
+			Map<Integer, List<List<TwProcess>>> processCallingOrder,
 			SystemContainer ecosystem) {
 		super();
 		this.id = id;
@@ -163,15 +164,14 @@ public class Simulator {
 				i++;
 			}
 			// 3 execute all the processes depending on these time models
-			List<List<ProcessNode>> currentProcesses = processCallingOrder.get(ctmask);
+			List<List<TwProcess>> currentProcesses = processCallingOrder.get(ctmask);
 			// loop on dependency rank
 			for (int j = 0; j < currentProcesses.size(); j++) {
-				List<ProcessNode> torun = currentProcesses.get(j);
+				List<TwProcess> torun = currentProcesses.get(j);
 				// execute all processes at the same dependency level
-				for (ProcessNode p : torun) {
+				for (TwProcess p : torun) {
 //					p.execute(nexttime, step); 
-					// This may be a flaw (to keep ProcessNode here instead of TwProcess)
-					p.getInstance(id).execute(nexttime,step);
+					p.execute(nexttime,step);
 				}
 			}
 			// 4 advance time ONLY for those time models that were processed

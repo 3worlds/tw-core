@@ -60,6 +60,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.Individual;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
+import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
@@ -118,11 +119,13 @@ public class SimulatorNode
 	
 	@SuppressWarnings("unchecked")
 	private Simulator makeSimulator(int index) {
+		// *** TimeModel --> Timer
 		List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),
 			selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
 		List<Timer> timers = new ArrayList<>();
 		for (TimeModel tm:timeModels)
 			timers.add(tm.getInstance(index));
+		// *** StoppingConditionNode --> StoppingCondition
 		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
 			selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
 		StoppingCondition rootStop = null;
@@ -139,18 +142,22 @@ public class SimulatorNode
 		// when there is only one stopping condition, then it is used
 		else
 			rootStop = scnodes.get(0).getInstance();
-		Map<Integer, List<List<ProcessNode>>> pco = new HashMap<>();
+		// *** ProcessNode --> Process
+		Map<Integer, List<List<TwProcess>>> pco = new HashMap<>();
 		for (Map.Entry<Integer,List<List<ProcessNode>>> e:processCallingOrder.entrySet()) {
-			List<List<ProcessNode>> nllp = new ArrayList<>();
+			List<List<TwProcess>> nllp = new ArrayList<>();
 			for (List<ProcessNode> lp:e.getValue()) {
-				List<ProcessNode> nlp = new ArrayList<>();
-				nlp.addAll(lp);
+				List<TwProcess> nlp = new ArrayList<>();
+				for (ProcessNode pn:lp)
+					nlp.add(pn.getInstance(index));
 				nllp.add(nlp);
 			}
 			pco.put(e.getKey(),nllp);
 		}
+		// *** Initial community
 		SystemContainer comm = (SystemContainer)((Ecosystem) getParent()).getInstance(index);
 		setInitialCommunity(index);
+		// *** finally, instantiate simulator
 		Simulator sim = new Simulator(index,rootStop,timeLine,timers,timeModelMasks.clone(),pco,comm);
 		rootStop.attachSimulator(sim);
 		return sim;
