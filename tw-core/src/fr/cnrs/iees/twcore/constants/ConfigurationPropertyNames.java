@@ -67,7 +67,9 @@ public enum ConfigurationPropertyNames {
 	P_DATATRACKER_STATISTICS	("statistics"),
 	P_DATATRACKER_TABLESTATS	("tableStatistics"),
 	P_DATATRACKER_VIEWOTHERS	("viewOthers"),
-	P_DATATRACKER_TRACK			("track")
+	P_DATATRACKER_TRACK			("track"),
+	P_DATASOURCE_FILE			("file"),
+	P_DATASOURCE_SUBCLASS		("subclass")
 	;
 
 	private final String pname;

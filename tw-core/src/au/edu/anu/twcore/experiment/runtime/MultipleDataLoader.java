@@ -35,6 +35,5 @@ public interface MultipleDataLoader<T extends SimplePropertyList> {
      * data contained in the file. Clones are then put in the Map argument.
      **/
     public void load(Map<String,T> result, T dataModel);    
-
 	
 }
