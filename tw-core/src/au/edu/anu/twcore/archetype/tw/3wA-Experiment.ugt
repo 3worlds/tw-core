@@ -93,11 +93,11 @@ hasNode dataSourceSpec
 		parameters = StringTable(([3]"subclass",+
 		"au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader",+
 		"3wSA-CsvFileLoader.ugt"))
-//	mustSatisfyQuery CheckSubArchetypeQueryOdfFile
-//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-//		parameters = StringTable(([3]"subclass",+
-//		"au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader",+
-//		"3wSA-OdfFileLoader.ugt"))
+	mustSatisfyQuery CheckSubArchetypeQueryOdfFile
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"subclass",+
+		"au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader",+
+		"3wSA-OdfFileLoader.ugt"))
 
 hasNode dataSinkSpec
 	isOfClass = String("dataSink")

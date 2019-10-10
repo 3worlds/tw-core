@@ -100,8 +100,10 @@ public class DataSource
     		String sep = (String) properties().getPropertyValue("separator");
     		dataLoader = new CsvFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,input,sep);
     	}
-    	else if (loaderclass.contains(OdfFileLoader.class.getSimpleName()))
-    		dataLoader = new OdfFileLoader();
+    	else if (loaderclass.contains(OdfFileLoader.class.getSimpleName())) {
+    		String sheet = (String) properties().getPropertyValue("sheet");
+    		dataLoader = new OdfFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,input,sheet);
+    	}
     	else if (loaderclass.contains(BOMWeatherLoader.class.getSimpleName()))
     		dataLoader = new BOMWeatherLoader();
 	}
