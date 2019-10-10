@@ -177,16 +177,16 @@ public class SimulatorNode
 	
 	@SuppressWarnings("unchecked")
 	private void setInitialCommunity(int index) {
-		InitialState init = (InitialState) get(getChildren(),
-			selectZeroOrOne(hasTheLabel(N_INITIALSTATE.label())));
-		List<Individual> li = (List<Individual>) get(init.getChildren(),
-			selectZeroOrMany(hasTheLabel(N_INDIVIDUAL.label())));
-		for (Individual i:li)
-			i.getInstance(index);
-		List<Group> lg = (List<Group>) get(init.getChildren(),
-			selectZeroOrMany(hasTheLabel(N_GROUP.label())));
-		for (Group g:lg)
-			scanSubGroups(g,index);
+		InitialState init = (InitialState) get(getChildren(), selectZeroOrOne(hasTheLabel(N_INITIALSTATE.label())));
+		if (init != null) {
+			List<Individual> li = (List<Individual>) get(init.getChildren(),
+					selectZeroOrMany(hasTheLabel(N_INDIVIDUAL.label())));
+			for (Individual i : li)
+				i.getInstance(index);
+			List<Group> lg = (List<Group>) get(init.getChildren(), selectZeroOrMany(hasTheLabel(N_GROUP.label())));
+			for (Group g : lg)
+				scanSubGroups(g, index);
+		}
 	}
 
 	@Override
