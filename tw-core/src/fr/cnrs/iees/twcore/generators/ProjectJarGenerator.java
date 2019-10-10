@@ -101,7 +101,8 @@ public class ProjectJarGenerator {
 	}
 
 	private void pullAllCodeFiles() {
-		File localDir = Project.makeFile(ProjectPaths.LOCALCODE);
+		//File localDir = Project.makeFile(ProjectPaths.LOCALCODE);
+		File localDir = Project.makeFile(ProjectPaths.JAVAPROJECT);
 		String[] extensions = new String[] { "java" };
 		List<File> remoteSrcFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
 		for (File remoteSrcFile : remoteSrcFiles) {
