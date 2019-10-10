@@ -67,5 +67,5 @@ public interface ProjectPaths {
 	 */
 	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
 	
-	public static String LOGS /*                  */="Logs";
+	public static String LOGS /*                  */=PROJECT_LOCAL + File.separator + "Logs";
 }
