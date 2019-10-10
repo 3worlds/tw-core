@@ -1,5 +1,7 @@
 package au.edu.anu.twcore.experiment;
 
+import au.edu.anu.rscs.aot.collections.tables.IntTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
 import au.edu.anu.twcore.experiment.runtime.io.BOMWeatherLoader;
@@ -21,6 +23,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -36,7 +40,7 @@ public class DataSource
 	private static Logger log = Logging.getLogger(DataSource.class);
 	
 	/** the data stream which will be read by this DataLoader */
-	protected InputStream input = null;
+	private InputStream input = null;
 	
 	private boolean sealed = false;
 	
@@ -75,8 +79,27 @@ public class DataSource
      		log.info("Data source "+id()+" initialised");
     	}
     	String loaderclass = (String) properties().getPropertyValue(P_DATASOURCE_SUBCLASS.key());
-    	if (loaderclass.contains(CsvFileLoader.class.getSimpleName()))
-    		dataLoader = new CsvFileLoader();
+		String idsp = (String) properties().getPropertyValue("idSpecies");
+		String idst = (String) properties().getPropertyValue("idStage");
+		String idsc = (String) properties().getPropertyValue("idComponent");
+		String idsr = (String) properties().getPropertyValue("idRelation");
+		String idmd = (String) properties().getPropertyValue("idVariable");
+		IntTable dimlist = (IntTable) properties().getPropertyValue("dim");
+		int[] idDims = null;
+		if (dimlist!=null) {
+			idDims = new int[dimlist.size()];
+			for (int i=0; i<dimlist.size(); i++)
+				idDims[i] = dimlist.getWithFlatIndex(i);
+		}
+		StringTable readList = (StringTable) properties().getPropertyValue("read");
+		Set<String> columnsToRead = new HashSet<>();
+		if (readList!=null)
+			for (int i=0; i<readList.size(); i++)
+				columnsToRead.add(readList.getWithFlatIndex(i));
+    	if (loaderclass.contains(CsvFileLoader.class.getSimpleName())) {
+    		String sep = (String) properties().getPropertyValue("separator");
+    		dataLoader = new CsvFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,input,sep);
+    	}
     	else if (loaderclass.contains(OdfFileLoader.class.getSimpleName()))
     		dataLoader = new OdfFileLoader();
     	else if (loaderclass.contains(BOMWeatherLoader.class.getSimpleName()))

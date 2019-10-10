@@ -88,11 +88,11 @@ hasNode dataSourceSpec
 			"au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader",+
 			"au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader",+
 			"au.edu.anu.twcore.experiment.runtime.io.BOMWeatherLoader"))
-//	mustSatisfyQuery CheckSubArchetypeQueryCsvFile
-//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-//		parameters = StringTable(([3]"subclass",+
-//		"au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader",+
-//		"3wSA-CsvFileLoader.ugt"))
+	mustSatisfyQuery CheckSubArchetypeQueryCsvFile
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"subclass",+
+		"au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader",+
+		"3wSA-CsvFileLoader.ugt"))
 //	mustSatisfyQuery CheckSubArchetypeQueryOdfFile
 //		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 //		parameters = StringTable(([3]"subclass",+

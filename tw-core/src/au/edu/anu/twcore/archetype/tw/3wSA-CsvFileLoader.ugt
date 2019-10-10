@@ -1,0 +1,58 @@
+tree
+// Sub-archetype for 3Worlds for checking CsvFileLoader specifications
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-CsvFileLoader
+
+	hasNode CsvFileLoaderSpec
+		isOfClass = String("dataSource")
+		hasParent = StringTable(([1]"experiment:"))
+		multiplicity = IntegerRange("0..*")
+		// separator character used in csv file (default = tab)
+		hasProperty CsvFileSeparatorSpec
+			hasName = String("separator")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		// name of column with species ids (default: no species)
+		hasProperty CsvFileidSpeciesSpec
+			hasName = String("idSpecies")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		// name of column with stage ids (default: no stage)
+		hasProperty CsvFileidStageSpec
+			hasName = String("idStage")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		// name of column with individual component ids (default: no component)
+		hasProperty CsvFileidComponentSpec
+			hasName = String("idComponent")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		// name fo column with individual relation ids (default: no relation)
+		hasProperty CsvFileidRelationSpec
+			hasName = String("idRelation")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		// ??
+		hasProperty CsvFileidVariableSpec
+			hasName = String("idVariable")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		// table of table dimension column ranks, ie dimList=[1,4,3] means values
+		// of dimension 0 are in file column 1, dim. 1 in column 4 and dim.2 in column 3
+		// default: no dimensions
+		hasProperty CsvFileDimListSpec
+			hasName = String("dimList")
+			type = String("IntTable")
+			multiplicity = IntegerRange("0..1")
+		// list of column names to read as variables (default: read all variables found in the file)
+		hasProperty CsvFileReadSpec
+			hasName = String("read")
+			type = String("StringTable")
+			multiplicity = IntegerRange("0..1")
+			
