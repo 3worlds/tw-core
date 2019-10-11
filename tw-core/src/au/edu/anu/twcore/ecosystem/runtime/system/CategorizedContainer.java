@@ -46,30 +46,35 @@ import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
-import fr.ens.biologie.generic.Factory;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.Sealable;
 
 /**
- * <p>The class holding the SystemComponents (actually, any object with an Id can be stored 
+ * <p>The class holding the SystemComponents (actually, any object with an id (class {@linkplain Identity})
+ *  can be stored 
  * in such containers) at runtime, and responsible for their creation and deletion.</p>
- * <p>The rule is: all items (type T) contained in this class have the same data structure.
+ * <p>The rule is: all items (type {@code T}) contained in this class have the same data structure.
  * The data structure is defined by the categoryInfo field, which refers to a set of
  * categories which tell how data is associated to this container. These data consist in
  * constant values (parameters) and values varying with time (variables). Both are available
  * as ReadOnlyPropertyList in this class, since it's not its business to know how
- * to change the values. Items contain in this container either appear as a flat list
- * indexed by id, or in sub-containers of this same class.</p>
+ * to change the values.</p>
+ * <p>A container can have <em>sub-containers</em>, so that they can be organized in a hierarchy.
+ * </p>
  * <p>This class is meant to be used at runtime in a time-synchronized way: changes (additions
- * and deletions) are only recorded, but not effected until the effectChanges() method is called.
+ * and deletions) are only recorded, but not effected until the {@code effectChanges()} or
+ * {@code effectAllChanges()} method is called.
  * </p> 
+ * <p>This class is meant to hold a population of simulated items, starting with an initial
+ * population that can be <em>reset</em> later, i.e. the whole container can revert to an
+ * initial state.</p>
  * 
  * @author Jacques Gignoux - 1 juil. 2019
  *
  */
 // Tested OK with version 0.1.3 on 1/7/2019
 public abstract class CategorizedContainer<T extends Identity> 
-		implements Population, Identity, Resettable, Factory<T>, Sealable {
+		implements Population, Identity, Resettable, Sealable {
 
 	// class-level constants
 	private static final IdentityScope scope = new LocalScope("3w-runtime-container");
@@ -195,41 +200,97 @@ public abstract class CategorizedContainer<T extends Identity>
 		initialItems.add(item);
 	}
 
+	/**
+	 * Returns the set of categories ({@linkplain Category}) associated to this container. If this
+	 * container has variables and parameters, they are specified by these categories.
+	 * 
+	 * @return the object holding all the category information
+	 */
 	public Categorized<T> categoryInfo() {
 		return categoryInfo;
 	}
 	
+	/**
+	 * Returns the parameter set associated to this container. It is specified by the categories
+	 * associated to the container, accessible through the {@code categoryInfo()} method.
+	 * 
+	 * @return the parameter set - may be {@code null}
+	 */
 	public TwData parameters() {
 		return parameters;
 	}
 	
+	/**
+	 * Returns the variables associated to this container. It is specified by the categories
+	 * associated to the container, accessible through the {@code categoryInfo()} method.
+	 * 
+	 * @return the variables - may be {@code null}
+	 */
 	public TwData variables() {
 		return variables;
 	}
 	
+	/**
+	 * Returns the {@linkplain Population} data associated to this container. Population data 
+	 * are automatic variables added to any container (they include such things as number of
+	 * items, number of newly created and deleted items). Population data are computed internally
+	 * depending on the dynamics of the items stored in the container.
+	 * 
+	 * @return the population data as a read-only property list
+	 */
 	public ReadOnlyPropertyList populationData() {
 		return populationData;
 	}
 
-	// delayed addition
+	/**
+	 * Tag an item for addition into this container's item list. The item will be effectively 
+	 * added only when {@code effectChanges()} or {@code effectAllChanges()} is called thereafter.
+	 * This enables one to keep the container state consistent over time in discrete time simulations.
+	 * 
+	 * @param item the item to add
+	 */
 	public void addItem(T item) {
 		itemsToAdd.add(item);
 	}
 
-	// delayed removal
+	/**
+	 * Tag an item for removal from this container's item list. The item will be effectively 
+	 * removed only when {@code effectChanges()} or {@code effectAllChanges()} is called thereafter.
+	 * This enables one to keep the container state consistent over time in discrete time simulations.
+	 * 
+	 * @param id the id of the item to remove
+	 */
 	public void removeItem(String id) {
 		itemsToRemove.add(id);
 	}
 	
+	/**
+	 * Gets the item matching the id passed as argument. Only searches this container item list, not
+	 * those of the sub-containers.
+	 * 
+	 * @param id the id to search for
+	 * @return the matching item, {@code null} if not found
+	 */
 	public T item(String id) {
 		return items.get(id);
 	}
 	
-	/** gets all items contained in this container only, without those contained in sub-containers */
+	/**
+	 * Gets all items contained in this container only, without those contained in sub-containers.
+	 * 
+	 * @return a read-only item list
+	 */
 	public Iterable<T> items() {
 		return items.values();
 	}
 	
+	/**
+	 * Gets the sub-container matching the id passed as an argument. Only searches this container
+	 * sub-container list, not those of its sub-containers.
+	 * 
+	 * @param containerId the sub-container to search for
+	 * @return the matching sub-container, {@code null} if not found
+	 */
 	public CategorizedContainer<T> subContainer(String containerId) {
 		return subContainers.get(containerId);
 	}
@@ -249,14 +310,22 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 	
 	/**
-	 * Finds a container in the sub-container hierachy
-	 * @param containerId
-	 * @return
+	 * Gets the sub-container matching the id passed as an argument. Searches this container
+	 * whole sub-container hierarchy, ie including all its sub-containers.
+	 * 
+	 * @param containerId the sub-container to search for
+	 * @return the matching sub-container, {@code null} if not found
 	 */
 	public CategorizedContainer<T> findContainer(String containerId) {
 		return findContainer(containerId,this);
 	}
 	
+	/**
+	 * Gets all sub-containers contained in this container only, without those contained 
+	 * in sub-containers.
+	 * 
+	 * @return a read-only container list
+	 */
 	public Iterable<CategorizedContainer<T>> subContainers() {
 		return subContainers.values();
 	}
@@ -268,7 +337,13 @@ public abstract class CategorizedContainer<T extends Identity>
 			addItems(result,sc);
 	}
 	
-	/** gets all items contained in this container, including those contained in sub-containers */
+	/**
+	 * Gets all items contained in this container, including those contained in sub-containers.
+	 * CAUTION: these items may belong to different categories, i.e. they may not store the same
+	 * sets of variables/parameters.
+	 * 
+	 * @return a read-only list of items
+	 */
 	public Iterable<T> allItems() {
 		QuickListOfLists<T> l = new QuickListOfLists<T>();
 		addItems(l,this);
@@ -285,7 +360,13 @@ public abstract class CategorizedContainer<T extends Identity>
 			addItems(result,sc);
 	}
 
-	/** gets all items matching a particular category signature */
+	/**
+	 * Gets all items matching a particular category signature. Searches the whole sub-container
+	 * hierarchy.
+	 * 
+	 * @param requestedCats the required categories
+	 * @return a read-only list of items
+	 */
 	public Iterable<T> allItems(Set<Category> requestedCats) {
 		QuickListOfLists<T> l = new QuickListOfLists<T>();
 		addItems(l,this,requestedCats);
@@ -293,7 +374,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	/**
-	 * Effectively remove/add items from the container lists (before a call to this method, they are
+	 * Effectively remove <em>and</em> add items from the container lists (before a call to this method, they are
 	 * just stored into {@code itemsToRemove} and {@code itemsToAdd}). NB: to recursively effect changes
 	 * for all sub-containers, use {@code effectAllChanges()}.
 	 */
@@ -313,10 +394,11 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	/**
-	 * Effectively remove/add items from the container lists and from <em>all</em> its 
+	 * Effectively remove <em>and</em> add items from the container lists and from <em>all</em> its 
 	 * sub-containers (before a call to this method, items are
-	 * just stored into {@code itemsToRemove} and {@code itemsToAdd}). Recursive.
+	 * just stored into {@code itemsToRemove} and {@code itemsToAdd})
 	 */
+	// Recursive
 	public void effectAllChanges() {
 		effectChanges();
 		for (CategorizedContainer<T> c:subContainers())

@@ -164,7 +164,8 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 							lifeCycleContainer.subContainers()) 
 							if (subContainer.categoryInfo().categoryId().contains(newCat))
 								recruitContainer = (SystemContainer) subContainer;
-						if (recruitContainer==null) {
+						if ((recruitContainer==null) |
+							!(recruitContainer.categoryInfo() instanceof SystemFactory)) {
 							StringBuilder sb = new StringBuilder();
 							sb.append("'")
 								.append(focalContext.groupName)
@@ -174,7 +175,8 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 							log.severe(sb.toString());
 						}
 						else {
-							SystemComponent newRecruit = recruitContainer.newInstance();
+							SystemComponent newRecruit = null;
+							newRecruit = ((SystemFactory)recruitContainer.categoryInfo()).newInstance();
 							newRecruit.autoVar().writeEnable();
 							// carry over former ID as name
 							if (focal.autoVar().name().isBlank())

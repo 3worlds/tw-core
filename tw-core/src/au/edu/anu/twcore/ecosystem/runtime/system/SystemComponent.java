@@ -143,9 +143,12 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 		
 	}
 	
-	@Override
+	@Override 
 	public SystemComponent clone() {
-		return null;
+		// TODO: check this method ! specially for speed...
+		SystemComponent result = (SystemComponent) factory().makeNode(this.getClass(), 
+			this.properties().clone());
+		return result;
 	}
 	
 	@SuppressWarnings("unchecked")
