@@ -38,17 +38,22 @@ import fr.ens.biologie.generic.Sealable;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BELONGSTO;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_INSTANCEOF;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_PARAMETERCLASS;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.dynamics.SystemComponentNode;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Individual;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
@@ -76,9 +81,6 @@ public class Ecosystem
 	private Set<Category> categories = new TreeSet<Category>(); 
 	private TwData parameters = null;
 	
-	// a singleton container for all SystemComponents within an ecosystem
-//	private SystemContainer community = null;
-	
 	private Map<Integer,SystemContainer> communities = new HashMap<>();
 
 	public Ecosystem(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -91,9 +93,19 @@ public class Ecosystem
 
 	@SuppressWarnings("unchecked")
 	@Override
+	// RULES HERE:
+	// a CategorizedContainer MUST store items which match its categories, so:
+	// 1 if an Ecosystem has been specified with categories through belongsTo edges,
+	// then it cannot contain SystemComponents in its item list (cf. InitialState)
+	// 2 if InitialState has Individual as direct children, then the Ecosystem
+	// categories MUST be set to those of these children. Of course the children must
+	// all have the same categories.
+	// TODO: implement queries to check these constraints
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
+			// case 1: categories have been attached to the ecosystem - they will be used
+			// to set its variables, it cannot have any initial item
 			Collection<Category> cats = (Collection<Category>) get(edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
 				edgeListEndNodes());
@@ -101,8 +113,31 @@ public class Ecosystem
 				categories.addAll(getSuperCategories(cats));
 				categoryId = buildCategorySignature();
 			}
-			else
-				categoryId = rootCategoryId;
+			else {
+				InitialState is = (InitialState) get(getChildren(),
+					selectOne(hasTheLabel(N_DYNAMICS.label())),
+					children(),
+					selectZeroOrOne(hasTheLabel(N_INITIALSTATE.label())));
+				List<Individual> il = (List<Individual>) get(is.getChildren(),
+					selectZeroOrMany(hasTheLabel(N_INDIVIDUAL.label())));
+				// case 2: no categories attached to the ecosystem and no individuals initialised
+				// means the ecosystem has no variables, no parameters, no items.
+				if (il.isEmpty())
+					categoryId = rootCategoryId;
+				// case 3: initial individuals have been specified, the ecosystem
+				// categories are set to those of the first individual in the list				
+				else {
+					Individual i = il.get(0);
+					SystemComponentNode scn = (SystemComponentNode) get(i.edges(Direction.OUT),
+						selectOne(hasTheLabel(E_INSTANCEOF.label())),
+						endNode());
+					Collection<Category> nl = (Collection<Category>) get(scn.edges(Direction.OUT),
+						selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
+						edgeListEndNodes());
+					categories.addAll(getSuperCategories(nl));
+					categoryId = buildCategorySignature();
+				}
+			}
 			if (properties().hasProperty(P_PARAMETERCLASS.key())) {
 				String s = (String) properties().getPropertyValue(P_PARAMETERCLASS.key());
 				if (s!=null)
@@ -110,6 +145,7 @@ public class Ecosystem
 						parameters = loadDataClass(s);
 			}
 			// TODO: automatic variables as variableTemplate
+			// means data code generation must work for ecosystem too
 			sealed = true;
 		}
 	}
@@ -118,10 +154,6 @@ public class Ecosystem
 	public int initRank() {
 		return N_SYSTEM.initRank();
 	}
-
-//	public CategorizedContainer<SystemComponent> community() {
-//		return community;
-//	}
 	
 	@Override
 	public Set<Category> categories() {
@@ -152,11 +184,6 @@ public class Ecosystem
 			communities.put(index, makeCommunity());
 		return communities.get(index);
 	}
-
-//	// for compatibility with LifeCycle and Systemfactory 
-//	public SystemContainer container(String name) {
-//		return community;
-//	}
 
 	@Override
 	public Sealable seal() {

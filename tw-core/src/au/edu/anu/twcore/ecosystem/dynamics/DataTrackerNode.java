@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -38,17 +39,25 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.Metadata;
+import au.edu.anu.twcore.data.runtime.TimeSeriesData;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
+import au.edu.anu.twcore.ui.WidgetNode;
+import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
  * Class matching the "ecosystem/dynamics/timeLine/timeModel/process/dataTracker" node label in the 
@@ -69,6 +78,7 @@ public class DataTrackerNode
 	private StatisticalAggregatesSet tstats = null;
 	private boolean viewOthers = false;
 	private Object dataTrackerClass;
+	private List<WidgetNode> timeSeriesWidgets = null;
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -78,6 +88,7 @@ public class DataTrackerNode
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		if (!sealed) {
@@ -101,11 +112,13 @@ public class DataTrackerNode
 				tstats = StatisticalAggregatesSet.defaultValue();
 			if (properties().hasProperty(P_DATATRACKER_VIEWOTHERS.key()))
 				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
-			// the only required property.
+			// the only required properties.
 			properties().getPropertyValue(P_DATATRACKER_TRACK.key());
-			// instantiate the guy really doing the job
 			dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
-			// TODO - implement behaviour...
+			// time series observers to this tracker
+			timeSeriesWidgets = (List<WidgetNode>) get(edges(Direction.IN),
+				selectZeroOrMany(hasTheLabel(E_TRACKSERIES.label())),
+				edgeListStartNodes()); // they must be widgetNodes
 			sealed = true;
 		}
 	}
@@ -126,20 +139,25 @@ public class DataTrackerNode
 		return sealed;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private DataTracker<?,?> makeDataTracker(int index) {
-		AbstractDataTracker<?,?> result = null;
+		AbstractDataTracker<?,?> finalResult = null;
 		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
-			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers);
+			TimeSeriesTracker result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers);
+			// TODO: bug here - circular constructor call
+//			for (WidgetNode wn:timeSeriesWidgets)
+//				result.addObserver((DataReceiver<TimeSeriesData, Metadata>) wn.getInstance());
+			finalResult = result;
 		}		
 		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
-			result = new MapTracker();
+			finalResult = new MapTracker();
 		}		
 		else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
-			result = new LabelValuePairTracker();
+			finalResult = new LabelValuePairTracker();
 		}
-		if (result!=null)
-			result.setSender(index);
-		return result;
+		if (finalResult!=null)
+			finalResult.setSender(index);
+		return finalResult;
 	}
 
 	@Override

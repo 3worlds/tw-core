@@ -20,7 +20,7 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
  * @author Jacques Gignoux - 1 oct. 2019
  *
  */
-public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData, Metadata> {
+public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metadata> {
 	
 	private static String[] propertyKeys = {
 		P_DATATRACKER_SELECT.key(),

@@ -54,6 +54,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.InstanceOfEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.LoadFromEdge;
 
 import au.edu.anu.twcore.ui.TrackTimeEdge;
+import au.edu.anu.twcore.ui.TrackTimeSeriesEdge;
 /**
  * 
  * @author Jacques Gignoux - 4 juin 2019
@@ -90,6 +91,7 @@ public enum ConfigurationEdgeLabels {
 	E_LOADFROM		("loadFrom",		LoadFromEdge.class),
 	// user interface
 	E_TRACKTIME		("trackTime",		TrackTimeEdge.class),
+	E_TRACKSERIES	("trackSeries",		TrackTimeSeriesEdge.class),
 	;
 	//=========================================================================
 	private final String label;

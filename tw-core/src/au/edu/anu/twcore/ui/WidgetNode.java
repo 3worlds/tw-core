@@ -50,7 +50,6 @@ import java.lang.reflect.Constructor;
 
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
@@ -98,13 +97,11 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 //						children(),
 //						selectOne(hasTheLabel(N_EXPERIMENT.label())));
 					TreeNode root = (TreeNode) this;
-
 					// this could be a function of any TreeNode
 					while (root.getParent() != null)
 						root = root.getParent();
-
-					Experiment exp = (Experiment) get(root, children(), selectOne(hasTheLabel(N_EXPERIMENT.label())));
-
+					Experiment exp = (Experiment) get(root.getChildren(), 
+						selectOne(hasTheLabel(N_EXPERIMENT.label())));
 					StateMachineController obs = exp.getInstance();
 					widget = widgetConstructor.newInstance(obs.stateMachine());
 				}
