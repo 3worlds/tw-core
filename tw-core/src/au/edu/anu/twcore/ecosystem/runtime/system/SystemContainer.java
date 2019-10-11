@@ -47,20 +47,9 @@ public class SystemContainer extends CategorizedContainer<SystemComponent> {
 		super(cats,proposedId,parent,parameters,variables);
 	}
 
-//	@Override
-//	public SystemComponent newInstance() {
-//		if (categoryInfo() instanceof SystemFactory)
-//			return ((SystemFactory)categoryInfo()).newInstance();
-//		throw new TwcoreException("SystemContainer "+id()+" cannot instantiate SystemComponents");
-//	}
-
 	@Override
-	public final SystemComponent clone(SystemComponent item) {
-//		SystemComponent result = newInstance();
-		// possible FLAW here ? how does this interact with SystemFactory.newInstance() ?
-		SystemComponent result = item.clone();
-		result.properties().setProperties(item.properties());
-		return result;
+	public final SystemComponent cloneItem(SystemComponent item) {
+		return item.clone();
 	}
 	
 	/**

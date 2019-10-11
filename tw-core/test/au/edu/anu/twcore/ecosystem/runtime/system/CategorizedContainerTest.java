@@ -81,11 +81,7 @@ class CategorizedContainerTest {
 			super(cats,proposedId,parent,null,null);
 		}
 		@Override
-		public Identity newInstance() {
-			return scope().newId();
-		}
-		@Override
-		public Identity clone(Identity item) {
+		public Identity cloneItem(Identity item) {
 			Identity id = scope().newId(true,item.id());
 			return id;
 		}

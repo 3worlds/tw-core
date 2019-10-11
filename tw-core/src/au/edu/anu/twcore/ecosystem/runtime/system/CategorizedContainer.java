@@ -493,7 +493,7 @@ public abstract class CategorizedContainer<T extends Identity>
 		itemsToRemove.clear();
 		itemsToAdd.clear();
 		for (T item:initialItems) {
-			T c = clone(item);
+			T c = cloneItem(item);
 			items.put(c.id(),c);
 		}
 		resetCounters();
@@ -558,6 +558,6 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 	
 	// NB two methods must be overriden in descendants: clone(item) and newInstance();
-	public abstract T clone(T item);
+	protected abstract T cloneItem(T item);
 	
 }
