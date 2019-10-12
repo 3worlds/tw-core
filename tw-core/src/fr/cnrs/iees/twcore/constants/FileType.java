@@ -30,10 +30,13 @@
 package fr.cnrs.iees.twcore.constants;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.ens.biologie.generic.utils.Duple;
 
 /**
  * Author Ian Davies
@@ -45,6 +48,15 @@ public class FileType {
 
 	public String getRelativePath() {
 		return relativePath;
+	}
+	//dataSourceFileSpec
+	//designFilePropertySpec
+	// dataSinkSpec
+	// problme is these depend on the sub-arch
+	public List<Duple<String,String>> getExtenstions(){
+		List<Duple<String,String>> result = new ArrayList<>();
+		result.add(new Duple<String,String>("All files","*.*"));
+		return result;
 	}
 
 	@Override

@@ -113,3 +113,6 @@ hasNode dataSinkSpec
 		multiplicity = IntegerRange("1..1")
 	// TODO: more is needed to really implement this (ie file format...)
 	
+	// TODO: it might be better if the File property was in the sub-arch rather than the base class
+	// Then i can determine a "Type" for the file and use the appropriate extensions - Ian
+	
