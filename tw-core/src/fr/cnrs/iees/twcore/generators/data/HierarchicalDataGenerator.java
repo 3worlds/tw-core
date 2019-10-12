@@ -89,11 +89,11 @@ public abstract class HierarchicalDataGenerator
 		super(spec);
 		this.modelName = modelName;
 //		packageName = validJavaName(wordUpperCaseName(modelName))+"."+TW_CODE;	
-		//packageName = validJavaName(wordUpperCaseName(modelName));	
-		packageName = REMOTECODE;
+		packageName =REMOTECODE+"."+ validJavaName(wordUpperCaseName(modelName));	
+//		packageName = REMOTECODE;
 //		packagePath = Project.makeFile(validJavaName(wordUpperCaseName(modelName)),TW_CODE).getAbsolutePath();
-//		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
-		packagePath = Project.makeFile(LOCALCODE).getAbsolutePath();
+		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+//		packagePath = Project.makeFile(LOCALCODE).getAbsolutePath();
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -20,9 +20,10 @@ archetype 3wSA-SimpleTimeSeriesWidget
 			hasName = String("maxColours")
 			type = String("Integer")
 			multiplicity = IntegerRange("1..1")
+			// Must have at least 10 colours. Otherwise the uit may not deliver enough options.
 			mustSatisfyQuery senderIsInRangeQuerySpec
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
-				interval = IntTable(("[2]0,100"))
+				interval = IntTable(("[2]10,100"))
 		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
