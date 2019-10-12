@@ -31,6 +31,7 @@ public class EnumProperties {
 		TimeUnits.defaultValue();
 		TwFunctionTypes.defaultValue();
 		UIContainerOrientation.defaultValue();
+		TrackerType.defaultValue();
 	}
 
 }

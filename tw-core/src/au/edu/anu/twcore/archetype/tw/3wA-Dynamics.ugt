@@ -148,7 +148,7 @@ hasNode dataTrackerSpec
 		multiplicity = IntegerRange("0..1") 
 	hasProperty trackPropSpec
 		hasName = String("track")
-		type = String("StringTable")
+		type = String("TrackerType")
 		multiplicity = IntegerRange("1..1")
 		// TODO: check the tracked variables are compatible with this process category
 	hasProperty groupBySpec
