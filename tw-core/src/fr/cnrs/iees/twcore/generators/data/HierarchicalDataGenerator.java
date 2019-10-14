@@ -36,6 +36,9 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
@@ -45,6 +48,7 @@ import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -136,6 +140,21 @@ public abstract class HierarchicalDataGenerator
 		File file = new File(packagePath+File.separator+cn+".java");
 		writeFile(cg,file,cn);
 		String result =  compiler.compileCode(file,rootDir);
+		
+		// attempt to fix bug
+		ClassLoader cl = OmugiClassLoader.getAppClassLoader();
+		URLClassLoader ucl;
+		try {
+			String ss = rootDir.getPath()+File.separator+"local"+File.separator+"java"+File.separator;
+			URL url = new File(ss).toURI().toURL();
+			ucl = new URLClassLoader("bidon",new URL[]{url},cl);
+			ucl.loadClass(cn);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		// attempt to fix bug
+		
 		hadErrors = hadErrors | result!=null;
 		if (result!=null) 
 			ComplianceManager.add(new CompileErr(file, result));
@@ -199,6 +218,21 @@ public abstract class HierarchicalDataGenerator
 			File file = new File(packagePath+File.separator+ftype+".java");
 			writeFile(cg,file,ftype);
 			String result =  compiler.compileCode(file,rootDir);
+			
+			// attempt to fix bug
+			ClassLoader cl = OmugiClassLoader.getAppClassLoader();
+			URLClassLoader ucl;
+			try {
+				String ss = rootDir.getPath()+File.separator+"local"+File.separator+"java"+File.separator;
+				URL url = new File(ss).toURI().toURL();
+				ucl = new URLClassLoader("bidon",new URL[]{url},cl);
+				ucl.loadClass(ftype);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			// attempt to fix bug
+			
 			hadErrors = hadErrors | result!=null;
 			if (result!=null) 
 				ComplianceManager.add(new CompileErr(file, result));

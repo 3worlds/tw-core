@@ -12,18 +12,18 @@ treegraph
 			size = Integer(12)
 		record lcRec
 			field ageOfCaptain 
-				type = String("Integer")
+				type = fr.cnrs.iees.twcore.constants.DataElementType("Integer")
 			field nRecruits
-				type = String("Long")
+				type = fr.cnrs.iees.twcore.constants.DataElementType("Long")
 			field nOffspring
-				type = String("Short")
+				type = fr.cnrs.iees.twcore.constants.DataElementType("Short")
 			table items 
 				dataElementType = fr.cnrs.iees.twcore.constants.DataElementType("Boolean")
 			field color
-				type = String("String")
+				type = fr.cnrs.iees.twcore.constants.DataElementType("String")
 		record siteRec
 			field area
-				type = String("Double")
+				type = fr.cnrs.iees.twcore.constants.DataElementType("Double")
 	system my_ecosystem
 		structure anything
 			categorySet everything

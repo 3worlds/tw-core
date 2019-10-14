@@ -29,9 +29,6 @@
 package fr.cnrs.iees.twcore.generators.data;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
