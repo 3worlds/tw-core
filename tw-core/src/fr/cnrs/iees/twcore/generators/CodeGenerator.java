@@ -44,6 +44,7 @@ import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
@@ -56,6 +57,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwInitialiserGenerator;
+import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.cnrs.iees.properties.ResizeablePropertyList;
 
 /**
@@ -86,14 +88,15 @@ public class CodeGenerator {
 		}
 		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
+		File ecologyFiles = null;
 		for (TreeGraphDataNode ecology : ecologies) {
-			File ecologyFiles = Project.makeFile(ProjectPaths.LOCALCODE, wordUpperCaseName(ecology.id()));
+			ecologyFiles = Project.makeFile(ProjectPaths.LOCALCODE, wordUpperCaseName(ecology.id()));
 			ecologyFiles.mkdirs();
 
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(ecology.getChildren(),
-					selectOne(hasTheLabel(N_DYNAMICS.label())));
+				selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(),
-					selectOne(hasTheLabel(N_STRUCTURE.label())));
+				selectOne(hasTheLabel(N_STRUCTURE.label())));
 			// generate data classes for SystemComponents
 			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENT.label());
 			for (TreeGraphDataNode system : systems) {
@@ -107,15 +110,15 @@ public class CodeGenerator {
 			// generate data classes for Ecosystem, if any
 			// caution here: Ecosystem may have no category at all
 			Collection<Category> cats = (Collection<Category>) get(ecology.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			if (!cats.isEmpty())
 				generateDataCode(ecology, ecology.id());
 			// generate TwFunction classes
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
 			List<TreeGraphDataNode> timeModels = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
-					selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
-					selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
+				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
+				selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
 			if (timeModels != null)
 				for (TreeGraphDataNode timeModel : timeModels) {
 					List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
@@ -128,6 +131,12 @@ public class CodeGenerator {
 			for (TreeGraphDataNode initialiser : initialisers)
 				generateInitialiserCode(initialiser, ecology.id());
 		}
+		
+		// compile whole code directory here
+		JavaCompiler compiler = new JavaCompiler();
+		String result =  compiler.compileCode(ecologyFiles);
+		if (result!=null) 
+			ComplianceManager.add(new CompileErr(ecologyFiles, result));
 		UserProjectLink.pushFiles();
 		return !ComplianceManager.haveErrors();
 	}

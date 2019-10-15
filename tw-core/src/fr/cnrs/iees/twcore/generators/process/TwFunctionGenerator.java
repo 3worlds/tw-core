@@ -58,7 +58,7 @@ import fr.cnrs.iees.twcore.constants.SnippetLocation;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
-import fr.ens.biologie.codeGeneration.JavaCompiler;
+//import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -180,11 +180,11 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		generatedClassName = packageName + "." + name;
 		log.info("  done.");
 
-		JavaCompiler compiler = new JavaCompiler();
-		String result =  compiler.compileCode(file,Project.makeFile());
-		if (result!=null) 
-			ComplianceManager.add(new CompileErr(file, result));
-		return result==null;
+//		JavaCompiler compiler = new JavaCompiler();
+//		String result =  compiler.compileCode(file,Project.makeFile());
+//		if (result!=null) 
+//			ComplianceManager.add(new CompileErr(file, result));
+		return true; //result==null;
 	}
 
 	public String generatedClassName() {

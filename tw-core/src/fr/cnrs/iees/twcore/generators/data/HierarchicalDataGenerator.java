@@ -36,34 +36,39 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
-import au.edu.anu.twcore.errorMessaging.ComplianceManager;
-import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
-import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
-import fr.ens.biologie.codeGeneration.JavaCompiler;
+//import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * <p>Implements the recursive generation of nested record and table data classes.
  * Details of code generated are left to descendants.</p>
  *
+ *
+ *
+ *javac -sourcepath ~/.3w/project_test1_2019-10-15-11-05-36-408/local/java/code/my_ecosystem/*.java -classpath ~/.3w/tw-dep.jar 
+ *
  * @author Jacques Gignoux - dec. 2014
  */
+// NB to fix possible problems in the future: there was a bug due to the one-by-one compiling
+// of java classes. eg, this command:
+// javac ./Subtable.java -classpath ~/.3w/tw-dep.jar
+// fails because dependent classes are not compiled, where as this command:
+// javac *.java -classpath ~/.3w/tw-dep.jar
+// works, because javac manages the dependencies of all classes in the directory
+// ALL the java compiling code has been moved to CodeGenerator.generate() 
 public abstract class HierarchicalDataGenerator 
 	extends TwCodeGenerator
 	implements ProjectPaths {
@@ -79,9 +84,9 @@ public abstract class HierarchicalDataGenerator
 	/** the model name (matching the ecology node name */
 	protected String modelName = null;		
 	/** the compiler used to compile the generated classes */
-	private JavaCompiler compiler = new JavaCompiler();
+//	private JavaCompiler compiler = new JavaCompiler();
 	
-	private File rootDir = Project.makeFile();  // TODO check the root dir is OK
+//	private File rootDir = Project.makeFile();  // TODO check the root dir is OK
 	
 	private boolean hadErrors = false;
 
@@ -139,25 +144,10 @@ public abstract class HierarchicalDataGenerator
 		log.info("    generating file "+cn+".java ...");
 		File file = new File(packagePath+File.separator+cn+".java");
 		writeFile(cg,file,cn);
-		String result =  compiler.compileCode(file,rootDir);
-		
-		// attempt to fix bug
-		ClassLoader cl = OmugiClassLoader.getAppClassLoader();
-		URLClassLoader ucl;
-		try {
-			String ss = rootDir.getPath()+File.separator+"local"+File.separator+"java"+File.separator;
-			URL url = new File(ss).toURI().toURL();
-			ucl = new URLClassLoader("bidon",new URL[]{url},cl);
-			ucl.loadClass(cn);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		// attempt to fix bug
-		
-		hadErrors = hadErrors | result!=null;
-		if (result!=null) 
-			ComplianceManager.add(new CompileErr(file, result));
+//		String result =  compiler.compileCode(file,rootDir);
+//		hadErrors = hadErrors | result!=null;
+//		if (result!=null) 
+//			ComplianceManager.add(new CompileErr(file, result));
 		
 		log.info("  ...done.");
 		return cn;
@@ -217,28 +207,10 @@ public abstract class HierarchicalDataGenerator
 //				ftype+".java");
 			File file = new File(packagePath+File.separator+ftype+".java");
 			writeFile(cg,file,ftype);
-			String result =  compiler.compileCode(file,rootDir);
-			
-			// attempt to fix bug
-			ClassLoader cl = OmugiClassLoader.getAppClassLoader();
-			URLClassLoader ucl;
-			try {
-				String ss = rootDir.getPath()+File.separator+"local"+File.separator+"java"+File.separator;
-				URL url = new File(ss).toURI().toURL();
-				ucl = new URLClassLoader("bidon",new URL[]{url},cl);
-				ucl.loadClass(ftype);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			// attempt to fix bug
-			
-			hadErrors = hadErrors | result!=null;
-			if (result!=null) 
-				ComplianceManager.add(new CompileErr(file, result));
-
-			
-
+//			String result =  compiler.compileCode(file,rootDir);
+//			hadErrors = hadErrors | result!=null;
+//			if (result!=null) 
+//				ComplianceManager.add(new CompileErr(file, result));
 //			spec.setProperty("class", packageName+"."+ftype);
 			log.info("  ...done.");
 		}
