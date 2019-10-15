@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.LabelValuePairData;
+import au.edu.anu.twcore.data.runtime.MapData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeSeriesData;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
@@ -78,7 +80,6 @@ public class DataTrackerNode
 	private StatisticalAggregatesSet tstats = null;
 	private boolean viewOthers = false;
 	private Object dataTrackerClass;
-	private List<WidgetNode> timeSeriesWidgets = null;
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -115,10 +116,6 @@ public class DataTrackerNode
 			// the only required properties.
 			properties().getPropertyValue(P_DATATRACKER_TRACK.key());
 			dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
-			// time series observers to this tracker
-			timeSeriesWidgets = (List<WidgetNode>) get(edges(Direction.IN),
-				selectZeroOrMany(hasTheLabel(E_TRACKSERIES.label())),
-				edgeListStartNodes()); // they must be widgetNodes
 			sealed = true;
 		}
 	}
@@ -140,25 +137,46 @@ public class DataTrackerNode
 	}
 	
 	private DataTracker<?,?> makeDataTracker(int index) {
-		AbstractDataTracker<?,?> finalResult = null;
+		AbstractDataTracker<?,?> result = null;
 		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
-			TimeSeriesTracker result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers);
-			// TODO: bug here - circular constructor call
-//			for (WidgetNode wn:timeSeriesWidgets)
-//				result.addObserver((DataReceiver<TimeSeriesData, Metadata>) wn.getInstance());
-			finalResult = result;
+			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers);
 		}		
 		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
-			finalResult = new MapTracker();
+			result = new MapTracker();
 		}		
 		else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
-			finalResult = new LabelValuePairTracker();
+			result = new LabelValuePairTracker();
 		}
-		if (finalResult!=null)
-			finalResult.setSender(index);
-		return finalResult;
+		if (result!=null)
+			result.setSender(index);
+		return result;
 	}
 
+	// CAUTION: this method assumes that the widgets have been instantiated AFTER
+	// the DataTrackers
+	/**
+	 * attach time series widgets to these trackers
+	 * @param widget
+	 */
+	public void attachTimeSeriesWidget(DataReceiver<TimeSeriesData,Metadata> widget) {
+		for (DataTracker<?,?> dt:dataTrackers.values())
+			if (dt instanceof TimeSeriesTracker)
+				((TimeSeriesTracker)dt).addObserver(widget);
+	}
+
+	public void attachMapWidget(DataReceiver<MapData,Metadata> widget) {
+		for (DataTracker<?,?> dt:dataTrackers.values())
+			if (dt instanceof MapTracker)
+				((MapTracker)dt).addObserver(widget);
+	}
+
+	public void attachLabelValuePairWidget(DataReceiver<LabelValuePairData,Metadata> widget) {
+		for (DataTracker<?,?> dt:dataTrackers.values())
+			if (dt instanceof LabelValuePairTracker)
+				((LabelValuePairTracker)dt).addObserver(widget);
+	}
+
+	
 	@Override
 	public DataTracker<?, ?> getInstance(int id) {
 		if (!sealed)

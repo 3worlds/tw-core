@@ -47,11 +47,13 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.lang.reflect.Constructor;
-
+import java.util.List;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
+import au.edu.anu.twcore.data.runtime.TimeSeriesData;
+import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.Experiment;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
@@ -111,11 +113,19 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 					widget = widgetConstructor.newInstance();
 				}
 				widget.setProperties(id(), properties());
+				// tracker sending data to this widget
+				List<DataTrackerNode> timeSeriesTrackers = (List<DataTrackerNode>) get(edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_TRACKSERIES.label())),
+					edgeListEndNodes()); 
+				for (DataTrackerNode dtn:timeSeriesTrackers)
+					if (widget instanceof DataReceiver)
+						dtn.attachTimeSeriesWidget((DataReceiver<TimeSeriesData, Metadata>) widget);
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
-					selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())), endNode());
+				selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())), endNode());
 			if (sim != null)
 				sim.addObserver((DataReceiver<TimeData, Metadata>) widget);
 //			sim.addObserver((DataReceiver<LabelValuePairData, Metadata>) widget);
