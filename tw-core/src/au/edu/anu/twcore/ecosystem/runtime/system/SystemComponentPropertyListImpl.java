@@ -199,5 +199,10 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	protected TwData[] drivers() {
 		return drivers;
 	}
-	
+
+	// needed technically by SystemComponent.stepForward() - only to be used by SystemComponent
+	protected void rotateDriverProperties(TwData newDrivers) {
+		properties[DRIVERS] = newDrivers;
+	}
+
 }

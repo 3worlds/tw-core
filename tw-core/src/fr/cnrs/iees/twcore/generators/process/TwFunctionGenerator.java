@@ -47,8 +47,6 @@ import java.util.logging.Logger;
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.errorMessaging.ComplianceManager;
-import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;

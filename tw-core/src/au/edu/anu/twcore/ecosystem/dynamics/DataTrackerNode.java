@@ -139,7 +139,6 @@ public class DataTrackerNode
 		return sealed;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private DataTracker<?,?> makeDataTracker(int index) {
 		AbstractDataTracker<?,?> finalResult = null;
 		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	

@@ -127,8 +127,18 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 
 	@Override
 	public void stepForward() {
-		// TODO Auto-generated method stub
-		
+		TwData[] state = ((SystemComponentPropertyListImpl)properties()).drivers();
+		if (state != null) {
+			// circular buffer
+			TwData last = state[state.length - 1]; // this is the last
+			for (int i = state.length - 1; i > 0; i--)
+				state[i] = state[i - 1];
+			state[0] = last;
+			// copy back current values into next
+			if (last != null)
+				last.setProperties(state[CURRENT]);
+			((SystemComponentPropertyListImpl) properties()).rotateDriverProperties(state[CURRENT]);
+		}
 	}
 
 	@Override
