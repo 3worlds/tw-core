@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
-import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -39,15 +38,11 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.MapData;
@@ -58,7 +53,6 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
-import au.edu.anu.twcore.ui.WidgetNode;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
@@ -80,6 +74,7 @@ public class DataTrackerNode
 	private StatisticalAggregatesSet tstats = null;
 	private boolean viewOthers = false;
 	private Object dataTrackerClass;
+	private StringTable track = null;
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -89,7 +84,6 @@ public class DataTrackerNode
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		if (!sealed) {
@@ -114,7 +108,7 @@ public class DataTrackerNode
 			if (properties().hasProperty(P_DATATRACKER_VIEWOTHERS.key()))
 				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
 			// the only required properties.
-			properties().getPropertyValue(P_DATATRACKER_TRACK.key());
+			track = (StringTable) properties().getPropertyValue(P_DATATRACKER_TRACK.key());
 			dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
 			sealed = true;
 		}
@@ -139,7 +133,7 @@ public class DataTrackerNode
 	private DataTracker<?,?> makeDataTracker(int index) {
 		AbstractDataTracker<?,?> result = null;
 		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
-			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers);
+			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers,track);
 		}		
 		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
 			result = new MapTracker();

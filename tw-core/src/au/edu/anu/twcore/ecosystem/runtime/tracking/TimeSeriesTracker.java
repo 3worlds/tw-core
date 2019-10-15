@@ -2,6 +2,7 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeSeriesData;
@@ -39,14 +40,15 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 			StatisticalAggregatesSet statistics,
 			StatisticalAggregatesSet tableStatistics,
 			SamplingMode selection,
-			boolean viewOthers) {
+			boolean viewOthers,
+			StringTable track) {
 		super(DataMessageTypes.TIME_SERIES);
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(),selection);
 		metaprops.setProperty(P_DATATRACKER_GROUPBY.key(),grouping);
 		metaprops.setProperty(P_DATATRACKER_STATISTICS.key(),statistics);
 		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(),tableStatistics);
-		metaprops.setProperty(P_DATATRACKER_TRACK.key(),null);
+		metaprops.setProperty(P_DATATRACKER_TRACK.key(),track);
 		metadata = new TimeSeriesMetadata();
 		// TODO: fill with appropriate information
 		metaprops.setProperty(TimeSeriesMetadata.TSMETA,metadata);
