@@ -100,6 +100,21 @@ public class TimeSeriesData extends TimeData {
 		return stringValues;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		int i=0;
+		for (DataLabel name:meta.intNames())
+			sb.append(' ').append(name.toString()).append('=').append(intValues[i++]);
+		i=0;
+		for (DataLabel name:meta.doubleNames())
+			sb.append(' ').append(name.toString()).append('=').append(doubleValues[i++]);
+		i=0;
+		for (DataLabel name:meta.stringNames())
+			sb.append(' ').append(name.toString()).append('=').append(stringValues[i++]);
+		return sb.toString();
+	}
+	
 
 //	public void addValue(Number value, DataLabel label) {
 //		values.put(label, value);

@@ -70,9 +70,6 @@ public class Simulator {
 	private Map<Integer, List<List<TwProcess>>> processCallingOrder;
 	/** the timeTracker, sending time information to whoever is listening */
 	private TimeTracker timetracker; 
-	/** simulator state fields */
-//	private boolean started = false;
-//	private boolean finished = false;
 	/** container for all SystemComponents */
 	private SystemContainer community;
 	/** simulator status */
@@ -116,16 +113,6 @@ public class Simulator {
 	
 	// METHODS
 	
-//	private SimulatorStatus status() {
-//		if (started)
-//			if (finished)
-//				return SimulatorStatus.Final;
-//			else
-//				return SimulatorStatus.Active;
-//		else
-//			return SimulatorStatus.Initial;
-//	}
-	
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		timetracker.addObserver(observer);
 		// as metadata, send all properties of the reference TimeLine of this simulator.		
@@ -138,7 +125,6 @@ public class Simulator {
 		if (!isStarted())
 			resetSimulation();
 		status = SimulatorStatus.Active;
-//		started = true;
 		log.info("Time = "+lastTime);
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
@@ -151,7 +137,6 @@ public class Simulator {
 		// advance main timer clock 
 		if (nexttime == Long.MAX_VALUE)
 			status = SimulatorStatus.Final;
-//			finished = true;
 		else {
 			long step = nexttime - lastTime;
 			lastTime = nexttime;

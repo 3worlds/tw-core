@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
@@ -92,8 +93,8 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 //	private SystemContainer groupContainer = null;
 	private SimulatorStatus currentStatus = SimulatorStatus.Initial;
 	
-	public ComponentProcess(SystemContainer world, Collection<Category> categories) {
-		super(world);
+	public ComponentProcess(SystemContainer world, Collection<Category> categories, Timer timer) {
+		super(world,timer);
 		focalCategories.addAll(categories);
 		categoryId = buildCategorySignature();
 	}
@@ -287,24 +288,11 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 	}
 
 	@Override
-	public final void execute(SimulatorStatus status, double t, double dt) {
+	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
-		loop(ecosystem(),t,dt);
-//		// get current systems to work with
-//		Iterable<SystemComponent> focals = (Iterable<SystemComponent>) world().getSystemsByCategory(focalCategories);
-//		// preparing data sampling
-//		for (AggregatorFunction function : Afunctions)
-//			function.prepareForSampling(focals, t);
-//		// apply all functions attached to this Process
-//		for (SystemComponent focal : focals) {
-//			// A model can have no state
-//			// aggregate data for data tracking
-//			for (AggregatorFunction function : Afunctions)
-//				function.aggregate(focal, focal.stage().species().getName(), focal.stage().name());
-//		}
-//		// send aggregator function results
-//		for (AggregatorFunction function : Afunctions)
-//			function.sendData(t);
+		for (TimeSeriesTracker tracker:tsTrackers)
+			tracker.recordTime(t);		
+		loop(ecosystem(),timer.userTime(t),timer.userTime(dt));
 	}
 
 	@Override

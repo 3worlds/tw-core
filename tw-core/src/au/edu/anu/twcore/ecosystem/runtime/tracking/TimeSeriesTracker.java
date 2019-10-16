@@ -36,6 +36,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	private TimeSeriesMetadata metadata;
 	private int metadataType = -1;
 	private int senderId = -1;
+	private long currentTime = Long.MIN_VALUE;
 
 	public TimeSeriesTracker(Grouping grouping,
 			StatisticalAggregatesSet statistics,
@@ -84,9 +85,15 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		senderId = id;
 	}
 	
+	public void recordTime(long time) {
+		currentTime = time;
+	}
+	
 	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
 			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
+			tsd.setTime(currentTime);
+			boolean foundOne = false;
 			for (String key:props.getKeysAsSet()) {
 				for (DataLabel lab:metadata.intNames()) 
 					if (key.equals(lab.getEnd())) {
@@ -100,7 +107,8 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 						else if (o instanceof Short)
 							tsd.setValue(lab,(short)o);							
 						else if (o instanceof Byte)
-							tsd.setValue(lab,(byte)o);							
+							tsd.setValue(lab,(byte)o);
+						foundOne = true;
 				}
 				for (DataLabel lab:metadata.doubleNames()) 
 					if (key.equals(lab.getEnd())) {
@@ -109,13 +117,15 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 							tsd.setValue(lab,(double)o);
 						else if (o instanceof Float)
 							tsd.setValue(lab,(float)o);							
+						foundOne = true;
 				}
 				for (DataLabel lab:metadata.stringNames()) 
 					if (key.equals(lab.getEnd())) {
 						tsd.setValue(lab,(String)props.getPropertyValue(key));
+						foundOne = true;
 				}
-
 			}
+			if (foundOne) sendData(tsd);
 		}
 	}
 

@@ -62,5 +62,15 @@ public abstract class AbstractTimer implements Timer {
 	public void reset() {
 		lastTime = 0L;
 	}
+
+	@Override
+	public final long modelTime(double t) {
+		return timeModel.modelToBaseTime(t);
+	}
+
+	@Override
+	public final double userTime(long t) {
+		return timeModel.userTime(t);
+	}
 	
 }

@@ -57,4 +57,8 @@ public interface Timer extends Resettable {
 	
 	public long nextTime(long t);
 	
+	public long modelTime(double t);
+	
+	public double userTime(long t);
+	
 }

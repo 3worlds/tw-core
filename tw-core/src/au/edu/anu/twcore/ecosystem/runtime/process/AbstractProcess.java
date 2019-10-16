@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
@@ -54,10 +55,12 @@ public abstract class AbstractProcess implements TwProcess, Sealable {
 	protected List<TimeSeriesTracker> tsTrackers = new LinkedList<TimeSeriesTracker>();
 	protected List<MapTracker> mapTrackers = new LinkedList<MapTracker>();
 	protected List<LabelValuePairTracker> simpleTrackers = new LinkedList<LabelValuePairTracker>();
+	protected Timer timer = null;
     
-    public AbstractProcess(SystemContainer world) {
+    public AbstractProcess(SystemContainer world, Timer timer) {
     	super();
     	ecosystem = world;
+    	this.timer = timer;
     }
 
 	@Override
