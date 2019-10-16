@@ -117,7 +117,8 @@ public class TwDataGenerator
 		if (isPredefinedTableType(ftype))
 			cg.getMethod("clone").setStatement("clone."+fname+" = "+fname+".clone()");	
 		else
-			cg.getMethod("clone").setStatement("clone."+fname+" = ("+ftype+") "+fname+".clone()");		
+//			cg.getMethod("clone").setStatement("clone."+fname+" = ("+ftype+") "+fname+".clone()");		
+			cg.getMethod("clone").setStatement("clone."+fname+" = "+fname+".clone()");
 		cg.getMethod("hasProperty").setStatement("if (v0.equals(\""+fname+"\")) return true");
 		cg.getMethod("propertyToString").setStatement("if (v0.equals(\""+fname+"\")) return "+fname+".toString()");
 		cg.getMethod("setProperty").setStatement("if (v0.equals(\""+fname+"\")) "+fname+".copy((Table)v1)");
@@ -195,8 +196,7 @@ public class TwDataGenerator
 		cg.setMethod("clone", m);
 		cg.getMethod("clone").setReturnType(ftype);
 		cg.getMethod("clone").setStatement(ftype+" result = cloneStructure()");
-		cg.getMethod("clone").setStatement("for (int i=0; i<flatSize; i++)");
-		cg.getMethod("clone").setStatement("\tresult.setWithFlatIndex(getWithFlatIndex(i),i);");
+		cg.getMethod("clone").setStatement("for (int i=0; i<flatSize; i++)\n\t\t\tresult.setWithFlatIndex(getWithFlatIndex(i),i)");
 		cg.getMethod("clone").setReturnStatement("return result");
 		// since cloneStructure() is not abstract in ancestor, we must redeclare it here
 		m = new MethodGenerator("public",ftype,"cloneStructure");
