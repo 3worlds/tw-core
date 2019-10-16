@@ -84,10 +84,6 @@ public abstract class HierarchicalDataGenerator
 	protected String packagePath = null;
 	/** the model name (matching the ecology node name */
 	protected String modelName = null;		
-	/** the compiler used to compile the generated classes */
-//	private JavaCompiler compiler = new JavaCompiler();
-	
-//	private File rootDir = Project.makeFile();  // TODO check the root dir is OK
 	
 	private boolean hadErrors = false;
 
@@ -122,7 +118,6 @@ public abstract class HierarchicalDataGenerator
 			childrenList = (Iterable<TreeNode>) get(spec.edges(Direction.OUT),
 				selectZeroOrMany(hasProperty("type","forCodeGeneration")),
 				edgeListEndNodes());
-//		for (TreeNode ff:spec.getChildren()) {
 		for (TreeNode ff:childrenList) {
 			TreeGraphDataNode f = (TreeGraphDataNode) ff;
 			String fname = validJavaName(wordUpperCaseName(f.id()));
@@ -130,7 +125,6 @@ public abstract class HierarchicalDataGenerator
 			if (f.properties().hasProperty(P_FIELDTYPE.key())) {
 				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELDTYPE.key());
 				ftype = det.name();
-//				ftype = checkType((String) f.properties().getPropertyValue(P_FIELDTYPE.key()));
 			}
 			if (f.classId().equals(N_TABLE.label())) {
 				ftype = generateTableCode((TreeGraphDataNode) f,cg);
@@ -146,11 +140,6 @@ public abstract class HierarchicalDataGenerator
 		File file = new File(packagePath+File.separator+cn+".java");
 		writeFile(cg,file,cn);
 		UserProjectLink.addDataFile(file);
-//		String result =  compiler.compileCode(file,rootDir);
-//		hadErrors = hadErrors | result!=null;
-//		if (result!=null) 
-//			ComplianceManager.add(new CompileErr(file, result));
-		
 		log.info("  ...done.");
 		return cn;
 	}
@@ -186,10 +175,6 @@ public abstract class HierarchicalDataGenerator
 				ftype = t+"Table";
 				fpack = Table.class.getPackageName()+"."+ftype;
 			}
-			// no code to generate here ! just use a predefined table ! 
-			log.info("    generating reference to "+fpack+" ...");
-//			spec.setProperty("class", fpack);
-			log.info("  ...done.");
 		}
 		else { // this must be a record - superclass will be generated from the record name, but doesnt exist yet !
 			// a table is never the root of a data definition, so there should not be problems here
@@ -204,17 +189,9 @@ public abstract class HierarchicalDataGenerator
 			String comment = comment(general,classComment(fname),generatedCode(false,modelName, ""));		
 			ClassGenerator cg = getTableClassGenerator(ftype,contentType,comment);	
 			tableCode(cg,ftype,contentType,dims);
-//			File file = Project.makeFile(PROJECT_FILES,
-//				validJavaName(wordUpperCaseName(modelName))+File.separator+THREE_WORLDS_CODE,
-//				ftype+".java");
 			File file = new File(packagePath+File.separator+ftype+".java");
 			writeFile(cg,file,ftype);
 			UserProjectLink.addDataFile(file);
-//			String result =  compiler.compileCode(file,rootDir);
-//			hadErrors = hadErrors | result!=null;
-//			if (result!=null) 
-//				ComplianceManager.add(new CompileErr(file, result));
-//			spec.setProperty("class", packageName+"."+ftype);
 			log.info("  ...done.");
 		}
 		if (parentCG!=null) {

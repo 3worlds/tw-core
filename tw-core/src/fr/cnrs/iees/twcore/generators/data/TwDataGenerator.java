@@ -174,6 +174,9 @@ public class TwDataGenerator
 		cg.getConstructor("constructor1").setStatement(fname+" = new "+ftype+"("+dims+")"); 
 	}
 
+	// this is called only to generate ObjectTable descendants
+	// these Tables must implement clone() and clonestructure() with the proper return types,
+	// otherwise there is a cast exception when using the ancestor clone() method.
 	@Override
 	protected void tableCode(ClassGenerator cg, String ftype, String contentType, Iterable<TreeGraphDataNode> dimList) {
 		cg.setImport(packageName+"."+contentType);
@@ -187,6 +190,19 @@ public class TwDataGenerator
 		s = s.substring(0, s.length()-1);
 		s +=")";
 		cg.getConstructor("constructor1").setStatement(s);
+		// since clone() is not abstract in ancestor, we must redeclare it here
+		MethodGenerator m = new MethodGenerator("public",ftype,"clone");
+		cg.setMethod("clone", m);
+		cg.getMethod("clone").setReturnType(ftype);
+		cg.getMethod("clone").setStatement(ftype+" result = cloneStructure()");
+		cg.getMethod("clone").setStatement("for (int i=0; i<flatSize; i++)");
+		cg.getMethod("clone").setStatement("\tresult.setWithFlatIndex(getWithFlatIndex(i),i);");
+		cg.getMethod("clone").setReturnStatement("return result");
+		// since cloneStructure() is not abstract in ancestor, we must redeclare it here
+		m = new MethodGenerator("public",ftype,"cloneStructure");
+		cg.setMethod("cloneStructure", m);
+		cg.getMethod("cloneStructure").setReturnType(ftype);
+		cg.getMethod("cloneStructure").setReturnStatement("return new "+ftype+"()");
 	}
 
 	
