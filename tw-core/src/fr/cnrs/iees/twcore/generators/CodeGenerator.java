@@ -137,7 +137,8 @@ public class CodeGenerator {
 		String result =  compiler.compileCode(ecologyFiles);
 		if (result!=null) 
 			ComplianceManager.add(new CompileErr(ecologyFiles, result));
-		UserProjectLink.pushFiles();
+		if (!ComplianceManager.haveErrors())
+				UserProjectLink.pushFiles();
 		return !ComplianceManager.haveErrors();
 	}
 
