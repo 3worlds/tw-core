@@ -10,7 +10,7 @@ import java.util.List;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-public class DataLabel {
+public class DataLabel implements Comparable<DataLabel> {
 
 	private List<String> label = new LinkedList<String>(); 
 	
@@ -62,6 +62,12 @@ public class DataLabel {
 				sb.append('>');
 		}
 		return sb.toString();
+	}
+
+	// slow ?
+	@Override
+	public int compareTo(DataLabel o) {		
+		return toString().compareTo(o.toString());
 	}
 
 }

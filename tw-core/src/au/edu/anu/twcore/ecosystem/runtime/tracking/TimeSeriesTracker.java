@@ -2,6 +2,7 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
@@ -41,7 +42,8 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 			StatisticalAggregatesSet tableStatistics,
 			SamplingMode selection,
 			boolean viewOthers,
-			StringTable track) {
+			StringTable track,
+			ObjectTable<Class<?>> trackTypes) {
 		super(DataMessageTypes.TIME_SERIES);
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(),selection);
@@ -50,8 +52,25 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(),tableStatistics);
 		metaprops.setProperty(P_DATATRACKER_TRACK.key(),track);
 		metadata = new TimeSeriesMetadata();
+		DataLabel[] labels = buildLabels(track);
+		for (int i=0; i<track.size(); i++) {
+			Class<?> c = trackTypes.getWithFlatIndex(i);
+			if (c.equals(String.class))
+				metadata.addStringVariable(labels[i]);
+			else if (c.equals(Double.class) | c.equals(Float.class))
+				metadata.addDoubleVariable(labels[i]);
+			else 
+				metadata.addIntVariable(labels[i]);
+		}
 		// TODO: fill with appropriate information
 		metaprops.setProperty(TimeSeriesMetadata.TSMETA,metadata);
+	}
+	
+	private DataLabel[] buildLabels(StringTable track) {
+		DataLabel[] result = new DataLabel[track.size()];
+		for (int i=0; i<track.size(); i++)
+			result[i] = new DataLabel(track.getWithFlatIndex(i));
+		return result;
 	}
 	
 	public Metadata metadata(SimulatorStatus status) {

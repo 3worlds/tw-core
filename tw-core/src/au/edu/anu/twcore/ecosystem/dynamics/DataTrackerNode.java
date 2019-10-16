@@ -42,6 +42,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
+import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.LabelValuePairData;
@@ -75,6 +77,7 @@ public class DataTrackerNode
 	private boolean viewOthers = false;
 	private Object dataTrackerClass;
 	private StringTable track = null;
+	ObjectTable<Class<?>> trackTypes = null;
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -109,6 +112,10 @@ public class DataTrackerNode
 				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
 			// the only required properties.
 			track = (StringTable) properties().getPropertyValue(P_DATATRACKER_TRACK.key());
+			// TODO! (this is temporary code): extract the property types from the graph
+			trackTypes = new ObjectTable<>(new Dimensioner(track.size()));
+			trackTypes.fillWith(Double.class);
+			// end code to change
 			dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
 			sealed = true;
 		}
@@ -133,7 +140,7 @@ public class DataTrackerNode
 	private DataTracker<?,?> makeDataTracker(int index) {
 		AbstractDataTracker<?,?> result = null;
 		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
-			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers,track);
+			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers,track,trackTypes);
 		}		
 		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
 			result = new MapTracker();
