@@ -130,6 +130,7 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			}
 			executeFunctions(container,t,dt);
 			// track group state
+			// TODO: filter ni some way, depending on the tracker grouping
 			for (TimeSeriesTracker tracker:tsTrackers) {
 				tracker.record(currentStatus,container.populationData());
 			}
@@ -282,11 +283,25 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			}
 			// track component state
 			for (TimeSeriesTracker tracker:tsTrackers) {
+				tracker.recordItem(buildItemId(focal.id()));
 				tracker.record(currentStatus,focal.currentState());
 			}
 		}
 	}
 
+	private String[] buildItemId(String itemId) {
+		List<String> items = new LinkedList<>();
+		if (focalContext.ecosystemName!=null)
+			items.add(focalContext.ecosystemName);
+		if (focalContext.lifeCycleName!=null)
+			items.add(focalContext.lifeCycleName);
+		if (focalContext.groupName!=null)
+			items.add(focalContext.groupName);
+		items.add(itemId);
+		return items.toArray(new String[items.size()]);
+	}
+	
+	
 	@Override
 	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;

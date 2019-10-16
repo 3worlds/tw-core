@@ -37,6 +37,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	private int metadataType = -1;
 	private int senderId = -1;
 	private long currentTime = Long.MIN_VALUE;
+	private DataLabel currentItem = null;
 
 	public TimeSeriesTracker(Grouping grouping,
 			StatisticalAggregatesSet statistics,
@@ -89,10 +90,15 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		currentTime = time;
 	}
 	
+	public void recordItem(String...labels) {
+		currentItem = new DataLabel(labels);
+	}
+	
 	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
 			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
 			tsd.setTime(currentTime);
+			tsd.setItemLabel(currentItem);
 			boolean foundOne = false;
 			for (String key:props.getKeysAsSet()) {
 				for (DataLabel lab:metadata.intNames()) 

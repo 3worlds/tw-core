@@ -7,6 +7,8 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  *
  * @date 19 Sep 2019
  */
+// Question: what's the use case for this class ? LabelValuePairData could do the same job (except
+// for time)
 public class ObjectData extends TimeData {
 	// private DataLabel label = null;
 	private Object value;

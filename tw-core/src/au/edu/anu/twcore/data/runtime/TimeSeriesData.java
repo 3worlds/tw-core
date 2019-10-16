@@ -16,7 +16,7 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-public class TimeSeriesData extends TimeData {
+public class TimeSeriesData extends LabelledItemData {
 	
 //	private Map<DataLabel, Number> values = new HashMap<>();
 	
