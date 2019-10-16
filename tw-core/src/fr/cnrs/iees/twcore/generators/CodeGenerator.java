@@ -147,7 +147,7 @@ public class CodeGenerator {
 		if (spec != null) {
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
 			gen.generateCode();
-			UserProjectLink.addDataFile(gen.getFile());
+			//UserProjectLink.addDataFile(gen.getFile());
 			if (system.properties().hasProperty(dataGroup)) {
 				String oldValue = (String) system.properties().getPropertyValue(dataGroup);
 				String newValue = gen.generatedClassName();

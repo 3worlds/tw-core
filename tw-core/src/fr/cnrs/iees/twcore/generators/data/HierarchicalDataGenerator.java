@@ -43,6 +43,7 @@ import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -144,6 +145,7 @@ public abstract class HierarchicalDataGenerator
 		log.info("    generating file "+cn+".java ...");
 		File file = new File(packagePath+File.separator+cn+".java");
 		writeFile(cg,file,cn);
+		UserProjectLink.addDataFile(file);
 //		String result =  compiler.compileCode(file,rootDir);
 //		hadErrors = hadErrors | result!=null;
 //		if (result!=null) 
@@ -207,6 +209,7 @@ public abstract class HierarchicalDataGenerator
 //				ftype+".java");
 			File file = new File(packagePath+File.separator+ftype+".java");
 			writeFile(cg,file,ftype);
+			UserProjectLink.addDataFile(file);
 //			String result =  compiler.compileCode(file,rootDir);
 //			hadErrors = hadErrors | result!=null;
 //			if (result!=null) 
