@@ -2,6 +2,7 @@ package au.edu.anu.twcore.ecosystem.runtime;
 
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.rvgrid.observer.Observable;
+import fr.ens.biologie.generic.Singleton;
 
 /**
  * <p>An interface for any object that sends data through messages to other objects of the
@@ -23,7 +24,7 @@ import fr.cnrs.iees.rvgrid.observer.Observable;
  * @author Jacques Gignoux - 3 sept. 2019
  *
  */
-public interface DataTracker<T,M> extends Observable<DataReceiver<T,M>> { 
+public interface DataTracker<T,M> extends Observable<DataReceiver<T,M>>, Singleton<M> { 
 	
 	/**
 	 * Removes an observer from this data tracker's list
@@ -54,5 +55,5 @@ public interface DataTracker<T,M> extends Observable<DataReceiver<T,M>> {
 	 * @return true if this data tracker has observers, false otherwise.
 	 */
 	public boolean hasObservers();
-
+	
 }

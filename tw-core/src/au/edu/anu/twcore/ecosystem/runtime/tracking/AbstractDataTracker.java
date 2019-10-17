@@ -29,6 +29,7 @@ public abstract class AbstractDataTracker<T,M>
 	
 	private Set<DataReceiver<T,M>> observers = new HashSet<>();
 	private int messageType;
+	protected int senderId = -1;
 
 	protected AbstractDataTracker(int messageType) {
 		super();
@@ -72,7 +73,13 @@ public abstract class AbstractDataTracker<T,M>
 	}
 	
 	public void setSender(int id) {
-		// do nothing - for descendants
+		senderId = id;
+	}
+
+	@Override
+	public M getInstance() {
+		// dummy - for descendants
+		return null;
 	}
 
 	

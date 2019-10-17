@@ -35,9 +35,9 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	private SimplePropertyList metaprops;
 	private TimeSeriesMetadata metadata;
 	private int metadataType = -1;
-	private int senderId = -1;
 	private long currentTime = Long.MIN_VALUE;
 	private DataLabel currentItem = null;
+	private Metadata singletonMD = null;
 
 	public TimeSeriesTracker(Grouping grouping,
 			StatisticalAggregatesSet statistics,
@@ -73,17 +73,6 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		for (int i=0; i<track.size(); i++)
 			result[i] = new DataLabel(track.getWithFlatIndex(i));
 		return result;
-	}
-	
-	public Metadata metadata(SimulatorStatus status) {
-		Metadata result = new Metadata(status,senderId,metaprops); 
-		metadataType = result.type();
-		return result;
-	}
-	
-	@Override
-	public void setSender(int id) {
-		senderId = id;
 	}
 	
 	public void recordTime(long time) {
@@ -134,5 +123,15 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 			if (foundOne) sendData(tsd);
 		}
 	}
+
+	@Override
+	public Metadata getInstance() {
+		if (singletonMD==null) {
+			singletonMD = new Metadata(senderId,metaprops); 
+			metadataType = singletonMD.type();
+		}
+		return singletonMD;
+	}
+
 
 }

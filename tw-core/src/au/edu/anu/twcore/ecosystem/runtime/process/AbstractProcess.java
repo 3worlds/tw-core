@@ -28,14 +28,17 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.process;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
@@ -47,7 +50,8 @@ import fr.ens.biologie.generic.Sealable;
  * @author gignoux - 10 mars 2017
  *
  */
-public abstract class AbstractProcess implements TwProcess, Sealable {
+public abstract class AbstractProcess 
+		implements TwProcess, Sealable, DataTrackerHolder<Metadata> {
 
 	private boolean sealed = false;
     private SystemContainer ecosystem = null;
@@ -56,6 +60,7 @@ public abstract class AbstractProcess implements TwProcess, Sealable {
 	protected List<MapTracker> mapTrackers = new LinkedList<MapTracker>();
 	protected List<LabelValuePairTracker> simpleTrackers = new LinkedList<LabelValuePairTracker>();
 	protected Timer timer = null;
+	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
     
     public AbstractProcess(SystemContainer world, Timer timer) {
     	super();
@@ -66,6 +71,9 @@ public abstract class AbstractProcess implements TwProcess, Sealable {
 	@Override
 	public final Sealable seal() {
 		sealed = true;
+    	trackers.addAll(tsTrackers);
+    	trackers.addAll(mapTrackers);
+    	trackers.addAll(simpleTrackers);
 		return this;
 	}
 
@@ -99,4 +107,11 @@ public abstract class AbstractProcess implements TwProcess, Sealable {
 				simpleTrackers.add((LabelValuePairTracker) tracker);
 		}
 	}
+	
+	@Override
+	public Iterable<DataTracker<?,Metadata>> dataTrackers() {
+		return trackers;
+	}
+
+
 }

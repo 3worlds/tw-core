@@ -1,5 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -7,12 +8,14 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
+import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerHolder;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.utils.Logging;
@@ -63,8 +66,6 @@ public class Simulator {
 	 There is always exactly one stopping condition.
 	 When there are many, they are organized as a tree */
 	protected StoppingCondition stoppingCondition;
-//	/** the time line for this simulator, common to all timers */
-//	private TimeLine refTimer;
 	/** the calling order of processes depending on the combination of
 	 * simultaneous time models */
 	private Map<Integer, List<List<TwProcess>>> processCallingOrder;
@@ -74,6 +75,8 @@ public class Simulator {
 	private SystemContainer community;
 	/** simulator status */
 	private SimulatorStatus status = SimulatorStatus.Initial;
+	/** all data trackers used in this simulator, together with their metadata */
+	private Map<DataTracker<?,Metadata>,Metadata> trackers = new HashMap<>(); 
 	
 	// CONSTRUCTORS
 
@@ -87,6 +90,7 @@ public class Simulator {
 	 * @param processCallingOrder
 	 * @param ecosystem
 	 */
+	@SuppressWarnings("unchecked")
 	public Simulator(int id,
 			StoppingCondition stoppingCondition, 
 			TimeLine refTimer,
@@ -104,9 +108,21 @@ public class Simulator {
 		this.community = ecosystem;
 		// looping aids
 		currentTimes = new long[timerList.size()];
-		// data tracking
+		// data tracking - record all data trackers and make their metadata
 		timetracker = new TimeTracker();
-		metadata = new Metadata(status,id,refTimer.properties());
+		metadata = new Metadata(id,refTimer.properties());
+		trackers.put(timetracker,metadata);
+		for (List<List<TwProcess>> llp:processCallingOrder.values())
+			for (List<TwProcess> lp:llp)
+				for (TwProcess p:lp)
+					if (p instanceof DataTrackerHolder)
+						for (DataTracker<?,Metadata> dt:((DataTrackerHolder<Metadata>)p).dataTrackers()) {
+							// make metadata
+							// TODO: send timer properties too
+							Metadata meta = dt.getInstance();
+							meta.addProperties(refTimer.properties());
+							trackers.put(dt, meta);
+		}
 		// copies initial community to current community to start properly
 		community.reset();
 	}
@@ -157,7 +173,6 @@ public class Simulator {
 				List<TwProcess> torun = currentProcesses.get(j);
 				// execute all processes at the same dependency level
 				for (TwProcess p : torun) {
-//					p.execute(nexttime, step); 
 					p.execute(status,nexttime,step);
 				}
 			}
@@ -193,8 +208,9 @@ public class Simulator {
 		lastTime = startTime;
 		stoppingCondition.reset();
 		status = SimulatorStatus.Initial;
-//		started = false;
-//		finished = false;
+		// this to get all data trackers to send their metadata to their widgets
+		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
+			dte.getKey().sendMetadata(dte.getValue());
 		for (Timer t:timerList)
 			t.reset();
 		timetracker.sendData(lastTime);

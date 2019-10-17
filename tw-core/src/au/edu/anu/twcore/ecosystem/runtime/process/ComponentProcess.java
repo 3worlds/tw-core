@@ -63,7 +63,9 @@ import fr.ens.biologie.generic.utils.Logging;
  * @author gignoux - 10 mars 2017
  *
  */
-public class ComponentProcess extends AbstractProcess implements Categorized<SystemComponent> {
+public class ComponentProcess 
+		extends AbstractProcess 
+		implements Categorized<SystemComponent> {
 	
 	private class newBornSettings {
 		SystemFactory factory = null;

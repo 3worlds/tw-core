@@ -82,8 +82,6 @@ public class SimulatorNode
 		implements LimitedEdition<Simulator>, Sealable {
 	
 	private boolean sealed = false;
-//	private StoppingCondition rootStop = null;
-//	private List<Timer> timers = new ArrayList<>();
 	private TimeLine timeLine = null;
 	private Map<Integer,Simulator> simulators = new HashMap<>();
 	private int[] timeModelMasks; // bit pattern for every timeModel
@@ -197,12 +195,7 @@ public class SimulatorNode
 			simulators.put(index,makeSimulator(index));
 		return simulators.get(index);
 	}
-	
-//	public void addObserver(DataReceiver<LabelValuePairData,Metadata> observer) {
-//		for (Simulator sim:instances)
-//			sim.addObserver(observer);
-//		instances.clear();
-//	}
+
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		for (Simulator sim:simulators.values())
 			sim.addObserver(observer);
@@ -219,7 +212,6 @@ public class SimulatorNode
 	public boolean isSealed() {
 		return sealed;
 	}
-	
 	
 	/**
 	 * recursive method to build up the list of all possible simultaneous
@@ -246,7 +238,6 @@ public class SimulatorNode
 		if (combinationList.size() != initSize)
 			computeTMCombinations(combinationList,timerList);
 	}
-
 	
 	/**
 	 * compute the dependency rank of a Process - recursive
@@ -260,7 +251,6 @@ public class SimulatorNode
 			result = Math.max(result, dependencyRank(rank + 1, dp, deps));
 		return result;
 	}
-
 	
 	/**
 	 * computes the order of process calls for any combination of time models
@@ -356,6 +346,5 @@ public class SimulatorNode
 			processCallingOrder.put(allTMMasks.get(stm), processesByRank);
 		}
 	}
-
 	
 }
