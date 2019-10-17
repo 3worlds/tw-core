@@ -39,6 +39,5 @@ public interface TwProcess {
 	
 	/** execute computation for time t with time interval dt */
 	public void execute(SimulatorStatus status, long t, long dt);
-
 	
 }

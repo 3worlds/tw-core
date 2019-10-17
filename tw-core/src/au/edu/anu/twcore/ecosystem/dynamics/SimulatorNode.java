@@ -156,7 +156,7 @@ public class SimulatorNode
 		SystemContainer comm = (SystemContainer)((Ecosystem) getParent()).getInstance(index);
 		setInitialCommunity(index);
 		// *** finally, instantiate simulator
-		Simulator sim = new Simulator(index,rootStop,timeLine,timers,timeModelMasks.clone(),pco,comm);
+		Simulator sim = new Simulator(index,rootStop,timeLine,timeModels,timers,timeModelMasks.clone(),pco,comm);
 		rootStop.attachSimulator(sim);
 		return sim;
 	}

@@ -60,6 +60,7 @@ public abstract class AbstractProcess
 	protected List<MapTracker> mapTrackers = new LinkedList<MapTracker>();
 	protected List<LabelValuePairTracker> simpleTrackers = new LinkedList<LabelValuePairTracker>();
 	protected Timer timer = null;
+
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
     
     public AbstractProcess(SystemContainer world, Timer timer) {
@@ -112,6 +113,5 @@ public abstract class AbstractProcess
 	public Iterable<DataTracker<?,Metadata>> dataTrackers() {
 		return trackers;
 	}
-
 
 }

@@ -7,7 +7,9 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
+import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
+import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -17,6 +19,8 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerHolder;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -94,6 +98,7 @@ public class Simulator {
 	public Simulator(int id,
 			StoppingCondition stoppingCondition, 
 			TimeLine refTimer,
+			List<TimeModel> timeModels,
 			List<Timer> timers,
 			int[] timeModelMasks,
 			Map<Integer, List<List<TwProcess>>> processCallingOrder,
@@ -118,13 +123,24 @@ public class Simulator {
 					if (p instanceof DataTrackerHolder)
 						for (DataTracker<?,Metadata> dt:((DataTrackerHolder<Metadata>)p).dataTrackers()) {
 							// make metadata
-							// TODO: send timer properties too
 							Metadata meta = dt.getInstance();
 							meta.addProperties(refTimer.properties());
+							ReadOnlyPropertyList timerProps = findTimerProps(timeModels,p);
+							if (timerProps!=null)
+								meta.addProperties(timerProps);
 							trackers.put(dt, meta);
 		}
 		// copies initial community to current community to start properly
 		community.reset();
+	}
+	
+	private ReadOnlyPropertyList findTimerProps(List<TimeModel> timeModels,TwProcess p) {
+		for (TimeModel tm:timeModels)
+			for (TreeNode tn:tm.getChildren())
+				if (tn instanceof ProcessNode)
+					if (p==((ProcessNode)tn).getInstance(id))
+						return tm.properties();
+		return null;
 	}
 	
 	// METHODS

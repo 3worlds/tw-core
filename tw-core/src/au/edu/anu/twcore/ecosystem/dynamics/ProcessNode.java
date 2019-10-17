@@ -185,6 +185,7 @@ public class ProcessNode
 		for (DataTrackerNode dt:ldt) {
 			result.addDataTracker(dt.getInstance(index));
 		}
+		result.seal();
 		return result;
 	}
 
