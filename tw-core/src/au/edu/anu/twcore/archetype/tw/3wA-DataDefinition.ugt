@@ -20,10 +20,6 @@ hasNode recordRootSpec
 	isOfClass = String("record")
 	hasParent = StringTable(([1]"dataDefinition:"))
 	multiplicity = IntegerRange("0..*")
-//	hasProperty recordNameSpec
-//		hasName = String("name")
-//		type = String("String")
-//		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery recordRootNodeAtLeastOneChildLabelOfQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
 		childLabel = StringTable(([2]"field", "table"))
@@ -34,10 +30,6 @@ hasNode recordTableSpec
 	isOfClass = String("record")
 	hasParent = StringTable(([1]"table:"))
 	multiplicity = IntegerRange("0..1")
-//	hasProperty recordNameSpec
-//		hasName = String("name")
-//		type = String("String")
-//		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
 		childLabel = StringTable(([2]"field", "table"))
@@ -52,7 +44,6 @@ hasNode tableSpec
 	hasProperty dataElementTypeSpec
 		hasName = String("dataElementType")
 		type = String("DataElementType")
-		//type = String("String")				
 		multiplicity = IntegerRange("0..1")
 	hasEdge dimEdgeSpec
 		isOfClass = String("sizedBy")            

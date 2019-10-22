@@ -28,24 +28,35 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.Grouping;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.Field;
+import au.edu.anu.twcore.data.Record;
+import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.MapData;
 import au.edu.anu.twcore.data.runtime.Metadata;
@@ -55,6 +66,8 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
+import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
@@ -86,7 +99,71 @@ public class DataTrackerNode
 	public DataTrackerNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
+	
+	// search a table for data types - assumes trackVar is the table name WITHOUT index
+	// (ie 'myTable', not 'myTable[0][12]') 
+	// cross-recursive with next method
+	private Class<?> findTrackType(TableNode tab, String trackVar) {
+		Class<?> result = null;
+		// leaf table, ie with primitive elements
+		// CAUTION: returns the type of the table elements, NOT the table type
+		// (eg Boolean, not BooleanTable)
+		if (tab.properties().hasProperty(P_DATAELEMENTTYPE.key())) 
+			if (tab.id().equals(trackVar)) {
+				DataElementType det = (DataElementType) tab.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
+				try {
+					result = Class.forName(det.className());
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		// table of records - must have exactly one child which is a record
+		else for (TreeNode nn:tab.getChildren()) {
+			result = findTrackType((Record)nn,trackVar);
+			if (result!=null)
+				break;
+		}
+		return result;
+	}
+	
+	// cross-recursive with previous
+	private Class<?> findTrackType(Record rec, String trackVar) {
+		Class<?> result = null;
+		for (TreeNode n:rec.getChildren()) {
+			if (n instanceof Field) 
+					if (n.id().equals(trackVar)) {
+				DataElementType det = (DataElementType) ((Field)n)
+					.properties().getPropertyValue(P_FIELD_TYPE.key());
+				try {
+					result = Class.forName(det.className());
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else if (n instanceof TableNode)
+				result = findTrackType((TableNode)n,trackVar);
+			if (result!=null)
+				break;
+		}
+		return result;
+	}
 
+	// recursive
+	@SuppressWarnings("unchecked")
+	private Class<?> findTrackType(Category cat, String trackVar) {
+		Class<?> result = null;
+		List<Record> lr = (List<Record>) get(cat.edges(Direction.OUT),
+			selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()),hasTheLabel(E_DECORATORS.label()))),
+			edgeListEndNodes());
+		if (lr!=null) 
+			for (Record r:lr)
+				result = findTrackType((Record)r,trackVar);
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		if (!sealed) {
@@ -112,9 +189,25 @@ public class DataTrackerNode
 				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
 			// the only required properties.
 			track = (StringTable) properties().getPropertyValue(P_DATATRACKER_TRACK.key());
-			// TODO! (this is temporary code): extract the property types from the graph
+			// extract the property types from the graph
 			trackTypes = new ObjectTable<>(new Dimensioner(track.size()));
-			trackTypes.fillWith(Double.class);
+//			trackTypes.fillWith(Double.class);
+			List<Node> ln = (List<Node>) get(getParent().edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
+				edgeListEndNodes());
+			for (Node n:ln) {
+				if (n instanceof RelationType) {
+					// TODO: implement code for relation data trackers
+				}
+				else if (n instanceof Category)
+					for (int i=0; i<track.size(); i++) {
+						Class<?> tt = findTrackType((Category)n,track.getWithFlatIndex(i));
+						if (tt!=null)
+							trackTypes.setWithFlatIndex(tt,i);
+						else ; // throw Exception ? this should never happen normally...
+				}
+			}
+			
 			// end code to change
 			dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
 			sealed = true;
