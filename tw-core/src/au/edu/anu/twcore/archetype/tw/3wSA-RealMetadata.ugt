@@ -1,0 +1,28 @@
+tree
+// Sub-archetype for 3Worlds for checking metadata for real number variables specifications
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-RealMetadata
+
+	hasNode RealMetadataSpec
+		isOfClass = String("field")
+		hasParent = StringTable(([1]"record:"))
+		multiplicity = IntegerRange("0..*")
+		hasProperty RealNumberFieldUnitsSpec
+			hasName = String("units")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		hasProperty RealNumberFieldPrecSpec
+			hasName = String("precision")
+			type = String("Double")
+			multiplicity = IntegerRange("0..1")
+		hasProperty RealNumberRangeSpec
+			hasName = String("range")
+			type = String("Interval")
+			multiplicity = IntegerRange("0..1")
+	      
