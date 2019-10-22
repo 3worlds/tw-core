@@ -33,6 +33,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DataElementType;
@@ -41,6 +42,8 @@ import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
+import fr.ens.biologie.generic.utils.Interval;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
@@ -53,6 +56,7 @@ import java.util.Map;
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.Field;
 import au.edu.anu.twcore.data.Record;
@@ -80,6 +84,15 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
 public class DataTrackerNode 
 		extends InitialisableNode 
 		implements LimitedEdition<DataTracker<?,?>>, Sealable {
+	
+	// a class to collect metadata on fields, ie min, max, precision, units etc.
+	private class TrackMeta {
+		Class<?> trackType = null;
+		Interval rrange = null;
+		IntegerRange irange = null;
+		Double prec = null;
+		String units = null;
+	}
 
 	private Map<Integer, DataTracker<?,?>> dataTrackers = new HashMap<>();
 	private boolean sealed = false;
@@ -90,7 +103,8 @@ public class DataTrackerNode
 	private boolean viewOthers = false;
 	private Object dataTrackerClass;
 	private StringTable track = null;
-	ObjectTable<Class<?>> trackTypes = null;
+	private ObjectTable<Class<?>> trackTypes = null;
+	private ExtendablePropertyList fieldMetadata = new ExtendablePropertyListImpl();
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -103,16 +117,18 @@ public class DataTrackerNode
 	// search a table for data types - assumes trackVar is the table name WITHOUT index
 	// (ie 'myTable', not 'myTable[0][12]') 
 	// cross-recursive with next method
-	private Class<?> findTrackType(TableNode tab, String trackVar) {
-		Class<?> result = null;
+	private TrackMeta findTrackMetadata(TableNode tab, String trackVar) {
+		TrackMeta result = null;
 		// leaf table, ie with primitive elements
 		// CAUTION: returns the type of the table elements, NOT the table type
 		// (eg Boolean, not BooleanTable)
 		if (tab.properties().hasProperty(P_DATAELEMENTTYPE.key())) 
 			if (tab.id().equals(trackVar)) {
 				DataElementType det = (DataElementType) tab.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
+				result = new TrackMeta();
+				// TODO (when table metadata exist as for fields): manage other metadata
 				try {
-					result = Class.forName(det.className());
+					result.trackType = Class.forName(det.className());
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -120,7 +136,7 @@ public class DataTrackerNode
 		}
 		// table of records - must have exactly one child which is a record
 		else for (TreeNode nn:tab.getChildren()) {
-			result = findTrackType((Record)nn,trackVar);
+			result = findTrackMetadata((Record)nn,trackVar);
 			if (result!=null)
 				break;
 		}
@@ -128,22 +144,38 @@ public class DataTrackerNode
 	}
 	
 	// cross-recursive with previous
-	private Class<?> findTrackType(Record rec, String trackVar) {
-		Class<?> result = null;
+	private TrackMeta findTrackMetadata(Record rec, String trackVar) {
+		TrackMeta result = null;
 		for (TreeNode n:rec.getChildren()) {
 			if (n instanceof Field) 
 					if (n.id().equals(trackVar)) {
-				DataElementType det = (DataElementType) ((Field)n)
-					.properties().getPropertyValue(P_FIELD_TYPE.key());
+				Field f = (Field) n;
+				result = new TrackMeta();
+				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELD_TYPE.key());
+				if (f.properties().hasProperty(P_FIELD_UNITS.key()))
+					result.units = (String) f.properties().getPropertyValue(P_FIELD_UNITS.key());
+				if (f.properties().hasProperty(P_FIELD_RANGE.key()))
+					switch(det) {
+					case Double: case Float:
+						result.rrange = (Interval) f.properties().getPropertyValue(P_FIELD_RANGE.key());
+						break;
+					case Integer: case Long: case Short: case Byte:
+						result.irange = (IntegerRange) f.properties().getPropertyValue(P_FIELD_RANGE.key());
+						break;
+					default:
+						break;
+					}
+				if (f.properties().hasProperty(P_FIELD_PREC.key())) 
+					result.prec = (Double) f.properties().getPropertyValue(P_FIELD_PREC.key());
 				try {
-					result = Class.forName(det.className());
+					result.trackType = Class.forName(det.className());
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 			else if (n instanceof TableNode)
-				result = findTrackType((TableNode)n,trackVar);
+				result = findTrackMetadata((TableNode)n,trackVar);
 			if (result!=null)
 				break;
 		}
@@ -152,14 +184,14 @@ public class DataTrackerNode
 
 	// recursive
 	@SuppressWarnings("unchecked")
-	private Class<?> findTrackType(Category cat, String trackVar) {
-		Class<?> result = null;
+	private TrackMeta findTrackMetadata(Category cat, String trackVar) {
+		TrackMeta result = null;
 		List<Record> lr = (List<Record>) get(cat.edges(Direction.OUT),
 			selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()),hasTheLabel(E_DECORATORS.label()))),
 			edgeListEndNodes());
 		if (lr!=null) 
 			for (Record r:lr)
-				result = findTrackType((Record)r,trackVar);
+				result = findTrackMetadata((Record)r,trackVar);
 		return result;
 	}
 	
@@ -189,9 +221,8 @@ public class DataTrackerNode
 				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
 			// the only required properties.
 			track = (StringTable) properties().getPropertyValue(P_DATATRACKER_TRACK.key());
-			// extract the property types from the graph
+			// extract the property types + metadata from the graph
 			trackTypes = new ObjectTable<>(new Dimensioner(track.size()));
-//			trackTypes.fillWith(Double.class);
 			List<Node> ln = (List<Node>) get(getParent().edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
 				edgeListEndNodes());
@@ -201,9 +232,19 @@ public class DataTrackerNode
 				}
 				else if (n instanceof Category)
 					for (int i=0; i<track.size(); i++) {
-						Class<?> tt = findTrackType((Category)n,track.getWithFlatIndex(i));
-						if (tt!=null)
-							trackTypes.setWithFlatIndex(tt,i);
+						TrackMeta tt = findTrackMetadata((Category)n,track.getWithFlatIndex(i));
+						if (tt!=null) {
+							trackTypes.setWithFlatIndex(tt.trackType,i);
+							String trackName = track.getWithFlatIndex(i)+".";
+							if (tt.units!=null)
+								fieldMetadata.addProperty(trackName+P_FIELD_UNITS.key(),tt.units);
+							if (tt.irange!=null)
+								fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.irange);
+							if (tt.rrange!=null)
+								fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.rrange);
+							if (tt.prec!=null)
+								fieldMetadata.addProperty(trackName+P_FIELD_PREC.key(),tt.prec);
+						}
 						else ; // throw Exception ? this should never happen normally...
 				}
 			}
@@ -233,7 +274,7 @@ public class DataTrackerNode
 	private DataTracker<?,?> makeDataTracker(int index) {
 		AbstractDataTracker<?,?> result = null;
 		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
-			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers,track,trackTypes);
+			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers,track,trackTypes,fieldMetadata);
 		}		
 		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
 			result = new MapTracker();

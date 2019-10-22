@@ -38,6 +38,8 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	private long currentTime = Long.MIN_VALUE;
 	private DataLabel currentItem = null;
 	private Metadata singletonMD = null;
+	// metadata for numeric fields, ie min max units etc.
+	private ReadOnlyPropertyList fieldMetadata = null;
 
 	public TimeSeriesTracker(Grouping grouping,
 			StatisticalAggregatesSet statistics,
@@ -45,8 +47,10 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 			SamplingMode selection,
 			boolean viewOthers,
 			StringTable track,
-			ObjectTable<Class<?>> trackTypes) {
+			ObjectTable<Class<?>> trackTypes,
+			ReadOnlyPropertyList fieldMetadata) {
 		super(DataMessageTypes.TIME_SERIES);
+		this.fieldMetadata = fieldMetadata;
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(),selection);
 		metaprops.setProperty(P_DATATRACKER_GROUPBY.key(),grouping);
@@ -129,6 +133,8 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		if (singletonMD==null) {
 			singletonMD = new Metadata(senderId,metaprops); 
 			metadataType = singletonMD.type();
+			if (fieldMetadata!=null)
+				singletonMD.addProperties(fieldMetadata);
 		}
 		return singletonMD;
 	}
