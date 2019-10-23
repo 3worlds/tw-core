@@ -122,8 +122,8 @@ public abstract class HierarchicalDataGenerator
 			TreeGraphDataNode f = (TreeGraphDataNode) ff;
 			String fname = validJavaName(wordUpperCaseName(f.id()));
 			String ftype = null;
-			if (f.properties().hasProperty(P_FIELDTYPE.key())) {
-				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELDTYPE.key());
+			if (f.properties().hasProperty(P_FIELD_TYPE.key())) {
+				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELD_TYPE.key());
 				ftype = det.name();
 			}
 			if (f.classId().equals(N_TABLE.label())) {

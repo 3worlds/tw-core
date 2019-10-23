@@ -25,4 +25,21 @@ archetype 3wSA-RealMetadata
 			hasName = String("range")
 			type = String("Interval")
 			multiplicity = IntegerRange("0..1")
+	
+	hasNode RealMetadataTableSpec
+		isOfClass = String("table")
+		hasParent = StringTable(([1]"record:"))
+		multiplicity = IntegerRange("0..*")
+		hasProperty RealNumberTableUnitsSpec
+			hasName = String("units")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		hasProperty RealNumberTablePrecSpec
+			hasName = String("precision")
+			type = String("Double")
+			multiplicity = IntegerRange("0..1")
+		hasProperty RealNumberTableRangeSpec
+			hasName = String("range")
+			type = String("Interval")
+			multiplicity = IntegerRange("0..1")
 	      

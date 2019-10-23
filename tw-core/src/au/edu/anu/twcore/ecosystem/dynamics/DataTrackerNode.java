@@ -122,17 +122,31 @@ public class DataTrackerNode
 		// leaf table, ie with primitive elements
 		// CAUTION: returns the type of the table elements, NOT the table type
 		// (eg Boolean, not BooleanTable)
-		if (tab.properties().hasProperty(P_DATAELEMENTTYPE.key())) 
+		if (tab.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
 			if (tab.id().equals(trackVar)) {
-				DataElementType det = (DataElementType) tab.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 				result = new TrackMeta();
-				// TODO (when table metadata exist as for fields): manage other metadata
+				DataElementType det = (DataElementType) tab.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
+				if (tab.properties().hasProperty(P_TABLE_UNITS.key()))
+					result.units = (String) tab.properties().getPropertyValue(P_TABLE_UNITS.key());
+				if (tab.properties().hasProperty(P_TABLE_RANGE.key()))
+					switch(det) {
+					case Double: case Float:
+						result.rrange = (Interval) tab.properties().getPropertyValue(P_TABLE_RANGE.key());
+						break;
+					case Integer: case Long: case Short: case Byte:
+						result.irange = (IntegerRange) tab.properties().getPropertyValue(P_TABLE_RANGE.key());
+						break;
+					default:
+						break;
+					}
+				if (tab.properties().hasProperty(P_TABLE_PREC.key())) 
+					result.prec = (Double) tab.properties().getPropertyValue(P_TABLE_PREC.key());
 				try {
 					result.trackType = Class.forName(det.className());
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			}
 		}
 		// table of records - must have exactly one child which is a record
 		else for (TreeNode nn:tab.getChildren()) {
@@ -147,31 +161,31 @@ public class DataTrackerNode
 	private TrackMeta findTrackMetadata(Record rec, String trackVar) {
 		TrackMeta result = null;
 		for (TreeNode n:rec.getChildren()) {
-			if (n instanceof Field) 
-					if (n.id().equals(trackVar)) {
-				Field f = (Field) n;
-				result = new TrackMeta();
-				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELD_TYPE.key());
-				if (f.properties().hasProperty(P_FIELD_UNITS.key()))
-					result.units = (String) f.properties().getPropertyValue(P_FIELD_UNITS.key());
-				if (f.properties().hasProperty(P_FIELD_RANGE.key()))
-					switch(det) {
-					case Double: case Float:
-						result.rrange = (Interval) f.properties().getPropertyValue(P_FIELD_RANGE.key());
-						break;
-					case Integer: case Long: case Short: case Byte:
-						result.irange = (IntegerRange) f.properties().getPropertyValue(P_FIELD_RANGE.key());
-						break;
-					default:
-						break;
+			if (n instanceof Field) {
+				if (n.id().equals(trackVar)) {
+					Field f = (Field) n;
+					result = new TrackMeta();
+					DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELD_TYPE.key());
+					if (f.properties().hasProperty(P_FIELD_UNITS.key()))
+						result.units = (String) f.properties().getPropertyValue(P_FIELD_UNITS.key());
+					if (f.properties().hasProperty(P_FIELD_RANGE.key()))
+						switch(det) {
+						case Double: case Float:
+							result.rrange = (Interval) f.properties().getPropertyValue(P_FIELD_RANGE.key());
+							break;
+						case Integer: case Long: case Short: case Byte:
+							result.irange = (IntegerRange) f.properties().getPropertyValue(P_FIELD_RANGE.key());
+							break;
+						default:
+							break;
+						}
+					if (f.properties().hasProperty(P_FIELD_PREC.key())) 
+						result.prec = (Double) f.properties().getPropertyValue(P_FIELD_PREC.key());
+					try {
+						result.trackType = Class.forName(det.className());
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
 					}
-				if (f.properties().hasProperty(P_FIELD_PREC.key())) 
-					result.prec = (Double) f.properties().getPropertyValue(P_FIELD_PREC.key());
-				try {
-					result.trackType = Class.forName(det.className());
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
 			else if (n instanceof TableNode)
@@ -190,8 +204,11 @@ public class DataTrackerNode
 			selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()),hasTheLabel(E_DECORATORS.label()))),
 			edgeListEndNodes());
 		if (lr!=null) 
-			for (Record r:lr)
+			for (Record r:lr) { // this list may contain at most 2 items
 				result = findTrackMetadata((Record)r,trackVar);
+				if (result!=null)
+					break;
+		}
 		return result;
 	}
 	

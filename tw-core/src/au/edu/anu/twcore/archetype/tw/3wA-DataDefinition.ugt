@@ -52,24 +52,51 @@ hasNode tableSpec
 	mustSatisfyQuery childXorPropertyQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery")
 		edge_prop = StringTable(([2]"record","dataElementType"))
+	mustSatisfyQuery DoubleMetadataTableTypeSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([2]"dataElementType","3wSA-RealMetadata.ugt"))
+		value = fr.cnrs.iees.twcore.constants.DataElementType(Double)
+	mustSatisfyQuery FloatMetadataTableTypeSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([2]"dataElementType","3wSA-RealMetadata.ugt"))
+		value = fr.cnrs.iees.twcore.constants.DataElementType(Float)
+	mustSatisfyQuery IntegerMetadataTableTypeSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([2]"dataElementType","3wSA-IntegerMetadata.ugt"))
+		value = fr.cnrs.iees.twcore.constants.DataElementType(Integer)
+	mustSatisfyQuery LongMetadataTableTypeSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([2]"dataElementType","3wSA-IntegerMetadata.ugt"))
+		value = fr.cnrs.iees.twcore.constants.DataElementType(Long)
+	mustSatisfyQuery ShortMetadataTableTypeSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([2]"dataElementType","3wSA-IntegerMetadata.ugt"))
+		value = fr.cnrs.iees.twcore.constants.DataElementType(Short)
+	mustSatisfyQuery ByteMetadataTableTypeSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([2]"dataElementType","3wSA-IntegerMetadata.ugt"))
+		value = fr.cnrs.iees.twcore.constants.DataElementType(Byte)
+		
+		
+		
 	// optional metadata - TODO: make sure these are only applied to numeric tables
 	// cf what has been done for fields below
-	hasProperty NumericTableUnitsSpec
-		hasName = String("units")
-		type = String("String")
-		multiplicity = IntegerRange("0..1")
-	hasProperty NumericTablePrecSpec
-		hasName = String("precision")
-		type = String("Double")
-		multiplicity = IntegerRange("0..1")
-	hasProperty NumericTableMinSpec
-		hasName = String("min")
-		type = String("Double")
-		multiplicity = IntegerRange("0..1")
-	hasProperty NumericTableMaxSpec
-		hasName = String("max")
-		type = String("Double")
-		multiplicity = IntegerRange("0..1")
+//	hasProperty NumericTableUnitsSpec
+//		hasName = String("units")
+//		type = String("String")
+//		multiplicity = IntegerRange("0..1")
+//	hasProperty NumericTablePrecSpec
+//		hasName = String("precision")
+//		type = String("Double")
+//		multiplicity = IntegerRange("0..1")
+//	hasProperty NumericTableMinSpec
+//		hasName = String("min")
+//		type = String("Double")
+//		multiplicity = IntegerRange("0..1")
+//	hasProperty NumericTableMaxSpec
+//		hasName = String("max")
+//		type = String("Double")
+//		multiplicity = IntegerRange("0..1")
 		
 hasNode recordFieldSpec
 	isOfClass = String("field")

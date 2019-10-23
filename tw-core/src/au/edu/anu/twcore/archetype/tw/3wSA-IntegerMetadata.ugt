@@ -21,4 +21,17 @@ archetype 3wSA-IntegerMetadata
 			hasName = String("range")
 			type = String("IntegerRange")
 			multiplicity = IntegerRange("0..1")
+
+	hasNode IntegerMetadataTableSpec
+		isOfClass = String("table")
+		hasParent = StringTable(([1]"record:"))
+		multiplicity = IntegerRange("0..*")
+		hasProperty IntegerNumberTableUnitsSpec
+			hasName = String("units")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		hasProperty IntegerNumberTableRangeSpec
+			hasName = String("range")
+			type = String("IntegerRange")
+			multiplicity = IntegerRange("0..1")
 	      
