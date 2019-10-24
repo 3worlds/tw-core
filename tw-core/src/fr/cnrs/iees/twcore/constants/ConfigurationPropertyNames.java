@@ -35,6 +35,7 @@ public enum ConfigurationPropertyNames {
 	P_FIELD_RANGE 				("range"),
 	P_FIELD_PREC 				("precision"),
 	P_FIELD_UNITS 				("units"),
+	P_TABLE_INDEX 				("index"),
 	P_DESIGN_TYPE				("type"),
 	P_DESIGN_FILE				("file"),
 	P_TREATMENT_REPLICATES		("replicates"),

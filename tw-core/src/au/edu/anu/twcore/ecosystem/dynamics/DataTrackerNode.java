@@ -54,10 +54,12 @@ import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
+import au.edu.anu.rscs.aot.collections.tables.IndexString;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.DimNode;
 import au.edu.anu.twcore.data.Field;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
@@ -92,6 +94,7 @@ public class DataTrackerNode
 		IntegerRange irange = null;
 		Double prec = null;
 		String units = null;
+		int[][] indexes = null;
 	}
 
 	private Map<Integer, DataTracker<?,?>> dataTrackers = new HashMap<>();
@@ -117,14 +120,29 @@ public class DataTrackerNode
 	// search a table for data types - assumes trackVar is the table name WITHOUT index
 	// (ie 'myTable', not 'myTable[0][12]') 
 	// cross-recursive with next method
+	@SuppressWarnings("unchecked")
 	private TrackMeta findTrackMetadata(TableNode tab, String trackVar) {
 		TrackMeta result = null;
+		String tv = trackVar;
+		String is = "";
+		if (trackVar.contains("[")) {
+			tv = trackVar.substring(0,trackVar.indexOf('['));
+			is = trackVar.substring(trackVar.indexOf('['));
+		}
 		// leaf table, ie with primitive elements
 		// CAUTION: returns the type of the table elements, NOT the table type
 		// (eg Boolean, not BooleanTable)
 		if (tab.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
-			if (tab.id().equals(trackVar)) {
+			if (tab.id().equals(tv)) {
 				result = new TrackMeta();
+				List<DimNode> dimns = (List<DimNode>) get(tab.edges(Direction.OUT),
+					selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
+					edgeListEndNodes());
+				int [] dims = new int[dimns.size()];
+				int j=0;
+				for (DimNode dim:dimns)
+					dims[j++] = (int) dim.properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
+				result.indexes = IndexString.stringToIndex(is,dims);
 				DataElementType det = (DataElementType) tab.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 				if (tab.properties().hasProperty(P_TABLE_UNITS.key()))
 					result.units = (String) tab.properties().getPropertyValue(P_TABLE_UNITS.key());
@@ -150,7 +168,7 @@ public class DataTrackerNode
 		}
 		// table of records - must have exactly one child which is a record
 		else for (TreeNode nn:tab.getChildren()) {
-			result = findTrackMetadata((Record)nn,trackVar);
+			result = findTrackMetadata((Record)nn,tv);
 			if (result!=null)
 				break;
 		}
@@ -261,6 +279,8 @@ public class DataTrackerNode
 								fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.rrange);
 							if (tt.prec!=null)
 								fieldMetadata.addProperty(trackName+P_FIELD_PREC.key(),tt.prec);
+							if (tt.indexes!=null)
+								fieldMetadata.addProperty(trackName+P_TABLE_INDEX.key(),tt.indexes);
 						}
 						else ; // throw Exception ? this should never happen normally...
 				}

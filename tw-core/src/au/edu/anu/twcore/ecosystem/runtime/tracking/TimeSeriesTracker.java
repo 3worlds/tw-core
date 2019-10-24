@@ -2,6 +2,8 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.util.Arrays;
+
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.runtime.DataLabel;
@@ -61,21 +63,38 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		DataLabel[] labels = buildLabels(track);
 		for (int i=0; i<track.size(); i++) {
 			Class<?> c = trackTypes.getWithFlatIndex(i);
-			if (c.equals(String.class))
-				metadata.addStringVariable(labels[i]);
-			else if (c.equals(Double.class) | c.equals(Float.class))
-				metadata.addDoubleVariable(labels[i]);
-			else 
-				metadata.addIntVariable(labels[i]);
+			// TODO: fix this
+//			String varname = labels[i].getEnd();
+//			varname = varname.substring(0,varname.indexOf('[')); // if there was an index string, strip it off
+//			if (fieldMetadata.hasProperty(varname+"."+P_TABLE_INDEX.key())) {
+//				int[][] index = (int[][]) fieldMetadata.getPropertyValue(varname+"."+P_TABLE_INDEX.key()) ;
+//				for (int j=0; j<index.length; j++) {
+//					DataLabel dl = labels[i].clone();
+//					dl.stripEnd();
+//					dl.append(varname + Arrays.toString(index[j]));
+//					addMetadataVariable(c,dl);
+//				}
+//			}
+//			else
+				addMetadataVariable(c,labels[i]);
 		}
 		// TODO: fill with appropriate information
 		metaprops.setProperty(TimeSeriesMetadata.TSMETA,metadata);
 	}
 	
+	private void addMetadataVariable(Class<?> c, DataLabel lab) {
+		if (c.equals(String.class))
+			metadata.addStringVariable(lab);
+		else if (c.equals(Double.class) | c.equals(Float.class))
+			metadata.addDoubleVariable(lab);
+		else 
+			metadata.addIntVariable(lab);
+	}
+	
 	private DataLabel[] buildLabels(StringTable track) {
 		DataLabel[] result = new DataLabel[track.size()];
 		for (int i=0; i<track.size(); i++)
-			result[i] = new DataLabel(track.getWithFlatIndex(i));
+			result[i] = DataLabel.valueOf(track.getWithFlatIndex(i)); 
 		return result;
 	}
 	
