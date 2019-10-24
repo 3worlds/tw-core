@@ -94,9 +94,9 @@ public class CodeGenerator {
 			ecologyFiles.mkdirs();
 
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(ecology.getChildren(),
-				selectOne(hasTheLabel(N_DYNAMICS.label())));
+					selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(),
-				selectOne(hasTheLabel(N_STRUCTURE.label())));
+					selectOne(hasTheLabel(N_STRUCTURE.label())));
 			// generate data classes for SystemComponents
 			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENT.label());
 			for (TreeGraphDataNode system : systems) {
@@ -110,15 +110,15 @@ public class CodeGenerator {
 			// generate data classes for Ecosystem, if any
 			// caution here: Ecosystem may have no category at all
 			Collection<Category> cats = (Collection<Category>) get(ecology.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			if (!cats.isEmpty())
 				generateDataCode(ecology, ecology.id());
 			// generate TwFunction classes
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
 			List<TreeGraphDataNode> timeModels = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
-				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
-				selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
+					selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
+					selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
 			if (timeModels != null)
 				for (TreeGraphDataNode timeModel : timeModels) {
 					List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
@@ -131,23 +131,27 @@ public class CodeGenerator {
 			for (TreeGraphDataNode initialiser : initialisers)
 				generateInitialiserCode(initialiser, ecology.id());
 		}
-		
+
 		// compile whole code directory here
 		JavaCompiler compiler = new JavaCompiler();
-		String result =  compiler.compileCode(ecologyFiles);
-		if (result!=null) 
-			ComplianceManager.add(new CompileErr(ecologyFiles, result));
-		UserProjectLink.pushFiles();
+		String result = compiler.compileCode(ecologyFiles);
+		if (result != null)
+			if (UserProjectLink.haveUserProject())
+				ComplianceManager.add(new CompileErr(ecologyFiles, "Files not pushed to linked project. " + result));
+			else 
+				ComplianceManager.add(new CompileErr(ecologyFiles,result));
+			
+		if (!ComplianceManager.haveErrors())
+			UserProjectLink.pushFiles();
 		return !ComplianceManager.haveErrors();
 	}
-
 
 	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
 			String dataGroup) {
 		if (spec != null) {
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
 			gen.generateCode();
-			UserProjectLink.addDataFile(gen.getFile());
+			// UserProjectLink.addDataFile(gen.getFile());
 			if (system.properties().hasProperty(dataGroup)) {
 				String oldValue = (String) system.properties().getPropertyValue(dataGroup);
 				String newValue = gen.generatedClassName();

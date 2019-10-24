@@ -8,7 +8,7 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-public class MapData extends TimeData {
+public class MapData extends LabelledItemData {
 
 	private DataLabel zlabel;
 	private Number[][] map;
@@ -27,11 +27,11 @@ public class MapData extends TimeData {
 			map[ix][iy] = value;
 	}
 	
-	public void setLabel(DataLabel label) {
+	public void setZLabel(DataLabel label) {
 		zlabel = label;
 	}
 
-	public void setLabel(String...labelParts) {
+	public void setZLabel(String...labelParts) {
 		zlabel = new DataLabel(labelParts);
 	}
 
@@ -40,7 +40,7 @@ public class MapData extends TimeData {
 		return map;
 	}
 	
-	public DataLabel label() {
+	public DataLabel zLabel() {
 		return zlabel;
 	}
 

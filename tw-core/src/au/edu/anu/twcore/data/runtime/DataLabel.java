@@ -10,8 +10,9 @@ import java.util.List;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-public class DataLabel {
+public class DataLabel implements Comparable<DataLabel>, Cloneable {
 
+	private static String labelSeparator = ">";
 	private List<String> label = new LinkedList<String>(); 
 	
 	public DataLabel() {
@@ -49,6 +50,10 @@ public class DataLabel {
 		return null;
 	}
 	
+	public void stripEnd() {
+		label.remove(label.size()-1);
+	}
+		
 	public String getEnd() {
 		return label.get(label.size()-1);
 	}
@@ -59,9 +64,24 @@ public class DataLabel {
 		for (int i=0; i<label.size(); i++) {
 			sb.append(label.get(i));
 			if (i<label.size()-1)
-				sb.append('>');
+				sb.append(labelSeparator);
 		}
 		return sb.toString();
 	}
 
+	// slow ?
+	@Override
+	public int compareTo(DataLabel o) {		
+		return toString().compareTo(o.toString());
+	}
+
+	public static DataLabel valueOf(String text) {
+		return new DataLabel(text.split(labelSeparator));
+	}
+	
+	@Override
+	public DataLabel clone() {
+		return new DataLabel(label);
+	}
+	
 }

@@ -12,6 +12,7 @@ import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.SimpleTree;
 import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.cnrs.iees.twcore.constants.DataElementType;
 
 /**
  * A Query to be processed while in an archetype - use it to check whole
@@ -34,7 +35,7 @@ import fr.cnrs.iees.graph.io.GraphImporter;
 public class CheckSubArchetypeQuery extends Query {
 
 	private String pKey = null;
-	private String pValue = null;
+	private Object pValue = null;
 	private String fileName = null;
 
 	/**
@@ -46,8 +47,36 @@ public class CheckSubArchetypeQuery extends Query {
 	public CheckSubArchetypeQuery(StringTable parameters) {
 		super();
 		pKey = (String) parameters.getWithFlatIndex(0);
-		pValue = (String) parameters.getWithFlatIndex(1);
+		pValue = parameters.getWithFlatIndex(1);
 		fileName = (String) parameters.getWithFlatIndex(2);
+	}
+
+	// a more generic constructor, able to handle non-String values
+	public CheckSubArchetypeQuery(StringTable parameters, Object value) {
+		super();
+		pKey = (String) parameters.getWithFlatIndex(0);
+		fileName = (String) parameters.getWithFlatIndex(1);
+		pValue = value;
+	}
+	public CheckSubArchetypeQuery(Object value,StringTable parameters) {
+		super();
+		pKey = (String) parameters.getWithFlatIndex(0);
+		fileName = (String) parameters.getWithFlatIndex(1);
+		pValue = value;
+	}
+	
+	// apparently Object is not useful, so here are specialised constructors:
+	public CheckSubArchetypeQuery(StringTable parameters, DataElementType value) {
+		super();
+		pKey = (String) parameters.getWithFlatIndex(0);
+		fileName = (String) parameters.getWithFlatIndex(1);
+		pValue = value;
+	}
+	public CheckSubArchetypeQuery(DataElementType value,StringTable parameters) {
+		super();
+		pKey = (String) parameters.getWithFlatIndex(0);
+		fileName = (String) parameters.getWithFlatIndex(1);
+		pValue = value;
 	}
 
 	/*
@@ -63,7 +92,7 @@ public class CheckSubArchetypeQuery extends Query {
 		ReadOnlyDataHolder localItem =  (ReadOnlyDataHolder) input;
 		TreeNode node = (TreeNode) input;
 		satisfied = true;
-		String givenpValue = (String) localItem.properties().getPropertyValue(pKey);
+		Object givenpValue = localItem.properties().getPropertyValue(pKey);
 		if (pValue.equals(givenpValue)) {
 			Tree<?> tree = (Tree<?>) GraphImporter.importGraph(fileName,getClass());
 			// maybe this is a flaw to use this factory ?

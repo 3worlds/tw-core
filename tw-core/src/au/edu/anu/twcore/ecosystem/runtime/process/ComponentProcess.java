@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
@@ -62,7 +63,9 @@ import fr.ens.biologie.generic.utils.Logging;
  * @author gignoux - 10 mars 2017
  *
  */
-public class ComponentProcess extends AbstractProcess implements Categorized<SystemComponent> {
+public class ComponentProcess 
+		extends AbstractProcess 
+		implements Categorized<SystemComponent> {
 	
 	private class newBornSettings {
 		SystemFactory factory = null;
@@ -92,8 +95,8 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 //	private SystemContainer groupContainer = null;
 	private SimulatorStatus currentStatus = SimulatorStatus.Initial;
 	
-	public ComponentProcess(SystemContainer world, Collection<Category> categories) {
-		super(world);
+	public ComponentProcess(SystemContainer world, Collection<Category> categories, Timer timer) {
+		super(world,timer);
 		focalCategories.addAll(categories);
 		categoryId = buildCategorySignature();
 	}
@@ -129,6 +132,7 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			}
 			executeFunctions(container,t,dt);
 			// track group state
+			// TODO: filter ni some way, depending on the tracker grouping
 			for (TimeSeriesTracker tracker:tsTrackers) {
 				tracker.record(currentStatus,container.populationData());
 			}
@@ -281,30 +285,31 @@ public class ComponentProcess extends AbstractProcess implements Categorized<Sys
 			}
 			// track component state
 			for (TimeSeriesTracker tracker:tsTrackers) {
+				tracker.recordItem(buildItemId(focal.id()));
 				tracker.record(currentStatus,focal.currentState());
 			}
 		}
 	}
 
+	private String[] buildItemId(String itemId) {
+		List<String> items = new LinkedList<>();
+		if (focalContext.ecosystemName!=null)
+			items.add(focalContext.ecosystemName);
+		if (focalContext.lifeCycleName!=null)
+			items.add(focalContext.lifeCycleName);
+		if (focalContext.groupName!=null)
+			items.add(focalContext.groupName);
+		items.add(itemId);
+		return items.toArray(new String[items.size()]);
+	}
+	
+	
 	@Override
-	public final void execute(SimulatorStatus status, double t, double dt) {
+	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
-		loop(ecosystem(),t,dt);
-//		// get current systems to work with
-//		Iterable<SystemComponent> focals = (Iterable<SystemComponent>) world().getSystemsByCategory(focalCategories);
-//		// preparing data sampling
-//		for (AggregatorFunction function : Afunctions)
-//			function.prepareForSampling(focals, t);
-//		// apply all functions attached to this Process
-//		for (SystemComponent focal : focals) {
-//			// A model can have no state
-//			// aggregate data for data tracking
-//			for (AggregatorFunction function : Afunctions)
-//				function.aggregate(focal, focal.stage().species().getName(), focal.stage().name());
-//		}
-//		// send aggregator function results
-//		for (AggregatorFunction function : Afunctions)
-//			function.sendData(t);
+		for (TimeSeriesTracker tracker:tsTrackers)
+			tracker.recordTime(t);		
+		loop(ecosystem(),timer.userTime(t),timer.userTime(dt));
 	}
 
 	@Override

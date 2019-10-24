@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
+import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -61,13 +62,13 @@ public class RelationProcess extends AbstractProcess implements Related<SystemCo
     private List<ChangeRelationStateFunction> CRfunctions = 
     	new LinkedList<ChangeRelationStateFunction>();
 
-	public RelationProcess(SystemContainer world, RelationType relation) {
-		super(world);
+	public RelationProcess(SystemContainer world, RelationType relation, Timer timer) {
+		super(world,timer);
 		myRelation = relation;
 	}
 
 	@Override
-	public void execute(SimulatorStatus status, double t, double dt) {
+	public void execute(SimulatorStatus status, long t, long dt) {
 //		// loop on this:
 //		Iterable<Edge> relations = myRelation.relations();
 //		for (Edge e:relations) {

@@ -92,7 +92,7 @@ public class ProcessNode
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();		
-			sealed = false;					// timeModel  timeLine    dynamics    ecosystem
+			sealed = false;			// timeModel  timeLine    dynamics    ecosystem
 			ecosystem = (Ecosystem) getParent().getParent().getParent().getParent();
 //			timeModel = (TimeModel)getParent();
 			// 1 - setting up simulation code execution 
@@ -173,10 +173,11 @@ public class ProcessNode
 	@SuppressWarnings("unchecked")
 	private TwProcess makeProcess(int index) {
 		AbstractProcess result = null;
+		TimeModel tm = (TimeModel) getParent();
 		if (categories!=null)
-			result = new ComponentProcess(ecosystem.getInstance(index),categories);
+			result = new ComponentProcess(ecosystem.getInstance(index),categories,tm.getInstance(index));
 		else if (relation!=null)
-			result = new RelationProcess(ecosystem.getInstance(index),relation);
+			result = new RelationProcess(ecosystem.getInstance(index),relation,tm.getInstance(index));
 		for (FunctionNode func:functions)
 			result.addFunction(func.getInstance(index));
 		List<DataTrackerNode> ldt = (List<DataTrackerNode>) get(getChildren(),
@@ -184,6 +185,7 @@ public class ProcessNode
 		for (DataTrackerNode dt:ldt) {
 			result.addDataTracker(dt.getInstance(index));
 		}
+		result.seal();
 		return result;
 	}
 

@@ -45,6 +45,7 @@ import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.Sealable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,8 +53,9 @@ import java.util.Map;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
+
 /**
- * Class matching the "ecosystem/dynamics/timeLine/timeModel" node label in the 3Worlds configuration tree.
+ * Class matching the "system/dynamics/timeLine/timeModel" node label in the 3Worlds configuration tree.
  *
  * NB grain has been removed (now equals 1)
  *
@@ -93,8 +95,8 @@ public class TimeModel
 		if (!sealed) {
 			super.initialise();
 			timeLine = (TimeLine) getParent();
-			timeUnit = (TimeUnits) properties().getPropertyValue("timeUnit");
-			nTimeUnits = (Integer) properties().getPropertyValue("nTimeUnits");
+			timeUnit = (TimeUnits) properties().getPropertyValue(P_TIMEMODEL_TU.key());
+			nTimeUnits = (Integer) properties().getPropertyValue(P_TIMEMODEL_NTU.key());
 			long unitConversionFactor = TimeUtil.timeUnitExactConversionFactor(timeUnit, timeLine.shortestTimeUnit());
 			isExact = unitConversionFactor > 0L;
 			if (timeUnit.equals(TimeUnits.UNSPECIFIED))

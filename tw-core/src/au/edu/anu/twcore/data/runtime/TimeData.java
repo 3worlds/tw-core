@@ -32,6 +32,8 @@ package au.edu.anu.twcore.data.runtime;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
+ * This class simply sends the current time of a simulator, as a long.
+ * 
  * @author Ian Davies
  *
  * @date 19 Sep 2019

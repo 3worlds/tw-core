@@ -2,6 +2,9 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.util.Arrays;
+
+import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
@@ -34,15 +37,22 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	private SimplePropertyList metaprops;
 	private TimeSeriesMetadata metadata;
 	private int metadataType = -1;
-	private int senderId = -1;
+	private long currentTime = Long.MIN_VALUE;
+	private DataLabel currentItem = null;
+	private Metadata singletonMD = null;
+	// metadata for numeric fields, ie min max units etc.
+	private ReadOnlyPropertyList fieldMetadata = null;
 
 	public TimeSeriesTracker(Grouping grouping,
 			StatisticalAggregatesSet statistics,
 			StatisticalAggregatesSet tableStatistics,
 			SamplingMode selection,
 			boolean viewOthers,
-			StringTable track) {
+			StringTable track,
+			ObjectTable<Class<?>> trackTypes,
+			ReadOnlyPropertyList fieldMetadata) {
 		super(DataMessageTypes.TIME_SERIES);
+		this.fieldMetadata = fieldMetadata;
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(),selection);
 		metaprops.setProperty(P_DATATRACKER_GROUPBY.key(),grouping);
@@ -50,24 +60,58 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(),tableStatistics);
 		metaprops.setProperty(P_DATATRACKER_TRACK.key(),track);
 		metadata = new TimeSeriesMetadata();
+		DataLabel[] labels = buildLabels(track);
+		for (int i=0; i<track.size(); i++) {
+			Class<?> c = trackTypes.getWithFlatIndex(i);
+			// TODO: fix this
+//			String varname = labels[i].getEnd();
+//			varname = varname.substring(0,varname.indexOf('[')); // if there was an index string, strip it off
+//			if (fieldMetadata.hasProperty(varname+"."+P_TABLE_INDEX.key())) {
+//				int[][] index = (int[][]) fieldMetadata.getPropertyValue(varname+"."+P_TABLE_INDEX.key()) ;
+//				for (int j=0; j<index.length; j++) {
+//					DataLabel dl = labels[i].clone();
+//					dl.stripEnd();
+//					dl.append(varname + Arrays.toString(index[j]));
+//					addMetadataVariable(c,dl);
+//				}
+//			}
+//			else
+				addMetadataVariable(c,labels[i]);
+		}
 		// TODO: fill with appropriate information
 		metaprops.setProperty(TimeSeriesMetadata.TSMETA,metadata);
 	}
 	
-	public Metadata metadata(SimulatorStatus status) {
-		Metadata result = new Metadata(status,senderId,metaprops); 
-		metadataType = result.type();
+	private void addMetadataVariable(Class<?> c, DataLabel lab) {
+		if (c.equals(String.class))
+			metadata.addStringVariable(lab);
+		else if (c.equals(Double.class) | c.equals(Float.class))
+			metadata.addDoubleVariable(lab);
+		else 
+			metadata.addIntVariable(lab);
+	}
+	
+	private DataLabel[] buildLabels(StringTable track) {
+		DataLabel[] result = new DataLabel[track.size()];
+		for (int i=0; i<track.size(); i++)
+			result[i] = DataLabel.valueOf(track.getWithFlatIndex(i)); 
 		return result;
 	}
 	
-	@Override
-	public void setSender(int id) {
-		senderId = id;
+	public void recordTime(long time) {
+		currentTime = time;
+	}
+	
+	public void recordItem(String...labels) {
+		currentItem = new DataLabel(labels);
 	}
 	
 	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
 			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
+			tsd.setTime(currentTime);
+			tsd.setItemLabel(currentItem);
+			boolean foundOne = false;
 			for (String key:props.getKeysAsSet()) {
 				for (DataLabel lab:metadata.intNames()) 
 					if (key.equals(lab.getEnd())) {
@@ -81,7 +125,8 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 						else if (o instanceof Short)
 							tsd.setValue(lab,(short)o);							
 						else if (o instanceof Byte)
-							tsd.setValue(lab,(byte)o);							
+							tsd.setValue(lab,(byte)o);
+						foundOne = true;
 				}
 				for (DataLabel lab:metadata.doubleNames()) 
 					if (key.equals(lab.getEnd())) {
@@ -90,14 +135,28 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 							tsd.setValue(lab,(double)o);
 						else if (o instanceof Float)
 							tsd.setValue(lab,(float)o);							
+						foundOne = true;
 				}
 				for (DataLabel lab:metadata.stringNames()) 
 					if (key.equals(lab.getEnd())) {
 						tsd.setValue(lab,(String)props.getPropertyValue(key));
+						foundOne = true;
 				}
-
 			}
+			if (foundOne) sendData(tsd);
 		}
 	}
+
+	@Override
+	public Metadata getInstance() {
+		if (singletonMD==null) {
+			singletonMD = new Metadata(senderId,metaprops); 
+			metadataType = singletonMD.type();
+			if (fieldMetadata!=null)
+				singletonMD.addProperties(fieldMetadata);
+		}
+		return singletonMD;
+	}
+
 
 }

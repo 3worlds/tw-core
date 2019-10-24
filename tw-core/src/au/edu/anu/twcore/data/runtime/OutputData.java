@@ -32,7 +32,8 @@ package au.edu.anu.twcore.data.runtime;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
- * An ancestor class for data being sent from DataTrackers to DataReceivers
+ * An ancestor class for data being sent from DataTrackers to DataReceivers. This class holds the
+ * simulator id, the simulator current status, and the metadata type.
  * 
  * @author Jacques Gignoux - 10 sept. 2019
  *
