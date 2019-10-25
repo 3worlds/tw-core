@@ -3,9 +3,10 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeSeriesData;
@@ -42,6 +43,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	private Metadata singletonMD = null;
 	// metadata for numeric fields, ie min max units etc.
 	private ReadOnlyPropertyList fieldMetadata = null;
+	private Map<String,int[]> tableIndices = new HashMap<String,int[]>();
 
 	public TimeSeriesTracker(Grouping grouping,
 			StatisticalAggregatesSet statistics,
@@ -64,18 +66,21 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		for (int i=0; i<track.size(); i++) {
 			Class<?> c = trackTypes.getWithFlatIndex(i);
 			// TODO: fix this
-//			String varname = labels[i].getEnd();
-//			varname = varname.substring(0,varname.indexOf('[')); // if there was an index string, strip it off
-//			if (fieldMetadata.hasProperty(varname+"."+P_TABLE_INDEX.key())) {
-//				int[][] index = (int[][]) fieldMetadata.getPropertyValue(varname+"."+P_TABLE_INDEX.key()) ;
-//				for (int j=0; j<index.length; j++) {
-//					DataLabel dl = labels[i].clone();
-//					dl.stripEnd();
-//					dl.append(varname + Arrays.toString(index[j]));
-//					addMetadataVariable(c,dl);
-//				}
-//			}
-//			else
+			String varname = labels[i].getEnd();
+			if (varname.contains("[")) // if there was an index string, strip it off
+				varname = varname.substring(0,varname.indexOf('[')); 
+			if (fieldMetadata.hasProperty(varname+"."+P_TABLE_INDEX.key())) {
+				int[][] index = (int[][]) fieldMetadata.getPropertyValue(varname+"."+P_TABLE_INDEX.key()) ;
+				for (int j=0; j<index.length; j++) {
+					DataLabel dl = labels[i].clone();
+					dl.stripEnd();
+					String s = varname + Arrays.toString(index[j]);
+					dl.append(s);
+					tableIndices.put(s,index[j]);
+					addMetadataVariable(c,dl);
+				}
+			}
+			else
 				addMetadataVariable(c,labels[i]);
 		}
 		// TODO: fill with appropriate information
@@ -106,6 +111,60 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		currentItem = new DataLabel(labels);
 	}
 	
+	private void recordFieldValue(DataLabel lab,Object value,TimeSeriesData tsd) {
+		if (value instanceof Double)
+			tsd.setValue(lab,(double)value);
+		else if (value instanceof Float)
+			tsd.setValue(lab,(float)value);							
+		else if (value instanceof Integer)
+			tsd.setValue(lab,(int)value);
+		else if (value instanceof Long)
+			tsd.setValue(lab,(long)value);							
+		else if (value instanceof Boolean)
+			tsd.setValue(lab,(boolean)value);							
+		else if (value instanceof Short)
+			tsd.setValue(lab,(short)value);							
+		else if (value instanceof Byte)
+			tsd.setValue(lab,(byte)value);
+		else if (value instanceof String)
+			tsd.setValue(lab,(String)value);
+	}
+	
+	private void recordTableValue(DataLabel lab,Table table, int[] index,TimeSeriesData tsd) {
+		if (table instanceof DoubleTable) 
+			tsd.setValue(lab,((DoubleTable)table).getByInt(index));
+		else if (table instanceof FloatTable) 
+			tsd.setValue(lab,((FloatTable)table).getByInt(index));
+		else if (table instanceof IntTable) 
+			tsd.setValue(lab,((IntTable)table).getByInt(index));
+		else if (table instanceof LongTable) 
+			tsd.setValue(lab,((LongTable)table).getByInt(index));
+		else if (table instanceof BooleanTable) 
+			tsd.setValue(lab,((BooleanTable)table).getByInt(index));
+		else if (table instanceof ShortTable) 
+			tsd.setValue(lab,((ShortTable)table).getByInt(index));
+		else if (table instanceof ByteTable) 
+			tsd.setValue(lab,((ByteTable)table).getByInt(index));
+		else if (table instanceof StringTable) 
+			tsd.setValue(lab,((StringTable)table).getByInt(index));
+	}
+	
+	private boolean recordData(DataLabel lab, String key, ReadOnlyPropertyList props,TimeSeriesData tsd) {
+		boolean foundOne = false;
+		if (key.equals(lab.getEnd())) {
+			recordFieldValue(lab,props.getPropertyValue(key),tsd);
+			foundOne = true;
+		}
+		else if (lab.getEnd().contains("[")) {
+			if (key.equals(lab.getEnd().substring(0,lab.getEnd().indexOf("[")))) {
+				int[] index = tableIndices.get(lab.getEnd());
+				recordTableValue(lab,(Table)props.getPropertyValue(key),index,tsd);
+				foundOne = true;
+			}
+		}
+		return foundOne;
+	}
+	
 	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
 			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
@@ -113,35 +172,12 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 			tsd.setItemLabel(currentItem);
 			boolean foundOne = false;
 			for (String key:props.getKeysAsSet()) {
-				for (DataLabel lab:metadata.intNames()) 
-					if (key.equals(lab.getEnd())) {
-						Object o = props.getPropertyValue(key);
-						if (o instanceof Integer)
-							tsd.setValue(lab,(int)o);
-						else if (o instanceof Long)
-							tsd.setValue(lab,(long)o);							
-						else if (o instanceof Boolean)
-							tsd.setValue(lab,(boolean)o);							
-						else if (o instanceof Short)
-							tsd.setValue(lab,(short)o);							
-						else if (o instanceof Byte)
-							tsd.setValue(lab,(byte)o);
-						foundOne = true;
-				}
+				for (DataLabel lab:metadata.intNames())
+					foundOne |= recordData(lab,key,props,tsd);
 				for (DataLabel lab:metadata.doubleNames()) 
-					if (key.equals(lab.getEnd())) {
-						Object o = props.getPropertyValue(key);
-						if (o instanceof Double)
-							tsd.setValue(lab,(double)o);
-						else if (o instanceof Float)
-							tsd.setValue(lab,(float)o);							
-						foundOne = true;
-				}
+					foundOne |= recordData(lab,key,props,tsd);
 				for (DataLabel lab:metadata.stringNames()) 
-					if (key.equals(lab.getEnd())) {
-						tsd.setValue(lab,(String)props.getPropertyValue(key));
-						foundOne = true;
-				}
+					foundOne |= recordData(lab,key,props,tsd);
 			}
 			if (foundOne) sendData(tsd);
 		}
