@@ -65,7 +65,6 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		DataLabel[] labels = buildLabels(track);
 		for (int i=0; i<track.size(); i++) {
 			Class<?> c = trackTypes.getWithFlatIndex(i);
-			// TODO: fix this
 			String varname = labels[i].getEnd();
 			if (varname.contains("[")) // if there was an index string, strip it off
 				varname = varname.substring(0,varname.indexOf('[')); 

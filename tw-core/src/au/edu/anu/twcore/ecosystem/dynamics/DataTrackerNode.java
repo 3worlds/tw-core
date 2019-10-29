@@ -49,6 +49,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -270,17 +272,34 @@ public class DataTrackerNode
 						TrackMeta tt = findTrackMetadata((Category)n,track.getWithFlatIndex(i));
 						if (tt!=null) {
 							trackTypes.setWithFlatIndex(tt.trackType,i);
-							String trackName = track.getWithFlatIndex(i)+".";
+							String trackName = track.getWithFlatIndex(i);
+							if (trackName.contains("["))
+								trackName = trackName.substring(0,trackName.indexOf('['));
+							trackName += ".";
 							if (tt.units!=null)
-								fieldMetadata.addProperty(trackName+P_FIELD_UNITS.key(),tt.units);
+								if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
+									fieldMetadata.addProperty(trackName+P_FIELD_UNITS.key(),tt.units);
 							if (tt.irange!=null)
-								fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.irange);
+								if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
+									fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.irange);
 							if (tt.rrange!=null)
-								fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.rrange);
+								if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
+									fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.rrange);
 							if (tt.prec!=null)
-								fieldMetadata.addProperty(trackName+P_FIELD_PREC.key(),tt.prec);
-							if (tt.indexes!=null)
-								fieldMetadata.addProperty(trackName+P_TABLE_INDEX.key(),tt.indexes);
+								if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
+									fieldMetadata.addProperty(trackName+P_FIELD_PREC.key(),tt.prec);
+							if (tt.indexes!=null) {
+								if (fieldMetadata.hasProperty(trackName+P_TABLE_INDEX.key())) {
+									// means an index has already been set before, so they must be merged
+									int[][] prevIndex = (int[][]) fieldMetadata.getPropertyValue(trackName+P_TABLE_INDEX.key());
+									int[][] newIndex = Arrays.copyOf(prevIndex, prevIndex.length + tt.indexes.length);
+									for (int j=0; j<tt.indexes.length; j++)
+										newIndex[j+prevIndex.length] = tt.indexes[j];
+									fieldMetadata.addProperty(trackName+P_TABLE_INDEX.key(),newIndex);
+								}
+								else
+									fieldMetadata.addProperty(trackName+P_TABLE_INDEX.key(),tt.indexes);
+							}
 						}
 						else ; // throw Exception ? this should never happen normally...
 				}
