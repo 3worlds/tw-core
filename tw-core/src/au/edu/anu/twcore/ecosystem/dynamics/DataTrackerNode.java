@@ -65,6 +65,7 @@ import au.edu.anu.twcore.data.DimNode;
 import au.edu.anu.twcore.data.Field;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
+import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.MapData;
 import au.edu.anu.twcore.data.runtime.Metadata;
@@ -91,11 +92,13 @@ public class DataTrackerNode
 	
 	// a class to collect metadata on fields, ie min, max, precision, units etc.
 	private class TrackMeta {
+		DataLabel label = null;
 		Class<?> trackType = null;
 		Interval rrange = null;
 		IntegerRange irange = null;
 		Double prec = null;
 		String units = null;
+		// TODO: remove this field - the index data is in the DataLabel
 		int[][] indexes = null;
 	}
 
@@ -258,7 +261,22 @@ public class DataTrackerNode
 				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
 			// the only required properties.
 			track = (StringTable) properties().getPropertyValue(P_DATATRACKER_TRACK.key());
+			
+			// TODO - WIP
+			for (int i=0; i<track.size(); i++) {
+				DataLabel unexpanded = DataLabel.valueOf(track.getWithFlatIndex(i));
+				// HERE: where to find the dims ?
+				List<DataLabel> labels = null;//DataLabel.expandIndexes(unexpanded, dims);
+				for (DataLabel l:labels) {
+					TrackMeta tm = new TrackMeta();
+					tm.label = l;
+					// etc...
+				}
+			}
+			
+			
 			// extract the property types + metadata from the graph
+			// these do not need indexes ! 
 			trackTypes = new ObjectTable<>(new Dimensioner(track.size()));
 			List<Node> ln = (List<Node>) get(getParent().edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
@@ -269,12 +287,13 @@ public class DataTrackerNode
 				}
 				else if (n instanceof Category)
 					for (int i=0; i<track.size(); i++) {
-						TrackMeta tt = findTrackMetadata((Category)n,track.getWithFlatIndex(i));
+						String trackName = track.getWithFlatIndex(i);
+						DataLabel trackdl = DataLabel.valueOf(trackName);
+						if (trackName.contains("["))
+							trackName = trackName.substring(0,trackName.indexOf('['));
+						TrackMeta tt = findTrackMetadata((Category)n,trackName);
 						if (tt!=null) {
 							trackTypes.setWithFlatIndex(tt.trackType,i);
-							String trackName = track.getWithFlatIndex(i);
-							if (trackName.contains("["))
-								trackName = trackName.substring(0,trackName.indexOf('['));
 							trackName += ".";
 							if (tt.units!=null)
 								if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
@@ -291,6 +310,7 @@ public class DataTrackerNode
 							if (tt.indexes!=null) {
 								if (fieldMetadata.hasProperty(trackName+P_TABLE_INDEX.key())) {
 									// means an index has already been set before, so they must be merged
+									// NB this may be useless now if we dont allow for repeated track values
 									int[][] prevIndex = (int[][]) fieldMetadata.getPropertyValue(trackName+P_TABLE_INDEX.key());
 									int[][] newIndex = Arrays.copyOf(prevIndex, prevIndex.length + tt.indexes.length);
 									for (int j=0; j<tt.indexes.length; j++)
