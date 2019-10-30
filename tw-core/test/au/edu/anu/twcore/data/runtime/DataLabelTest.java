@@ -25,12 +25,12 @@ class DataLabelTest {
 		DataLabel dl = DataLabel.valueOf("x>tab[1:2]>y>gru[3|]");
 		int[] dim1 = {4};
 		int[] dim2 =  {5,8};
-		List<DataLabel> list = DataLabel.expandIndexes(dl,dim1,dim2);
+		List<IndexedDataLabel> list = IndexedDataLabel.expandIndexes(dl,dim1,dim2);
 		for (DataLabel d:list)
 			System.out.println(d);
 		assertEquals(list.size(),16);
 		dl = DataLabel.valueOf("ref");
-		list = DataLabel.expandIndexes(dl);
+		list = IndexedDataLabel.expandIndexes(dl);
 		for (DataLabel d:list)
 			System.out.println(d);
 		assertEquals(list.size(),1);		

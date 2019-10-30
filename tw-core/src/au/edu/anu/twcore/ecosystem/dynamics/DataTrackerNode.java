@@ -50,14 +50,13 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
-import au.edu.anu.rscs.aot.collections.tables.IndexString;
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.InitialisableNode;
@@ -66,6 +65,7 @@ import au.edu.anu.twcore.data.Field;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.data.runtime.DataLabel;
+import au.edu.anu.twcore.data.runtime.IndexedDataLabel;
 import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.MapData;
 import au.edu.anu.twcore.data.runtime.Metadata;
@@ -92,14 +92,13 @@ public class DataTrackerNode
 	
 	// a class to collect metadata on fields, ie min, max, precision, units etc.
 	private class TrackMeta {
-		DataLabel label = null;
+		IndexedDataLabel label = null;
 		Class<?> trackType = null;
 		Interval rrange = null;
 		IntegerRange irange = null;
 		Double prec = null;
 		String units = null;
-		// TODO: remove this field - the index data is in the DataLabel
-		int[][] indexes = null;
+		List<int[]> index = new ArrayList<>();
 	}
 
 	private Map<Integer, DataTracker<?,?>> dataTrackers = new HashMap<>();
@@ -111,8 +110,12 @@ public class DataTrackerNode
 	private boolean viewOthers = false;
 	private Object dataTrackerClass;
 	private StringTable track = null;
-	private ObjectTable<Class<?>> trackTypes = null;
+//	private ObjectTable<Class<?>> trackTypes = null;
 	private ExtendablePropertyList fieldMetadata = new ExtendablePropertyListImpl();
+	
+	// a map of all table dimensions
+	private Map<String,int[]> tableDims = new HashMap<>();
+	private Map<String,TrackMeta> expandedTrackList = new HashMap<>();
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -122,32 +125,45 @@ public class DataTrackerNode
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 	
+	@SuppressWarnings("unchecked")
+	private int[] getTableDims(TableNode tab) {
+		// FLAW HERE: the order of dimensioners may change! we need an ordering prop in DimEdge!
+		List<DimNode> dimns = (List<DimNode>) get(tab.edges(Direction.OUT),
+			selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
+			edgeListEndNodes());
+		int [] dims = new int[dimns.size()];
+		int j=0;
+		for (DimNode dim:dimns)
+			dims[j++] = (int) dim.properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
+		return dims;
+	}
+	
 	// search a table for data types - assumes trackVar is the table name WITHOUT index
 	// (ie 'myTable', not 'myTable[0][12]') 
 	// cross-recursive with next method
-	@SuppressWarnings("unchecked")
 	private TrackMeta findTrackMetadata(TableNode tab, String trackVar) {
+		tableDims.put(tab.id(),getTableDims(tab));
 		TrackMeta result = null;
 		String tv = trackVar;
-		String is = "";
-		if (trackVar.contains("[")) {
-			tv = trackVar.substring(0,trackVar.indexOf('['));
-			is = trackVar.substring(trackVar.indexOf('['));
-		}
+//		String is = "";
+//		if (trackVar.contains("[")) {
+//			tv = trackVar.substring(0,trackVar.indexOf('['));
+//			is = trackVar.substring(trackVar.indexOf('['));
+//		}
 		// leaf table, ie with primitive elements
 		// CAUTION: returns the type of the table elements, NOT the table type
 		// (eg Boolean, not BooleanTable)
 		if (tab.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
 			if (tab.id().equals(tv)) {
 				result = new TrackMeta();
-				List<DimNode> dimns = (List<DimNode>) get(tab.edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
-					edgeListEndNodes());
-				int [] dims = new int[dimns.size()];
-				int j=0;
-				for (DimNode dim:dimns)
-					dims[j++] = (int) dim.properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
-				result.indexes = IndexString.stringToIndex(is,dims);
+//				List<DimNode> dimns = (List<DimNode>) get(tab.edges(Direction.OUT),
+//					selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
+//					edgeListEndNodes());
+//				int [] dims = new int[dimns.size()];
+//				int j=0;
+//				for (DimNode dim:dimns)
+//					dims[j++] = (int) dim.properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
+//				result.indexes = IndexString.stringToIndex(is,dims);
 				DataElementType det = (DataElementType) tab.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 				if (tab.properties().hasProperty(P_TABLE_UNITS.key()))
 					result.units = (String) tab.properties().getPropertyValue(P_TABLE_UNITS.key());
@@ -235,6 +251,13 @@ public class DataTrackerNode
 		return result;
 	}
 	
+	private String stripVarName(DataLabel lab) {
+		String trackName = lab.getEnd();
+		if (trackName.contains("["))
+			trackName = trackName.substring(0,trackName.indexOf('['));
+		return trackName;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
@@ -261,23 +284,7 @@ public class DataTrackerNode
 				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
 			// the only required properties.
 			track = (StringTable) properties().getPropertyValue(P_DATATRACKER_TRACK.key());
-			
-			// TODO - WIP
-			for (int i=0; i<track.size(); i++) {
-				DataLabel unexpanded = DataLabel.valueOf(track.getWithFlatIndex(i));
-				// HERE: where to find the dims ?
-				List<DataLabel> labels = null;//DataLabel.expandIndexes(unexpanded, dims);
-				for (DataLabel l:labels) {
-					TrackMeta tm = new TrackMeta();
-					tm.label = l;
-					// etc...
-				}
-			}
-			
-			
 			// extract the property types + metadata from the graph
-			// these do not need indexes ! 
-			trackTypes = new ObjectTable<>(new Dimensioner(track.size()));
 			List<Node> ln = (List<Node>) get(getParent().edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
 				edgeListEndNodes());
@@ -285,47 +292,114 @@ public class DataTrackerNode
 				if (n instanceof RelationType) {
 					// TODO: implement code for relation data trackers
 				}
-				else if (n instanceof Category)
+				else if (n instanceof Category) {
+					// 1 - get all the info where indexing and full label is not needed
+					SortedMap<String,TrackMeta> fm = new TreeMap<>();
 					for (int i=0; i<track.size(); i++) {
+						// extract the last bit of the data label, stripping off indexes
 						String trackName = track.getWithFlatIndex(i);
-						DataLabel trackdl = DataLabel.valueOf(trackName);
-						if (trackName.contains("["))
-							trackName = trackName.substring(0,trackName.indexOf('['));
-						TrackMeta tt = findTrackMetadata((Category)n,trackName);
-						if (tt!=null) {
-							trackTypes.setWithFlatIndex(tt.trackType,i);
-							trackName += ".";
-							if (tt.units!=null)
-								if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
-									fieldMetadata.addProperty(trackName+P_FIELD_UNITS.key(),tt.units);
-							if (tt.irange!=null)
-								if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
-									fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.irange);
-							if (tt.rrange!=null)
-								if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
-									fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.rrange);
-							if (tt.prec!=null)
-								if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
-									fieldMetadata.addProperty(trackName+P_FIELD_PREC.key(),tt.prec);
-							if (tt.indexes!=null) {
-								if (fieldMetadata.hasProperty(trackName+P_TABLE_INDEX.key())) {
-									// means an index has already been set before, so they must be merged
-									// NB this may be useless now if we dont allow for repeated track values
-									int[][] prevIndex = (int[][]) fieldMetadata.getPropertyValue(trackName+P_TABLE_INDEX.key());
-									int[][] newIndex = Arrays.copyOf(prevIndex, prevIndex.length + tt.indexes.length);
-									for (int j=0; j<tt.indexes.length; j++)
-										newIndex[j+prevIndex.length] = tt.indexes[j];
-									fieldMetadata.addProperty(trackName+P_TABLE_INDEX.key(),newIndex);
-								}
-								else
-									fieldMetadata.addProperty(trackName+P_TABLE_INDEX.key(),tt.indexes);
-							}
+						trackName = stripVarName(DataLabel.valueOf(trackName));
+						// search the metadata for this varname
+						if (!fm.containsKey(trackName)) {
+							TrackMeta tt = findTrackMetadata((Category)n,trackName);
+							if (tt!=null) 
+								fm.put(trackName, tt);
+							else ; // throw Exception ? this should never happen normally...
 						}
-						else ; // throw Exception ? this should never happen normally...
+					}
+					// 2 - expand indexes and develop full labels and store above information
+					for (int i=0; i<track.size(); i++) {
+						DataLabel unexpanded = DataLabel.valueOf(track.getWithFlatIndex(i));
+						List<int[]> dims = new ArrayList<>();
+						for (int j=0; j<unexpanded.size(); j++) {
+							String s = unexpanded.get(j);
+							if (s.contains("[")) // this is not enough as a criterion as some tables may be taken in full
+								dims.add(tableDims.get(s.substring(0,s.indexOf("["))));
+							else if (tableDims.containsKey(s))
+								dims.add(tableDims.get(s));
+						}
+						List<IndexedDataLabel> labels = null;
+						if (dims.isEmpty()) { // no indexed data
+							labels = new ArrayList<>();
+							IndexedDataLabel lb = new IndexedDataLabel(unexpanded);
+							labels.add(lb);
+						}
+						else {
+							int[][] ddims = new int[1][];
+							ddims = dims.toArray(ddims);
+							labels = IndexedDataLabel.expandIndexes(unexpanded,ddims);
+						}
+						// now there is one label for each index combination
+						for (IndexedDataLabel l:labels) {
+							String trackName = stripVarName(l);
+							TrackMeta tm = new TrackMeta();
+							tm.label = l; // the index is in the label, now!
+							TrackMeta tmm = fm.get(trackName);
+							tm.irange = tmm.irange;
+							tm.rrange = tmm.rrange;
+							tm.prec = tmm.prec;
+							tm.trackType = tmm.trackType;
+							tm.units = tmm.units;
+							// this contains in the proper order all the indexes needed to read the data
+							for (int j=0; j<l.size(); j++)
+								if (l.getIndex(j)!=null)
+									tm.index.add(l.getIndex(j));
+							expandedTrackList.put(l.toString(),tm);
+						}
+					}
+					// 3 store results into fieldMetadata
+					for (String trackName:expandedTrackList.keySet()) {
+						TrackMeta tm = expandedTrackList.get(trackName);
+						trackName += ".";
+						if (!fieldMetadata.hasProperty(trackName+P_FIELD_TYPE.key()))
+							fieldMetadata.addProperty(trackName+P_FIELD_TYPE.key(),tm.trackType);
+						if (!fieldMetadata.hasProperty(trackName+P_FIELD_LABEL.key()))
+							fieldMetadata.addProperty(trackName+P_FIELD_LABEL.key(),tm.label);
+						if (tm.units!=null)
+							if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
+								fieldMetadata.addProperty(trackName+P_FIELD_UNITS.key(),tm.units);
+						if (tm.irange!=null)
+							if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
+								fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tm.irange);
+						if (tm.rrange!=null)
+							if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
+								fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tm.rrange);
+						if (tm.prec!=null)
+							if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
+								fieldMetadata.addProperty(trackName+P_FIELD_PREC.key(),tm.prec);
+					}
+					
+//				{
+//					trackTypes.setWithFlatIndex(tt.trackType,i);
+//					trackName += ".";
+//					if (tt.units!=null)
+//						if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
+//							fieldMetadata.addProperty(trackName+P_FIELD_UNITS.key(),tt.units);
+//					if (tt.irange!=null)
+//						if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
+//							fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.irange);
+//					if (tt.rrange!=null)
+//						if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
+//							fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tt.rrange);
+//					if (tt.prec!=null)
+//						if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
+//							fieldMetadata.addProperty(trackName+P_FIELD_PREC.key(),tt.prec);
+//					if (tt.indexes!=null) {
+//						if (fieldMetadata.hasProperty(trackName+P_TABLE_INDEX.key())) {
+//							// means an index has already been set before, so they must be merged
+//							// NB this may be useless now if we dont allow for repeated track values
+//							int[][] prevIndex = (int[][]) fieldMetadata.getPropertyValue(trackName+P_TABLE_INDEX.key());
+//							int[][] newIndex = Arrays.copyOf(prevIndex, prevIndex.length + tt.indexes.length);
+//							for (int j=0; j<tt.indexes.length; j++)
+//								newIndex[j+prevIndex.length] = tt.indexes[j];
+//							fieldMetadata.addProperty(trackName+P_TABLE_INDEX.key(),newIndex);
+//						}
+//						else
+//							fieldMetadata.addProperty(trackName+P_TABLE_INDEX.key(),tt.indexes);
+//					}
+				
 				}
 			}
-			
-			// end code to change
 			dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
 			sealed = true;
 		}
@@ -350,7 +424,8 @@ public class DataTrackerNode
 	private DataTracker<?,?> makeDataTracker(int index) {
 		AbstractDataTracker<?,?> result = null;
 		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
-			result = new TimeSeriesTracker(grouping,stats,tstats,selection,viewOthers,track,trackTypes,fieldMetadata);
+			result = new TimeSeriesTracker(grouping,stats,tstats,selection,
+				viewOthers,expandedTrackList.keySet(),fieldMetadata);
 		}		
 		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
 			result = new MapTracker();
