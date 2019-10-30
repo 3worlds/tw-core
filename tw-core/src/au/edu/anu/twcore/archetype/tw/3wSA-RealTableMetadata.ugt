@@ -1,5 +1,5 @@
 tree
-// Sub-archetype for 3Worlds for checking metadata for integer number variables specifications
+// Sub-archetype for 3Worlds for checking metadata for real number variables specifications
 	scope =            String("3W-archetype")
 	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
 	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
@@ -7,31 +7,22 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-IntegerMetadata
+archetype 3wSA-RealTableMetadata
 
-	hasNode IntegerMetadataSpec
-		isOfClass = String("field")
-		hasParent = StringTable(([1]"record:"))
-		multiplicity = IntegerRange("0..*")
-		hasProperty IntegerNumberFieldUnitsSpec
-			hasName = String("units")
-			type = String("String")
-			multiplicity = IntegerRange("0..1")
-		hasProperty IntegerNumberRangeSpec
-			hasName = String("range")
-			type = String("IntegerRange")
-			multiplicity = IntegerRange("0..1")
-
-	hasNode IntegerMetadataTableSpec
+	hasNode RealMetadataTableSpec
 		isOfClass = String("table")
 		hasParent = StringTable(([1]"record:"))
 		multiplicity = IntegerRange("0..*")
-		hasProperty IntegerNumberTableUnitsSpec
+		hasProperty RealNumberTableUnitsSpec
 			hasName = String("units")
 			type = String("String")
 			multiplicity = IntegerRange("0..1")
-		hasProperty IntegerNumberTableRangeSpec
+		hasProperty RealNumberTablePrecSpec
+			hasName = String("precision")
+			type = String("Double")
+			multiplicity = IntegerRange("0..1")
+		hasProperty RealNumberTableRangeSpec
 			hasName = String("range")
-			type = String("IntegerRange")
+			type = String("Interval")
 			multiplicity = IntegerRange("0..1")
 	      

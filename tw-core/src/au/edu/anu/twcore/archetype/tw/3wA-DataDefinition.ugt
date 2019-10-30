@@ -54,27 +54,27 @@ hasNode tableSpec
 		edge_prop = StringTable(([2]"record","dataElementType"))
 	mustSatisfyQuery DoubleMetadataTableTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-RealMetadata.ugt"))
+		parameters = StringTable(([2]"dataElementType","3wSA-RealTableMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Double)
 	mustSatisfyQuery FloatMetadataTableTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-RealMetadata.ugt"))
+		parameters = StringTable(([2]"dataElementType","3wSA-RealTableMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Float)
 	mustSatisfyQuery IntegerMetadataTableTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-IntegerMetadata.ugt"))
+		parameters = StringTable(([2]"dataElementType","3wSA-IntegerTableMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Integer)
 	mustSatisfyQuery LongMetadataTableTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-IntegerMetadata.ugt"))
+		parameters = StringTable(([2]"dataElementType","3wSA-IntegerTableMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Long)
 	mustSatisfyQuery ShortMetadataTableTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-IntegerMetadata.ugt"))
+		parameters = StringTable(([2]"dataElementType","3wSA-IntegerTableMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Short)
 	mustSatisfyQuery ByteMetadataTableTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-IntegerMetadata.ugt"))
+		parameters = StringTable(([2]"dataElementType","3wSA-IntegerTableMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Byte)
 		
 		
@@ -108,25 +108,25 @@ hasNode recordFieldSpec
 		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery DoubleMetadataTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-RealMetadata.ugt"))
+		parameters = StringTable(([2]"type","3wSA-RealFieldMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Double)
 	mustSatisfyQuery FloatMetadataTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-RealMetadata.ugt"))
+		parameters = StringTable(([2]"type","3wSA-RealFieldMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Float)
 	mustSatisfyQuery IntegerMetadataTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-IntegerMetadata.ugt"))
+		parameters = StringTable(([2]"type","3wSA-IntegerFieldMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Integer)
 	mustSatisfyQuery LongMetadataTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-IntegerMetadata.ugt"))
+		parameters = StringTable(([2]"type","3wSA-IntegerFieldMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Long)
 	mustSatisfyQuery ShortMetadataTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-IntegerMetadata.ugt"))
+		parameters = StringTable(([2]"type","3wSA-IntegerFieldMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Short)
 	mustSatisfyQuery ByteMetadataTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-IntegerMetadata.ugt"))
+		parameters = StringTable(([2]"type","3wSA-IntegerFieldMetadata.ugt"))
 		value = fr.cnrs.iees.twcore.constants.DataElementType(Byte)
