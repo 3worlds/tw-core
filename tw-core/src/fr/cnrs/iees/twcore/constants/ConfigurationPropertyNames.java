@@ -31,6 +31,7 @@ package fr.cnrs.iees.twcore.constants;
 public enum ConfigurationPropertyNames {
 	
 	P_DIMENSIONER_SIZE 			("size"),
+	P_DIMENSIONER_RANK 			("rank"),
 	P_FIELD_TYPE 				("type"),
 	P_FIELD_RANGE 				("range"),
 	P_FIELD_PREC 				("precision"),

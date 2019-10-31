@@ -36,11 +36,15 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.userProject.UserProjectLink;
@@ -160,10 +164,25 @@ public abstract class HierarchicalDataGenerator
 		String ftype = "";
 		String fpack = "";
 		String fname = validJavaName(wordUpperCaseName(spec.id()));
-		Iterable<TreeGraphDataNode> dims = (Iterable<TreeGraphDataNode>) get(spec,
+		// get the dimensioners
+		List<TreeGraphDataNode> dims = (List<TreeGraphDataNode>) get(spec,
 			outEdges(),
 			edgeListEndNodes(),
-			selectOneOrMany(hasTheLabel("dimensioner")));
+			selectOneOrMany(hasTheLabel(N_DIMENSIONER.label())));
+		// order them by rank
+		SortedMap<Integer,TreeGraphDataNode> sortedDims = new TreeMap<>();
+		int rank = 0;
+		for (TreeGraphDataNode d:dims) {
+			if (d.properties().hasProperty(P_DIMENSIONER_RANK.key())) {
+				if (sortedDims.put((Integer)d.properties().getPropertyValue(P_DIMENSIONER_RANK.key()),d)!=null) {
+					// this is a case with duplicate ranks - should never happen!
+					throw new TwcoreException("Wrong ordering of dimensioners");
+				}
+			}
+			else 
+				sortedDims.put(rank++,d);
+		}
+		// get the table element type
 		if (spec.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
 			DataElementType tet = (DataElementType) spec.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 			String t = tet.name();
