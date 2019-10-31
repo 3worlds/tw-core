@@ -134,8 +134,7 @@ public class ComponentProcess
 			// track group state
 			// TODO: filter ni some way, depending on the tracker grouping
 			for (TimeSeriesTracker tracker:tsTrackers) {
-				// TODO: population data should be a TwData now
-//				tracker.record(currentStatus,container.populationData());
+				tracker.record(currentStatus,container.populationData());
 			}
 			focalContext.clear();
 		}

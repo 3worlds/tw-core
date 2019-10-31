@@ -142,6 +142,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		}
 	}
 	
+	// use this for SystemComponent TwData variables
 	public void record(SimulatorStatus status, TwData props) {
 		if (hasObservers()) {
 			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
@@ -153,6 +154,24 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 				getRecValue(0,props,lab,tsd);
 			for (DataLabel lab:metadata.stringNames()) 
 				getRecValue(0,props,lab,tsd);
+			sendData(tsd);
+		}
+	}
+	
+	// use this for simple property lists, eg Population data
+	// assumes label = property name
+	// TODO: untested!
+	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
+		if (hasObservers()) {
+			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
+			tsd.setTime(currentTime);
+			tsd.setItemLabel(currentItem);
+			for (DataLabel lab:metadata.intNames())
+				tsd.setValue(lab,(Long)props.getPropertyValue(lab.getEnd()));
+			for (DataLabel lab:metadata.doubleNames()) 
+				tsd.setValue(lab,(Double)props.getPropertyValue(lab.getEnd()));
+			for (DataLabel lab:metadata.stringNames()) 
+				tsd.setValue(lab,(String)props.getPropertyValue(lab.getEnd()));
 			sendData(tsd);
 		}
 	}
