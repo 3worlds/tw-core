@@ -166,7 +166,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			if (type.returnType().equals("void"))
 				mg.setReturnStatement("");
 			else 
-				mg.setReturnStatement("return "+zero(type.returnType()));
+				mg.setReturnStatement("return "+zero(checkType(type.returnType())));
 			if (inBodyCode != null)
 				for (String s : inBodyCode)
 					mg.setStatement(s);

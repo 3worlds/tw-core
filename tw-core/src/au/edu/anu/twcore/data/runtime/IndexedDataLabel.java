@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import au.edu.anu.rscs.aot.collections.tables.IndexString;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * A specialized data label class for items that may contain a SIMPLE index String
@@ -114,12 +114,10 @@ public class IndexedDataLabel extends DataLabel {
 	 * @param dims the dimensions matching levels of the Label where dims are needed, in the same order
 	 * @return
 	 */
-	// tested OK
-	public static List<IndexedDataLabel> expandIndexes(DataLabel multiLabel,int[]...dims) {
+	public static List<IndexedDataLabel> expandIndexes(DataLabel multiLabel,Map<String,int[]> dims) {
 		List<List<IndexedDataLabel>> result = new ArrayList<>();
 		for (int i=0; i<multiLabel.size(); i++)
 			result.add(new ArrayList<IndexedDataLabel>());
-		int i=0;
 		for (int k=0; k<multiLabel.label.size(); k++) {
 			String s = multiLabel.label.get(k);
 			int[][] index = null;
@@ -128,16 +126,18 @@ public class IndexedDataLabel extends DataLabel {
 				ix = s.substring(s.indexOf("["));
 				s = s.substring(0,s.indexOf("["));
 			}
-			if (dims.length==i)
-				throw new TwcoreException("Not enough dimensions passed to expandIndexes");
-			index = IndexString.stringToIndex(ix,dims[i++]);
-			for (int j=0; j<index.length; j++) {
-				result.get(k).add(new IndexedDataLabel(s+Arrays.toString(index[j]).replace(" ","")));
+			if (dims!=null) {
+				if (dims.containsKey(s)) { // means this variable is a table
+					index = IndexString.stringToIndex(ix,dims.get(s));
+					for (int j=0; j<index.length; j++) {
+						result.get(k).add(new IndexedDataLabel(s+Arrays.toString(index[j]).replace(" ","")));
+					}
+				}
+				else
+					result.get(k).add(new IndexedDataLabel(s));
 			}
-//			}
-//			else {
-//				result.get(k).add(new IndexedDataLabel(s));
-//			}
+			else
+				result.get(k).add(new IndexedDataLabel(s));
 		}
 		return mergeLabels(result);
 	}

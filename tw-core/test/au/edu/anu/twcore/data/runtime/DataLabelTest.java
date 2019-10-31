@@ -2,7 +2,9 @@ package au.edu.anu.twcore.data.runtime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,15 +27,25 @@ class DataLabelTest {
 		DataLabel dl = DataLabel.valueOf("x>tab[1:2]>y>gru[3|]");
 		int[] dim1 = {4};
 		int[] dim2 =  {5,8};
-		List<IndexedDataLabel> list = IndexedDataLabel.expandIndexes(dl,dim1,dim2);
+		Map<String,int[]> map = new HashMap<>();
+		map.put("tab",dim1);
+		map.put("gru",dim2);
+		List<IndexedDataLabel> list = IndexedDataLabel.expandIndexes(dl,map);
 		for (DataLabel d:list)
 			System.out.println(d);
 		assertEquals(list.size(),16);
 		dl = DataLabel.valueOf("ref");
-		list = IndexedDataLabel.expandIndexes(dl);
+		map.clear();
+		map.put("ref",dim1);
+		list = IndexedDataLabel.expandIndexes(dl,map);
 		for (DataLabel d:list)
 			System.out.println(d);
-		assertEquals(list.size(),1);		
+		assertEquals(list.size(),4);
+		map.clear();
+		list = IndexedDataLabel.expandIndexes(dl,null);
+		for (DataLabel d:list)
+			System.out.println(d);
+		assertEquals(list.size(),1);
 	}
 
 }

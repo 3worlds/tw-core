@@ -128,7 +128,7 @@ public class TwDataGenerator
 	@Override
 	protected void primitiveFieldCode(ClassGenerator cg, String fname,
 			String ftype) {
-		cg.getMethod("clear").setStatement(fname+ " = "+zero(ftype));
+		cg.getMethod("clear").setStatement(fname+ " = "+zero(checkType(ftype)));
 		cg.getMethod("clone").setStatement("clone."+fname+" = "+fname);
 		cg.getMethod("hasProperty").setStatement("if (v0.equals(\""+fname+"\")) return true");
 		cg.getMethod("propertyToString").setStatement("if (v0.equals(\""+fname+"\")) return String.valueOf("+fname+")");
@@ -191,6 +191,8 @@ public class TwDataGenerator
 		s = s.substring(0, s.length()-1);
 		s +=")";
 		cg.getConstructor("constructor1").setStatement(s);
+		s = "for (int i=0; i<flatSize; i++)\n\t\t\tsetWithFlatIndex(new "+contentType+"(),i)";
+		cg.getConstructor("constructor1").setStatement(s);
 		// since clone() is not abstract in ancestor, we must redeclare it here
 		MethodGenerator m = new MethodGenerator("public",ftype,"clone");
 		cg.setMethod("clone", m);
@@ -203,6 +205,12 @@ public class TwDataGenerator
 		cg.setMethod("cloneStructure", m);
 		cg.getMethod("cloneStructure").setReturnType(ftype);
 		cg.getMethod("cloneStructure").setReturnStatement("return new "+ftype+"()");
+		// since clear() is not abstract in ancestor, we must redeclare it here
+		m = new MethodGenerator("public",ftype,"clear");
+		cg.setMethod("clear",m);
+		cg.getMethod("clear").setReturnType(ftype);
+		cg.getMethod("clear").setReturnStatement("return this");
+		cg.getMethod("clear").setStatement("for (int i=0; i<flatSize; i++)\n\t\t\tgetWithFlatIndex(i).clear()");
 	}
 
 	

@@ -311,24 +311,25 @@ public class DataTrackerNode
 					for (int i=0; i<track.size(); i++) {
 						DataLabel unexpanded = DataLabel.valueOf(track.getWithFlatIndex(i));
 						List<int[]> dims = new ArrayList<>();
-						for (int j=0; j<unexpanded.size(); j++) {
-							String s = unexpanded.get(j);
-							if (s.contains("[")) // this is not enough as a criterion as some tables may be taken in full
-								dims.add(tableDims.get(s.substring(0,s.indexOf("["))));
-							else if (tableDims.containsKey(s))
-								dims.add(tableDims.get(s));
-						}
+//						for (int j=0; j<unexpanded.size(); j++) {
+//							String s = unexpanded.get(j);
+//							if (s.contains("[")) // this is not enough as a criterion as some tables may be taken in full
+//								dims.add(tableDims.get(s.substring(0,s.indexOf("["))));
+//							else if (tableDims.containsKey(s))
+//								dims.add(tableDims.get(s));
+//						}
 						List<IndexedDataLabel> labels = null;
-						if (dims.isEmpty()) { // no indexed data
-							labels = new ArrayList<>();
-							IndexedDataLabel lb = new IndexedDataLabel(unexpanded);
-							labels.add(lb);
-						}
-						else {
-							int[][] ddims = new int[1][];
-							ddims = dims.toArray(ddims);
-							labels = IndexedDataLabel.expandIndexes(unexpanded,ddims);
-						}
+//						if (dims.isEmpty()) { // no indexed data
+//							labels = new ArrayList<>();
+//							IndexedDataLabel lb = new IndexedDataLabel(unexpanded);
+//							labels.add(lb);
+//						}
+//						else {
+//							int[][] ddims = new int[1][];
+//							ddims = dims.toArray(ddims);
+//							labels = IndexedDataLabel.expandIndexes(unexpanded,ddims);
+//						}
+						labels = IndexedDataLabel.expandIndexes(unexpanded,tableDims);
 						// now there is one label for each index combination
 						for (IndexedDataLabel l:labels) {
 							String trackName = stripVarName(l);
