@@ -28,16 +28,15 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.queries.Query;
-import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 /**
  * Checks that an out node has either of two labels.
@@ -46,7 +45,7 @@ import fr.cnrs.iees.graph.Node;
  * Constraint: either 1..* nodes with label1 or 1..* nodes with label2
  * 
  */
-public class OutNodeXorQuery extends Query implements TwArchetypeConstants{
+public class OutNodeXorQuery extends Query {
 
 	private String nodeLabel1 = null;
 	private String nodeLabel2 = null;
@@ -67,11 +66,12 @@ public class OutNodeXorQuery extends Query implements TwArchetypeConstants{
 	public Query process(Object input) {  // input is a node
 		defaultProcess(input);
 		Node localItem = (Node) input;
-		List<Node> nl1 = (List<Node>) get(localItem, 
+		
+		List<Node> nl1 = (List<Node>) get(localItem. 
 			edges(Direction.OUT),
 			edgeListEndNodes(),
 			selectZeroOrMany(hasTheLabel(nodeLabel1)));
-		List<Node> nl2 = (List<Node>) get(localItem,
+		List<Node> nl2 = (List<Node>) get(localItem.
 			edges(Direction.OUT),
 			edgeListEndNodes(),
 			selectZeroOrMany(hasTheLabel(nodeLabel2)));
