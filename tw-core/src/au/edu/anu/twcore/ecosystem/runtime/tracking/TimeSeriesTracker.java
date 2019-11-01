@@ -161,6 +161,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	// use this for simple property lists, eg Population data
 	// assumes label = property name
 	// TODO: untested!
+	// always crashes for me: lab.getEnd is not a key to props - some kind of mix up here
 	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
 			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
