@@ -18,7 +18,8 @@ hasNode  dimSpec
 	hasProperty dimRankSpec
 		hasName = String("rank")
 		type = String("Integer")
-		multiplicity = IntegerRange("0..1")
+		multiplicity = IntegerRange("1..1")
+		// why should this optional????
 				
 hasNode recordRootSpec
 	isOfClass = String("record")
