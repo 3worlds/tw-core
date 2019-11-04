@@ -134,7 +134,8 @@ public class ComponentProcess
 			// track group state
 			// TODO: filter ni some way, depending on the tracker grouping
 			for (TimeSeriesTracker tracker:tsTrackers) {
-				tracker.record(currentStatus,container.populationData());
+// TODO: fix this it's causing a null pointer exception in TimeSeriesTracker.record()				
+//				tracker.record(currentStatus,container.populationData());
 			}
 			focalContext.clear();
 		}
