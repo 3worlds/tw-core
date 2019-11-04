@@ -63,13 +63,15 @@ public enum ConfigurationPropertyNames {
 	P_TABLE_UNITS 				("units"),
 	P_STOPCD_SUBCLASS			("subclass"),
 	P_WIDGET_SUBCLASS			("subclass"),
+	P_DATASOURCE_SUBCLASS		("subclass"),
+	P_DATATRACKER_SUBCLASS		("subclass"),
+	P_SA_SUBCLASS               ("subclass"),
 	P_STOPCD_ENDTIME			("endTime"),
 	P_STOPCD_STOPVAR			("stopVariable"),
 	P_STOPCD_STOPVAL			("stopValue"),
 	P_STOPCD_RANGE				("range"),
 	P_UICONTAINER_ORIENT		("orientation"),
 	P_UIORDER					("order"),
-	P_DATATRACKER_SUBCLASS		("subclass"),
 	P_DATATRACKER_SELECT		("select"),
 	P_DATATRACKER_GROUPBY		("groupBy"),
 	P_DATATRACKER_STATISTICS	("statistics"),
@@ -77,7 +79,6 @@ public enum ConfigurationPropertyNames {
 	P_DATATRACKER_VIEWOTHERS	("viewOthers"),
 	P_DATATRACKER_TRACK			("track"),
 	P_DATASOURCE_FILE			("file"),
-	P_DATASOURCE_SUBCLASS		("subclass")
 	;
 
 	private final String pname;

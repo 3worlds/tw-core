@@ -49,24 +49,26 @@ import fr.ens.biologie.generic.utils.Logging;
  * @date 20 Jul 2019
  */
 public class TWA {
-	
-	/** the 3Worlds archetype (= "The Instance")*/
+
+	/** the 3Worlds archetype (= "The Instance") */
 	private static Tree<? extends TreeNode> threeWorldsArchetype;
-	
+
 	/** the root of the 3Worlds archetype */
 	private static TreeNode twaRoot;
-	
+
 	/** if the 3Worlds archetype is valid, ie compies with the archetype format */
 	private static boolean checked = false;
-	
+
 	/** a logger for getting information */
 	private static Logger log = Logging.getLogger(TWA.class);
 
 	/** all the sub-archetypes found in the 3Worlds archetype */
 	private static Map<String, Tree<? extends TreeNode>> subGraphs = new HashMap<>();
-	
-	/** the archetype for archetypes, used to check the 3Worlds archetype and
-	 * 3Worlds specifications against the 3Worlds archetype (has the "check(...)" methods */
+
+	/**
+	 * the archetype for archetypes, used to check the 3Worlds archetype and 3Worlds
+	 * specifications against the 3Worlds archetype (has the "check(...)" methods
+	 */
 	private static Archetypes rootArchetype = null;
 
 	private TWA() {
@@ -80,7 +82,7 @@ public class TWA {
 	public static synchronized Tree<? extends TreeNode> getInstance() {
 		if (threeWorldsArchetype == null) {
 			threeWorldsArchetype = (Tree<? extends TreeNode>) GraphImporter.importGraph("3wArchetype.ugt",
-				CheckSubArchetypeQuery.class);
+					CheckSubArchetypeQuery.class);
 		}
 		return threeWorldsArchetype;
 	}
@@ -97,12 +99,13 @@ public class TWA {
 
 	/**
 	 * Makes sure the 3Worlds archetype is a valid archetype
+	 * 
 	 * @return true if the 3Worlds archetype has no errors
 	 */
 	public static synchronized boolean validArchetype() {
 		if (checked)
 			return checked;
-		if (rootArchetype==null)
+		if (rootArchetype == null)
 			rootArchetype = new Archetypes();
 		if (!rootArchetype.isArchetype(TWA.getInstance())) {
 			log.severe("3WORLDS ARCHETYPE HAS ERRORS! (list follows)");
@@ -116,7 +119,8 @@ public class TWA {
 
 	/**
 	 * Accessor to the sub-archetypes listed in the main 3Worlds archetype
-	 * @param key the name of the sub-archetype 
+	 * 
+	 * @param key the name of the sub-archetype
 	 * @return the sub-archetype as a tree
 	 */
 	@SuppressWarnings("unchecked")
@@ -126,11 +130,15 @@ public class TWA {
 		Tree<? extends TreeNode> tree = (Tree<? extends TreeNode>) GraphImporter.importGraph(key,
 				CheckSubArchetypeQuery.class);
 		subGraphs.put(key, tree);
+//		subGraphs.entrySet().forEach(entry -> {
+//			System.out.println(entry.getKey());
+//		});
 		return tree;
 	}
 
 	/**
 	 * Checks that a specification complies with the 3Worlds archetype
+	 * 
 	 * @param graph the graph to check
 	 * @return the list of errors, or null if no errors
 	 */
@@ -140,5 +148,5 @@ public class TWA {
 			rootArchetype.check(graph, getInstance());
 		return rootArchetype.errorList();
 	}
-	
+
 }
