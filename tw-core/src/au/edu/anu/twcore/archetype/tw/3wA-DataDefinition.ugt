@@ -57,51 +57,34 @@ hasNode tableSpec
 	mustSatisfyQuery childXorPropertyQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery")
 		edge_prop = StringTable(([2]"record","dataElementType"))
-	mustSatisfyQuery DoubleMetadataTableTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-RealTableMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Double)
-	mustSatisfyQuery FloatMetadataTableTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-RealTableMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Float)
-	mustSatisfyQuery IntegerMetadataTableTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-IntegerTableMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Integer)
-	mustSatisfyQuery LongMetadataTableTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-IntegerTableMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Long)
-	mustSatisfyQuery ShortMetadataTableTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-IntegerTableMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Short)
-	mustSatisfyQuery ByteMetadataTableTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"dataElementType","3wSA-IntegerTableMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Byte)
-		
-		
-		
-	// optional metadata - TODO: make sure these are only applied to numeric tables
-	// cf what has been done for fields below
-//	hasProperty NumericTableUnitsSpec
-//		hasName = String("units")
-//		type = String("String")
-//		multiplicity = IntegerRange("0..1")
-//	hasProperty NumericTablePrecSpec
-//		hasName = String("precision")
-//		type = String("Double")
-//		multiplicity = IntegerRange("0..1")
-//	hasProperty NumericTableMinSpec
-//		hasName = String("min")
-//		type = String("Double")
-//		multiplicity = IntegerRange("0..1")
-//	hasProperty NumericTableMaxSpec
-//		hasName = String("max")
-//		type = String("Double")
-//		multiplicity = IntegerRange("0..1")
+	hasProperty NumberTableUnitsSpec
+		hasName = String("units")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery NumberTableUnitsSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([8]"units","dataElementType","Double","Float","Integer","Long","Short","Byte"))		
+	hasProperty RealNumberTablePrecSpec
+		hasName = String("precision")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery RealNumberTablePrecSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([4]"precision","dataElementType","Double","Float"))
+	hasProperty TableRealNumberIntervalSpec
+		hasName = String("interval")
+		type = String("Interval")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery TableRealNumberIntervalSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([4]"interval","dataElementType","Double","Float"))
+	hasProperty TableIntegerNumberRangeSpec
+		hasName = String("range")
+		type = String("IntegerRange")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery TableIntegerNumberRangeSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([7]"range","dataElementType","Integer","Long","Boolean","Short","Byte"))
 		
 hasNode recordFieldSpec
 	isOfClass = String("field")
@@ -111,27 +94,31 @@ hasNode recordFieldSpec
 		hasName = String("type")
 		type = String("DataElementType")
 		multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery DoubleMetadataTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-RealFieldMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Double)
-	mustSatisfyQuery FloatMetadataTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-RealFieldMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Float)
-	mustSatisfyQuery IntegerMetadataTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-IntegerFieldMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Integer)
-	mustSatisfyQuery LongMetadataTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-IntegerFieldMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Long)
-	mustSatisfyQuery ShortMetadataTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-IntegerFieldMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Short)
-	mustSatisfyQuery ByteMetadataTypeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([2]"type","3wSA-IntegerFieldMetadata.ugt"))
-		value = fr.cnrs.iees.twcore.constants.DataElementType(Byte)
+	hasProperty NumberFieldUnitsSpec
+		hasName = String("units")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery NumberFieldUnitsSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([8]"units","type","Double","Float","Integer","Long","Short","Byte"))		
+	hasProperty RealNumberFieldPrecSpec
+		hasName = String("precision")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery RealNumberFieldPrecSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([4]"precision","type","Double","Float"))
+	hasProperty RealNumberIntervalSpec
+		hasName = String("interval")
+		type = String("Interval")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery RealNumberIntervalSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([4]"interval","type","Double","Float"))
+	hasProperty IntegerNumberRangeSpec
+		hasName = String("range")
+		type = String("IntegerRange")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery IntegerNumberRangeSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([7]"range","type","Integer","Long","Boolean","Short","Byte"))

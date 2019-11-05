@@ -61,7 +61,7 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.DimNode;
-import au.edu.anu.twcore.data.Field;
+import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.data.runtime.DataLabel;
@@ -185,26 +185,29 @@ public class DataTrackerNode
 	private TrackMeta findTrackMetadata(Record rec, String trackVar) {
 		TrackMeta result = null;
 		for (TreeNode n:rec.getChildren()) {
-			if (n instanceof Field) {
+			if (n instanceof FieldNode) {
 				if (n.id().equals(trackVar)) {
-					Field f = (Field) n;
+					FieldNode f = (FieldNode) n;
 					result = new TrackMeta();
-					DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELD_TYPE.key());
 					if (f.properties().hasProperty(P_FIELD_UNITS.key()))
 						result.units = (String) f.properties().getPropertyValue(P_FIELD_UNITS.key());
 					if (f.properties().hasProperty(P_FIELD_RANGE.key()))
-						switch(det) {
-						case Double: case Float:
-							result.rrange = (Interval) f.properties().getPropertyValue(P_FIELD_RANGE.key());
-							break;
-						case Integer: case Long: case Short: case Byte:
-							result.irange = (IntegerRange) f.properties().getPropertyValue(P_FIELD_RANGE.key());
-							break;
-						default:
-							break;
-						}
+						result.irange = (IntegerRange) f.properties().getPropertyValue(P_FIELD_RANGE.key());
+					if (f.properties().hasProperty(P_FIELD_INTERVAL.key()))
+						result.rrange = (Interval) f.properties().getPropertyValue(P_FIELD_INTERVAL.key());
+//						switch(det) {
+//						case Double: case Float:
+//							result.rrange = (Interval) f.properties().getPropertyValue(P_FIELD_RANGE.key());
+//							break;
+//						case Integer: case Long: case Short: case Byte:
+//							result.irange = (IntegerRange) f.properties().getPropertyValue(P_FIELD_RANGE.key());
+//							break;
+//						default:
+//							break;
+//						}
 					if (f.properties().hasProperty(P_FIELD_PREC.key())) 
 						result.prec = (Double) f.properties().getPropertyValue(P_FIELD_PREC.key());
+					DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELD_TYPE.key());
 					try {
 						result.trackType = Class.forName(det.className());
 					} catch (ClassNotFoundException e) {
@@ -329,8 +332,8 @@ public class DataTrackerNode
 							if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
 								fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tm.irange);
 						if (tm.rrange!=null)
-							if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
-								fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tm.rrange);
+							if (!fieldMetadata.hasProperty(trackName+P_FIELD_INTERVAL.key()))
+								fieldMetadata.addProperty(trackName+P_FIELD_INTERVAL.key(),tm.rrange);
 						if (tm.prec!=null)
 							if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
 								fieldMetadata.addProperty(trackName+P_FIELD_PREC.key(),tm.prec);

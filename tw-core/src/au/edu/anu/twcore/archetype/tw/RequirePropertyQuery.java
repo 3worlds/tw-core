@@ -28,64 +28,58 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.lang.reflect.Method;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.queries.Query;
-import static fr.cnrs.iees.io.parsing.TextGrammar.*;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
- * A Query to test that if a node property takes certain values, then another property must be set. eg, the
+ * A Query to test that if a node property takes certain values, then another property must exist. eg, the
  * second property is not really optional: it is not needed in some cases, but it is in others.
+ * 
  * @author Jacques Gignoux - 22-06-2018 
  *  
- *  TODO: this class is unfinished !
- *
  */
+// tested OK 5/11/2019
 public class RequirePropertyQuery extends Query {
 	
 	private String p1;
 	private String p2;
-	private String type;
-	private Object[] values = null;
+	private String[] stringValues = null;
 
-//	  mustSatisfyQuery
-//	    className: fr.ens.biologie.threeWorlds.ui.configuration.archetype3w.RequirePropertyQuery
-//	    values: {"fr.ens.biologie.threeWorlds.resources.core.constants.Grouping","select",{[4],ALL,SPECIES,STAGE,SPECIES_STAGE}}
-	
-	@SuppressWarnings("unchecked")
-	public RequirePropertyQuery(String prop1, String type1, String prop2, String valueList) {
+	/**
+	 * Constructor from a StringTable assuming :
+	 * first argument = the property which existence is conditioned on the next argument
+	 * second arg = the property which must have values for the first one to be present
+	 * all next arguments = the set of valid values of prop 2 for which prop 1 may be present
+	 */
+	public RequirePropertyQuery(StringTable params) {
 		super();
-		p1 = prop1;
-		p2 = prop2;
-		type = type1;
-		char[][] bdel = new char[2][2];
-		bdel[Table.DIMix] = DIM_BLOCK_DELIMITERS;
-		bdel[Table.TABLEix] = TABLE_BLOCK_DELIMITERS;
-		char[] isep = new char[2];
-		isep[Table.DIMix] = DIM_ITEM_SEPARATOR;
-		isep[Table.TABLEix] = TABLE_ITEM_SEPARATOR;
-		StringTable s = StringTable.valueOf(valueList,bdel,isep);
-		try {
-			Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) Class.forName(type,true,Thread.currentThread().getContextClassLoader());
-			Method m = e.getMethod("valueOf", String.class);
-			values = new Object[s.size()];
-			for (int i = 0; i < values.length; i++)
-				values[i] = m.invoke(null,s.getWithFlatIndex(i));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		p1 = params.getWithFlatIndex(0);
+		p2 = params.getWithFlatIndex(1);
+		stringValues = new String[params.size()-2];
+		for (int i=2; i<params.size(); i++)
+			stringValues[i-2] = params.getWithFlatIndex(i);
 	}
-	
 	
 	@Override
 	public Query process(Object input) { // input is a node
-		// TODO Auto-generated method stub
-		return null;
+		defaultProcess(input);
+		ReadOnlyDataHolder n = (ReadOnlyDataHolder) input;
+		if (n.properties().hasProperty(p1)) {
+			if (n.properties().hasProperty(p2)) {
+				for (int i=0; i<stringValues.length; i++)
+					if (n.properties().getPropertyValue(p2).toString().equals(stringValues[i]))
+						satisfied = true;
+			}
+		}
+		else
+			satisfied = true;
+		return this;
 	}
 
 	public String toString() {
-		return "[" + this.getClass().getName() +" Must have either '"+p1+"' or '"+p2+ "' property]";
+		return "[" + this.getClass().getName() +
+			" Presence of property '"+p1+"' incompatible with value of property '"+p2+"']";
 	}
 
 }

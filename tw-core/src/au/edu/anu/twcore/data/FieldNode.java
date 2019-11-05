@@ -32,7 +32,6 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -45,13 +44,13 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 31 mai 2019
  *
  */
-public class Field extends InitialisableNode {
+public class FieldNode extends InitialisableNode{
 
-	public Field(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public FieldNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 	
-	public Field(Identity id, GraphFactory gfactory) {
+	public FieldNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
