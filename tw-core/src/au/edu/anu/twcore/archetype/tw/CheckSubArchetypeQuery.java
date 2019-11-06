@@ -12,7 +12,6 @@ import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.SimpleTree;
 import fr.cnrs.iees.graph.io.GraphImporter;
-import fr.cnrs.iees.twcore.constants.DataElementType;
 
 /**
  * A Query to be processed while in an archetype - use it to check whole

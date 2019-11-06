@@ -33,6 +33,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.ens.biologie.generic.Factory;
 import fr.ens.biologie.generic.Sealable;
 
@@ -40,14 +41,13 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static fr.cnrs.iees.io.parsing.ValidPropertyTypes.*;
-
 import au.edu.anu.rscs.aot.collections.tables.*;
-import au.edu.anu.rscs.aot.util.StringUtils;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
@@ -65,15 +65,14 @@ public class TableNode
 
 	private boolean sealed = false;
 	private Dimensioner[] dims = null;
-	private String dataType = null;
+	private DataElementType dataType = null;
 	
 	public TableNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 	
 	public TableNode(Identity id, GraphFactory gfactory) {
-		super(id, new ExtendablePropertyListImpl(), gfactory);		super.initialise();
-
+		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
 
@@ -82,15 +81,23 @@ public class TableNode
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
-			List<DimNode> d = (List<DimNode>) get(this.edges(Direction.OUT),
-				selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
-				edgeListEndNodes());
-			dims = new Dimensioner[d.size()];
-			for (int i=0; i<dims.length; i++)
-				dims[i] = d.get(i).getInstance();
-			if (properties().hasProperty(P_FIELD_TYPE.key()))
-				if (isPrimitiveType((String) properties().getPropertyValue(P_FIELD_TYPE.key())))
-					dataType = StringUtils.cap((String)properties().getPropertyValue(P_FIELD_TYPE.key()));
+			// sort dimensioner by rank order - NB ranks must be different, but they do not
+			// have to follow each other
+			List<SizedByEdge> lsbe = (List<SizedByEdge>) get(this.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_SIZEDBY.label())));
+			SortedMap<Integer,DimNode> ld = new TreeMap<>();
+			for (SizedByEdge sbe:lsbe) {
+				int ix = (int) sbe.properties().getPropertyValue(P_DIMENSIONER_RANK.key());
+				DimNode dn = (DimNode) sbe.endNode();
+				ld.put(ix,dn);
+			}
+			dims = new Dimensioner[ld.size()];
+			int i=0;
+			for (int j:ld.keySet())
+				dims[i++] = ld.get(j).getInstance();
+			// get data type
+			if (properties().hasProperty(P_DATAELEMENTTYPE.key()))
+				dataType = (DataElementType) properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 			sealed = true;
 		}
 	}
@@ -109,24 +116,25 @@ public class TableNode
 		if (!sealed)
 			initialise();
 		switch (dataType) {
-			case "Byte":
+			case Byte:
 				return new ByteTable(dims);
-			case "Char":
+			case Char:
 				return new CharTable(dims);
-			case "Short":
+			case Short:
 				return new ShortTable(dims);
-			case "Integer":
+			case Integer:
 				return new IntTable(dims);
-			case "Long":
+			case Long:
 				return new LongTable(dims);
-			case "Float":
+			case Float:
 				return new FloatTable(dims);
-			case "Double":
+			case Double:
 				return new DoubleTable(dims);
-			case "Boolean":
+			case Boolean:
 				return new BooleanTable(dims);
-			case "String":
+			case String:
 				return new StringTable(dims);
+			default:;
 		}
 		return null;
 	}
