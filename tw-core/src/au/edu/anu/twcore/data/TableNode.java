@@ -75,7 +75,6 @@ public class TableNode
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
@@ -109,6 +108,12 @@ public class TableNode
 
 	public String name() {
 		return classId();
+	}
+	
+	public Dimensioner[] dimensioners() {
+		if (!sealed)
+			initialise();
+		return dims;
 	}
 
 	@Override

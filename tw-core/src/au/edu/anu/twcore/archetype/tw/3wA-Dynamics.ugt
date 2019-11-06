@@ -91,7 +91,6 @@ hasNode processSpec
 		multiplicity = IntegerRange("0..*")
 	hasEdge appliesToRelationSpec
 		isOfClass = String("appliesTo")
-		//toNode = String("relation")
 		toNode = String("relationType")
 		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery processToRelationOrCategorySpec
@@ -150,9 +149,26 @@ hasNode dataTrackerSpec
 		hasName = String("track")
 		type = String("TrackerType")
 		multiplicity = IntegerRange("1..1")
-		// TODO: check the tracked variables are compatible with this process category
+	hasEdge trackFieldEdgeSpec
+		isOfClass = String("trackField")
+		toNode = String("field")
+		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery validTrackFieldCategory
+			className = String("au.edu.anu.twcore.archetype.tw.FindCommonCategoryQuery")
+	hasEdge trackTableEdgeSpec
+		isOfClass = String("trackTable")
+		toNode = String("table")
+		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery validTrackTableCategory
+			className = String("au.edu.anu.twcore.archetype.tw.FindCommonCategoryQuery")
+		mustSatisfyQuery leafTableSpec
+			className = String("au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery")
+			propname = String("dataElementType")
 		// TODO: check that tracked tables have the correct number of dimensions and indices !
-		// TODO: check that the same name does not appear twice in track property
+		hasProperty trackTableIndexSpec
+			hasName = String("index")
+			type = String("String")
+			multiplicity = IntegerRange("1..1")
 	hasProperty groupBySpec
 		hasName = String("groupBy")
 		type = String("Grouping")

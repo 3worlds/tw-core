@@ -60,7 +60,6 @@ import java.util.TreeMap;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.data.DimNode;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
@@ -123,16 +122,10 @@ public class DataTrackerNode
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private int[] getTableDims(TableNode tab) {
-		// FLAW HERE: the order of dimensioners may change! we need an ordering prop in DimEdge!
-		List<DimNode> dimns = (List<DimNode>) get(tab.edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
-			edgeListEndNodes());
-		int [] dims = new int[dimns.size()];
-		int j=0;
-		for (DimNode dim:dimns)
-			dims[j++] = (int) dim.properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
+		int[] dims = new int[tab.dimensioners().length];
+		for (int i=0; i<dims.length; i++)
+			dims[i] = tab.dimensioners()[i].getLength();
 		return dims;
 	}
 	
@@ -195,16 +188,6 @@ public class DataTrackerNode
 						result.irange = (IntegerRange) f.properties().getPropertyValue(P_FIELD_RANGE.key());
 					if (f.properties().hasProperty(P_FIELD_INTERVAL.key()))
 						result.rrange = (Interval) f.properties().getPropertyValue(P_FIELD_INTERVAL.key());
-//						switch(det) {
-//						case Double: case Float:
-//							result.rrange = (Interval) f.properties().getPropertyValue(P_FIELD_RANGE.key());
-//							break;
-//						case Integer: case Long: case Short: case Byte:
-//							result.irange = (IntegerRange) f.properties().getPropertyValue(P_FIELD_RANGE.key());
-//							break;
-//						default:
-//							break;
-//						}
 					if (f.properties().hasProperty(P_FIELD_PREC.key())) 
 						result.prec = (Double) f.properties().getPropertyValue(P_FIELD_PREC.key());
 					DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELD_TYPE.key());
