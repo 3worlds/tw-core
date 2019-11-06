@@ -51,34 +51,6 @@ public class CheckSubArchetypeQuery extends Query {
 		fileName = (String) parameters.getWithFlatIndex(2);
 	}
 
-	// a more generic constructor, able to handle non-String values
-	public CheckSubArchetypeQuery(StringTable parameters, Object value) {
-		super();
-		pKey = (String) parameters.getWithFlatIndex(0);
-		fileName = (String) parameters.getWithFlatIndex(1);
-		pValue = value;
-	}
-	public CheckSubArchetypeQuery(Object value,StringTable parameters) {
-		super();
-		pKey = (String) parameters.getWithFlatIndex(0);
-		fileName = (String) parameters.getWithFlatIndex(1);
-		pValue = value;
-	}
-	
-	// apparently Object is not useful, so here are specialised constructors:
-	public CheckSubArchetypeQuery(StringTable parameters, DataElementType value) {
-		super();
-		pKey = (String) parameters.getWithFlatIndex(0);
-		fileName = (String) parameters.getWithFlatIndex(1);
-		pValue = value;
-	}
-	public CheckSubArchetypeQuery(DataElementType value,StringTable parameters) {
-		super();
-		pKey = (String) parameters.getWithFlatIndex(0);
-		fileName = (String) parameters.getWithFlatIndex(1);
-		pValue = value;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
