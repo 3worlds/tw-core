@@ -12,7 +12,6 @@ hasNode initialisationSpec
 	mustSatisfyQuery initialiserNameWithUppercaseQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
 	
-	
 hasNode timeLineSpec
 	isOfClass = String("timeLine")
 	hasParent = StringTable(([1]"dynamics:"))
@@ -155,6 +154,13 @@ hasNode dataTrackerSpec
 		multiplicity = IntegerRange("0..*")
 		mustSatisfyQuery validTrackFieldCategory
 			className = String("au.edu.anu.twcore.archetype.tw.FindCommonCategoryQuery")
+		// this may be needed if upper containers for the field are tables
+		hasProperty trackTableIndexSpec
+			hasName = String("index")
+			type = String("StringTable")
+			multiplicity = IntegerRange("0..1")
+		mustSatisfyQuery indexInTableDimRangeFieldSpec
+			className = String("au.edu.anu.twcore.archetype.tw.IndexDimensionQuery")
 	hasEdge trackTableEdgeSpec
 		isOfClass = String("trackTable")
 		toNode = String("table")
@@ -164,11 +170,12 @@ hasNode dataTrackerSpec
 		mustSatisfyQuery leafTableSpec
 			className = String("au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery")
 			propname = String("dataElementType")
-		// TODO: check that tracked tables have the correct number of dimensions and indices !
 		hasProperty trackTableIndexSpec
 			hasName = String("index")
-			type = String("String")
+			type = String("StringTable")
 			multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery indexInTableDimRangeTableSpec
+			className = String("au.edu.anu.twcore.archetype.tw.IndexDimensionQuery")
 	hasProperty groupBySpec
 		hasName = String("groupBy")
 		type = String("Grouping")
