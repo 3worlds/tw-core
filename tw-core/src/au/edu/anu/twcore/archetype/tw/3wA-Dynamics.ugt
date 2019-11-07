@@ -144,10 +144,10 @@ hasNode dataTrackerSpec
 		hasName = String("tableStatistics")
 		type = String("StatisticalAggregatesSet")
 		multiplicity = IntegerRange("0..1") 
-	hasProperty trackPropSpec
-		hasName = String("track")
-		type = String("TrackerType")
-		multiplicity = IntegerRange("1..1")
+//	hasProperty trackPropSpec
+//		hasName = String("track")
+//		type = String("TrackerType")
+//		multiplicity = IntegerRange("1..1")
 	hasEdge trackFieldEdgeSpec
 		isOfClass = String("trackField")
 		toNode = String("field")

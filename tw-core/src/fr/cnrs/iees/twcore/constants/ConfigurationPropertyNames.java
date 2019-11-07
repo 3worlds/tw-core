@@ -60,6 +60,7 @@ public enum ConfigurationPropertyNames {
 	P_FUNCTIONCLASS				("userClassName"), 
 	P_DATAELEMENTTYPE			("dataElementType"),
 	P_TABLE_RANGE 				("range"),
+	P_TABLE_INTERVAL 			("interval"),
 	P_TABLE_PREC 				("precision"),
 	P_TABLE_UNITS 				("units"),
 	P_STOPCD_SUBCLASS			("subclass"),

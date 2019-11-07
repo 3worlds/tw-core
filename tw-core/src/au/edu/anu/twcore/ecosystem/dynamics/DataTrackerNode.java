@@ -29,8 +29,10 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
@@ -51,7 +53,10 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -108,7 +113,7 @@ public class DataTrackerNode
 	private StatisticalAggregatesSet tstats = null;
 	private boolean viewOthers = false;
 	private Object dataTrackerClass;
-	private StringTable track = null;
+//	private StringTable track = null;
 	private ExtendablePropertyList fieldMetadata = new ExtendablePropertyListImpl();
 	// a map of all table dimensions
 	private Map<String,int[]> tableDims = new HashMap<>();
@@ -145,17 +150,10 @@ public class DataTrackerNode
 				DataElementType det = (DataElementType) tab.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 				if (tab.properties().hasProperty(P_TABLE_UNITS.key()))
 					result.units = (String) tab.properties().getPropertyValue(P_TABLE_UNITS.key());
+				if (tab.properties().hasProperty(P_TABLE_INTERVAL.key()))
+					result.rrange = (Interval) tab.properties().getPropertyValue(P_TABLE_INTERVAL.key());
 				if (tab.properties().hasProperty(P_TABLE_RANGE.key()))
-					switch(det) {
-					case Double: case Float:
-						result.rrange = (Interval) tab.properties().getPropertyValue(P_TABLE_RANGE.key());
-						break;
-					case Integer: case Long: case Short: case Byte:
-						result.irange = (IntegerRange) tab.properties().getPropertyValue(P_TABLE_RANGE.key());
-						break;
-					default:
-						break;
-					}
+					result.irange = (IntegerRange) tab.properties().getPropertyValue(P_TABLE_RANGE.key());
 				if (tab.properties().hasProperty(P_TABLE_PREC.key())) 
 					result.prec = (Double) tab.properties().getPropertyValue(P_TABLE_PREC.key());
 				try {
@@ -229,6 +227,30 @@ public class DataTrackerNode
 		return trackName;
 	}
 	
+	private DataLabel getFullVarName(TreeNode var, StringTable index) {
+		DataLabel result = new DataLabel();
+		Deque<String> l = new LinkedList<>();		
+		TreeNode parent = var;
+		int i = 0;
+		if (index!=null)
+			i = index.size()-1;
+		while (parent!=null) {
+			if (parent instanceof FieldNode)
+				l.add(parent.id());
+			else if (parent instanceof TableNode) {
+				if (index!=null)
+					l.add(parent.id()+index.getWithFlatIndex(i--));
+				else
+					l.add(parent.id());
+			}
+			parent = parent.getParent();
+		}
+		Iterator<String> it = l.descendingIterator();
+		while (it.hasNext())
+			result.append(it.next());
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
@@ -253,8 +275,9 @@ public class DataTrackerNode
 				tstats = StatisticalAggregatesSet.defaultValue();
 			if (properties().hasProperty(P_DATATRACKER_VIEWOTHERS.key()))
 				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
+			
 			// the only required properties.
-			track = (StringTable) properties().getPropertyValue(P_DATATRACKER_TRACK.key());
+//			track = (StringTable) properties().getPropertyValue(P_DATATRACKER_TRACK.key());
 			// extract the property types + metadata from the graph
 			List<Node> ln = (List<Node>) get(getParent().edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
@@ -266,11 +289,10 @@ public class DataTrackerNode
 				else if (n instanceof Category) {
 					// 1 - get all the info where indexing and full label is not needed
 					SortedMap<String,TrackMeta> fm = new TreeMap<>();
-					for (int i=0; i<track.size(); i++) {
-						// extract the last bit of the data label, stripping off indexes
-						String trackName = track.getWithFlatIndex(i);
-						trackName = stripVarName(DataLabel.valueOf(trackName));
-						// search the metadata for this varname
+					List<Edge> le = (List<Edge>) get(edges(Direction.OUT),
+						selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),hasTheLabel(E_TRACKTABLE.label()))));
+					for (Edge e:le) {
+						String trackName = e.endNode().id();
 						if (!fm.containsKey(trackName)) {
 							TrackMeta tt = findTrackMetadata((Category)n,trackName);
 							if (tt!=null) 
@@ -278,10 +300,27 @@ public class DataTrackerNode
 							else ; // throw Exception ? this should never happen normally...
 						}
 					}
+//					for (int i=0; i<track.size(); i++) {
+//						// extract the last bit of the data label, stripping off indexes
+//						String trackName = track.getWithFlatIndex(i);
+//						trackName = stripVarName(DataLabel.valueOf(trackName));
+//						// search the metadata for this varname
+//						if (!fm.containsKey(trackName)) {
+//							TrackMeta tt = findTrackMetadata((Category)n,trackName);
+//							if (tt!=null) 
+//								fm.put(trackName, tt);
+//							else ; // throw Exception ? this should never happen normally...
+//						}
+//					}
 					// 2 - expand indexes and develop full labels and store above information
-					for (int i=0; i<track.size(); i++) {
-						DataLabel unexpanded = DataLabel.valueOf(track.getWithFlatIndex(i));
+					for (Edge e:le) {
+						DataLabel unexpanded = getFullVarName((TreeNode)e.endNode(),
+							(StringTable)((ReadOnlyDataHolder)e).properties().getPropertyValue("index"));
 						List<IndexedDataLabel> labels = IndexedDataLabel.expandIndexes(unexpanded,tableDims);
+//					}
+//					for (int i=0; i<track.size(); i++) {
+//						DataLabel unexpanded = DataLabel.valueOf(track.getWithFlatIndex(i));
+//						List<IndexedDataLabel> labels = IndexedDataLabel.expandIndexes(unexpanded,tableDims);
 						// now there is one label for each index combination
 						for (IndexedDataLabel l:labels) {
 							String trackName = stripVarName(l);
