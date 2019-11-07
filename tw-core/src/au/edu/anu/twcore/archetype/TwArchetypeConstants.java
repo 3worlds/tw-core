@@ -46,5 +46,6 @@ public interface TwArchetypeConstants {
 	public final static String twaParameters = "parameters";
 	public final static String twaNodeLabel1 = "nodeLabel1";
 	public final static String twaNodeLabel2 = "nodeLabel2";
+	public final static String twaConditions = "conditions";
 
 }
