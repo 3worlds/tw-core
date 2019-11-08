@@ -31,6 +31,7 @@ package fr.cnrs.iees.twcore.constants;
 
 import static fr.cnrs.iees.io.parsing.TextGrammar.*;
 import au.edu.anu.rscs.aot.collections.tables.*;
+import fr.cnrs.iees.OmugiException;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
 /**
@@ -43,23 +44,39 @@ public class TrackerType extends StringTable {
 	public TrackerType(Dimensioner[] readDimensioners) {
 		super(readDimensioners);
 	}
-
+	private static char QUOTE = '"';
+	// TODO IDD something needs to be done about this duplication
 	public static TrackerType valueOf(String value) {
+		if ((value==null)||value.isBlank()||value.isEmpty())
+			return null;
 		char[][] bdel = bdel();
 		char[] isep = isep();
+
 		String ss = TableAdapter.getBlockContent(value, bdel[TABLEix]);
 		String d = ss.substring(0, ss.indexOf(bdel[DIMix][BLOCK_CLOSE]) + 1);
 		TrackerType result = new TrackerType(readDimensioners(d, bdel[DIMix], isep[DIMix]));
 		ss = ss.substring(ss.indexOf(bdel[DIMix][BLOCK_CLOSE]) + 1);
-		String s = null;
-		int i = 0;
-		while (ss.indexOf(isep[TABLEix]) > 0) {
-			s = ss.substring(0, ss.indexOf(isep[TABLEix]));
-			ss = ss.substring(ss.indexOf(isep[TABLEix]) + 1);
-			result.data[i] = s;
-			i++;
+		StringBuilder sb = new StringBuilder();
+		int n = 0;
+		boolean inquote = false;
+		for (int i=0; i<ss.length(); i++) {
+			char c = ss.charAt(i);
+			if (c==QUOTE)
+				inquote = !inquote;
+			else if (inquote)
+				sb.append(c);
+			else if (!inquote) {
+				if (c==isep[TABLEix]) {
+					if (n==result.flatSize-1)
+						throw new OmugiException("Too many values read: table size == "+result.flatSize);
+					result.data[n++] = sb.toString().trim();
+					sb = new StringBuilder();
+				}
+				else
+					sb.append(c);
+			}
 		}
-		result.data[i] = ss.trim();
+		result.data[n++] = sb.toString().trim();
 		return result;
 	}
 
