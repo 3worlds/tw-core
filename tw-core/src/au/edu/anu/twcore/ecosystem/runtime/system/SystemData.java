@@ -32,8 +32,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.AotException;
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 /**
  * A Data object to contain automatic ComplexSystem variables, i.e. those variables which
@@ -68,7 +68,7 @@ public class SystemData extends TwData {
 	}
 	
 	public void age(long value) {
-		if (isReadOnly()) throw new AotException("attempt to write to read-only data");
+		if (isReadOnly()) throw new TwcoreException("attempt to write to read-only data");
 		age = value;
 	}
 	
@@ -77,7 +77,7 @@ public class SystemData extends TwData {
 	}
 	
 	public void birthDate(long value) {
-		if (isReadOnly()) throw new AotException("attempt to write to read-only data");
+		if (isReadOnly()) throw new TwcoreException("attempt to write to read-only data");
 		birthDate = value;
 	}
 	
@@ -86,7 +86,7 @@ public class SystemData extends TwData {
 	}
 
 	public void name(String value) {
-		if (isReadOnly()) throw new AotException("attempt to write to read-only data");
+		if (isReadOnly()) throw new TwcoreException("attempt to write to read-only data");
 		name = value;
 	}
 

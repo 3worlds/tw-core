@@ -3,7 +3,6 @@ package au.edu.anu.twcore.experiment.runtime.io;
 import java.util.HashSet;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.AotException;
 import au.edu.anu.rscs.aot.collections.tables.BooleanTable;
 import au.edu.anu.rscs.aot.collections.tables.ByteTable;
 import au.edu.anu.rscs.aot.collections.tables.CharTable;
@@ -94,7 +93,7 @@ public class PropertyDataLoader implements DataLoader<SimplePropertyList> {
 					}
 					Class<?> dataType = data.getPropertyClass(header);
 					if (dataType == null)
-						throw new AotException("No datatype found in " + data.getClass().getName()
+						throw new TwcoreException("No datatype found in " + data.getClass().getName()
 								+ " for column header " + header + ".");
 
 					// Primitives

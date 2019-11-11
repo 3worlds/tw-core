@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import au.edu.anu.rscs.aot.AotException;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
@@ -555,7 +554,7 @@ public class TimeUtil {
 		case MICROSECOND:
 			return ChronoUnit.MICROS;
 		default: {
-			throw new AotException("Unable to convert " + tu + "to ChronoUnit");
+			throw new TwcoreException("Unable to convert " + tu + "to ChronoUnit");
 		}
 		}
 	}
@@ -607,7 +606,7 @@ public class TimeUtil {
 		case MILLENNIUM:
 			return date.plusYears(n * 1000L);
 		default: {
-			throw new AotException("Unable to advance " + unit);
+			throw new TwcoreException("Unable to advance " + unit);
 		}
 
 		}
