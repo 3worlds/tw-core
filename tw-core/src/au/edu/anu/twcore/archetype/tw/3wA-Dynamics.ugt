@@ -172,7 +172,7 @@ hasNode dataTrackerSpec
 			propname = String("dataElementType")
 		hasProperty trackTableIndexSpec
 			hasName = String("index")
-			type = String("StringTable")
+			type = String("TrackerType")
 			multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery indexInTableDimRangeTableSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IndexDimensionQuery")
