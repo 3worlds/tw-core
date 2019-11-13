@@ -305,7 +305,7 @@ hasNode groupSpec
 	multiplicity = IntegerRange("0..*")
 	hasEdge groupToSystemSpec
 		isOfClass = String("groupOf")
-		toNode = String("component")
+		toNode = String("componentType")
 		multiplicity = IntegerRange("0..1")
 	hasEdge groupToLifeCycleSpec
 		isOfClass = String("cycle")
@@ -317,7 +317,7 @@ hasNode groupSpec
 		multiplicity = IntegerRange("0..*")
 	mustSatisfyQuery groupObjectSpec
 		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
-		nodeLabel1 = String("component")
+		nodeLabel1 = String("componentType")
 		nodeLabel2 = String("lifeCycle")
 	
 // initial state for an individual component 	
@@ -327,7 +327,7 @@ hasNode individualSpec
 	multiplicity = IntegerRange("0..*")
 	hasEdge individualToSystemSpec
 		isOfClass = String("instanceOf")
-		toNode = String("component")
+		toNode = String("componentType")
 		multiplicity = IntegerRange("1..1")
 	hasEdge individualToSourceLoadFromSpec
 		isOfClass = String("loadFrom")

@@ -26,16 +26,16 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.dynamics;
+package au.edu.anu.twcore.ecosystem.structure;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
+import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
-import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -65,7 +65,7 @@ import java.util.TreeSet;
  * @author Jacques Gignoux - 25 avr. 2013
  *
  */
-public class SystemComponentNode 
+public class ComponentType 
 		extends InitialisableNode 
 		implements LimitedEdition<SystemFactory>, Categorized<SystemComponent>, Sealable {
 	
@@ -94,11 +94,11 @@ public class SystemComponentNode
 	// The SystemComponent containers instantiated by this SystemFactory
 	private Map<Integer,Map<String,SystemContainer>> containers = new HashMap<>();
 
-	public SystemComponentNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public ComponentType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 	
-	public SystemComponentNode(Identity id, GraphFactory gfactory) {
+	public ComponentType(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 

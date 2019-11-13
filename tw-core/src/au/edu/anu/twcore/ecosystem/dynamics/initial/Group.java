@@ -30,8 +30,8 @@ package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
-import au.edu.anu.twcore.ecosystem.dynamics.SystemComponentNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
@@ -145,7 +145,7 @@ public class Group
 			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
 			endNode());
 		if (n!=null) {
-			SystemComponentNode sf = (SystemComponentNode) n;
+			ComponentType sf = (ComponentType) n;
 			container = sf.makeContainer(index,id());
 		}
 		n = (Node) get(edges(Direction.OUT),

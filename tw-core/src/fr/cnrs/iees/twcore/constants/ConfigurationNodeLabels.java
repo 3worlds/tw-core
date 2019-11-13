@@ -80,7 +80,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_STRUCTURE 		("structure",			Structure.class,			0),
 				N_CATEGORYSET 	("categorySet",			CategorySet.class,			0),
 				N_CATEGORY 		("category",			Category.class,				CATEGORYBASE), 
-				N_COMPONENT 	("component",			SystemComponentNode.class,	CATEGORYBASE+10), // after category and categorySet
+				N_COMPONENT 	("componentType",		ComponentType.class,	CATEGORYBASE+10), // after category and categorySet
 				N_RELATIONTYPE 	("relationType",		RelationType.class,			CATEGORYBASE+10), // after category
 		N_EXPERIMENT 			("experiment",			Experiment.class,			SIMBASE+20),	// after fully iinitialised simulator
 			N_DESIGN 			("design",				Design.class,				0),

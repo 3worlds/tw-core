@@ -51,13 +51,13 @@ import java.util.TreeSet;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.dynamics.SystemComponentNode;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Individual;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 
 /**
  * Class matching the "ecosystem" node label in the 3Worlds configuration tree.
@@ -128,7 +128,7 @@ public class Ecosystem
 				// categories are set to those of the first individual in the list				
 				else {
 					Individual i = il.get(0);
-					SystemComponentNode scn = (SystemComponentNode) get(i.edges(Direction.OUT),
+					ComponentType scn = (ComponentType) get(i.edges(Direction.OUT),
 						selectOne(hasTheLabel(E_INSTANCEOF.label())),
 						endNode());
 					Collection<Category> nl = (Collection<Category>) get(scn.edges(Direction.OUT),

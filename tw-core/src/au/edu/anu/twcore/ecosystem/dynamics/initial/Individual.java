@@ -37,9 +37,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.ecosystem.dynamics.SystemComponentNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
@@ -60,7 +60,7 @@ public class Individual
 
 	private boolean sealed = false;
 //	private TwData variables = null;
-	private SystemComponentNode factory = null;
+	private ComponentType factory = null;
 	private Map<Integer,SystemComponent> individuals = new HashMap<>();
 
 	// default constructor
@@ -77,7 +77,7 @@ public class Individual
 	public void initialise() {
 		super.initialise();
 		sealed = false;
-		factory = (SystemComponentNode) get(edges(Direction.OUT),
+		factory = (ComponentType) get(edges(Direction.OUT),
 			selectOne(hasTheLabel(E_INSTANCEOF.label())),
 			endNode());
 		sealed = true;

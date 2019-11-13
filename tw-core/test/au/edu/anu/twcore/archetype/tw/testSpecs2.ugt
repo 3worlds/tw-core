@@ -55,23 +55,23 @@ treegraph
 				category senescent
 			relationType recruitJA
 			relationType recruitAS
-			component seedling
+			componentType seedling
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
-			component tree
+			componentType tree
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
-			component oldtree
+			componentType oldtree
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
-			component calf
+			componentType calf
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
-			component cow
+			componentType cow
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
-			component sacredcow
+			componentType sacredcow
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
-			component cub
+			componentType cub
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
-			component tiger
+			componentType tiger
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
-			component oldstripey
+			componentType oldstripey
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
 		dynamics my_simulator
 			timeLine my_time_line
@@ -163,24 +163,24 @@ treegraph
 				sender = Integer(1) //  what's this used for ??? this is the sender id. For a SimpleTimeWidget this is the Simulator instance number (id) as per SimpleWidgetPolicy
 	
 // CROSS-LINKS
-[component:seedling] belongsTo [category:plant]
-[component:seedling] belongsTo [category:juvenile]
-[component:tree] belongsTo [category:plant]
-[component:tree] belongsTo [category:adult]
-[component:oldtree] belongsTo [category:plant]
-[component:oldtree] belongsTo [category:senescent]
-[component:calf] belongsTo [category:herbivore]
-[component:calf] belongsTo [category:juvenile]
-[component:cow] belongsTo [category:herbivore]
-[component:cow] belongsTo [category:adult]
-[component:sacredcow] belongsTo [category:herbivore]
-[component:sacredcow] belongsTo [category:senescent]
-[component:cub] belongsTo [category:carnivore]
-[component:cub] belongsTo [category:juvenile]
-[component:tiger] belongsTo [category:carnivore]
-[component:tiger] belongsTo [category:adult]
-[component:oldstripey] belongsTo [category:carnivore]
-[component:oldstripey] belongsTo [category:senescent]
+[componentType:seedling] belongsTo [category:plant]
+[componentType:seedling] belongsTo [category:juvenile]
+[componentType:tree] belongsTo [category:plant]
+[componentType:tree] belongsTo [category:adult]
+[componentType:oldtree] belongsTo [category:plant]
+[componentType:oldtree] belongsTo [category:senescent]
+[componentType:calf] belongsTo [category:herbivore]
+[componentType:calf] belongsTo [category:juvenile]
+[componentType:cow] belongsTo [category:herbivore]
+[componentType:cow] belongsTo [category:adult]
+[componentType:sacredcow] belongsTo [category:herbivore]
+[componentType:sacredcow] belongsTo [category:senescent]
+[componentType:cub] belongsTo [category:carnivore]
+[componentType:cub] belongsTo [category:juvenile]
+[componentType:tiger] belongsTo [category:carnivore]
+[componentType:tiger] belongsTo [category:adult]
+[componentType:oldstripey] belongsTo [category:carnivore]
+[componentType:oldstripey] belongsTo [category:senescent]
 [category:plant] drivers [record:rplant]
 [category:animal] drivers [record:ranimal]
 [category:juvenile] drivers [record:rjuvenile]
@@ -213,12 +213,12 @@ treegraph
 [process:recruitFromJtoA] appliesTo [category:juvenile]
 [process:recruitFromAtoS] appliesTo [category:adult]
 [group:Brassica_repens] cycle [lifeCycle:standardLC]
-[group:BRjuv] groupOf [component:seedling]
-[group:BRad] groupOf [component:tree]
-[group:BRsen] groupOf [component:oldtree]
+[group:BRjuv] groupOf [componentType:seedling]
+[group:BRad] groupOf [componentType:tree]
+[group:BRsen] groupOf [componentType:oldtree]
 [group:Sequoia_supervirens] cycle [lifeCycle:standardLC]
-[group:SSjuv] groupOf [component:seedling]
-[group:SSad] groupOf [component:tree]
-[group:SSsen] groupOf [component:oldtree]
+[group:SSjuv] groupOf [componentType:seedling]
+[group:SSad] groupOf [componentType:tree]
+[group:SSsen] groupOf [componentType:oldtree]
 [widget:widget2] trackTime [dynamics:my_simulator]
-[individual:brj1] instanceOf [component:seedling]
+[individual:brj1] instanceOf [componentType:seedling]

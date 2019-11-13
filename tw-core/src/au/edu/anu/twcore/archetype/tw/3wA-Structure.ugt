@@ -31,8 +31,8 @@ hasNode categorySpec
 		toNode = String("record")
 		multiplicity = IntegerRange("0..1")
 		
-hasNode componentSpec
-	isOfClass = String("component")
+hasNode componentTypeSpec
+	isOfClass = String("componentType")
 	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("1..*") 
 	hasProperty componentLifeSpanPropertySpec
