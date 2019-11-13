@@ -48,6 +48,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.Sealable;
+import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
 
 /**
  * <p>The class holding the SystemComponents (actually, any object with an id (class {@linkplain Identity})
@@ -78,17 +79,11 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	// class-level constants
 	private static final IdentityScope scope = new LocalScope("3w-runtime-container");
-	private static final String COUNT = "population.size";
-	private static final String NADDED = "population.births";
-	private static final String NREMOVED = "population.deaths";
-	private static final String TCOUNT = "total.population.size";
-	private static final String TADDED = "total.population.births";
-	private static final String TREMOVED = "total.population.deaths";
 	private static final Set<String> props = new HashSet<String>();
 	private static final PropertyKeys propsPK;
 	static { 
-		props.add(COUNT);	props.add(NADDED);	props.add(NREMOVED);
-		props.add(TCOUNT); 	props.add(TADDED);	props.add(TREMOVED);
+		props.add(COUNT.longName());	props.add(NADDED.longName());	props.add(NREMOVED.longName());
+		props.add(TCOUNT.longName()); 	props.add(TNADDED.longName());	props.add(TNREMOVED.longName());
 		propsPK = new PropertyKeys(props);
 	}
 			
@@ -119,19 +114,25 @@ public abstract class CategorizedContainer<T extends Identity>
 		public int nRemoved = 0;
 		@Override
 		public Object getPropertyValue(String key) {
-			switch (key) {
-				case COUNT: 	return count;
-				case NADDED: 	return nAdded;
-				case NREMOVED: 	return nRemoved;
-				case TCOUNT: 	return totalCount();
-				case TADDED: 	return totalAdded();
-				case TREMOVED: 	return totalRemoved();
-			}
+			if (key.equals(COUNT.longName()))
+				return count;
+			else if (key.equals(NADDED.longName()))
+				return nAdded;
+			else if (key.equals(NREMOVED.longName()))
+				return nRemoved;
+			else if (key.equals(TCOUNT.longName()))
+				return totalCount();
+			else if (key.equals(TNADDED.longName()))
+				return totalAdded();
+			else if (key.equals(TNREMOVED.longName()))
+				return totalRemoved();
 			return null;
 		}
 		@Override
 		public boolean hasProperty(String key) {
-			if (key.equals(COUNT) || key.equals(NADDED) || key.equals(NREMOVED))
+			if (key.equals(COUNT.longName()) || 
+				key.equals(NADDED.longName()) || 
+				key.equals(NREMOVED.longName()))
 				return true;
 			return false;
 		}

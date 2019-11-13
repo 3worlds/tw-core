@@ -186,6 +186,10 @@ hasNode dataTrackerSpec
 		isOfClass = String("trackPopulation")
 		toNode = String("group")
 		multiplicity = IntegerRange("0..*")
+		hasProperty trackPopulationVariableSpec
+			hasName = String("variables")
+			type = String("PopulationVariablesSet")
+			multiplicity = IntegerRange("1..1")
 
 hasNode lifeCycleSpec
 	isOfClass = String("lifeCycle")
