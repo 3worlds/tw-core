@@ -144,10 +144,6 @@ hasNode dataTrackerSpec
 		hasName = String("tableStatistics")
 		type = String("StatisticalAggregatesSet")
 		multiplicity = IntegerRange("0..1") 
-//	hasProperty trackPropSpec
-//		hasName = String("track")
-//		type = String("TrackerType")
-//		multiplicity = IntegerRange("1..1")
 	hasEdge trackFieldEdgeSpec
 		isOfClass = String("trackField")
 		toNode = String("field")
@@ -157,7 +153,7 @@ hasNode dataTrackerSpec
 		// this may be needed if upper containers for the field are tables
 		hasProperty trackTableIndexSpec
 			hasName = String("index")
-			type = String("StringTable")
+			type = String("TrackerType")
 			multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery indexInTableDimRangeFieldSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IndexDimensionQuery")
