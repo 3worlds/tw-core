@@ -150,7 +150,7 @@ public class ComponentType
 
 	@Override
 	public int initRank() {
-		return N_COMPONENT.initRank();
+		return N_COMPONENTTYPE.initRank();
 	}
 
 //	/**

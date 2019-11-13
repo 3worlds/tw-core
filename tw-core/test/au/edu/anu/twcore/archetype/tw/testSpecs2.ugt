@@ -120,7 +120,7 @@ treegraph
 						parameterValues pBRjuv
 							rgr = Double(1.2)
 							survival = Double(0.1)
-						individual brj1
+						component brj1
 							variableValues brj1v
 								effectivegrowth = Double(0.98)
 								biomass = Double(0.1)
@@ -221,4 +221,4 @@ treegraph
 [group:SSad] groupOf [componentType:tree]
 [group:SSsen] groupOf [componentType:oldtree]
 [widget:widget2] trackTime [dynamics:my_simulator]
-[individual:brj1] instanceOf [componentType:seedling]
+[component:brj1] instanceOf [componentType:seedling]

@@ -322,7 +322,7 @@ hasNode groupSpec
 	
 // initial state for an individual component 	
 hasNode individualSpec
-	isOfClass = String("individual")
+	isOfClass = String("component")
 	hasParent = StringTable(([2]"initialState:","group:"))
 	multiplicity = IntegerRange("0..*")
 	hasEdge individualToSystemSpec
@@ -337,7 +337,7 @@ hasNode individualSpec
 // parameter values for a group as specified in groupSpec above
 hasNode parameterValuesSpec
 	isOfClass = String("parameterValues")
-	hasParent = StringTable(([3]"initialState:","group:","individual:"))
+	hasParent = StringTable(([3]"initialState:","group:","component:"))
 	multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
 	// caution: if parameter values are associated to an individual, it means it is unique in its
@@ -346,7 +346,7 @@ hasNode parameterValuesSpec
 	
 hasNode variableValuesSpec
 	isOfClass = String("variableValues")
-	hasParent = StringTable(([1]"individual:"))
+	hasParent = StringTable(([1]"component:"))
 	multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
 	

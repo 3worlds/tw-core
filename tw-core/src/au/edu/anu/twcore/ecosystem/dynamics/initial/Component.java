@@ -54,7 +54,7 @@ import fr.ens.biologie.generic.Sealable;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class Individual 
+public class Component 
 		extends InitialisableNode 
 		implements Sealable, LimitedEdition<SystemComponent> {
 
@@ -64,12 +64,12 @@ public class Individual
 	private Map<Integer,SystemComponent> individuals = new HashMap<>();
 
 	// default constructor
-	public Individual(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
 	// constructor with no properties
-	public Individual(Identity id, GraphFactory gfactory) {
+	public Component(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
@@ -85,7 +85,7 @@ public class Individual
 
 	@Override
 	public int initRank() {
-		return N_INDIVIDUAL.initRank();
+		return N_COMPONENT.initRank();
 	}
 	
 //	public TwData getVariables() {

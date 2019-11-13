@@ -56,7 +56,7 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Individual;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -163,9 +163,9 @@ public class SimulatorNode
 	
 	@SuppressWarnings("unchecked")
 	private void scanSubGroups(Group group,int index) {
-		List<Individual> li = (List<Individual>) get(group.getChildren(),
-			selectZeroOrMany(hasTheLabel(N_INDIVIDUAL.label())));
-		for (Individual i:li)
+		List<Component> li = (List<Component>) get(group.getChildren(),
+			selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+		for (Component i:li)
 			i.getInstance(index);
 		List<Group> lg = (List<Group>) get(group.getChildren(),
 			selectZeroOrMany(hasTheLabel(N_GROUP.label())));
@@ -177,9 +177,9 @@ public class SimulatorNode
 	private void setInitialCommunity(int index) {
 		InitialState init = (InitialState) get(getChildren(), selectZeroOrOne(hasTheLabel(N_INITIALSTATE.label())));
 		if (init != null) {
-			List<Individual> li = (List<Individual>) get(init.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_INDIVIDUAL.label())));
-			for (Individual i : li)
+			List<Component> li = (List<Component>) get(init.getChildren(),
+					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+			for (Component i : li)
 				i.getInstance(index);
 			List<Group> lg = (List<Group>) get(init.getChildren(), selectZeroOrMany(hasTheLabel(N_GROUP.label())));
 			for (Group g : lg)

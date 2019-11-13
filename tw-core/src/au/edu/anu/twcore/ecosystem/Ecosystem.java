@@ -51,7 +51,7 @@ import java.util.TreeSet;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Individual;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -118,8 +118,8 @@ public class Ecosystem
 					selectOne(hasTheLabel(N_DYNAMICS.label())),
 					children(),
 					selectZeroOrOne(hasTheLabel(N_INITIALSTATE.label())));
-				List<Individual> il = (List<Individual>) get(is.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_INDIVIDUAL.label())));
+				List<Component> il = (List<Component>) get(is.getChildren(),
+					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
 				// case 2: no categories attached to the ecosystem and no individuals initialised
 				// means the ecosystem has no variables, no parameters, no items.
 				if (il.isEmpty())
@@ -127,7 +127,7 @@ public class Ecosystem
 				// case 3: initial individuals have been specified, the ecosystem
 				// categories are set to those of the first individual in the list				
 				else {
-					Individual i = il.get(0);
+					Component i = il.get(0);
 					ComponentType scn = (ComponentType) get(i.edges(Direction.OUT),
 						selectOne(hasTheLabel(E_INSTANCEOF.label())),
 						endNode());

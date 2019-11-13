@@ -98,7 +98,7 @@ public class CodeGenerator {
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(),
 					selectOne(hasTheLabel(N_STRUCTURE.label())));
 			// generate data classes for SystemComponents
-			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENT.label());
+			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENTTYPE.label());
 			for (TreeGraphDataNode system : systems) {
 				generateDataCode(system, ecology.id());
 			}
