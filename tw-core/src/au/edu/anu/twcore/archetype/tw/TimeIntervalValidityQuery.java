@@ -72,8 +72,14 @@ public class TimeIntervalValidityQuery extends Query {
 		refScale = (TimeScaleType) timeLine.properties().getPropertyValue(pscale);
 		minTU = (TimeUnits) timeLine.properties().getProperty(pmin).getValue();
 		maxTU = (TimeUnits) timeLine.properties().getProperty(pmax).getValue();
-		modelMax = TimeUnits.MICROSECOND;
-		modelMin = TimeUnits.MILLENNIUM;
+		if (refScale.equals(TimeScaleType.ARBITRARY)) {
+			modelMax = TimeUnits.UNSPECIFIED;
+			modelMin = TimeUnits.UNSPECIFIED;
+		}
+		else {
+			modelMax = TimeUnits.MICROSECOND;
+			modelMin = TimeUnits.MILLENNIUM;
+		}
 		timeModelRangeError = false;
 
 		// If there is no refScale property we should crash.
