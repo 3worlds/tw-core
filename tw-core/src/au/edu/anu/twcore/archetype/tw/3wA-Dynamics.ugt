@@ -132,10 +132,11 @@ hasNode dataTrackerSpec
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker",+
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker",+
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker"))
+	// this will go to the trackComponent edge
 	hasProperty selectSpec
 		hasName = String("select")
 		type = String("SamplingMode") 
-		multiplicity = IntegerRange("0..1")
+		multiplicity = IntegerRange("0..1")		
 	hasProperty SatisticsSpec
 		hasName = String("statistics")
 		type = String("StatisticalAggregatesSet")
@@ -172,6 +173,7 @@ hasNode dataTrackerSpec
 			multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery indexInTableDimRangeTableSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IndexDimensionQuery")
+	// this will disappear
 	hasProperty groupBySpec
 		hasName = String("groupBy")
 		type = String("Grouping")
@@ -180,6 +182,10 @@ hasNode dataTrackerSpec
 		hasName = String(viewOthers)
 		type = String("Boolean")
 		multiplicity = IntegerRange("0..1")
+	hasEdge trackPopulationEdgeSpec
+		isOfClass = String("trackPopulation")
+		toNode = String("group")
+		multiplicity = IntegerRange("0..*")
 
 hasNode lifeCycleSpec
 	isOfClass = String("lifeCycle")

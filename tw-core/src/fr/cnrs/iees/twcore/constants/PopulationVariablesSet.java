@@ -17,38 +17,38 @@ import java.util.Collection;
 import java.util.EnumSet;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
-public class StatisticalAggregatesSet {
+public class PopulationVariablesSet {
 
-	private EnumSet<StatisticalAggregates> values = null;
+	private EnumSet<PopulationVariables> values = null;
 
 	/** constructor from list of enum values */
-	public StatisticalAggregatesSet(Collection<StatisticalAggregates> ag) {
+	public PopulationVariablesSet(Collection<PopulationVariables> ag) {
 		super();
 		values = EnumSet.copyOf(ag);
 	}
 
 	/** constructor for an empty Set */
-	public StatisticalAggregatesSet() {
+	public PopulationVariablesSet() {
 		super();
-		values = EnumSet.noneOf(StatisticalAggregates.class);
+		values = EnumSet.noneOf(PopulationVariables.class);
 	}
 
 	/** constructor from single enum value */
-	public StatisticalAggregatesSet(StatisticalAggregates sa) {
+	public PopulationVariablesSet(PopulationVariables sa) {
 		super();
 		values = EnumSet.of(sa);
 	}
 
-	public static StatisticalAggregatesSet valueOf(String value) {
+	public static PopulationVariablesSet valueOf(String value) {
 		String ss = value.substring(1,value.indexOf('}'));
 		String [] sl = ss.split(",");
-		StatisticalAggregatesSet e = new StatisticalAggregatesSet();
+		PopulationVariablesSet e = new PopulationVariablesSet();
 		for (String s:sl)
-			e.values.add(StatisticalAggregates.valueOf(StatisticalAggregates.class,s.trim()));
+			e.values.add(PopulationVariables.valueOf(PopulationVariables.class,s.trim()));
 		return e;
 	}
 
-	public EnumSet<StatisticalAggregates> values() {
+	public EnumSet<PopulationVariables> values() {
 		return values;
 	}
 
@@ -63,7 +63,7 @@ public class StatisticalAggregatesSet {
 		sb.append('{');
 		int n = values.size();
 		int i=0;
-		for (StatisticalAggregates sa:values) {
+		for (PopulationVariables sa:values) {
 			sb.append(sa);
 			i++;
 			if (i<n) sb.append(',');
@@ -72,13 +72,13 @@ public class StatisticalAggregatesSet {
 		return sb.toString();
 	}
 
-	public static StatisticalAggregatesSet defaultValue() {
-		return new StatisticalAggregatesSet(StatisticalAggregates.defaultValue());
+	public static PopulationVariablesSet defaultValue() {
+		return new PopulationVariablesSet(PopulationVariables.defaultValue());
 	}
 
 	static {
-		ValidPropertyTypes.recordPropertyType(StatisticalAggregatesSet.class.getSimpleName(),
-			StatisticalAggregatesSet.class.getName(),defaultValue());
+		ValidPropertyTypes.recordPropertyType(PopulationVariablesSet.class.getSimpleName(),
+			PopulationVariablesSet.class.getName(),defaultValue());
 	}
 
 }

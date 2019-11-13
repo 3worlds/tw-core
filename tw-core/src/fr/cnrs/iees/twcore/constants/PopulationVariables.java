@@ -30,26 +30,45 @@ import java.util.HashSet;
 import java.util.Set;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
-public enum SamplingMode {
+public enum PopulationVariables {
 
-// RANDOM: selects a random system component in each group
-	RANDOM,
+// COUNT: population size
+	COUNT ("population.size", "n"),
 
-// FIRST: selects the first system component in each group as stored in the simulator’s lists (quite unpredictable unless there is only one item in the list)
-	FIRST,
+// NADDED: number of births in population
+	NADDED ("population.births", "n+"),
 
-// LAST: selects the last system component in each group as stored in the simulator’s lists (quite unpredictable unless there is only one item in the list)
-	LAST,
+// NREMOVED: number of deaths in population
+	NREMOVED ("population.deaths", "n-"),
 
-// AGGREGATE: computes a statistical aggregate of tracked variables for all members of each group (i.e., all system components of the group are tracked)
-	AGGREGATE,
+// TCOUNT: total population size (including sub-populations)
+	TCOUNT ("total.population.size", "N"),
 
-// GROUP: tracks the data of that group, if available (typically, group size, number of new and deleted members)
-	GROUP;
+// TNADDED: total number of births in population (including sub-populations)
+	TNADDED ("total.population.births", "N+"),
+
+// TNREMOVED: total number of deaths in population (including sub-populations)
+	TNREMOVED ("total.population.deaths", "N-");
 	
+	private final String longName;
+	private final String shortName;
+
+	private PopulationVariables(String longName, String shortName) {
+		this.longName = longName;
+		this.shortName = shortName;
+	}
+
+	public String longName() {
+		return longName;
+	}
+
+	public String shortName() {
+		return shortName;
+	}
+
 	public static String[] toStrings() {
-		String[] result = new String[SamplingMode.values().length];
-		for (SamplingMode s: SamplingMode.values())
+		String[] result = new String[PopulationVariables.values().length];
+		for (PopulationVariables s: PopulationVariables.values())
 			result[s.ordinal()] = s.name();
 		Arrays.sort(result);
 		return result;
@@ -57,18 +76,18 @@ public enum SamplingMode {
 
 	public static Set<String> keySet() {
 		Set<String> result = new HashSet<String>();
-		for (SamplingMode e: SamplingMode.values())
+		for (PopulationVariables e: PopulationVariables.values())
 			result.add(e.toString());
 		return result;
 	}
 
-	public static SamplingMode defaultValue() {
-		return RANDOM;
+	public static PopulationVariables defaultValue() {
+		return COUNT;
 	}
 
 	static {
-		ValidPropertyTypes.recordPropertyType(SamplingMode.class.getSimpleName(), 
-		SamplingMode.class.getName(),defaultValue());
+		ValidPropertyTypes.recordPropertyType(PopulationVariables.class.getSimpleName(), 
+		PopulationVariables.class.getName(),defaultValue());
 	}
 
 }

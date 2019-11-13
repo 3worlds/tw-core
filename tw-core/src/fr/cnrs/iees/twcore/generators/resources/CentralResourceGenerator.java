@@ -449,7 +449,9 @@ public class CentralResourceGenerator {
 					// header code
 					output.append("package ").append(CONSTANTS_PACKAGE).append(";\n\n");
 					output.append("import java.util.Collection;\n");
-					output.append("import java.util.EnumSet;\n\n");
+					output.append("import java.util.EnumSet;\n");
+					output.append("import fr.cnrs.iees.io.parsing.ValidPropertyTypes;\n\n");
+
 					output.append("public class ").append(propType).append("Set {\n\n");
 					// fields
 					output.append("\tprivate EnumSet<").append(propType).append("> values = null;\n\n");
@@ -504,7 +506,18 @@ public class CentralResourceGenerator {
 					output.append("\t\tsb.append('}');\n");
 					output.append("\t\treturn sb.toString();\n");
 					output.append("\t}\n\n");
-
+					// defaultValue
+					output.append("\tpublic static ").append(propType).append("Set defaultValue() {\n");
+					output.append("\t\treturn new ").append(propType).append("Set(")
+						.append(propType).append(".defaultValue());\n");
+					output.append("\t}\n\n");
+					// static init block
+					output.append("\tstatic {\n");
+					output.append("\t\tValidPropertyTypes.recordPropertyType(")
+						.append(propType).append("Set.class.getSimpleName(),\n\t\t\t")
+						.append(propType).append("Set.class.getName(),defaultValue());\n");
+					output.append("\t}\n\n");
+					
 					// footer code
 					output.append("}\n");
 
