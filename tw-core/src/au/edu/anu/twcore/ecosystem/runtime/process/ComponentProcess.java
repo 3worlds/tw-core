@@ -132,10 +132,9 @@ public class ComponentProcess
 			}
 			executeFunctions(container,t,dt);
 			// track group state
-			// TODO: filter ni some way, depending on the tracker grouping
 			for (TimeSeriesTracker tracker:tsTrackers) {
-// TODO: fix this it's causing a null pointer exception in TimeSeriesTracker.record()				
-//				tracker.record(currentStatus,container.populationData());
+				tracker.recordItem(buildItemId(null));
+				tracker.record(currentStatus,container.populationData());
 			}
 			focalContext.clear();
 		}
@@ -300,7 +299,9 @@ public class ComponentProcess
 			items.add(focalContext.lifeCycleName);
 		if (focalContext.groupName!=null)
 			items.add(focalContext.groupName);
-		items.add(itemId);
+		if (itemId!=null)
+			if (!itemId.isBlank())
+				items.add(itemId);
 		return items.toArray(new String[items.size()]);
 	}
 	

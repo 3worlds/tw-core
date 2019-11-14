@@ -82,8 +82,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	private static final Set<String> props = new HashSet<String>();
 	private static final PropertyKeys propsPK;
 	static { 
-		props.add(COUNT.longName());	props.add(NADDED.longName());	props.add(NREMOVED.longName());
-		props.add(TCOUNT.longName()); 	props.add(TNADDED.longName());	props.add(TNREMOVED.longName());
+		props.add(COUNT.shortName());	props.add(NADDED.shortName());	props.add(NREMOVED.shortName());
+		props.add(TCOUNT.shortName()); 	props.add(TNADDED.shortName());	props.add(TNREMOVED.shortName());
 		propsPK = new PropertyKeys(props);
 	}
 			
@@ -114,25 +114,25 @@ public abstract class CategorizedContainer<T extends Identity>
 		public int nRemoved = 0;
 		@Override
 		public Object getPropertyValue(String key) {
-			if (key.equals(COUNT.longName()))
+			if (key.equals(COUNT.shortName()))
 				return count;
-			else if (key.equals(NADDED.longName()))
+			else if (key.equals(NADDED.shortName()))
 				return nAdded;
-			else if (key.equals(NREMOVED.longName()))
+			else if (key.equals(NREMOVED.shortName()))
 				return nRemoved;
-			else if (key.equals(TCOUNT.longName()))
+			else if (key.equals(TCOUNT.shortName()))
 				return totalCount();
-			else if (key.equals(TNADDED.longName()))
+			else if (key.equals(TNADDED.shortName()))
 				return totalAdded();
-			else if (key.equals(TNREMOVED.longName()))
+			else if (key.equals(TNREMOVED.shortName()))
 				return totalRemoved();
 			return null;
 		}
 		@Override
 		public boolean hasProperty(String key) {
-			if (key.equals(COUNT.longName()) || 
-				key.equals(NADDED.longName()) || 
-				key.equals(NREMOVED.longName()))
+			if (key.equals(COUNT.shortName()) || 
+				key.equals(NADDED.shortName()) || 
+				key.equals(NREMOVED.shortName()))
 				return true;
 			return false;
 		}

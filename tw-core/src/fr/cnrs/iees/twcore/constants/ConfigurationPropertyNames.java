@@ -81,6 +81,7 @@ public enum ConfigurationPropertyNames {
 	P_DATATRACKER_VIEWOTHERS	("viewOthers"),
 	P_DATATRACKER_TRACK			("track"),
 	P_DATASOURCE_FILE			("file"),
+	P_TRACKPOP_VAR				("variables"),
 	;
 
 	private final String pname;

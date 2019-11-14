@@ -168,9 +168,9 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 			tsd.setTime(currentTime);
 			tsd.setItemLabel(currentItem);
 			for (DataLabel lab:metadata.intNames())
-				tsd.setValue(lab,(Long)props.getPropertyValue(lab.getEnd()));
+				tsd.setValue(lab,((Number)props.getPropertyValue(lab.getEnd())).longValue());
 			for (DataLabel lab:metadata.doubleNames()) 
-				tsd.setValue(lab,(Double)props.getPropertyValue(lab.getEnd()));
+				tsd.setValue(lab,((Number)props.getPropertyValue(lab.getEnd())).doubleValue());
 			for (DataLabel lab:metadata.stringNames()) 
 				tsd.setValue(lab,(String)props.getPropertyValue(lab.getEnd()));
 			sendData(tsd);
