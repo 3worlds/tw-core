@@ -75,8 +75,7 @@ public class TimeIntervalValidityQuery extends Query {
 		if (refScale.equals(TimeScaleType.ARBITRARY)) {
 			modelMax = TimeUnits.UNSPECIFIED;
 			modelMin = TimeUnits.UNSPECIFIED;
-		}
-		else {
+		} else {
 			modelMax = TimeUnits.MICROSECOND;
 			modelMin = TimeUnits.MILLENNIUM;
 		}
@@ -88,20 +87,22 @@ public class TimeIntervalValidityQuery extends Query {
 		else
 			satisfied = (minTU.compareTo(maxTU) <= 0);
 		if (satisfied) {
-			Iterable<ReadOnlyDataHolder> timeModels = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
-			for (ReadOnlyDataHolder timeModel : timeModels) {
-				TimeUnits tu = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
-				if (tu.compareTo(modelMin) < 0)
-					modelMin = tu;
-				if (tu.compareTo(modelMax) > 0)
-					modelMax = tu;
-			}
-			if (!modelMin.equals(minTU)) {
-				timeModelRangeError = true;
-				satisfied = false;
-			} else if (!modelMax.equals(maxTU)) {
-				timeModelRangeError = true;
-				satisfied = false;
+			if (timeLineNode.hasChildren()) {
+				Iterable<ReadOnlyDataHolder> timeModels = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
+				for (ReadOnlyDataHolder timeModel : timeModels) {
+					TimeUnits tu = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
+					if (tu.compareTo(modelMin) < 0)
+						modelMin = tu;
+					if (tu.compareTo(modelMax) > 0)
+						modelMax = tu;
+				}
+				if (!modelMin.equals(minTU)) {
+					timeModelRangeError = true;
+					satisfied = false;
+				} else if (!modelMax.equals(maxTU)) {
+					timeModelRangeError = true;
+					satisfied = false;
+				}		
 			}
 		}
 		return this;
@@ -109,7 +110,8 @@ public class TimeIntervalValidityQuery extends Query {
 
 	public String toString() {
 		if (timeModelRangeError)
-			return ": Time models collectively must span the whole range of possible values of the time line, i.e. from "+minTU + " to "+maxTU;
+			return ": Time models collectively must span the whole range of possible values of the time line, i.e. from "
+					+ minTU + " to " + maxTU;
 		else if (refScale.equals(TimeScaleType.MONO_UNIT))
 			return ": For " + TimeScaleType.MONO_UNIT + ", " + pmin + " must be equal to " + pmax;
 		else
