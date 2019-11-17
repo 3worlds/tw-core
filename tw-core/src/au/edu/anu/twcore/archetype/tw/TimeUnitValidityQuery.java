@@ -76,6 +76,10 @@ public class TimeUnitValidityQuery extends Query {
 			satisfied = true;
 		else if (refScale == null)
 			satisfied = true;
+		// remain silent until there are time models present
+		// Could make the default refScale ABITRARY but I think it would seem confusing.
+		else if(!localNode.hasChildren())
+			satisfied = true;
 		else {
 			TimeUnits tu = (TimeUnits) prop.getValue();
 			if (tu == null)

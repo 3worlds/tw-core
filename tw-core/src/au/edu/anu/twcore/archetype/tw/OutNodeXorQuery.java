@@ -80,7 +80,7 @@ public class OutNodeXorQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " There must be at least one out node with either label '" + nodeLabel1 + "' or '"+nodeLabel2+"']";
+		return "[" + stateString() + " There must be at least one out node with either label '" + nodeLabel1 + "' or '"+nodeLabel2+" but not both.']";
 	}
 
 }
