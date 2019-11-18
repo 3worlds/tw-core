@@ -344,7 +344,7 @@ public class Project implements ProjectPaths, TwPaths {
 	public static File makeConfigurationFile() {
 		String name = Project.getProjectUserName();
 		// Its a string of several extensions
-		return Project.makeFile(name + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
+		return Project.makeFile(name + GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
 	}
 
 	/**
@@ -353,7 +353,7 @@ public class Project implements ProjectPaths, TwPaths {
 	 * @return
 	 */
 	public static File makeLayoutFile() {
-		return makeFile("Layout" + GraphFileFormats.TOMUGI.extension().split(" ")[0]);
+		return makeFile("Layout" + GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
 	}
 
 // used for menu creation
