@@ -38,6 +38,7 @@ import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.PropertyListFactory;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -78,12 +79,15 @@ public class TwConfigFactory extends TreeGraphFactory implements EditableFactory
 		}
 	};
 	
+		
 	public TwConfigFactory() {
 		super("3worlds",twLabels);
 	}
 
 	public TwConfigFactory(String scopeName) {
 		this();
+//		if (scopeName!=null)
+//			scope=new LocalScope(scopeName);
 	}
 
 	public TwConfigFactory(String scopeName, Map<String, String> labels) {
