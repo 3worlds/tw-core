@@ -49,5 +49,7 @@ public interface TwArchetypeConstants {
 	public final static String twaEdgeLabel1 = "edgeLabel1";
 	public final static String twaEdgeLabel2 = "edgeLabel2";
 	public final static String twaConditions = "conditions";
+	public final static String twaPropName = "propname";
+	
 
 }
