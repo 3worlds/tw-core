@@ -78,7 +78,7 @@ public class ParentLabelQuery extends Query {
 	}
 	
 	public String toString() {
-		return "[" + stateString() + " Parent label must be one of '" + labels.toString() + "']";
+		return "[" + stateString() + " |Parent label must be one of '" + labels.toString() + "'|]";
 	}
 
 }

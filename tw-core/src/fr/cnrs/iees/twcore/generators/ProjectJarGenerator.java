@@ -20,10 +20,10 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.omhtk.jars.Jars;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
-import au.edu.anu.twcore.errorMessaging.ComplianceManager;
-import au.edu.anu.twcore.errorMessaging.deploy.DeployClassFileMissing;
-import au.edu.anu.twcore.errorMessaging.deploy.DeployClassOutOfDate;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
@@ -36,7 +36,7 @@ import fr.cnrs.iees.twcore.constants.FileType;
 
 public class ProjectJarGenerator {
 	public static String mainClass = "au.edu.anu.twuifx.mr.Main";
-	public static final String userCodeRunner = "UserCodeRunner.java"; 
+	public static final String userCodeRunner = "UserCodeRunner.java";
 
 	@SuppressWarnings("unchecked")
 	public void generate(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
@@ -101,7 +101,7 @@ public class ProjectJarGenerator {
 	}
 
 	private void pullAllCodeFiles() {
-		//File localDir = Project.makeFile(ProjectPaths.LOCALCODE);
+		// File localDir = Project.makeFile(ProjectPaths.LOCALCODE);
 		File localDir = Project.makeFile(ProjectPaths.JAVAPROJECT);
 		String[] extensions = new String[] { "java" };
 		List<File> remoteSrcFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
@@ -111,7 +111,8 @@ public class ProjectJarGenerator {
 				File localSrcFile = replaceParentPath(remoteSrcFile, UserProjectLink.srcRoot(), localDir);
 				File localClsFile = replaceParentPath(remoteClsFile, UserProjectLink.classRoot(), localDir);
 				if (!remoteClsFile.exists())
-					ComplianceManager.add(new DeployClassFileMissing(remoteClsFile, remoteSrcFile));
+					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_CLASS_MISSING,
+							remoteClsFile, remoteSrcFile));
 				else {
 					try {
 						FileTime ftSrc = Files.getLastModifiedTime(remoteSrcFile.toPath());
@@ -119,7 +120,9 @@ public class ProjectJarGenerator {
 						Long ageJava = ftSrc.toMillis();
 						Long ageClass = ftCls.toMillis();
 						if (ageJava > ageClass)
-							ComplianceManager.add(new DeployClassOutOfDate(remoteSrcFile, remoteClsFile, ftSrc, ftCls));
+							ErrorList.add(new ModelBuildErrorMsg(
+									ModelBuildErrors.DEPLOY_CLASS_OUTOFDATE, remoteSrcFile, remoteClsFile,
+									ftSrc, ftCls));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -132,7 +135,7 @@ public class ProjectJarGenerator {
 
 	private void pullAllResources() {
 		File localDir = Project.makeFile(Project.RES);
-		List<File> remoteFiles = (List<File>) FileUtils.listFiles( UserProjectLink.srcRoot(), null, true);
+		List<File> remoteFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), null, true);
 		for (File remoteFile : remoteFiles) {
 			String name = remoteFile.getName();
 			if (!(name.endsWith("java") || name.endsWith("class") || name.contains(AbstractUPL.extOrig))) {

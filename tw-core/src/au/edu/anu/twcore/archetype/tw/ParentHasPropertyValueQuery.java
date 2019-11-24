@@ -146,9 +146,9 @@ public class ParentHasPropertyValueQuery extends Query {
 	}
 	
 	public String toString() {
-		return "[" + stateString() + " Parent property '"
+		return "[" + stateString() + " |Parent property '"
 			+ propertyName + "' must have value '" 
-			+ expectedValues.toString() + "']";
+			+ expectedValues.toString() + "'|]";
 	}
 
 

@@ -107,7 +107,7 @@ public class IsInRangeQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " value must be within [" + min + "; " + max + "]]";
+		return "[" + stateString() + " |Value must be within [" + min + "; " + max + "]|]";
 	}
 
 }

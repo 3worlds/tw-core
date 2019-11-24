@@ -44,11 +44,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.init.SecondaryParametersInitialiser;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.errorMessaging.ComplianceManager;
-import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
@@ -158,7 +159,9 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		JavaCompiler compiler = new JavaCompiler();
 		String result= compiler.compileCode(file,Project.makeFile());
 		if (result!=null) 
-			ComplianceManager.add(new CompileErr(file, result));
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, file,
+					result));
+			//ComplianceManager.add(new CompileErr(file, result));
 		return result==null;
 	}
 	

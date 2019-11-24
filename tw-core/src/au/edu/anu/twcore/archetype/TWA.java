@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.archetype.Archetypes;
-import au.edu.anu.rscs.aot.archetype.CheckMessage;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
@@ -109,7 +109,7 @@ public class TWA {
 			rootArchetype = new Archetypes();
 		if (!rootArchetype.isArchetype(TWA.getInstance())) {
 			log.severe("3WORLDS ARCHETYPE HAS ERRORS! (list follows)");
-			for (CheckMessage cm : rootArchetype.errorList())
+			for (ErrorMessagable cm : rootArchetype.errorList())
 				log.severe(cm.toString() + "\n");
 			checked = false;
 		} else
@@ -143,7 +143,7 @@ public class TWA {
 	 * @return the list of errors, or null if no errors
 	 */
 	// JG: was initially in TwArchetypes, moved to here
-	public static synchronized Iterable<CheckMessage> checkSpecifications(TreeGraph<?, ?> graph) {
+	public static synchronized Iterable<ErrorMessagable> checkSpecifications(TreeGraph<?, ?> graph) {
 		if (validArchetype())
 			rootArchetype.check(graph, getInstance());
 		return rootArchetype.errorList();

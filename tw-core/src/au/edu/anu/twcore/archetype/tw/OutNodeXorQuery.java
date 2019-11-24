@@ -60,12 +60,12 @@ public class OutNodeXorQuery extends Query {
 		nodeLabel1 = (String) table.getWithFlatIndex(0);
 		nodeLabel2 = (String) table.getWithFlatIndex(1);
 	}
-	
+	private Node localItem;
 	@SuppressWarnings("unchecked")
 	@Override
 	public Query process(Object input) {  // input is a node
 		defaultProcess(input);
-		Node localItem = (Node) input;
+		localItem = (Node) input;
 		
 		List<Node> nl1 = (List<Node>) get(localItem. 
 			edges(Direction.OUT),
@@ -80,7 +80,7 @@ public class OutNodeXorQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " There must be at least one out node with either label '" + nodeLabel1 + "' or '"+nodeLabel2+" but not both.']";
+		return "[" + stateString() + " |'"+localItem.classId()+":"+localItem.id()+"' must have at least one out node with either label '" + nodeLabel1 + "' or '"+nodeLabel2+"'.|]";
 	}
 
 }

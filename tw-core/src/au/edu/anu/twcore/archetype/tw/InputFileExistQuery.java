@@ -41,12 +41,13 @@ import fr.cnrs.iees.twcore.constants.FileType;
  *
  */
 public class InputFileExistQuery extends Query{
-	
+	File s;
+	Property localItem;
 	@Override
 	public Query process(Object input) { // input is a property 
 		defaultProcess(input);
-		Property localItem = (Property) input;
-		File s = ((FileType) localItem.getValue()).getFile();
+		localItem = (Property) input;
+		s = ((FileType) localItem.getValue()).getFile();
 		if (s!=null && s.exists())
 			satisfied = true;
 		// TODO need to handle jars!!
@@ -56,7 +57,7 @@ public class InputFileExistQuery extends Query{
 	}
 
 	public String toString() {
-		return "[" + stateString() + " File must exist ";
+		return "[" + stateString() + "|File for property'"+localItem.getKey()+"' must exist.|";
 	}
 
 }

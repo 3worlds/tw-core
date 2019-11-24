@@ -90,8 +90,8 @@ public class TimeUnitValidityQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " Property value for " + pname + " must be one of {"
-				+ TimeScaleType.validTimeUnits(refScale).toString() + "}]";
+		return "[" + stateString() + " |Property value for " + pname + " must be one of {"
+				+ TimeScaleType.validTimeUnits(refScale).toString() + "}.|]";
 	}
 
 }

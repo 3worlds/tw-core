@@ -79,7 +79,7 @@ public class ParentClassQuery extends Query implements ArchetypeArchetypeConstan
 	}
 
 	public String toString() {
-		return "[" + stateString() + " Parent must have class one of '" + klasses.toString() + "']";
+		return "[" + stateString() + " |Parent must have class one of '" + klasses.toString() + "'|]";
 	}
 
 }

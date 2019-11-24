@@ -79,7 +79,7 @@ public class RequirePropertyQuery extends Query {
 
 	public String toString() {
 		return "[" + this.getClass().getName() +
-			" Presence of property '"+p1+"' incompatible with value of property '"+p2+"']";
+			" |Presence of property '"+p1+"' incompatible with value of property '"+p2+"'|]";
 	}
 
 }

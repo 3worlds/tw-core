@@ -53,10 +53,11 @@ public class NodeAtLeastOneChildLabelOfQuery extends Query {
 			labels.add(table.getWithFlatIndex(i).trim());
 	}
 
+	private TreeNode node;
 	@Override
 	public Query process(Object input) {
 		defaultProcess(input);
-		TreeNode node = (TreeNode) input;
+		node = (TreeNode) input;
 		Iterable<? extends TreeNode> children = node.getChildren();
 		satisfied = false;
 		for (String label : labels) {
@@ -72,8 +73,8 @@ public class NodeAtLeastOneChildLabelOfQuery extends Query {
 
 	@Override
 	public String toString() {
-		return "[" + stateString() + " Must have at least one child labelled '" + 
-			labels.toString() + "']";
+		return "[" + stateString() + " |'"+ node.classId()+":"+node.id()+"' must have at least one child labelled '" + 
+			labels.toString() + "'|]";
 	}
 
 }

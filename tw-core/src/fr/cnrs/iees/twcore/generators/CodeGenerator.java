@@ -40,11 +40,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.errorMessaging.ComplianceManager;
-import au.edu.anu.twcore.errorMessaging.codeGenerator.CompileErr;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
@@ -136,14 +137,11 @@ public class CodeGenerator {
 		JavaCompiler compiler = new JavaCompiler();
 		String result = compiler.compileCode(ecologyFiles);
 		if (result != null)
-			if (UserProjectLink.haveUserProject())
-				ComplianceManager.add(new CompileErr(ecologyFiles, "Files not pushed to linked project. " + result));
-			else 
-				ComplianceManager.add(new CompileErr(ecologyFiles,result));
-			
-		if (!ComplianceManager.haveErrors())
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, ecologyFiles,
+					result));
+		if (!ErrorList.haveErrors())
 			UserProjectLink.pushFiles();
-		return !ComplianceManager.haveErrors();
+		return !ErrorList.haveErrors();
 	}
 
 	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,

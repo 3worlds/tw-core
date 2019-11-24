@@ -26,17 +26,29 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-
 package au.edu.anu.twcore.errorMessaging;
 
-import au.edu.anu.twcore.errorMessaging.Verbosity;
-
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date Dec 12, 2018
+ * @date 23 Nov 2019
  */
-public interface ErrorMessagable {
-	public String message(Verbosity level);
+public enum ModelBuildErrors {
+	PROCESS_CLASS_CHANGE/*   */("Compile: "), //
+	COMPILER_ERROR/*         */("Compile: "), //
+	COMPILER_MISSING/*       */("Compile: "), //
+	SPECIFICATION/*          */("Specification: "), //
+	DEPLOY_CLASS_MISSING/*   */("Deployment: "), //
+	DEPLOY_CLASS_OUTOFDATE/* */("Deployment: "), //
+	DEPLOY_FAIL/*            */("Deployment: "), //
+	DEPLOY_EXCEPTION/*       */("Deployment: "), //
+	DEPLOY_RESOURCE_MISSING/**/("Deployment: "), //
+	DEPLOY_PROJECT_UNSAVED/* */("Deployment: "), //
+	;
+	private final String category;
+	
+	private ModelBuildErrors(String category) {
+		this.category=category;
+	}
 
 }

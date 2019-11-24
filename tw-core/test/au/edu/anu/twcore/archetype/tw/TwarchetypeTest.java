@@ -31,7 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import au.edu.anu.rscs.aot.archetype.CheckMessage;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.twcore.archetype.TWA;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -55,10 +55,10 @@ class TwarchetypeTest {
 			System.out.println(n.id()+", "+n.getClass().getName());
 			
 		}
-		Iterable<CheckMessage> errors = TWA.checkSpecifications(specs);
+		Iterable<ErrorMessagable> errors = TWA.checkSpecifications(specs);
 		if (errors!=null) {
 			System.out.println("There were errors in specifications: ");
-			for (CheckMessage m:errors)
+			for (ErrorMessagable m:errors)
 				System.out.println(m.toString()+"\n");
 		}
 		else 

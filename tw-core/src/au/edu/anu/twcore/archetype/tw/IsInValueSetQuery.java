@@ -109,10 +109,11 @@ public class IsInValueSetQuery extends Query {
 		return false;
 	}
 
+	private Property localItem;
 	@Override
 	public Query process(Object input) { // input is a property
 		defaultProcess(input);
-		Property localItem = (Property) input;
+		localItem = (Property) input;
 		Object o = localItem.getValue();
 		if (ObjectTable.class.isAssignableFrom(o.getClass())) {
 			ObjectTable<?> table = (ObjectTable<?>) o;
@@ -125,7 +126,7 @@ public class IsInValueSetQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " Property value must be one of " + valueSet.toString() + "]";
+		return "[" + stateString() + " |Property '"+localItem.getKey()+"' value must be one of " + valueSet.toString() + "|]";
 	}
 
 }

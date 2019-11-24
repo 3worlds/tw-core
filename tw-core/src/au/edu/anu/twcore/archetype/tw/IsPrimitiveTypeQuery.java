@@ -48,17 +48,18 @@ public class IsPrimitiveTypeQuery extends Query {
 		super();
 	}
 
+	private Property localItem;
 	@Override
 	public Query process(Object input) { // input is a prop here
 		defaultProcess(input);
-		Property localItem = (Property) input;
+		localItem = (Property) input;
 		String name = (String)localItem.getValue();
 		satisfied = ValidPropertyTypes.isPrimitiveType(name);
 		return this;
 	}
 
 	public String toString() {
-		return "[" + stateString() + " Type must be primitive]";
+		return "[" + stateString() + " |Property '"+localItem.getKey()+"' value must be primitive.|]";
 	}
 
 }

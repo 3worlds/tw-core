@@ -41,9 +41,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
-import au.edu.anu.twcore.errorMessaging.ComplianceManager;
-import au.edu.anu.twcore.errorMessaging.codeGenerator.ProcessClassChangeErr;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
@@ -145,8 +146,8 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	 */
 	@Override
 	public void pushFiles() {
-		String remoteSrcPath = this.srcRoot().getAbsolutePath()+File.separator+ProjectPaths.REMOTECODE;
-		String remoteClsPath = this.classRoot().getAbsolutePath()+File.separator+ProjectPaths.REMOTECODE;
+		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + ProjectPaths.REMOTECODE;
+		String remoteClsPath = this.classRoot().getAbsolutePath() + File.separator + ProjectPaths.REMOTECODE;
 		String localPath = Project.makeFile(ProjectPaths.LOCALCODE).getAbsolutePath();
 		writeUserCodeRunner();
 		log.info(localPath + "-> [" + remoteSrcPath + "," + remoteClsPath + "]");
@@ -167,7 +168,8 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		}
 	}
 
-	// Never overwrite unless a class change is detected. In this case backup old work.
+	// Never overwrite unless a class change is detected. In this case backup old
+	// work.
 	public void pushFunctionFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File localSrcFile : functionFiles) {
 			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
@@ -192,9 +194,8 @@ public abstract class AbstractUPL implements IUserProjectLink {
 					remoteSrcFile.renameTo(backup);
 					FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
 					FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
-					ComplianceManager.add(
-							new ProcessClassChangeErr(localAncestorClass, remoteAncestorClass, localSrcFile.getName()));
-
+					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.PROCESS_CLASS_CHANGE,
+							localAncestorClass, remoteAncestorClass, localSrcFile));
 				}
 			}
 		}

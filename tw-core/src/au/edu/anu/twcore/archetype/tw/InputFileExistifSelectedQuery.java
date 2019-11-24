@@ -52,13 +52,14 @@ import fr.cnrs.iees.twcore.constants.FileType;
  * @date 7 May 2019
  */
 public class InputFileExistifSelectedQuery extends Query {
-	
+	File s;
+	Property localItem;
 	@Override
 	public Query process(Object input) { // input is a property 
 		defaultProcess(input);
-		Property localItem = (Property) input;
+		localItem = (Property) input;
 		FileType ft = (FileType) localItem.getValue();
-		File s = ft.getFile();
+		s = ft.getFile();
 		if (s==null)
 			satisfied = true;
 		if (s!=null && s.exists())
@@ -70,7 +71,7 @@ public class InputFileExistifSelectedQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " File must exist if selected";
+		return "[" + stateString() + "|File for property '"+localItem.getKey()+"' must exist if selected.|";
 	}
 
 }

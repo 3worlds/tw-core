@@ -33,10 +33,11 @@ import au.edu.anu.rscs.aot.queries.Query;
 
 public class NameStartsWithUpperCaseQuery extends Query {
 
+	private String localItem;
 	@Override
 	public Query process(Object input) { // input is a node - actually anything with an id() will work
 		defaultProcess(input);
-		String localItem = ((Identity) input).id();
+		localItem = ((Identity) input).id();
 		char c = localItem.charAt(0);
 		char upper = Character.toUpperCase(c);
 		if (c==upper) satisfied = true;
@@ -44,9 +45,7 @@ public class NameStartsWithUpperCaseQuery extends Query {
 	}
 
 	public String toString() {
-//		return "[" + this.getClass().getSimpleName() + ", satisfied=" + satisfied 
-//			+ ", labels = " + labels+ "]";
-		return "[" + stateString() + " Name must start with an upper case character]";
+		return "[" + stateString() + "|'"+localItem+"' must start with an upper case character.|]";
 	}
 
 }

@@ -64,8 +64,8 @@ public class IndexDimensionQuery extends Query {
 	}
 	
 	public String toString() {
-		return "[" + stateString() + " Index string '" + ixs 
-			+ "' out of range for table '" + nodeId + "']";
+		return "[" + stateString() + " |Index string '" + ixs 
+			+ "' out of range for table '" + nodeId + "'|]";
 	}
 
 }

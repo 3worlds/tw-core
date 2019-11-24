@@ -82,7 +82,7 @@ public class ValidLifeCycleProcessQuery extends Query {
 
 	@Override
 	public String toString() {
-		return "[" + stateString() + message+ "]";
+		return "[" + stateString() + "|"+message+ "|]";
 	}
 
 }
