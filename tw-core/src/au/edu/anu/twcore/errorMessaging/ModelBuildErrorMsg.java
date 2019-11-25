@@ -148,13 +148,21 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 				Integer nChildren = (Integer) sem.args()[3];
 				if (nChildren < range.getLast())
 					verbose1 = sem.category() + "Add '" + childClassName + "' to " + parent.toUniqueString() + ".";
-
 			}
 				break;
 			case EDGE_OUT_OF_RANGE: {
-				String toNodeRef = (String) sem.args()[3];
-				if (!findNodeWithClassId(refToClassId(toNodeRef), graph))
+				Node fromNode = (Node) sem.args()[0];
+				IntegerRange range = (IntegerRange) sem.args()[1];
+				String label = (String) sem.args()[2];
+				String reference = (String) sem.args()[3];
+				Integer nEdges = (Integer) sem.args()[4];
+				if (!findNodeWithClassId(refToClassId(reference), graph))
 					ignore = true;
+				else {
+					if (nEdges < range.getLast())
+						verbose1 = sem.category() + "Add edge of class '" + label + "' from '"
+								+ fromNode.toUniqueString() + "' to a node of class '" + reference + "'.";
+				}
 				break;
 			}
 			}
@@ -181,7 +189,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 	}
 
 	private String refToClassId(String ref) {
-		return ref.replace("[", "").replace(":]", "");
+		return ref.replace(":", "");
 	}
 
 	@Override
