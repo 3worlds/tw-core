@@ -32,8 +32,16 @@ import java.io.File;
 import java.nio.file.attribute.FileTime;
 
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
+import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
+import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.userProject.UserProjectLink;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
 /**
  * @author Ian Davies
@@ -51,10 +59,10 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 	public ModelBuildErrorMsg(ModelBuildErrors msgType, Object... args) {
 		this.msgType = msgType;
 		this.args = args;
-		this.ignore=false;
+		this.ignore = false;
 		buildMessages();
 	}
-	
+
 	public boolean ignore() {
 		return ignore;
 	}
@@ -98,7 +106,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			/*-msg1 = "Java compiler not found.";
 			msg2 = msg1 + " Check installation of Java Development Kit (JDK)";
 			msg3 = msg2;*/
- break;
+			break;
 		}
 		case DEPLOY_CLASS_MISSING: {
 			/*-msg1 = "Refresh Java Project: Compiled class file is missing for "+sourceFile.getName();
@@ -123,6 +131,35 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			FileTime ftCls = (FileTime) args[3];
 			break;
 		}
+		case SPECIFICATION: {
+			// Here is where context is shifted from whatever the specs say to whatever the
+			// user can do.
+			/*- SpecificationErrorMsg se)*/
+
+			SpecificationErrorMsg sem = (SpecificationErrorMsg) args[0];
+			TreeGraph<TreeGraphDataNode, ALEdge> graph = (TreeGraph<TreeGraphDataNode, ALEdge>) args[1];
+			verbose1 = sem.verbose1();
+			verbose2 = sem.verbose2();
+			switch (sem.error()) {
+			case CHILD_MULTIPLICITY_INCORRECT: {
+				Node parent = (Node) sem.args()[0];
+				String childClassName = (String) sem.args()[1];
+				IntegerRange range = (IntegerRange) sem.args()[2];
+				Integer nChildren = (Integer) sem.args()[3];
+				if (nChildren < range.getLast()) {
+					verbose1 = sem.category() + "Add '" + childClassName + "' to " + parent.toUniqueString() + ".";
+				}
+			}
+			}
+			break;
+		}
+		case DEPLOY_PROJECT_UNSAVED: {
+			// no args
+			verbose1 = category() + "Configuration is unsaved [press Ctrl+S].";
+			verbose2 = category() + errorName()
+					+ "Configuration is unsaved [press Ctrl+S]. To deploy the experiment from ModelMaker, the configuration must first be saved.";
+			break;
+		}
 		default: {
 			throw new TwcoreException("Message type not handled [" + msgType + "]");
 		}
@@ -131,13 +168,11 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 	@Override
 	public String verbose1() {
-		// TODO Auto-generated method stub
 		return verbose1;
 	}
 
 	@Override
 	public String verbose2() {
-		// TODO Auto-generated method stub
 		return verbose2;
 	}
 
@@ -155,14 +190,15 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 	@Override
 	public String category() {
-		// TODO Auto-generated method stub
-		return null;
+		return "[" + msgType.category() + "] ";
 	}
 
 	@Override
-	public String code() {
-		// TODO Auto-generated method stub
-		return null;
+	public String errorName() {
+		return "[" + msgType.name() + "] ";
 	}
 
+	public ModelBuildErrors error() {
+		return msgType;
+	}
 }

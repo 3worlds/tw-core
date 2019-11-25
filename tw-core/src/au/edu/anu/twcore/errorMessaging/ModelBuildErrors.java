@@ -34,21 +34,24 @@ package au.edu.anu.twcore.errorMessaging;
  * @date 23 Nov 2019
  */
 public enum ModelBuildErrors {
-	PROCESS_CLASS_CHANGE/*   */("Compile: "), //
-	COMPILER_ERROR/*         */("Compile: "), //
-	COMPILER_MISSING/*       */("Compile: "), //
-	SPECIFICATION/*          */("Specification: "), //
-	DEPLOY_CLASS_MISSING/*   */("Deployment: "), //
-	DEPLOY_CLASS_OUTOFDATE/* */("Deployment: "), //
-	DEPLOY_FAIL/*            */("Deployment: "), //
-	DEPLOY_EXCEPTION/*       */("Deployment: "), //
-	DEPLOY_RESOURCE_MISSING/**/("Deployment: "), //
-	DEPLOY_PROJECT_UNSAVED/* */("Deployment: "), //
+	PROCESS_CLASS_CHANGE/*   */("Compile"), //
+	COMPILER_ERROR/*         */("Compile"), //
+	COMPILER_MISSING/*       */("Compile"), //
+	SPECIFICATION/*          */("Specification"), //
+	DEPLOY_CLASS_MISSING/*   */("Deployment"), //
+	DEPLOY_CLASS_OUTOFDATE/* */("Deployment"), //
+	DEPLOY_FAIL/*            */("Deployment"), //
+	DEPLOY_EXCEPTION/*       */("Deployment"), //
+	DEPLOY_RESOURCE_MISSING/**/("Deployment"), //
+	DEPLOY_PROJECT_UNSAVED/* */("Deployment"), //
 	;
 	private final String category;
 	
 	private ModelBuildErrors(String category) {
 		this.category=category;
+	}
+	public String category() {
+		return category;
 	}
 
 }
