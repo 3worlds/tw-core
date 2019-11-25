@@ -45,7 +45,7 @@ public class NameStartsWithUpperCaseQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + "|'"+localItem+"' must start with an upper case character.|]";
+		return "[" + stateString() + "||'"+localItem+"' must start with an upper case character.||]";
 	}
 
 }

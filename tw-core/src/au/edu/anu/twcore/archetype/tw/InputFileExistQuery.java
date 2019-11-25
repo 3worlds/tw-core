@@ -57,7 +57,7 @@ public class InputFileExistQuery extends Query{
 	}
 
 	public String toString() {
-		return "[" + stateString() + "|File for property'"+localItem.getKey()+"' must exist.|";
+		return "[" + stateString() + "||File for property'"+localItem.getKey()+"' must exist.||";
 	}
 
 }

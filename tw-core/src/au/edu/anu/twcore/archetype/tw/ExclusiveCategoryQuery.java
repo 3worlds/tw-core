@@ -81,8 +81,8 @@ public class ExclusiveCategoryQuery extends Query {
 	@Override
 	public String toString() {
 		return "[" + stateString()
-			+ " |Node cannot belong to two categories of the same set. Two categories of set '"
-			+ failedCategorySet.id() + "' found|"
+			+ " ||Node cannot belong to two categories of the same set. Two categories of set '"
+			+ failedCategorySet.id() + "' found||"
 			+ "]";
 	}
 

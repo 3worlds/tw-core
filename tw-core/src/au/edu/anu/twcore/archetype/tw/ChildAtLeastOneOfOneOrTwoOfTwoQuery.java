@@ -85,8 +85,8 @@ public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends Query implements TwArch
 	}
 
 	public String toString() {
-		return "[" + stateString() + " |There must be at least one child node with label '" + nodeLabel1
-				+ "' or two children with label '" + nodeLabel2 + "'|]";
+		return "[" + stateString() + " ||There must be at least one child node with label '" + nodeLabel1
+				+ "' or two children with label '" + nodeLabel2 + "'||]";
 	}
 
 }

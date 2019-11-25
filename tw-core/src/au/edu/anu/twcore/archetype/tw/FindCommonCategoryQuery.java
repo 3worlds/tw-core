@@ -70,7 +70,7 @@ public class FindCommonCategoryQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " |Track variable '" + trackName 
-			+ "' does not belong to any of the DataTracker categories|]";
+		return "[" + stateString() + " ||Track variable '" + trackName 
+			+ "' does not belong to any of the DataTracker categories||]";
 	}
 }

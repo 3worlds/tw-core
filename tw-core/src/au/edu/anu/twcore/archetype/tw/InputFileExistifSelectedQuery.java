@@ -71,7 +71,7 @@ public class InputFileExistifSelectedQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + "|File for property '"+localItem.getKey()+"' must exist if selected.|";
+		return "[" + stateString() + "||File for property '"+localItem.getKey()+"' must exist if selected.||";
 	}
 
 }

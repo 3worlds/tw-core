@@ -146,9 +146,16 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 				String childClassName = (String) sem.args()[1];
 				IntegerRange range = (IntegerRange) sem.args()[2];
 				Integer nChildren = (Integer) sem.args()[3];
-				if (nChildren < range.getLast()) {
+				if (nChildren < range.getLast())
 					verbose1 = sem.category() + "Add '" + childClassName + "' to " + parent.toUniqueString() + ".";
-				}
+
+			}
+				break;
+			case EDGE_OUT_OF_RANGE: {
+				String toNodeRef = (String) sem.args()[3];
+				if (!findNodeWithClassId(refToClassId(toNodeRef), graph))
+					ignore = true;
+				break;
 			}
 			}
 			break;
@@ -164,6 +171,17 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			throw new TwcoreException("Message type not handled [" + msgType + "]");
 		}
 		}
+	}
+
+	private boolean findNodeWithClassId(String classId, TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+		for (Node node : graph.nodes())
+			if (node.classId().equals(classId))
+				return true;
+		return false;
+	}
+
+	private String refToClassId(String ref) {
+		return ref.replace("[", "").replace(":]", "");
 	}
 
 	@Override

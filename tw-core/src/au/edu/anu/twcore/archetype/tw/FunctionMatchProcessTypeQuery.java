@@ -64,8 +64,8 @@ public class FunctionMatchProcessTypeQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " |Function type '" + functionType + 
-				"' incompatible with a " + processType + " process|";
+		return "[" + stateString() + " ||Function type '" + functionType + 
+				"' incompatible with a " + processType + " process||";
 	}
 
 }

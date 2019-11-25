@@ -64,7 +64,7 @@ public class ZeroOrOneEdgeQuery extends Query {
 	}
 	
 	public String toString() {
-		return "[" + stateString() + " |Node must have 0..1 out edges with label '" + edgeLabel+"'|]";
+		return "[" + stateString() + " ||Node must have 0..1 out edges with label '" + edgeLabel+"'||]";
 	}
 
 
