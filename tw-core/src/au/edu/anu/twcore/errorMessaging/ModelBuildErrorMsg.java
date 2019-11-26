@@ -37,6 +37,7 @@ import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.userProject.UserProjectLink;
+import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -63,6 +64,10 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 		buildMessages();
 	}
 
+	private String labelId(Element e) {
+		return e.classId() + ":" + e.id();
+	}
+
 	public boolean ignore() {
 		return ignore;
 	}
@@ -73,6 +78,13 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			String localAncestorClass = (String) args[0];
 			String remoteAncestorClass = (String) args[1];
 			File localSrcFile = (File) args[2];
+			verbose1 = category() + "Refresh and check linked Java project. Process '" + localSrcFile.getName()
+					+ "' has changed class from '" + remoteAncestorClass + "' to '" + localAncestorClass + "'.";
+			verbose2 = category() + errorName() + "Refresh and check linked Java project. Process '"
+					+ localSrcFile.getName() + "' has changed class from '" + remoteAncestorClass + "' to '"
+					+ localAncestorClass + "'.\n"+//
+					"Old java file has been backed up and renamed with ext *.orig";
+			
 			/*
 			 * msg1 =
 			 * "Refresh and check Java project: Process class has changed ("+name+")"; msg2
@@ -82,53 +94,48 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			break;
 		}
 		case COMPILER_ERROR: {
-			/*
-			 * ErrorList.add(new ModelConstructionErrorMessage(ecologyFiles,
-			 * "Files not pushed to linked project. " + result)); //
-			 * ComplianceManager.add(new CompileErr(ecologyFiles,
-			 * "Files not pushed to linked project. " + result)); else
-			 * ComplianceManager.add(new CompileErr(ecologyFiles,result));
-			 */
-			/*
-			 * msg1 = "There were compiling warnings/errors in " + classFile.getName(); msg2
-			 * = msg1 + "\n" + error; msg3 = msg2;
-			 */
 
 			File file = (File) args[0];
 			String compileResult = (String) args[1];
+			verbose1 = category() + "There were compiling warnings/errors in " + file.getName() + ".";
+			verbose2 = category() + errorName() + "There were compiling warnings/errors in " + file.getName()
+					+ ". Errors: " + compileResult;
 			if (UserProjectLink.haveUserProject()) {
-
+				verbose2 = category() + errorName() + "There were compiling warnings/errors in " + file.getName()
+						+ ". Errors: " + compileResult + ".\nFile has not been pushed to "
+						+ UserProjectLink.projectRoot().getName();
 			}
 
 			break;
 		}
 		case COMPILER_MISSING: {
-			/*-msg1 = "Java compiler not found.";
-			msg2 = msg1 + " Check installation of Java Development Kit (JDK)";
-			msg3 = msg2;*/
+			verbose1 = category() + "Java compiler not found.";
+			verbose2 = category() + errorName()
+					+ "Java compiler not found. Check installation of Java Development Kit (JDK)";
 			break;
 		}
 		case DEPLOY_CLASS_MISSING: {
-			/*-msg1 = "Refresh Java Project: Compiled class file is missing for "+sourceFile.getName();
-			msg2 = msg1+ "\n"+sourceFile.getAbsolutePath();
-			msg3 = msg2+ "\n"+classFile.getAbsolutePath();
-			*/
 			File cls = (File) args[0];
 			File src = (File) args[1];
+			verbose1 = category() + "Class file is missing [" + cls.getName() + "].";
+			verbose1 = category() + errorName() + "Class file missing:\n" + //
+					cls.getAbsolutePath() + "\n" + //
+					src.getAbsoluteFile();
 
 			break;
 		}
 		case DEPLOY_CLASS_OUTOFDATE: {
-			// remoteSrcFile, remoteClsFile, ftSrc, ftCls
-			/*-"Refresh Java project: Compiled class file is older than Java source file '" + sourceFile.getName()
-				+ "'.";
-			msg2 = msg1 + "\n" + sourceFile.getName() + "(" + ageSource.toString() + ")";
-			msg2 = msg2 + "\n" + classFile.getName() + "(" + ageClass.toString() + ")";
-			*/
+			/*- remoteSrcFile, remoteClsFile, ftSrc, ftCls*/
 			File remoteSrcFile = (File) args[0];
 			File remoteClsFile = (File) args[1];
 			FileTime ftSrc = (FileTime) args[2];
 			FileTime ftCls = (FileTime) args[3];
+
+			verbose1 = category() + "Refresh Java project: Compiled class file is older than Java source file '"
+					+ remoteSrcFile.getName() + ".";
+			verbose2 = category() + errorName() + "Refresh Java project. \n" + //
+					remoteClsFile.getAbsolutePath() + " Time = " + ftCls.toString() + "\n" + //
+					remoteSrcFile.getAbsolutePath() + " Time = " + ftSrc.toString();
 			break;
 		}
 		case SPECIFICATION: {
@@ -147,7 +154,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 				IntegerRange range = (IntegerRange) sem.args()[2];
 				Integer nChildren = (Integer) sem.args()[3];
 				if (nChildren < range.getLast())
-					verbose1 = sem.category() + "Add '" + childClassName + "' to " + parent.toUniqueString() + ".";
+					verbose1 = sem.category() + "Add '" + childClassName + "' node to " + labelId(parent) + ".";
 			}
 				break;
 			case EDGE_OUT_OF_RANGE: {
@@ -160,8 +167,8 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 					ignore = true;
 				else {
 					if (nEdges < range.getLast())
-						verbose1 = sem.category() + "Add edge of class '" + label + "' from '"
-								+ fromNode.toUniqueString() + "' to a node of class '" + reference + "'.";
+						verbose1 = sem.category() + "Add '" + label + "' edge from '" + labelId(fromNode) + "' to '"
+								+ reference + "'.";
 				}
 				break;
 			}
@@ -172,7 +179,15 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			// no args
 			verbose1 = category() + "Configuration is unsaved [press Ctrl+S].";
 			verbose2 = category() + errorName()
-					+ "Configuration is unsaved [press Ctrl+S]. To deploy the experiment from ModelMaker, the configuration must first be saved.";
+					+ "Configuration is unsaved [press Ctrl+S]. Project must be saved before model can be deployed from ModelMaker.";
+			break;
+		}
+		case DEPLOY_RESOURCE_MISSING: {
+			/*- file */
+			File file = (File) args[0];
+			String hint = (String) args[1];
+			verbose1 = category() + "Resource missing [" + file.getName() + "].";
+			verbose2 = category() + errorName() + "Resource missing [" + file.getAbsolutePath() + "]. "+hint;
 			break;
 		}
 		default: {

@@ -97,17 +97,19 @@ public class IsInRangeQuery extends Query {
 		}
 	}
 
+	private Property localItem;
 	@Override
 	public Query process(Object input) { // input is a prop here
 		defaultProcess(input);
-		Property localItem = (Property) input;
+		localItem = (Property) input;
 		double value = ((Number) localItem.getValue()).doubleValue();
 		satisfied = (value >= min) & (value <= max);
 		return this;
 	}
 
 	public String toString() {
-		return "[" + stateString() + " ||Value must be within [" + min + "; " + max + "]||]";
+		//NB will crash if process has not been run
+		return "[" + stateString() + " ||Property '"+localItem.getKey()+"="+localItem.getValue()+"' must be within [" + min + "; " + max + "]||]";
 	}
 
 }

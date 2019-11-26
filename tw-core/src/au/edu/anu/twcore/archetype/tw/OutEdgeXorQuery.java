@@ -108,7 +108,7 @@ public class OutEdgeXorQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " ||There must be at least one out edge with either label " 
+		return "[" + stateString() + " ||There must be at least one edge labelled either " 
 			+ Arrays.toString(edgeLabel1) + " or "+ Arrays.toString(edgeLabel2) +".||]";
 	}
 

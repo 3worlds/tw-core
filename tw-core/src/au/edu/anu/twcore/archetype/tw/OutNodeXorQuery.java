@@ -79,7 +79,7 @@ public class OutNodeXorQuery extends Query {
 
 	public String toString() {
 		return "[" + stateString() + " ||'" + localItem.classId() + ":" + localItem.id()
-				+ "' must have at least one out node with either label '" + nodeLabel1 + "' or '" + nodeLabel2
+				+ "' must have at least one edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2
 				+ "'.||]";
 	}
 

@@ -73,7 +73,7 @@ public class NodeAtLeastOneChildLabelOfQuery extends Query {
 
 	@Override
 	public String toString() {
-		return "[" + stateString() + " ||'"+ node.toUniqueString()+"' must have at least one child labelled '" + 
+		return "[" + stateString() + " ||'"+ node.classId()+":"+node.id()+"' must have at least one child labelled '" + 
 			labels.toString() + "'||]";
 	}
 
