@@ -133,7 +133,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 			verbose1 = category() + "Refresh Java project: Compiled class file is older than Java source file '"
 					+ remoteSrcFile.getName() + ".";
-			verbose2 = category() + errorName() + "Refresh Java project. \n" + //
+			verbose2 = category() + errorName() + "Refresh Java project.  Compiled class file is older than Java source file:\n" + //
 					remoteClsFile.getAbsolutePath() + " Time = " + ftCls.toString() + "\n" + //
 					remoteSrcFile.getAbsolutePath() + " Time = " + ftSrc.toString();
 			break;
