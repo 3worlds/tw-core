@@ -109,7 +109,7 @@ public class IsInRangeQuery extends Query {
 
 	public String toString() {
 		//NB will crash if process has not been run
-		return "[" + stateString() + " ||Property '"+localItem.getKey()+"="+localItem.getValue()+"' must be within [" + min + "; " + max + "]||]";
+		return "[" + stateString() + " ||Property '"+localItem.getKey()+"="+localItem.getValue()+"' must be within [" + min + "; " + max + "].||]";
 	}
 
 }

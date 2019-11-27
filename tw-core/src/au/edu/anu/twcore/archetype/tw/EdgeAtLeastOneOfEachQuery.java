@@ -76,7 +76,7 @@ public class EdgeAtLeastOneOfEachQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " ||There must be at least one edge of each type: " + valueSet.toString() + "||]";
+		return "[" + stateString() + " ||must have at least one edge of each type: " + valueSet.toString() + ".||]";
 	}
 
 }

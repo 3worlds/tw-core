@@ -56,6 +56,10 @@ public class FindCommonCategoryQuery extends Query {
 		}
 		List<Node> ln = (List<Node>) get(process.edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
+		if (ln.isEmpty()) {
+			satisfied = true;
+			return this;
+		}
 		if (ln.get(0) instanceof Category) {
 			for (Node cat : ln) {
 				Record topRec = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),

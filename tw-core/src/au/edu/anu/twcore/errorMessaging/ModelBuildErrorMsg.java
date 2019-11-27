@@ -242,4 +242,5 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 	public ModelBuildErrors error() {
 		return msgType;
 	}
+
 }
