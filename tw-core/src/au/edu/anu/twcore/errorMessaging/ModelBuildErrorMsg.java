@@ -141,6 +141,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			/*- SpecificationErrorMsg se)*/
 
 			SpecificationErrorMsg sem = (SpecificationErrorMsg) args[0];
+			@SuppressWarnings("unchecked")
 			TreeGraph<TreeGraphDataNode, ALEdge> graph = (TreeGraph<TreeGraphDataNode, ALEdge>) args[1];
 			verbose1 = sem.verbose1();
 			verbose2 = sem.verbose2();
@@ -168,6 +169,9 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 								+ reference + "].";
 				}
 				break;
+			}
+			default :{
+				// do nothing
 			}
 			}
 			break;
