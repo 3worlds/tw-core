@@ -35,11 +35,9 @@ import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.exceptions.TwcoreException;
-import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -139,8 +137,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			break;
 		}
 		case SPECIFICATION: {
-			// Here is where context is shifted from whatever the specs say to whatever the
-			// user can do.
+			//Translate error msg a bit for mm
 			/*- SpecificationErrorMsg se)*/
 
 			SpecificationErrorMsg sem = (SpecificationErrorMsg) args[0];
@@ -148,16 +145,16 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			verbose1 = sem.verbose1();
 			verbose2 = sem.verbose2();
 			switch (sem.error()) {
-			case CHILD_MULTIPLICITY_INCORRECT: {
+			case NODE_RANGE_INCORRECT2: {
 				Node parent = (Node) sem.args()[0];
 				String childClassName = (String) sem.args()[1];
 				IntegerRange range = (IntegerRange) sem.args()[2];
 				Integer nChildren = (Integer) sem.args()[3];
 				if (nChildren < range.getLast())
-					verbose1 = sem.category() + "Add '" + childClassName + "' node to " + labelId(parent) + ".";
+					verbose1 = sem.category() + "Add node [" + childClassName + ":] to '" + labelId(parent) + "'.";
 			}
 				break;
-			case EDGE_OUT_OF_RANGE: {
+			case EDGE_RANGE_INCORRECT: {
 				Node fromNode = (Node) sem.args()[0];
 				IntegerRange range = (IntegerRange) sem.args()[1];
 				String label = (String) sem.args()[2];
@@ -167,8 +164,8 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 					ignore = true;
 				else {
 					if (nEdges < range.getLast())
-						verbose1 = sem.category() + "Add '" + label + "' edge from '" + labelId(fromNode) + "' to '"
-								+ reference + "'.";
+						verbose1 = sem.category() + "Add edge [" + label + ":] from '" + labelId(fromNode) + "' to ["
+								+ reference + "].";
 				}
 				break;
 			}

@@ -20,6 +20,7 @@ hasNode designSpec
 		hasName = String("file")
 		type = String("FileType")
 		multiplicity = IntegerRange("0..1")
+		// TODO needs a file must exist query on this property
 	mustSatisfyQuery dimIsInRangeQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
 		proplist = StringTable(([2]file,type))
@@ -67,7 +68,7 @@ hasNode timePeriodSpec
 		isOfClass = String("stopOn")               
 		toNode = String("stoppingCondition:")
 		multiplicity = IntegerRange("0..1")
-	
+	// TODO Needs a query to make end>start
 hasNode dataSourceSpec
 	isOfClass = String("dataSource")
 	hasParent =  StringTable(([1]"experiment:"))
