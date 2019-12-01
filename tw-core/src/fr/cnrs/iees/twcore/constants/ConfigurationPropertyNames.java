@@ -82,6 +82,7 @@ public enum ConfigurationPropertyNames {
 	P_DATATRACKER_TRACK			("track"),
 	P_DATASOURCE_FILE			("file"),
 	P_TRACKPOP_VAR				("variables"),
+	P_TRACKEDGE_INDEX           ("index"),
 	;
 
 	private final String pname;

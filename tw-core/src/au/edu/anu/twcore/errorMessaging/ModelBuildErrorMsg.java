@@ -80,9 +80,9 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 					+ "' has changed class from '" + remoteAncestorClass + "' to '" + localAncestorClass + "'.";
 			verbose2 = category() + errorName() + "Refresh and check linked Java project. Process '"
 					+ localSrcFile.getName() + "' has changed class from '" + remoteAncestorClass + "' to '"
-					+ localAncestorClass + "'.\n"+//
+					+ localAncestorClass + "'.\n" + //
 					"Old java file has been backed up and renamed with ext *.orig";
-			
+
 			/*
 			 * msg1 =
 			 * "Refresh and check Java project: Process class has changed ("+name+")"; msg2
@@ -131,13 +131,14 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 			verbose1 = category() + "Refresh Java project: Compiled class file is older than Java source file '"
 					+ remoteSrcFile.getName() + ".";
-			verbose2 = category() + errorName() + "Refresh Java project.  Compiled class file is older than Java source file:\n" + //
+			verbose2 = category() + errorName()
+					+ "Refresh Java project.  Compiled class file is older than Java source file:\n" + //
 					remoteClsFile.getAbsolutePath() + " Time = " + ftCls.toString() + "\n" + //
 					remoteSrcFile.getAbsolutePath() + " Time = " + ftSrc.toString();
 			break;
 		}
 		case SPECIFICATION: {
-			//Translate error msg a bit for mm
+			// Translate error msg a bit for mm
 			/*- SpecificationErrorMsg se)*/
 
 			SpecificationErrorMsg sem = (SpecificationErrorMsg) args[0];
@@ -161,16 +162,16 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 				String label = (String) sem.args()[2];
 				String reference = (String) sem.args()[3];
 				Integer nEdges = (Integer) sem.args()[4];
-				if (!findNodeWithClassId(refToClassId(reference), graph))
-					ignore = true;
-				else {
-					if (nEdges < range.getLast())
-						verbose1 = sem.category() + "Add edge [" + label + ":] from '" + labelId(fromNode) + "' to ["
-								+ reference + "].";
-				}
+//				if (!findNodeWithClassId(refToClassId(reference), graph))
+//					ignore = true;
+//				else { // can't do this! will fall through to generateCode and crash!
+				if (nEdges < range.getLast())
+					verbose1 = sem.category() + "Add edge [" + label + ":] from '" + labelId(fromNode) + "' to ["
+							+ reference + "].";
+//				}
 				break;
 			}
-			default :{
+			default: {
 				// do nothing
 			}
 			}
@@ -188,13 +189,14 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			File file = (File) args[0];
 			String hint = (String) args[1];
 			verbose1 = category() + "Resource missing [" + file.getName() + "].";
-			verbose2 = category() + errorName() + "Resource missing [" + file.getAbsolutePath() + "]. "+hint;
+			verbose2 = category() + errorName() + "Resource missing [" + file.getAbsolutePath() + "]. " + hint;
 			break;
 		}
 		default: {
 			throw new TwcoreException("Message type not handled [" + msgType + "]");
 		}
 		}
+
 	}
 
 	private boolean findNodeWithClassId(String classId, TreeGraph<TreeGraphDataNode, ALEdge> graph) {
