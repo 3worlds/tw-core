@@ -193,8 +193,8 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			Exception e = (Exception) args[0];
 			File f = (File)args[1];
 			verbose1 = category()+"Failed to launch ModelRunner.";
-			verbose2 = category()+errorName()+"Failed to launch ModelRunner.\n+"//
-					+ "Project="+f.getAbsolutePath()+"\n"+//
+			verbose2 = category()+errorName()+"Failed to launch ModelRunner.\n"+//
+					"Project="+f.getAbsolutePath()+"\n"+//
 					"Exception="+e.toString();
 			
 			break;	
@@ -205,7 +205,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			File project = (File)args[2];
 			verbose1 = category()+"ModelRunner crashed on startup.";
 			verbose2 = category()+errorName()+"ModelRunner crashed on startup.\n"+//
-					"log="+errorLog.getAbsoluteFile()+"\n"+//
+					"Log="+errorLog.getAbsoluteFile()+"\n"+//
 					"Project="+project.getAbsoluteFile()+"\n"+//
 					"Exception="+e.toString();
 			break;
