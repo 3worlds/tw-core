@@ -38,9 +38,6 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
 /**
  * @author Ian Davies
@@ -142,8 +139,8 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			/*- SpecificationErrorMsg se)*/
 
 			SpecificationErrorMsg sem = (SpecificationErrorMsg) args[0];
-			@SuppressWarnings("unchecked")
-			TreeGraph<TreeGraphDataNode, ALEdge> graph = (TreeGraph<TreeGraphDataNode, ALEdge>) args[1];
+//			@SuppressWarnings("unchecked")
+//			TreeGraph<TreeGraphDataNode, ALEdge> graph = (TreeGraph<TreeGraphDataNode, ALEdge>) args[1];
 			verbose1 = sem.verbose1();
 			verbose2 = sem.verbose2();
 			switch (sem.error()) {
@@ -199,16 +196,16 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 	}
 
-	private boolean findNodeWithClassId(String classId, TreeGraph<TreeGraphDataNode, ALEdge> graph) {
-		for (Node node : graph.nodes())
-			if (node.classId().equals(classId))
-				return true;
-		return false;
-	}
+//	private boolean findNodeWithClassId(String classId, TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+//		for (Node node : graph.nodes())
+//			if (node.classId().equals(classId))
+//				return true;
+//		return false;
+//	}
 
-	private String refToClassId(String ref) {
-		return ref.replace(":", "");
-	}
+//	private String refToClassId(String ref) {
+//		return ref.replace(":", "");
+//	}
 
 	@Override
 	public String verbose1() {
