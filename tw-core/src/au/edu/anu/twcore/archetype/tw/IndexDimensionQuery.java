@@ -8,6 +8,7 @@ import au.edu.anu.twcore.data.TableNode;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
  * A Query to check that table index specifications in data trackers have compatible dimensions with
@@ -28,8 +29,8 @@ public class IndexDimensionQuery extends Query {
 	@Override
 	public Query process(Object input) { // input is an edge with start=dataTracker and end=field or table
 		defaultProcess(input);
-		if (((ReadOnlyDataHolder)input).properties().hasProperty("index")) {
-			StringTable index = (StringTable) ((ReadOnlyDataHolder)input).properties().getPropertyValue("index");
+		if (((ReadOnlyDataHolder)input).properties().hasProperty(P_TRACKEDGE_INDEX.key())) {
+			StringTable index = (StringTable) ((ReadOnlyDataHolder)input).properties().getPropertyValue(P_TRACKEDGE_INDEX.key());
 			TreeNode end = (TreeNode) ((Edge) input).endNode();
 			TreeNode parent = end;
 			int i=index.size()-1;
