@@ -79,11 +79,11 @@ public class FindCommonCategoryQuery extends Query {
 
 	public String toString() {
 		if (process == null)
-			return "[" + stateString() + " ||Track variable '" + trackName
-					+ "' does not belong to any of the DataTracker's process categories.||]";
+			return "[" + stateString() + "Track variable '" + trackName
+					+ "' does not belong to any of the DataTracker's process categories.]";
 		else
-			return "[" + stateString() + " ||Track variable '" + trackName
+			return "[" + stateString() + "Track variable '" + trackName
 					+ "' does not belong to any of the DataTracker's '" + process.classId() + ":" + process.id()
-					+ "' categories.||]";
+					+ "' categories.]";
 	}
 }

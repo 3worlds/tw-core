@@ -78,9 +78,9 @@ public class OutNodeXorQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " ||'" + localItem.classId() + ":" + localItem.id()
+		return "[" + stateString() + "'" + localItem.classId() + ":" + localItem.id()
 				+ "' must have at least one edge to a node labelled either [" + nodeLabel1 + "] or [" + nodeLabel2
-				+ "].||]";
+				+ "].]";
 	}
 
 }

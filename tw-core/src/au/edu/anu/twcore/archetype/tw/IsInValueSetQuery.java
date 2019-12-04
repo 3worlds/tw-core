@@ -126,7 +126,7 @@ public class IsInValueSetQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " ||Property '"+localItem.getKey()+"' value must be one of " + valueSet.toString() + ".||]";
+		return "[" + stateString() + "Property '"+localItem.getKey()+"' value must be one of " + valueSet.toString() + ".]";
 	}
 
 }

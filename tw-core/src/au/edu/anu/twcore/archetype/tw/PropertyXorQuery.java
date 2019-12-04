@@ -61,7 +61,7 @@ public class PropertyXorQuery extends Query {
 	}
 
 	public String toString() {
-		return "[||'" + this.getClass().getSimpleName() +"' Must have either '"+name1+"' or '"+name2+ "' property||]";
+		return "['" + this.getClass().getSimpleName() +"' Must have either '"+name1+"' or '"+name2+ "' property'.]";
 	}
 
 }

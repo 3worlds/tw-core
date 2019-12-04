@@ -72,7 +72,7 @@ public class ChildXorPropertyQuery extends Query {
 
 	@Override
 	public String toString() {
-		return "[" + stateString() + " ||must have either property '" + propertyName.toString() + "' or child '"+nodeLabel+"'.||]";
+		return "[" + stateString() + "must have either property '" + propertyName.toString() + "' or child '"+nodeLabel+"'.]";
 	}
 
 }

@@ -31,8 +31,8 @@ public class EndNodeHasPropertyQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " ||End node '" + rodh 
-			+ "' must have the '"+propName+"' property.||]";
+		return "[" + stateString() + "end node '" + rodh 
+			+ "' must have the '"+propName+"' property.]";
 	}
 
 }

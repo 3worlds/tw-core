@@ -110,12 +110,12 @@ public class TimeIntervalValidityQuery extends Query {
 
 	public String toString() {
 		if (timeModelRangeError)
-			return ": ||Time models collectively must span the whole range of possible values of the time line, i.e. from "
-					+ minTU + " to " + maxTU+".||";
+			return ": Time models collectively must span the whole range of possible values of the time line, i.e. from "
+					+ minTU + " to " + maxTU+".";
 		else if (refScale.equals(TimeScaleType.MONO_UNIT))
-			return ": ||For " + TimeScaleType.MONO_UNIT + ", " + pmin + " must be equal to " + pmax+".||";
+			return ": For " + TimeScaleType.MONO_UNIT + ", " + pmin + " must be equal to " + pmax+".";
 		else
-			return ": ||" + pmin + " must be shorter than or equal to " + pmax+".||";
+			return ": " + pmin + " must be shorter than or equal to " + pmax+".";
 	}
 
 }

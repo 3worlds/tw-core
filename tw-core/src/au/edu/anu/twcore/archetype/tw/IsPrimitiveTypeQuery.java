@@ -59,7 +59,7 @@ public class IsPrimitiveTypeQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + " ||Property '"+localItem.getKey()+"' value must be primitive.||]";
+		return "[" + stateString() + "Property '"+localItem.getKey()+"' value must be a primitive.]";
 	}
 
 }

@@ -70,7 +70,7 @@ public class EdgeOrPropertyQuery extends Query {
 	}
 	
 	public String toString() {
-		return "[" + stateString() + " ||must have at least property '" + propertyName.toString() + "' or edge to '"+nodeLabel+"'.||]";
+		return "[" + stateString() + "must have at least property '" + propertyName.toString() + "' or edge to '"+nodeLabel+"'.]";
 	}
 
 }

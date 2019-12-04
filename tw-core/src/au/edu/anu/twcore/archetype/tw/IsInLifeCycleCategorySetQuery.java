@@ -61,7 +61,7 @@ public class IsInLifeCycleCategorySetQuery extends Query {
 
 	@Override
 	public String toString() {
-		return "[" + stateString() + " ||'"+ failedCat +"' must be in the life cycle category set.||]";
+		return "[" + stateString() + "'"+ failedCat +"' must be in the life cycle category set.]";
 	}
 
 }
