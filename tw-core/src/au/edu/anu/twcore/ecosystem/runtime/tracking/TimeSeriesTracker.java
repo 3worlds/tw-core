@@ -164,16 +164,16 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	// always crashes for me: lab.getEnd is not a key to props - some kind of mix up here
 	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
-			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
-			tsd.setTime(currentTime);
-			tsd.setItemLabel(currentItem);
-			for (DataLabel lab:metadata.intNames())
-				tsd.setValue(lab,((Number)props.getPropertyValue(lab.getEnd())).longValue());
-			for (DataLabel lab:metadata.doubleNames()) 
-				tsd.setValue(lab,((Number)props.getPropertyValue(lab.getEnd())).doubleValue());
-			for (DataLabel lab:metadata.stringNames()) 
-				tsd.setValue(lab,(String)props.getPropertyValue(lab.getEnd()));
-			sendData(tsd);
+//			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
+//			tsd.setTime(currentTime);
+//			tsd.setItemLabel(currentItem);
+//			for (DataLabel lab:metadata.intNames())
+//				tsd.setValue(lab,((Number)props.getPropertyValue(lab.getEnd())).longValue());
+//			for (DataLabel lab:metadata.doubleNames()) 
+//				tsd.setValue(lab,((Number)props.getPropertyValue(lab.getEnd())).doubleValue());
+//			for (DataLabel lab:metadata.stringNames()) 
+//				tsd.setValue(lab,(String)props.getPropertyValue(lab.getEnd()));
+//			sendData(tsd);
 		}
 	}
 
