@@ -39,7 +39,6 @@ import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DataElementType;
-import fr.cnrs.iees.twcore.constants.Grouping;
 import fr.cnrs.iees.twcore.constants.PopulationVariables;
 import fr.cnrs.iees.twcore.constants.PopulationVariablesSet;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
@@ -47,7 +46,6 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.utils.Interval;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
@@ -76,7 +74,10 @@ import au.edu.anu.twcore.data.runtime.LabelValuePairData;
 import au.edu.anu.twcore.data.runtime.MapData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeSeriesData;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
@@ -110,16 +111,20 @@ public class DataTrackerNode
 	private Map<Integer, DataTracker<?,?>> dataTrackers = new HashMap<>();
 	private boolean sealed = false;
 	private SamplingMode selection = null;
-	private Grouping grouping = null;
+	private int sampleSize = 0;
+//	private Grouping grouping = null;
 	private StatisticalAggregatesSet stats = null;
 	private StatisticalAggregatesSet tstats = null;
-	private boolean viewOthers = false;
+//	private boolean viewOthers = false;
 	private Object dataTrackerClass;
 //	private StringTable track = null;
 	private ExtendablePropertyList fieldMetadata = new ExtendablePropertyListImpl();
 	// a map of all table dimensions
 	private Map<String,int[]> tableDims = new HashMap<>();
 	private Map<String,TrackMeta> expandedTrackList = new HashMap<>();
+	// target objects of tracking: groups or systemComponents
+	private List<LimitedEdition<SystemContainer>> trackedGroups = new ArrayList<>();
+	private List<Component> trackedComponents = new ArrayList<>();
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -258,6 +263,7 @@ public class DataTrackerNode
 		List<Node> ln = (List<Node>) get(getParent().edges(Direction.OUT),
 			selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
 			edgeListEndNodes());
+		// get all the variables to track
 		for (Node n:ln) {
 			if (n instanceof RelationType) {
 				// TODO: implement code for relation data trackers
@@ -306,6 +312,11 @@ public class DataTrackerNode
 				}
 			}
 		}
+		// get the initial components to track
+		List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())));
+		for (Edge e:ll)
+			trackedComponents.add((Component) e.endNode());
 	}
 	
 	private void setFieldMetadata(TrackMeta tm, String trackName) {
@@ -352,6 +363,8 @@ public class DataTrackerNode
 					}
 				}
 			}
+			LimitedEdition<SystemContainer> group = (LimitedEdition<SystemContainer>) e.endNode();
+			trackedGroups.add(group);
 		}
 	}
 	
@@ -362,13 +375,21 @@ public class DataTrackerNode
 			super.initialise();
 			// optional properties - if absent take default value
 			if (properties().hasProperty(P_DATATRACKER_SELECT.key()))
-				selection= (SamplingMode) properties().getPropertyValue(P_DATATRACKER_SELECT.key());
+				selection = (SamplingMode) properties().getPropertyValue(P_DATATRACKER_SELECT.key());
 			else
 				selection = SamplingMode.defaultValue();
-			if (properties().hasProperty(P_DATATRACKER_GROUPBY.key()))
-				grouping = (Grouping) properties().getPropertyValue(P_DATATRACKER_GROUPBY.key());
-			else
-				grouping = Grouping.defaultValue();
+			if (properties().hasProperty(P_DATATRACKER_SAMPLESIZE.key())) {
+				String s = (String) properties().getPropertyValue(P_DATATRACKER_SAMPLESIZE.key());
+				if (s.equals("ALL"))
+					sampleSize = -1;
+				else
+					sampleSize = Integer.valueOf(s);
+			}
+//			deprecated
+//			if (properties().hasProperty(P_DATATRACKER_GROUPBY.key()))
+//				grouping = (Grouping) properties().getPropertyValue(P_DATATRACKER_GROUPBY.key());
+//			else
+//				grouping = Grouping.defaultValue();
 			if (properties().hasProperty(P_DATATRACKER_STATISTICS.key()))
 				stats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
 			else
@@ -377,8 +398,9 @@ public class DataTrackerNode
 				tstats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_TABLESTATS.key());
 			else
 				tstats = StatisticalAggregatesSet.defaultValue();
-			if (properties().hasProperty(P_DATATRACKER_VIEWOTHERS.key()))
-				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
+//			deprecated
+//			if (properties().hasProperty(P_DATATRACKER_VIEWOTHERS.key()))
+//				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
 			// component or relation tracker
 			List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
 				selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),hasTheLabel(E_TRACKTABLE.label()))));
@@ -389,6 +411,7 @@ public class DataTrackerNode
 				selectZeroOrMany(hasTheLabel(E_TRACKPOP.label())));
 			if (!ll.isEmpty())
 				setupPopulationTracker();
+			// the type of tracker
 			dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
 			sealed = true;
 		}
@@ -412,9 +435,15 @@ public class DataTrackerNode
 	
 	private DataTracker<?,?> makeDataTracker(int index) {
 		AbstractDataTracker<?,?> result = null;
-		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {	
-			result = new TimeSeriesTracker(grouping,stats,tstats,selection,
-				viewOthers,expandedTrackList.keySet(),fieldMetadata);
+		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {
+			List<SystemContainer> lsc = new ArrayList<SystemContainer>();
+			for (LimitedEdition<SystemContainer> group:trackedGroups)
+				lsc.add(group.getInstance(index));
+			List<SystemComponent> ls = new ArrayList<SystemComponent>();
+			for (Component c:trackedComponents)
+				ls.add(c.getInstance(index));
+			result = new TimeSeriesTracker(stats,tstats,selection,sampleSize,
+				lsc, ls, expandedTrackList.keySet(),fieldMetadata); 
 		}		
 		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
 			result = new MapTracker();

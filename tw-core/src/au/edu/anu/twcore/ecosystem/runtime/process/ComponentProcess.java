@@ -132,9 +132,10 @@ public class ComponentProcess
 			}
 			executeFunctions(container,t,dt);
 			// track group state
-			for (TimeSeriesTracker tracker:tsTrackers) {
-				tracker.recordItem(buildItemId(null));
-				tracker.record(currentStatus,container.populationData());
+			for (TimeSeriesTracker tracker:tsTrackers)
+				if (tracker.isTracked(container)) {
+					tracker.recordItem(buildItemId(null));
+					tracker.record(currentStatus,container.populationData());
 			}
 			focalContext.clear();
 		}
@@ -284,7 +285,8 @@ public class ComponentProcess
 				}
 			}
 			// track component state
-			for (TimeSeriesTracker tracker:tsTrackers) {
+			for (TimeSeriesTracker tracker:tsTrackers) 
+				if (tracker.isTracked(focal)) {
 				tracker.recordItem(buildItemId(focal.id()));
 				tracker.record(currentStatus,focal.currentState());
 			}
