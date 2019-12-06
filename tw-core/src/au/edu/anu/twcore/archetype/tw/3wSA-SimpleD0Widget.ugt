@@ -6,17 +6,21 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-SimpleMapWidget
+archetype 3wSA-SimpleD0Widget
 
-	hasNode SimpleMapWidgetSpec
+	hasNode SimpleD0WidgetSpec
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
-		hasProperty SimpleMapWidgetSenderProperty
+		hasProperty SimpleD0WidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
 			multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
+		hasEdge SimpleD0WidgetDataTrackerEdgeSpec
+			isOfClass = String("trackSeries")
+			toNode = String("dataTracker")
+			multiplicity = IntegerRange("1..1")
 			
