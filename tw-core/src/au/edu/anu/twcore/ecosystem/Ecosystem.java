@@ -169,10 +169,10 @@ public class Ecosystem
 	
 	private SystemContainer makeCommunity() {
 		SystemContainer community = null;
-		if (parameters!=null)
-			community = new SystemContainer(this,"ecosystem",null,parameters.clone(),null);
+		if (parameters!=null) // is it know here that this is definitely an "ecosystem"?
+			community = new SystemContainer(this,"system",null,parameters.clone(),null);
 		else
-			community = new SystemContainer(this,"ecosystem",null,null,null);
+			community = new SystemContainer(this,"system",null,null,null);
 		return community;
 	}
 
