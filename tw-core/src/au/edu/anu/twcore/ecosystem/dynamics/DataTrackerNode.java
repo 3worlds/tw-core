@@ -285,7 +285,7 @@ public class DataTrackerNode
 				// 2 - expand indexes and develop full labels and store above information
 				for (Edge e:le) {
 					DataLabel unexpanded = getFullVarName((TreeNode)e.endNode(),
-						(StringTable)((ReadOnlyDataHolder)e).properties().getPropertyValue("index"));
+						(StringTable)((ReadOnlyDataHolder)e).properties().getPropertyValue(P_TRACKEDGE_INDEX.key()));
 					List<IndexedDataLabel> labels = IndexedDataLabel.expandIndexes(unexpanded,tableDims);
 					// now there is one label for each index combination
 					for (IndexedDataLabel l:labels) {
