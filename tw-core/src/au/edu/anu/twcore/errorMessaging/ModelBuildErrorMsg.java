@@ -191,10 +191,12 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 		}
 		case DEPLOY_EXCEPTION:{
 			Exception e = (Exception) args[0];
-			File f = (File)args[1];
+			File errorFile = (File)args[1];
+			File prjFile = (File)args[2];
 			verbose1 = category()+"Failed to launch ModelRunner.";
 			verbose2 = category()+errorName()+"Failed to launch ModelRunner.\n"+//
-					"Project="+f.getAbsolutePath()+"\n"+//
+					"Project="+prjFile.getAbsolutePath()+"\n"+//
+					"ErrorLog="+errorFile.getAbsolutePath()+"\n"+//
 					"Exception="+e.toString();
 			
 			break;	
