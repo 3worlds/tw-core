@@ -2,8 +2,10 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.*;
@@ -33,10 +35,8 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	
 	private static String[] propertyKeys = {
 		P_DATATRACKER_SELECT.key(),
-//		P_DATATRACKER_GROUPBY.key(),
 		P_DATATRACKER_STATISTICS.key(),
 		P_DATATRACKER_TABLESTATS.key(),
-//		P_DATATRACKER_VIEWOTHERS.key(),
 		P_DATATRACKER_TRACK.key(),
 		P_DATATRACKER_SAMPLESIZE.key(),
 		TimeSeriesMetadata.TSMETA};
@@ -53,15 +53,12 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	private int trackSampleSize = 0;
 	private SamplingMode trackMode;
 
-	public TimeSeriesTracker(
-//			Grouping grouping,
-			StatisticalAggregatesSet statistics,
+	public TimeSeriesTracker(StatisticalAggregatesSet statistics,
 			StatisticalAggregatesSet tableStatistics,
 			SamplingMode selection,
 			int sampleSize,
 			List<SystemContainer> trackedGroups,
 			List<SystemComponent> trackedComponents,
-//			boolean viewOthers,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
 		super(DataMessageTypes.TIME_SERIES);
@@ -69,10 +66,8 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(),selection);
 		trackMode = selection;
-//		metaprops.setProperty(P_DATATRACKER_GROUPBY.key(),grouping);
 		metaprops.setProperty(P_DATATRACKER_STATISTICS.key(),statistics);
 		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(),tableStatistics);
-//		metaprops.setProperty(P_DATATRACKER_TRACK.key(),track);
 		metaprops.setProperty(P_DATATRACKER_SAMPLESIZE.key(), sampleSize);
 		trackSampleSize = sampleSize;
 		metadata = new TimeSeriesMetadata();
@@ -215,16 +210,51 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 				}
 				break;
 			case RANDOM:
-				// TODO: code it using random streams
-				// break;
+				// TODO - work in progress
+//				goOn = true;
+//				while (goOn) {
+//					if (container.count()>0) {
+//						// not enough components to pick them randomly - take all of them
+//						if (container.count()<=trackSampleSize) {
+//							for (SystemComponent sc:container.items())
+//								if (!trackedComponents.contains(sc))
+//									trackedComponents.add(sc);
+//						} 
+//						// enough components - select them randomly
+//						else {
+//							ArrayList<SystemComponent> l = new ArrayList<>(container.count());
+//							for (SystemComponent sc:container.items())
+//								l.add(sc);
+//							int i =	0;
+//							SystemComponent next = null;
+//							while (trackedComponents.contains(next)) {
+//								while (i>=container.count())
+//									i = (int)Math.floor(Math.random()*container.count());
+//								next = l.get(i);
+//							}
+//							if (next==null)
+//								goOn=false;
+//							else {
+//								trackedComponents.add(next);
+//								if (trackedComponents.size() == trackSampleSize)
+//									goOn = false;
+//							}
+//						}
+//					}
+//					else 
+//						goOn = false;
+//				}
+//				break;
 			case LAST:
 				goOn = true;
 				while (goOn) {
 					if (container.count()>0) {
-						
-						// TODO: find a way to reverse loop (need a reverse iterator to get last first)
-						
-						Iterator<SystemComponent> list = container.items().iterator();
+						// reverse the list order
+						LinkedList<SystemComponent> l = new LinkedList<>();
+						for (SystemComponent sc:container.items())
+							l.addFirst(sc);
+						// as before
+						Iterator<SystemComponent> list = l.iterator();
 						SystemComponent next = list.next();
 						while (trackedComponents.contains(next))
 							next = list.next();
