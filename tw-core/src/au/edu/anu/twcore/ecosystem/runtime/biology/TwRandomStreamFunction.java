@@ -12,6 +12,9 @@ import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
  * @author Jacques Gignoux - 19 sept. 2019
  *
  */
+
+// Ian: I'm not sure if this is necessary. Any nodes that require an rng, must have an edge to one in the DataDefinition.
+// TODO modify the arch to reflect this.
 public abstract class TwRandomStreamFunction extends TwFunctionAdapter {
 
 	Random rng = null;
@@ -30,6 +33,7 @@ public abstract class TwRandomStreamFunction extends TwFunctionAdapter {
 	 */
 	public TwRandomStreamFunction() {
 		super();
+		// cf au.edu.anu.twcore.data.RngNode.java. It copies the DimNode pattern.
 		if (!RngFactory.exists("default 3wRNG"))
 			RngFactory.makeRandom("default 3wRNG", 0, RngResetType.never, RngSeedSourceType.table, RngAlgType.Pcg32);
 		this.rng = RngFactory.getRandom("default 3wRNG");

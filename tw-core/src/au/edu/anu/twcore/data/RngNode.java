@@ -43,9 +43,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.Random;
 
-import au.edu.anu.omhtk.rng.Pcg32;
-import au.edu.anu.omhtk.rng.XSRandom;
-import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 
@@ -81,6 +78,8 @@ public class RngNode extends InitialisableNode implements Singleton<Random>, Sea
 			RngResetType reset = (RngResetType) properties().getPropertyValue(P_RNGRESETIME.key());
 			Integer tableIndex = (Integer) properties().getPropertyValue(P_RNGTABLEINDEX.key());
 			String key = id();
+			// Note: This key is unique within the scope of the config. Thus the rng instance is guaranteed to be unique.
+			// 
 			if (RngFactory.exists(key))
 				rng = RngFactory.getRandom(key);
 			else {
