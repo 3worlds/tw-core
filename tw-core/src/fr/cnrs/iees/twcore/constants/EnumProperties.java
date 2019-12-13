@@ -34,6 +34,9 @@ public class EnumProperties {
 		TwFunctionTypes.defaultValue();
 		UIContainerOrientation.defaultValue();
 		TrackerType.defaultValue();
+		RngResetType.defaultValue();
+		RngSeedSourceType.defaultValue();
+		RngAlgType.defaultValue();
 	}
 
 }

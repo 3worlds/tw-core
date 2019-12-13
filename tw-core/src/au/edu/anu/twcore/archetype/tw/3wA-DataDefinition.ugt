@@ -15,6 +15,26 @@ hasNode  dimSpec
 		mustSatisfyQuery dimIsInRangeQuerySpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 			interval = IntTable(("[2]1,2147483647"))
+hasNode  rngSpec
+	isOfClass = String("rng")
+	hasParent = StringTable(([1]"dataDefinition:"))
+	multiplicity = IntegerRange("0..*")
+	hasProperty dimAlgSpec
+		hasName = String("algorithm")
+		type = String("RngAlgType") 
+		multiplicity = IntegerRange("1..1")
+	hasProperty dimSeedSpec
+		hasName = String("seedSource")
+		type = String("RngSeedSourceType") 
+		multiplicity = IntegerRange("1..1")
+	hasProperty dimResetSpec
+		hasName = String("resetTime")
+		type = String("RngResetType") 
+		multiplicity = IntegerRange("1..1")
+	hasProperty dimSeedIndexSpec
+		hasName = String("tableIndex")
+		type = String("Integer") 
+		multiplicity = IntegerRange("1..1")
 				
 hasNode recordRootSpec
 	isOfClass = String("record")

@@ -84,6 +84,10 @@ public enum ConfigurationPropertyNames {
 	P_DATASOURCE_FILE			("file"),
 	P_TRACKPOP_VAR				("variables"),
 	P_TRACKEDGE_INDEX           ("index"),
+	P_RNGALG                    ("algorithm"),
+	P_RNGSEEDSOURCE             ("seedSource"),
+	P_RNGRESETIME               ("resetTime"),
+	P_RNGTABLEINDEX             ("tableIndex"),
 	;
 
 	private final String pname;
