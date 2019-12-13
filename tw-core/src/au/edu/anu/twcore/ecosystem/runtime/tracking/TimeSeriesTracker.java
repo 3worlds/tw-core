@@ -18,10 +18,14 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.rngFactory.RngFactory;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+import fr.cnrs.iees.twcore.constants.RngAlgType;
+import fr.cnrs.iees.twcore.constants.RngResetType;
+import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 
@@ -32,6 +36,8 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
  *
  */
 public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metadata> {
+	
+	private static final String rngName = "DataTracker RNG";
 	
 	private static String[] propertyKeys = {
 		P_DATATRACKER_SELECT.key(),
@@ -79,6 +85,9 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		metaprops.setProperty(TimeSeriesMetadata.TSMETA,metadata);
 		this.trackedGroups = trackedGroups;
 		this.trackedComponents = trackedComponents;
+		// TODO: check this is ok for a RNG - do we want other settings?
+		if (!RngFactory.exists(rngName))
+			RngFactory.makeRandom(rngName,0,RngResetType.never,RngSeedSourceType.secure,RngAlgType.Pcg32);
 	}
 	
 	private void addMetadataVariable(Class<?> c, DataLabel lab) {
@@ -181,103 +190,90 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	}
 	
 	// use this to select new SystemComponents if some are missing
-	public void updateTrackList(CategorizedContainer<SystemComponent> container) {
-		if (trackSampleSize == -1) { // means the whole container is tracked
+	@Override
+	public void updateTrackList() {
+		// if we track system components, then trackedGroups only contains one group
+		CategorizedContainer<SystemComponent> container = trackedGroups.get(0);
+		// no more components to track
+		if (container.count()==0) 
+			trackedComponents.clear();
+		// all components must be tracked
+		else if ((trackSampleSize == -1) || // means the whole container is tracked 
+			(container.count()<=trackSampleSize)) { // means there are not enough components to select them
 			trackedComponents.clear();
 			for (SystemComponent sc:container.items())
 				trackedComponents.add(sc);
 		}
-		if (trackedComponents.size()<trackSampleSize) {
+		// only a selected subset is tracked
+		else if (trackedComponents.size()<trackSampleSize) {
+			// first cleanup the tracked list from components which are gone from the container list
+			Iterator<SystemComponent> isc = trackedComponents.iterator();
+			while (isc.hasNext()) {
+				if (container.item(isc.next().id())==null)
+					isc.remove();
+			}
+			// then proceed to selection
 			boolean goOn = true;
 			switch (trackMode) {
 			case FIRST:	
 				while (goOn) {
-					if (container.count()>0) {
-						Iterator<SystemComponent> list = container.items().iterator();
-						SystemComponent next = list.next();
-						while (trackedComponents.contains(next))
-							next = list.next();
-						if (next==null)
-							goOn=false;
-						else {
-							trackedComponents.add(next);
-							if (trackedComponents.size() == trackSampleSize)
-								goOn = false;
-						}
+					Iterator<SystemComponent> list = container.items().iterator();
+					SystemComponent next = list.next();
+					while (trackedComponents.contains(next))
+						next = list.next();
+					if (next==null)
+						goOn=false;
+					else {
+						trackedComponents.add(next);
+						if (trackedComponents.size() == trackSampleSize)
+							goOn = false;
 					}
-					else 
-						goOn = false;
 				}
 				break;
 			case RANDOM:
-				// TODO - work in progress
-//				goOn = true;
-//				while (goOn) {
-//					if (container.count()>0) {
-//						// not enough components to pick them randomly - take all of them
-//						if (container.count()<=trackSampleSize) {
-//							for (SystemComponent sc:container.items())
-//								if (!trackedComponents.contains(sc))
-//									trackedComponents.add(sc);
-//						} 
-//						// enough components - select them randomly
-//						else {
-//							ArrayList<SystemComponent> l = new ArrayList<>(container.count());
-//							for (SystemComponent sc:container.items())
-//								l.add(sc);
-//							int i =	0;
-//							SystemComponent next = null;
-//							while (trackedComponents.contains(next)) {
-//								while (i>=container.count())
-//									i = (int)Math.floor(Math.random()*container.count());
-//								next = l.get(i);
-//							}
-//							if (next==null)
-//								goOn=false;
-//							else {
-//								trackedComponents.add(next);
-//								if (trackedComponents.size() == trackSampleSize)
-//									goOn = false;
-//							}
-//						}
-//					}
-//					else 
-//						goOn = false;
-//				}
-//				break;
+				goOn = true;
+				while (goOn) {
+					ArrayList<SystemComponent> l = new ArrayList<>(container.count());
+					for (SystemComponent sc:container.items())
+						l.add(sc);
+					int i =	0;
+					SystemComponent next = null;
+					while (trackedComponents.contains(next)) {
+						i = RngFactory.getRandom(rngName).nextInt(container.count());
+						next = l.get(i);
+					}
+					if (next==null) // this should never happen actually
+						goOn=false;
+					else {
+						trackedComponents.add(next);
+						if (trackedComponents.size() == trackSampleSize)
+							goOn = false;
+					}
+				}
+				break;
 			case LAST:
 				goOn = true;
 				while (goOn) {
-					if (container.count()>0) {
-						// reverse the list order
-						LinkedList<SystemComponent> l = new LinkedList<>();
-						for (SystemComponent sc:container.items())
-							l.addFirst(sc);
-						// as before
-						Iterator<SystemComponent> list = l.iterator();
-						SystemComponent next = list.next();
-						while (trackedComponents.contains(next))
-							next = list.next();
-						if (next==null)
-							goOn=false;
-						else {
-							trackedComponents.add(next);
-							if (trackedComponents.size() == trackSampleSize)
-								goOn = false;
-						}
+					// reverse the list order
+					LinkedList<SystemComponent> l = new LinkedList<>();
+					for (SystemComponent sc:container.items())
+						l.addFirst(sc);
+					// as before
+					Iterator<SystemComponent> list = l.iterator();
+					SystemComponent next = list.next();
+					while (trackedComponents.contains(next))
+						next = list.next();
+					if (next==null)
+						goOn=false;
+					else {
+						trackedComponents.add(next);
+						if (trackedComponents.size() == trackSampleSize)
+							goOn = false;
 					}
-					else 
-						goOn = false;
 				}
 				break;
 			}
 		}
-	}
-	
-	// use this to remove a tracked system component from the list (eg when dead)
-	public void removeTrackedComponent(SystemComponent removed) {
-		if (trackedComponents.contains(removed))
-			trackedComponents.remove(removed);
 	}
 	
 	// use this for simple property lists, eg Population data

@@ -82,5 +82,9 @@ public abstract class AbstractDataTracker<T,M>
 		return null;
 	}
 
+	@Override
+	public void updateTrackList() {
+		// do nothing - for descendants
+	}
 	
 }

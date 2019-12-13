@@ -202,6 +202,8 @@ public class Simulator {
 			// apply all changes to community
 			community.stepAll();
 			community.effectAllChanges();
+			for (DataTracker<?,Metadata> tracker:trackers.keySet())
+				tracker.updateTrackList();
 //			
 ////			// 7 Send graph data to whoever is listening
 ////			graphWidgets = getGraphListeners();

@@ -56,4 +56,6 @@ public interface DataTracker<T,M> extends Observable<DataReceiver<T,M>>, Singlet
 	 */
 	public boolean hasObservers();
 	
+	public void updateTrackList();
+	
 }

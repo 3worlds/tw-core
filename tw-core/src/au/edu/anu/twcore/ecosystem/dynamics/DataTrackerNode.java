@@ -313,10 +313,22 @@ public class DataTrackerNode
 			}
 		}
 		// get the initial components to track
+		// NB: this list either contains initial components OR points to a single group to be tracked
 		List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())));
-		for (Edge e:ll)
-			trackedComponents.add((Component) e.endNode());
+		if (ll.size()==1) {
+			if (ll.get(0).endNode() instanceof Component) {
+				trackedComponents.add((Component) ll.get(0).endNode());
+				trackedGroups.add((LimitedEdition<SystemContainer>)trackedComponents.get(0).getParent());
+			}
+			else
+				trackedGroups.add((LimitedEdition<SystemContainer>) ll.get(0).endNode());
+		}
+		else {
+			for (Edge e:ll)
+				trackedComponents.add((Component) e.endNode());
+			trackedGroups.add((LimitedEdition<SystemContainer>)trackedComponents.get(0).getParent());
+		}
 	}
 	
 	private void setFieldMetadata(TrackMeta tm, String trackName) {
@@ -385,11 +397,6 @@ public class DataTrackerNode
 				else
 					sampleSize = Integer.valueOf(s);
 			}
-//			deprecated
-//			if (properties().hasProperty(P_DATATRACKER_GROUPBY.key()))
-//				grouping = (Grouping) properties().getPropertyValue(P_DATATRACKER_GROUPBY.key());
-//			else
-//				grouping = Grouping.defaultValue();
 			if (properties().hasProperty(P_DATATRACKER_STATISTICS.key()))
 				stats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
 			else
@@ -398,10 +405,6 @@ public class DataTrackerNode
 				tstats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_TABLESTATS.key());
 			else
 				tstats = StatisticalAggregatesSet.defaultValue();
-//			deprecated
-//			if (properties().hasProperty(P_DATATRACKER_VIEWOTHERS.key()))
-//				viewOthers = (boolean) properties().getPropertyValue(P_DATATRACKER_VIEWOTHERS.key());
-			// component or relation tracker
 			List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
 				selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),hasTheLabel(E_TRACKTABLE.label()))));
 			if (!ll.isEmpty())
@@ -485,7 +488,7 @@ public class DataTrackerNode
 		if (!sealed)
 			initialise();
 		if (!dataTrackers.containsKey(id))
-			dataTrackers.put(id,makeDataTracker(id));
+			dataTrackers.put(id,makeDataTracker(id));		
 		return dataTrackers.get(id);
 	}
 

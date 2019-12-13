@@ -181,22 +181,24 @@ hasNode dataTrackerSpec
 			multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery indexInTableDimRangeTableSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IndexDimensionQuery")
-//	// this will disappear
-//	hasProperty groupBySpec
-//		hasName = String("groupBy")
-//		type = String("Grouping")
-//		multiplicity = IntegerRange("0..1")
-//	hasProperty viewOthersSpec
-//		hasName = String(viewOthers)
-//		type = String("Boolean")
-//		multiplicity = IntegerRange("0..1")
 
 	// tracking of components (use with trackField and trackTable)
-	hasEdge trackComponentEdgeSpec
+	hasEdge trackComponentEdgeSpec // track an initial list of components
 		// todo: check this component is of the proper category?
+		// also check all components are under the same group
 		isOfClass = String("trackComponent")
 		toNode = String("component")
 		multiplicity = IntegerRange("0..*")
+	hasEdge trackComponentGroupEdgeSpec // track any components from this group
+		// todo: check this group is of the proper category?
+		isOfClass = String("trackComponent")
+		toNode = String("group")
+		multiplicity = IntegerRange("0..1")
+	hasEdge trackComponentEcosystemEdgeSpec // track any components at the ecosystem level
+		// todo: check this component is of the proper category?
+		isOfClass = String("trackComponent")
+		toNode = String("initialState")
+		multiplicity = IntegerRange("0..1")
 				
 	// tracking of population data, ie groups
 	hasEdge trackPopulationEdgeSpec
