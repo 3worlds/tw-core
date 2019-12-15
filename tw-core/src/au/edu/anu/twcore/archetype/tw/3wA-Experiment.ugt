@@ -20,7 +20,8 @@ hasNode designSpec
 		hasName = String("file")
 		type = String("FileType")
 		multiplicity = IntegerRange("0..1")
-		// TODO needs a file must exist query on this property
+		mustSatisfyQuery dataSourceFileExistenceQuery
+			className = String("au.edu.anu.twcore.archetype.tw.InputFileExistQuery")
 	mustSatisfyQuery dimIsInRangeQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
 		proplist = StringTable(([2]file,type))
