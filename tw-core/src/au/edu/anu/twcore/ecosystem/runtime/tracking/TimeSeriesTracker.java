@@ -182,11 +182,22 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	}
 	
 	public boolean isTracked(CategorizedContainer<SystemComponent> cc) {
-		return trackedGroups.contains(cc);
+		return (trackedGroups.contains(cc) & (trackedComponents.isEmpty()));
 	}
 	
+	// There may be a time bottleneck here
 	public boolean isTracked(SystemComponent sc) {
-		return trackedComponents.contains(sc);
+		boolean result = trackedComponents.contains(sc);
+		if (!result) {
+			for (CategorizedContainer<SystemComponent> cc : trackedGroups) {
+				SystemComponent isc = cc.initialForItem(sc.id());
+				if (isc!=null)
+					result = trackedComponents.contains(isc);
+				if (result)
+					break;
+			}
+		}
+		return result;
 	}
 	
 	// use this to select new SystemComponents if some are missing
@@ -278,8 +289,6 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	
 	// use this for simple property lists, eg Population data
 	// assumes label = property name
-	// TODO: untested!
-	// always crashes for me: lab.getEnd is not a key to props - some kind of mix up here
 	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
 			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);

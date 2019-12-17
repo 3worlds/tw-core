@@ -104,6 +104,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	private CategorizedContainer<T> superContainer = null;
 	// initial state
 	private Set<T> initialItems = new HashSet<>();
+	// a map of runtime item ids to initial items 
+	private Map<String,T> itemsToInitials = new HashMap<>();
 	// data for housework
 	private Set<String> itemsToRemove = new HashSet<>();
 	private Set<T> itemsToAdd = new HashSet<>();
@@ -275,7 +277,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	public T item(String id) {
 		return items.get(id);
 	}
-	
+		
 	/**
 	 * Gets all items contained in this container only, without those contained in sub-containers.
 	 * 
@@ -384,6 +386,7 @@ public abstract class CategorizedContainer<T extends Identity>
 			if (items.remove(id)!=null) {
 				populationData.count--;
 				populationData.nRemoved++;
+				itemsToInitials.remove(id);
 		}
 		itemsToRemove.clear();
 		for (T item:itemsToAdd)
@@ -392,6 +395,28 @@ public abstract class CategorizedContainer<T extends Identity>
 				populationData.nAdded++;
 		}
 		itemsToAdd.clear();
+	}
+	
+	public boolean contains(T item) {
+		return items.values().contains(item);
+	}
+
+	public boolean contains(String item) {
+		return items.keySet().contains(item);
+	}
+	
+	public boolean containsInitialItem(T item) {
+		return initialItems.contains(item);
+	}
+
+	/**
+	 * Returns the initial item from which an item is a copy, null if it's not a copy.
+	 * 
+	 * @param item
+	 * @return
+	 */
+	public T initialForItem(String id) {
+		return itemsToInitials.get(id);
 	}
 
 	/**
@@ -493,9 +518,11 @@ public abstract class CategorizedContainer<T extends Identity>
 		items.clear();
 		itemsToRemove.clear();
 		itemsToAdd.clear();
+		itemsToInitials.clear();
 		for (T item:initialItems) {
 			T c = cloneItem(item);
 			items.put(c.id(),c);
+			itemsToInitials.put(c.id(),item);
 		}
 		resetCounters();
 		for (CategorizedContainer<T> sc:subContainers.values())

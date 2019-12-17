@@ -314,6 +314,7 @@ public class DataTrackerNode
 		}
 		// get the initial components to track
 		// NB: this list either contains initial components OR points to a single group to be tracked
+		// CAUTION: this is adding the INITIAL components, not the RUNTIME ones
 		List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())));
 		if (ll.size()==1) {
@@ -397,6 +398,8 @@ public class DataTrackerNode
 				else
 					sampleSize = Integer.valueOf(s);
 			}
+			else 
+				sampleSize = -1;
 			if (properties().hasProperty(P_DATATRACKER_STATISTICS.key()))
 				stats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
 			else

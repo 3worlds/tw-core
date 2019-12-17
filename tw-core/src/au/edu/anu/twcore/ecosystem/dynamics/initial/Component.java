@@ -60,7 +60,8 @@ public class Component
 
 	private boolean sealed = false;
 //	private TwData variables = null;
-	private ComponentType factory = null;
+	private ComponentType componentFactory = null;
+	// This is FLAWED: assumes only ONE component per simulator ???
 	private Map<Integer,SystemComponent> individuals = new HashMap<>();
 
 	// default constructor
@@ -77,7 +78,7 @@ public class Component
 	public void initialise() {
 		super.initialise();
 		sealed = false;
-		factory = (ComponentType) get(edges(Direction.OUT),
+		componentFactory = (ComponentType) get(edges(Direction.OUT),
 			selectOne(hasTheLabel(E_INSTANCEOF.label())),
 			endNode());
 		sealed = true;
@@ -112,14 +113,15 @@ public class Component
 		if (!sealed)
 			initialise();
 		if (!individuals.containsKey(id)) {
-			SystemComponent sc = factory.getInstance(id).newInstance();
+			SystemComponent sc = componentFactory.getInstance(id).newInstance();
 			for (TreeNode tn:getChildren())
 				if (tn instanceof VariableValues)
 					((VariableValues)tn).fill(sc.currentState());
 			// TODO: workout the particular case when an individual has parameters
 			LimitedEdition<SystemContainer> p = (LimitedEdition<SystemContainer>) getParent();
 			if (sc.membership().categories().equals(p.getInstance(id).categoryInfo().categories()))
-				p.getInstance(id).addInitialItem(sc);	
+				p.getInstance(id).addInitialItem(sc);
+			individuals.put(id,sc);
 		}
 		return individuals.get(id);
 	}
