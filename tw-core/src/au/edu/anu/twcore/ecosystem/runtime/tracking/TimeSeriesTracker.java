@@ -58,6 +58,8 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	private List<SystemComponent> trackedComponents = null;
 	private int trackSampleSize = 0;
 	private SamplingMode trackMode;
+	// true if tracking a group, false if tracking components
+	private boolean popTracker; 
 
 	public TimeSeriesTracker(StatisticalAggregatesSet statistics,
 			StatisticalAggregatesSet tableStatistics,
@@ -66,8 +68,10 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 			List<SystemContainer> trackedGroups,
 			List<SystemComponent> trackedComponents,
 			Collection<String> track,
-			ReadOnlyPropertyList fieldMetadata) {
+			ReadOnlyPropertyList fieldMetadata,
+			boolean trackGroup) {
 		super(DataMessageTypes.TIME_SERIES);
+		popTracker = trackGroup;
 		this.fieldMetadata = fieldMetadata;
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(),selection);
@@ -182,19 +186,22 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	}
 	
 	public boolean isTracked(CategorizedContainer<SystemComponent> cc) {
-		return (trackedGroups.contains(cc) & (trackedComponents.isEmpty()));
+		return (popTracker && trackedGroups.contains(cc));
 	}
 	
 	// There may be a time bottleneck here
 	public boolean isTracked(SystemComponent sc) {
-		boolean result = trackedComponents.contains(sc);
-		if (!result) {
-			for (CategorizedContainer<SystemComponent> cc : trackedGroups) {
-				SystemComponent isc = cc.initialForItem(sc.id());
-				if (isc!=null)
-					result = trackedComponents.contains(isc);
-				if (result)
-					break;
+		boolean result = false;
+		if (!popTracker) {
+			result = trackedComponents.contains(sc);
+			if (!result) {
+				for (CategorizedContainer<SystemComponent> cc : trackedGroups) {
+					SystemComponent isc = cc.initialForItem(sc.id());
+					if (isc!=null)
+						result = trackedComponents.contains(isc);
+					if (result)
+						break;
+				}
 			}
 		}
 		return result;
@@ -203,86 +210,88 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	// use this to select new SystemComponents if some are missing
 	@Override
 	public void updateTrackList() {
-		// if we track system components, then trackedGroups only contains one group
-		CategorizedContainer<SystemComponent> container = trackedGroups.get(0);
-		// no more components to track
-		if (container.count()==0) 
-			trackedComponents.clear();
-		// all components must be tracked
-		else if ((trackSampleSize == -1) || // means the whole container is tracked 
-			(container.count()<=trackSampleSize)) { // means there are not enough components to select them
-			trackedComponents.clear();
-			for (SystemComponent sc:container.items())
-				trackedComponents.add(sc);
-		}
-		// only a selected subset is tracked
-		else if (trackedComponents.size()<trackSampleSize) {
-			// first cleanup the tracked list from components which are gone from the container list
-			Iterator<SystemComponent> isc = trackedComponents.iterator();
-			while (isc.hasNext()) {
-				if (container.item(isc.next().id())==null)
-					isc.remove();
+		if (!popTracker) {
+			// if we track system components, then trackedGroups only contains one group
+			CategorizedContainer<SystemComponent> container = trackedGroups.get(0);
+			// no more components to track
+			if (container.count()==0) 
+				trackedComponents.clear();
+			// all components must be tracked
+			else if ((trackSampleSize == -1) || // means the whole container is tracked 
+				(container.count()<=trackSampleSize)) { // means there are not enough components to select them
+				trackedComponents.clear();
+				for (SystemComponent sc:container.items())
+					trackedComponents.add(sc);
 			}
-			// then proceed to selection
-			boolean goOn = true;
-			switch (trackMode) {
-			case FIRST:	
-				while (goOn) {
-					Iterator<SystemComponent> list = container.items().iterator();
-					SystemComponent next = list.next();
-					while (trackedComponents.contains(next))
-						next = list.next();
-					if (next==null)
-						goOn=false;
-					else {
-						trackedComponents.add(next);
-						if (trackedComponents.size() == trackSampleSize)
-							goOn = false;
-					}
+			// only a selected subset is tracked
+			else if (trackedComponents.size()<trackSampleSize) {
+				// first cleanup the tracked list from components which are gone from the container list
+				Iterator<SystemComponent> isc = trackedComponents.iterator();
+				while (isc.hasNext()) {
+					if (container.item(isc.next().id())==null)
+						isc.remove();
 				}
-				break;
-			case RANDOM:
-				goOn = true;
-				while (goOn) {
-					ArrayList<SystemComponent> l = new ArrayList<>(container.count());
-					for (SystemComponent sc:container.items())
-						l.add(sc);
-					int i =	0;
-					SystemComponent next = null;
-					while (trackedComponents.contains(next)) {
-						i = RngFactory.getRandom(rngName).nextInt(container.count());
-						next = l.get(i);
+				// then proceed to selection
+				boolean goOn = true;
+				switch (trackMode) {
+				case FIRST:	
+					while (goOn) {
+						Iterator<SystemComponent> list = container.items().iterator();
+						SystemComponent next = list.next();
+						while (trackedComponents.contains(next))
+							next = list.next();
+						if (next==null)
+							goOn=false;
+						else {
+							trackedComponents.add(next);
+							if (trackedComponents.size() == trackSampleSize)
+								goOn = false;
+						}
 					}
-					if (next==null) // this should never happen actually
-						goOn=false;
-					else {
-						trackedComponents.add(next);
-						if (trackedComponents.size() == trackSampleSize)
-							goOn = false;
+					break;
+				case RANDOM:
+					goOn = true;
+					while (goOn) {
+						ArrayList<SystemComponent> l = new ArrayList<>(container.count());
+						for (SystemComponent sc:container.items())
+							l.add(sc);
+						int i =	0;
+						SystemComponent next = null;
+						while (trackedComponents.contains(next)) {
+							i = RngFactory.getRandom(rngName).nextInt(container.count());
+							next = l.get(i);
+						}
+						if (next==null) // this should never happen actually
+							goOn=false;
+						else {
+							trackedComponents.add(next);
+							if (trackedComponents.size() == trackSampleSize)
+								goOn = false;
+						}
 					}
+					break;
+				case LAST:
+					goOn = true;
+					while (goOn) {
+						// reverse the list order
+						LinkedList<SystemComponent> l = new LinkedList<>();
+						for (SystemComponent sc:container.items())
+							l.addFirst(sc);
+						// as before
+						Iterator<SystemComponent> list = l.iterator();
+						SystemComponent next = list.next();
+						while (trackedComponents.contains(next))
+							next = list.next();
+						if (next==null)
+							goOn=false;
+						else {
+							trackedComponents.add(next);
+							if (trackedComponents.size() == trackSampleSize)
+								goOn = false;
+						}
+					}
+					break;
 				}
-				break;
-			case LAST:
-				goOn = true;
-				while (goOn) {
-					// reverse the list order
-					LinkedList<SystemComponent> l = new LinkedList<>();
-					for (SystemComponent sc:container.items())
-						l.addFirst(sc);
-					// as before
-					Iterator<SystemComponent> list = l.iterator();
-					SystemComponent next = list.next();
-					while (trackedComponents.contains(next))
-						next = list.next();
-					if (next==null)
-						goOn=false;
-					else {
-						trackedComponents.add(next);
-						if (trackedComponents.size() == trackSampleSize)
-							goOn = false;
-					}
-				}
-				break;
 			}
 		}
 	}

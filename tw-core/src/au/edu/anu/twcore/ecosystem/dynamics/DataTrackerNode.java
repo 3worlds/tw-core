@@ -125,6 +125,7 @@ public class DataTrackerNode
 	// target objects of tracking: groups or systemComponents
 	private List<LimitedEdition<SystemContainer>> trackedGroups = new ArrayList<>();
 	private List<Component> trackedComponents = new ArrayList<>();
+	private boolean groupTracker;
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -260,6 +261,7 @@ public class DataTrackerNode
 	
 	@SuppressWarnings("unchecked")
 	private void setupComponentTracker() {
+		groupTracker = false;
 		List<Node> ln = (List<Node>) get(getParent().edges(Direction.OUT),
 			selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
 			edgeListEndNodes());
@@ -354,6 +356,7 @@ public class DataTrackerNode
 	
 	@SuppressWarnings("unchecked")
 	private void setupPopulationTracker() {
+		groupTracker = true;
 		List<Edge> trackedEdges = (List<Edge>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_TRACKPOP.label())));
 		for (Edge e:trackedEdges) {
@@ -449,7 +452,7 @@ public class DataTrackerNode
 			for (Component c:trackedComponents)
 				ls.add(c.getInstance(index));
 			result = new TimeSeriesTracker(stats,tstats,selection,sampleSize,
-				lsc, ls, expandedTrackList.keySet(),fieldMetadata); 
+				lsc, ls, expandedTrackList.keySet(),fieldMetadata,groupTracker); 
 		}		
 		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
 			result = new MapTracker();

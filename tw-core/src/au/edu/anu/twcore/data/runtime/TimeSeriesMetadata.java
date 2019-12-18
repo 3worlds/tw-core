@@ -1,9 +1,9 @@
 package au.edu.anu.twcore.data.runtime;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * <p>A class storing time series metadata to initialise time series widgets.
@@ -24,9 +24,9 @@ public class TimeSeriesMetadata {
 	public static String TSMETA = "timeSeriesMetadata";
 	
 	private SortedMap<DataLabel,Integer> nameIndex = new TreeMap<DataLabel,Integer>();
-	private SortedSet<DataLabel> intNames = new TreeSet<DataLabel>();
-	private SortedSet<DataLabel> doubleNames = new TreeSet<DataLabel>();
-	private SortedSet<DataLabel> stringNames = new TreeSet<DataLabel>(); 
+	private List<DataLabel> intNames = new ArrayList<DataLabel>();
+	private List<DataLabel> doubleNames = new ArrayList<DataLabel>();
+	private List<DataLabel> stringNames = new ArrayList<DataLabel>(); 
 
 	public TimeSeriesMetadata() {
 		// TODO Auto-generated constructor stub
