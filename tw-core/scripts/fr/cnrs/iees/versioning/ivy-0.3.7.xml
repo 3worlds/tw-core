@@ -1,5 +1,5 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-core> version 0.3.8 (Wed Dec 18 16:09:52 CET 2019)
+ ant and ivy scripts for project <tw-core> version 0.3.7 (Wed Nov 13 15:00:24 CET 2019)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -13,7 +13,7 @@
 
 	<info	organisation="fr.cnrs.iees.tw-core"
 			module="tw-core"
-			revision="0.3.8"
+			revision="0.3.7"
 			status="integration">
 		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
 		<description>This module brings together all components required for 3Worlds including archetype</description>
