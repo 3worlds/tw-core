@@ -19,7 +19,7 @@ import java.util.TreeMap;
  * @author Jacques Gignoux - 30 sept. 2019
  *
  */
-public class TimeSeriesMetadata {
+public class Output0DMetadata {
 	
 	public static String TSMETA = "timeSeriesMetadata";
 	
@@ -28,7 +28,7 @@ public class TimeSeriesMetadata {
 	private List<DataLabel> doubleNames = new ArrayList<DataLabel>();
 	private List<DataLabel> stringNames = new ArrayList<DataLabel>(); 
 
-	public TimeSeriesMetadata() {
+	public Output0DMetadata() {
 		// TODO Auto-generated constructor stub
 	}
 	

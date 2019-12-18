@@ -50,7 +50,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
@@ -132,7 +132,7 @@ public class ComponentProcess
 			}
 			executeFunctions(container,t,dt);
 			// track group state
-			for (TimeSeriesTracker tracker:tsTrackers)
+			for (DataTracker0D tracker:tsTrackers)
 				if (tracker.isTracked(container)) {
 					tracker.recordItem(buildItemId(null));
 					tracker.record(currentStatus,container.populationData());
@@ -285,7 +285,7 @@ public class ComponentProcess
 				}
 			}
 			// track component state
-			for (TimeSeriesTracker tracker:tsTrackers) 
+			for (DataTracker0D tracker:tsTrackers) 
 				if (tracker.isTracked(focal)) {
 				tracker.recordItem(buildItemId(focal.id()));
 				tracker.record(currentStatus,focal.currentState());
@@ -311,7 +311,7 @@ public class ComponentProcess
 	@Override
 	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
-		for (TimeSeriesTracker tracker:tsTrackers)
+		for (DataTracker0D tracker:tsTrackers)
 			tracker.recordTime(t);		
 		loop(ecosystem(),timer.userTime(t),timer.userTime(dt));
 	}

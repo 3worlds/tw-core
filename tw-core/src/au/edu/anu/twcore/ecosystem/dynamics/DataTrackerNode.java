@@ -70,18 +70,16 @@ import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.IndexedDataLabel;
-import au.edu.anu.twcore.data.runtime.LabelValuePairData;
-import au.edu.anu.twcore.data.runtime.MapData;
+import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.data.runtime.Metadata;
-import au.edu.anu.twcore.data.runtime.TimeSeriesData;
+import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerTracker2D;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
@@ -444,22 +442,22 @@ public class DataTrackerNode
 	
 	private DataTracker<?,?> makeDataTracker(int index) {
 		AbstractDataTracker<?,?> result = null;
-		if (dataTrackerClass.equals(TimeSeriesTracker.class.getName())) {
+		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
 			List<SystemContainer> lsc = new ArrayList<SystemContainer>();
 			for (LimitedEdition<SystemContainer> group:trackedGroups)
 				lsc.add(group.getInstance(index));
 			List<SystemComponent> ls = new ArrayList<SystemComponent>();
 			for (Component c:trackedComponents)
 				ls.add(c.getInstance(index));
-			result = new TimeSeriesTracker(stats,tstats,selection,sampleSize,
+			result = new DataTracker0D(stats,tstats,selection,sampleSize,
 				lsc, ls, expandedTrackList.keySet(),fieldMetadata,groupTracker); 
 		}		
-		else if (dataTrackerClass.equals(MapTracker.class.getName())) {	
-			result = new MapTracker();
+		else if (dataTrackerClass.equals(DataTrackerTracker2D.class.getName())) {	
+			result = new DataTrackerTracker2D();
 		}		
-		else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
-			result = new LabelValuePairTracker();
-		}
+//		else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
+//			result = new LabelValuePairTracker();
+//		}
 		if (result!=null)
 			result.setSender(index);
 		return result;
@@ -471,23 +469,23 @@ public class DataTrackerNode
 	 * attach time series widgets to these trackers
 	 * @param widget
 	 */
-	public void attachTimeSeriesWidget(DataReceiver<TimeSeriesData,Metadata> widget) {
+	public void attachTimeSeriesWidget(DataReceiver<Output0DData,Metadata> widget) {
 		for (DataTracker<?,?> dt:dataTrackers.values())
-			if (dt instanceof TimeSeriesTracker)
-				((TimeSeriesTracker)dt).addObserver(widget);
+			if (dt instanceof DataTracker0D)
+				((DataTracker0D)dt).addObserver(widget);
 	}
 
-	public void attachMapWidget(DataReceiver<MapData,Metadata> widget) {
+	public void attachMapWidget(DataReceiver<Output2DData,Metadata> widget) {
 		for (DataTracker<?,?> dt:dataTrackers.values())
-			if (dt instanceof MapTracker)
-				((MapTracker)dt).addObserver(widget);
+			if (dt instanceof DataTrackerTracker2D)
+				((DataTrackerTracker2D)dt).addObserver(widget);
 	}
 
-	public void attachLabelValuePairWidget(DataReceiver<LabelValuePairData,Metadata> widget) {
-		for (DataTracker<?,?> dt:dataTrackers.values())
-			if (dt instanceof LabelValuePairTracker)
-				((LabelValuePairTracker)dt).addObserver(widget);
-	}
+//	public void attachLabelValuePairWidget(DataReceiver<LabelValuePairData,Metadata> widget) {
+//		for (DataTracker<?,?> dt:dataTrackers.values())
+//			if (dt instanceof LabelValuePairTracker)
+//				((LabelValuePairTracker)dt).addObserver(widget);
+//	}
 	
 	@Override
 	public DataTracker<?, ?> getInstance(int id) {

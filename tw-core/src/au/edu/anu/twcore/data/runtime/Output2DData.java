@@ -8,12 +8,12 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-public class MapData extends LabelledItemData {
+public class Output2DData extends LabelledItemData {
 
 	private DataLabel zlabel;
 	private Number[][] map;
 
-	public MapData(SimulatorStatus status, 
+	public Output2DData(SimulatorStatus status, 
 			int senderId, 
 			int metadataType,
 			int nx,

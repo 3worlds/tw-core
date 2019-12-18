@@ -52,7 +52,7 @@ import java.util.List;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
-import au.edu.anu.twcore.data.runtime.TimeSeriesData;
+import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.Experiment;
@@ -119,7 +119,7 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 					edgeListEndNodes()); 
 				for (DataTrackerNode dtn:timeSeriesTrackers)
 					if (widget instanceof DataReceiver)
-						dtn.attachTimeSeriesWidget((DataReceiver<TimeSeriesData, Metadata>) widget);
+						dtn.attachTimeSeriesWidget((DataReceiver<Output0DData, Metadata>) widget);
 
 			} catch (Exception e) {
 				e.printStackTrace();

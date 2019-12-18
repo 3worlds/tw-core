@@ -12,8 +12,8 @@ import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.IndexedDataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
-import au.edu.anu.twcore.data.runtime.TimeSeriesData;
-import au.edu.anu.twcore.data.runtime.TimeSeriesMetadata;
+import au.edu.anu.twcore.data.runtime.Output0DData;
+import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -35,7 +35,7 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
  * @author Jacques Gignoux - 1 oct. 2019
  *
  */
-public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metadata> {
+public class DataTracker0D extends AbstractDataTracker<Output0DData,Metadata> {
 	
 	private static final String rngName = "DataTracker RNG";
 	
@@ -45,9 +45,9 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		P_DATATRACKER_TABLESTATS.key(),
 		P_DATATRACKER_TRACK.key(),
 		P_DATATRACKER_SAMPLESIZE.key(),
-		TimeSeriesMetadata.TSMETA};
+		Output0DMetadata.TSMETA};
 	private SimplePropertyList metaprops;
-	private TimeSeriesMetadata metadata;
+	private Output0DMetadata metadata;
 	private int metadataType = -1;
 	private long currentTime = Long.MIN_VALUE;
 	private DataLabel currentItem = null;
@@ -61,7 +61,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	// true if tracking a group, false if tracking components
 	private boolean popTracker; 
 
-	public TimeSeriesTracker(StatisticalAggregatesSet statistics,
+	public DataTracker0D(StatisticalAggregatesSet statistics,
 			StatisticalAggregatesSet tableStatistics,
 			SamplingMode selection,
 			int sampleSize,
@@ -80,13 +80,13 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(),tableStatistics);
 		metaprops.setProperty(P_DATATRACKER_SAMPLESIZE.key(), sampleSize);
 		trackSampleSize = sampleSize;
-		metadata = new TimeSeriesMetadata();
+		metadata = new Output0DMetadata();
 		for (String s:track) {
 			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s+"."+P_FIELD_TYPE.key());
 			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s+"."+P_FIELD_LABEL.key());
 			addMetadataVariable(c,l);
 		}
-		metaprops.setProperty(TimeSeriesMetadata.TSMETA,metadata);
+		metaprops.setProperty(Output0DMetadata.TSMETA,metadata);
 		this.trackedGroups = trackedGroups;
 		this.trackedComponents = trackedComponents;
 		// TODO: check this is ok for a RNG - do we want other settings?
@@ -112,7 +112,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	}
 		
 	// cross-recursive with below
-	private void getTableValue(int depth, Table table, int[] index, DataLabel lab, TimeSeriesData tsd) {
+	private void getTableValue(int depth, Table table, int[] index, DataLabel lab, Output0DData tsd) {
 		if (table instanceof ObjectTable<?>) {
 			ObjectTable<?> t = (ObjectTable<?>) table;
 			TwData next = (TwData) t.getByInt(index);
@@ -139,7 +139,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	}
 	
 	// cross-recursive with above
-	private void getRecValue(int depth, TwData root, DataLabel lab, TimeSeriesData tsd) {
+	private void getRecValue(int depth, TwData root, DataLabel lab, Output0DData tsd) {
 		String key = lab.get(depth);
 		if (key.contains("["))
 			key = key.substring(0,key.indexOf("["));
@@ -172,7 +172,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	// use this for SystemComponent TwData variables
 	public void record(SimulatorStatus status, TwData props) {
 		if (hasObservers()) {
-			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
+			Output0DData tsd = new Output0DData(status,senderId,metadataType,metadata);
 			tsd.setTime(currentTime);
 			tsd.setItemLabel(currentItem);
 			for (DataLabel lab:metadata.intNames())
@@ -300,7 +300,7 @@ public class TimeSeriesTracker extends AbstractDataTracker<TimeSeriesData,Metada
 	// assumes label = property name
 	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
 		if (hasObservers()) {
-			TimeSeriesData tsd = new TimeSeriesData(status,senderId,metadataType,metadata);
+			Output0DData tsd = new Output0DData(status,senderId,metadataType,metadata);
 			tsd.setTime(currentTime);
 			tsd.setItemLabel(currentItem);
 			for (DataLabel lab:metadata.intNames())

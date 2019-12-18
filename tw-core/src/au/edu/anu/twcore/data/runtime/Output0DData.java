@@ -16,11 +16,9 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-public class TimeSeriesData extends LabelledItemData {
+public class Output0DData extends LabelledItemData {
 	
-//	private Map<DataLabel, Number> values = new HashMap<>();
-	
-	private TimeSeriesMetadata meta;
+	private Output0DMetadata meta;
 	// this table is used to send byte,int,short,long and boolean values
 	private long intValues[];
 	// this table is used to send float and double values
@@ -28,10 +26,10 @@ public class TimeSeriesData extends LabelledItemData {
 	// this table is used to send String values
 	private String stringValues[];
 
-	public TimeSeriesData(SimulatorStatus status, 
+	public Output0DData(SimulatorStatus status, 
 			int senderId, 
 			int metadataType, 
-			TimeSeriesMetadata metadata) {
+			Output0DMetadata metadata) {
 		super(status, senderId, metadataType);
 		this.meta = metadata;
 		intValues = new long[meta.nInt()];
@@ -114,19 +112,5 @@ public class TimeSeriesData extends LabelledItemData {
 			sb.append(' ').append(name.toString()).append('=').append(stringValues[i++]);
 		return sb.toString();
 	}
-	
-
-//	public void addValue(Number value, DataLabel label) {
-//		values.put(label, value);
-//	}
-//
-//	public void addValue(Number value, String... labelParts) {
-//		DataLabel label = new DataLabel(labelParts);
-//		values.put(label, value);
-//	}
-//
-//	public Map<DataLabel, Number> values() {
-//		return values;
-//	}
 
 }

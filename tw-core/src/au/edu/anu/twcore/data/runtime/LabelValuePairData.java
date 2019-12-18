@@ -8,6 +8,7 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
+@Deprecated
 public class LabelValuePairData extends OutputData {
 
 	// the label as a hierarchical name

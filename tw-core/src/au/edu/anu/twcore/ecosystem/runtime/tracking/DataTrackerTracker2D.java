@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
-import au.edu.anu.twcore.data.runtime.MapData;
+import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 
 /**
@@ -9,9 +9,9 @@ import au.edu.anu.twcore.data.runtime.Metadata;
  * @author Jacques Gignoux - 1 oct. 2019
  *
  */
-public class MapTracker extends AbstractDataTracker<MapData, Metadata> {
+public class DataTrackerTracker2D extends AbstractDataTracker<Output2DData, Metadata> {
 
-	public MapTracker() {
+	public DataTrackerTracker2D() {
 		super(DataMessageTypes.MAP);
 	}
 

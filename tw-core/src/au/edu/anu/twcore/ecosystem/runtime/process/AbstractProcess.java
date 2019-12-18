@@ -39,9 +39,8 @@ import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerHolder;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.LabelValuePairTracker;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.MapTracker;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerTracker2D;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import fr.ens.biologie.generic.Sealable;
 
 /**
@@ -56,9 +55,8 @@ public abstract class AbstractProcess
 	private boolean sealed = false;
     private SystemContainer ecosystem = null;
     // dataTrackers - common to all process types
-	protected List<TimeSeriesTracker> tsTrackers = new LinkedList<TimeSeriesTracker>();
-	protected List<MapTracker> mapTrackers = new LinkedList<MapTracker>();
-	protected List<LabelValuePairTracker> simpleTrackers = new LinkedList<LabelValuePairTracker>();
+	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
+	protected List<DataTrackerTracker2D> mapTrackers = new LinkedList<DataTrackerTracker2D>();
 	protected Timer timer = null;
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
@@ -74,8 +72,7 @@ public abstract class AbstractProcess
 		sealed = true;
     	trackers.addAll(tsTrackers);
     	trackers.addAll(mapTrackers);
-    	trackers.addAll(simpleTrackers);
-		return this;
+ 		return this;
 	}
 
 	@Override
@@ -88,11 +85,9 @@ public abstract class AbstractProcess
 	}
 	
 	public void setSender(int id) {
-		for (TimeSeriesTracker tracker:tsTrackers)
+		for (DataTracker0D tracker:tsTrackers)
 			tracker.setSender(id);
-		for (MapTracker tracker:mapTrackers)
-			tracker.setSender(id);
-		for (LabelValuePairTracker tracker:simpleTrackers)
+		for (DataTrackerTracker2D tracker:mapTrackers)
 			tracker.setSender(id);
 	}
 	
@@ -100,12 +95,10 @@ public abstract class AbstractProcess
 	
 	public void addDataTracker(DataTracker<?,?> tracker) {
 		if (!isSealed()) {
-			if (tracker instanceof TimeSeriesTracker)
-				tsTrackers.add((TimeSeriesTracker) tracker);
-			else if (tracker instanceof MapTracker)
-				mapTrackers.add((MapTracker) tracker);
-			else if (tracker instanceof LabelValuePairTracker)
-				simpleTrackers.add((LabelValuePairTracker) tracker);
+			if (tracker instanceof DataTracker0D)
+				tsTrackers.add((DataTracker0D) tracker);
+			else if (tracker instanceof DataTrackerTracker2D)
+				mapTrackers.add((DataTrackerTracker2D) tracker);
 		}
 	}
 	

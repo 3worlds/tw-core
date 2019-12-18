@@ -9,6 +9,7 @@ import au.edu.anu.twcore.data.runtime.Metadata;
  * @author Jacques Gignoux - 1 oct. 2019
  *
  */
+@Deprecated
 public class LabelValuePairTracker extends AbstractDataTracker<LabelValuePairData, Metadata> {
 
 	public LabelValuePairTracker() {
