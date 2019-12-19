@@ -75,6 +75,10 @@ public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends Query implements TwArch
 		TreeNode parent = (TreeNode) input;
 		List<TreeNode> type1 = (List<TreeNode>) get(parent, children(), selectZeroOrMany(hasTheLabel(nodeLabel1)));
 		List<TreeNode> type2 = (List<TreeNode>) get(parent, children(), selectZeroOrMany(hasTheLabel(nodeLabel2)));
+		if ((type2.size()+ type1.size())>2) {
+			satisfied = false;
+			return this;
+		}
 		if (!type1.isEmpty() && type2.isEmpty())
 			satisfied = true;
 		else if (type1.isEmpty() && type2.size() == 2)
@@ -85,7 +89,7 @@ public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends Query implements TwArch
 	}
 
 	public String toString() {
-		return "[" + stateString() + "must have at least one child node with label '" + nodeLabel1
+		return "[" + stateString() + "must have at least one or two children node with label '" + nodeLabel1
 				+ "' or two children with label '" + nodeLabel2 + "'.]";
 	}
 
