@@ -394,6 +394,8 @@ public class DataTrackerNode
 				selection = SamplingMode.defaultValue();
 			if (properties().hasProperty(P_DATATRACKER_SAMPLESIZE.key())) {
 				String s = (String) properties().getPropertyValue(P_DATATRACKER_SAMPLESIZE.key());
+				if (s.isBlank())
+					s = "ALL";
 				if (s.equals("ALL"))
 					sampleSize = -1;
 				else
