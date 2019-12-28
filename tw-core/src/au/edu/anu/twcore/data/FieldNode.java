@@ -32,24 +32,27 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.DataElementType;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
- * Class matching the "field" node label in the 3Worlds configuration tree.
- * Has the "type" property.
+ * Class matching the "field" node label in the 3Worlds configuration tree. Has
+ * the "type" property.
  * 
  * @author Jacques Gignoux - 31 mai 2019
  *
  */
-public class FieldNode extends InitialisableNode{
+public class FieldNode extends InitialisableNode {
 
 	public FieldNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
-	
+
 	public FieldNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
@@ -67,9 +70,35 @@ public class FieldNode extends InitialisableNode{
 	public String name() {
 		return classId();
 	}
-	
+
 	public String type() {
 		return (String) properties().getPropertyValue(P_FIELD_TYPE.key());
 	}
-	
+
+	public Object newInstance() {
+		DataElementType dt = (DataElementType) properties().getPropertyValue(P_FIELD_TYPE.key());
+		switch (dt) {
+		case Byte:
+			return Byte.valueOf((byte) 0);
+		case Char:
+			return Character.valueOf('0');
+		case Short:
+			return Short.valueOf((short) 0);
+		case Integer:
+			return Integer.valueOf(0);
+		case Long:
+			return Long.valueOf(0L);
+		case Float:
+			return Float.valueOf(0.0F);
+		case Double:
+			return Double.valueOf(0.0);
+		case Boolean:
+			return Boolean.valueOf(false);
+		case String:
+			return "";
+		default:
+			throw new TwcoreException("Unable to instantiate " + dt);
+		}
+	}
+
 }

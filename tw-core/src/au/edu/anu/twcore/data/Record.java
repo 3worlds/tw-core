@@ -28,11 +28,21 @@
  **************************************************************************/
 package au.edu.anu.twcore.data;
 
+import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import au.edu.anu.twcore.InitialisableNode;
 
@@ -62,5 +72,32 @@ public class Record extends InitialisableNode {
 	public int initRank() {
 		return N_RECORD.initRank();
 	}
+
+	public static List<TreeGraphDataNode> getLeaves(TreeGraphDataNode rootRecord) {
+		List<TreeGraphDataNode> result = new ArrayList<>();
+		getLeaves(result,rootRecord);
+		return result;
+	}
+
+	private static void getLeaves(List<TreeGraphDataNode> result, TreeNode record) {
+		for (TreeNode child:record.getChildren()) {
+			if (child.classId().equals(N_FIELD.label()))
+				result.add((TreeGraphDataNode) child);
+			else if (child.classId().equals(N_TABLE.label())) {
+				DataHolder table = (DataHolder) child;
+				// cannot depend on child record being present
+				if (table.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
+					result.add((TreeGraphDataNode) child);
+				} else// There can be only one child but this is easiest.
+					for (TreeNode tableRecord:child.getChildren())
+						getLeaves(result,tableRecord);
+			}
+		}
+		
+
+		
+	}
+
+	
 
 }

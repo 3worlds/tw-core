@@ -363,15 +363,15 @@ hasNode groupSpec
 		nodeLabel2 = String("lifeCycle")
 	
 // initial state for an individual component 	
-hasNode individualSpec
+hasNode componentSpec
 	isOfClass = String("component")
 	hasParent = StringTable(([2]"initialState:","group:"))
 	multiplicity = IntegerRange("0..*")
-	hasEdge individualToSystemSpec
+	hasEdge componentToSystemSpec
 		isOfClass = String("instanceOf")
 		toNode = String("componentType")
 		multiplicity = IntegerRange("1..1")
-	hasEdge individualToSourceLoadFromSpec
+	hasEdge instanceOfToSourceLoadFromSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource")
 		multiplicity = IntegerRange("0..*")
@@ -385,11 +385,17 @@ hasNode parameterValuesSpec
 	// caution: if parameter values are associated to an individual, it means it is unique in its
 	// category, its parameters are specific to it and no other individual with the same values
 	// will ever exist. Shared parameter values must be set at the group level
+	mustSatisfyQuery parameterValuesPropertiesMatchDefinitionQuery
+		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinition")
+		values = StringTable(([1]parameters))
 	
 hasNode variableValuesSpec
 	isOfClass = String("variableValues")
 	hasParent = StringTable(([1]"component:"))
 	multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
+	mustSatisfyQuery variableValuesPropertiesMatchDefinitionQuery
+		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinition")
+		values = StringTable(([1]drivers))
 	
 	
