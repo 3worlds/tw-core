@@ -52,8 +52,10 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -94,6 +96,10 @@ public class ComponentType
 	// The SystemComponent containers instantiated by this SystemFactory
 	private Map<Integer,Map<String,SystemContainer>> containers = new HashMap<>();
 
+	// temp explore code
+	public Collection<Map<String, SystemContainer>> containers() {
+		return containers.values();
+	}
 	public ComponentType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}

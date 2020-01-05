@@ -95,6 +95,7 @@ public class TimeModel
 		if (!sealed) {
 			super.initialise();
 			timeLine = (TimeLine) getParent();
+			timeLine.initialise();
 			timeUnit = (TimeUnits) properties().getPropertyValue(P_TIMEMODEL_TU.key());
 			nTimeUnits = (Integer) properties().getPropertyValue(P_TIMEMODEL_NTU.key());
 			long unitConversionFactor = TimeUtil.timeUnitExactConversionFactor(timeUnit, timeLine.shortestTimeUnit());

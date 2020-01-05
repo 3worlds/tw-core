@@ -146,6 +146,7 @@ public class Group
 			endNode());
 		if (n!=null) {
 			ComponentType sf = (ComponentType) n;
+			sf.initialise();
 			container = sf.makeContainer(index,id());
 		}
 		n = (Node) get(edges(Direction.OUT),
