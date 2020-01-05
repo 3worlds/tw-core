@@ -37,11 +37,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import au.edu.anu.twcore.InitialisableNode;
