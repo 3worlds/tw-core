@@ -1,22 +1,12 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import java.util.Random;
-
 /**
  * Ancestor class to all functions that make decisions based on probabilities
  * 
  * @author Jacques Gignoux - 18 sept. 2019
  *
  */
-public abstract class AbstractDecisionFunction extends TwRandomStreamFunction {
-
-	/**
-	 * Constructor using a random number stream
-	 * @param rng
-	 */
-	public AbstractDecisionFunction(Random rng) {
-		super(rng);
-	}
+public abstract class AbstractDecisionFunction extends TwFunctionAdapter {
 
 	/**
 	 * constructor defining its own randm number stream

@@ -117,6 +117,12 @@ hasNode functionSpec
 		hasName = String("userClassName")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
+	// a function may have a node to a RNG. if none and one is required, default is used
+	// if more than one is needed, then make two functions.
+	hasEdge functionRngSpec
+		isOfClass = String("useRNG")
+		toNode = String("rng")
+		multiplicity = IntegerRange("0..1")
 		
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")

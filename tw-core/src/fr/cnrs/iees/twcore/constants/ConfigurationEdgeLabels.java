@@ -47,6 +47,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.DependsOnEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.EffectedByEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.StopSystemEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.ConditionEdge;
+import au.edu.anu.twcore.ecosystem.dynamics.UseRNGEdge;
 
 import au.edu.anu.twcore.ecosystem.dynamics.initial.GroupOfEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.CycleEdge;
@@ -94,6 +95,7 @@ public enum ConfigurationEdgeLabels {
 	E_CYCLE			("cycle",			CycleEdge.class),
 	E_INSTANCEOF	("instanceOf",		InstanceOfEdge.class),
 	E_LOADFROM		("loadFrom",		LoadFromEdge.class),
+	E_USERNG		("useRNG",			UseRNGEdge.class),
 	// user interface
 	E_TRACKTIME		("trackTime",		TrackTimeEdge.class),
 	E_TRACKSERIES	("trackSeries",		TrackTimeSeriesEdge.class),

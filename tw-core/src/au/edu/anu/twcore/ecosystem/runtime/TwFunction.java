@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime;
 
 import java.util.List;
+import java.util.Random;
 
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
@@ -41,7 +42,13 @@ import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
  */
 public interface TwFunction {
 	
-	public void setProcess(AbstractProcess process);
+	/**
+	 * Connects a function to its process, only once (at construction time).
+	 * This function is not meant to be used by end-users.
+	 * 
+	 * @param process the process
+	 */
+	public void initProcess(AbstractProcess process);
 	
 	public AbstractProcess process();
 
@@ -53,4 +60,13 @@ public interface TwFunction {
 		return null;
 	}
 
+	public Random rng();
+	
+	/**
+	 * Connects a function to its random number generator, only once (at construction time)
+	 * This function is not meant to be used by end-users.
+	 *  
+	 * @param rng the random number generator
+	 */
+	public void initRng(Random rng);
 }

@@ -42,7 +42,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
  * result is a number of descendants to create (as a double - fractional part used as a probability)
  * 
  */
-public abstract class CreateOtherDecisionFunction extends TwRandomStreamFunction {
+public abstract class CreateOtherDecisionFunction extends AbstractDecisionFunction {
 
     private List<ChangeStateFunction> CSfunctions = 
         	new LinkedList<ChangeStateFunction>();
@@ -50,14 +50,6 @@ public abstract class CreateOtherDecisionFunction extends TwRandomStreamFunction
         	new LinkedList<ChangeOtherStateFunction>();
     private List<RelateToDecisionFunction> RTfunctions = 
         	new LinkedList<RelateToDecisionFunction>();
-	
-	/**
-	 * Constructor using a random number stream
-	 * @param rng
-	 */
-	public CreateOtherDecisionFunction(Random rng) {
-		super(rng);
-	}
 
 	/**
 	 * constructor defining its own randm number stream

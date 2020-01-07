@@ -29,8 +29,10 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.RngNode;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import fr.cnrs.iees.OmugiClassLoader;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
@@ -38,6 +40,10 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -56,10 +62,9 @@ public class FunctionNode
 		implements LimitedEdition<TwFunction>, Sealable {
 
 	private boolean sealed = false;
-	// a template function with the proper consequences
-//	private TwFunction function = null;
 	private Map<Integer,TwFunction> functions = new HashMap<>();
 	private Constructor<? extends TwFunction> fConstructor = null;
+	private RngNode rngNode = null;
 	
 	public FunctionNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -74,7 +79,9 @@ public class FunctionNode
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
-//			sealed = false;
+			rngNode = (RngNode) get(edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(E_USERNG.label())),
+				endNode());
 			// this is once code has been generated and edited by the user
 			String className = (String) properties().getPropertyValue(P_FUNCTIONCLASS.key());
 			if (className!=null) {
@@ -86,25 +93,10 @@ public class FunctionNode
 				try {
 					functionClass = (Class<? extends TwFunction>) Class.forName(className,true,classLoader);
 					fConstructor = functionClass.getConstructor();
-//					function = fConstructor.newInstance();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//				// add the consequences of the function, if any
-//				// if my parent is a function, I am a consequence of it
-//				if (getParent() instanceof FunctionNode) {
-//					FunctionNode parent = (FunctionNode) getParent();
-//					if (parent.isSealed())
-//						parent.getInstance().addConsequence(function);
-//				}
-//				// if my children are functions, they are consequences of me
-//				else for (TreeNode n:getChildren()) 
-//					if (n instanceof FunctionNode){
-//						FunctionNode csq = (FunctionNode) n;
-//						if (csq.isSealed())
-//							function.addConsequence(csq.getInstance());
-//				}
 			}
 			sealed = true;
 		}
@@ -114,13 +106,6 @@ public class FunctionNode
 	public int initRank() {
 		return N_FUNCTION.initRank();
 	}
-
-//	@Override
-//	public TwFunction getInstance() {
-//		if (!sealed)
-//			initialise();
-//		return function;
-//	}
 
 	@Override
 	public Sealable seal() {
@@ -137,6 +122,12 @@ public class FunctionNode
 		TwFunction result = null;
 		try {
 			result = fConstructor.newInstance();
+			if (rngNode==null)
+				result.initRng(null);
+			else
+				result.initRng(rngNode.getInstance());
+				// NB this may replace the previous later:
+				//	result.initRng(rngNode.getInstance(index));
 			// add the consequences of the function, if any
 			// if my parent is a function, I am a consequence of it
 			if (getParent() instanceof FunctionNode) {
