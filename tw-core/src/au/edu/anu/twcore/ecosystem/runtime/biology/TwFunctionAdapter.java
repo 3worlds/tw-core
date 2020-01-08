@@ -56,10 +56,6 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	 */
 	public TwFunctionAdapter() {
 		super();
-//		if (!RngFactory.exists("default 3wRNG"))
-//			RngFactory.makeRandom("default 3wRNG", 0, RngResetType.never, 
-//				RngSeedSourceType.secure, RngAlgType.Pcg32);
-//		this.rng = RngFactory.getRandom("default 3wRNG");
 	}
 	
 	@Override
