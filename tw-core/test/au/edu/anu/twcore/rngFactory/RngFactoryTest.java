@@ -34,6 +34,7 @@ import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
+import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
@@ -42,12 +43,6 @@ class RngFactoryTest {
 
 	private final static int trials = 100_000_000;
 
-//	private Integer[] intTest(Random rng) {
-//		Integer[] res = new Integer[10];
-//		for (int i = 0; i < res.length; i++)
-//			res[i] = new Integer(0);
-//		return res;
-//	}
 
 	private long timing(Random rng) {
 		long s = System.nanoTime();
@@ -77,40 +72,26 @@ class RngFactoryTest {
 	@Test
 	void test() {
 
-		RngFactory.makeRandom("Random", 0, RngResetType.onRunStart, RngSeedSourceType.constant, RngAlgType.java);
-		// TODO If XSRandom is set with seed==0 it is never changed! The other generators seem to be ok.
-		RngFactory.makeRandom("XSRandom", 0, RngResetType.onRunStart, RngSeedSourceType.constant, RngAlgType.XSRandom);
-//		RngFactory.makeRandom("XSRandom", 0, ResetType.ONRUNSTART, SeedSource.TABLE, new XSRandom());
-		RngFactory.makeRandom("PCGRandom", 0, RngResetType.onRunStart, RngSeedSourceType.constant,RngAlgType.Pcg32);
-		//RngFactory.makeRandom("SecureRandom", 0, ResetType.NEVER, SeedSource.TABLE, new SecureRandom());
+		Generator rngJava = RngFactory.newInstance("Random", 0, RngResetType.onRunStart, RngSeedSourceType.constant, RngAlgType.java);
+		Generator rngXSRandom = RngFactory.newInstance("XSRandom", 0, RngResetType.onRunStart, RngSeedSourceType.constant, RngAlgType.XSRandom);
+		Generator rngPCG = RngFactory.newInstance("PCGRandom", 0, RngResetType.onRunStart, RngSeedSourceType.constant,RngAlgType.Pcg32);
 
-		Random random = RngFactory.getRandom("Random");
-		Random xsRandom = RngFactory.getRandom("XSRandom");
-		Random pcgRandom = RngFactory.getRandom("PCGRandom");
-//		Random secureRandom = RngFactory.getRandom("SecureRandom");
+		Random random = rngJava.getRandom();
+		Random xsRandom = rngXSRandom.getRandom();
+		Random pcgRandom = rngPCG.getRandom();
 
-		RngFactory.resetRun();
+		rngJava.resetRun();
+		rngXSRandom.resetRun();
+		rngPCG.resetRun();
 		double v1 = random.nextDouble();
 		double v2 = xsRandom.nextDouble();
 		double v3 = pcgRandom.nextDouble();
-		RngFactory.resetRun();
+		rngJava.resetRun();
+		rngXSRandom.resetRun();
+		rngPCG.resetRun();
 		assertEquals(v1, random.nextDouble());
 		assertEquals(v2, xsRandom.nextDouble());
 		assertEquals(v3, pcgRandom.nextDouble());
-
-		// Integer[] r1 = intTest(random);
-		// System.out.println("Random: "+Arrays.deepToString(r1));
-		// Integer[] r2 = intTest(xsRandom);
-		// System.out.println("XSRandom: "+Arrays.deepToString(r2));
-		// Integer[] r3 = intTest(pcgRandom);
-		// System.out.println("PCGRandom: "+Arrays.deepToString(r3));
-		// Integer[] r4 = intTest(secureRandom);
-		// System.out.println("SecureRandom: "+Arrays.deepToString(r4));
-		// String s = "\t";
-		// System.out.println("Random"+s+"XSRandom"+s+"PCGRandom"+s+"SecureRandom");
-		// for (int i= 0;i<r1.length;i++) {
-		// System.out.println(r1[i]+s+r2[i]+s+r3[i]+s+r4[i]);
-		// }
 
 		System.out.println("Range check Random");
 		checkRange(random);
@@ -118,10 +99,10 @@ class RngFactoryTest {
 		checkRange(xsRandom);
 		System.out.println("Range check PCGRandom");
 		checkRange(pcgRandom);
-		// System.out.println("Range check Random");
-		// checkRange(secureRandom);
 
-		RngFactory.resetRun();
+		rngJava.resetRun();
+		rngXSRandom.resetRun();
+		rngPCG.resetRun();
 
 		System.out.println("Time trial Random");
 		double t1 = timing(random);
@@ -129,14 +110,8 @@ class RngFactoryTest {
 		double t2 = timing(xsRandom);
 		System.out.println("Time trial PCGRandom");
 		double t3 = timing(pcgRandom);
-		// > 2000% slower
-		// double t4 = timing(secureRandom);
-
 		System.out.println(("xsRandom is: " + (1 - t2 / t1) * 100) + " % faster than Java.util.Random");
 		System.out.println(("pcgRandom is: " + (1 - t3 / t1) * 100) + " % faster than Java.util.Random");
-		
-		// System.out.println(("SecureRandom is: "+(1-t4/t1)*100)+" % faster than
-		// Java.util.Random");
 	}
 
 
