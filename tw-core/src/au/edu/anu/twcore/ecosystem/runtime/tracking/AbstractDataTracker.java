@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.rvgrid.rendezvous.AbstractGridNode;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
@@ -84,6 +85,11 @@ public abstract class AbstractDataTracker<T,M>
 
 	@Override
 	public void updateTrackList() {
+		// do nothing - for descendants
+	}
+	
+	@Override
+	public void removeTrackedItem(SystemComponent wasTracked) {
 		// do nothing - for descendants
 	}
 	
