@@ -147,6 +147,13 @@ public class ComponentProcess
 	private void executeFunctions(CategorizedContainer<SystemComponent> container,
 		double t, double dt) {
 		for (SystemComponent focal:container.items()) {
+			// track component state
+			for (DataTracker0D tracker:tsTrackers) 
+				if (tracker.isTracked(focal)) {
+				tracker.recordItem(buildItemId(focal.id()));
+				tracker.record(currentStatus,focal.currentState());
+			}
+			// compute changes
 			if (focal.currentState() != null) { // otherwise no point computing changes!
 				focal.currentState().writeDisable();
 				focal.nextState().writeEnable();
@@ -200,6 +207,10 @@ public class ComponentProcess
 							// replacement of old component by new one.
 							container.removeItem(focal.id());
 							recruitContainer.addItem(newRecruit);
+							// remove from tracklist - safe, data sending has already been made
+							for (DataTracker0D tracker:tsTrackers) 
+								if (tracker.isTracked(focal))
+									tracker.removeTrackedItem(focal);
 							// CAUTION: this makes sure the new object takes the place of
 							// the former one in any graph it is part of.
 							// THIS WILL NOT WORK if there are edges to SystemFactory etc.
@@ -215,6 +226,10 @@ public class ComponentProcess
 				function.setFocalContext(focalContext);
 				if (function.delete(t, dt, focal)) {
 					container.removeItem(focal.id()); // safe - delayed removal
+					// remove from tracklist if dead - safe, data sending has already been made
+					for (DataTracker0D tracker:tsTrackers) 
+						if (tracker.isTracked(focal))
+							tracker.removeTrackedItem(focal);
 					// if present, spreads some values to other components 
 					// (e.g. "decomposition", or "erosion")
 					if (!function.getConsequences().isEmpty())
@@ -283,12 +298,6 @@ public class ComponentProcess
 						nbs.container.addItem(newBorn); // safe - delayed addition
 					}
 				}
-			}
-			// track component state
-			for (DataTracker0D tracker:tsTrackers) 
-				if (tracker.isTracked(focal)) {
-				tracker.recordItem(buildItemId(focal.id()));
-				tracker.record(currentStatus,focal.currentState());
 			}
 		}
 	}

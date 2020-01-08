@@ -125,9 +125,9 @@ public class FunctionNode
 			if (rngNode==null)
 				result.initRng(null);
 			else
-				result.initRng(rngNode.getInstance());
+				//  result.initRng(rngNode.getInstance());
 				// NB this may replace the previous later:
-				//	result.initRng(rngNode.getInstance(index));
+					result.initRng(rngNode.getInstance(index));
 			// add the consequences of the function, if any
 			// if my parent is a function, I am a consequence of it
 			if (getParent() instanceof FunctionNode) {

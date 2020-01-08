@@ -45,12 +45,13 @@ public abstract class DeleteOtherDecisionFunction extends AbstractDecisionFuncti
 
 	private List<ChangeOtherStateFunction> consequences = 
 			new LinkedList<ChangeOtherStateFunction>();
-	 
+
 	public abstract boolean delete(double t,	
 		double dt,	
 		SystemComponent focal, 
 		SystemComponent other);
 	
+	@Override
 	public final void addConsequence(TwFunction function) {
 		consequences.add((ChangeOtherStateFunction) function);
 	}

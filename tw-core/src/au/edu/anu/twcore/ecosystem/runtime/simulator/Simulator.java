@@ -14,6 +14,7 @@ import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
@@ -199,6 +200,9 @@ public class Simulator {
 					tm.advanceTime(lastTime);
 				i++;
 			}
+			// 5 advance age of ALL SystemComponents, including the not update ones.		
+			for (SystemComponent sc:community.allItems())
+				sc.autoVar().age(nexttime-sc.autoVar().birthDate());
 			// apply all changes to community
 			community.stepAll();
 			community.effectAllChanges();

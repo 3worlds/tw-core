@@ -44,6 +44,7 @@ import java.util.List;
  */
 public abstract class ChangeCategoryDecisionFunction extends TwFunctionAdapter {
 
+
 	private List<ChangeOtherStateFunction> consequences = new LinkedList<ChangeOtherStateFunction>();
 
 	/**
@@ -56,10 +57,12 @@ public abstract class ChangeCategoryDecisionFunction extends TwFunctionAdapter {
 	 */
 	public abstract String changeCategory(double t, double dt,	SystemComponent focal);
 
+	@Override
 	public void addConsequence(TwFunction function) {
 		consequences.add((ChangeOtherStateFunction) function);
 	}
 	
+	@Override
 	public List<ChangeOtherStateFunction> getConsequences() {
 		return consequences;
 	}

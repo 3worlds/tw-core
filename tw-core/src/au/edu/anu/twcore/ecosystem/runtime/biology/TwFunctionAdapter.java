@@ -28,7 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
@@ -37,6 +39,7 @@ import au.edu.anu.twcore.rngFactory.RngFactory;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * Ancestor for the class doing the user-defined computation
@@ -49,6 +52,8 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	private AbstractProcess myProcess = null;
 	protected HierarchicalContext focalContext = null;
 	Random rng = null;
+	TwFunctionTypes fType;
+	Set<TwFunctionTypes> csqTypes = new HashSet<>();
 
 	/**
 	 * constructor defining its own random number stream. It's a default stream with
@@ -56,10 +61,6 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	 */
 	public TwFunctionAdapter() {
 		super();
-		if (!RngFactory.exists("default 3wRNG"))
-			RngFactory.makeRandom("default 3wRNG", 0, RngResetType.never, 
-				RngSeedSourceType.secure, RngAlgType.Pcg32);
-		this.rng = RngFactory.getRandom("default 3wRNG");
 	}
 	
 	@Override
@@ -104,4 +105,5 @@ public abstract class TwFunctionAdapter implements TwFunction {
 			else this.rng = rng;
 		}
 	}
+	
 }

@@ -1,5 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime;
 
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.rvgrid.observer.Observable;
 import fr.ens.biologie.generic.Singleton;
@@ -57,5 +58,7 @@ public interface DataTracker<T,M> extends Observable<DataReceiver<T,M>>, Singlet
 	public boolean hasObservers();
 	
 	public void updateTrackList();
+	
+	public void removeTrackedItem(SystemComponent wasTracked);
 	
 }

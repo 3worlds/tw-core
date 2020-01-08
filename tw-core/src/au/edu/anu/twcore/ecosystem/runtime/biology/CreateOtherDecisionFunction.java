@@ -30,8 +30,6 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 
@@ -51,13 +49,6 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
     private List<RelateToDecisionFunction> RTfunctions = 
         	new LinkedList<RelateToDecisionFunction>();
 
-	/**
-	 * constructor defining its own randm number stream
-	 */
-	public CreateOtherDecisionFunction() {
-		super();
-	}
-    
     /**
      * 
      * @param t time
@@ -71,6 +62,7 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
 		SystemComponent focal,
 		String newType);
 	
+	@Override
 	public final void addConsequence(TwFunction function) {
 		if (ChangeOtherStateFunction.class.isAssignableFrom(function.getClass()))
 			COSfunctions.add((ChangeOtherStateFunction) function);

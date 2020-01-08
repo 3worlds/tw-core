@@ -35,12 +35,13 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-import fr.ens.biologie.generic.Singleton;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import au.edu.anu.twcore.InitialisableNode;
@@ -55,10 +56,16 @@ import au.edu.anu.twcore.rngFactory.RngFactory;
  *
  * @date 13 Dec 2019
  */
-public class RngNode extends InitialisableNode implements Singleton<Random>, Sealable {
+public class RngNode extends InitialisableNode implements LimitedEdition<Random>, Sealable {
 
+	private static char sep = ':';
 	private boolean sealed = false;
-	private Random rng = null;
+//	private Random rng = null;
+	private Map<Integer,Random> rngs = new HashMap<>();
+	private RngAlgType alg;
+	private RngSeedSourceType seedSrc;
+	private RngResetType reset;
+	private Integer tableIndex;
 
 	public RngNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -73,20 +80,10 @@ public class RngNode extends InitialisableNode implements Singleton<Random>, Sea
 		if (!sealed) {
 			super.initialise();
 			sealed = false;
-			RngAlgType alg = (RngAlgType) properties().getPropertyValue(P_RNGALG.key());
-			RngSeedSourceType seedSrc = (RngSeedSourceType) properties().getPropertyValue(P_RNGSEEDSOURCE.key());
-			RngResetType reset = (RngResetType) properties().getPropertyValue(P_RNGRESETIME.key());
-			Integer tableIndex = (Integer) properties().getPropertyValue(P_RNGTABLEINDEX.key());
-			String key = id();
-			// Note: This key is unique within the scope of the config. Thus the rng instance is guaranteed to be unique.
-			// 
-			if (RngFactory.exists(key))
-				rng = RngFactory.getRandom(key);
-			else {
-				RngFactory.makeRandom(key, tableIndex, reset, seedSrc, alg);
-				rng = RngFactory.getRandom(key);
-			}
-
+			alg = (RngAlgType) properties().getPropertyValue(P_RNGALG.key());
+			seedSrc = (RngSeedSourceType) properties().getPropertyValue(P_RNGSEEDSOURCE.key());
+			reset = (RngResetType) properties().getPropertyValue(P_RNGRESETIME.key());
+			tableIndex = (Integer) properties().getPropertyValue(P_RNGTABLEINDEX.key());
 			sealed = true;
 		}
 	}
@@ -105,10 +102,21 @@ public class RngNode extends InitialisableNode implements Singleton<Random>, Sea
 	}
 
 	@Override
-	public Random getInstance() {
+	public Random getInstance(int id) {
 		if (!sealed)
 			initialise();
-		return rng;
+		if (!rngs.containsKey(id)) {
+			String key = new StringBuilder().append(id()).append(sep).append(id).toString();
+			Random rng = null;
+			if (RngFactory.exists(key))
+				rng = RngFactory.getRandom(key);
+			else {
+				RngFactory.makeRandom(key, tableIndex, reset, seedSrc, alg);
+				rng = RngFactory.getRandom(key);
+			}
+			rngs.put(id,rng);
+		}
+		return rngs.get(id);
 	}
 
 	@Override

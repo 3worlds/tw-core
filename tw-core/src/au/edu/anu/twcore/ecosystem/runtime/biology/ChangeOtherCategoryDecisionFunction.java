@@ -44,7 +44,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
  */
 public abstract class ChangeOtherCategoryDecisionFunction extends TwFunctionAdapter {
 
-
 	private List<ChangeOtherStateFunction> consequences = new LinkedList<ChangeOtherStateFunction>();
 
 	public abstract String changeCategory(double t,	
@@ -52,6 +51,7 @@ public abstract class ChangeOtherCategoryDecisionFunction extends TwFunctionAdap
 		SystemComponent focal, 
 		SystemComponent other);
 	
+	@Override
 	public void addConsequence(TwFunction function) {
 		consequences.add((ChangeOtherStateFunction) function);
 	}
