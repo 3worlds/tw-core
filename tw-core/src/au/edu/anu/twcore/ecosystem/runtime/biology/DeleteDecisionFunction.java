@@ -56,6 +56,7 @@ public abstract class DeleteDecisionFunction extends AbstractDecisionFunction {
 		double dt,	
 		SystemComponent focal);
 
+	@Override
 	public void addConsequence(TwFunction function) {
 		consequences.add((ChangeOtherStateFunction) function);
 	}

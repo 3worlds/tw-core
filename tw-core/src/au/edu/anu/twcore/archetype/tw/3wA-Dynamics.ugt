@@ -103,7 +103,7 @@ hasNode processSpec
 
 hasNode functionSpec
 	isOfClass = String("function")
-	hasParent = StringTable(([2]"process:","process:/function:"))
+	hasParent = StringTable(([1]"process:"))
 	multiplicity = IntegerRange("0..*")
 	mustSatisfyQuery functionNameWithUppercaseQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
@@ -123,6 +123,30 @@ hasNode functionSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng")
 		multiplicity = IntegerRange("0..1")
+
+hasNode consequenceFunctionSpec
+	isOfClass = String("function")
+	hasParent = StringTable(([1]"process:/function:"))
+	multiplicity = IntegerRange("0..*")
+	mustSatisfyQuery functionNameWithUppercaseQuery
+		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
+	mustSatisfyQuery functionMatchesWithParentFunctionTypeSpec
+		className = String("au.edu.anu.twcore.archetype.tw.ConsequenceMatchFunctionTypeQuery")
+	hasProperty csqfunctionTypeSpec
+		hasName = String("type")
+		type = String("TwFunctionTypes")
+		multiplicity = IntegerRange("1..1")
+	hasProperty csquserFunctionSpec
+		hasName = String("userClassName")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+	// a function may have a node to a RNG. if none and one is required, default is used
+	// if more than one is needed, then make two functions.
+	hasEdge csqfunctionRngSpec
+		isOfClass = String("useRNG")
+		toNode = String("rng")
+		multiplicity = IntegerRange("0..1")
+		
 		
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")

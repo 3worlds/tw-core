@@ -28,11 +28,15 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime;
 
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
-
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
 /**
  * Ancestor for the class doing the user-defined computation
@@ -41,6 +45,9 @@ import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
  *
  */
 public interface TwFunction {
+	
+	static EnumMap<TwFunctionTypes,EnumSet<TwFunctionTypes>> ftypes = 
+		new EnumMap<TwFunctionTypes, EnumSet<TwFunctionTypes>>(TwFunctionTypes.class);
 	
 	/**
 	 * Connects a function to its process, only once (at construction time).
@@ -69,4 +76,25 @@ public interface TwFunction {
 	 * @param rng the random number generator
 	 */
 	public void initRng(Random rng);
+	
+	/**
+	 * Utility to find the proper consequences of every function type. Always returns a valid
+	 * iterable (sometimes empty).
+	 */
+	public static Collection<TwFunctionTypes> consequenceTypes(TwFunctionTypes func) {
+		if (ftypes.isEmpty()) {
+			ftypes.put(ChangeState,EnumSet.noneOf(TwFunctionTypes.class));
+			ftypes.put(ChangeCategoryDecision,EnumSet.of(ChangeOtherState));
+			ftypes.put(CreateOtherDecision,EnumSet.of(ChangeOtherState,ChangeState,RelateToDecision));
+			ftypes.put(DeleteDecision,EnumSet.of(ChangeOtherState));
+			ftypes.put(ChangeOtherState, EnumSet.noneOf(TwFunctionTypes.class));
+			ftypes.put(ChangeOtherCategoryDecision,EnumSet.of(ChangeOtherState));
+			ftypes.put(DeleteOtherDecision,EnumSet.of(ChangeOtherState));
+			ftypes.put(RelateToDecision, EnumSet.noneOf(TwFunctionTypes.class));
+			ftypes.put(MaintainRelationDecision, EnumSet.noneOf(TwFunctionTypes.class));
+			ftypes.put(ChangeRelationState, EnumSet.noneOf(TwFunctionTypes.class));
+		}
+		return ftypes.get(func);
+	}
+	
 }
