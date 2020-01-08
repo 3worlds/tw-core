@@ -36,6 +36,7 @@ import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
 import au.edu.anu.twcore.rngFactory.RngFactory;
+import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
@@ -48,7 +49,7 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
  *
  */
 public abstract class TwFunctionAdapter implements TwFunction {
-	
+
 	private AbstractProcess myProcess = null;
 	protected HierarchicalContext focalContext = null;
 	Random rng = null;
@@ -62,7 +63,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	public TwFunctionAdapter() {
 		super();
 	}
-	
+
 	@Override
 	// CAUTION: can be set only once
 	// this to prevent end-users to mess up with the internal code
@@ -70,9 +71,9 @@ public abstract class TwFunctionAdapter implements TwFunction {
 		if (myProcess == null)
 			myProcess = process;
 	}
-	
+
 	@Override
-	public final AbstractProcess process(){
+	public final AbstractProcess process() {
 		return myProcess;
 	}
 
@@ -90,20 +91,37 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	public final Random rng() {
 		return rng;
 	}
-	
+
+	private static final String defRngName = "default 3wRNG";
+
 	@Override
 	// CAUTION: can be set only once
 	// this to prevent end-users to mess up with the internal code
+
+	/*-
+	 * IDD: Nobody knows about this default rng so it can't be reset or stored in
+	 * any initial state file i.e it is unmanaged.
+	 * To avoid this, the edge to a RngNode must be 1..1 (or 1..*?)
+	 * To get and therefore save the state of the rng use gen.getState()
+	 * To set the state of an rng use gen.setStage(long state);
+	 * To reset use gen.reset(); or 
+	 * RngFactory,find(key).reset();
+	 * Since defRngName has RngResetType.never it can never be reset anyway
+	 */
 	public final void initRng(Random rng) {
 		if (this.rng == null) {
-			if (rng==null) {
-				if (!RngFactory.exists("default 3wRNG"))
-					RngFactory.makeRandom("default 3wRNG", 0, RngResetType.never, 
-						RngSeedSourceType.secure, RngAlgType.Pcg32);
-				this.rng = RngFactory.getRandom("default 3wRNG");
-			}
-			else this.rng = rng;
+			if (rng == null) {
+				Generator gen = RngFactory.find(defRngName);
+				if (gen != null)
+					this.rng = gen.getRandom();
+				else {
+					gen = RngFactory.newInstance(defRngName, 0, RngResetType.never, RngSeedSourceType.secure,
+							RngAlgType.Pcg32);
+					this.rng = gen.getRandom();
+				}
+			} else
+				this.rng = rng;
 		}
 	}
-	
+
 }

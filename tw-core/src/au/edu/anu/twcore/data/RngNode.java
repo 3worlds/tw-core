@@ -46,6 +46,7 @@ import java.util.Random;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.rngFactory.RngFactory;
+import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 
 /**
  * Class matching the "RngNode" node label in the 3Worlds configuration tree.
@@ -61,7 +62,7 @@ public class RngNode extends InitialisableNode implements LimitedEdition<Random>
 	private static char sep = ':';
 	private boolean sealed = false;
 //	private Random rng = null;
-	private Map<Integer,Random> rngs = new HashMap<>();
+	private Map<Integer, Random> rngs = new HashMap<>();
 	private RngAlgType alg;
 	private RngSeedSourceType seedSrc;
 	private RngResetType reset;
@@ -108,13 +109,19 @@ public class RngNode extends InitialisableNode implements LimitedEdition<Random>
 		if (!rngs.containsKey(id)) {
 			String key = new StringBuilder().append(id()).append(sep).append(id).toString();
 			Random rng = null;
-			if (RngFactory.exists(key))
-				rng = RngFactory.getRandom(key);
+			Generator gen = RngFactory.find(key);
+			if (gen != null)// should be an error otherwise this is sharing an rng with something else
+				rng = gen.getRandom();
 			else {
-				RngFactory.makeRandom(key, tableIndex, reset, seedSrc, alg);
-				rng = RngFactory.getRandom(key);
+				gen = RngFactory.newInstance(key, tableIndex, reset, seedSrc, alg);
+				rng = gen.getRandom();
 			}
-			rngs.put(id,rng);
+			rngs.put(id, rng);
+			/**
+			 * ok so we have duplicate management of uniqueness. To avoid this and relieve
+			 * the RngFactory of checking uniquness, other uses of the Factory must be
+			 * altered. cf dataTrackerD0 and TwFunctionAdapter.
+			 */
 		}
 		return rngs.get(id);
 	}

@@ -243,9 +243,9 @@ public class RngFactory {
 	 * @param key
 	 * @return
 	 */
-	public static boolean exists(String key) {
-		return rngs.containsKey(key);
-	}
+//	public static boolean exists(String key) {
+//		return rngs.containsKey(key);
+//	}
 
 	private static void reset(RngResetType type) {
 		rngs.entrySet().forEach(entry -> {
