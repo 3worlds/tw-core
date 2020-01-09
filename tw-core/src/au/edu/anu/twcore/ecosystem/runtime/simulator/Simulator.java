@@ -206,8 +206,8 @@ public class Simulator {
 			for (SystemComponent sc:community.allItems())
 				sc.autoVar().age(nexttime-sc.autoVar().birthDate());
 			// apply all changes to community
-			community.stepAll();
-			community.effectAllChanges();
+			community.effectAllChanges(); // must be done first -> removes dead ones and includes new ones
+			community.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
 			for (DataTracker<?,Metadata> tracker:trackers.keySet())
 				tracker.updateTrackList();
 //			

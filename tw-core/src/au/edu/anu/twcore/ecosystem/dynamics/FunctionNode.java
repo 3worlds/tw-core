@@ -125,21 +125,20 @@ public class FunctionNode
 			if (rngNode==null)
 				result.initRng(null);
 			else
-				//  result.initRng(rngNode.getInstance());
-				// NB this may replace the previous later:
-					result.initRng(rngNode.getInstance(index));
+				result.initRng(rngNode.getInstance(index));
 			// add the consequences of the function, if any
 			// if my parent is a function, I am a consequence of it
-			if (getParent() instanceof FunctionNode) {
-				FunctionNode parent = (FunctionNode) getParent();
-				parent.getInstance(index).addConsequence(result);
-			}
+//			if (getParent() instanceof FunctionNode) {
+//				FunctionNode parent = (FunctionNode) getParent();
+//				parent.getInstance(index).addConsequence(result);
+//			}
 			// if my children are functions, they are consequences of me
-			else for (TreeNode n:getChildren()) 
+//			else 
+			for (TreeNode n:getChildren()) 
 				if (n instanceof FunctionNode){
 					FunctionNode csq = (FunctionNode) n;
-					if (csq.isSealed())
-						result.addConsequence(csq.getInstance(index));
+//					if (csq.isSealed())
+					result.addConsequence(csq.getInstance(index));
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
