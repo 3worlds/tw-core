@@ -40,6 +40,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -86,6 +87,11 @@ public class SimulatorNode
 	private Map<Integer,Simulator> simulators = new HashMap<>();
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
+
+	// IDD temp code
+	public Collection<Simulator> getSimulators(){
+		return simulators.values();
+	}
 
 	public SimulatorNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -199,7 +205,7 @@ public class SimulatorNode
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		for (Simulator sim:simulators.values())
 			sim.addObserver(observer);
-		simulators.clear();
+		//simulators.clear(); IDD: what's going on here -no longer needed?
 	}
 
 	@Override

@@ -134,7 +134,9 @@ public class Simulator {
 		// copies initial community to current community to start properly
 		community.reset();
 	}
-	
+	public int id() {
+		return id;
+	}
 	private ReadOnlyPropertyList findTimerProps(List<TimeModel> timeModels,TwProcess p) {
 		for (TimeModel tm:timeModels)
 			for (TreeNode tn:tm.getChildren())
