@@ -252,6 +252,10 @@ hasNode dataTrackerSpec
 		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery")
 		edgeLabel1 = String("trackPopulation")
 		edgeLabel2 = StringTable(([3]"trackField","trackTable","trackComponent"))
+	mustSatisfyQuery ifComponentMustHaveEitherFieldOrTableEdge
+		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
+		edgeLabel1 = String("trackComponent")
+		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
 
 hasNode lifeCycleSpec
 	isOfClass = String("lifeCycle")
