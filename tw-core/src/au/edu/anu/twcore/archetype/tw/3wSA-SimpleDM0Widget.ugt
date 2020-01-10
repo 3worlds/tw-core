@@ -21,6 +21,6 @@ archetype 3wSA-SimpleDM0Widget
 			parentLabels = StringTable(([2]"tab", "container"))
 		hasEdge SimpleDM0WidgetDataTrackerEdgeSpec
 			isOfClass = String("trackSeries")
-			toNode = String("dataTracker")
+			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
 			

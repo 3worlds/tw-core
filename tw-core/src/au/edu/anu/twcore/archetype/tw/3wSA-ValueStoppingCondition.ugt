@@ -24,6 +24,6 @@ archetype 3wSA-ValueStoppingCondition
 			multiplicity = IntegerRange("1..1")
 		hasEdge ValueStoppingConditionSystemSpec
 			isOfClass = String("stopSystem")
-			toNode = String("component")
+			toNode = String("component:")
 			multiplicity = IntegerRange("1..1")
 		// TODO: add the constraint that the stopVariable exists in stopSystem and is of a numeric type

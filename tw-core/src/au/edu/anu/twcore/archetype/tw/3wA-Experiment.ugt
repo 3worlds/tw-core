@@ -111,7 +111,7 @@ hasNode dataSinkSpec
 		multiplicity = IntegerRange("1..1")
 	hasEdge dataSinkToDataTrackerEdgeSpec
 		isOfClass = String("source")
-		toNode = String("dataTracker")
+		toNode = String("dataTracker:")
 		multiplicity = IntegerRange("1..1")
 	// TODO: more is needed to really implement this (ie file format...)
 	

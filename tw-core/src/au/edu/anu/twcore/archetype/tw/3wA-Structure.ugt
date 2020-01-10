@@ -20,15 +20,15 @@ hasNode categorySpec
 	multiplicity = IntegerRange("1..*")
 	hasEdge edgeToDriversSpec
 		isOfClass = String("drivers")
-		toNode = String("record")
+		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
 	hasEdge edgeToDecoratorsSpec
 		isOfClass = String("decorators")
-		toNode = String("record")
+		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
 	hasEdge edgeToParametersSpec
 		isOfClass = String("parameters")
-		toNode = String("record")
+		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
 		
 hasNode componentTypeSpec
