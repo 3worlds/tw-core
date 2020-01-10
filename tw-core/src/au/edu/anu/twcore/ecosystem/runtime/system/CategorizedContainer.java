@@ -203,6 +203,9 @@ public abstract class CategorizedContainer<T extends Identity>
 		initialItems.add(item);
 	}
 
+	public Set<T> getInitialItems(){
+		return initialItems;
+	}
 	/**
 	 * Returns the set of categories ({@linkplain Category}) associated to this container. If this
 	 * container has variables and parameters, they are specified by these categories.
