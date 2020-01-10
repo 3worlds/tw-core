@@ -29,7 +29,10 @@
 
 package au.edu.anu.twcore.archetype.tw;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
@@ -77,7 +80,7 @@ public class PropertiesMatchDefinition extends Query {
 	public Query process(Object input) {
 		defaultProcess(input);
 		TreeGraphDataNode targetNode = (TreeGraphDataNode) input;
-		List<TreeGraphDataNode> defs = getDataDefs(targetNode, dataCategory);
+		Collection<TreeGraphDataNode> defs = getDataDefs(targetNode, dataCategory);
 		satisfied = true;
 		if (defs == null) {
 			msg = "No property definitions found.";
@@ -141,23 +144,29 @@ public class PropertiesMatchDefinition extends Query {
 	}
 
 	/* Public static - available for use by MM for matching purpose */
-	public static List<TreeGraphDataNode> getDataDefs(TreeGraphDataNode node, String dataCategory) {
+	@SuppressWarnings("unchecked")
+	public static Collection<TreeGraphDataNode> getDataDefs(TreeGraphDataNode node, String dataCategory) {
 		// can't allow exceptions to arise here if used from MM
 		TreeGraphDataNode parent = (TreeGraphDataNode) node.getParent();
 		if (parent == null)
 			return null;
 		TreeGraphDataNode ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
+			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
 		if (ct == null)
 			return null;
-		TreeGraphDataNode cat = (TreeGraphDataNode) get(ct.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_BELONGSTO.label())), endNode());
-		if (cat == null)
+//		TreeGraphDataNode cat = (TreeGraphDataNode) get(ct.edges(Direction.OUT),
+//			selectZeroOrOne(hasTheLabel(E_BELONGSTO.label())), endNode());
+		List<TreeGraphDataNode> cats = (List<TreeGraphDataNode>) get(ct.edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+		if (cats.isEmpty())
 			return null;
-		Record rootRecord = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(dataCategory)),
+		Set<TreeGraphDataNode> result = new HashSet<>();
+		for (TreeGraphDataNode cat:cats) {
+			Record rootRecord = (Record) get(cat.edges(Direction.OUT), 
+				selectZeroOrOne(hasTheLabel(dataCategory)),
 				endNode());
-		if (rootRecord == null)
-			return null;
-		return Record.getLeaves(rootRecord);
+			result.addAll(Record.getLeaves(rootRecord));
+		}
+		return result;
 	}
 }
