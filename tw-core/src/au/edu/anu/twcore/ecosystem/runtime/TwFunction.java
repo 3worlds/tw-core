@@ -76,6 +76,7 @@ public interface TwFunction {
 	 * @param rng the random number generator
 	 */
 	public void initRng(Random rng);
+	public void initRng(int index);
 	
 	/**
 	 * Utility to find the proper consequences of every function type. Always returns a valid

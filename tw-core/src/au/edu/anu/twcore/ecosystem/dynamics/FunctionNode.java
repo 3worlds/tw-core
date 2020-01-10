@@ -122,22 +122,15 @@ public class FunctionNode
 		TwFunction result = null;
 		try {
 			result = fConstructor.newInstance();
+			// attach a random number generator
 			if (rngNode==null)
-				result.initRng(null);
+				result.initRng(index);
 			else
 				result.initRng(rngNode.getInstance(index));
 			// add the consequences of the function, if any
-			// if my parent is a function, I am a consequence of it
-//			if (getParent() instanceof FunctionNode) {
-//				FunctionNode parent = (FunctionNode) getParent();
-//				parent.getInstance(index).addConsequence(result);
-//			}
-			// if my children are functions, they are consequences of me
-//			else 
 			for (TreeNode n:getChildren()) 
 				if (n instanceof FunctionNode){
 					FunctionNode csq = (FunctionNode) n;
-//					if (csq.isSealed())
 					result.addConsequence(csq.getInstance(index));
 			}
 		} catch (Exception e) {

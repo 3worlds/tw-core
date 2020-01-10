@@ -35,6 +35,7 @@ import java.util.Set;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
@@ -98,6 +99,12 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	// CAUTION: can be set only once
 	// this to prevent end-users to mess up with the internal code
 
+	public final void initRng(Random rng) {
+		if (rng == null)
+			throw new TwcoreException("valid random number generator expected");
+		this.rng = rng;
+	}
+	
 	/*-
 	 * IDD: Nobody knows about this default rng so it can't be reset or stored in
 	 * any initial state file i.e it is unmanaged.
@@ -108,19 +115,17 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	 * RngFactory,find(key).reset();
 	 * Since defRngName has RngResetType.never it can never be reset anyway
 	 */
-	public final void initRng(Random rng) {
-		if (this.rng == null) {
-			if (rng == null) {
-				Generator gen = RngFactory.find(defRngName);
-				if (gen != null)
-					this.rng = gen.getRandom();
-				else {
-					gen = RngFactory.newInstance(defRngName, 0, RngResetType.never, RngSeedSourceType.secure,
-							RngAlgType.Pcg32);
-					this.rng = gen.getRandom();
-				}
-			} else
-				this.rng = rng;
+	// JG: I guess the simulator should keep a handle to it? now there will be one per simulator.
+	public final void initRng(int index) {
+		if (rng == null) {
+			Generator gen = RngFactory.find(defRngName+":"+index);
+			if (gen != null)
+				this.rng = gen.getRandom();
+			else {
+				gen = RngFactory.newInstance(defRngName+":"+index, 0, RngResetType.never, 
+					RngSeedSourceType.secure,RngAlgType.Pcg32);
+				this.rng = gen.getRandom();
+			}
 		}
 	}
 
