@@ -61,7 +61,6 @@ public class Group
 		implements Sealable, LimitedEdition<SystemContainer> {
 
 	private boolean sealed = false;
-//	private TwData parameters = null;
 	private SystemContainer container = null;
 	
 	private Map<Integer,SystemContainer> groups = new HashMap<>();

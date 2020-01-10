@@ -286,7 +286,9 @@ public class LifeCycle
 	 * @return the container
 	 */
 	public SystemContainer makeContainer(int simId, String name) {
-		if (sealed) {
+		if (!sealed) 
+			initialise();
+//		else {
 			Map<String,SystemContainer> lsc = containers.get(simId);
 			if (lsc==null)
 				containers.put(simId,new HashMap<String,SystemContainer>());
@@ -303,7 +305,8 @@ public class LifeCycle
 				containers.get(simId).put(result.id(),result);
 			}
 			return result;
-		} else
-			throw new TwcoreException("attempt to access uninitialised data");
+//		} 
+//		else
+//			throw new TwcoreException("attempt to access uninitialised data");
 	}
 }

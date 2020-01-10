@@ -366,11 +366,7 @@ hasNode initialStateSpec
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
 	
-// set of values for a parameter set linked to a group of components or a life cycle	
-// NB: a group represents either a lifeCycle or just a group of components with the same parameters
-// when a group is a life cycle, then it MUST have a subgroup matching each of its
-// lifecycle categories
-// TODO: implement this constraint as a query
+// set of values for a parameter set linked to a group of components or a life cycle
 hasNode groupSpec
 	isOfClass = String("group")
 	hasParent = StringTable(([2]"initialState:","group:"))
@@ -391,6 +387,10 @@ hasNode groupSpec
 		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
 		nodeLabel1 = String("componentType")
 		nodeLabel2 = String("lifeCycle")
+	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
+		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
+	mustSatisfyQuery lifeCycleMustHaveNoComponents
+		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleNoComponentsQuery")
 	
 // initial state for an individual component 	
 hasNode componentSpec
