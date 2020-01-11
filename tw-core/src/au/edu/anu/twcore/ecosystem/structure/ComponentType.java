@@ -303,5 +303,9 @@ public class ComponentType
 			factories.put(id,makeFactory(id));
 		return factories.get(id);
 	}
+	
+	public Map<Integer,SystemFactory> getFactories(){
+		return factories;
+	}
 
 }
