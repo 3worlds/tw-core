@@ -51,42 +51,54 @@ import fr.ens.biologie.generic.Sealable;
 import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
 
 /**
- * <p>The class holding the SystemComponents (actually, any object with an id (class {@linkplain Identity})
- *  can be stored 
- * in such containers) at runtime, and responsible for their creation and deletion.</p>
- * <p>The rule is: all items (type {@code T}) contained in this class have the same data structure.
- * The data structure is defined by the categoryInfo field, which refers to a set of
- * categories which tell how data is associated to this container. These data consist in
- * constant values (parameters) and values varying with time (variables). Both are available
- * as ReadOnlyPropertyList in this class, since it's not its business to know how
- * to change the values.</p>
- * <p>A container can have <em>sub-containers</em>, so that they can be organized in a hierarchy.
+ * <p>
+ * The class holding the SystemComponents (actually, any object with an id
+ * (class {@linkplain Identity}) can be stored in such containers) at runtime,
+ * and responsible for their creation and deletion.
  * </p>
- * <p>This class is meant to be used at runtime in a time-synchronized way: changes (additions
- * and deletions) are only recorded, but not effected until the {@code effectChanges()} or
- * {@code effectAllChanges()} method is called.
- * </p> 
- * <p>This class is meant to hold a population of simulated items, starting with an initial
- * population that can be <em>reset</em> later, i.e. the whole container can revert to an
- * initial state.</p>
+ * <p>
+ * The rule is: all items (type {@code T}) contained in this class have the same
+ * data structure. The data structure is defined by the categoryInfo field,
+ * which refers to a set of categories which tell how data is associated to this
+ * container. These data consist in constant values (parameters) and values
+ * varying with time (variables). Both are available as ReadOnlyPropertyList in
+ * this class, since it's not its business to know how to change the values.
+ * </p>
+ * <p>
+ * A container can have <em>sub-containers</em>, so that they can be organized
+ * in a hierarchy.
+ * </p>
+ * <p>
+ * This class is meant to be used at runtime in a time-synchronized way: changes
+ * (additions and deletions) are only recorded, but not effected until the
+ * {@code effectChanges()} or {@code effectAllChanges()} method is called.
+ * </p>
+ * <p>
+ * This class is meant to hold a population of simulated items, starting with an
+ * initial population that can be <em>reset</em> later, i.e. the whole container
+ * can revert to an initial state.
+ * </p>
  * 
  * @author Jacques Gignoux - 1 juil. 2019
  *
  */
 // Tested OK with version 0.1.3 on 1/7/2019
-public abstract class CategorizedContainer<T extends Identity> 
-		implements Population, Identity, Resettable, Sealable {
+public abstract class CategorizedContainer<T extends Identity> implements Population, Identity, Resettable, Sealable {
 
 	// class-level constants
 	private static final IdentityScope scope = new LocalScope("3w-runtime-container");
 	private static final Set<String> props = new HashSet<String>();
 	private static final PropertyKeys propsPK;
-	static { 
-		props.add(COUNT.shortName());	props.add(NADDED.shortName());	props.add(NREMOVED.shortName());
-		props.add(TCOUNT.shortName()); 	props.add(TNADDED.shortName());	props.add(TNREMOVED.shortName());
+	static {
+		props.add(COUNT.shortName());
+		props.add(NADDED.shortName());
+		props.add(NREMOVED.shortName());
+		props.add(TCOUNT.shortName());
+		props.add(TNADDED.shortName());
+		props.add(TNREMOVED.shortName());
 		propsPK = new PropertyKeys(props);
 	}
-			
+
 	private boolean sealed = false;
 	// unique id for this container (matches the parameter set)
 	private Identity id = null;
@@ -97,23 +109,25 @@ public abstract class CategorizedContainer<T extends Identity>
 	// variables (unique, owned)
 	private TwData variables = null;
 	// items contained at this level (owned)
-	private Map<String,T> items = new HashMap<>();
+	private Map<String, T> items = new HashMap<>();
 	// items contained at lower levels
-	private Map<String,CategorizedContainer<T>> subContainers = new HashMap<>();
+	private Map<String, CategorizedContainer<T>> subContainers = new HashMap<>();
 	// my container, if any
 	private CategorizedContainer<T> superContainer = null;
 	// initial state
 	private Set<T> initialItems = new HashSet<>();
-	// a map of runtime item ids to initial items 
-	private Map<String,T> itemsToInitials = new HashMap<>();
+	// a map of runtime item ids to initial items
+	private Map<String, T> itemsToInitials = new HashMap<>();
 	// data for housework
 	private Set<String> itemsToRemove = new HashSet<>();
 	private Set<T> itemsToAdd = new HashSet<>();
+
 	// Population data
 	private class popData implements ReadOnlyPropertyList {
 		public int count = 0;
 		public int nAdded = 0;
 		public int nRemoved = 0;
+
 		@Override
 		public Object getPropertyValue(String key) {
 			if (key.equals(COUNT.shortName()))
@@ -130,33 +144,36 @@ public abstract class CategorizedContainer<T extends Identity>
 				return totalRemoved();
 			return null;
 		}
+
 		@Override
 		public boolean hasProperty(String key) {
-			if (key.equals(COUNT.shortName()) || 
-				key.equals(NADDED.shortName()) || 
-				key.equals(NREMOVED.shortName()))
+			if (key.equals(COUNT.shortName()) || key.equals(NADDED.shortName()) || key.equals(NREMOVED.shortName()))
 				return true;
 			return false;
 		}
+
 		@Override
 		public Set<String> getKeysAsSet() {
 			return props;
 		}
+
 		@Override
 		public int size() {
 			return 3;
 		}
+
 		@Override
 		public ReadOnlyPropertyList clone() {
 			SimplePropertyList pl = new SharedPropertyListImpl(propsPK);
 			pl.setProperties(this);
 			return pl;
 		}
+
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder(1024);
 			boolean first = true;
-			for (String key: props)
+			for (String key : props)
 				if (first) {
 					sb.append(key).append("=").append(getPropertyValue(key));
 					first = false;
@@ -165,82 +182,88 @@ public abstract class CategorizedContainer<T extends Identity>
 			return sb.toString();
 		}
 	}
+
 	private popData populationData = new popData();
-		
-	public CategorizedContainer(Categorized<T> cats, 
-			String proposedId,
-			CategorizedContainer<T> parent,
-			TwData parameters,
-			TwData variables) {
+
+	public CategorizedContainer(Categorized<T> cats, String proposedId, CategorizedContainer<T> parent,
+			TwData parameters, TwData variables) {
 		super();
 		categoryInfo = cats;
-		id = scope.newId(true,proposedId);
+		id = scope.newId(true, proposedId);
 		this.parameters = parameters;
 		this.variables = variables;
-		if (parent!=null) {
+		if (parent != null) {
 			superContainer = parent;
-			superContainer.subContainers.put(id(),this);
+			superContainer.subContainers.put(id(), this);
 		}
 	}
-	
+
 	// four ways to add items to the initialItems list
 	@SuppressWarnings("unchecked")
 	public void setInitialItems(T... items) {
 		initialItems.clear();
-		for (T item:items)
+		for (T item : items)
 			initialItems.add(item);
 	}
+
 	public void setInitialItems(Collection<T> items) {
 		initialItems.clear();
 		initialItems.addAll(items);
 	}
+
 	public void setInitialItems(Iterable<T> items) {
 		initialItems.clear();
-		for (T item:items)
+		for (T item : items)
 			initialItems.add(item);
 	}
+
 	public void addInitialItem(T item) {
 		initialItems.add(item);
 	}
 
-	public Set<T> getInitialItems(){
+	public Set<T> getInitialItems() {
 		return initialItems;
 	}
+
 	/**
-	 * Returns the set of categories ({@linkplain Category}) associated to this container. If this
-	 * container has variables and parameters, they are specified by these categories.
+	 * Returns the set of categories ({@linkplain Category}) associated to this
+	 * container. If this container has variables and parameters, they are specified
+	 * by these categories.
 	 * 
 	 * @return the object holding all the category information
 	 */
 	public Categorized<T> categoryInfo() {
 		return categoryInfo;
 	}
-	
+
 	/**
-	 * Returns the parameter set associated to this container. It is specified by the categories
-	 * associated to the container, accessible through the {@code categoryInfo()} method.
+	 * Returns the parameter set associated to this container. It is specified by
+	 * the categories associated to the container, accessible through the
+	 * {@code categoryInfo()} method.
 	 * 
 	 * @return the parameter set - may be {@code null}
 	 */
 	public TwData parameters() {
 		return parameters;
 	}
-	
+
 	/**
-	 * Returns the variables associated to this container. It is specified by the categories
-	 * associated to the container, accessible through the {@code categoryInfo()} method.
+	 * Returns the variables associated to this container. It is specified by the
+	 * categories associated to the container, accessible through the
+	 * {@code categoryInfo()} method.
 	 * 
 	 * @return the variables - may be {@code null}
 	 */
 	public TwData variables() {
 		return variables;
 	}
-	
+
 	/**
-	 * Returns the {@linkplain Population} data associated to this container. Population data 
-	 * are automatic variables added to any container (they include such things as number of
-	 * items, number of newly created and deleted items). Population data are computed internally
-	 * depending on the dynamics of the items stored in the container.
+	 * Returns the {@linkplain Population} data associated to this container.
+	 * Population data are automatic variables added to any container (they include
+	 * such things as number of items, number of newly created and deleted items).
+	 * Population data are computed internally depending on the dynamics of the
+	 * items stored in the container.
 	 * 
 	 * @return the population data as a read-only property list
 	 */
@@ -249,9 +272,10 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	/**
-	 * Tag an item for addition into this container's item list. The item will be effectively 
-	 * added only when {@code effectChanges()} or {@code effectAllChanges()} is called thereafter.
-	 * This enables one to keep the container state consistent over time in discrete time simulations.
+	 * Tag an item for addition into this container's item list. The item will be
+	 * effectively added only when {@code effectChanges()} or
+	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
+	 * container state consistent over time in discrete time simulations.
 	 * 
 	 * @param item the item to add
 	 */
@@ -260,19 +284,20 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	/**
-	 * Tag an item for removal from this container's item list. The item will be effectively 
-	 * removed only when {@code effectChanges()} or {@code effectAllChanges()} is called thereafter.
-	 * This enables one to keep the container state consistent over time in discrete time simulations.
+	 * Tag an item for removal from this container's item list. The item will be
+	 * effectively removed only when {@code effectChanges()} or
+	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
+	 * container state consistent over time in discrete time simulations.
 	 * 
 	 * @param id the id of the item to remove
 	 */
 	public void removeItem(String id) {
 		itemsToRemove.add(id);
 	}
-	
+
 	/**
-	 * Gets the item matching the id passed as argument. Only searches this container item list, not
-	 * those of the sub-containers.
+	 * Gets the item matching the id passed as argument. Only searches this
+	 * container item list, not those of the sub-containers.
 	 * 
 	 * @param id the id to search for
 	 * @return the matching item, {@code null} if not found
@@ -280,19 +305,20 @@ public abstract class CategorizedContainer<T extends Identity>
 	public T item(String id) {
 		return items.get(id);
 	}
-		
+
 	/**
-	 * Gets all items contained in this container only, without those contained in sub-containers.
+	 * Gets all items contained in this container only, without those contained in
+	 * sub-containers.
 	 * 
 	 * @return a read-only item list
 	 */
 	public Iterable<T> items() {
 		return items.values();
 	}
-	
+
 	/**
-	 * Gets the sub-container matching the id passed as an argument. Only searches this container
-	 * sub-container list, not those of its sub-containers.
+	 * Gets the sub-container matching the id passed as an argument. Only searches
+	 * this container sub-container list, not those of its sub-containers.
 	 * 
 	 * @param containerId the sub-container to search for
 	 * @return the matching sub-container, {@code null} if not found
@@ -300,106 +326,104 @@ public abstract class CategorizedContainer<T extends Identity>
 	public CategorizedContainer<T> subContainer(String containerId) {
 		return subContainers.get(containerId);
 	}
-	
+
 	// recursive
 	// TODO: test it ! seems to work
-	private CategorizedContainer<T> findContainer(String containerId, 
-		CategorizedContainer<T> container) {
+	private CategorizedContainer<T> findContainer(String containerId, CategorizedContainer<T> container) {
 		CategorizedContainer<T> result = container.subContainers.get(containerId);
-		if (result==null)
-			for (CategorizedContainer<T> c:container.subContainers.values()) {
-				result = findContainer(containerId,c);
-				if (result!=null)
+		if (result == null)
+			for (CategorizedContainer<T> c : container.subContainers.values()) {
+				result = findContainer(containerId, c);
+				if (result != null)
 					break;
-		}
+			}
 		return result;
 	}
-	
+
 	/**
-	 * Gets the sub-container matching the id passed as an argument. Searches this container
-	 * whole sub-container hierarchy, ie including all its sub-containers.
+	 * Gets the sub-container matching the id passed as an argument. Searches this
+	 * container whole sub-container hierarchy, ie including all its sub-containers.
 	 * 
 	 * @param containerId the sub-container to search for
 	 * @return the matching sub-container, {@code null} if not found
 	 */
 	public CategorizedContainer<T> findContainer(String containerId) {
-		return findContainer(containerId,this);
+		return findContainer(containerId, this);
 	}
-	
+
 	/**
-	 * Gets all sub-containers contained in this container only, without those contained 
-	 * in sub-containers.
+	 * Gets all sub-containers contained in this container only, without those
+	 * contained in sub-containers.
 	 * 
 	 * @return a read-only container list
 	 */
 	public Iterable<CategorizedContainer<T>> subContainers() {
 		return subContainers.values();
 	}
-	
+
 	// Recursive
-	private void addItems(QuickListOfLists<T> result,CategorizedContainer<T> container) {
+	private void addItems(QuickListOfLists<T> result, CategorizedContainer<T> container) {
 		result.addList(container.items());
-		for (CategorizedContainer<T> sc:container.subContainers.values())
-			addItems(result,sc);
+		for (CategorizedContainer<T> sc : container.subContainers.values())
+			addItems(result, sc);
 	}
-	
+
 	/**
-	 * Gets all items contained in this container, including those contained in sub-containers.
-	 * CAUTION: these items may belong to different categories, i.e. they may not store the same
-	 * sets of variables/parameters.
+	 * Gets all items contained in this container, including those contained in
+	 * sub-containers. CAUTION: these items may belong to different categories, i.e.
+	 * they may not store the same sets of variables/parameters.
 	 * 
 	 * @return a read-only list of items
 	 */
 	public Iterable<T> allItems() {
 		QuickListOfLists<T> l = new QuickListOfLists<T>();
-		addItems(l,this);
+		addItems(l, this);
 		return l;
 	}
 
 	// Recursive
-	private void addItems(QuickListOfLists<T> result,
-			CategorizedContainer<T> container,
-			Set<Category> requestedCats) {
+	private void addItems(QuickListOfLists<T> result, CategorizedContainer<T> container, Set<Category> requestedCats) {
 		if (container.categoryInfo().belongsTo(requestedCats))
 			result.addList(container.items());
-		for (CategorizedContainer<T> sc:container.subContainers.values())
-			addItems(result,sc);
+		for (CategorizedContainer<T> sc : container.subContainers.values())
+			addItems(result, sc);
 	}
 
 	/**
-	 * Gets all items matching a particular category signature. Searches the whole sub-container
-	 * hierarchy.
+	 * Gets all items matching a particular category signature. Searches the whole
+	 * sub-container hierarchy.
 	 * 
 	 * @param requestedCats the required categories
 	 * @return a read-only list of items
 	 */
 	public Iterable<T> allItems(Set<Category> requestedCats) {
 		QuickListOfLists<T> l = new QuickListOfLists<T>();
-		addItems(l,this,requestedCats);
+		addItems(l, this, requestedCats);
 		return l;
 	}
 
 	/**
-	 * Effectively remove <em>and</em> add items from the container lists (before a call to this method, they are
-	 * just stored into {@code itemsToRemove} and {@code itemsToAdd}). NB: to recursively effect changes
-	 * for all sub-containers, use {@code effectAllChanges()}.
+	 * Effectively remove <em>and</em> add items from the container lists (before a
+	 * call to this method, they are just stored into {@code itemsToRemove} and
+	 * {@code itemsToAdd}). NB: to recursively effect changes for all
+	 * sub-containers, use {@code effectAllChanges()}.
 	 */
 	public void effectChanges() {
-		for (String id:itemsToRemove)
-			if (items.remove(id)!=null) {
+		for (String id : itemsToRemove)
+			if (items.remove(id) != null) {
 				populationData.count--;
 				populationData.nRemoved++;
 				itemsToInitials.remove(id);
-		}
+			}
 		itemsToRemove.clear();
-		for (T item:itemsToAdd)
-			if (items.put(item.id(),item)==null) {
+		for (T item : itemsToAdd)
+			if (items.put(item.id(), item) == null) {
 				populationData.count++;
 				populationData.nAdded++;
-		}
+			}
 		itemsToAdd.clear();
 	}
-	
+
 	public boolean contains(T item) {
 		return items.values().contains(item);
 	}
@@ -407,13 +431,14 @@ public abstract class CategorizedContainer<T extends Identity>
 	public boolean contains(String item) {
 		return items.keySet().contains(item);
 	}
-	
+
 	public boolean containsInitialItem(T item) {
 		return initialItems.contains(item);
 	}
 
 	/**
-	 * Returns the initial item from which an item is a copy, null if it's not a copy.
+	 * Returns the initial item from which an item is a copy, null if it's not a
+	 * copy.
 	 * 
 	 * @param item
 	 * @return
@@ -423,54 +448,57 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	/**
-	 * Effectively remove <em>and</em> add items from the container lists and from <em>all</em> its 
-	 * sub-containers (before a call to this method, items are
-	 * just stored into {@code itemsToRemove} and {@code itemsToAdd})
+	 * Effectively remove <em>and</em> add items from the container lists and from
+	 * <em>all</em> its sub-containers (before a call to this method, items are just
+	 * stored into {@code itemsToRemove} and {@code itemsToAdd})
 	 */
 	// Recursive
 	public void effectAllChanges() {
 		effectChanges();
-		for (CategorizedContainer<T> c:subContainers())
+		for (CategorizedContainer<T> c : subContainers())
 			c.effectAllChanges();
 	}
-	
-	private int totalCount(CategorizedContainer<T> container,int cumulator) {
+
+	private int totalCount(CategorizedContainer<T> container, int cumulator) {
 		cumulator += container.populationData.count;
-		for (CategorizedContainer<T> subc:container.subContainers.values())
-			cumulator += totalCount(subc,cumulator);
+		for (CategorizedContainer<T> subc : container.subContainers.values())
+			cumulator += totalCount(subc, cumulator);
 		return cumulator;
 	}
-	/** counts the total number of items, including those of subContainers  */
+
+	/** counts the total number of items, including those of subContainers */
 	public int totalCount() {
-		return totalCount(this,0);
+		return totalCount(this, 0);
 	}
-	
-	private int totalAdded(CategorizedContainer<T> container,int cumulator) {
+
+	private int totalAdded(CategorizedContainer<T> container, int cumulator) {
 		cumulator += container.populationData.nAdded;
-		for (CategorizedContainer<T> subc:container.subContainers.values())
-			cumulator += totalCount(subc,cumulator);
+		for (CategorizedContainer<T> subc : container.subContainers.values())
+			cumulator += totalCount(subc, cumulator);
 		return cumulator;
 	}
-	/** counts the total number of added items, including those of subContainers  */
+
+	/** counts the total number of added items, including those of subContainers */
 	public int totalAdded() {
-		return totalAdded(this,0);
+		return totalAdded(this, 0);
 	}
-	
-	private int totalRemoved(CategorizedContainer<T> container,int cumulator) {
+
+	private int totalRemoved(CategorizedContainer<T> container, int cumulator) {
 		cumulator += container.populationData.nRemoved;
-		for (CategorizedContainer<T> subc:container.subContainers.values())
-			cumulator += totalCount(subc,cumulator);
+		for (CategorizedContainer<T> subc : container.subContainers.values())
+			cumulator += totalCount(subc, cumulator);
 		return cumulator;
 	}
-	/** counts the total number of added items, including those of subContainers  */
+
+	/** counts the total number of added items, including those of subContainers */
 	public int totalRemoved() {
-		return totalRemoved(this,0);
+		return totalRemoved(this, 0);
 	}
-	
+
 	public int depth() {
 		int result = 0;
 		CategorizedContainer<?> superC = this;
-		while (superC!=null) {
+		while (superC != null) {
 			result++;
 			superC = superC.superContainer;
 		}
@@ -478,7 +506,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	// Population methods
-	
+
 	@Override
 	public int count() {
 		return populationData.count;
@@ -500,7 +528,7 @@ public abstract class CategorizedContainer<T extends Identity>
 		populationData.nAdded = 0;
 		populationData.nRemoved = 0;
 	}
-	
+
 	// Identity methods
 
 	@Override
@@ -514,7 +542,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	// Resettable methods
-	
+
 	// NB: Recursive on sub-containers
 	@Override
 	public void reset() {
@@ -522,16 +550,16 @@ public abstract class CategorizedContainer<T extends Identity>
 		itemsToRemove.clear();
 		itemsToAdd.clear();
 		itemsToInitials.clear();
-		for (T item:initialItems) {
+		for (T item : initialItems) {
 			T c = cloneItem(item);
-			items.put(c.id(),c);
-			itemsToInitials.put(c.id(),item);
+			items.put(c.id(), c);
+			itemsToInitials.put(c.id(), item);
 		}
 		resetCounters();
-		for (CategorizedContainer<T> sc:subContainers.values())
+		for (CategorizedContainer<T> sc : subContainers.values())
 			sc.reset();
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -539,21 +567,27 @@ public abstract class CategorizedContainer<T extends Identity>
 		sb.append("container:");
 		sb.append(id().toString());
 		sb.append('[');
-		if (categoryInfo.categories()!=null) {
-			if (first) first = false;
-			else sb.append(' ');
+		if (categoryInfo.categories() != null) {
+			if (first)
+				first = false;
+			else
+				sb.append(' ');
 			sb.append("categories:");
 			sb.append(categoryInfo.categories().toString());
 		}
-		if (parameters!=null)  {
-			if (first) first = false;
-			else sb.append(' ');
+		if (parameters != null) {
+			if (first)
+				first = false;
+			else
+				sb.append(' ');
 			sb.append("parameters:(");
 			sb.append(parameters.toString());
 			sb.append(')');
 		}
-		if (first) first = false;
-		else sb.append(' ');
+		if (first)
+			first = false;
+		else
+			sb.append(' ');
 		sb.append("variables:(");
 		sb.append(populationData.toString());
 		sb.append(')');
@@ -565,7 +599,7 @@ public abstract class CategorizedContainer<T extends Identity>
 			sb.append(" local_items:");
 			sb.append(items.toString());
 		}
-		if (superContainer!=null) {
+		if (superContainer != null) {
 			sb.append(" super_container:");
 			sb.append(superContainer.id());
 		}
@@ -576,7 +610,7 @@ public abstract class CategorizedContainer<T extends Identity>
 		sb.append(']');
 		return sb.toString();
 	}
-	
+
 	@Override
 	public Sealable seal() {
 		sealed = true;
@@ -587,8 +621,24 @@ public abstract class CategorizedContainer<T extends Identity>
 	public boolean isSealed() {
 		return sealed;
 	}
-	
-	// NB two methods must be overriden in descendants: clone(item) and newInstance();
+
+	// NB two methods must be overriden in descendants: clone(item) and
+	// newInstance();
 	protected abstract T cloneItem(T item);
+
+	/**Recursively removes all items and clears variables and population data*/
+	public void clearState() {
+		clearState(this);
+	}
+
 	
+	private  void clearState(CategorizedContainer<T> container) {
+		for (CategorizedContainer<T> child : container.subContainers()) 
+			clearState(child);	
+		for (T item:container.items()) 
+			removeItem(item.id());	
+		container.effectAllChanges();
+		container.variables.clear();
+		container.populationData().clear();
+	}
 }
