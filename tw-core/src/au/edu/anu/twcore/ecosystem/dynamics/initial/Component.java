@@ -113,11 +113,14 @@ public class Component
 		if (!sealed)
 			initialise();
 		if (!individuals.containsKey(id)) {
+			// instantiate component
 			SystemComponent sc = componentFactory.getInstance(id).newInstance();
+			// fill component with initial values
 			for (TreeNode tn:getChildren())
 				if (tn instanceof VariableValues)
 					((VariableValues)tn).fill(sc.currentState());
 			// TODO: workout the particular case when an individual has parameters
+			// insert component into container
 			LimitedEdition<SystemContainer> p = (LimitedEdition<SystemContainer>) getParent();
 			if (sc.membership().categories().equals(p.getInstance(id).categoryInfo().categories()))
 				p.getInstance(id).addInitialItem(sc);

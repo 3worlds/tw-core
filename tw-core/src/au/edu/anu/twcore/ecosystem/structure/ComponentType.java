@@ -30,8 +30,6 @@ package au.edu.anu.twcore.ecosystem.structure;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
@@ -52,10 +50,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -254,29 +250,17 @@ public class ComponentType
 	 * @param name
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public SystemContainer makeContainer(int index,String name) {
+	public SystemContainer makeContainer(int index,String name, SystemContainer parent) {
 		if (sealed) {
 			Map<String,SystemContainer> lsc = containers.get(index);
 			if (lsc==null)
 				containers.put(index,new HashMap<>());
 			SystemContainer result = containers.get(index).get(name);
 			if (result==null) {
-				Ecosystem ec = (Ecosystem)getParent().getParent();
-				Collection<LifeCycle> lcl = (Collection<LifeCycle>) get(ec.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_LIFECYCLE.label())));
-				SystemContainer sc = null;
-				for (LifeCycle lc:lcl) {
-					sc = lc.container(index,name);
-					if (sc!=null)
-						break;
-				}
-				if (sc==null)
-					sc = ec.getInstance(index);
 				if (parameterTemplate!=null)
-					result = new SystemContainer(getInstance(index), name, sc, parameterTemplate.clone(), null);
+					result = new SystemContainer(getInstance(index), name, parent, parameterTemplate.clone(), null);
 				else
-					result = new SystemContainer(getInstance(index), name, sc, null, null);
+					result = new SystemContainer(getInstance(index), name, parent, null, null);
 				if (!result.id().equals(name))
 					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
 				containers.get(index).put(result.id(),result);

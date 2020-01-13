@@ -680,7 +680,6 @@ public class TimeUtil {
 		return lowerTo + frac;
 	}
 
-	@SuppressWarnings("unused")
 	private static void testConversions(TimeScaleType tst) {
 		long startTime = 0L;
 		LocalDateTime timeOrigin = longToDate(startTime, TimeUnits.MILLISECOND);

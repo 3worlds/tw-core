@@ -203,8 +203,11 @@ public class Simulator {
 				i++;
 			}
 			// 5 advance age of ALL SystemComponents, including the not update ones.		
-			for (SystemComponent sc:community.allItems())
+			for (SystemComponent sc:community.allItems()) {
+				sc.autoVar().writeEnable();
 				sc.autoVar().age(nexttime-sc.autoVar().birthDate());
+				sc.autoVar().writeDisable();
+			}
 			// apply all changes to community
 			community.effectAllChanges(); // must be done first -> removes dead ones and includes new ones
 			community.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly

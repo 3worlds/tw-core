@@ -54,7 +54,6 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
@@ -285,28 +284,22 @@ public class LifeCycle
 	 * @param name the name of the container
 	 * @return the container
 	 */
-	public SystemContainer makeContainer(int simId, String name) {
+	public SystemContainer makeContainer(int simId, String name, SystemContainer parent) {
 		if (!sealed) 
 			initialise();
-//		else {
-			Map<String,SystemContainer> lsc = containers.get(simId);
-			if (lsc==null)
-				containers.put(simId,new HashMap<String,SystemContainer>());
-			SystemContainer result = containers.get(simId).get(name);
-			if (result==null) {
-				// get the parent container - for a lifeCycle, it's the ecosystem
-				SystemContainer sc = ((Ecosystem)getParent().getParent()).getInstance(simId);
-				if (parameterTemplate!=null)
-					result = new SystemContainer(this,name,sc,parameterTemplate.clone(),null);
-				else
-					result = new SystemContainer(this,name,sc,null,null);
-				if (!result.id().equals(name))
-					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
-				containers.get(simId).put(result.id(),result);
-			}
-			return result;
-//		} 
-//		else
-//			throw new TwcoreException("attempt to access uninitialised data");
+		Map<String,SystemContainer> lsc = containers.get(simId);
+		if (lsc==null)
+			containers.put(simId,new HashMap<String,SystemContainer>());
+		SystemContainer result = containers.get(simId).get(name);
+		if (result==null) {
+			if (parameterTemplate!=null)
+				result = new SystemContainer(this,name,parent,parameterTemplate.clone(),null);
+			else
+				result = new SystemContainer(this,name,parent,null,null);
+			if (!result.id().equals(name))
+				log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
+			containers.get(simId).put(result.id(),result);
+		}
+		return result;
 	}
 }

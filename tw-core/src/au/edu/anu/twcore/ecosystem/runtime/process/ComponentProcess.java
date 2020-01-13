@@ -104,40 +104,35 @@ public class ComponentProcess
 	// recursive loop on all sub containers of the community
 	private void loop(CategorizedContainer<SystemComponent> container,
 		double t, double dt) {
-		if (container.categoryInfo().belongsTo(focalCategories)) {
-			if (container.categoryInfo() instanceof LifeCycle) {
-				focalContext.lifeCycleParameters = container.parameters();
-				focalContext.lifeCycleVariables = container.variables();
-				focalContext.lifeCyclePopulationData = container.populationData();
-				focalContext.lifeCycleName = container.id();
-				lifeCycle = (LifeCycle) container.categoryInfo();
-				lifeCycleContainer = (SystemContainer) container;
-			}
-			else if (container.categoryInfo() instanceof Ecosystem) {
-				focalContext.ecosystemParameters = container.parameters();
-				focalContext.ecosystemVariables = container.variables();
-				focalContext.ecosystemPopulationData = container.populationData();
-				focalContext.ecosystemName = container.id();
-//				ecosystem = (Ecosystem) container.categoryInfo();
-//				ecosystemContainer = (SystemContainer) container;
-			}
-			else if (container.categoryInfo() instanceof SystemFactory) {
+		if (container.categoryInfo() instanceof Ecosystem) {
+			focalContext.ecosystemParameters = container.parameters();
+			focalContext.ecosystemVariables = container.variables();
+			focalContext.ecosystemPopulationData = container.populationData();
+			focalContext.ecosystemName = container.id();
+		}
+		else if (container.categoryInfo() instanceof LifeCycle) {
+			focalContext.lifeCycleParameters = container.parameters();
+			focalContext.lifeCycleVariables = container.variables();
+			focalContext.lifeCyclePopulationData = container.populationData();
+			focalContext.lifeCycleName = container.id();
+			lifeCycle = (LifeCycle) container.categoryInfo();
+			lifeCycleContainer = (SystemContainer) container;
+		}
+		else if (container.categoryInfo() instanceof SystemFactory) 
+			if (container.categoryInfo().belongsTo(focalCategories)) {
 				focalContext.groupParameters = container.parameters();
 				focalContext.groupVariables = container.variables();
 				focalContext.groupPopulationData = container.populationData();
 				focalContext.groupName = container.id();
 				group = (SystemFactory) container.categoryInfo();
-//				groupContainer = (SystemContainer) container;
-				
-			}
-			executeFunctions(container,t,dt);
-			// track group state
-			for (DataTracker0D tracker:tsTrackers)
-				if (tracker.isTracked(container)) {
-					tracker.recordItem(buildItemId(null));
-					tracker.record(currentStatus,container.populationData());
-			}
-			focalContext.clear();
+				executeFunctions(container,t,dt);
+				// track group state
+				for (DataTracker0D tracker:tsTrackers)
+					if (tracker.isTracked(container)) {
+						tracker.recordItem(buildItemId(null));
+						tracker.record(currentStatus,container.populationData());
+				}
+				focalContext.clear();
 		}
 		for (CategorizedContainer<SystemComponent> subc:container.subContainers())
 			loop(subc,t,dt);

@@ -34,8 +34,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -81,33 +81,10 @@ public class Group
 	public void initialise() {
 		super.initialise();
 		sealed = false;
-//		Node n = (Node) get(edges(Direction.OUT),
-//			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
-//			endNode());
-//		if (n!=null) {
-//			SystemFactory sf = (SystemFactory) n;
-//			container = sf.makeContainer(id());
-//			parameters = container.parameters();
-//		}
-//		n = (Node) get(edges(Direction.OUT),
-//			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
-//			endNode());
-//		if (n!=null) {
-//			LifeCycle lc = (LifeCycle) n;
-//			container = lc.makeContainer(id());
-//			parameters = container.parameters();
-//		}
+		// ...
 		sealed = true;
 	}
 	
-//	@Override
-//	public TwData getParameters() {
-//		if (sealed)
-//			return parameters;
-//		else
-//			throw new TwcoreException("attempt to access uninitialised data");
-//	}
-
 	// this to call groups in proper dependency order, i.e. higher groups must be initialised first
 	private int initRank(Group g, int rank) {
 		if (g.getParent() instanceof Group)
@@ -130,31 +107,39 @@ public class Group
 	public boolean isSealed() {
 		return sealed;
 	}
-
-//	@Override
-//	public SystemContainer container() {
-//		if (sealed)
-//			return container;
-//		else
-//			throw new TwcoreException("attempt to access uninitialised data");
-//	}
 	
 	private SystemContainer makeContainer(int index) {
-		Node n = (Node) get(edges(Direction.OUT),
+		// 1 leaf group
+		TreeGraphNode n = (TreeGraphNode) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
 			endNode());
 		if (n!=null) {
+			// make sure parent container exists before
+			SystemContainer parentC = null;
+			if (getParent() instanceof Group)
+				parentC = ((Group)getParent()).getInstance(index);
+			else if (getParent() instanceof InitialState)
+				parentC = ((InitialState)getParent()).getInstance(index);
+			// instantiate container
 			ComponentType sf = (ComponentType) n;
 			sf.initialise();
-			container = sf.makeContainer(index,id());
+			container = sf.makeContainer(index,id(),parentC);
 		}
-		n = (Node) get(edges(Direction.OUT),
+		// 2 life cycle group
+		n = (TreeGraphNode) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
 			endNode());
 		if (n!=null) {
+			// make sure parent container exists before
+			SystemContainer parentC = null;
+			if (getParent() instanceof InitialState)
+				parentC = ((InitialState)getParent()).getInstance(index);
+			// instantiate container
 			LifeCycle lc = (LifeCycle) n;
-			container = lc.makeContainer(index,id());
+			lc.initialise();
+			container = lc.makeContainer(index,id(),parentC);
 		}
+		// fill container with initial values
 		for (TreeNode tn:getChildren())
 			if (tn instanceof ParameterValues)
 				((ParameterValues) tn).fill(container.parameters());

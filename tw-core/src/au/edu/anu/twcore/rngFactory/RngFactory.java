@@ -247,12 +247,12 @@ public class RngFactory {
 //		return rngs.containsKey(key);
 //	}
 
-	private static void reset(RngResetType type) {
-		rngs.entrySet().forEach(entry -> {
-			Generator rng = entry.getValue();
-			if (rng.resetType.equals(type))
-				rng.reset();
-		});
-	}
+//	private static void reset(RngResetType type) {
+//		rngs.entrySet().forEach(entry -> {
+//			Generator rng = entry.getValue();
+//			if (rng.resetType.equals(type))
+//				rng.reset();
+//		});
+//	}
 
 }

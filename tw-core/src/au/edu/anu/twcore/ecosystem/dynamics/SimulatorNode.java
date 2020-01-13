@@ -169,6 +169,7 @@ public class SimulatorNode
 	
 	@SuppressWarnings("unchecked")
 	private void scanSubGroups(Group group,int index) {
+		group.getInstance(index);
 		List<Component> li = (List<Component>) get(group.getChildren(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
 		for (Component i:li)
