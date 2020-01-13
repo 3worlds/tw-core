@@ -33,6 +33,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALGraphFactory;
+import fr.cnrs.iees.identity.impl.IntegerScope;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.Factory;
 import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentPropertyListImpl.*;
@@ -57,7 +58,7 @@ public class SystemFactory
 		Map<String,String> labels = new HashMap<>();
 		labels.put("component", SystemComponent.class.getName());
 		labels.put("relation", SystemRelation.class.getName());
-		SCfactory = new ALGraphFactory("3w",labels);
+		SCfactory = new ALGraphFactory(new IntegerScope("3w"),labels);
 	}
 	
 	private SortedSet<Category> categories = new TreeSet<>();
