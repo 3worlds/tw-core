@@ -33,47 +33,75 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
- * A container for SystemComponents 
+ * A container for SystemComponents
+ * 
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
 public class SystemContainer extends CategorizedContainer<SystemComponent> {
-	
-	public SystemContainer(Categorized<SystemComponent> cats, 
-			String proposedId, 
-			SystemContainer parent,
-			TwData parameters,
-			TwData variables) {
-		super(cats,proposedId,parent,parameters,variables);
+
+	public SystemContainer(Categorized<SystemComponent> cats, String proposedId, SystemContainer parent,
+			TwData parameters, TwData variables) {
+		super(cats, proposedId, parent, parameters, variables);
 	}
 
 	@Override
 	public final SystemComponent cloneItem(SystemComponent item) {
 		return item.clone();
 	}
-	
+
 	/**
 	 * Advances state of all SystemComponents contained in this container only.
 	 */
 	public void step() {
-		for (SystemComponent sc:items())
+		for (SystemComponent sc : items())
 			sc.stepForward();
 	}
-	
+
 	/**
-	 * Advances state of all SystemComponents contained in this container and its sub-containers
-	 * (recursive).
+	 * Advances state of all SystemComponents contained in this container and its
+	 * sub-containers (recursive).
 	 */
 	public void stepAll() {
 		step();
-		for (CategorizedContainer<SystemComponent> sc:subContainers())
-			((SystemContainer)sc).stepAll();
+		for (CategorizedContainer<SystemComponent> sc : subContainers())
+			((SystemContainer) sc).stepAll();
 	}
 
 	@Override
 	public void rename(String oldId, String newId) {
-		throw new TwcoreException ("Renaming of '"+this.getClass().getSimpleName()+"' is not implemented.");
-		
+		throw new TwcoreException("Renaming of '" + this.getClass().getSimpleName() + "' is not implemented.");
+	}
+
+	/**
+	 * Recursively clears all container items and variables (if any). Used in
+	 * loading new model states with ModelRunner.
+	 */
+	public void clearState() {
+		clearState(this);
+	}
+
+	// best if static to avoid errors
+	private static void clearState(CategorizedContainer<SystemComponent> parentContainer) {
+		for (CategorizedContainer<SystemComponent> childContainer : parentContainer.subContainers())
+			clearState(childContainer);
+		for (SystemComponent item : parentContainer.items())
+			parentContainer.removeItem(item.id());
+		// effectAllChanges() is recursive so don't use here.
+		parentContainer.effectChanges();// counters are handled here
+		if (parentContainer.variables() != null) {
+			/**
+			 * TODO not tested yet. I assume it's readOnly until executing Twfunctions. If
+			 * so replace with writeEnable()/writeDisable() without testing.
+			 */
+			boolean readOnly = parentContainer.variables().isReadOnly();
+			if (readOnly)
+				parentContainer.variables().writeEnable();
+			parentContainer.variables().clear();
+			if (readOnly)
+				parentContainer.variables().writeDisable();
+		}
+
 	}
 
 }

@@ -622,23 +622,8 @@ public abstract class CategorizedContainer<T extends Identity> implements Popula
 		return sealed;
 	}
 
-	// NB two methods must be overriden in descendants: clone(item) and
+	// NB two methods must be overridden in descendants: clone(item) and
 	// newInstance();
 	protected abstract T cloneItem(T item);
 
-	/**Recursively removes all items and clears variables and population data*/
-	public void clearState() {
-		clearState(this);
-	}
-
-	
-	private  void clearState(CategorizedContainer<T> container) {
-		for (CategorizedContainer<T> child : container.subContainers()) 
-			clearState(child);	
-		for (T item:container.items()) 
-			removeItem(item.id());	
-		container.effectAllChanges();
-		container.variables.clear();
-		container.populationData().clear();
-	}
 }
