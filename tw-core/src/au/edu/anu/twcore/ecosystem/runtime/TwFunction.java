@@ -63,6 +63,8 @@ public interface TwFunction {
 	
 	public void setFocalContext(HierarchicalContext context);
 	
+	public void setOtherContext(HierarchicalContext context);
+	
 	public default List<? extends TwFunction> getConsequences() {
 		return null;
 	}

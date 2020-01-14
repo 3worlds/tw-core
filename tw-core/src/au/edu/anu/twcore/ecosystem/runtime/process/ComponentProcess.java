@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
+import static au.edu.anu.twcore.ecosystem.structure.RelationType.predefinedRelationTypes.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,7 +83,6 @@ public class ComponentProcess
 	private List<ChangeStateFunction> CSfunctions = new LinkedList<ChangeStateFunction>();
 	private List<DeleteDecisionFunction> Dfunctions = new LinkedList<DeleteDecisionFunction>();
 	private List<CreateOtherDecisionFunction> COfunctions = new LinkedList<CreateOtherDecisionFunction>();
-//	private List<AggregatorFunction> Afunctions = new LinkedList<AggregatorFunction>();
 	
 	// local variables for looping
 	private HierarchicalContext focalContext = new HierarchicalContext();
@@ -196,6 +196,12 @@ public class ComponentProcess
 							newRecruit.autoVar().writeDisable();
 							// user-defined carry-overs
 							for (ChangeOtherStateFunction func : function.getConsequences()) {
+								HierarchicalContext otherContext = new HierarchicalContext();
+								otherContext.groupParameters = recruitContainer.parameters();
+								otherContext.groupVariables = recruitContainer.variables();
+								otherContext.groupPopulationData = recruitContainer.populationData();
+								otherContext.groupName = recruitContainer.id();
+								function.setOtherContext(otherContext);
 								function.setFocalContext(focalContext);
 								func.changeOtherState(t, dt, focal, newRecruit);
 							}
@@ -229,7 +235,7 @@ public class ComponentProcess
 					// (e.g. "decomposition", or "erosion")
 					if (!function.getConsequences().isEmpty())
 						// TODO: the "returnsTo" relation type must be predefined somewhere
-						for (SystemRelation to:focal.getRelations("returnsTo")) {
+						for (SystemRelation to:focal.getRelations(returnsTo.key())) {
 							SystemComponent other = (SystemComponent) to.endNode();
 							for (ChangeOtherStateFunction consequence:function.getConsequences()) {
 								function.setFocalContext(focalContext);
@@ -279,14 +285,29 @@ public class ComponentProcess
 							func.changeState(t, dt, newBorn);
 						}
 						for (ChangeOtherStateFunction func : function.getChangeOtherStateConsequences()) {
+							HierarchicalContext otherContext = new HierarchicalContext();
+							otherContext.groupParameters = nbs.container.parameters();
+							otherContext.groupVariables = nbs.container.variables();
+							otherContext.groupPopulationData = nbs.container.populationData();
+							otherContext.groupName = nbs.container.id();
+							function.setOtherContext(otherContext);
 							function.setFocalContext(focalContext);
 							func.changeOtherState(t, dt, focal, newBorn);
 						}
+						// TODO: put a condition on this ? or always keeps this info?
+						focal.relateTo(newBorn,parentTo.key());
+						// This is actually not needed: the only relation would be parentTo!
 						for (RelateToDecisionFunction func : function.getRelateToDecisionConsequences()) {
+							HierarchicalContext otherContext = new HierarchicalContext();
+							otherContext.groupParameters = nbs.container.parameters();
+							otherContext.groupVariables = nbs.container.variables();
+							otherContext.groupPopulationData = nbs.container.populationData();
+							otherContext.groupName = nbs.container.id();
+							function.setOtherContext(otherContext);
 							function.setFocalContext(focalContext);
 							if (func.relate(t, dt, focal, newBorn)) {
 								// TODO: how to know the type of relation to establish ?
-								focal.relateTo(newBorn,"parentTo");
+//								focal.relateTo(newBorn,parentTo.key());
 							}
 						}
 						// welcome newBorn in container!
@@ -331,8 +352,6 @@ public class ComponentProcess
 				Dfunctions.add((DeleteDecisionFunction) function);
 			else if (CreateOtherDecisionFunction.class.isAssignableFrom(function.getClass()))
 				COfunctions.add((CreateOtherDecisionFunction) function);
-//			else if (AggregatorFunction.class.isAssignableFrom(function.getClass()))
-//				Afunctions.add((AggregatorFunction) function);
 		}
 	}
 

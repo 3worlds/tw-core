@@ -53,6 +53,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 
 	private AbstractProcess myProcess = null;
 	protected HierarchicalContext focalContext = null;
+	protected HierarchicalContext otherContext = null;
 	Random rng = null;
 	TwFunctionTypes fType;
 	Set<TwFunctionTypes> csqTypes = new HashSet<>();
@@ -86,6 +87,11 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	@Override
 	public void setFocalContext(HierarchicalContext context) {
 		focalContext = context;
+	}
+	
+	@Override
+	public void setOtherContext(HierarchicalContext context) {
+		otherContext = context;
 	}
 
 	@Override

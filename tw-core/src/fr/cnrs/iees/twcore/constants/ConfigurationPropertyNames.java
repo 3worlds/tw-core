@@ -88,6 +88,7 @@ public enum ConfigurationPropertyNames {
 	P_RNGSEEDSOURCE             ("seedSource"),
 	P_RNGRESETIME               ("resetTime"),
 	P_RNGTABLEINDEX             ("tableIndex"),
+	P_RELATIONTYPE				("type")
 	;
 
 	private final String pname;

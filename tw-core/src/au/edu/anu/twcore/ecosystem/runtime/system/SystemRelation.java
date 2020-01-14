@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIONTYPE;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
@@ -45,7 +46,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  */
 public class SystemRelation extends ALDataEdge {
 	
-	protected static PropertyKeys DEFAULT_PROPERTIES = new PropertyKeys("type");
+	protected static PropertyKeys DEFAULT_PROPERTIES = new PropertyKeys(P_RELATIONTYPE.key());
 	
 	private Related<SystemComponent> relation = null;	
 

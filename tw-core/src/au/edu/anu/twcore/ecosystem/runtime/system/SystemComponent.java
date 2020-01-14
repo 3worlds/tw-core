@@ -41,6 +41,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIONTYPE;
 
 /**
  * The main runtime object in 3worlds, representing "individuals" or "agents" or "system
@@ -181,7 +182,7 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 	public SystemRelation relateTo(SystemComponent toComponent, String relationType) {
 		SystemRelation rel = (SystemRelation) connectTo(Direction.OUT,toComponent,
 			new SharedPropertyListImpl(SystemRelation.DEFAULT_PROPERTIES));
-		rel.properties().setProperty("type",relationType);
+		rel.properties().setProperty(P_RELATIONTYPE.key(),relationType);
 		return rel;
 	}
 	

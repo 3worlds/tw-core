@@ -63,6 +63,21 @@ public class RelationType
 		extends InitialisableNode 
 		implements Factory<SystemRelation>, Related<SystemComponent>, Sealable {
 	
+	// predefined values for the type property of SystemRelation
+	public enum predefinedRelationTypes {
+		parentTo	("_parentTo"), 	// start if the parent of end
+		returnsTo	("_returnsTo"),	// start changes state of end
+		comprises	("_comprises"),	// start is made of end
+		;
+		private final String key;		
+		private predefinedRelationTypes(String string) {
+			this.key = string;
+		}
+		public String key() {
+			return key;
+		}
+	}
+	
 	// a little class to record the from and to category lists
 	private class cat implements Categorized<SystemComponent> {
 		private SortedSet<Category> categories = new TreeSet<>();

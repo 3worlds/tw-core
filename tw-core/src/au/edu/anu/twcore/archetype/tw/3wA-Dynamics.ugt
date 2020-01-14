@@ -117,12 +117,13 @@ hasNode functionSpec
 		hasName = String("userClassName")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
-	// a function may have a node to a RNG. if none and one is required, default is used
+	// a function may have a node to a RNG. if more than one is required, default is used
 	// if more than one is needed, then make two functions.
 	hasEdge functionRngSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
+	// TODO: specific to createOther: do we want to keep a parent link between offspring and parent?
 
 hasNode consequenceFunctionSpec
 	isOfClass = String("function")
@@ -140,13 +141,14 @@ hasNode consequenceFunctionSpec
 		hasName = String("userClassName")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
-	// a function may have a node to a RNG. if none and one is required, default is used
+	// a function may have a node to a RNG. if more than one is required, default is used
 	// if more than one is needed, then make two functions.
 	hasEdge csqfunctionRngSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
-		
+	// TODO: specific to 	ChangeOtherStateFunction when consequence of DeleteDecision:
+	// must specify to which other item data should be returned...
 		
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")
