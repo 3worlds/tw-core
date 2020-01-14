@@ -173,6 +173,7 @@ public class Simulator {
 		if (nexttime == Long.MAX_VALUE)
 			status = SimulatorStatus.Final;
 		else {
+//			long st = System.currentTimeMillis();
 			long step = nexttime - lastTime;
 			lastTime = nexttime;
 			// 2 find all timeModels which must execute now - using bitmasks for
@@ -202,11 +203,14 @@ public class Simulator {
 					tm.advanceTime(lastTime);
 				i++;
 			}
-			// 5 advance age of ALL SystemComponents, including the not update ones.		
+			// 5 advance age of ALL SystemComponents, including the not update ones.	
+		
+//			int nItems=0;
 			for (SystemComponent sc:community.allItems()) {
 				sc.autoVar().writeEnable();
 				sc.autoVar().age(nexttime-sc.autoVar().birthDate());
 				sc.autoVar().writeDisable();
+//				nItems++;
 			}
 			// apply all changes to community
 			community.effectAllChanges(); // must be done first -> removes dead ones and includes new ones
@@ -227,6 +231,8 @@ public class Simulator {
 ////				gn.callRendezvous(msg);
 ////			}
 			timetracker.sendData(lastTime);
+//			long et = System.currentTimeMillis();
+//			System.out.println("step\t"+nItems+"\t"+(et-st));
 		}
 	}
 	
