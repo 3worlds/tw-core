@@ -203,12 +203,6 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 		return result;
 	}
 
-	// use this to remove tracked items when they are dead or recruited
-	@Override
-	public void removeTrackedItem(SystemComponent wasTracked) {
-//		trackedComponents.remove(wasTracked);
-	}
-
 	// use this to select new SystemComponents if some are missing
 	@Override
 	public void updateTrackList() {
@@ -222,11 +216,6 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 				if (!container.contains(isc.next()))
 					isc.remove();
 			}
-//			// no more components to track - NOW handled by previous code
-//			if (container.count()==0) 
-//				trackedComponents.clear();
-			// all components must be tracked
-//			else 
 			if ((trackSampleSize == -1) || // means the whole container is tracked
 					(container.count() <= trackSampleSize)) { // means there are not enough components to select them
 				trackedComponents.clear();

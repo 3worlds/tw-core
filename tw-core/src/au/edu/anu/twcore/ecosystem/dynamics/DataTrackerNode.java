@@ -64,6 +64,7 @@ import java.util.TreeMap;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
@@ -74,6 +75,7 @@ import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
@@ -93,7 +95,7 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
  */
 public class DataTrackerNode 
 		extends InitialisableNode 
-		implements LimitedEdition<DataTracker<?,?>>, Sealable {
+		implements LimitedEdition<DataTracker<?,?>>, Sealable, DefaultStrings {
 	
 	// a class to collect metadata on fields, ie min, max, precision, units etc.
 	private class TrackMeta {
@@ -124,6 +126,7 @@ public class DataTrackerNode
 	private List<LimitedEdition<SystemContainer>> trackedGroups = new ArrayList<>();
 	private List<Component> trackedComponents = new ArrayList<>();
 	private boolean groupTracker;
+	private InitialState ecosystemContainer = null;
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -320,7 +323,11 @@ public class DataTrackerNode
 		if (ll.size()==1) {
 			if (ll.get(0).endNode() instanceof Component) {
 				trackedComponents.add((Component) ll.get(0).endNode());
-				trackedGroups.add((LimitedEdition<SystemContainer>)trackedComponents.get(0).getParent());
+				LimitedEdition<SystemContainer> tgroup = (LimitedEdition<SystemContainer>)trackedComponents.get(0).getParent();
+				if (tgroup instanceof InitialState)
+					ecosystemContainer = (InitialState) tgroup;
+				else
+					trackedGroups.add(tgroup);
 			}
 			else
 				trackedGroups.add((LimitedEdition<SystemContainer>) ll.get(0).endNode());
@@ -446,7 +453,14 @@ public class DataTrackerNode
 		AbstractDataTracker<?,?> result = null;
 		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
 			List<SystemContainer> lsc = new ArrayList<SystemContainer>();
-			for (LimitedEdition<SystemContainer> group:trackedGroups)
+			if (ecosystemContainer!=null) {
+				// assuming only 1 component is tracked!
+				SystemComponent sc = trackedComponents.get(0).getInstance(index);
+				String gname = defaultPrefix + "group" + nameSeparator + 
+					sc.membership().categoryId();
+				lsc.add((SystemContainer)ecosystemContainer.getInstance(index).subContainer(gname));
+			}
+			else for (LimitedEdition<SystemContainer> group:trackedGroups)
 				lsc.add(group.getInstance(index));
 			List<SystemComponent> ls = new ArrayList<SystemComponent>();
 			for (Component c:trackedComponents)

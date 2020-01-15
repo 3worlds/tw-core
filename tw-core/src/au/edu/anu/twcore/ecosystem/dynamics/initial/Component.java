@@ -36,7 +36,9 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
@@ -56,7 +58,7 @@ import fr.ens.biologie.generic.Sealable;
  */
 public class Component 
 		extends InitialisableNode 
-		implements Sealable, LimitedEdition<SystemComponent> {
+		implements Sealable, LimitedEdition<SystemComponent>, DefaultStrings {
 
 	private boolean sealed = false;
 //	private TwData variables = null;
@@ -119,10 +121,45 @@ public class Component
 			for (TreeNode tn:getChildren())
 				if (tn instanceof VariableValues)
 					((VariableValues)tn).fill(sc.currentState());
-			// TODO: workout the particular case when an individual has parameters
 			// insert component into container
 			LimitedEdition<SystemContainer> p = (LimitedEdition<SystemContainer>) getParent();
-			if (sc.membership().categories().equals(p.getInstance(id).categoryInfo().categories()))
+			// first case: no groups are specified, the component is required to be stored directly
+			// at the ecosystem level.
+			// In order not to break the logic of containers, which must only contain items of the
+			// same category signature, we must create a new group for every new category signature
+			// and put the new SC into it. The ecosystem container cannot store any SC directly because
+			// it's got no categories.
+			if (p instanceof InitialState) {
+				SystemContainer ecoCont = p.getInstance(id); 
+				CategorizedContainer<SystemComponent> theCont = null;
+				for (CategorizedContainer<SystemComponent> cont:ecoCont.subContainers()) {
+					if (cont.categoryInfo().categories().equals(sc.membership().categories())) {						
+						theCont = cont;
+						break;
+					}
+				}
+				if (theCont==null) {
+					String groupName = defaultPrefix + "group" + nameSeparator + sc.membership().categoryId();
+					// if there were parameters attached to the SC, attach them to its group
+					// CAUTION: this is only possible if there is just ONE permanent component
+					ParameterValues pv = null;
+					for (TreeNode tn:getChildren())
+						if (tn instanceof ParameterValues) {
+							pv = (ParameterValues) tn;
+							break;
+					}
+					if (pv==null)
+						theCont = new SystemContainer(sc.membership(),groupName,ecoCont,null,null);
+					else {
+						theCont = new SystemContainer(sc.membership(),groupName,ecoCont,
+							componentFactory.newParameterSet(),null);
+						pv.fill(theCont.parameters());
+					}
+					theCont.addInitialItem(sc);
+				}
+			}
+			// second case: the container has categories, then they must match those of the component
+			else if	(sc.membership().categories().equals(p.getInstance(id).categoryInfo().categories()))
 				p.getInstance(id).addInitialItem(sc);
 			individuals.put(id,sc);
 		}

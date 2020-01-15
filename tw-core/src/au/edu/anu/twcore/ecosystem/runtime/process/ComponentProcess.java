@@ -109,6 +109,9 @@ public class ComponentProcess
 			focalContext.ecosystemVariables = container.variables();
 			focalContext.ecosystemPopulationData = container.populationData();
 			focalContext.ecosystemName = container.id();
+			// there may be items stored at the ecosystem level - in this case the category of every
+			// sc has to be checked
+			// FLAW: this breaks the container logic (every item in a container is of the same categories
 		}
 		else if (container.categoryInfo() instanceof LifeCycle) {
 			focalContext.lifeCycleParameters = container.parameters();
@@ -295,7 +298,8 @@ public class ComponentProcess
 							func.changeOtherState(t, dt, focal, newBorn);
 						}
 						// TODO: put a condition on this ? or always keeps this info?
-						focal.relateTo(newBorn,parentTo.key());
+						// BUG: this crashes due to SystemRelation != ALDataEdge
+//						focal.relateTo(newBorn,parentTo.key());
 						// This is actually not needed: the only relation would be parentTo!
 						for (RelateToDecisionFunction func : function.getRelateToDecisionConsequences()) {
 							HierarchicalContext otherContext = new HierarchicalContext();
