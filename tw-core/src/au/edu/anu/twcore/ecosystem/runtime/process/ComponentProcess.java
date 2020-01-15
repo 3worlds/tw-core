@@ -298,8 +298,7 @@ public class ComponentProcess
 							func.changeOtherState(t, dt, focal, newBorn);
 						}
 						// TODO: put a condition on this ? or always keeps this info?
-						// BUG: this crashes due to SystemRelation != ALDataEdge
-//						focal.relateTo(newBorn,parentTo.key());
+						focal.relateTo(newBorn,parentTo.key());
 						// This is actually not needed: the only relation would be parentTo!
 						for (RelateToDecisionFunction func : function.getRelateToDecisionConsequences()) {
 							HierarchicalContext otherContext = new HierarchicalContext();

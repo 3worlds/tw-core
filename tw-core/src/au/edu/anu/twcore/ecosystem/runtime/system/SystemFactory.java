@@ -32,8 +32,6 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.ALGraphFactory;
-import fr.cnrs.iees.identity.impl.IntegerScope;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.Factory;
 import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentPropertyListImpl.*;
@@ -53,13 +51,7 @@ public class SystemFactory
 		implements Factory<SystemComponent>, Categorized<SystemComponent> {
 	
 	// the factory for SystemComponents and SystemRelations
-	private static GraphFactory SCfactory = null;
-	static {
-		Map<String,String> labels = new HashMap<>();
-		labels.put("component", SystemComponent.class.getName());
-		labels.put("relation", SystemRelation.class.getName());
-		SCfactory = new ALGraphFactory(new IntegerScope("3w"),labels);
-	}
+	private static GraphFactory SCfactory = new TwGraphFactory();
 	
 	private SortedSet<Category> categories = new TreeSet<>();
 	private String categoryId = null;

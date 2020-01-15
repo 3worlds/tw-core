@@ -48,6 +48,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
@@ -61,13 +62,13 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
  */
 public class RelationType 
 		extends InitialisableNode 
-		implements Factory<SystemRelation>, Related<SystemComponent>, Sealable {
+		implements Factory<SystemRelation>, Related<SystemComponent>, Sealable, DefaultStrings {
 	
 	// predefined values for the type property of SystemRelation
 	public enum predefinedRelationTypes {
-		parentTo	("_parentTo"), 	// start if the parent of end
-		returnsTo	("_returnsTo"),	// start changes state of end
-		comprises	("_comprises"),	// start is made of end
+		parentTo	(defaultPrefix+"parentTo"), 	// start if the parent of end
+		returnsTo	(defaultPrefix+"returnsTo"),	// start changes state of end
+		comprises	(defaultPrefix+"comprises"),	// start is made of end
 		;
 		private final String key;		
 		private predefinedRelationTypes(String string) {
