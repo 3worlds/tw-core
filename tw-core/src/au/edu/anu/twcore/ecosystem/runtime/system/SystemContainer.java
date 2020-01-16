@@ -72,16 +72,18 @@ public class SystemContainer extends CategorizedContainer<SystemComponent> {
 	public void rename(String oldId, String newId) {
 		throw new TwcoreException("Renaming of '" + this.getClass().getSimpleName() + "' is not implemented.");
 	}
-
+	
 	/**
 	 * Recursively clears all container items and variables (if any). Used in
 	 * loading new model states with ModelRunner.
 	 */
+	// TO IAN: note that the clearAllVariables() and clearAllItems() methods do the same job now
 	public void clearState() {
 		clearState(this);
 	}
 
 	// best if static to avoid errors
+	// TO IAN: note that the clearAllVariables() and clearAllItems() methods do the same job now
 	private static void clearState(CategorizedContainer<SystemComponent> parentContainer) {
 		for (CategorizedContainer<SystemComponent> childContainer : parentContainer.subContainers())
 			clearState(childContainer);
@@ -89,19 +91,62 @@ public class SystemContainer extends CategorizedContainer<SystemComponent> {
 			parentContainer.removeItem(item.id());
 		// effectAllChanges() is recursive so don't use here.
 		parentContainer.effectChanges();// counters are handled here
-		if (parentContainer.variables() != null) {
-			/**
-			 * TODO not tested yet. I assume it's readOnly until executing Twfunctions. If
-			 * so replace with writeEnable()/writeDisable() without testing.
-			 */
-			boolean readOnly = parentContainer.variables().isReadOnly();
-			if (readOnly)
-				parentContainer.variables().writeEnable();
-			parentContainer.variables().clear();
-			if (readOnly)
-				parentContainer.variables().writeDisable();
-		}
+		parentContainer.clearVariables();
+// replaced by method below		
+//		if (parentContainer.variables() != null) {
+//			/**
+//			 * TODO not tested yet. I assume it's readOnly until executing Twfunctions. If
+//			 * so replace with writeEnable()/writeDisable() without testing.
+//			 */
+//			boolean readOnly = parentContainer.variables().isReadOnly();
+//			if (readOnly)
+//				parentContainer.variables().writeEnable();
+//			parentContainer.variables().clear();
+//			if (readOnly)
+//				parentContainer.variables().writeDisable();
+//		}
+//
+	}
 
+	@Override
+	public void clearVariables() {
+		if (variables() != null) {
+			boolean readOnly = variables().isReadOnly();
+			if (readOnly)
+				variables().writeEnable();
+			variables().clear();
+			if (readOnly)
+				variables().writeDisable();
+		}
+	}
+
+	@Override
+	public void clearAllVariables() {
+		clearVariables();
+		for (CategorizedContainer<SystemComponent> childContainer: subContainers())
+			childContainer.clearAllVariables();
+	}
+
+	// TODO: fix the problem here
+	// CAUTION: must disconnect !!!
+	public void effectChanges() {
+		for (String id : itemsToRemove) {
+			SystemComponent sc = items.remove(id);
+			if (sc != null) {
+				populationData.count--;
+				populationData.nRemoved++;
+				itemsToInitials.remove(id);
+				sc.disconnect(); // SRs will stay in their relation lists...
+				// solution: before disconnect, remove all edges from the relation containers
+			}
+		}
+		itemsToRemove.clear();
+		for (SystemComponent item : itemsToAdd)
+			if (items.put(item.id(), item) == null) {
+				populationData.count++;
+				populationData.nAdded++;
+			}
+		itemsToAdd.clear();
 	}
 
 }

@@ -33,14 +33,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
+import au.edu.anu.twcore.ecosystem.Ecosystem;
+import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerTracker2D;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Sealable;
 
 /**
@@ -53,6 +59,7 @@ public abstract class AbstractProcess
 		implements TwProcess, Sealable, DataTrackerHolder<Metadata> {
 
 	private boolean sealed = false;
+	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
     private SystemContainer ecosystem = null;
     // dataTrackers - common to all process types
 	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
@@ -91,8 +98,6 @@ public abstract class AbstractProcess
 			tracker.setSender(id);
 	}
 	
-	public abstract void addFunction(TwFunction function);
-	
 	public void addDataTracker(DataTracker<?,?> tracker) {
 		if (!isSealed()) {
 			if (tracker instanceof DataTracker0D)
@@ -106,5 +111,47 @@ public abstract class AbstractProcess
 	public Iterable<DataTracker<?,Metadata>> dataTrackers() {
 		return trackers;
 	}
+
+	@Override
+	public final void execute(SimulatorStatus status, long t, long dt) {
+		currentStatus = status;
+		for (DataTracker0D tracker:tsTrackers)
+			tracker.recordTime(t);		
+		loop(ecosystem(),timer.userTime(t),timer.userTime(dt));
+	}
+
+	/**
+	 * Utility for descendants
+	 * @param context
+	 * @param container
+	 */
+	protected void setContext(HierarchicalContext context,
+			CategorizedContainer<SystemComponent> container) {
+		if (container.categoryInfo() instanceof Ecosystem) {
+			context.ecosystemParameters = container.parameters();
+			context.ecosystemVariables = container.variables();
+			context.ecosystemPopulationData = container.populationData();
+			context.ecosystemName = container.id();
+		}
+		else if (container.categoryInfo() instanceof LifeCycle) {
+			context.lifeCycleParameters = container.parameters();
+			context.lifeCycleVariables = container.variables();
+			context.lifeCyclePopulationData = container.populationData();
+			context.lifeCycleName = container.id();
+		}
+		else if (container.categoryInfo() instanceof SystemFactory)  {
+			context.groupParameters = container.parameters();
+			context.groupVariables = container.variables();
+			context.groupPopulationData = container.populationData();
+			context.groupName = container.id();
+		}
+	}
+	
+	public abstract void addFunction(TwFunction function);
+	
+	protected abstract void loop(CategorizedContainer<SystemComponent> container,
+			double t, double dt);
+	
+
 
 }

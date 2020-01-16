@@ -64,6 +64,8 @@ import au.edu.anu.twcore.ecosystem.structure.ComponentType;
  * Has properties. Also, produces the singleton top-container for the community of
  * SystemComponents which constitute this ecosystem.
  * 
+ * TODO: add systemrelations in the community !
+ * 
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
@@ -97,15 +99,17 @@ public class Ecosystem
 	// a CategorizedContainer MUST store items which match its categories, so:
 	// 1 if an Ecosystem has been specified with categories through belongsTo edges,
 	// then it cannot contain SystemComponents in its item list (cf. InitialState)
-	// 2 if InitialState has Individual as direct children, then the Ecosystem
-	// categories MUST be set to those of these children. Of course the children must
-	// all have the same categories.
+	// 2 if InitialState has Individual as direct children, then additional group
+	// containers will be setup to make sure the individuals will be stored in the
+	// proper container - as a result, teh ecosystem has no direct items in its list
 	// TODO: implement queries to check these constraints
+	// NB: caution: this method is a mess. 16/1/2020 JG
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
 			// case 1: categories have been attached to the ecosystem - they will be used
 			// to set its variables, it cannot have any initial item
+			// FLAW: this is not going to work because no process will ever be called in this case
 			Collection<Category> cats = (Collection<Category>) get(edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
 				edgeListEndNodes());
@@ -115,27 +119,30 @@ public class Ecosystem
 			}
 			else {
 				InitialState is = (InitialState) get(getChildren(),
-					selectOne(hasTheLabel(N_DYNAMICS.label())),
+					selectZeroOrOne(hasTheLabel(N_DYNAMICS.label())),
 					children(),
 					selectZeroOrOne(hasTheLabel(N_INITIALSTATE.label())));
-				List<Component> il = (List<Component>) get(is.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-				// case 2: no categories attached to the ecosystem and no individuals initialised
-				// means the ecosystem has no variables, no parameters, no items.
-				if (il.isEmpty())
-					categoryId = rootCategoryId;
-				// case 3: initial individuals have been specified, the ecosystem
-				// categories are set to those of the first individual in the list				
-				else {
-					Component i = il.get(0);
-					ComponentType scn = (ComponentType) get(i.edges(Direction.OUT),
-						selectOne(hasTheLabel(E_INSTANCEOF.label())),
-						endNode());
-					Collection<Category> nl = (Collection<Category>) get(scn.edges(Direction.OUT),
-						selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
-						edgeListEndNodes());
-					categories.addAll(getSuperCategories(nl));
-					categoryId = buildCategorySignature();
+				if (is!=null) {
+					List<Component> il = (List<Component>) get(is.getChildren(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+					// case 2: no categories attached to the ecosystem and no individuals initialised
+					// means the ecosystem has no variables, no parameters, no items.
+					// SO nothing will happen!
+					if (il.isEmpty())
+						categoryId = rootCategoryId;
+					// case 3: initial individuals have been specified, the ecosystem
+					// categories are set to those of the first individual in the list				
+					else {
+						Component i = il.get(0);
+						ComponentType scn = (ComponentType) get(i.edges(Direction.OUT),
+							selectOne(hasTheLabel(E_INSTANCEOF.label())),
+							endNode());
+						Collection<Category> nl = (Collection<Category>) get(scn.edges(Direction.OUT),
+							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
+							edgeListEndNodes());
+						categories.addAll(getSuperCategories(nl));
+						categoryId = buildCategorySignature();
+					}
 				}
 			}
 			if (properties().hasProperty(P_PARAMETERCLASS.key())) {

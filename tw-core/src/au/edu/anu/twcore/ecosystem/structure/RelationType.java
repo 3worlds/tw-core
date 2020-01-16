@@ -33,9 +33,8 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.Factory;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-
 import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOneOrMany;
@@ -44,6 +43,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -52,8 +53,8 @@ import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
+import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 
 /**
  * This is equivalent to the SystemFactory, but for SystemRelation
@@ -62,7 +63,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
  */
 public class RelationType 
 		extends InitialisableNode 
-		implements Factory<SystemRelation>, Related<SystemComponent>, Sealable, DefaultStrings {
+		implements LimitedEdition<RelationContainer>, 
+			Related<SystemComponent>, Sealable, DefaultStrings {
 	
 	// predefined values for the type property of SystemRelation
 	public enum predefinedRelationTypes {
@@ -100,6 +102,9 @@ public class RelationType
 	private boolean sealed = false;
 	// from and to category lists
 	private cat fromCat, toCat;
+	
+	private Map<Integer,RelationContainer> relconts = new HashMap<>();
+	
 
 	public RelationType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -132,22 +137,25 @@ public class RelationType
 	}
 
 	@Override
-	public SystemRelation newInstance() {
+	public RelationContainer getInstance(int id) {
 		if (!sealed)
 			initialise();
-		// TODO finish implementation
-		SystemRelation result = null;
-//		result.setRelated(this); 
-		return result;
+		if (!relconts.containsKey(id))
+			relconts.put(id, new RelationContainer(this));
+		return relconts.get(id);
 	}
-
+	
 	@Override
 	public Categorized<SystemComponent> from() {
+		if (!sealed)
+			initialise();
 		return fromCat;
 	}
 
 	@Override
 	public Categorized<SystemComponent> to() {
+		if (!sealed)
+			initialise();
 		return toCat;
 	}
 

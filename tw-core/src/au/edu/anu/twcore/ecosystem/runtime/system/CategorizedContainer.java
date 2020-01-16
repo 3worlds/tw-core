@@ -41,8 +41,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Population;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.identity.IdentityScope;
-import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
@@ -83,16 +81,12 @@ import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
  *
  */
 // Tested OK with version 0.1.3 on 1/7/2019
-public abstract class CategorizedContainer<T extends Identity> implements Population, Identity, Resettable, Sealable {
-
-	// class-level constants
-	private static final IdentityScope scope = new LocalScope("3w-runtime-container");
-	private static final Set<String> props = new HashSet<String>();
-	private static final PropertyKeys propsPK;
+public abstract class CategorizedContainer<T extends Identity> 
+		extends AbstractPopulationContainer<T>
+		implements NestedContainer<T>, ResettableContainer<T>, 
+			StateContainer, Resettable, Sealable {
+	
 	static {
-		props.add(COUNT.shortName());
-		props.add(NADDED.shortName());
-		props.add(NREMOVED.shortName());
 		props.add(TCOUNT.shortName());
 		props.add(TNADDED.shortName());
 		props.add(TNREMOVED.shortName());
@@ -100,8 +94,6 @@ public abstract class CategorizedContainer<T extends Identity> implements Popula
 	}
 
 	private boolean sealed = false;
-	// unique id for this container (matches the parameter set)
-	private Identity id = null;
 	// category info (shared)
 	private Categorized<T> categoryInfo = null;
 	// parameters (unique, owned)
@@ -109,87 +101,47 @@ public abstract class CategorizedContainer<T extends Identity> implements Popula
 	// variables (unique, owned)
 	private TwData variables = null;
 	// items contained at this level (owned)
-	private Map<String, T> items = new HashMap<>();
+	protected Map<String, T> items = new HashMap<>();
 	// items contained at lower levels
 	private Map<String, CategorizedContainer<T>> subContainers = new HashMap<>();
 	// my container, if any
 	private CategorizedContainer<T> superContainer = null;
 	// initial state
-	private Set<T> initialItems = new HashSet<>();
+	protected Set<T> initialItems = new HashSet<>();
 	// a map of runtime item ids to initial items
-	private Map<String, T> itemsToInitials = new HashMap<>();
+	protected Map<String, T> itemsToInitials = new HashMap<>();
 	// data for housework
-	private Set<String> itemsToRemove = new HashSet<>();
-	private Set<T> itemsToAdd = new HashSet<>();
+	protected Set<String> itemsToRemove = new HashSet<>();
+	protected Set<T> itemsToAdd = new HashSet<>();
 
 	// Population data
-	private class popData implements ReadOnlyPropertyList {
-		public int count = 0;
-		public int nAdded = 0;
-		public int nRemoved = 0;
-
+	private class popData2 extends popData {
 		@Override
 		public Object getPropertyValue(String key) {
-			if (key.equals(COUNT.shortName()))
-				return count;
-			else if (key.equals(NADDED.shortName()))
-				return nAdded;
-			else if (key.equals(NREMOVED.shortName()))
-				return nRemoved;
-			else if (key.equals(TCOUNT.shortName()))
-				return totalCount();
-			else if (key.equals(TNADDED.shortName()))
-				return totalAdded();
-			else if (key.equals(TNREMOVED.shortName()))
-				return totalRemoved();
-			return null;
+			Object result = super.getPropertyValue(key);
+			if (result==null) {
+				if (key.equals(TCOUNT.shortName()))
+					return totalCount();
+				else if (key.equals(TNADDED.shortName()))
+					return totalAdded();
+				else if (key.equals(TNREMOVED.shortName()))
+					return totalRemoved();
+			}
+			return result;
 		}
-
-		@Override
-		public boolean hasProperty(String key) {
-			if (key.equals(COUNT.shortName()) || key.equals(NADDED.shortName()) || key.equals(NREMOVED.shortName()))
-				return true;
-			return false;
-		}
-
-		@Override
-		public Set<String> getKeysAsSet() {
-			return props;
-		}
-
-		@Override
-		public int size() {
-			return 3;
-		}
-
 		@Override
 		public ReadOnlyPropertyList clone() {
 			SimplePropertyList pl = new SharedPropertyListImpl(propsPK);
 			pl.setProperties(this);
 			return pl;
 		}
-
-		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder(1024);
-			boolean first = true;
-			for (String key : props)
-				if (first) {
-					sb.append(key).append("=").append(getPropertyValue(key));
-					first = false;
-				} else
-					sb.append(' ').append(key).append("=").append(getPropertyValue(key));
-			return sb.toString();
-		}
 	}
-
-	private popData populationData = new popData();
 
 	public CategorizedContainer(Categorized<T> cats, String proposedId, CategorizedContainer<T> parent,
 			TwData parameters, TwData variables) {
-		super();
+		super(proposedId);
+		populationData = new popData2();
 		categoryInfo = cats;
-		id = scope.newId(true, proposedId);
 		this.parameters = parameters;
 		this.variables = variables;
 		if (parent != null) {
@@ -402,28 +354,6 @@ public abstract class CategorizedContainer<T extends Identity> implements Popula
 		return l;
 	}
 
-	/**
-	 * Effectively remove <em>and</em> add items from the container lists (before a
-	 * call to this method, they are just stored into {@code itemsToRemove} and
-	 * {@code itemsToAdd}). NB: to recursively effect changes for all
-	 * sub-containers, use {@code effectAllChanges()}.
-	 */
-	public void effectChanges() {
-		for (String id : itemsToRemove)
-			if (items.remove(id) != null) {
-				populationData.count--;
-				populationData.nRemoved++;
-				itemsToInitials.remove(id);
-			}
-		itemsToRemove.clear();
-		for (T item : itemsToAdd)
-			if (items.put(item.id(), item) == null) {
-				populationData.count++;
-				populationData.nAdded++;
-			}
-		itemsToAdd.clear();
-	}
-
 	public boolean contains(T item) {
 		return items.values().contains(item);
 	}
@@ -505,40 +435,12 @@ public abstract class CategorizedContainer<T extends Identity> implements Popula
 		return result;
 	}
 
-	// Population methods
-
-	@Override
-	public int count() {
-		return populationData.count;
-	}
-
-	@Override
-	public int nAdded() {
-		return populationData.nAdded;
-	}
-
-	@Override
-	public int nRemoved() {
-		return populationData.nRemoved;
-	}
 
 	@Override
 	public void resetCounters() {
 		populationData.count = items.size();
 		populationData.nAdded = 0;
 		populationData.nRemoved = 0;
-	}
-
-	// Identity methods
-
-	@Override
-	public String id() {
-		return id.id();
-	}
-
-	@Override
-	public IdentityScope scope() {
-		return scope;
 	}
 
 	// Resettable methods
@@ -620,6 +522,22 @@ public abstract class CategorizedContainer<T extends Identity> implements Popula
 	@Override
 	public boolean isSealed() {
 		return sealed;
+	}
+
+	@Override
+	public void clearItems() {
+		items.clear();
+		itemsToRemove.clear();
+		itemsToAdd.clear();
+		itemsToInitials.clear();
+		resetCounters();
+	}
+
+	@Override
+	public void clearAllItems() {
+		clearItems();
+		for (CategorizedContainer<T> sc : subContainers.values())
+			sc.clearAllItems();
 	}
 
 	// NB two methods must be overridden in descendants: clone(item) and

@@ -53,7 +53,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -93,7 +92,6 @@ public class ComponentProcess
 	private SystemContainer lifeCycleContainer = null;
 //	private SystemContainer ecosystemContainer = null;
 //	private SystemContainer groupContainer = null;
-	private SimulatorStatus currentStatus = SimulatorStatus.Initial;
 	
 	public ComponentProcess(SystemContainer world, Collection<Category> categories, Timer timer) {
 		super(world,timer);
@@ -102,37 +100,25 @@ public class ComponentProcess
 	}
 	
 	// recursive loop on all sub containers of the community
-	private void loop(CategorizedContainer<SystemComponent> container,
+	protected void loop(CategorizedContainer<SystemComponent> container,
 		double t, double dt) {
 		if (container.categoryInfo() instanceof Ecosystem) {
-			focalContext.ecosystemParameters = container.parameters();
-			focalContext.ecosystemVariables = container.variables();
-			focalContext.ecosystemPopulationData = container.populationData();
-			focalContext.ecosystemName = container.id();
-			// there may be items stored at the ecosystem level - in this case the category of every
-			// sc has to be checked
-			// FLAW: this breaks the container logic (every item in a container is of the same categories
+			setContext(focalContext,container);
 		}
 		else if (container.categoryInfo() instanceof LifeCycle) {
-			focalContext.lifeCycleParameters = container.parameters();
-			focalContext.lifeCycleVariables = container.variables();
-			focalContext.lifeCyclePopulationData = container.populationData();
-			focalContext.lifeCycleName = container.id();
+			setContext(focalContext,container);
 			lifeCycle = (LifeCycle) container.categoryInfo();
 			lifeCycleContainer = (SystemContainer) container;
 		}
 		else if (container.categoryInfo() instanceof SystemFactory) 
 			if (container.categoryInfo().belongsTo(focalCategories)) {
-				focalContext.groupParameters = container.parameters();
-				focalContext.groupVariables = container.variables();
-				focalContext.groupPopulationData = container.populationData();
-				focalContext.groupName = container.id();
+				setContext(focalContext,container);
 				group = (SystemFactory) container.categoryInfo();
 				executeFunctions(container,t,dt);
 				// track group state
 				for (DataTracker0D tracker:tsTrackers)
 					if (tracker.isTracked(container)) {
-						tracker.recordItem(buildItemId(null));
+						tracker.recordItem(focalContext.buildItemId(null));
 						tracker.record(currentStatus,container.populationData());
 				}
 				focalContext.clear();
@@ -148,7 +134,7 @@ public class ComponentProcess
 			// track component state
 			for (DataTracker0D tracker:tsTrackers) 
 				if (tracker.isTracked(focal)) {
-				tracker.recordItem(buildItemId(focal.id()));
+				tracker.recordItem(focalContext.buildItemId(focal.id()));
 				tracker.record(currentStatus,focal.currentState());
 			}
 			// compute changes
@@ -321,29 +307,21 @@ public class ComponentProcess
 		}
 	}
 
-	private String[] buildItemId(String itemId) {
-		List<String> items = new LinkedList<>();
-		if (focalContext.ecosystemName!=null)
-			items.add(focalContext.ecosystemName);
-		if (focalContext.lifeCycleName!=null)
-			items.add(focalContext.lifeCycleName);
-		if (focalContext.groupName!=null)
-			items.add(focalContext.groupName);
-		if (itemId!=null)
-			if (!itemId.isBlank())
-				items.add(itemId);
-		return items.toArray(new String[items.size()]);
-	}
+//	private String[] buildItemId(String itemId) {
+//		List<String> items = new LinkedList<>();
+//		if (focalContext.ecosystemName!=null)
+//			items.add(focalContext.ecosystemName);
+//		if (focalContext.lifeCycleName!=null)
+//			items.add(focalContext.lifeCycleName);
+//		if (focalContext.groupName!=null)
+//			items.add(focalContext.groupName);
+//		if (itemId!=null)
+//			if (!itemId.isBlank())
+//				items.add(itemId);
+//		return items.toArray(new String[items.size()]);
+//	}
 	
 	
-	@Override
-	public final void execute(SimulatorStatus status, long t, long dt) {
-		currentStatus = status;
-		for (DataTracker0D tracker:tsTrackers)
-			tracker.recordTime(t);		
-		loop(ecosystem(),timer.userTime(t),timer.userTime(dt));
-	}
-
 	@Override
 	public void addFunction(TwFunction function) {
 		if (!isSealed()) {

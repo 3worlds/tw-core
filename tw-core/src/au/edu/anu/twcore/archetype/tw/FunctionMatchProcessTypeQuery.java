@@ -31,8 +31,8 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
+import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
-import au.edu.anu.twcore.ecosystem.runtime.process.RelationProcess;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import fr.cnrs.iees.graph.Direction;
@@ -75,7 +75,7 @@ public class FunctionMatchProcessTypeQuery extends Query {
 				edgeListEndNodes());
 			TwFunctionTypes[] validFunctions = null;
 			if (targets.get(0) instanceof RelationType) {
-				validFunctions = RelationProcess.compatibleFunctionTypes;
+				validFunctions = AbstractRelationProcess.compatibleFunctionTypes;
 				processType = "relation";
 			}
 			else if (targets.get(0) instanceof Category) {

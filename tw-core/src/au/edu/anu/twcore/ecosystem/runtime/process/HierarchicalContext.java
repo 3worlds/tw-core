@@ -28,6 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.process;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import au.edu.anu.twcore.data.runtime.TwData;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 
@@ -69,6 +72,20 @@ public class HierarchicalContext {
 		groupVariables = null;
 		groupPopulationData = null;
 		groupName = null;
+	}
+
+	String[] buildItemId(String itemId) {
+		List<String> items = new LinkedList<>();
+		if (ecosystemName!=null)
+			items.add(ecosystemName);
+		if (lifeCycleName!=null)
+			items.add(lifeCycleName);
+		if (groupName!=null)
+			items.add(groupName);
+		if (itemId!=null)
+			if (!itemId.isBlank())
+				items.add(itemId);
+		return items.toArray(new String[items.size()]);
 	}
 
 }

@@ -89,6 +89,12 @@ class CategorizedContainerTest {
 		public void rename(String oldId, String newId) {
 			throw new TwcoreException ("Renaming of '"+this.getClass().getSimpleName()+"' is not implemented.");	
 		}
+		@Override
+		public void clearVariables() {
+		}
+		@Override
+		public void effectChanges() {
+		}
 	}
 	
 	private Category c1, c2, c3, c4, c5, c6;

@@ -1,0 +1,61 @@
+package au.edu.anu.twcore.ecosystem.runtime.process;
+
+import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
+
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.Related;
+import au.edu.anu.twcore.ecosystem.runtime.Timer;
+import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.structure.Category;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+
+/**
+ * Ancestor to RelationProcess and SearchProcess
+ * 
+ * @author Jacques Gignoux - 16 janv. 2020
+ *
+ */
+public abstract class AbstractRelationProcess 
+		extends AbstractProcess 
+		implements Related<SystemComponent> {
+
+	protected RelationContainer relContainer;
+	protected String focalCategoryId = null;
+	protected String otherCategoryId = null;
+	protected SortedSet<Category> focalCategories = new TreeSet<>();
+	protected SortedSet<Category> otherCategories = new TreeSet<>();
+
+	public AbstractRelationProcess(SystemContainer world, RelationContainer relation, Timer timer) {
+		super(world, timer);
+		relContainer = relation;
+		focalCategoryId = relContainer.from().buildCategorySignature();
+		otherCategoryId = relContainer.to().buildCategorySignature();
+		focalCategories.addAll(relContainer.from().categories());
+		otherCategories.addAll(relContainer.to().categories());
+	}
+
+	@Override
+	public final Categorized<SystemComponent> from() {
+		return relContainer.from();
+	}
+
+	@Override
+	public final Categorized<SystemComponent> to() {
+		return relContainer.to();
+	}
+
+	public static TwFunctionTypes[] compatibleFunctionTypes = {
+		ChangeOtherCategoryDecision,
+		ChangeOtherState,
+		DeleteOtherDecision,
+		ChangeRelationState,
+		MaintainRelationDecision,
+		RelateToDecision
+	};
+
+}

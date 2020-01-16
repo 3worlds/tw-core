@@ -30,15 +30,14 @@ package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import java.util.LinkedList;
 import java.util.List;
-import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
@@ -48,9 +47,8 @@ import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
  * @author gignoux - 10 mars 2017
  *
  */
-public class RelationProcess extends AbstractProcess implements Related<SystemComponent> {
+public class RelationProcess extends AbstractRelationProcess {
 	
-	private RelationType myRelation;
     private List<ChangeOtherCategoryDecisionFunction> COCfunctions = 
     	new LinkedList<ChangeOtherCategoryDecisionFunction>();
     private List<ChangeOtherStateFunction> COSfunctions = 
@@ -62,13 +60,12 @@ public class RelationProcess extends AbstractProcess implements Related<SystemCo
     private List<ChangeRelationStateFunction> CRfunctions = 
     	new LinkedList<ChangeRelationStateFunction>();
 
-	public RelationProcess(SystemContainer world, RelationType relation, Timer timer) {
-		super(world,timer);
-		myRelation = relation;
+	public RelationProcess(SystemContainer world, RelationContainer relation, Timer timer) {
+		super(world,relation,timer);
 	}
 
-	@Override
-	public void execute(SimulatorStatus status, long t, long dt) {
+//	@Override
+//	public void execute(SimulatorStatus status, long t, long dt) {
 //		// loop on this:
 //		Iterable<Edge> relations = myRelation.relations();
 //		for (Edge e:relations) {
@@ -110,12 +107,12 @@ public class RelationProcess extends AbstractProcess implements Related<SystemCo
 //					myRelation.tagRelationForDeletion(e);
 //			}
 //			// change relation state
-//			//TODO: make Edge write enabled
+//			//TODO: make Edge write enableded<SystemComponent>
 //			for (ChangeRelationStateFunction function:CRfunctions) {
 //				function.changeRelationState(t, dt, focal, target, e);
 //			}
 //		}
-	}
+//	}
 
 	@Override
 	public void addFunction(TwFunction function) {
@@ -134,21 +131,9 @@ public class RelationProcess extends AbstractProcess implements Related<SystemCo
 	}
 
 	@Override
-	public Categorized<SystemComponent> from() {
-		return myRelation.from();
+	protected void loop(CategorizedContainer<SystemComponent> container, double t, double dt) {
+		// TODO Auto-generated method stub
+		
 	}
-
-	@Override
-	public Categorized<SystemComponent> to() {
-		return myRelation.to();
-	}
-	
-	public static TwFunctionTypes[] compatibleFunctionTypes = {
-		ChangeOtherCategoryDecision,
-		ChangeOtherState,
-		DeleteOtherDecision,
-		ChangeRelationState,
-		MaintainRelationDecision
-	};
 
 }
