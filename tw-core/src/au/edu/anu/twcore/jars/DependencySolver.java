@@ -105,7 +105,7 @@ public class DependencySolver implements ProjectPaths, TwPaths {
 			writer.println("<ivysettings>");
 			writer.println("	<settings defaultResolver=\"default\"/>");
 			writer.println(
-					"	<property name=\"ivy.shared.default.root\" value=\"${ivy.default.ivy.user.dir}/shared\" override=\"false\"/>");
+					"	<property name=\"ivy.shared.default.root\" value=\"${ivy.default.ivy.user.dir}/cache\" override=\"false\"/>");
 			writer.println(
 					"	<property name=\"ivy.shared.default.ivy.pattern\" value=\"[organisation]/[module]/[revision]/[type]s/[artifact].[ext]\" override=\"false\"/>");
 			writer.println(
