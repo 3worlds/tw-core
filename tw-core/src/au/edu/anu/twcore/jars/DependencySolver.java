@@ -117,7 +117,7 @@ public class DependencySolver implements ProjectPaths, TwPaths {
 			writer.println(
 					"	<property name=\"ivy.local.default.artifact.pattern\" value=\"[organisation]/[module]/[revision]/[type]s/[artifact].[ext]\" override=\"false\"/>");
 			writer.println("	<resolvers>");
-			writer.println("		<ibiblio name=\"public\" m2compatible=\"true\"/>");
+			writer.println("		<ibiblio name=\"public\" m2compatible=\"true\"  root=\"https://repo1.maven.org/maven2\"/>");
 			writer.println("		<filesystem name=\"shared\">");
 			writer.println(
 					"			<ivy pattern=\"${ivy.shared.default.root}/${ivy.shared.default.ivy.pattern}\"/>");
