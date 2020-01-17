@@ -37,8 +37,12 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DYNAMIC
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import au.edu.anu.rscs.aot.collections.DynamicList;
 import au.edu.anu.rscs.aot.graph.property.Property;
@@ -46,6 +50,7 @@ import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
+import au.edu.anu.twcore.ecosystem.structure.Structure;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.NodeFactory;
@@ -149,10 +154,32 @@ public interface Categorized<T extends Identity> {
 		Collection<Category> cats = (Collection<Category>) get(node.edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
 			edgeListEndNodes());
-		Collection<Category> result = new LinkedList<Category>();
+		Collection<Category> result = new HashSet<Category>();
 		result.addAll(cats);
 		for (Category cat:cats)
 			getSuperCategories(cat,result);
+		// sort categories by hierarchical order
+		if (!result.isEmpty()) {
+			List<Category> l = new LinkedList<>();
+			l.addAll(result);
+			SortedMap<Integer,Category> sortedres = new TreeMap<>();
+			sortedres.put(0,l.get(0));
+			while (sortedres.size()<result.size()) {
+				for (Category c:result)
+					for (int i:sortedres.keySet()) 
+						if (sortedres.get(i)!=c) {
+							if (c.getParent().getParent() instanceof Structure) {
+								sortedres.put(-result.size(), c);
+								break;
+							}
+							else if (c.getParent().getParent().equals(sortedres.get(i))) {
+								sortedres.put(i+1,c);
+								break;
+							}
+					}
+			}
+			return sortedres.values();
+		}
 		return result;
 	}
 
@@ -180,6 +207,7 @@ public interface Categorized<T extends Identity> {
 		TreeGraphDataNode mergedRoot = null;
 		DynamicList<TreeGraphDataNode> roots = new DynamicList<TreeGraphDataNode>();
 		Collection<Category> cats = getSuperCategories(node);
+		// put them in roots in category hierarchy order !
 		for (Category cat:cats) {
 			TreeGraphDataNode n = (TreeGraphDataNode) get(cat.edges(Direction.OUT), 
 				selectZeroOrOne(hasTheLabel(dataGroup)), 
