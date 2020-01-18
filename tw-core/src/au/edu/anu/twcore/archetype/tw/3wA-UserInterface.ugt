@@ -2,7 +2,7 @@ tree
 hasNode userInterfaceSpec
 	isOfClass = String("userInterface")
 	hasParent = StringTable(([1]"3worlds:"))
-	multiplicity = IntegerRange("0..1")
+	multiplicity = IntegerRange("1..1")
 
 hasNode topSpec
 	isOfClass = String("top")
