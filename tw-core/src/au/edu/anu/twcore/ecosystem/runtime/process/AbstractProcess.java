@@ -44,7 +44,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerHolder;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerTracker2D;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Sealable;
@@ -63,7 +63,7 @@ public abstract class AbstractProcess
     private SystemContainer ecosystem = null;
     // dataTrackers - common to all process types
 	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
-	protected List<DataTrackerTracker2D> mapTrackers = new LinkedList<DataTrackerTracker2D>();
+	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
 	protected Timer timer = null;
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
@@ -94,7 +94,7 @@ public abstract class AbstractProcess
 	public void setSender(int id) {
 		for (DataTracker0D tracker:tsTrackers)
 			tracker.setSender(id);
-		for (DataTrackerTracker2D tracker:mapTrackers)
+		for (DataTracker2D tracker:mapTrackers)
 			tracker.setSender(id);
 	}
 	
@@ -102,8 +102,8 @@ public abstract class AbstractProcess
 		if (!isSealed()) {
 			if (tracker instanceof DataTracker0D)
 				tsTrackers.add((DataTracker0D) tracker);
-			else if (tracker instanceof DataTrackerTracker2D)
-				mapTrackers.add((DataTrackerTracker2D) tracker);
+			else if (tracker instanceof DataTracker2D)
+				mapTrackers.add((DataTracker2D) tracker);
 		}
 	}
 	

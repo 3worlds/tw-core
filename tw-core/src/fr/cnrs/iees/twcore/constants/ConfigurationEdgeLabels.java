@@ -40,6 +40,7 @@ import au.edu.anu.twcore.ecosystem.structure.ParameterEdge;
 import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 import au.edu.anu.twcore.ecosystem.structure.InitialisedByEdge;
 import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.ecosystem.structure.FromCategoryEdge;
 
 import au.edu.anu.twcore.ecosystem.dynamics.AppliesToEdge;
@@ -68,48 +69,50 @@ import au.edu.anu.twcore.ui.TrackComponentEdge;
  */
 public enum ConfigurationEdgeLabels {
 	//=========================================================================
-	//			| label				| 	class				
+	//			| label					|def name		| 	class				
 	//-------------------------------------------------------------------------
 	// data definition
-	E_SIZEDBY 		("sizedBy",			SizedByEdge.class),
+	E_SIZEDBY 		("sizedBy",			"szBy",			SizedByEdge.class),
 	// experiment
-	E_BASELINE 		("baseLine",		BaseLineEdge.class),
-	E_MODELSETUP	("modelSetup",		ModelSetupEdge.class),
-	E_STOPON		("stopOn",			StopOnEdge.class),
-	E_SOURCE		("source",			SourceEdge.class),
+	E_BASELINE 		("baseLine",		"bsln",			BaseLineEdge.class),
+	E_MODELSETUP	("modelSetup",		"moSu",			ModelSetupEdge.class),
+	E_STOPON		("stopOn",			"stpOn",		StopOnEdge.class),
+	E_SOURCE		("source",			"srcd",			SourceEdge.class),
 	// ecosystem / structure
-	E_DRIVERS		("drivers",			DriverEdge.class),
-	E_DECORATORS	("decorators",		DecoratorEdge.class),
-	E_PARAMETERS	("parameters",		ParameterEdge.class),
-	E_BELONGSTO		("belongsTo",		BelongsToEdge.class),
-	E_INITIALISEDBY	("initialisedBy",	InitialisedByEdge.class),
-	E_TOCATEGORY	("toCategory",		ToCategoryEdge.class),
-	E_FROMCATEGORY	("fromCategory",	FromCategoryEdge.class),
+	E_DRIVERS		("drivers",			"drvs",			DriverEdge.class),
+	E_DECORATORS	("decorators",		"decs",			DecoratorEdge.class),
+	E_PARAMETERS	("parameters",		"pars",			ParameterEdge.class),
+	E_BELONGSTO		("belongsTo",		"blngsTo",		BelongsToEdge.class),
+	E_INITIALISEDBY	("initialisedBy",	"initBy",		InitialisedByEdge.class),
+	E_TOCATEGORY	("toCategory",		"to",			ToCategoryEdge.class),
+	E_FROMCATEGORY	("fromCategory",	"from",			FromCategoryEdge.class),
 	// ecosystem / dynamics
-	E_APPLIESTO		("appliesTo",		AppliesToEdge.class),
-	E_DEPENDSON		("dependsOn",		DependsOnEdge.class),
-	E_EFFECTEDBY	("effectedBy",		EffectedByEdge.class),
-	E_STOPSYSTEM	("stopSystem",		StopSystemEdge.class),
-	E_CONDITION		("condition",		ConditionEdge.class),
-	E_GROUPOF		("groupOf",			GroupOfEdge.class),
-	E_CYCLE			("cycle",			CycleEdge.class),
-	E_INSTANCEOF	("instanceOf",		InstanceOfEdge.class),
-	E_LOADFROM		("loadFrom",		LoadFromEdge.class),
-	E_USERNG		("useRNG",			UseRNGEdge.class),
+	E_APPLIESTO		("appliesTo",		"aplyTo",		AppliesToEdge.class),
+	E_DEPENDSON		("dependsOn",		"depsOn",		DependsOnEdge.class),
+	E_EFFECTEDBY	("effectedBy",		"effdBy",		EffectedByEdge.class),
+	E_STOPSYSTEM	("stopSystem",		"stpSys",		StopSystemEdge.class),
+	E_CONDITION		("condition",		"condOf",			ConditionEdge.class),
+	E_GROUPOF		("groupOf",			"grpOf",		GroupOfEdge.class),
+	E_CYCLE			("cycle",			"cycl",			CycleEdge.class),
+	E_INSTANCEOF	("instanceOf",		"instOf",		InstanceOfEdge.class),
+	E_LOADFROM		("loadFrom",		"ldFrom",		LoadFromEdge.class),
+	E_USERNG		("useRNG",			"uses",			UseRNGEdge.class),
 	// user interface
-	E_TRACKTIME		("trackTime",		TrackTimeEdge.class),
-	E_TRACKSERIES	("trackSeries",		TrackTimeSeriesEdge.class),
-	E_TRACKFIELD	("trackField",		TrackFieldEdge.class),
-	E_TRACKTABLE	("trackTable",		TrackTableEdge.class),
-	E_TRACKPOP		("trackPopulation",	TrackPopulationEdge.class),
-	E_TRACKCOMPONENT("trackComponent",	TrackComponentEdge.class)
+	E_TRACKTIME		("trackTime",		"trksTmOf",		TrackTimeEdge.class),
+	E_TRACKSERIES	("trackSeries",		"trksSrsOf",	TrackTimeSeriesEdge.class),
+	E_TRACKFIELD	("trackField",		"trksFldOf",	TrackFieldEdge.class),
+	E_TRACKTABLE	("trackTable",		"trksTblOf",	TrackTableEdge.class),
+	E_TRACKPOP		("trackPopulation",	"trksPopOf",	TrackPopulationEdge.class),
+	E_TRACKCOMPONENT("trackComponent",	"trksCmpOf",	TrackComponentEdge.class)
 	;
 	//=========================================================================
 	private final String label;
+	private final String defName;
 	private final Class<?> type;
 	
-	private ConfigurationEdgeLabels(String label,Class<?> type) {
+	private ConfigurationEdgeLabels(String label,String defName,Class<?> type) {
 		this.label = label;
+		this.defName=defName;
 		this.type = type;
 	}
 	
@@ -117,8 +120,18 @@ public enum ConfigurationEdgeLabels {
 		return label;
 	}
 	
+	public String defName() {
+		return defName;
+	}
+	
 	public Class<?> type() {
 		return type;
 	}
-
+	public static ConfigurationEdgeLabels labelValueOf(String label) {
+		for (ConfigurationEdgeLabels lbl: ConfigurationEdgeLabels.values()) {
+			if (lbl.label.equals(label))
+				return lbl;
+		}
+		throw new TwcoreException("'"+label+"' not found in "+ConfigurationEdgeLabels.class.getSimpleName());
+	}
 }

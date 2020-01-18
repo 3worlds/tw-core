@@ -37,9 +37,9 @@ import au.edu.anu.twcore.data.runtime.Metadata;
  * @author Jacques Gignoux - 1 oct. 2019
  *
  */
-public class DataTrackerTracker2D extends AbstractDataTracker<Output2DData, Metadata> {
+public class DataTracker2D extends AbstractDataTracker<Output2DData, Metadata> {
 
-	public DataTrackerTracker2D() {
+	public DataTracker2D() {
 		super(DataMessageTypes.MAP);
 	}
 

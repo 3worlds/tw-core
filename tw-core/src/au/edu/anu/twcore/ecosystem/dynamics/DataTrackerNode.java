@@ -80,7 +80,7 @@ import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerTracker2D;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
@@ -468,8 +468,8 @@ public class DataTrackerNode
 			result = new DataTracker0D(stats,tstats,selection,sampleSize,
 				lsc, ls, expandedTrackList.keySet(),fieldMetadata,groupTracker); 
 		}		
-		else if (dataTrackerClass.equals(DataTrackerTracker2D.class.getName())) {	
-			result = new DataTrackerTracker2D();
+		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {	
+			result = new DataTracker2D();
 		}		
 //		else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
 //			result = new LabelValuePairTracker();
@@ -493,8 +493,8 @@ public class DataTrackerNode
 
 	public void attachMapWidget(DataReceiver<Output2DData,Metadata> widget) {
 		for (DataTracker<?,?> dt:dataTrackers.values())
-			if (dt instanceof DataTrackerTracker2D)
-				((DataTrackerTracker2D)dt).addObserver(widget);
+			if (dt instanceof DataTracker2D)
+				((DataTracker2D)dt).addObserver(widget);
 	}
 
 //	public void attachLabelValuePairWidget(DataReceiver<LabelValuePairData,Metadata> widget) {
