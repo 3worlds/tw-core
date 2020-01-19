@@ -87,16 +87,16 @@ public class PropertiesMatchDefinition extends Query {
 			satisfied = false;
 			return this;
 		}
-		SimplePropertyList props = targetNode.properties();
+		SimplePropertyList trgProps = targetNode.properties();
 		for (TreeGraphDataNode def : defs) {
-			if (!props.hasProperty(def.id())) {
+			if (!trgProps.hasProperty(def.id())) {
 				msg = "Property '" + def.id() + "' is missing.";
 				satisfied = false;
 				return this;
 			}
 			if (def.classId().equals(N_FIELD.label())) {
 				DataElementType dt = (DataElementType) def.properties().getPropertyValue(P_FIELD_TYPE.key());
-				String trgClassName = props.getPropertyClass(def.id()).getName();
+				String trgClassName = trgProps.getPropertyClass(def.id()).getName();
 				String defClassName = dt.className();
 				if (!trgClassName.equals(defClassName)) {
 					msg = "Property '" + def.id() + "' should have class '" + defClassName + "' but has '"
@@ -105,9 +105,9 @@ public class PropertiesMatchDefinition extends Query {
 					return this;
 				}
 			} else {
-				TableNode tn = (TableNode) def;
-				Dimensioner[] defDims = tn.dimensioners();
-				Table trgValue = (Table) tn.properties().getPropertyValue(def.id());
+				TableNode tblDef = (TableNode) def;
+				Dimensioner[] defDims = tblDef.dimensioners();
+				Table trgValue = (Table) trgProps.getPropertyValue(def.id());
 				Dimensioner[] trgDims = trgValue.getDimensioners();
 				if (trgDims.length != defDims.length) {
 					msg = "Property '" + def.id() + "' has " + defDims.length + " dimensions but has " + trgDims.length
@@ -125,7 +125,7 @@ public class PropertiesMatchDefinition extends Query {
 					}
 
 				}
-				Table defValue = tn.newInstance();
+				Table defValue = tblDef.newInstance();
 				if (!trgValue.getClass().equals(defValue.getClass())) {
 					msg = "Property '" + def.id() + " is of class '" + trgValue.getClass()
 							+ "' but should be of class '" + defValue.getClass() + "'.";
