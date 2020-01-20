@@ -55,8 +55,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * A query to check that the properties of a parameterValues or variableValues 
- * node match the definitions of the driver or parameter data
+ * A query to check that a controller of some kind exists in the userInterface
  */
 
 /**
@@ -69,19 +68,28 @@ public class UIStateMachineControllerQuery extends Query {
 
 	private String msg;
 
+	private static void getWidgets(TreeNode parent, List<TreeGraphDataNode> widgets, List<TreeNode> containers) {
+		if (parent.classId().equals(N_UIWIDGET.label()))
+			widgets.add((TreeGraphDataNode) parent);
+		else
+			containers.add(parent);
+
+		for (TreeNode child : parent.getChildren())
+			getWidgets(child, widgets, containers);
+	}
+
 	@Override
 	public Query process(Object input) {
 		defaultProcess(input);
 		TreeNode ui = (TreeNode) input;
 		Class<?> smcClass = fr.cnrs.iees.rvgrid.statemachine.StateMachineController.class;
 		List<TreeGraphDataNode> widgets = new ArrayList<>();
-		int containers =0;
-		for (TreeNode child : ui.getChildren()) {
-			containers++;
-			for (TreeNode widget : child.getChildren())
-				widgets.add((TreeGraphDataNode) widget);
-		}
-		int count = 0;
+		List<TreeNode> containers = new ArrayList<>();
+
+		for (TreeNode child : ui.getChildren()) 
+			getWidgets(child, widgets, containers);
+
+		int count=0;
 		for (TreeGraphDataNode widgetNode : widgets) {
 			String kstr = (String) widgetNode.properties().getPropertyValue(TwArchetypeConstants.twaSubclass);
 			try {
@@ -94,9 +102,10 @@ public class UIStateMachineControllerQuery extends Query {
 				e.printStackTrace();
 			}
 		}
-		// ha - this is like dna methylation. Suppress the query if something else will activate a query before hand.
-		// In this case its the must have a top, bottom or tab child.
-		if (containers==0) {
+		// ha - this is like dna methylation. Suppress the query if something else will
+		// activate a query before hand.
+		// In this case its the must have a child with label top, bottom or tab child.
+		if (containers.isEmpty()) {
 			satisfied = true;
 			return this;
 		}
