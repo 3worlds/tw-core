@@ -422,7 +422,7 @@ hasNode parameterValuesSpec
 	// category, its parameters are specific to it and no other individual with the same values
 	// will ever exist. Shared parameter values must be set at the group level
 	mustSatisfyQuery parameterValuesPropertiesMatchDefinitionQuery
-		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinition")
+		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
 		values = StringTable(([1]parameters))
 	
 hasNode variableValuesSpec
@@ -431,7 +431,7 @@ hasNode variableValuesSpec
 	multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
 	mustSatisfyQuery variableValuesPropertiesMatchDefinitionQuery
-		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinition")
+		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
 		values = StringTable(([1]drivers))
 	
 	

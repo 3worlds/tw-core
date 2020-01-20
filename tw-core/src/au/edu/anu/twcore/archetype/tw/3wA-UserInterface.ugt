@@ -3,6 +3,11 @@ hasNode userInterfaceSpec
 	isOfClass = String("userInterface")
 	hasParent = StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery musthaveStateMachineControllerQuery
+		className = String("au.edu.anu.twcore.archetype.tw.UIStateMachineControllerQuery")
+	mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
+		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
+		childLabel = StringTable(([3]"top", "bottom","tab"))
 
 hasNode topSpec
 	isOfClass = String("top")

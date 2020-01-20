@@ -29,6 +29,7 @@
 
 package au.edu.anu.twcore.archetype.tw;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -38,9 +39,11 @@ import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
@@ -61,80 +64,48 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  *
  * @date 29 Dec 2019
  */
-public class PropertiesMatchDefinition extends Query {
-
-	private String dataCategory;
-
-	public PropertiesMatchDefinition(String dataCategory) {
-		this.dataCategory = dataCategory;
-	}
-
-	public PropertiesMatchDefinition(StringTable table) {
-		super();
-		this.dataCategory = (table.getWithFlatIndex(0));
-	}
+public class UIStateMachineControllerQuery extends Query {
+	// could be SubTreeContainsOneOf??
 
 	private String msg;
 
 	@Override
 	public Query process(Object input) {
 		defaultProcess(input);
-		TreeGraphDataNode targetNode = (TreeGraphDataNode) input;
-		Collection<TreeGraphDataNode> defs = getDataDefs(targetNode, dataCategory);
-		satisfied = true;
-		if (defs == null) {
-			msg = "No property definitions found.";
-			satisfied = false;
+		TreeNode ui = (TreeNode) input;
+		Class<?> smcClass = fr.cnrs.iees.rvgrid.statemachine.StateMachineController.class;
+		List<TreeGraphDataNode> widgets = new ArrayList<>();
+		int containers =0;
+		for (TreeNode child : ui.getChildren()) {
+			containers++;
+			for (TreeNode widget : child.getChildren())
+				widgets.add((TreeGraphDataNode) widget);
+		}
+		int count = 0;
+		for (TreeGraphDataNode widgetNode : widgets) {
+			String kstr = (String) widgetNode.properties().getPropertyValue(TwArchetypeConstants.twaSubclass);
+			try {
+				Class<?> widgetClass = Class.forName(kstr);
+				if (smcClass.isAssignableFrom(widgetClass)) {
+					count++;
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		// ha - this is like dna methylation. Suppress the query if something else will activate a query before hand.
+		// In this case its the must have a top, bottom or tab child.
+		if (containers==0) {
+			satisfied = true;
 			return this;
 		}
-		SimplePropertyList trgProps = targetNode.properties();
-		for (TreeGraphDataNode def : defs) {
-			if (!trgProps.hasProperty(def.id())) {
-				msg = "Property '" + def.id() + "' is missing.";
-				satisfied = false;
-				return this;
-			}
-			if (def.classId().equals(N_FIELD.label())) {
-				DataElementType dt = (DataElementType) def.properties().getPropertyValue(P_FIELD_TYPE.key());
-				String trgClassName = trgProps.getPropertyClass(def.id()).getName();
-				String defClassName = dt.className();
-				if (!trgClassName.equals(defClassName)) {
-					msg = "Property '" + def.id() + "' should have class '" + defClassName + "' but has '"
-							+ trgClassName + "'.";
-					satisfied = false;
-					return this;
-				}
-			} else {
-				TableNode tblDef = (TableNode) def;
-				Dimensioner[] defDims = tblDef.dimensioners();
-				Table trgValue = (Table) trgProps.getPropertyValue(def.id());
-				Dimensioner[] trgDims = trgValue.getDimensioners();
-				if (trgDims.length != defDims.length) {
-					msg = "Property '" + def.id() + "' has " + defDims.length + " dimensions but has " + trgDims.length
-							+ ".";
-					satisfied = false;
-					return this;
-				}
-				for (int i = 0; i < trgDims.length; i++) {
-					if (trgDims[i].getLength() != defDims[i].getLength()) {
-						msg = "Property '" + def.id() + "' dimension [" + i + "] has length " + trgDims[i].getLength()
-								+ " but should be length " + defDims[i].getLength();
-						satisfied = false;
-						return this;
-
-					}
-
-				}
-				Table defValue = tblDef.newInstance();
-				if (!trgValue.getClass().equals(defValue.getClass())) {
-					msg = "Property '" + def.id() + " is of class '" + trgValue.getClass()
-							+ "' but should be of class '" + defValue.getClass() + "'.";
-					satisfied = false;
-					return this;
-				}
-			}
-		}
-		return null;
+		if (!(count == 1)) {
+			msg = "User interface must have one and only one controller widget";
+			satisfied = false;
+		} else
+			satisfied = true;
+		return this;
 	}
 
 	@Override
@@ -143,30 +114,4 @@ public class PropertiesMatchDefinition extends Query {
 
 	}
 
-	/* Public static - available for use by MM for matching purpose */
-	@SuppressWarnings("unchecked")
-	public static Collection<TreeGraphDataNode> getDataDefs(TreeGraphDataNode node, String dataCategory) {
-		// can't allow exceptions to arise here if used from MM
-		TreeGraphDataNode parent = (TreeGraphDataNode) node.getParent();
-		if (parent == null)
-			return null;
-		TreeGraphDataNode ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
-		if (ct == null)
-			return null;
-//		TreeGraphDataNode cat = (TreeGraphDataNode) get(ct.edges(Direction.OUT),
-//			selectZeroOrOne(hasTheLabel(E_BELONGSTO.label())), endNode());
-		List<TreeGraphDataNode> cats = (List<TreeGraphDataNode>) get(ct.edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
-		if (cats.isEmpty())
-			return null;
-		Set<TreeGraphDataNode> result = new HashSet<>();
-		for (TreeGraphDataNode cat:cats) {
-			Record rootRecord = (Record) get(cat.edges(Direction.OUT), 
-				selectZeroOrOne(hasTheLabel(dataCategory)),
-				endNode());
-			result.addAll(Record.getLeaves(rootRecord));
-		}
-		return result;
-	}
 }
