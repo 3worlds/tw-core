@@ -24,6 +24,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
  * @author Jacques Gignoux - 16 janv. 2020
  *
  */
+@SuppressWarnings("unused")
 public class SearchProcess 
 		extends AbstractRelationProcess  {
 

@@ -34,7 +34,7 @@ import fr.cnrs.iees.graph.io.GraphImporter;
 public class CheckSubArchetypeQuery extends Query {
 
 	private String pKey = null;
-	private Object pValue = null;
+	private String pValue = null;
 	private String fileName = null;
 
 	/**
@@ -45,9 +45,9 @@ public class CheckSubArchetypeQuery extends Query {
 	 */
 	public CheckSubArchetypeQuery(StringTable parameters) {
 		super();
-		pKey = (String) parameters.getWithFlatIndex(0);
+		pKey = parameters.getWithFlatIndex(0);
 		pValue = parameters.getWithFlatIndex(1);
-		fileName = (String) parameters.getWithFlatIndex(2);
+		fileName = parameters.getWithFlatIndex(2);
 	}
 
 	/*
@@ -64,7 +64,7 @@ public class CheckSubArchetypeQuery extends Query {
 		TreeNode node = (TreeNode) input;
 		satisfied = true;
 		Object givenpValue = localItem.properties().getPropertyValue(pKey);
-		if (pValue.equals(givenpValue)) {
+		if (pValue.equals(givenpValue.toString())) {
 			Tree<?> tree = (Tree<?>) GraphImporter.importGraph(fileName,getClass());
 			// maybe this is a flaw to use this factory ?
 			Tree<TreeNode> treeToCheck = new SimpleTree<TreeNode>(node.factory());

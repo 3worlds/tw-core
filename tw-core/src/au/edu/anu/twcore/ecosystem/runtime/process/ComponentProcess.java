@@ -283,22 +283,22 @@ public class ComponentProcess
 							function.setFocalContext(focalContext);
 							func.changeOtherState(t, dt, focal, newBorn);
 						}
-						// TODO: put a condition on this ? or always keeps this info?
-						focal.relateTo(newBorn,parentTo.key());
+						if (function.relateToOther())
+							focal.relateTo(newBorn,parentTo.key());
 						// This is actually not needed: the only relation would be parentTo!
-						for (RelateToDecisionFunction func : function.getRelateToDecisionConsequences()) {
-							HierarchicalContext otherContext = new HierarchicalContext();
-							otherContext.groupParameters = nbs.container.parameters();
-							otherContext.groupVariables = nbs.container.variables();
-							otherContext.groupPopulationData = nbs.container.populationData();
-							otherContext.groupName = nbs.container.id();
-							function.setOtherContext(otherContext);
-							function.setFocalContext(focalContext);
-							if (func.relate(t, dt, focal, newBorn)) {
-								// TODO: how to know the type of relation to establish ?
-//								focal.relateTo(newBorn,parentTo.key());
-							}
-						}
+//						for (RelateToDecisionFunction func : function.getRelateToDecisionConsequences()) {
+//							HierarchicalContext otherContext = new HierarchicalContext();
+//							otherContext.groupParameters = nbs.container.parameters();
+//							otherContext.groupVariables = nbs.container.variables();
+//							otherContext.groupPopulationData = nbs.container.populationData();
+//							otherContext.groupName = nbs.container.id();
+//							function.setOtherContext(otherContext);
+//							function.setFocalContext(focalContext);
+//							if (func.relate(t, dt, focal, newBorn)) {
+//								// TODO: how to know the type of relation to establish ?
+////								focal.relateTo(newBorn,parentTo.key());
+//							}
+//						}
 						// welcome newBorn in container!
 						nbs.container.addItem(newBorn); // safe - delayed addition
 					}

@@ -123,7 +123,10 @@ hasNode functionSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
-	// TODO: specific to createOther: do we want to keep a parent link between offspring and parent?
+	// specific to createOther: do we want to keep a parent link between offspring and parent?
+	mustSatisfyQuery CheckSubArchetypeQueryCreateOtherDecision
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"type","CreateOtherDecision","3wSA-CreateOtherDecision.ugt"))
 
 hasNode consequenceFunctionSpec
 	isOfClass = String("function")

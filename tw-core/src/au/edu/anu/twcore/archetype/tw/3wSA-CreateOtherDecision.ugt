@@ -1,0 +1,20 @@
+tree
+// Sub-archetype for 3Worlds for checking CreateOtherDecision specifications
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-CreateOtherDecision
+
+	hasNode CreateOtherDecisionFunctionSpec
+		isOfClass = String("function")
+		hasParent = StringTable(([1]"process:"))
+		multiplicity = IntegerRange("0..*")
+		hasProperty relateToFunctionKeepLinkPropertySpec
+			hasName = String("relateToProduct")
+			type = String("Boolean")
+			multiplicity = IntegerRange("1..1")
+      

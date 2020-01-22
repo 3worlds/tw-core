@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.RngNode;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
+import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -132,6 +133,9 @@ public class FunctionNode
 				if (n instanceof FunctionNode){
 					FunctionNode csq = (FunctionNode) n;
 					result.addConsequence(csq.getInstance(index));
+			if (result instanceof CreateOtherDecisionFunction)
+				((CreateOtherDecisionFunction)result).setRelateToOther(
+					(boolean)properties().getPropertyValue(P_RELATEPRODUCT.key()));
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

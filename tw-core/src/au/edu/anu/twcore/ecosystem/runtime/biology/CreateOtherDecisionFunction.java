@@ -46,8 +46,9 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
         	new LinkedList<ChangeStateFunction>();
     private List<ChangeOtherStateFunction> COSfunctions = 
         	new LinkedList<ChangeOtherStateFunction>();
-    private List<RelateToDecisionFunction> RTfunctions = 
-        	new LinkedList<RelateToDecisionFunction>();
+//    private List<RelateToDecisionFunction> RTfunctions = 
+//        	new LinkedList<RelateToDecisionFunction>();
+    private boolean relateToOther = false;
 
     /**
      * 
@@ -66,8 +67,8 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
 	public final void addConsequence(TwFunction function) {
 		if (ChangeOtherStateFunction.class.isAssignableFrom(function.getClass()))
 			COSfunctions.add((ChangeOtherStateFunction) function);
-		if (RelateToDecisionFunction.class.isAssignableFrom(function.getClass()))
-			RTfunctions.add((RelateToDecisionFunction) function);
+//		else if (RelateToDecisionFunction.class.isAssignableFrom(function.getClass()))
+//			RTfunctions.add((RelateToDecisionFunction) function);
 		else if (ChangeStateFunction.class.isAssignableFrom(function.getClass()))
 			CSfunctions.add((ChangeStateFunction) function);		
 	}
@@ -80,8 +81,17 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
 		return COSfunctions;
 	}
 	
-	public final List<RelateToDecisionFunction> getRelateToDecisionConsequences() {
-		return RTfunctions;	
+	public final boolean relateToOther() {
+		return relateToOther;
 	}
+
+	public final void setRelateToOther(boolean ro) {
+		relateToOther = ro;
+	}
+
+	
+//	public final List<RelateToDecisionFunction> getRelateToDecisionConsequences() {
+//		return RTfunctions;	
+//	}
 	
 }
