@@ -126,7 +126,7 @@ public class RelationContainer
 
 	@Override
 	public Categorized<SystemComponent> to() {
-		return relationType.from();
+		return relationType.to();
 	}
 
 }
