@@ -42,6 +42,7 @@ import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
+import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
@@ -105,7 +106,7 @@ public class Simulator {
 	/** the timeTracker, sending time information to whoever is listening */
 	private TimeTracker timetracker; 
 	/** container for all SystemComponents */
-	private SystemContainer community;
+	private EcosystemGraph ecosystem;
 	/** simulator status */
 	private SimulatorStatus status = SimulatorStatus.Initial;
 	/** all data trackers used in this simulator, together with their metadata */
@@ -131,7 +132,7 @@ public class Simulator {
 			List<Timer> timers,
 			int[] timeModelMasks,
 			Map<Integer, List<List<TwProcess>>> processCallingOrder,
-			SystemContainer ecosystem) {
+			EcosystemGraph ecosystem) {
 		super();
 		this.id = id;
 		this.stoppingCondition = stoppingCondition;
@@ -139,7 +140,7 @@ public class Simulator {
 		this.timerList=timers;
 		this.timeModelMasks = timeModelMasks;
 		this.processCallingOrder = processCallingOrder;
-		this.community = ecosystem;
+		this.ecosystem = ecosystem;
 		// looping aids
 		currentTimes = new long[timerList.size()];
 		// data tracking - record all data trackers and make their metadata
@@ -160,7 +161,7 @@ public class Simulator {
 							trackers.put(dt, meta);
 		}
 		// copies initial community to current community to start properly
-		community.reset();
+		this.ecosystem.reset();
 	}
 	public int id() {
 		return id;
@@ -234,15 +235,14 @@ public class Simulator {
 			// 5 advance age of ALL SystemComponents, including the not update ones.	
 		
 //			int nItems=0;
-			for (SystemComponent sc:community.allItems()) {
+			for (SystemComponent sc:ecosystem.community().allItems()) {
 				sc.autoVar().writeEnable();
 				sc.autoVar().age(nexttime-sc.autoVar().birthDate());
 				sc.autoVar().writeDisable();
 //				nItems++;
 			}
 			// apply all changes to community
-			community.effectAllChanges(); // must be done first -> removes dead ones and includes new ones
-			community.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
+			ecosystem.effectChanges(); 
 			for (DataTracker<?,Metadata> tracker:trackers.keySet())
 				tracker.updateTrackList();
 //			
@@ -275,7 +275,7 @@ public class Simulator {
 		for (Timer t:timerList)
 			t.reset();
 		timetracker.sendData(lastTime);
-		community.reset();
+		ecosystem.reset();
 	}
 
 	// returns true if stopping condition is met
@@ -299,6 +299,6 @@ public class Simulator {
 	}
 	
 	public SystemContainer community() {
-		return community;
+		return ecosystem.community();
 	}
 }

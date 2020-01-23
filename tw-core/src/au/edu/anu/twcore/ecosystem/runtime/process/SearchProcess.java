@@ -85,17 +85,6 @@ public class SearchProcess
 		}
 		if ((focalGroup!=null)&&(otherGroup!=null)) {
 			executeFunctions(focalGroupContainer,otherGroupContainer,t,dt);
-//			for (DataTracker0D tracker:tsTrackers) {
-//				if (tracker.isTracked(focalGroupContainer)) {
-//					tracker.recordItem(focalContext.buildItemId(null));
-//					tracker.record(currentStatus,container.populationData());
-//				}
-//				if (focalGroup!=otherGroup) // no need to track the same group twice
-//					if (tracker.isTracked(otherGroupContainer)) {
-//					tracker.recordItem(otherContext.buildItemId(null));
-//					tracker.record(currentStatus,container.populationData());
-//				}
-//			}
 		}
 	}
 
@@ -104,12 +93,6 @@ public class SearchProcess
 			double t, double dt) {
 		// brute force approach
 		for (SystemComponent focal:focalContainer.items()) {
-//			// track component state
-//			for (DataTracker0D tracker:tsTrackers) 
-//				if (tracker.isTracked(focal)) {
-//				tracker.recordItem(focalContext.buildItemId(focal.id()));
-//				tracker.record(currentStatus,focal.currentState());
-//			}
 			for (SystemComponent other:otherContainer.items()) {
 				for (RelateToDecisionFunction function: RTfunctions) {
 					function.setFocalContext(focalContext);

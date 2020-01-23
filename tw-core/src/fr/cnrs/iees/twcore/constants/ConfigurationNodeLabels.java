@@ -28,9 +28,6 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.constants;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import au.edu.anu.twcore.data.*;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.experiment.*;

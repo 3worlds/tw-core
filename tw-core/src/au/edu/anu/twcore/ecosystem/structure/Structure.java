@@ -32,9 +32,19 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.LimitedEdition;
+import fr.ens.biologie.generic.Sealable;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 
 /**
  * Class matching the "ecosystem/structure" node label in the 3Worlds configuration tree.
@@ -43,7 +53,12 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class Structure extends InitialisableNode {
+public class Structure 
+		extends InitialisableNode 
+		implements LimitedEdition<Map<String,RelationContainer>>, Sealable {
+	
+	private boolean sealed = false;
+	private Map<Integer,Map<String,RelationContainer>> relconts = new HashMap<>();
 
 	// default constructor
 	public Structure(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -63,6 +78,36 @@ public class Structure extends InitialisableNode {
 	@Override
 	public int initRank() {
 		return N_STRUCTURE.initRank();
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Map<String,RelationContainer> makeRelationContainers(int id) {
+		List<RelationType> lrt = (List<RelationType>) get(getChildren(),
+			selectZeroOrMany(hasTheLabel(N_RELATIONTYPE.label())));
+		Map<String,RelationContainer> result = new HashMap<>();
+		for (RelationType rt:lrt)
+			result.put(rt.id(),rt.getInstance(id));
+		return result;
+	}
+
+	@Override
+	public Map<String, RelationContainer> getInstance(int id) {
+		if (!sealed)
+			initialise();
+		if (!relconts.containsKey(id))
+			relconts.put(id,makeRelationContainers(id));
+		return relconts.get(id);
+	}
+
+	@Override
+	public Sealable seal() {
+		sealed = true;
+		return this;
+	}
+
+	@Override
+	public boolean isSealed() {
+		return sealed;
 	}
 
 }

@@ -65,7 +65,9 @@ import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
+import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.structure.Structure;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
@@ -161,8 +163,13 @@ public class SimulatorNode
 		// *** Initial community
 		SystemContainer comm = (SystemContainer)((Ecosystem) getParent()).getInstance(index);
 		setInitialCommunity(index);
+		// *** ecosystem graph
+		Structure str = (Structure) get(getParent(), 
+			children(), 
+			selectOne(hasTheLabel(N_STRUCTURE.label())));
+		EcosystemGraph ecosystem = new EcosystemGraph(comm,str.getInstance(index));
 		// *** finally, instantiate simulator
-		Simulator sim = new Simulator(index,rootStop,timeLine,timeModels,timers,timeModelMasks.clone(),pco,comm);
+		Simulator sim = new Simulator(index,rootStop,timeLine,timeModels,timers,timeModelMasks.clone(),pco,ecosystem);
 		rootStop.attachSimulator(sim);
 		return sim;
 	}

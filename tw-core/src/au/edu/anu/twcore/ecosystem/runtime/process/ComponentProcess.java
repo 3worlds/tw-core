@@ -284,21 +284,9 @@ public class ComponentProcess
 							func.changeOtherState(t, dt, focal, newBorn);
 						}
 						if (function.relateToOther())
+							// WRONG: should use delayed addition by a relContainer ?
+							// well, no in theory it's ok because users are not going to see this...
 							focal.relateTo(newBorn,parentTo.key());
-						// This is actually not needed: the only relation would be parentTo!
-//						for (RelateToDecisionFunction func : function.getRelateToDecisionConsequences()) {
-//							HierarchicalContext otherContext = new HierarchicalContext();
-//							otherContext.groupParameters = nbs.container.parameters();
-//							otherContext.groupVariables = nbs.container.variables();
-//							otherContext.groupPopulationData = nbs.container.populationData();
-//							otherContext.groupName = nbs.container.id();
-//							function.setOtherContext(otherContext);
-//							function.setFocalContext(focalContext);
-//							if (func.relate(t, dt, focal, newBorn)) {
-//								// TODO: how to know the type of relation to establish ?
-////								focal.relateTo(newBorn,parentTo.key());
-//							}
-//						}
 						// welcome newBorn in container!
 						nbs.container.addItem(newBorn); // safe - delayed addition
 					}
