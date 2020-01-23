@@ -110,6 +110,7 @@ hasNode functionSpec
 	mustSatisfyQuery functionMatchesWithProcessTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.FunctionMatchProcessTypeQuery")
 	hasProperty functionTypeSpec
+		// NB: default is ChangeState
 		hasName = String("type")
 		type = String("TwFunctionTypes")
 		multiplicity = IntegerRange("1..1")
@@ -130,13 +131,16 @@ hasNode functionSpec
 
 hasNode consequenceFunctionSpec
 	isOfClass = String("function")
-	hasParent = StringTable(([1]"process:/function:"))
+	//hasParent = StringTable(([1]"process:/function:"))
+	// recursive - consequence of consequence of ...
+	hasParent = StringTable(([1]"function:"))
 	multiplicity = IntegerRange("0..*")
 	mustSatisfyQuery functionNameWithUppercaseQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
 	mustSatisfyQuery functionMatchesWithParentFunctionTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ConsequenceMatchFunctionTypeQuery")
 	hasProperty csqfunctionTypeSpec
+		// NB: default is ChangeState
 		hasName = String("type")
 		type = String("TwFunctionTypes")
 		multiplicity = IntegerRange("1..1")
