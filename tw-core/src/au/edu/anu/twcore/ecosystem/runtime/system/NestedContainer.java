@@ -45,13 +45,6 @@ public interface NestedContainer<T extends Identity> {
 	 */
 	public Iterable<T> allItems();
 
-	/**
-	 * Effectively remove <em>and</em> add items from the container lists and from
-	 * <em>all</em> its sub-containers (before a call to this method, items are just
-	 * stored into {@code itemsToRemove} and {@code itemsToAdd})
-	 */
-	public void effectAllChanges();
-
 	/** counts the total number of items, including those of subContainers */
 	public int totalCount();
 
@@ -67,4 +60,7 @@ public interface NestedContainer<T extends Identity> {
 	public default void clearAllVariables() {
 		// do nothing
 	}
+	
+	public int depth();
+
 }

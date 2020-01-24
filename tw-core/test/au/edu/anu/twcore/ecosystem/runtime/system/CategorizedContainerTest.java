@@ -188,7 +188,7 @@ class CategorizedContainerTest {
 	final void testRemoveItem() {
 		int currentCount = cc.count();
 		for (int i=0; i<3; i++)
-			cc.removeItem("whale_"+i);
+			cc.removeItem(cc.item("whale_"+i));
 		assertEquals(cc.count(),currentCount);
 		cc.effectChanges();
 		assertEquals(cc.count(),currentCount-3);
@@ -249,7 +249,7 @@ class CategorizedContainerTest {
 		cc.effectChanges();
 		assertEquals(cc.nAdded(),1);
 		assertEquals(cc.count(),4);
-		cc.removeItem("whale_1");
+		cc.removeItem(cc.item("whale_1"));
 		assertEquals(cc.count(),4);
 		assertEquals(cc.nRemoved(),0);
 		cc.effectChanges();
@@ -278,7 +278,7 @@ class CategorizedContainerTest {
 	final void testNRemoved() {
 		cc.resetCounters();
 		for (int i=0; i<2; i++) {
-			cc.removeItem("whale_"+i);
+			cc.removeItem(cc.item("whale_"+i));
 			cc.effectChanges();
 			show("testNRemoved",Integer.toString(cc.nRemoved())+"/"+Integer.toString(cc.count()));
 		}
@@ -288,7 +288,7 @@ class CategorizedContainerTest {
 
 	@Test
 	final void testResetCounters() {
-		cc.removeItem("whale_2");
+		cc.removeItem(cc.item("whale_2"));
 		cc.effectChanges();
 		assertEquals(cc.nAdded(),3);
 		assertEquals(cc.nRemoved(),1);

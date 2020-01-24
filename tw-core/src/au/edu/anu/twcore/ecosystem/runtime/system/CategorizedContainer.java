@@ -83,7 +83,7 @@ import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
 // Tested OK with version 0.1.3 on 1/7/2019
 public abstract class CategorizedContainer<T extends Identity> 
 		extends AbstractPopulationContainer<T>
-		implements NestedContainer<T>, ResettableContainer<T>, 
+		implements NestedContainer<T>, NestedDynamicContainer<T>, ResettableContainer<T>, 
 			StateContainer, Resettable, Sealable {
 	
 	static {
@@ -243,9 +243,11 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * 
 	 * @param id the id of the item to remove
 	 */
-	public void removeItem(String id) {
-		itemsToRemove.add(id);
+	@Override
+	public void removeItem(T item) {
+		itemsToRemove.add(item.id());
 	}
+	
 
 	/**
 	 * Gets the item matching the id passed as argument. Only searches this
@@ -254,6 +256,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * @param id the id to search for
 	 * @return the matching item, {@code null} if not found
 	 */
+	@Override
 	public T item(String id) {
 		return items.get(id);
 	}
@@ -264,6 +267,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * 
 	 * @return a read-only item list
 	 */
+	@Override
 	public Iterable<T> items() {
 		return items.values();
 	}
@@ -275,6 +279,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * @param containerId the sub-container to search for
 	 * @return the matching sub-container, {@code null} if not found
 	 */
+	@Override
 	public CategorizedContainer<T> subContainer(String containerId) {
 		return subContainers.get(containerId);
 	}
@@ -299,6 +304,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * @param containerId the sub-container to search for
 	 * @return the matching sub-container, {@code null} if not found
 	 */
+	@Override
 	public CategorizedContainer<T> findContainer(String containerId) {
 		return findContainer(containerId, this);
 	}
@@ -309,6 +315,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * 
 	 * @return a read-only container list
 	 */
+	@Override
 	public Iterable<CategorizedContainer<T>> subContainers() {
 		return subContainers.values();
 	}
@@ -327,6 +334,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * 
 	 * @return a read-only list of items
 	 */
+	@Override
 	public Iterable<T> allItems() {
 		QuickListOfLists<T> l = new QuickListOfLists<T>();
 		addItems(l, this);
@@ -354,14 +362,17 @@ public abstract class CategorizedContainer<T extends Identity>
 		return l;
 	}
 
+	@Override
 	public boolean contains(T item) {
 		return items.values().contains(item);
 	}
 
+	@Override
 	public boolean contains(String item) {
 		return items.keySet().contains(item);
 	}
 
+	@Override
 	public boolean containsInitialItem(T item) {
 		return initialItems.contains(item);
 	}
@@ -373,6 +384,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * @param item
 	 * @return
 	 */
+	@Override
 	public T initialForItem(String id) {
 		return itemsToInitials.get(id);
 	}
@@ -397,6 +409,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	/** counts the total number of items, including those of subContainers */
+	@Override
 	public int totalCount() {
 		return totalCount(this, 0);
 	}
@@ -409,6 +422,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	/** counts the total number of added items, including those of subContainers */
+	@Override
 	public int totalAdded() {
 		return totalAdded(this, 0);
 	}
@@ -421,10 +435,12 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	/** counts the total number of added items, including those of subContainers */
+	@Override
 	public int totalRemoved() {
 		return totalRemoved(this, 0);
 	}
 
+	@Override
 	public int depth() {
 		int result = 0;
 		CategorizedContainer<?> superC = this;

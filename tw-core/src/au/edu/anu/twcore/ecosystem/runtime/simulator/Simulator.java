@@ -243,6 +243,7 @@ public class Simulator {
 			}
 			// apply all changes to community
 			ecosystem.effectChanges(); 
+//			System.out.println("Ecosystem: "+ecosystem.nNodes()+" components, "+ecosystem.nEdges()+" relations");
 			for (DataTracker<?,Metadata> tracker:trackers.keySet())
 				tracker.updateTrackList();
 //			

@@ -25,9 +25,6 @@ public abstract class AbstractPopulationContainer<T extends Identity>
 		props.add(COUNT.shortName());
 		props.add(NADDED.shortName());
 		props.add(NREMOVED.shortName());
-//		props.add(TCOUNT.shortName());
-//		props.add(TNADDED.shortName());
-//		props.add(TNREMOVED.shortName());
 		propsPK = new PropertyKeys(props);
 	}
 

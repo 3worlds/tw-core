@@ -24,26 +24,6 @@ public interface SimpleContainer<T extends Identity> extends Population {
 	public ReadOnlyPropertyList populationData();
 
 	/**
-	 * Tag an item for addition into this container's item list. The item will be
-	 * effectively added only when {@code effectChanges()} or
-	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
-	 * container state consistent over time in discrete time simulations.
-	 * 
-	 * @param item the item to add
-	 */
-	public void addItem(T item);
-
-	/**
-	 * Tag an item for removal from this container's item list. The item will be
-	 * effectively removed only when {@code effectChanges()} or
-	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
-	 * container state consistent over time in discrete time simulations.
-	 * 
-	 * @param id the id of the item to remove
-	 */
-	public void removeItem(String id);
-
-	/**
 	 * Gets the item matching the id passed as argument. Only searches this
 	 * container item list, not those of the sub-containers.
 	 * 
@@ -59,15 +39,6 @@ public interface SimpleContainer<T extends Identity> extends Population {
 	 * @return a read-only item list
 	 */
 	public Iterable<T> items();
-
-
-	/**
-	 * Effectively remove <em>and</em> add items from the container lists (before a
-	 * call to this method, they are just stored into {@code itemsToRemove} and
-	 * {@code itemsToAdd}). NB: to recursively effect changes for all
-	 * sub-containers, use {@code effectAllChanges()}.
-	 */
-	public void effectChanges();
 
 	public boolean contains(T item);
 

@@ -195,7 +195,7 @@ public class ComponentProcess
 								func.changeOtherState(t, dt, focal, newRecruit);
 							}
 							// replacement of old component by new one.
-							container.removeItem(focal.id());
+							container.removeItem(focal);
 							recruitContainer.addItem(newRecruit);
 							// remove from tracklist - safe, data sending has already been made
 							for (DataTracker0D tracker:tsTrackers) 
@@ -215,7 +215,7 @@ public class ComponentProcess
 			for (DeleteDecisionFunction function : Dfunctions) {
 				function.setFocalContext(focalContext);
 				if (function.delete(t, dt, focal)) {
-					container.removeItem(focal.id()); // safe - delayed removal
+					container.removeItem(focal); // safe - delayed removal
 					// remove from tracklist if dead - safe, data sending has already been made
 					for (DataTracker0D tracker:tsTrackers) 
 						if (tracker.isTracked(focal))

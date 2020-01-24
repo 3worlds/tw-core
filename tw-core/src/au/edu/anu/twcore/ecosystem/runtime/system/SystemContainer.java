@@ -88,7 +88,7 @@ public class SystemContainer extends CategorizedContainer<SystemComponent> {
 		for (CategorizedContainer<SystemComponent> childContainer : parentContainer.subContainers())
 			clearState(childContainer);
 		for (SystemComponent item : parentContainer.items())
-			parentContainer.removeItem(item.id());
+			parentContainer.removeItem(item);
 		// effectAllChanges() is recursive so don't use here.
 		parentContainer.effectChanges();// counters are handled here
 		parentContainer.clearVariables();
@@ -127,8 +127,7 @@ public class SystemContainer extends CategorizedContainer<SystemComponent> {
 			childContainer.clearAllVariables();
 	}
 
-	// TODO: fix the problem here
-	// CAUTION: must disconnect !!!
+	@Override
 	public void effectChanges() {
 		for (String id : itemsToRemove) {
 			SystemComponent sc = items.remove(id);
@@ -136,8 +135,7 @@ public class SystemContainer extends CategorizedContainer<SystemComponent> {
 				populationData.count--;
 				populationData.nRemoved++;
 				itemsToInitials.remove(id);
-				sc.disconnect(); // SRs will stay in their relation lists...
-				// solution: before disconnect, remove all edges from the relation containers
+				sc.disconnect();
 			}
 		}
 		itemsToRemove.clear();
