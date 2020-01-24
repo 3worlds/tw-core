@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
