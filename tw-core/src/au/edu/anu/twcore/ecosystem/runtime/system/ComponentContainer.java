@@ -38,9 +38,9 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class SystemContainer extends CategorizedContainer<SystemComponent> {
+public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 
-	public SystemContainer(Categorized<SystemComponent> cats, String proposedId, SystemContainer parent,
+	public ComponentContainer(Categorized<SystemComponent> cats, String proposedId, ComponentContainer parent,
 			TwData parameters, TwData variables) {
 		super(cats, proposedId, parent, parameters, variables);
 	}
@@ -65,7 +65,7 @@ public class SystemContainer extends CategorizedContainer<SystemComponent> {
 	public void stepAll() {
 		step();
 		for (CategorizedContainer<SystemComponent> sc : subContainers())
-			((SystemContainer) sc).stepAll();
+			((ComponentContainer) sc).stepAll();
 	}
 
 	@Override

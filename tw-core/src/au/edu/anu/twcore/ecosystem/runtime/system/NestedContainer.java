@@ -17,7 +17,7 @@ public interface NestedContainer<T extends Identity> {
 	 * @param containerId the sub-container to search for
 	 * @return the matching sub-container, {@code null} if not found
 	 */
-	public NestedContainer<T> subContainer(String containerId);
+	public SimpleContainer<T> subContainer(String containerId);
 
 	/**
 	 * Gets the sub-container matching the id passed as an argument. Searches this
@@ -26,7 +26,7 @@ public interface NestedContainer<T extends Identity> {
 	 * @param containerId the sub-container to search for
 	 * @return the matching sub-container, {@code null} if not found
 	 */
-	public NestedContainer<T> findContainer(String containerId);
+	public SimpleContainer<T> findContainer(String containerId);
 	
 	/**
 	 * Gets all sub-containers contained in this container only, without those
@@ -34,7 +34,7 @@ public interface NestedContainer<T extends Identity> {
 	 * 
 	 * @return a read-only container list
 	 */
-	public Iterable<? extends NestedContainer<T>> subContainers();
+	public Iterable<? extends SimpleContainer<T>> subContainers();
 
 	/**
 	 * Gets all items contained in this container, including those contained in

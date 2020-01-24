@@ -40,7 +40,7 @@ import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -122,7 +122,7 @@ public class Component
 				if (tn instanceof VariableValues)
 					((VariableValues)tn).fill(sc.currentState());
 			// insert component into container
-			LimitedEdition<SystemContainer> p = (LimitedEdition<SystemContainer>) getParent();
+			LimitedEdition<ComponentContainer> p = (LimitedEdition<ComponentContainer>) getParent();
 			// first case: no groups are specified, the component is required to be stored directly
 			// at the ecosystem level.
 			// In order not to break the logic of containers, which must only contain items of the
@@ -130,7 +130,7 @@ public class Component
 			// and put the new SC into it. The ecosystem container cannot store any SC directly because
 			// it's got no categories.
 			if (p instanceof InitialState) {
-				SystemContainer ecoCont = p.getInstance(id); 
+				ComponentContainer ecoCont = p.getInstance(id); 
 				CategorizedContainer<SystemComponent> theCont = null;
 				for (CategorizedContainer<SystemComponent> cont:ecoCont.subContainers()) {
 					if (cont.categoryInfo().categories().equals(sc.membership().categories())) {						
@@ -149,9 +149,9 @@ public class Component
 							break;
 					}
 					if (pv==null)
-						theCont = new SystemContainer(sc.membership(),groupName,ecoCont,null,null);
+						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,null,null);
 					else {
-						theCont = new SystemContainer(sc.membership(),groupName,ecoCont,
+						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,
 							componentFactory.newParameterSet(),null);
 						pv.fill(theCont.parameters());
 					}

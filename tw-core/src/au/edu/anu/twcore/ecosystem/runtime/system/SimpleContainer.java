@@ -45,7 +45,5 @@ public interface SimpleContainer<T extends Identity> extends Population {
 	public boolean contains(String item);
 	
 	public void clearItems();
-	
-	public void resetCounters();
 
 }

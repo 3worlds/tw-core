@@ -56,7 +56,7 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
@@ -113,7 +113,7 @@ public class LifeCycle
 	private Map<Category,Category> produce = new HashMap<Category,Category>();
 	
 	// The SystemComponent containers instantiated by this LifeCycle
-	private Map<Integer,Map<String,SystemContainer>> containers = new HashMap<>();
+	private Map<Integer,Map<String,ComponentContainer>> containers = new HashMap<>();
 	
 	// default constructor
 	public LifeCycle(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -255,7 +255,7 @@ public class LifeCycle
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
 
-	public Collection<SystemContainer> containers(int simId) {
+	public Collection<ComponentContainer> containers(int simId) {
 		if (sealed)
 			return containers.get(simId).values();
 		else
@@ -268,7 +268,7 @@ public class LifeCycle
 	 * @param name
 	 * @return
 	 */
-	public SystemContainer container(int simId, String name) {
+	public ComponentContainer container(int simId, String name) {
 		if (sealed)
 			return containers.get(simId).get(name);
 		else
@@ -284,18 +284,18 @@ public class LifeCycle
 	 * @param name the name of the container
 	 * @return the container
 	 */
-	public SystemContainer makeContainer(int simId, String name, SystemContainer parent) {
+	public ComponentContainer makeContainer(int simId, String name, ComponentContainer parent) {
 		if (!sealed) 
 			initialise();
-		Map<String,SystemContainer> lsc = containers.get(simId);
+		Map<String,ComponentContainer> lsc = containers.get(simId);
 		if (lsc==null)
-			containers.put(simId,new HashMap<String,SystemContainer>());
-		SystemContainer result = containers.get(simId).get(name);
+			containers.put(simId,new HashMap<String,ComponentContainer>());
+		ComponentContainer result = containers.get(simId).get(name);
 		if (result==null) {
 			if (parameterTemplate!=null)
-				result = new SystemContainer(this,name,parent,parameterTemplate.clone(),null);
+				result = new ComponentContainer(this,name,parent,parameterTemplate.clone(),null);
 			else
-				result = new SystemContainer(this,name,parent,null,null);
+				result = new ComponentContainer(this,name,parent,null,null);
 			if (!result.id().equals(name))
 				log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
 			containers.get(simId).put(result.id(),result);

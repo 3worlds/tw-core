@@ -10,7 +10,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
@@ -30,7 +30,7 @@ public abstract class AbstractRelationProcess
 	protected SortedSet<Category> focalCategories = new TreeSet<>();
 	protected SortedSet<Category> otherCategories = new TreeSet<>();
 
-	public AbstractRelationProcess(SystemContainer world, RelationContainer relation, Timer timer) {
+	public AbstractRelationProcess(ComponentContainer world, RelationContainer relation, Timer timer) {
 		super(world, timer);
 		relContainer = relation;
 		focalCategoryId = relContainer.from().buildCategorySignature();

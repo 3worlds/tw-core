@@ -45,7 +45,7 @@ import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -79,7 +79,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 	private Metadata singletonMD = null;
 	// metadata for numeric fields, ie min max units etc.
 	private ReadOnlyPropertyList fieldMetadata = null;
-	private List<SystemContainer> trackedGroups = null;
+	private List<ComponentContainer> trackedGroups = null;
 	private List<SystemComponent> trackedComponents = null;
 	private int trackSampleSize = 0;
 	private SamplingMode trackMode;
@@ -89,7 +89,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 	private Random rng;
 
 	public DataTracker0D(StatisticalAggregatesSet statistics, StatisticalAggregatesSet tableStatistics,
-			SamplingMode selection, int sampleSize, List<SystemContainer> trackedGroups,
+			SamplingMode selection, int sampleSize, List<ComponentContainer> trackedGroups,
 			List<SystemComponent> trackedComponents, Collection<String> track, ReadOnlyPropertyList fieldMetadata,
 			boolean trackGroup) {
 		super(DataMessageTypes.TIME_SERIES);

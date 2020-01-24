@@ -43,7 +43,7 @@ import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 
 /**
  * A class matching the "ecosystem/dynamics/initialState" node of the 3w configuration
@@ -54,12 +54,12 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
 // classes are up and ready with their containers and data templates
 public class InitialState 
 		extends InitialisableNode 
-		implements Sealable, LimitedEdition<SystemContainer> {
+		implements Sealable, LimitedEdition<ComponentContainer> {
 
 	private boolean sealed = false;
 //	private TwData parameters = null;
 //	private SystemContainer container = null;
-	private Map<Integer,SystemContainer> containers = new HashMap<>();
+	private Map<Integer,ComponentContainer> containers = new HashMap<>();
 	
 	// default constructor
 	public InitialState(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -109,7 +109,7 @@ public class InitialState
 //	}
 	
 	@Override
-	public SystemContainer getInstance(int id) {
+	public ComponentContainer getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!containers.containsKey(id)) {

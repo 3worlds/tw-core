@@ -11,7 +11,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.RelateToDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 
 /**
@@ -32,15 +32,15 @@ public class SearchProcess
 	private HierarchicalContext focalContext = new HierarchicalContext();
 	private HierarchicalContext otherContext = new HierarchicalContext();
 	private LifeCycle focalLifeCycle = null;
-	private SystemContainer focalLifeCycleContainer = null;
+	private ComponentContainer focalLifeCycleContainer = null;
 	private SystemFactory focalGroup = null;
-	private SystemContainer focalGroupContainer = null;
+	private ComponentContainer focalGroupContainer = null;
 	private LifeCycle otherLifeCycle = null;
-	private SystemContainer otherLifeCycleContainer = null;
+	private ComponentContainer otherLifeCycleContainer = null;
 	private SystemFactory otherGroup = null;
-	private SystemContainer otherGroupContainer = null;
+	private ComponentContainer otherGroupContainer = null;
 	
-	public SearchProcess(SystemContainer world, RelationContainer relation, Timer timer) {
+	public SearchProcess(ComponentContainer world, RelationContainer relation, Timer timer) {
 		super(world, relation, timer);
 	}
 
@@ -66,21 +66,21 @@ public class SearchProcess
 				if (container.categoryInfo() instanceof LifeCycle) {
 					setContext(focalContext,container);
 					focalLifeCycle = (LifeCycle) container.categoryInfo();
-					focalLifeCycleContainer = (SystemContainer) container;
+					focalLifeCycleContainer = (ComponentContainer) container;
 				}
 				setContext(focalContext,subc);
 				focalGroup = (SystemFactory) subc.categoryInfo();
-				focalGroupContainer = (SystemContainer) subc;
+				focalGroupContainer = (ComponentContainer) subc;
 			}
 			if (subc.categoryInfo().belongsTo(otherCategories)) {
 				if (container.categoryInfo() instanceof LifeCycle) {
 					setContext(otherContext,container);
 					otherLifeCycle = (LifeCycle) container.categoryInfo();
-					otherLifeCycleContainer = (SystemContainer) container;
+					otherLifeCycleContainer = (ComponentContainer) container;
 				}
 				setContext(otherContext,subc);
 				otherGroup = (SystemFactory) subc.categoryInfo();
-				otherGroupContainer = (SystemContainer) subc;
+				otherGroupContainer = (ComponentContainer) subc;
 			}
 		}
 		if ((focalGroup!=null)&&(otherGroup!=null)) {

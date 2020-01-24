@@ -32,7 +32,7 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
@@ -90,10 +90,10 @@ public class ComponentType
 	private Map<Integer,SystemFactory> factories = new HashMap<>();
 	
 	// The SystemComponent containers instantiated by this SystemFactory
-	private Map<Integer,Map<String,SystemContainer>> containers = new HashMap<>();
+	private Map<Integer,Map<String,ComponentContainer>> containers = new HashMap<>();
 
 	// temp explore code
-	public Collection<Map<String, SystemContainer>> containers() {
+	public Collection<Map<String, ComponentContainer>> containers() {
 		return containers.values();
 	}
 	public ComponentType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -250,17 +250,17 @@ public class ComponentType
 	 * @param name
 	 * @return
 	 */
-	public SystemContainer makeContainer(int index,String name, SystemContainer parent) {
+	public ComponentContainer makeContainer(int index,String name, ComponentContainer parent) {
 		if (sealed) {
-			Map<String,SystemContainer> lsc = containers.get(index);
+			Map<String,ComponentContainer> lsc = containers.get(index);
 			if (lsc==null)
 				containers.put(index,new HashMap<>());
-			SystemContainer result = containers.get(index).get(name);
+			ComponentContainer result = containers.get(index).get(name);
 			if (result==null) {
 				if (parameterTemplate!=null)
-					result = new SystemContainer(getInstance(index), name, parent, parameterTemplate.clone(), null);
+					result = new ComponentContainer(getInstance(index), name, parent, parameterTemplate.clone(), null);
 				else
-					result = new SystemContainer(getInstance(index), name, parent, null, null);
+					result = new ComponentContainer(getInstance(index), name, parent, null, null);
 				if (!result.id().equals(name))
 					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
 				containers.get(index).put(result.id(),result);

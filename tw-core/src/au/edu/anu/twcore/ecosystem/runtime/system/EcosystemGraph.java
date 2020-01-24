@@ -21,11 +21,11 @@ public class EcosystemGraph
 		implements Graph<SystemComponent,SystemRelation>, Resettable {
 
 	/** "nodes" */
-	private SystemContainer components = null;
+	private ComponentContainer components = null;
 	/** "edges" (NB edges are not contained in there) */
 	private Map<String,RelationContainer> relations = null;
 	
-	public EcosystemGraph(SystemContainer components, Map<String,RelationContainer> relations) {
+	public EcosystemGraph(ComponentContainer components, Map<String,RelationContainer> relations) {
 		super();
 		this.components = components;
 		this.relations = relations;
@@ -104,7 +104,7 @@ public class EcosystemGraph
 
 	// LOCAL methods
 	
-	public SystemContainer community() {
+	public ComponentContainer community() {
 		return components;
 	}
 	

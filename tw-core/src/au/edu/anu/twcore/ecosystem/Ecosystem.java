@@ -54,7 +54,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 
@@ -70,7 +70,7 @@ import au.edu.anu.twcore.ecosystem.structure.ComponentType;
  */
 public class Ecosystem 
 		extends InitialisableNode 
-		implements Categorized<SystemComponent>, LimitedEdition<SystemContainer>, Sealable {
+		implements Categorized<SystemComponent>, LimitedEdition<ComponentContainer>, Sealable {
 
 	// this is the top of the system, so it doesnt belong to any category	
 	// except if we want to attach parameters/variables to it
@@ -82,7 +82,7 @@ public class Ecosystem
 	private Set<Category> categories = new TreeSet<Category>(); 
 	private TwData parameters = null;
 	
-	private Map<Integer,SystemContainer> communities = new HashMap<>();
+	private Map<Integer,ComponentContainer> communities = new HashMap<>();
 
 	public Ecosystem(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -173,17 +173,17 @@ public class Ecosystem
 		return categoryId;
 	}
 	
-	private SystemContainer makeCommunity() {
-		SystemContainer community = null;
+	private ComponentContainer makeCommunity() {
+		ComponentContainer community = null;
 		if (parameters!=null) // is it known here that this is definitely an "ecosystem"?
-			community = new SystemContainer(this,"system",null,parameters.clone(),null);
+			community = new ComponentContainer(this,"system",null,parameters.clone(),null);
 		else
-			community = new SystemContainer(this,"system",null,null,null);
+			community = new ComponentContainer(this,"system",null,null,null);
 		return community;
 	}
 
 	@Override
-	public SystemContainer getInstance(int index) {
+	public ComponentContainer getInstance(int index) {
 		if (!sealed)
 			initialise();
 		if (!communities.containsKey(index))

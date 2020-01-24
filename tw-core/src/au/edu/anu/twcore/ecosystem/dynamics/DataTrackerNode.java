@@ -78,7 +78,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
@@ -123,7 +123,7 @@ public class DataTrackerNode
 	private Map<String,int[]> tableDims = new HashMap<>();
 	private Map<String,TrackMeta> expandedTrackList = new HashMap<>();
 	// target objects of tracking: groups or systemComponents
-	private List<LimitedEdition<SystemContainer>> trackedGroups = new ArrayList<>();
+	private List<LimitedEdition<ComponentContainer>> trackedGroups = new ArrayList<>();
 	private List<Component> trackedComponents = new ArrayList<>();
 	private boolean groupTracker;
 	private InitialState ecosystemContainer = null;
@@ -323,19 +323,19 @@ public class DataTrackerNode
 		if (ll.size()==1) {
 			if (ll.get(0).endNode() instanceof Component) {
 				trackedComponents.add((Component) ll.get(0).endNode());
-				LimitedEdition<SystemContainer> tgroup = (LimitedEdition<SystemContainer>)trackedComponents.get(0).getParent();
+				LimitedEdition<ComponentContainer> tgroup = (LimitedEdition<ComponentContainer>)trackedComponents.get(0).getParent();
 				if (tgroup instanceof InitialState)
 					ecosystemContainer = (InitialState) tgroup;
 				else
 					trackedGroups.add(tgroup);
 			}
 			else
-				trackedGroups.add((LimitedEdition<SystemContainer>) ll.get(0).endNode());
+				trackedGroups.add((LimitedEdition<ComponentContainer>) ll.get(0).endNode());
 		}
 		else {
 			for (Edge e:ll)
 				trackedComponents.add((Component) e.endNode());
-			trackedGroups.add((LimitedEdition<SystemContainer>)trackedComponents.get(0).getParent());
+			trackedGroups.add((LimitedEdition<ComponentContainer>)trackedComponents.get(0).getParent());
 		}
 	}
 	
@@ -384,7 +384,7 @@ public class DataTrackerNode
 					}
 				}
 			}
-			LimitedEdition<SystemContainer> group = (LimitedEdition<SystemContainer>) e.endNode();
+			LimitedEdition<ComponentContainer> group = (LimitedEdition<ComponentContainer>) e.endNode();
 			trackedGroups.add(group);
 		}
 	}
@@ -452,15 +452,15 @@ public class DataTrackerNode
 	private DataTracker<?,?> makeDataTracker(int index) {
 		AbstractDataTracker<?,?> result = null;
 		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
-			List<SystemContainer> lsc = new ArrayList<SystemContainer>();
+			List<ComponentContainer> lsc = new ArrayList<ComponentContainer>();
 			if (ecosystemContainer!=null) {
 				// assuming only 1 component is tracked!
 				SystemComponent sc = trackedComponents.get(0).getInstance(index);
 				String gname = defaultPrefix + "group" + nameSeparator + 
 					sc.membership().categoryId();
-				lsc.add((SystemContainer)ecosystemContainer.getInstance(index).subContainer(gname));
+				lsc.add((ComponentContainer)ecosystemContainer.getInstance(index).subContainer(gname));
 			}
-			else for (LimitedEdition<SystemContainer> group:trackedGroups)
+			else for (LimitedEdition<ComponentContainer> group:trackedGroups)
 				lsc.add(group.getInstance(index));
 			List<SystemComponent> ls = new ArrayList<SystemComponent>();
 			for (Component c:trackedComponents)

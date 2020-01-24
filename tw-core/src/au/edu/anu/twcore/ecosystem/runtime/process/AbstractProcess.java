@@ -41,7 +41,7 @@ import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
@@ -60,7 +60,7 @@ public abstract class AbstractProcess
 
 	private boolean sealed = false;
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
-    private SystemContainer ecosystem = null;
+    private ComponentContainer ecosystem = null;
     // dataTrackers - common to all process types
 	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
 	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
@@ -68,7 +68,7 @@ public abstract class AbstractProcess
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
     
-    public AbstractProcess(SystemContainer world, Timer timer) {
+    public AbstractProcess(ComponentContainer world, Timer timer) {
     	super();
     	ecosystem = world;
     	this.timer = timer;
@@ -87,7 +87,7 @@ public abstract class AbstractProcess
 		return sealed;
 	}
 	
-	public final SystemContainer ecosystem() {
+	public final ComponentContainer ecosystem() {
 		return ecosystem;
 	}
 	

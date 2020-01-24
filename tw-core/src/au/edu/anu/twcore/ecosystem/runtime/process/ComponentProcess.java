@@ -48,7 +48,7 @@ import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
@@ -69,7 +69,7 @@ public class ComponentProcess
 	
 	private class newBornSettings {
 		SystemFactory factory = null;
-		SystemContainer container = null;
+		ComponentContainer container = null;
 		String name = null;
 	}
 
@@ -89,11 +89,11 @@ public class ComponentProcess
 //	private Ecosystem ecosystem = null;
 	private SystemFactory group = null;
 	
-	private SystemContainer lifeCycleContainer = null;
+	private ComponentContainer lifeCycleContainer = null;
 //	private SystemContainer ecosystemContainer = null;
 //	private SystemContainer groupContainer = null;
 	
-	public ComponentProcess(SystemContainer world, Collection<Category> categories, Timer timer) {
+	public ComponentProcess(ComponentContainer world, Collection<Category> categories, Timer timer) {
 		super(world,timer);
 		focalCategories.addAll(categories);
 		categoryId = buildCategorySignature();
@@ -108,7 +108,7 @@ public class ComponentProcess
 		else if (container.categoryInfo() instanceof LifeCycle) {
 			setContext(focalContext,container);
 			lifeCycle = (LifeCycle) container.categoryInfo();
-			lifeCycleContainer = (SystemContainer) container;
+			lifeCycleContainer = (ComponentContainer) container;
 		}
 		else if (container.categoryInfo() instanceof SystemFactory) 
 			if (container.categoryInfo().belongsTo(focalCategories)) {
@@ -155,11 +155,11 @@ public class ComponentProcess
 				if (newCat != null) {
 					if (lifeCycle!=null) {
 						// find the next stage & instantiate new component
-						SystemContainer recruitContainer = null;
+						ComponentContainer recruitContainer = null;
 						for (CategorizedContainer<SystemComponent> subContainer:
 							lifeCycleContainer.subContainers()) 
 							if (subContainer.categoryInfo().categoryId().contains(newCat))
-								recruitContainer = (SystemContainer) subContainer;
+								recruitContainer = (ComponentContainer) subContainer;
 						if ((recruitContainer==null) |
 							!(recruitContainer.categoryInfo() instanceof SystemFactory)) {
 							StringBuilder sb = new StringBuilder();
@@ -247,7 +247,7 @@ public class ComponentProcess
 							newBornSettings nbs = new newBornSettings();
 							nbs.name = subc.categoryInfo().categoryId();
 							nbs.factory = (SystemFactory) subc.categoryInfo();
-							nbs.container = (SystemContainer) subc;
+							nbs.container = (ComponentContainer) subc;
 							newBornSpecs.add(nbs);
 					}
 				} 
@@ -256,7 +256,7 @@ public class ComponentProcess
 					newBornSettings nbs = new newBornSettings();
 					nbs.factory = group;
 					nbs.name = group.categoryId();
-					nbs.container = (SystemContainer) container;
+					nbs.container = (ComponentContainer) container;
 					newBornSpecs.add(nbs);
 				}
 				function.setFocalContext(focalContext);

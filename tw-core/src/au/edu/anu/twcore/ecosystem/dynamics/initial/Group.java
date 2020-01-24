@@ -30,7 +30,7 @@ package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -58,12 +58,12 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
  */
 public class Group 
 		extends InitialisableNode 
-		implements Sealable, LimitedEdition<SystemContainer> {
+		implements Sealable, LimitedEdition<ComponentContainer> {
 
 	private boolean sealed = false;
-	private SystemContainer container = null;
+	private ComponentContainer container = null;
 	
-	private Map<Integer,SystemContainer> groups = new HashMap<>();
+	private Map<Integer,ComponentContainer> groups = new HashMap<>();
 	
 	private static final int baseInitRank = N_GROUP.initRank();
 	
@@ -108,14 +108,14 @@ public class Group
 		return sealed;
 	}
 	
-	private SystemContainer makeContainer(int index) {
+	private ComponentContainer makeContainer(int index) {
 		// 1 leaf group
 		TreeGraphNode n = (TreeGraphNode) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
 			endNode());
 		if (n!=null) {
 			// make sure parent container exists before
-			SystemContainer parentC = null;
+			ComponentContainer parentC = null;
 			if (getParent() instanceof Group)
 				parentC = ((Group)getParent()).getInstance(index);
 			else if (getParent() instanceof InitialState)
@@ -131,7 +131,7 @@ public class Group
 			endNode());
 		if (n!=null) {
 			// make sure parent container exists before
-			SystemContainer parentC = null;
+			ComponentContainer parentC = null;
 			if (getParent() instanceof InitialState)
 				parentC = ((InitialState)getParent()).getInstance(index);
 			// instantiate container
@@ -147,7 +147,7 @@ public class Group
 	}
 
 	@Override
-	public SystemContainer getInstance(int id) {
+	public ComponentContainer getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!groups.containsKey(id))
