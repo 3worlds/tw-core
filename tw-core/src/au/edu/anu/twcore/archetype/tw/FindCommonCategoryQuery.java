@@ -35,7 +35,6 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.twcore.data.Record;
-import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -72,9 +71,10 @@ public class FindCommonCategoryQuery extends Query {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // input is an edge between a datatracker (start) and a field or table (end)
+	public Query process(Object input) { // input is an edge between a datatracker (start) OR
+										 // a function (relateTo) and a field or table (end)
 		defaultProcess(input);
-		DataTrackerNode start = (DataTrackerNode) ((Edge) input).startNode();
+		TreeNode start = (TreeNode) ((Edge) input).startNode();
 		TreeNode end = (TreeNode) ((Edge) input).endNode();
 		trackName = end.id();
 		process = start.getParent();
