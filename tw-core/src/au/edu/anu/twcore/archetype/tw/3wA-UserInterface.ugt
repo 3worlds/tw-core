@@ -67,10 +67,11 @@ hasNode widgetSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery widgetClassInValueSetQuery
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery") 
-			values = StringTable(([6]+
+			values = StringTable(([7]+
 			"au.edu.anu.twuifx.widgets.SimpleDM0Widget",+
 			"au.edu.anu.twuifx.widgets.SimpleDM2Widget",+
 			"au.edu.anu.twuifx.widgets.SimpleTimeWidget",+
+			"au.edu.anu.twuifx.widgets.SimplePerformanceNumericWidget",+		
 			"au.edu.anu.twuifx.widgets.SimpleControlWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleTimeSeriesWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleWidget"))
@@ -85,6 +86,10 @@ hasNode widgetSpec
 	mustSatisfyQuery CheckSubArchetypeQueryTimeWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleTimeWidget","3wSA-SimpleTimeWidget.ugt"))
+
+	mustSatisfyQuery CheckSubArchetypeQueryPNWidget
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimplePerformanceNumericWidget","3wSA-SimpleTimeWidget.ugt"))
 
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleTimeSeriesWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
