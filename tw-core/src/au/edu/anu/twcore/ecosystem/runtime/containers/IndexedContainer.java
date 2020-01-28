@@ -15,4 +15,18 @@ public interface IndexedContainer<T extends Identity> {
 	
 	public Iterable<T> getItemsWithin(T item, double distance);
 
+	public void index(T item);
+	
+	public default void index(Iterable<T> items) {
+		for (T comp:items)
+			index(comp);
+	}
+
+	public void unIndex(T item);
+	
+	public default void unindex(Iterable<T> items) {
+		for (T i:items)
+			unIndex(i);
+	}
+
 }

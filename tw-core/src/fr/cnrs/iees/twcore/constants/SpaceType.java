@@ -30,17 +30,33 @@ import java.util.HashSet;
 import java.util.Set;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
-public enum SnippetLocation {
+public enum SpaceType {
 
-// inFunctionBody: snippet is added in the body of the relevant method of the  `Function` class (e.g. in the `changeState()` method for a `ChangeStateFunction`, etc.)
-	inFunctionBody,
+// continuousFlatSurface: a flat plan with continuous coordinates
+	continuousFlatSurface ("au.edu.anu.twcore.ecosystem.runtime.space.FlatSurface"),
 
-// inClassBody: snippet is added in `Function` class as private methods
-	inClassBody;
+// squareGrid: a flat square 2D grid for e.g. cellular automata
+	squareGrid ("au.edu.anu.twcore.ecosystem.runtime.space.SquareGrid"),
+
+// topographicSurface: a topographic plan with elevations
+	topographicSurface ("au.edu.anu.twcore.ecosystem.runtime.space.TopoSurface"),
+
+// linearNetwork: a graph of connected segments for e.g., hydrologic networks
+	linearNetwork ("au.edu.anu.twcore.ecosystem.runtime.space.LineNetwork");
 	
+	private final String className;
+
+	private SpaceType(String className) {
+		this.className = className;
+	}
+
+	public String className() {
+		return className;
+	}
+
 	public static String[] toStrings() {
-		String[] result = new String[SnippetLocation.values().length];
-		for (SnippetLocation s: SnippetLocation.values())
+		String[] result = new String[SpaceType.values().length];
+		for (SpaceType s: SpaceType.values())
 			result[s.ordinal()] = s.name();
 		Arrays.sort(result);
 		return result;
@@ -48,18 +64,18 @@ public enum SnippetLocation {
 
 	public static Set<String> keySet() {
 		Set<String> result = new HashSet<String>();
-		for (SnippetLocation e: SnippetLocation.values())
+		for (SpaceType e: SpaceType.values())
 			result.add(e.toString());
 		return result;
 	}
 
-	public static SnippetLocation defaultValue() {
-		return inFunctionBody;
+	public static SpaceType defaultValue() {
+		return continuousFlatSurface;
 	}
 
 	static {
-		ValidPropertyTypes.recordPropertyType(SnippetLocation.class.getSimpleName(), 
-		SnippetLocation.class.getName(),defaultValue());
+		ValidPropertyTypes.recordPropertyType(SpaceType.class.getSimpleName(), 
+		SpaceType.class.getName(),defaultValue());
 	}
 
 }
