@@ -100,6 +100,10 @@ hasNode processSpec
 		isOfClass = String("dependsOn")
 		toNode = String("process:")
 		multiplicity = IntegerRange("0..*")
+	hasEdge spaceEdgeSpec
+		isOfClass = String("inSpace")
+		toNode = String("space:")
+		multiplicity = IntegerRange("0..1")
 
 hasNode functionSpec
 	isOfClass = String("function")
@@ -128,11 +132,6 @@ hasNode functionSpec
 	mustSatisfyQuery CheckSubArchetypeQueryCreateOtherDecision
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"type","CreateOtherDecision","3wSA-CreateOtherDecision.ugt"))
-	// specific to relateTo: searches on the set of components can be optimized if attached to
-	// a space defined by continuous variables
-	mustSatisfyQuery CheckSubArchetypeQueryRelateToDecision
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"type","RelateToDecision","3wSA-RelateToDecision.ugt"))
 
 hasNode consequenceFunctionSpec
 	isOfClass = String("function")

@@ -63,8 +63,8 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_DYNAMICS 			("dynamics",		"dyns",			SimulatorNode.class,Math.max(SIMBASE+10,// after stopping conditions 
 																						Math.max(TIMEBASE+20,	// AND TimerModels
 																							CATEGORYBASE+60))), // AND a fully initialised ECOSYSTEM
-			N_TIMELINE 			("timeLine",		"tmLn",			TimeLine.class,				TIMEBASE),// 
-			N_TIMEMODEL			("timeModel",		"tmMo",			TimeModel.class,			TIMEBASE+10),// after timeLine
+				N_TIMELINE 		("timeLine",		"tmLn",			TimeLine.class,				TIMEBASE),// 
+				N_TIMEMODEL		("timeModel",		"tmMo",			TimeModel.class,			TIMEBASE+10),// after timeLine
 				N_EVENTQUEUE	("eventQueue",		"evntq",		EventQueue.class,			TIMEBASE+20),// after timeModel
 				N_PROCESS 		("process",			"proc",			ProcessNode.class,			TIMEBASE+30),	// after TimeModel, Function & EventQueue
 				N_FUNCTION 		("function",		"Func",			FunctionNode.class,			0), // ***
@@ -74,7 +74,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_PRODUCE 		("produce",			"prd",			Produce.class,				0),//
 				N_STOPPINGCONDITION("stoppingCondition","stCnd",	StoppingConditionNode.class,SIMBASE), // before Simulator
 				N_INITIALISER 	("initialiser",		"init",			Initialiser.class,			CATEGORYBASE+20), // after relation
-			N_INITIALSTATE 		("initialState",	"state",		InitialState.class,			ECOBASE+10), // after Ecosystem
+				N_INITIALSTATE 	("initialState",	"state",		InitialState.class,			ECOBASE+10), // after Ecosystem
 				N_GROUP 		("group",			"grp",			Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
 				N_COMPONENT 	("component",		"comp",			Component.class,			CATEGORYBASE+30), // after Group 
 				N_PARAMETERVALUES("parameterValues","parVals",		ParameterValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
@@ -84,6 +84,8 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_CATEGORY 		("category",		"cat",			Category.class,				CATEGORYBASE), 
 				N_COMPONENTTYPE ("componentType",	"compTyp",		ComponentType.class,	CATEGORYBASE+10), // after category and categorySet
 				N_RELATIONTYPE 	("relationType",	"relTyp",		RelationType.class,			CATEGORYBASE+10), // after category
+				N_ARENA 		("arena",			"arena",		ArenaNode.class,				CATEGORYBASE),
+				N_SPACE 		("space",			"space",		SpaceNode.class,				CATEGORYBASE),
 		N_EXPERIMENT 			("experiment",		"expt",			Experiment.class,			SIMBASE+20),	// after fully iinitialised simulator
 			N_DESIGN 			("design",			"dsgn",			Design.class,				0),//
 			N_TREATMENT 		("treatment",		"trt",			Treatment.class,			0),//

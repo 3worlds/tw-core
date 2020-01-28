@@ -74,5 +74,19 @@ hasNode relationTypeSpec
 		isOfClass = String("fromCategory")
 		toNode = String("category:")
 		multiplicity = IntegerRange("1..*")
+		
+hasNode arenaSpec
+	isOfClass = String("arena")
+	hasParent = StringTable(([1]"structure:"))
+	multiplicity = IntegerRange("0..1")
 
+hasNode spaceSpec
+	isOfClass = String("space")
+	hasParent = StringTable(([1]"arena:"))
+	multiplicity = IntegerRange("1..*")
+	hasEdge coordinatesSpec
+		isOfClass = String("coordinateVariables")
+		toNode = String("category:")
+		multiplicity = IntegerRange("1..1")
 	
+

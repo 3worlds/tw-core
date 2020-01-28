@@ -28,6 +28,8 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.constants;
 
+import au.edu.anu.twcore.exceptions.TwcoreException;
+
 import au.edu.anu.twcore.data.SizedByEdge;
 import au.edu.anu.twcore.experiment.BaseLineEdge;
 import au.edu.anu.twcore.experiment.ModelSetupEdge;
@@ -40,8 +42,8 @@ import au.edu.anu.twcore.ecosystem.structure.ParameterEdge;
 import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 import au.edu.anu.twcore.ecosystem.structure.InitialisedByEdge;
 import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.ecosystem.structure.FromCategoryEdge;
+import au.edu.anu.twcore.ecosystem.structure.SpaceCategoryEdge;
 
 import au.edu.anu.twcore.ecosystem.dynamics.AppliesToEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.DependsOnEdge;
@@ -49,7 +51,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.EffectedByEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.StopSystemEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.ConditionEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.UseRNGEdge;
-import au.edu.anu.twcore.ecosystem.dynamics.SpaceVarEdge;
+import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 
 import au.edu.anu.twcore.ecosystem.dynamics.initial.GroupOfEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.CycleEdge;
@@ -87,6 +89,7 @@ public enum ConfigurationEdgeLabels {
 	E_INITIALISEDBY	("initialisedBy",	"initBy",		InitialisedByEdge.class),
 	E_TOCATEGORY	("toCategory",		"to",			ToCategoryEdge.class),
 	E_FROMCATEGORY	("fromCategory",	"from",			FromCategoryEdge.class),
+	E_SPACECAT		("coordinateVariables",	"coordv",	SpaceCategoryEdge.class),
 	// ecosystem / dynamics
 	E_APPLIESTO		("appliesTo",		"aplyTo",		AppliesToEdge.class),
 	E_DEPENDSON		("dependsOn",		"depsOn",		DependsOnEdge.class),
@@ -98,7 +101,7 @@ public enum ConfigurationEdgeLabels {
 	E_INSTANCEOF	("instanceOf",		"instOf",		InstanceOfEdge.class),
 	E_LOADFROM		("loadFrom",		"ldFrom",		LoadFromEdge.class),
 	E_USERNG		("useRNG",			"uses",			UseRNGEdge.class),
-	E_SPACEVAR		("space",			"space",		SpaceVarEdge.class),
+	E_SPACE			("inSpace",			"in",			ProcessSpaceEdge.class),
 	// user interface
 	E_TRACKTIME		("trackTime",		"trksTmOf",		TrackTimeEdge.class),
 	E_TRACKSERIES	("trackSeries",		"trksSrsOf",	TrackTimeSeriesEdge.class),
