@@ -39,6 +39,10 @@ hasNode componentTypeSpec
 		hasName = String("lifeSpan")
 		type = String("LifespanType")
 		multiplicity = IntegerRange("1..1")
+	hasProperty componentMobilePropertySpec
+		hasName = String("mobile")
+		type = String("Boolean")
+		multiplicity = IntegerRange("0..1")
 	hasEdge componentCategoryBelongsToSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:")
@@ -84,9 +88,12 @@ hasNode spaceSpec
 	isOfClass = String("space")
 	hasParent = StringTable(([1]"arena:"))
 	multiplicity = IntegerRange("1..*")
-	hasEdge coordinatesSpec
-		isOfClass = String("coordinateVariables")
-		toNode = String("category:")
+	hasProperty spaceTypeSpec
+		hasName = String("type")
+		type = String("SpaceType")
 		multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery CheckSubArchetypeQuerySpaceType
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"type","continuousFlatSurface","3wSA-continuousFlatSurface.ugt"))
 	
 

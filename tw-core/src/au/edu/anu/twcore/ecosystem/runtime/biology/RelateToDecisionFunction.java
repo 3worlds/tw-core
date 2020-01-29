@@ -44,5 +44,17 @@ public abstract class RelateToDecisionFunction extends AbstractDecisionFunction 
 		double dt,	
 		SystemComponent focal, 
 		SystemComponent other);
+	
+	/**
+	 * An optional function computing a maximum search distance for establishing a relation.
+	 * relateTo(...) will only be called for 'other' SystemComponents for which distance to 
+	 * 'focal' is smaller than or equal to searchRadius(focal). This assumes a space is used
+	 * with the process which has this RelateToDecisionFunction as a function.
+	 *
+	 * @param focal
+	 * @return
+	 */
+	// ISSUE HERE: code generation not designed to handle more than one method per function type
+//	public abstract double searchRadius(SystemComponent focal);
 
 }

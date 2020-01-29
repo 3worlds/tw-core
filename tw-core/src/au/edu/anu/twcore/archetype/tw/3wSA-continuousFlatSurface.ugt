@@ -1,0 +1,44 @@
+tree
+// Sub-archetype for 3Worlds for checking continuousFlatSurface specifications
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-continuousFlatSurface
+
+	hasNode continuousFlatSurfaceSpec
+		isOfClass = String("space")
+		hasParent = StringTable(([1]"arena:"))
+		multiplicity = IntegerRange("1..*")
+		// the xmin and xmax of the rectangular area
+		hasProperty xLimitsSpec
+			hasName = String("x-limits")
+			type = String("Interval")
+			multiplicity = IntegerRange("1..1")
+		// the ymin and ymax of the rectangular area
+		hasProperty yLimitsSpec
+			hasName = String("y-limits")
+			type = String("Interval")
+			multiplicity = IntegerRange("1..1")
+		// the name of the x_coordinate - defaults to "x"
+		hasProperty xNameSpec
+			hasName = String("x-name")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		// the name of the y_coordinate - defaults to "y"
+		hasProperty yNameSpec
+			hasName = String("y-name")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		hasProperty coordinateUnitsSpec
+			hasName = String("units")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		hasProperty coordinateRealNumberFieldPrecSpec
+			hasName = String("precision")
+			type = String("Double")
+			multiplicity = IntegerRange("0..1")
+      

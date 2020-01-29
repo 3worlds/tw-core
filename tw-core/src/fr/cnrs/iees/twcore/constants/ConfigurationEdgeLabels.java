@@ -43,8 +43,6 @@ import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 import au.edu.anu.twcore.ecosystem.structure.InitialisedByEdge;
 import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
 import au.edu.anu.twcore.ecosystem.structure.FromCategoryEdge;
-import au.edu.anu.twcore.ecosystem.structure.SpaceCategoryEdge;
-
 import au.edu.anu.twcore.ecosystem.dynamics.AppliesToEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.DependsOnEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.EffectedByEdge;
@@ -89,7 +87,6 @@ public enum ConfigurationEdgeLabels {
 	E_INITIALISEDBY	("initialisedBy",	"initBy",		InitialisedByEdge.class),
 	E_TOCATEGORY	("toCategory",		"to",			ToCategoryEdge.class),
 	E_FROMCATEGORY	("fromCategory",	"from",			FromCategoryEdge.class),
-	E_SPACECAT		("coordinateVariables",	"coordv",	SpaceCategoryEdge.class),
 	// ecosystem / dynamics
 	E_APPLIESTO		("appliesTo",		"aplyTo",		AppliesToEdge.class),
 	E_DEPENDSON		("dependsOn",		"depsOn",		DependsOnEdge.class),

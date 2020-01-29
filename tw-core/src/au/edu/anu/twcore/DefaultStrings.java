@@ -58,5 +58,7 @@ public interface DefaultStrings {
 	 * file or directory names
 	 */
 	public static final String dashSpacer = "-";
+	
+	public static final String dotSpacer = ".";
 
 }

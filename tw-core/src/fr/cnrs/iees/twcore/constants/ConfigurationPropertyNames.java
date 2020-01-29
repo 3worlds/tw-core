@@ -52,6 +52,7 @@ public enum ConfigurationPropertyNames {
 	P_TIMEMODEL_TU				("timeUnit"),
 	P_TIMEMODEL_NTU             ("nTimeUnits"),
 	P_COMPONENT_LIFESPAN		("lifeSpan"),
+	P_COMPONENT_MOBILE			("mobile"),
 	P_PARAMETERCLASS			("parameterClass"),
 	P_DRIVERCLASS				("driverClass"), 
 	P_DECORATORCLASS			("decoratorClass"), 
@@ -89,7 +90,14 @@ public enum ConfigurationPropertyNames {
 	P_RNGRESETIME               ("resetTime"),
 	P_RNGTABLEINDEX             ("tableIndex"),
 	P_RELATIONTYPE				("type"),
-	P_RELATEPRODUCT				("relateToProduct")
+	P_RELATEPRODUCT				("relateToProduct"),
+	P_SPACETYPE					("type"),
+	P_SPACE_XLIM				("x-limits"),
+	P_SPACE_YLIM				("y-limits"),
+	P_SPACE_ZLIM				("z-limits"),
+	P_SPACE_XNAME				("x-name"),
+	P_SPACE_YNAME				("y-name"),
+	P_SPACE_ZNAME				("z-name"),
 	;
 
 	private final String pname;
