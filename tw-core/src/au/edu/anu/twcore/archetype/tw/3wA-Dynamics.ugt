@@ -104,6 +104,10 @@ hasNode processSpec
 		isOfClass = String("inSpace")
 		toNode = String("space:")
 		multiplicity = IntegerRange("0..1")
+		hasProperty spaceProcessFunctionSpec
+			hasName = String("relocateFunctionName")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
 
 hasNode functionSpec
 	isOfClass = String("function")

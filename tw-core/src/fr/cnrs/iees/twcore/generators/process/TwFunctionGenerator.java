@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
+import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -158,6 +159,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
 		generator.setImport(SystemComponent.class.getCanonicalName());
 		generator.setImport(Table.class.getPackageName()+".*");
+		if (type.equals(TwFunctionTypes.Relocate))
+			generator.setImport(Location.class.getCanonicalName());
 		// generator.setImport("java.util.Map");
 		Collection<MethodGenerator> lmg = generator.getMethods();
 		for (MethodGenerator mg : lmg) {

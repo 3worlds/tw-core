@@ -1,5 +1,5 @@
 tree
-// Sub-archetype for 3Worlds for checking continuousFlatSurface specifications
+// Sub-archetype for 3Worlds for checking squareGrid specifications
 	scope =            String("3W-archetype")
 	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
 	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
@@ -7,20 +7,25 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-continuousFlatSurface
+archetype 3wSA-squareGrid
 
-	hasNode continuousFlatSurfaceSpec
+	hasNode squareGridSpec
 		isOfClass = String("space")
 		hasParent = StringTable(([1]"arena:"))
 		multiplicity = IntegerRange("1..*")
-		// the xmin and xmax of the rectangular area
-		hasProperty xLimitsSpec
-			hasName = String("x-limits")
-			type = String("Interval")
+		// the cell size of the grid
+		hasProperty cellSizeSpec
+			hasName = String("cellSize")
+			type = String("Double")
 			multiplicity = IntegerRange("1..1")
-		// the ymin and ymax of the rectangular area
-		hasProperty yLimitsSpec
-			hasName = String("y-limits")
-			type = String("Interval")
+		// the number of cells in x
+		hasProperty xnCellsSpec
+			hasName = String("x-nCells")
+			type = String("Integer")
 			multiplicity = IntegerRange("1..1")
+      	// the number of cells in y (optional - if not here, equals "x-nCells")
+		hasProperty ynCellsSpec
+			hasName = String("y-nCells")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
       

@@ -92,8 +92,19 @@ hasNode spaceSpec
 		hasName = String("type")
 		type = String("SpaceType")
 		multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery CheckSubArchetypeQuerySpaceType
+	mustSatisfyQuery CheckSubArchetypeQuerySpaceType1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"type","continuousFlatSurface","3wSA-continuousFlatSurface.ugt"))
+	mustSatisfyQuery CheckSubArchetypeQuerySpaceType2
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"type","squareGrid","3wSA-squareGrid.ugt"))
+	hasProperty spacePrecisionSpec
+		hasName = String("precision")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+	hasProperty spaceUnitsSpec
+		hasName = String("units")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
 	
 

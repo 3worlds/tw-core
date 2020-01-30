@@ -5,10 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.space.FlatSurface;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.space.SquareGrid;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -17,8 +18,6 @@ import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.utils.Interval;
-import fr.ens.biologie.generic.utils.NameUtils;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -29,16 +28,15 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  */
 public class SpaceNode 
 		extends InitialisableNode 
-		implements LimitedEdition<Space>, Sealable {
+		implements LimitedEdition<Space<SystemComponent>>, Sealable {
 	
 	private boolean sealed = false;
-	private Map<Integer,Space> spaces = new HashMap<>();
+	private Map<Integer,Space<SystemComponent>> spaces = new HashMap<>();
 	private SpaceType stype = null;
 	// the name of coordinates relative to this space (eg "<this.id()>.x")
 	private Set<String> coordNames = new HashSet<>();
-	private String xname = "x";
-	private String yname = "y";
-	private String zname = "z";
+	private String units = "arbitrary units";
+	private double precision = 0.0;
 	
 	public SpaceNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -48,39 +46,14 @@ public class SpaceNode
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 	
-	private String makeCoordinateName(String name) {
-		return id()+NameUtils.initialUpperCase(name);
-	}
-	
 	@Override
 	public void initialise() {
 		super.initialise();
 		stype = (SpaceType) properties().getPropertyValue(P_SPACETYPE.key());
-		if (properties().hasProperty(P_SPACE_XNAME.key()))
-			xname = (String)properties().getPropertyValue(P_SPACE_XNAME.key());
-		if (properties().hasProperty(P_SPACE_YNAME.key()))
-			yname = (String)properties().getPropertyValue(P_SPACE_YNAME.key());
-		if (properties().hasProperty(P_SPACE_ZNAME.key()))
-			zname = (String)properties().getPropertyValue(P_SPACE_ZNAME.key());
-		switch (stype) {
-			case continuousFlatSurface:
-				coordNames.clear();
-				coordNames.add(makeCoordinateName(xname));
-				coordNames.add(makeCoordinateName(yname));
-				break;
-			case linearNetwork:
-				break;
-			case squareGrid:
-				break;
-			case topographicSurface:
-				coordNames.clear();
-				coordNames.add(makeCoordinateName(xname));
-				coordNames.add(makeCoordinateName(yname));
-				coordNames.add(makeCoordinateName(zname));
-				break;
-			default:
-				break;		
-		}
+		if (properties().hasProperty(P_SPACE_PREC.key()))
+			precision = (double)properties().getPropertyValue(P_SPACE_PREC.key());
+		if (properties().hasProperty(P_SPACE_UNITS.key()))
+			units = (String)properties().getPropertyValue(P_SPACE_UNITS.key());
 		seal();
 	}
 
@@ -89,17 +62,23 @@ public class SpaceNode
 		return N_SPACE.initRank();
 	}
 	
-	private Space makeSpace(int id) {
-		Space result = null;
+	private Space<SystemComponent> makeSpace(int id) {
+		Space<SystemComponent> result = null;
 		switch (stype) {
 			case continuousFlatSurface:
 				Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
 				Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
-				result = new FlatSurface(xlim.inf(),xlim.sup(),ylim.inf(),ylim.sup(),xname,yname);
+				result = new FlatSurface(xlim.inf(),xlim.sup(),ylim.inf(),ylim.sup(),precision,units);
 				break;
 			case linearNetwork:
 				break;
 			case squareGrid:
+				double cellSize = (double) properties().getPropertyValue(P_SPACE_CELLSIZE.key());
+				int nx = (int) properties().getPropertyValue(P_SPACE_NX.key());
+				int ny = nx;
+				if (properties().hasProperty("ny"))
+					ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
+				result = new SquareGrid(cellSize,nx,ny,precision,units);
 				break;
 			case topographicSurface:
 				break;
@@ -110,7 +89,7 @@ public class SpaceNode
 	}
 
 	@Override
-	public Space getInstance(int id) {
+	public Space<SystemComponent> getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!spaces.containsKey(id))

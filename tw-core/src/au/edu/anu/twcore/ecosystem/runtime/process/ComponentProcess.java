@@ -82,6 +82,7 @@ public class ComponentProcess
 	private List<ChangeStateFunction> CSfunctions = new LinkedList<ChangeStateFunction>();
 	private List<DeleteDecisionFunction> Dfunctions = new LinkedList<DeleteDecisionFunction>();
 	private List<CreateOtherDecisionFunction> COfunctions = new LinkedList<CreateOtherDecisionFunction>();
+	private List<RelocateFunction> Rfunctions = new LinkedList<RelocateFunction>();
 	
 	// local variables for looping
 	private HierarchicalContext focalContext = new HierarchicalContext();
@@ -313,14 +314,16 @@ public class ComponentProcess
 	@Override
 	public void addFunction(TwFunction function) {
 		if (!isSealed()) {
-			if (ChangeCategoryDecisionFunction.class.isAssignableFrom(function.getClass()))
+			if (function instanceof ChangeCategoryDecisionFunction)
 				CCfunctions.add((ChangeCategoryDecisionFunction) function);
-			else if (ChangeStateFunction.class.isAssignableFrom(function.getClass()))
+			else if (function instanceof ChangeStateFunction)
 				CSfunctions.add((ChangeStateFunction) function);
-			else if (DeleteDecisionFunction.class.isAssignableFrom(function.getClass()))
+			else if (function instanceof DeleteDecisionFunction)
 				Dfunctions.add((DeleteDecisionFunction) function);
-			else if (CreateOtherDecisionFunction.class.isAssignableFrom(function.getClass()))
+			else if (function instanceof CreateOtherDecisionFunction)
 				COfunctions.add((CreateOtherDecisionFunction) function);
+			else if (function instanceof RelocateFunction)
+				Rfunctions.add((RelocateFunction) function);
 		}
 	}
 
@@ -339,6 +342,7 @@ public class ComponentProcess
 		ChangeState,
 		DeleteDecision,
 		CreateOtherDecision,
+		Relocate
 	};
 
 }

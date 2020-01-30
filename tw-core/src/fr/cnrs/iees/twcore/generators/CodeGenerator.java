@@ -42,12 +42,9 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
-import au.edu.anu.twcore.data.FieldNode;
-import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
+import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.exceptions.TwcoreException;
@@ -59,7 +56,7 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.twcore.constants.DataElementType;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwInitialiserGenerator;
@@ -105,28 +102,28 @@ public class CodeGenerator {
 				selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(),
 				selectOne(hasTheLabel(N_STRUCTURE.label())));
-			TreeGraphDataNode arena =  (TreeGraphDataNode) get(structure.getChildren(),
-				selectZeroOrOne(hasTheLabel(N_ARENA.label())));
-			List<TreeGraphDataNode> spaces = null;
-			if (arena!=null)
-				spaces = (List<TreeGraphDataNode>) get(arena.getChildren(),
-					selectOneOrMany(hasTheLabel(N_SPACE.label())));
+//			TreeGraphDataNode arena =  (TreeGraphDataNode) get(structure.getChildren(),
+//				selectZeroOrOne(hasTheLabel(N_ARENA.label())));
+//			List<TreeGraphDataNode> spaces = null;
+//			if (arena!=null)
+//				spaces = (List<TreeGraphDataNode>) get(arena.getChildren(),
+//					selectOneOrMany(hasTheLabel(N_SPACE.label())));
 			// generate data classes for SystemComponents
 			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENTTYPE.label());
 			for (TreeGraphDataNode system : systems) {
-				generateDataCode(system, ecology.id(),spaces);
+				generateDataCode(system, ecology.id());
 			}
 			// generate data classes for LifeCycles, if any
 			List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(dynamics, N_LIFECYCLE.label());
 			for (TreeGraphDataNode lc : lifeCycles) {
-				generateDataCode(lc, ecology.id(),null);
+				generateDataCode(lc, ecology.id());
 			}
 			// generate data classes for Ecosystem, if any
 			// caution here: Ecosystem may have no category at all
 			Collection<Category> cats = (Collection<Category>) get(ecology.edges(Direction.OUT),
 					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			if (!cats.isEmpty())
-				generateDataCode(ecology, ecology.id(),null);
+				generateDataCode(ecology, ecology.id());
 			// generate TwFunction classes
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
@@ -185,112 +182,56 @@ public class CodeGenerator {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	private boolean isComponentInSpace(TreeGraphDataNode compType, TreeGraphDataNode space) {
-		Collection<Category> superC = Categorized.getSuperCategories(compType);
-		for (Category cat:superC) {
-			// 1 one of my super categories is involved in a CategoryProcess pointing to space
-			List<ProcessNode> procs = (List<ProcessNode>) get(cat.edges(Direction.IN),
-				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
-				edgeListStartNodes());
-			for (ProcessNode pn:procs) {
-				TreeGraphDataNode procSpace = (TreeGraphDataNode) get(pn.edges(Direction.OUT),
-					selectZeroOrOne(hasTheLabel(E_SPACE.label())),
-					endNode());
-				if (procSpace!=null)
-					if (procSpace.equals(space))
-						return true;
-			}
-			// 2 one of my super categories is involved in a RelationProcess pointing to space
-			List<RelationType> rels = (List<RelationType>) get(cat.edges(Direction.IN),
-				selectZeroOrMany(orQuery(hasTheLabel(E_TOCATEGORY.label()),hasTheLabel(E_FROMCATEGORY.label()))),
-				edgeListStartNodes());
-			for (RelationType rel:rels) {
-				ProcessNode pn = (ProcessNode) get(rel.edges(Direction.IN),
-					selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
-					startNode());
-				if (pn!=null) {
-					TreeGraphDataNode procSpace = (TreeGraphDataNode) get(pn.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_SPACE.label())),
-						endNode());
-					if (procSpace!=null)
-						if (procSpace.equals(space))
-							return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private void addSpaceCoordinates(TreeGraphDataNode spec,
-			TreeGraphDataNode compType, 
-			List<TreeGraphDataNode> spaces) {
-		for (TreeGraphDataNode space:spaces)
-			if (isComponentInSpace(compType,space))
-				for (String prop:((SpaceNode)space).coordinateNames()) {
-					ExtendablePropertyList fieldprops = new ExtendablePropertyListImpl();
-					fieldprops.addProperty("_generated",true);
-					fieldprops.addProperty(P_FIELD_TYPE.key(), DataElementType.Double);
-					if (prop.equals(P_SPACE_XNAME.key()))
-						fieldprops.addProperty(P_FIELD_INTERVAL.key(), 
-							space.properties().getPropertyValue(P_SPACE_XLIM.key()));
-					else if (prop.equals(P_SPACE_YNAME.key()))
-						fieldprops.addProperty(P_FIELD_INTERVAL.key(), 
-							space.properties().getPropertyValue(P_SPACE_YLIM.key()));
-					else if (prop.equals(P_SPACE_ZNAME.key()))
-						fieldprops.addProperty(P_FIELD_INTERVAL.key(), 
-							space.properties().getPropertyValue(P_SPACE_ZLIM.key()));
-					if (space.properties().hasProperty(P_FIELD_UNITS.key()))
-						fieldprops.addProperty(P_FIELD_UNITS.key(), 
-							space.properties().getPropertyValue(P_FIELD_UNITS.key()));
-					if (space.properties().hasProperty(P_FIELD_PREC.key()))
-						fieldprops.addProperty(P_FIELD_PREC.key(), 
-							space.properties().getPropertyValue(P_FIELD_PREC.key()));
-					// veeeery dirty - but different ComponentType may share the same space
-					if (spec.scope().contains(prop))
-						spec.scope().removeId(prop); 
-					FieldNode fn  = (FieldNode) spec.factory().makeNode(FieldNode.class,prop,fieldprops);
-					spec.connectChild(fn);
-		}
-	}
+	// kept for recycling wherever it could be useful
+//	@SuppressWarnings("unchecked")
+//	private boolean isComponentInSpace(TreeGraphDataNode compType, TreeGraphDataNode space) {
+//		Collection<Category> superC = Categorized.getSuperCategories(compType);
+//		for (Category cat:superC) {
+//			// 1 one of my super categories is involved in a CategoryProcess pointing to space
+//			List<ProcessNode> procs = (List<ProcessNode>) get(cat.edges(Direction.IN),
+//				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+//				edgeListStartNodes());
+//			for (ProcessNode pn:procs) {
+//				TreeGraphDataNode procSpace = (TreeGraphDataNode) get(pn.edges(Direction.OUT),
+//					selectZeroOrOne(hasTheLabel(E_SPACE.label())),
+//					endNode());
+//				if (procSpace!=null)
+//					if (procSpace.equals(space))
+//						return true;
+//			}
+//			// 2 one of my super categories is involved in a RelationProcess pointing to space
+//			List<RelationType> rels = (List<RelationType>) get(cat.edges(Direction.IN),
+//				selectZeroOrMany(orQuery(hasTheLabel(E_TOCATEGORY.label()),hasTheLabel(E_FROMCATEGORY.label()))),
+//				edgeListStartNodes());
+//			for (RelationType rel:rels) {
+//				ProcessNode pn = (ProcessNode) get(rel.edges(Direction.IN),
+//					selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
+//					startNode());
+//				if (pn!=null) {
+//					TreeGraphDataNode procSpace = (TreeGraphDataNode) get(pn.edges(Direction.OUT),
+//						selectZeroOrOne(hasTheLabel(E_SPACE.label())),
+//						endNode());
+//					if (procSpace!=null)
+//						if (procSpace.equals(space))
+//							return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}
 	
 	private void generateDataCode(TreeGraphDataNode system, 
-			String modelName, 
-			List<TreeGraphDataNode> spaces) {
+			String modelName) {
 		// 1. drivers
 		TreeGraphDataNode spec = Categorized.buildUniqueDataList(system, E_DRIVERS.label());
-		// add space coordinates for every space in which this component type will go (mobile components)
-		if (spaces!=null) {
-			if (!system.properties().hasProperty(P_COMPONENT_MOBILE.key())) 
-				addSpaceCoordinates(spec,system,spaces); // default: assumes mobile
-			else if ((boolean)system.properties().getPropertyValue(P_COMPONENT_MOBILE.key())==true)
-				addSpaceCoordinates(spec,system,spaces);
-		}
 		generateDataCode(spec, system, modelName, P_DRIVERCLASS.key());
-//		if (spec!=null) {
-//			List<TreeNode> gtn = (List<TreeNode>) get(spec.getChildren(),
-//				selectZeroOrMany(hasProperty("_generated")));
-//			for (TreeNode tn:gtn)
-//				tn.disconnect();
-//		}
 		// 2. parameters
 		spec = Categorized.buildUniqueDataList(system, E_PARAMETERS.label());
 		generateDataCode(spec, system, modelName, P_PARAMETERCLASS.key());
 		// 3. decorators
 		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label());
 		// add space coordinates for every space in which this component type will go (immobile components)
-		if (spaces!=null) {
-			if (system.properties().hasProperty(P_COMPONENT_MOBILE.key())) 
-				if ((boolean)system.properties().getPropertyValue(P_COMPONENT_MOBILE.key())==false)
-					addSpaceCoordinates(spec,system,spaces);
-		}
 		generateDataCode(spec, system, modelName, P_DECORATORCLASS.key());
-//		if (spec!=null) {
-//			List<TreeNode> gtn = (List<TreeNode>) get(spec.getChildren(),
-//				selectZeroOrMany(hasProperty("_generated")));
-//			for (TreeNode tn:gtn)
-//				tn.disconnect();
-//		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -306,6 +247,35 @@ public class CodeGenerator {
 			for (TreeGraphDataNode csq : consequences)
 				generateFunctionCode(csq, modelName);
 		}
+		// if the process has a space, then a relocatefunction is always generated
+		ProcessSpaceEdge spaceEdge = (ProcessSpaceEdge) get(process.edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_SPACE.label())));
+		if (spaceEdge!=null) {
+			String funcname = initialUpperCase(process.id())
+				+initialUpperCase((spaceEdge).endNode().id())
+				+initialUpperCase(TwFunctionTypes.Relocate.toString())+"Function";
+			ExtendablePropertyList props = new ExtendablePropertyListImpl();
+			props.addProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.Relocate);
+			// QAD: do not use NodeFactory otherwise it's included in the graph
+			// this is a throw-away free-floating Node just for initialisation of code generator
+			TreeGraphDataNode function = new TreeGraphDataNode(null, props, null);
+			TwFunctionGenerator generator = new TwFunctionGenerator(funcname, function, modelName);
+			generator.generateCode();
+			UserProjectLink.addFunctionFile(generator.getFile());
+			String genClassName = generator.generatedClassName();
+			// property is in space edge relocateFunctionName
+			if (spaceEdge.properties().hasProperty(P_RELOCATEFUNCTION.key())) {
+				String lastValue = (String) spaceEdge.properties().getPropertyValue(P_RELOCATEFUNCTION.key());
+				if (!lastValue.equals(genClassName)) {
+					spaceEdge.properties().setProperty(P_RELOCATEFUNCTION.key(),genClassName);
+					GraphState.setChanged();
+				}
+			}
+			else {
+				((ResizeablePropertyList) spaceEdge.properties()).addProperty(P_RELOCATEFUNCTION.key(), genClassName);
+				GraphState.setChanged();
+			}
+		}
 	}
 
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
@@ -319,7 +289,8 @@ public class CodeGenerator {
 				function.properties().setProperty(P_FUNCTIONCLASS.key(), genClassName);
 				GraphState.setChanged();
 			}
-		} else {
+		} 
+		else {
 			((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
 			GraphState.setChanged();
 		}

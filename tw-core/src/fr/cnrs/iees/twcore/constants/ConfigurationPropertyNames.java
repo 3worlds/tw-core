@@ -95,9 +95,12 @@ public enum ConfigurationPropertyNames {
 	P_SPACE_XLIM				("x-limits"),
 	P_SPACE_YLIM				("y-limits"),
 	P_SPACE_ZLIM				("z-limits"),
-	P_SPACE_XNAME				("x-name"),
-	P_SPACE_YNAME				("y-name"),
-	P_SPACE_ZNAME				("z-name"),
+	P_SPACE_PREC 				("precision"),
+	P_SPACE_UNITS 				("units"),
+	P_SPACE_CELLSIZE			("cellSize"),
+	P_SPACE_NX	 				("x-nCells"),
+	P_SPACE_NY 					("y-nCells"),
+	P_RELOCATEFUNCTION			("relocateFunctionName"),
 	;
 
 	private final String pname;

@@ -117,15 +117,15 @@ public class RelationProcess extends AbstractRelationProcess {
 	@Override
 	public void addFunction(TwFunction function) {
 		if (!isSealed()) {
-			if (ChangeOtherCategoryDecisionFunction.class.isAssignableFrom(function.getClass()))
+			if (function instanceof ChangeOtherCategoryDecisionFunction)
 				COCfunctions.add((ChangeOtherCategoryDecisionFunction) function);
-			else if (ChangeOtherStateFunction.class.isAssignableFrom(function.getClass()))
+			else if (function instanceof ChangeOtherStateFunction)
 				COSfunctions.add((ChangeOtherStateFunction) function);
-			else if (ChangeRelationStateFunction.class.isAssignableFrom(function.getClass()))
+			else if (function instanceof ChangeRelationStateFunction)
 				CRfunctions.add((ChangeRelationStateFunction) function);
-			else if (DeleteOtherDecisionFunction.class.isAssignableFrom(function.getClass()))
+			else if (function instanceof DeleteOtherDecisionFunction)
 				DOfunctions.add((DeleteOtherDecisionFunction) function);
-			else if (MaintainRelationDecisionFunction.class.isAssignableFrom(function.getClass()))
+			else if (function instanceof MaintainRelationDecisionFunction)
 				MRfunctions.add((MaintainRelationDecisionFunction) function);
 		}		
 	}

@@ -33,6 +33,7 @@ import java.util.List;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
+import au.edu.anu.twcore.ecosystem.runtime.space.Located;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALDataNode;
@@ -51,7 +52,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIO
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class SystemComponent extends ALDataNode implements DynamicSystem, Cloneable {
+public class SystemComponent extends ALDataNode implements DynamicSystem, Cloneable, Located {
 
 	/** indexes to access state variable table */
 	protected static int CURRENT = 1;
@@ -188,6 +189,12 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 	
 	public SystemData autoVar() {
 		return ((SystemComponentPropertyListImpl)properties()).auto();
+	}
+
+	@Override
+	public double[] initialLocation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
