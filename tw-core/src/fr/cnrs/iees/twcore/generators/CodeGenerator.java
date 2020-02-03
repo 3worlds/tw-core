@@ -307,7 +307,7 @@ public class CodeGenerator {
 					cptypes.addAll(lcomp);
 				}
 				List<TreeGraphDataNode> tocats = (List<TreeGraphDataNode>) get(ltgn.get(0).edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+					selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
 					edgeListEndNodes());
 				for (TreeGraphDataNode cat:tocats) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
