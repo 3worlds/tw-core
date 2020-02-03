@@ -136,6 +136,9 @@ public class ComponentType
 					if (!s.trim().isEmpty())
 						decoratorTemplate = loadDataClass(s);
 			}
+			// TODO: add automatically generated relocate functions
+			// by scanning the P_RELOCATEFUNCTION if present.
+			
 //			if (driverTemplate != null)
 //				for (String key : driverTemplate.getKeysAsSet())
 //					propertyMap.put(key, DRIVERS);
