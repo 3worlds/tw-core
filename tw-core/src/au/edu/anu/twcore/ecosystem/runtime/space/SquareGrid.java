@@ -31,20 +31,21 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 
 	private class squareGridLocation implements Location {
 		protected int[] loc = new int[2];
-		protected squareGridLocation(Located lc) {
+		private Point ploc = null;
+		protected squareGridLocation(Located lc,double[] xyloc) {
 			super();
-			double[] xyloc = lc.initialLocation();
 			loc[0] = (int) Math.floor(xyloc[0]/cellSize);
 			loc[1] = (int) Math.floor(xyloc[1]/cellSize);
 			if ((loc[0]>nx)|(loc[1]>ny))
 				throw new TwcoreException("New spatial coordinates for item "
 					+lc.toString()+" out of range "+boundingBox().toString());
+			double x = loc[0]*cellSize;
+			double y = loc[1]*cellSize;
+			ploc = Point.newPoint(x,y);
 		}
 		@Override
 		public Point asPoint() {
-			double x = loc[0]*cellSize;
-			double y = loc[1]*cellSize;
-			return Point.newPoint(x,y);
+			return ploc;
 		}
 		@Override
 		public String toString() {
@@ -99,8 +100,8 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 	}
 
 	@Override
-	public void locate(SystemComponent focal) {
-		squareGridLocation at = new squareGridLocation(focal);
+	public void locate(SystemComponent focal, double[] xyloc) {
+		squareGridLocation at = new squareGridLocation(focal,xyloc);
 		locatedItems.put(focal,at);
 		grid[at.loc[0]][at.loc[1]].add(focal);
 	}

@@ -101,6 +101,7 @@ public enum ConfigurationPropertyNames {
 	P_SPACE_NX	 				("x-nCells"),
 	P_SPACE_NY 					("y-nCells"),
 	P_RELOCATEFUNCTION			("relocateFunctionName"),
+	P_SPACENAMES				("spaces"),
 	;
 
 	private final String pname;

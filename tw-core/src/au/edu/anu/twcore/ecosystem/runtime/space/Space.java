@@ -5,6 +5,7 @@ import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
 
 /**
  * 
@@ -43,7 +44,7 @@ public interface Space<T extends Located> {
 	 * @param focal the system to add
 	 *
 	 */
-	public void locate(T focal);
+	public void locate(T focal, double[] location);
 	
 	/**
 	 * Removes the system component focal from this space.
@@ -97,4 +98,12 @@ public interface Space<T extends Located> {
 	 */
 	public Iterable<T> getItemsWithin(T item, double distance);
 
+	public default double[] defaultLocation() {
+		Point c = boundingBox().centre();
+		double[] coords = new double[c.dim()];
+		for (int i=0; i<coords.length; i++)
+			coords[i] = c.coordinate(i);
+		return coords;
+	}
+	
 }

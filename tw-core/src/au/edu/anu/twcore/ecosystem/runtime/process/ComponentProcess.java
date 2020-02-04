@@ -47,6 +47,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
@@ -274,15 +275,32 @@ public class ComponentProcess
 							function.setFocalContext(focalContext);
 							func.changeState(t, dt, newBorn);
 						}
+						HierarchicalContext newBornContext = null;
+						if ((!function.getChangeOtherStateConsequences().isEmpty()) |
+								(!((SystemFactory)newBorn.membership()).spaces().isEmpty())) {
+							newBornContext = new HierarchicalContext();
+							newBornContext.groupParameters = nbs.container.parameters();
+							newBornContext.groupVariables = nbs.container.variables();
+							newBornContext.groupPopulationData = nbs.container.populationData();
+							newBornContext.groupName = nbs.container.id();
+						}
 						for (ChangeOtherStateFunction func : function.getChangeOtherStateConsequences()) {
-							HierarchicalContext otherContext = new HierarchicalContext();
-							otherContext.groupParameters = nbs.container.parameters();
-							otherContext.groupVariables = nbs.container.variables();
-							otherContext.groupPopulationData = nbs.container.populationData();
-							otherContext.groupName = nbs.container.id();
-							function.setOtherContext(otherContext);
+							function.setOtherContext(newBornContext);
 							function.setFocalContext(focalContext);
 							func.changeOtherState(t, dt, focal, newBorn);
+						}
+						for (Space<SystemComponent> space:((SystemFactory)newBorn.membership()).spaces()) {
+							RelocateFunction func = ((SystemFactory)newBorn.membership()).locatorFunction(space);
+							func.setFocalContext(newBornContext);
+							double[] newLocation = func.relocate(t, dt, newBorn, null);
+							if (newLocation==null) {
+								log.warning("No location returned by relocate(...): default location generated");
+								newLocation = space.defaultLocation();
+							}
+							if (newLocation.length!=space.ndim()) {
+								log.warning("Wrong number of dimensions: default location generated");
+								newLocation = space.defaultLocation();
+							}
 						}
 						if (function.relateToOther())
 							// WRONG: should use delayed addition by a relContainer ?

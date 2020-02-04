@@ -29,9 +29,8 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	private class flatSurfaceLocation implements Location {
 		protected Point loc;
 		protected Point locDeviation;
-		protected flatSurfaceLocation(Located sc) {
+		protected flatSurfaceLocation(Located sc,double[] xyloc) {
 			super();
-			double[] xyloc = sc.initialLocation();
 			double p = precision();
 			double x = Math.floor(xyloc[0]/p)*p; // truncates location to nearest precision unit
 			double y = Math.floor(xyloc[1]/p)*p; // truncates location to nearest precision unit
@@ -73,8 +72,8 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	}
 
 	@Override
-	public void locate(SystemComponent focal) {
-		flatSurfaceLocation at = new flatSurfaceLocation(focal);
+	public void locate(SystemComponent focal, double[] location) {
+		flatSurfaceLocation at = new flatSurfaceLocation(focal,location);
 		locatedItems.put(focal,at);
 		// new item is located in the quadtree in the square to the right and above its loc
 		// by 1 precision unit

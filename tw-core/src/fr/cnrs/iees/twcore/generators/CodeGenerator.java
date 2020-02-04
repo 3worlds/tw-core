@@ -46,6 +46,7 @@ import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
+import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -240,8 +241,9 @@ public class CodeGenerator {
 	}
 	
 	private void generateRelocateFunction(TreeGraphDataNode comp, String space, String modelName) {
-		String funcname = initialUpperCase(comp.id())
-			+initialUpperCase(space)
+		String funcname = initialUpperCase(space)
+			+ DefaultStrings.defaultPrefix // this to make sure the space name can be easily extracted
+			+initialUpperCase(comp.id())
 			+initialUpperCase(TwFunctionTypes.Relocate.toString())+"Function";
 		ExtendablePropertyList props = new ExtendablePropertyListImpl();
 		props.addProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.Relocate);
@@ -259,10 +261,15 @@ public class CodeGenerator {
 		}
 		else {
 			StringTable prop = (StringTable) comp.properties().getPropertyValue(P_RELOCATEFUNCTION.key());
-			StringTable tb = new StringTable(new Dimensioner(prop.size()+1));
+			Set<String> set = new HashSet<>();
 			for (int i=0; i<prop.size(); i++)
-				tb.setWithFlatIndex(prop.getWithFlatIndex(i),i);
-			tb.setWithFlatIndex(genClassName,tb.size()-1);
+				set.add(prop.getWithFlatIndex(i));
+			set.add(genClassName);
+			StringTable tb = new StringTable(new Dimensioner(set.size()));
+			// CAUTION HERE: no repeats !
+			int i=0;
+			for (String s:set) 
+				tb.setWithFlatIndex(s,i++);
 			((ExtendablePropertyList)comp.properties()).setProperty(P_RELOCATEFUNCTION.key(),tb);
 		}
 	}

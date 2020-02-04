@@ -28,15 +28,20 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.structure;
 
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.biology.RelocateFunction;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -49,9 +54,12 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-
+import static fr.ens.biologie.generic.utils.NameUtils.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -85,8 +93,8 @@ public class ComponentType
 	private TwData parameterTemplate = null;
 	private TwData driverTemplate = null;
 	private TwData decoratorTemplate = null;
-//	private Map<String, Integer> propertyMap = new HashMap<String, Integer>();
-	
+	private Map<String,Constructor<? extends RelocateFunction>> fConstructors = new HashMap<>();
+	private Map<String,SpaceNode> spaces = new HashMap<>();
 	private Map<Integer,SystemFactory> factories = new HashMap<>();
 	
 	// The SystemComponent containers instantiated by this SystemFactory
@@ -136,8 +144,35 @@ public class ComponentType
 					if (!s.trim().isEmpty())
 						decoratorTemplate = loadDataClass(s);
 			}
-			// TODO: add automatically generated relocate functions
-			// by scanning the P_RELOCATEFUNCTION if present.
+			// add automatically generated relocate functions
+			if (properties().hasProperty(P_RELOCATEFUNCTION.key())) {
+				// get all spaces
+				TreeGraphNode arena = (TreeGraphNode) get(getParent(),
+					children(),
+					selectZeroOrOne(hasTheLabel(N_ARENA.label())));
+				List<SpaceNode> sp = null;
+				if (arena!=null) {
+					sp = (List<SpaceNode>) get(arena.getChildren(),
+						selectZeroOrMany(hasTheLabel("space")));
+					for (SpaceNode sn:sp)
+						spaces.put(initialUpperCase(sn.id()),sn);
+				}
+				StringTable st = (StringTable) properties().getPropertyValue(P_RELOCATEFUNCTION.key());
+				ClassLoader classLoader = OmugiClassLoader.getJarClassLoader();
+				for (int i=0; i<st.size(); i++) {
+					Class<? extends RelocateFunction> functionClass;
+					String className = st.getWithFlatIndex(i);
+					try {
+						functionClass = (Class<? extends RelocateFunction>) Class.forName(className,true,classLoader);
+						String spaceName = functionClass.getSimpleName()
+							.substring(0,functionClass.getSimpleName().indexOf('_'));
+						fConstructors.put(spaceName,functionClass.getConstructor());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
 			
 //			if (driverTemplate != null)
 //				for (String key : driverTemplate.getKeysAsSet())
@@ -157,21 +192,6 @@ public class ComponentType
 	public int initRank() {
 		return N_COMPONENTTYPE.initRank();
 	}
-
-//	/**
-//	 * 
-//	 * @return a new SystemComponent with the proper data structure
-//	 */
-//	@Override
-//	public final SystemComponent newInstance() {
-//		if (!sealed)
-//			initialise();
-//		SimplePropertyList props = new SystemComponentPropertyListImpl(driverTemplate,
-//			decoratorTemplate,2,propertyMap);
-//		SystemComponent result = (SystemComponent) SCfactory.makeNode(SystemComponent.class,"C0",props);
-//		result.setCategorized(this);
-//		return result;
-//	}
 
 	/** returns a new parameterSet of the proper structure for this SystemFactory */
 	public final TwData newParameterSet() {
@@ -225,27 +245,6 @@ public class ComponentType
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
 	
-//	public Collection<SystemContainer> containers() {
-//		if (sealed)
-//			return containers.values();
-//		else
-//			throw new TwcoreException("attempt to access uninitialised data");
-//	}
-//
-//	/**
-//	 * Either return container matching 'name' or create it if not yet there. This way, only
-//	 * one instance of that container will exist.
-//	 * 
-//	 * @param name
-//	 * @return
-//	 */
-//	public SystemContainer container(String name) {
-//		if (sealed)
-//			return containers.get(name);
-//		else
-//			throw new TwcoreException("attempt to access uninitialised data");
-//	}
-
 	/**
 	 * Returns a new container, either nested in a group container or in the Ecosystem
 	 * container, depending on what is found.
@@ -274,11 +273,26 @@ public class ComponentType
 	}
 	
 	private SystemFactory makeFactory(int index) {
+		Map<Space<SystemComponent>,RelocateFunction> spaceLocators = new HashMap<>();
+		if (!fConstructors.isEmpty()) {
+			for (String spc:fConstructors.keySet()) {
+				Constructor<? extends RelocateFunction> fc = fConstructors.get(spc);
+				try {
+					RelocateFunction f = fc.newInstance();
+					spaceLocators.put(spaces.get(spc).getInstance(index),f);
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		SystemFactory result = new SystemFactory(driverTemplate,
 			decoratorTemplate,
 			permanent,
 			categories,
-			categoryId);
+			categoryId,
+			spaceLocators);
 		return result;
 	}
 
