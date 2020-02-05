@@ -108,6 +108,8 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 
 	@Override
 	public Iterable<SystemComponent> getItemsWithin(SystemComponent item, double distance) {
+		// BUG HERE: item MUST be in locateditems list, otherwise null pointer exception
+		// This has to be done at model initialisation
 		Sphere itemSphere = new SphereImpl(locatedItems.get(item).asPoint(),distance);
 		return indexer.getItemsWithin(itemSphere);
 	}

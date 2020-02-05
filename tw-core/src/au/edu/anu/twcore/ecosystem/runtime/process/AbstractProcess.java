@@ -40,6 +40,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
@@ -65,13 +66,18 @@ public abstract class AbstractProcess
 	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
 	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
 	protected Timer timer = null;
+	protected Space<SystemComponent> space = null;
+	protected double searchRadius = 0.0;
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
     
-    public AbstractProcess(ComponentContainer world, Timer timer) {
+    public AbstractProcess(ComponentContainer world, Timer timer, Space<SystemComponent> space,
+    		double searchR) {
     	super();
     	ecosystem = world;
     	this.timer = timer;
+    	this.space = space;
+    	searchRadius = searchR;
     }
 
 	@Override

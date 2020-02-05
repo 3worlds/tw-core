@@ -34,6 +34,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
@@ -60,8 +61,9 @@ public class RelationProcess extends AbstractRelationProcess {
     private List<ChangeRelationStateFunction> CRfunctions = 
     	new LinkedList<ChangeRelationStateFunction>();
 
-	public RelationProcess(ComponentContainer world, RelationContainer relation, Timer timer) {
-		super(world,relation,timer);
+	public RelationProcess(ComponentContainer world, RelationContainer relation, 
+			Timer timer, Space<SystemComponent> space, double searchR) {
+		super(world,relation,timer,space,searchR);
 	}
 
 //	@Override

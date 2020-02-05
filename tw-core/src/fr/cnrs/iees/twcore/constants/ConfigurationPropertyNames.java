@@ -102,6 +102,7 @@ public enum ConfigurationPropertyNames {
 	P_SPACE_NY 					("y-nCells"),
 	P_RELOCATEFUNCTION			("relocateFunctionName"),
 	P_SPACENAMES				("spaces"),
+	P_SPACE_SEARCHRADIUS		("searchRadius"),
 	;
 
 	private final String pname;

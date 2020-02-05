@@ -36,8 +36,11 @@ import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.RelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
@@ -48,6 +51,7 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.Collection;
@@ -77,6 +81,9 @@ public class ProcessNode
 	
 	private Map<Integer,TwProcess> processes = new HashMap<>();
 	private List<FunctionNode> functions = null;
+	
+	private SpaceNode space = null;
+	private double searchRadius = 0.0;
 
 	// default constructor
 	public ProcessNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -108,6 +115,12 @@ public class ProcessNode
 				relation = (RelationType) first;
 			functions = (List<FunctionNode>) get(getChildren(),
 				selectZeroOrMany(hasTheLabel("function")));
+			ProcessSpaceEdge pse = (ProcessSpaceEdge) get(edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(E_SPACE.label())));
+			if (pse!=null) {
+				space = (SpaceNode) pse.endNode();
+				searchRadius = (double) pse.properties().getPropertyValue(P_SPACE_SEARCHRADIUS.key());
+			}
 			sealed = true;
 		}
 	}
@@ -132,19 +145,21 @@ public class ProcessNode
 	private TwProcess makeProcess(int index) {
 		AbstractProcess result = null;
 		TimeModel tm = (TimeModel) getParent();
+		Space<SystemComponent> sp = null;
+		if (space!=null)
+			sp = space.getInstance(index);
 		if (categories!=null)
-			result = new ComponentProcess(ecosystem.getInstance(index),categories,tm.getInstance(index));
+			result = new ComponentProcess(ecosystem.getInstance(index),
+				categories,tm.getInstance(index),sp,searchRadius);
 		else if (relation!=null) {
 			if ((functions.size()==1) && 
 				(functions.get(0).properties().getPropertyValue(P_FUNCTIONTYPE.key())
 					.equals(TwFunctionTypes.RelateToDecision)))
 				result = new SearchProcess(ecosystem.getInstance(index),
-					relation.getInstance(index),
-					tm.getInstance(index));
+					relation.getInstance(index),tm.getInstance(index),sp,searchRadius);
 			else
 				result = new RelationProcess(ecosystem.getInstance(index),
-					relation.getInstance(index),
-					tm.getInstance(index));
+					relation.getInstance(index),tm.getInstance(index),sp,searchRadius);
 		}
 		for (FunctionNode func:functions)
 			result.addFunction(func.getInstance(index));

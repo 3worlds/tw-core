@@ -95,8 +95,9 @@ public class ComponentProcess
 //	private SystemContainer ecosystemContainer = null;
 //	private SystemContainer groupContainer = null;
 	
-	public ComponentProcess(ComponentContainer world, Collection<Category> categories, Timer timer) {
-		super(world,timer);
+	public ComponentProcess(ComponentContainer world, Collection<Category> categories, 
+			Timer timer, Space<SystemComponent> space, double searchR) {
+		super(world,timer,space,searchR);
 		focalCategories.addAll(categories);
 		categoryId = buildCategorySignature();
 	}

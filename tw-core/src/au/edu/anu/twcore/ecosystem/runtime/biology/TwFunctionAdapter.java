@@ -103,9 +103,10 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	// CAUTION: can be set only once
 	// this to prevent end-users to mess up with the internal code
 	public final void setRng(Random arng) {
-		if (rng == null)
+		if (arng == null)
 			throw new TwcoreException("valid random number generator expected");
-		rng = arng;
+		if (rng==null)
+			rng = arng;
 	}
 	
 	/*-
