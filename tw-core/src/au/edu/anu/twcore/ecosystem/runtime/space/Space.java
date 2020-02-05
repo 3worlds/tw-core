@@ -1,5 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
+import au.edu.anu.twcore.rngFactory.RngHolder;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
@@ -12,7 +13,7 @@ import fr.cnrs.iees.uit.space.Point;
  * @author Jacques Gignoux - 28 janv. 2020
  *
  */
-public interface Space<T extends Located> {
+public interface Space<T extends Located> extends RngHolder {
 
 	/**
 	 * Every space is contained within a n-dim bounding box. This function returns

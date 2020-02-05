@@ -99,16 +99,13 @@ public abstract class TwFunctionAdapter implements TwFunction {
 		return rng;
 	}
 
-	private static final String defRngName = "default 3wRNG";
-
 	@Override
 	// CAUTION: can be set only once
 	// this to prevent end-users to mess up with the internal code
-
-	public final void initRng(Random rng) {
+	public final void setRng(Random arng) {
 		if (rng == null)
 			throw new TwcoreException("valid random number generator expected");
-		this.rng = rng;
+		rng = arng;
 	}
 	
 	/*-
@@ -122,7 +119,8 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	 * Since defRngName has RngResetType.never it can never be reset anyway
 	 */
 	// JG: I guess the simulator should keep a handle to it? now there will be one per simulator.
-	public final void initRng(int index) {
+	@Override
+	public final Random defaultRng(int index) {
 		if (rng == null) {
 			Generator gen = RngFactory.find(defRngName+":"+index);
 			if (gen != null)
@@ -133,6 +131,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 				this.rng = gen.getRandom();
 			}
 		}
+		return rng;
 	}
 
 }

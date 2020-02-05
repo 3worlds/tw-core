@@ -279,7 +279,9 @@ public class ComponentType
 				Constructor<? extends RelocateFunction> fc = fConstructors.get(spc);
 				try {
 					RelocateFunction f = fc.newInstance();
-					spaceLocators.put(spaces.get(spc).getInstance(index),f);
+					Space<SystemComponent> sp = spaces.get(spc).getInstance(index);
+					f.setRng(sp.rng());
+					spaceLocators.put(sp,f);
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 						| InvocationTargetException e) {
 					// TODO Auto-generated catch block

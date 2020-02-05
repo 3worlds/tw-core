@@ -110,5 +110,9 @@ hasNode spaceSpec
 		hasName = String("units")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
+	hasEdge spaceRngSpec
+		isOfClass = String("useRNG")
+		toNode = String("rng:")
+		multiplicity = IntegerRange("0..1")
 	
 

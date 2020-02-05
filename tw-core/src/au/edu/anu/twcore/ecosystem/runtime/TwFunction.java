@@ -32,9 +32,9 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Random;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
+import au.edu.anu.twcore.rngFactory.RngHolder;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
@@ -44,7 +44,7 @@ import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
  * @author Jacques Gignoux - 7 juin 2019
  *
  */
-public interface TwFunction {
+public interface TwFunction extends RngHolder {
 	
 	static EnumMap<TwFunctionTypes,EnumSet<TwFunctionTypes>> ftypes = 
 		new EnumMap<TwFunctionTypes, EnumSet<TwFunctionTypes>>(TwFunctionTypes.class);
@@ -68,17 +68,6 @@ public interface TwFunction {
 	public default List<? extends TwFunction> getConsequences() {
 		return null;
 	}
-
-	public Random rng();
-	
-	/**
-	 * Connects a function to its random number generator, only once (at construction time)
-	 * This function is not meant to be used by end-users.
-	 *  
-	 * @param rng the random number generator
-	 */
-	public void initRng(Random rng);
-	public void initRng(int index);
 	
 	/**
 	 * Utility to find the proper consequences of every function type. Always returns a valid

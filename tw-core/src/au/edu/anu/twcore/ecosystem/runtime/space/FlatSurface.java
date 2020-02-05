@@ -36,7 +36,7 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 			double y = Math.floor(xyloc[1]/p)*p; // truncates location to nearest precision unit
 			loc = Point.newPoint(x,y);
 			// replace truncated part by a random dev to make sure two positions are never exactly the same
-			locDeviation = Point.newPoint(rng.nextDouble()*p,rng.nextDouble()*p);
+			locDeviation = Point.newPoint(jitterRNG.nextDouble()*p,jitterRNG.nextDouble()*p);
 			if (!boundingBox().contains(loc))
 				throw new TwcoreException("New spatial coordinates for item "
 					+sc.toString()+" out of range "+boundingBox().toString());
