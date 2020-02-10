@@ -55,7 +55,7 @@ hasNode containerSpec
 	
 hasNode widgetSpec
 	isOfClass = String("widget")
-	hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
+	hasParent = StringTable(([4]"bottom:","top:","tab:","container:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder
 		hasName = String("order")		
