@@ -50,6 +50,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.StopSystemEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.ConditionEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.UseRNGEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
+import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
 
 import au.edu.anu.twcore.ecosystem.dynamics.initial.GroupOfEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.CycleEdge;
@@ -99,6 +100,7 @@ public enum ConfigurationEdgeLabels {
 	E_LOADFROM		("loadFrom",		"ldFrom",		LoadFromEdge.class),
 	E_USERNG		("useRNG",			"uses",			UseRNGEdge.class),
 	E_SPACE			("inSpace",			"in",			ProcessSpaceEdge.class),
+	E_LOCATION		("location",		"loc",			LocationEdge.class),
 	// user interface
 	E_TRACKTIME		("trackTime",		"trksTmOf",		TrackTimeEdge.class),
 	E_TRACKSERIES	("trackSeries",		"trksSrsOf",	TrackTimeSeriesEdge.class),

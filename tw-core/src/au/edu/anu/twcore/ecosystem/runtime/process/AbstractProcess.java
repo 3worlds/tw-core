@@ -36,6 +36,7 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.Spatialized;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
@@ -57,7 +58,7 @@ import fr.ens.biologie.generic.Sealable;
  *
  */
 public abstract class AbstractProcess 
-		implements TwProcess, Sealable, DataTrackerHolder<Metadata> {
+		implements TwProcess, Sealable, DataTrackerHolder<Metadata>, Spatialized<SystemComponent> {
 
 	private boolean sealed = false;
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
@@ -91,6 +92,11 @@ public abstract class AbstractProcess
 	@Override
 	public final boolean isSealed() {
 		return sealed;
+	}
+	
+	@Override
+	public Space<SystemComponent> space() {
+		return space;
 	}
 	
 	public final ComponentContainer ecosystem() {

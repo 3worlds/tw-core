@@ -469,7 +469,7 @@ public abstract class CategorizedContainer<T extends Identity>
 		itemsToAdd.clear();
 		itemsToInitials.clear();
 		for (T item : initialItems) {
-			T c = cloneItem(item);
+			T c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
 			items.put(c.id(), c);
 			itemsToInitials.put(c.id(), item);
 		}

@@ -103,6 +103,7 @@ public enum ConfigurationPropertyNames {
 	P_RELOCATEFUNCTION			("relocateFunctionName"),
 	P_SPACENAMES				("spaces"),
 	P_SPACE_SEARCHRADIUS		("searchRadius"),
+	P_SPACE_COORDINATES			("coordinates"),
 	;
 
 	private final String pname;

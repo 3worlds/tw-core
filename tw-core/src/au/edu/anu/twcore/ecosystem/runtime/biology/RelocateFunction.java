@@ -2,6 +2,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import fr.cnrs.iees.uit.space.Box;
 
 /**
  * Interface for user-defined ecological functions changing the location of a SystemComponent.
@@ -22,6 +23,7 @@ public abstract class RelocateFunction extends TwFunctionAdapter {
 	public abstract double[] relocate(double t,
 		double dt,
 		SystemComponent focal,
-		Location ctLocation);
+		Location ctLocation,
+		Box limits);
 	
 }

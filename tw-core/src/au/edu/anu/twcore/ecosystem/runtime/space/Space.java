@@ -45,7 +45,17 @@ public interface Space<T extends Located> extends RngHolder {
 	 * @param focal the system to add
 	 *
 	 */
-	public void locate(T focal, double[] location);
+	public void locate(T focal, double...location);
+	
+	public void locate(T focal, Point location);
+	
+	/**
+	 * Finds the location of an item in this space
+	 * 
+	 * @param focal
+	 * @return
+	 */
+	public Point locationOf(T focal);
 	
 	/**
 	 * Removes the system component focal from this space.

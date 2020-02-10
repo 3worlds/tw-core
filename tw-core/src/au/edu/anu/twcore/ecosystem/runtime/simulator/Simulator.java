@@ -29,8 +29,10 @@
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
@@ -39,9 +41,11 @@ import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.Spatialized;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
@@ -111,6 +115,8 @@ public class Simulator {
 	private SimulatorStatus status = SimulatorStatus.Initial;
 	/** all data trackers used in this simulator, together with their metadata */
 	private Map<DataTracker<?,Metadata>,Metadata> trackers = new HashMap<>(); 
+	/** all spaces used in this simulation */
+	private Set<Space<SystemComponent>> spaces = new HashSet<>();
 	
 	// CONSTRUCTORS
 
@@ -149,7 +155,7 @@ public class Simulator {
 		trackers.put(timetracker,metadata);
 		for (List<List<TwProcess>> llp:processCallingOrder.values())
 			for (List<TwProcess> lp:llp)
-				for (TwProcess p:lp)
+				for (TwProcess p:lp) {
 					if (p instanceof DataTrackerHolder)
 						for (DataTracker<?,Metadata> dt:((DataTrackerHolder<Metadata>)p).dataTrackers()) {
 							// make metadata
@@ -159,8 +165,15 @@ public class Simulator {
 							if (timerProps!=null)
 								meta.addProperties(timerProps);
 							trackers.put(dt, meta);
+						}
+					if (p instanceof Spatialized<?>) {
+						Space<SystemComponent> sp = ((Spatialized<SystemComponent>)p).space();
+						if (sp!=null)
+							spaces.add(sp);
+					}
 		}
 		// copies initial community to current community to start properly
+		// NB this is probably useless?
 		this.ecosystem.reset();
 	}
 	public int id() {
@@ -277,6 +290,8 @@ public class Simulator {
 			t.reset();
 		timetracker.sendData(lastTime);
 		ecosystem.reset();
+		for (Space<SystemComponent> sp:spaces)
+			ecosystem.community().resetCoordinates(sp);
 	}
 
 	// returns true if stopping condition is met

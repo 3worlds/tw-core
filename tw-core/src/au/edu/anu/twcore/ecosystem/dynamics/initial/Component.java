@@ -30,18 +30,24 @@ package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_INSTANCEOF;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
 import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
@@ -63,8 +69,11 @@ public class Component
 	private boolean sealed = false;
 //	private TwData variables = null;
 	private ComponentType componentFactory = null;
-	// This is FLAWED: assumes only ONE component per simulator ???
+	// This is FLAWED: assumes only ONE component per simulator ???, no, its fine, different components
+	// have different Component nodes
 	private Map<Integer,SystemComponent> individuals = new HashMap<>();
+	
+	private Map<SpaceNode,double[]> coordinates = new HashMap<>();
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -76,6 +85,7 @@ public class Component
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
@@ -83,6 +93,16 @@ public class Component
 		componentFactory = (ComponentType) get(edges(Direction.OUT),
 			selectOne(hasTheLabel(E_INSTANCEOF.label())),
 			endNode());
+		List<LocationEdge> spaces = (List<LocationEdge>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_LOCATION.label())));
+		for (LocationEdge spe:spaces) {
+			SpaceNode space = (SpaceNode) spe.endNode();
+			DoubleTable tab = (DoubleTable) spe.properties().getPropertyValue(P_SPACE_COORDINATES.key()); 
+			double[] coord = new double[tab.size()];
+			for (int i=0; i<coord.length; i++)
+				coord[i] = tab.getWithFlatIndex(i);
+			coordinates.put(space,coord);
+		}
 		sealed = true;
 	}
 
@@ -121,6 +141,11 @@ public class Component
 			for (TreeNode tn:getChildren())
 				if (tn instanceof VariableValues)
 					((VariableValues)tn).fill(sc.currentState());
+			// including spatial coordinates
+			for (SpaceNode spn:coordinates.keySet()) {
+				Space<SystemComponent> sp = spn.getInstance(id);
+				sp.locate(sc, coordinates.get(spn));
+			}
 			// insert component into container
 			LimitedEdition<ComponentContainer> p = (LimitedEdition<ComponentContainer>) getParent();
 			// first case: no groups are specified, the component is required to be stored directly

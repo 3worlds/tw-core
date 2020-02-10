@@ -29,7 +29,7 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	private class flatSurfaceLocation implements Location {
 		protected Point loc;
 		protected Point locDeviation;
-		protected flatSurfaceLocation(Located sc,double[] xyloc) {
+		protected flatSurfaceLocation(Located sc,double...xyloc) {
 			super();
 			double p = precision();
 			double x = Math.floor(xyloc[0]/p)*p; // truncates location to nearest precision unit
@@ -72,12 +72,17 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	}
 
 	@Override
-	public void locate(SystemComponent focal, double[] location) {
+	public void locate(SystemComponent focal, double...location) {
 		flatSurfaceLocation at = new flatSurfaceLocation(focal,location);
 		locatedItems.put(focal,at);
 		// new item is located in the quadtree in the square to the right and above its loc
 		// by 1 precision unit
 		indexer.insert(focal,Point.add(at.loc,at.locDeviation));
+	}
+
+	@Override
+	public void locate(SystemComponent focal, Point location) {
+		locate(focal,location.x(),location.y());		
 	}
 
 	@Override
@@ -108,10 +113,21 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 
 	@Override
 	public Iterable<SystemComponent> getItemsWithin(SystemComponent item, double distance) {
-		// BUG HERE: item MUST be in locateditems list, otherwise null pointer exception
-		// This has to be done at model initialisation
-		Sphere itemSphere = new SphereImpl(locatedItems.get(item).asPoint(),distance);
+		if (item==null)
+			System.out.println("Null system component passed to getItemsWithin(...)");
+		Location lok = locatedItems.get(item);
+		Point p = lok.asPoint();
+//		Sphere itemSphere = new SphereImpl(locatedItems.get(item).asPoint(),distance);
+		Sphere itemSphere = new SphereImpl(p,distance);
 		return indexer.getItemsWithin(itemSphere);
+	}
+
+	@Override
+	public Point locationOf(SystemComponent focal) {
+		if (locatedItems.get(focal)!=null)
+			return locatedItems.get(focal).asPoint();
+		else
+			return null;
 	}
 
 }

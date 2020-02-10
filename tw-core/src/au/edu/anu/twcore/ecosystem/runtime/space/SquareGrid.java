@@ -32,7 +32,7 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 	private class squareGridLocation implements Location {
 		protected int[] loc = new int[2];
 		private Point ploc = null;
-		protected squareGridLocation(Located lc,double[] xyloc) {
+		protected squareGridLocation(Located lc,double...xyloc) {
 			super();
 			loc[0] = (int) Math.floor(xyloc[0]/cellSize);
 			loc[1] = (int) Math.floor(xyloc[1]/cellSize);
@@ -100,10 +100,15 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 	}
 
 	@Override
-	public void locate(SystemComponent focal, double[] xyloc) {
+	public void locate(SystemComponent focal, double...xyloc) {
 		squareGridLocation at = new squareGridLocation(focal,xyloc);
 		locatedItems.put(focal,at);
 		grid[at.loc[0]][at.loc[1]].add(focal);
+	}
+
+	@Override
+	public void locate(SystemComponent focal, Point location) {
+		locate(focal,location.x(),location.y());		
 	}
 
 	@Override
@@ -162,6 +167,14 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 				result.remove(item);
 		}
 		return result;
+	}
+
+	@Override
+	public Point locationOf(SystemComponent focal) {
+		if (locatedItems.get(focal)!=null)
+			return locatedItems.get(focal).asPoint();
+		else
+			return null;
 	}
 
 }

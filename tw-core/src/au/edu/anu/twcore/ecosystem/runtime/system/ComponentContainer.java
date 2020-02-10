@@ -31,7 +31,9 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.uit.space.Point;
 
 /**
  * A container for SystemComponents
@@ -72,6 +74,25 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	@Override
 	public void rename(String oldId, String newId) {
 		throw new TwcoreException("Renaming of '" + this.getClass().getSimpleName() + "' is not implemented.");
+	}
+	
+	// sets the coordinates of components initially present
+	// recurses on sub-containers
+	public void resetCoordinates(Space<SystemComponent> space) {
+		for (String scid:items.keySet()) {
+			SystemComponent initSc = itemsToInitials.get(scid);
+			if (initSc!=null) { // means the SC was cloned from an initialItem
+				SystemComponent sc = items.get(scid);
+				Point initLoc = space.locationOf(initSc);
+				if (space.locationOf(sc)!=null)
+					space.unlocate(sc);
+				space.locate(sc,initLoc);
+				// this to make sure searches will not return an initial item
+//				space.unlocate(initSc);
+			}
+		}
+		for (CategorizedContainer<SystemComponent> childContainer: subContainers())
+			((ComponentContainer)childContainer).resetCoordinates(space);
 	}
 	
 	/**

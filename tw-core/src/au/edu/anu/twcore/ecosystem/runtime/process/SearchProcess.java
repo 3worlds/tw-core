@@ -105,6 +105,14 @@ public class SearchProcess
 	private void executeFunctions(CategorizedContainer<SystemComponent> focalContainer,
 			CategorizedContainer<SystemComponent> otherContainer,
 			double t, double dt) {
+		// NB: problem here:
+//		Exception in thread "Thread-4" java.util.ConcurrentModificationException
+//		at java.base/java.util.HashMap$HashIterator.nextNode(HashMap.java:1493)
+//		at java.base/java.util.HashMap$ValueIterator.next(HashMap.java:1521)
+//		at au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess.executeFunctions(SearchProcess.java:108)
+//		at au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess.loop(SearchProcess.java:89)
+//		at au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess.execute(AbstractProcess.java:132)
+//		at au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator.step(Simulator.java:238)
 		for (SystemComponent focal:focalContainer.items()) {
 			// brute force approach - SLOW O(n²) - maybe a warning should be issued in MM
 			if (space==null) {
@@ -120,7 +128,9 @@ public class SearchProcess
 					if (lsc!=null)
 						for (SystemComponent other:lsc) {
 							if (other!=focal)
-								doRelate(t,dt,focal,other);	
+								if (other.membership().belongsTo(otherCategories))
+									if (!otherContainer.containsInitialItem(other))
+										doRelate(t,dt,focal,other);	
 						}
 				}
 				// search radius null, means we search for the nearest neighbours only 
@@ -129,7 +139,9 @@ public class SearchProcess
 					if (lsc!=null)
 						for (SystemComponent other:lsc) {
 							if (other!=focal)
-								doRelate(t,dt,focal,other);
+								if (other.membership().belongsTo(otherCategories))
+									if (!otherContainer.containsInitialItem(other))
+										doRelate(t,dt,focal,other);
 						}
 				}
 			}

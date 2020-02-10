@@ -290,10 +290,11 @@ public class ComponentProcess
 							function.setFocalContext(focalContext);
 							func.changeOtherState(t, dt, focal, newBorn);
 						}
+						// location of newBorn in space
 						for (Space<SystemComponent> space:((SystemFactory)newBorn.membership()).spaces()) {
 							RelocateFunction func = ((SystemFactory)newBorn.membership()).locatorFunction(space);
 							func.setFocalContext(newBornContext);
-							double[] newLocation = func.relocate(t, dt, newBorn, null);
+							double[] newLocation = func.relocate(t, dt, newBorn, null, space.boundingBox());
 							if (newLocation==null) {
 								log.warning("No location returned by relocate(...): default location generated");
 								newLocation = space.defaultLocation();
@@ -302,11 +303,10 @@ public class ComponentProcess
 								log.warning("Wrong number of dimensions: default location generated");
 								newLocation = space.defaultLocation();
 							}
+							space.locate(newBorn,newLocation);
 						}
 						if (function.relateToOther())
-							// WRONG: should use delayed addition by a relContainer ?
-							// well, no in theory it's ok because users are not going to see this...
-							focal.relateTo(newBorn,parentTo.key());
+							focal.relateTo(newBorn,parentTo.key()); // delayed addition
 						// welcome newBorn in container!
 						nbs.container.addItem(newBorn); // safe - delayed addition
 					}

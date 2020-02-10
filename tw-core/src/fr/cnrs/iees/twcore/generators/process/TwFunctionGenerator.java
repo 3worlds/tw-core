@@ -56,6 +56,7 @@ import fr.cnrs.iees.twcore.constants.FileType;
 import fr.cnrs.iees.twcore.constants.SnippetLocation;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
+import fr.cnrs.iees.uit.space.Box;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
@@ -159,8 +160,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
 		generator.setImport(SystemComponent.class.getCanonicalName());
 		generator.setImport(Table.class.getPackageName()+".*");
-		if (type.equals(TwFunctionTypes.Relocate))
+		if (type.equals(TwFunctionTypes.Relocate)) {
 			generator.setImport(Location.class.getCanonicalName());
+			generator.setImport(Box.class.getCanonicalName());
+		}
 		// generator.setImport("java.util.Map");
 		Collection<MethodGenerator> lmg = generator.getMethods();
 		for (MethodGenerator mg : lmg) {
