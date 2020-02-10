@@ -19,12 +19,24 @@ public abstract class SpaceAdapter<T extends Located> implements Space<T> {
 	// ie points apart from less than this relative distance are considered to have the same location
 	// it is relative to largest space size (diagonal)
 	private static final double minimalPrecision = 0.00001;
+	private Random rng = null;
+
+	@Override
+	public Random rng() {
+		return rng;
+	}
+
+	@Override
+	public void setRng(Random arng) {
+		if (rng==null)
+			rng = arng;
+	}
 
 	private Box limits;
 	// absolute precision
 	private double precision;
 	private String units;
-	Random rng = RngFactory.newInstance("SpaceJitterRNG", 0, RngResetType.never, 
+	Random jitterRNG = RngFactory.newInstance("SpaceJitterRNG", 0, RngResetType.never, 
 			RngSeedSourceType.secure,RngAlgType.Pcg32).getRandom();
 
 	public SpaceAdapter(Box box, double prec, String units) {

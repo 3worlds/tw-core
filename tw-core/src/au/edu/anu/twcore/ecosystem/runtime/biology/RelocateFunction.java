@@ -17,12 +17,11 @@ public abstract class RelocateFunction extends TwFunctionAdapter {
 	 * @param dt		current time interval
 	 * @param focal		system component to relocate
 	 * @param ctLoc		current location of focal
-	 * @param newLoc	new location of focal
+	 * @return new location of focal
 	 */
-	public abstract void relocate(double t,
+	public abstract double[] relocate(double t,
 		double dt,
 		SystemComponent focal,
-		Location ctLoc,
-		Location newLoc);
+		Location ctLocation);
 	
 }

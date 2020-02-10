@@ -1,17 +1,19 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
+import au.edu.anu.twcore.rngFactory.RngHolder;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
 
 /**
  * 
  * @author Jacques Gignoux - 28 janv. 2020
  *
  */
-public interface Space<T extends Located> {
+public interface Space<T extends Located> extends RngHolder {
 
 	/**
 	 * Every space is contained within a n-dim bounding box. This function returns
@@ -43,7 +45,7 @@ public interface Space<T extends Located> {
 	 * @param focal the system to add
 	 *
 	 */
-	public void locate(T focal);
+	public void locate(T focal, double[] location);
 	
 	/**
 	 * Removes the system component focal from this space.
@@ -97,4 +99,12 @@ public interface Space<T extends Located> {
 	 */
 	public Iterable<T> getItemsWithin(T item, double distance);
 
+	public default double[] defaultLocation() {
+		Point c = boundingBox().centre();
+		double[] coords = new double[c.dim()];
+		for (int i=0; i<coords.length; i++)
+			coords[i] = c.coordinate(i);
+		return coords;
+	}
+	
 }

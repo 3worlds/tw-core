@@ -13,10 +13,6 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
  * @author Jacques Gignoux - 27 janv. 2020
  *
  */
-//PROBLEM HERE: if a ComponentProcess has a Space, then it must have a relocate function
-//to be called whenever a new component is created
-//if a relation process has a space, then all the component processes relating to its from and
-//to categories must have one.
 public class ProcessSpaceEdge extends ALDataEdge {
 
 	public ProcessSpaceEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {

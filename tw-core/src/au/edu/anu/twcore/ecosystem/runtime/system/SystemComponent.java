@@ -191,10 +191,10 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 		return ((SystemComponentPropertyListImpl)properties()).auto();
 	}
 
-	@Override
-	public double[] initialLocation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public double[] initialLocation(Space<?> space) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }

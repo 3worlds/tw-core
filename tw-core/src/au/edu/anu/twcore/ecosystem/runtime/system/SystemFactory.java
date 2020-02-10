@@ -30,11 +30,15 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.biology.RelocateFunction;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.Factory;
 import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentPropertyListImpl.*;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -62,9 +66,7 @@ public class SystemFactory
 	private TwData driverTemplate = null;
 	private TwData decoratorTemplate = null;
 	private Map<String, Integer> propertyMap = new HashMap<String, Integer>();
-	
-	// The SystemComponent containers instantiated by this SystemFactory
-//	private Map<String,SystemContainer> containers = new HashMap<String,SystemContainer>();
+	private Map<Space<SystemComponent>,RelocateFunction> Rfunctions = new HashMap<>();
 
 	/**
 	 * Constructor. All arguments to constructors are cloned or copied if immutable
@@ -75,7 +77,8 @@ public class SystemFactory
 	 * @param categoryId
 	 */
 	public SystemFactory(TwData drv, TwData dec, boolean perm,
-			SortedSet<Category> categories, String categoryId) {
+			SortedSet<Category> categories, String categoryId, 
+			Map<Space<SystemComponent>,RelocateFunction> spacelocators) {
 		super();
 //		if (par!=null)
 //			parameterTemplate = par.clone();
@@ -94,8 +97,19 @@ public class SystemFactory
 		permanent = perm;
 		this.categories.addAll(categories);
 		this.categoryId = categoryId;
+		for (Space<SystemComponent> sf:spacelocators.keySet()) {
+			Rfunctions.put(sf,spacelocators.get(sf));
+		}
+	}
+	
+	public RelocateFunction locatorFunction(Space<SystemComponent> spaceName) {
+		return Rfunctions.get(spaceName);
 	}
 
+	public Collection<Space<SystemComponent>> spaces() {
+		return Rfunctions.keySet();
+	}
+	
 	/**
 	 * 
 	 * @return a new SystemComponent with the proper data structure

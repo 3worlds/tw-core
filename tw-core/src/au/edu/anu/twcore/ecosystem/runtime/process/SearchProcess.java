@@ -9,6 +9,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.RelateToDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
@@ -40,8 +41,9 @@ public class SearchProcess
 	private SystemFactory otherGroup = null;
 	private ComponentContainer otherGroupContainer = null;
 	
-	public SearchProcess(ComponentContainer world, RelationContainer relation, Timer timer) {
-		super(world, relation, timer);
+	public SearchProcess(ComponentContainer world, RelationContainer relation, 
+			Timer timer, Space<SystemComponent> space,double searchR) {
+		super(world, relation, timer, space, searchR);
 	}
 
 	@Override
@@ -88,25 +90,50 @@ public class SearchProcess
 		}
 	}
 
+	private void doRelate(double t, double dt, SystemComponent focal, SystemComponent other) {
+		for (RelateToDecisionFunction function: RTfunctions) {
+			function.setFocalContext(focalContext);
+			function.setOtherContext(otherContext);
+			if (function.relate(t,dt,focal,other)) {
+				// tag items for future relation
+//						System.out.println("Relating "+focal.id()+ " to "+other.id());
+				relContainer.addItem(focal,other);
+			}
+		}
+	}
+	
 	private void executeFunctions(CategorizedContainer<SystemComponent> focalContainer,
 			CategorizedContainer<SystemComponent> otherContainer,
 			double t, double dt) {
-		// brute force approach
 		for (SystemComponent focal:focalContainer.items()) {
-			for (SystemComponent other:otherContainer.items()) {
-				for (RelateToDecisionFunction function: RTfunctions) {
-					function.setFocalContext(focalContext);
-					function.setOtherContext(otherContext);
-					if (function.relate(t,dt,focal,other)) {
-						// tag items for future relation
-//						System.out.println("Relating "+focal.id()+ " to "+other.id());
-						relContainer.addItem(focal,other);
-					}
+			// brute force approach - SLOW O(n²) - maybe a warning should be issued in MM
+			if (space==null) {
+				for (SystemComponent other:otherContainer.items())
+					if (other!=focal)
+						doRelate(t,dt,focal,other);
+			}
+			// optimised approach using space indexers
+			else {
+				// search radius positive, means we only search until this distance
+				if (searchRadius>space.precision()) {
+					Iterable<SystemComponent> lsc = space.getItemsWithin(focal,searchRadius);
+					if (lsc!=null)
+						for (SystemComponent other:lsc) {
+							if (other!=focal)
+								doRelate(t,dt,focal,other);	
+						}
+				}
+				// search radius null, means we search for the nearest neighbours only 
+				else {
+					Iterable<SystemComponent> lsc = space.getNearestItems(focal);
+					if (lsc!=null)
+						for (SystemComponent other:lsc) {
+							if (other!=focal)
+								doRelate(t,dt,focal,other);
+						}
 				}
 			}
 		}
-		// optimised approach using quadtrees
-		// TODO: how?
 	}
 
 }

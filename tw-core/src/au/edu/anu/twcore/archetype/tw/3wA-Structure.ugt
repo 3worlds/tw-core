@@ -65,6 +65,10 @@ hasNode componentTypeSpec
 		hasName = String("driverClass")
 		type =  String("String") 
 		multiplicity = IntegerRange("0..1") 
+	hasProperty autoRelocateFunctionSpec
+		hasName = String("relocateFunctionName")
+		type = String("StringTable")
+		multiplicity = IntegerRange("0..1")
 
 hasNode relationTypeSpec
 	isOfClass = String("relationType")
@@ -105,6 +109,10 @@ hasNode spaceSpec
 	hasProperty spaceUnitsSpec
 		hasName = String("units")
 		type = String("String")
+		multiplicity = IntegerRange("0..1")
+	hasEdge spaceRngSpec
+		isOfClass = String("useRNG")
+		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
 	
 

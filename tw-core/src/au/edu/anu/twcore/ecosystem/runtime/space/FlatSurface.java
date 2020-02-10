@@ -29,15 +29,14 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	private class flatSurfaceLocation implements Location {
 		protected Point loc;
 		protected Point locDeviation;
-		protected flatSurfaceLocation(Located sc) {
+		protected flatSurfaceLocation(Located sc,double[] xyloc) {
 			super();
-			double[] xyloc = sc.initialLocation();
 			double p = precision();
 			double x = Math.floor(xyloc[0]/p)*p; // truncates location to nearest precision unit
 			double y = Math.floor(xyloc[1]/p)*p; // truncates location to nearest precision unit
 			loc = Point.newPoint(x,y);
 			// replace truncated part by a random dev to make sure two positions are never exactly the same
-			locDeviation = Point.newPoint(rng.nextDouble()*p,rng.nextDouble()*p);
+			locDeviation = Point.newPoint(jitterRNG.nextDouble()*p,jitterRNG.nextDouble()*p);
 			if (!boundingBox().contains(loc))
 				throw new TwcoreException("New spatial coordinates for item "
 					+sc.toString()+" out of range "+boundingBox().toString());
@@ -73,8 +72,8 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	}
 
 	@Override
-	public void locate(SystemComponent focal) {
-		flatSurfaceLocation at = new flatSurfaceLocation(focal);
+	public void locate(SystemComponent focal, double[] location) {
+		flatSurfaceLocation at = new flatSurfaceLocation(focal,location);
 		locatedItems.put(focal,at);
 		// new item is located in the quadtree in the square to the right and above its loc
 		// by 1 precision unit
@@ -109,6 +108,8 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 
 	@Override
 	public Iterable<SystemComponent> getItemsWithin(SystemComponent item, double distance) {
+		// BUG HERE: item MUST be in locateditems list, otherwise null pointer exception
+		// This has to be done at model initialisation
 		Sphere itemSphere = new SphereImpl(locatedItems.get(item).asPoint(),distance);
 		return indexer.getItemsWithin(itemSphere);
 	}

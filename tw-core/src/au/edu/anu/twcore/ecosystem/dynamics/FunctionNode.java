@@ -125,9 +125,9 @@ public class FunctionNode
 			result = fConstructor.newInstance();
 			// attach a random number generator
 			if (rngNode==null)
-				result.initRng(index);
+				result.defaultRng(index);
 			else
-				result.initRng(rngNode.getInstance(index));
+				result.setRng(rngNode.getInstance(index));
 			// add the consequences of the function, if any
 			for (TreeNode n:getChildren()) 
 				if (n instanceof FunctionNode){

@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
@@ -30,8 +31,9 @@ public abstract class AbstractRelationProcess
 	protected SortedSet<Category> focalCategories = new TreeSet<>();
 	protected SortedSet<Category> otherCategories = new TreeSet<>();
 
-	public AbstractRelationProcess(ComponentContainer world, RelationContainer relation, Timer timer) {
-		super(world, timer);
+	public AbstractRelationProcess(ComponentContainer world, RelationContainer relation, 
+			Timer timer, Space<SystemComponent> space, double searchR) {
+		super(world, timer, space, searchR);
 		relContainer = relation;
 		focalCategoryId = relContainer.from().buildCategorySignature();
 		otherCategoryId = relContainer.to().buildCategorySignature();

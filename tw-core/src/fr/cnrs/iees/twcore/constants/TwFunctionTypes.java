@@ -66,7 +66,7 @@ public enum TwFunctionTypes {
 	ChangeRelationState ("changeRelationState", "t,dt,focal,other,relation", "double,double,SystemComponent,SystemComponent,Edge", "void"),
 
 // Relocate: compute or change the location of a system component
-	Relocate ("relocate", "t, dt, focal, ctLoc, newLoc", "double, double, SystemComponent, Location, Location", "void");
+	Relocate ("relocate", "t, dt, focal, ctLoc", "double, double, SystemComponent, Location", "double[]");
 	
 	private final String method;
 	private final String argumentNames;

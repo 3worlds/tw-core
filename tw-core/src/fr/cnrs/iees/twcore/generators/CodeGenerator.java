@@ -38,13 +38,19 @@ import static fr.ens.biologie.generic.utils.NameUtils.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
+import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.exceptions.TwcoreException;
@@ -233,6 +239,41 @@ public class CodeGenerator {
 		// add space coordinates for every space in which this component type will go (immobile components)
 		generateDataCode(spec, system, modelName, P_DECORATORCLASS.key());
 	}
+	
+	private void generateRelocateFunction(TreeGraphDataNode comp, String space, String modelName) {
+		String funcname = initialUpperCase(space)
+			+ DefaultStrings.defaultPrefix // this to make sure the space name can be easily extracted
+			+initialUpperCase(comp.id())
+			+initialUpperCase(TwFunctionTypes.Relocate.toString())+"Function";
+		ExtendablePropertyList props = new ExtendablePropertyListImpl();
+		props.addProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.Relocate);
+		// QAD: do not use NodeFactory otherwise it's included in the graph
+		// this is a throw-away free-floating Node just for initialisation of code generator
+		TreeGraphDataNode function = new TreeGraphDataNode(null, props, null);
+		TwFunctionGenerator generator = new TwFunctionGenerator(funcname, function, modelName);
+		generator.generateCode();
+		UserProjectLink.addFunctionFile(generator.getFile());
+		String genClassName =  generator.generatedClassName();
+		if (!comp.properties().hasProperty(P_RELOCATEFUNCTION.key())) {
+			StringTable tb = new StringTable(new Dimensioner(1));
+			tb.setWithFlatIndex(genClassName,0);
+			((ExtendablePropertyList)comp.properties()).addProperty(P_RELOCATEFUNCTION.key(),tb);
+		}
+		else {
+			StringTable prop = (StringTable) comp.properties().getPropertyValue(P_RELOCATEFUNCTION.key());
+			Set<String> set = new HashSet<>();
+			for (int i=0; i<prop.size(); i++)
+				set.add(prop.getWithFlatIndex(i));
+			set.add(genClassName);
+			StringTable tb = new StringTable(new Dimensioner(set.size()));
+			// CAUTION HERE: no repeats !
+			int i=0;
+			for (String s:set) 
+				tb.setWithFlatIndex(s,i++);
+			((ExtendablePropertyList)comp.properties()).setProperty(P_RELOCATEFUNCTION.key(),tb);
+		}
+	}
+	
 
 	@SuppressWarnings("unchecked")
 	private void generateProcessCode(TreeGraphDataNode process, String modelName) {
@@ -247,33 +288,60 @@ public class CodeGenerator {
 			for (TreeGraphDataNode csq : consequences)
 				generateFunctionCode(csq, modelName);
 		}
-		// if the process has a space, then a relocatefunction is always generated
+		// 3 if the process has a space, then a relocatefunction is always generated
+		// CAUTION: relocate functions are only attached to category processes, so if 
+		// the space applies to a relation process, two relocate functions are generated,
+		// attached to each category set of the relation.
+		// This poses no problem at execution since the relocate functions will only be
+		// called at SystemComponent creation, ie after a call to a CreateOtherDecisionFunction.nNew(...)
 		ProcessSpaceEdge spaceEdge = (ProcessSpaceEdge) get(process.edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_SPACE.label())));
 		if (spaceEdge!=null) {
-			String funcname = initialUpperCase(process.id())
-				+initialUpperCase((spaceEdge).endNode().id())
-				+initialUpperCase(TwFunctionTypes.Relocate.toString())+"Function";
-			ExtendablePropertyList props = new ExtendablePropertyListImpl();
-			props.addProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.Relocate);
-			// QAD: do not use NodeFactory otherwise it's included in the graph
-			// this is a throw-away free-floating Node just for initialisation of code generator
-			TreeGraphDataNode function = new TreeGraphDataNode(null, props, null);
-			TwFunctionGenerator generator = new TwFunctionGenerator(funcname, function, modelName);
-			generator.generateCode();
-			UserProjectLink.addFunctionFile(generator.getFile());
-			String genClassName = generator.generatedClassName();
-			// property is in space edge relocateFunctionName
-			if (spaceEdge.properties().hasProperty(P_RELOCATEFUNCTION.key())) {
-				String lastValue = (String) spaceEdge.properties().getPropertyValue(P_RELOCATEFUNCTION.key());
-				if (!lastValue.equals(genClassName)) {
-					spaceEdge.properties().setProperty(P_RELOCATEFUNCTION.key(),genClassName);
-					GraphState.setChanged();
+			List<TreeGraphDataNode> ltgn = (List<TreeGraphDataNode>) get(process.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
+				edgeListEndNodes());
+			// RelationProcess
+			if (ltgn.get(0) instanceof RelationType) {
+				Set<TreeGraphDataNode> cptypes = new HashSet<>();
+				List<TreeGraphDataNode> fromcats = (List<TreeGraphDataNode>) get(ltgn.get(0).edges(Direction.OUT),
+					selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+					edgeListEndNodes());
+				for (TreeGraphDataNode cat:fromcats) {
+					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+						edgeListStartNodes(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+					cptypes.addAll(lcomp);
 				}
+				List<TreeGraphDataNode> tocats = (List<TreeGraphDataNode>) get(ltgn.get(0).edges(Direction.OUT),
+					selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+					edgeListEndNodes());
+				for (TreeGraphDataNode cat:tocats) {
+					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+						edgeListStartNodes(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+					cptypes.addAll(lcomp);
+				}
+				// generate functions
+				for (TreeGraphDataNode comp: cptypes)
+					generateRelocateFunction(comp, spaceEdge.endNode().id(), modelName);
 			}
-			else {
-				((ResizeablePropertyList) spaceEdge.properties()).addProperty(P_RELOCATEFUNCTION.key(), genClassName);
-				GraphState.setChanged();
+			// CategoryProcess:
+			// a function is generated for every ComponentType depending on the categories
+			else if (ltgn.get(0) instanceof Category) {
+				// get all component types pointing to all categories of this process
+				Set<TreeGraphDataNode> cptypes = new HashSet<>();
+				for (TreeGraphDataNode cat:ltgn) {
+					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+						edgeListStartNodes(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+					cptypes.addAll(lcomp);
+				}
+				// generate functions
+				for (TreeGraphDataNode comp: cptypes)
+					generateRelocateFunction(comp, spaceEdge.endNode().id(), modelName);
 			}
 		}
 	}
