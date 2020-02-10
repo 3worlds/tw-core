@@ -139,9 +139,9 @@ hasNode functionSpec
 
 hasNode consequenceFunctionSpec
 	isOfClass = String("function")
-	//hasParent = StringTable(([1]"process:/function:"))
+	hasParent = StringTable(([1]"process:/function:"))
 	// recursive - consequence of consequence of ...
-	hasParent = StringTable(([1]"function:"))
+	//hasParent = StringTable(([1]"function:"))
 	multiplicity = IntegerRange("0..*")
 	mustSatisfyQuery functionNameWithUppercaseQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
