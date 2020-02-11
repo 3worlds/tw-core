@@ -96,6 +96,10 @@ hasNode spaceSpec
 		hasName = String("type")
 		type = String("SpaceType")
 		multiplicity = IntegerRange("1..1")
+	hasProperty edgeEffectsSpec
+		hasName = String("edgeEffects")
+		type = String("EdgeEffects")
+		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery CheckSubArchetypeQuerySpaceType1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"type","continuousFlatSurface","3wSA-continuousFlatSurface.ugt"))

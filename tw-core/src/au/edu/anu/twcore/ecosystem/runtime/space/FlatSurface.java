@@ -1,19 +1,22 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Graph;
+import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.uit.indexing.BoundedRegionIndexingTree;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 import fr.cnrs.iees.uit.space.Sphere;
 import fr.cnrs.iees.uit.space.SphereImpl;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * A spatial representation of a rectangular flat surface.
@@ -23,6 +26,8 @@ import fr.cnrs.iees.uit.space.SphereImpl;
  */
 // todo: toroidal correction
 public class FlatSurface extends SpaceAdapter<SystemComponent> {
+	
+	private static Logger log = Logging.getLogger(FlatSurface.class);
 	
 	private static final int ndim = 2;
 
@@ -37,9 +42,10 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 			loc = Point.newPoint(x,y);
 			// replace truncated part by a random dev to make sure two positions are never exactly the same
 			locDeviation = Point.newPoint(jitterRNG.nextDouble()*p,jitterRNG.nextDouble()*p);
-			if (!boundingBox().contains(loc))
-				throw new TwcoreException("New spatial coordinates for item "
-					+sc.toString()+" out of range "+boundingBox().toString());
+			checkLocation(this);
+//			if (!boundingBox().contains(loc))
+//				throw new TwcoreException("New spatial coordinates for item "
+//					+sc.toString()+" out of range "+boundingBox().toString());
 		}
 		@Override
 		public Point asPoint() {
@@ -54,10 +60,48 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	private Map<SystemComponent,Location> locatedItems = new HashMap<>();
 	
 	private BoundedRegionIndexingTree<SystemComponent> indexer;
+	
+	private final double xmin,xmax,ymin,ymax; // to save access time - redundant with boundingBox()
 
-	public FlatSurface(double xmin, double xmax, double ymin, double ymax, double prec, String units) {
-		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units);
+	public FlatSurface(double xmin, double xmax, double ymin, double ymax, 
+			double prec, String units, EdgeEffects ee) {
+		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,ee);
 		indexer = new BoundedRegionIndexingTree<>(boundingBox());
+		this.xmin = boundingBox().lowerBound(0);
+		this.xmax = boundingBox().upperBound(0);
+		this.ymin = boundingBox().lowerBound(1);
+		this.ymax = boundingBox().upperBound(1);
+	}
+	
+	private void checkLocation(flatSurfaceLocation location) {
+		switch (edgeEffectCorrection()) {
+			case bufferAndWrap:
+				// TODO
+			case bufferZone:
+				// TODO
+			case noCorrection:
+				if (!boundingBox().contains(location.loc)) {
+					log.warning("Proposed location "+location.loc+" out of range "+ boundingBox()+
+						" - new location generated.");
+					double x = Math.floor((xmin+rng().nextDouble()*(xmax-xmin))/precision())*precision(); 
+					double y = Math.floor((ymin+rng().nextDouble()*(ymax-ymin))/precision())*precision();
+					Point newloc = Point.newPoint(x,y);
+					Point locD = Point.newPoint(jitterRNG.nextDouble()*precision(),jitterRNG.nextDouble()*precision());
+					// CAUTION: theoretical possibility of an infinite loop here...
+					while (!boundingBox().contains(Point.add(newloc,locD)))
+						locD = Point.newPoint(jitterRNG.nextDouble()*precision(),jitterRNG.nextDouble()*precision());
+					location.loc = newloc;
+					location.locDeviation = locD;
+				}
+				break;
+			case wrapAround1D:
+				// TODO
+			case wrapAround2D:
+				// TODO
+			case wrapAroundAllD:
+				// TODO
+				break;
+		}
 	}
 	
 	@Override
@@ -128,6 +172,16 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 			return locatedItems.get(focal).asPoint();
 		else
 			return null;
+	}
+
+	@Override
+	public void unlocate(Collection<SystemComponent> items) {
+		for (SystemComponent sc:items) {
+			Point loc = locationOf(sc);
+			if (loc!=null)
+				indexer.remove(sc,loc);
+		}
+		locatedItems.keySet().removeAll(items);
 	}
 
 }

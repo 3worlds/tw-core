@@ -16,6 +16,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
@@ -41,6 +42,7 @@ public class SpaceNode
 	private boolean sealed = false;
 	private Map<Integer,Space<SystemComponent>> spaces = new HashMap<>();
 	private SpaceType stype = null;
+	private EdgeEffects eecorr = null;
 	// the name of coordinates relative to this space (eg "<this.id()>.x")
 	private Set<String> coordNames = new HashSet<>();
 	private String units = "arbitrary units";
@@ -59,6 +61,7 @@ public class SpaceNode
 	public void initialise() {
 		super.initialise();
 		stype = (SpaceType) properties().getPropertyValue(P_SPACETYPE.key());
+		eecorr = (EdgeEffects) properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
 		if (properties().hasProperty(P_SPACE_PREC.key()))
 			precision = (double)properties().getPropertyValue(P_SPACE_PREC.key());
 		if (properties().hasProperty(P_SPACE_UNITS.key()))
@@ -80,7 +83,8 @@ public class SpaceNode
 			case continuousFlatSurface:
 				Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
 				Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
-				result = new FlatSurface(xlim.inf(),xlim.sup(),ylim.inf(),ylim.sup(),precision,units);
+				result = new FlatSurface(xlim.inf(),xlim.sup(),ylim.inf(),ylim.sup(),
+					precision,units,eecorr);
 				break;
 			case linearNetwork:
 				break;
@@ -90,7 +94,7 @@ public class SpaceNode
 				int ny = nx;
 				if (properties().hasProperty("ny"))
 					ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
-				result = new SquareGrid(cellSize,nx,ny,precision,units);
+				result = new SquareGrid(cellSize,nx,ny,precision,units,eecorr);
 				break;
 			case topographicSurface:
 				break;

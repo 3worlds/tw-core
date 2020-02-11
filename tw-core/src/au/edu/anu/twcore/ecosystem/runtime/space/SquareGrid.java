@@ -1,6 +1,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,7 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.utils.Duple;
@@ -63,8 +65,8 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 	private SortedMap<Long,List<Duple<Integer,Integer>>> distanceMap = new TreeMap<>();
 	
 	@SuppressWarnings("unchecked")
-	public SquareGrid(double cellSize, int nx, int ny, double prec, String units) {
-		super(Box.boundingBox(Point.newPoint(0.0,0.0),Point.newPoint(nx*cellSize,ny*cellSize)),prec, units);
+	public SquareGrid(double cellSize, int nx, int ny, double prec, String units, EdgeEffects ee) {
+		super(Box.boundingBox(Point.newPoint(0.0,0.0),Point.newPoint(nx*cellSize,ny*cellSize)),prec, units, ee);
 		this.cellSize = cellSize;
 		this.nx = nx;
 		this.ny = ny;
@@ -175,6 +177,15 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 			return locatedItems.get(focal).asPoint();
 		else
 			return null;
+	}
+
+	@Override
+	public void unlocate(Collection<SystemComponent> items) {
+		for (SystemComponent sc:items) {
+			squareGridLocation loc = (squareGridLocation) locatedItems.get(sc);
+			grid[loc.loc[0]][loc.loc[1]].remove(sc);
+		}
+		locatedItems.keySet().removeAll(items);
 	}
 
 }

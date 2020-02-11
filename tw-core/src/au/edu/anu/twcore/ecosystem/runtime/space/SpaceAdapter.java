@@ -3,6 +3,7 @@ package au.edu.anu.twcore.ecosystem.runtime.space;
 import java.util.Random;
 
 import au.edu.anu.twcore.rngFactory.RngFactory;
+import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
@@ -36,10 +37,12 @@ public abstract class SpaceAdapter<T extends Located> implements Space<T> {
 	// absolute precision
 	private double precision;
 	private String units;
+	private EdgeEffects correction;
+	
 	Random jitterRNG = RngFactory.newInstance("SpaceJitterRNG", 0, RngResetType.never, 
 			RngSeedSourceType.secure,RngAlgType.Pcg32).getRandom();
 
-	public SpaceAdapter(Box box, double prec, String units) {
+	public SpaceAdapter(Box box, double prec, String units, EdgeEffects ee) {
 		super();
 		limits = box;
 // precision based on diagonal, but this is probably unexpected for users		
@@ -49,6 +52,7 @@ public abstract class SpaceAdapter<T extends Located> implements Space<T> {
 //	precision based on shortest side of plot
 		precision = Math.max(prec,minimalPrecision)*Math.min(limits.sideLength(0),limits.sideLength(1));
 		this.units = units;
+		correction = ee;
 	}
 
 	@Override
@@ -65,5 +69,11 @@ public abstract class SpaceAdapter<T extends Located> implements Space<T> {
 	public final String units() {
 		return units;
 	}
+	
+	@Override
+	public final EdgeEffects edgeEffectCorrection() {
+		return correction;
+	}
+
 
 }

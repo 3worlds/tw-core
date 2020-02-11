@@ -93,6 +93,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 		}
 		for (CategorizedContainer<SystemComponent> childContainer: subContainers())
 			((ComponentContainer)childContainer).resetCoordinates(space);
+//		space.unlocate(initialItems);
 	}
 	
 	/**

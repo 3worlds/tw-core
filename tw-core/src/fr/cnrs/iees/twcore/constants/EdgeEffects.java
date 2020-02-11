@@ -30,17 +30,29 @@ import java.util.HashSet;
 import java.util.Set;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
-public enum LifespanType {
+public enum EdgeEffects {
 
-// permanent: (1) system component stays forever during a simulation, (2) relation stays as long as both its ends stay
-	permanent,
+// noCorrection: no correction for edge effects
+	noCorrection,
 
-// ephemeral: system component / relations are created and deleted during a simulation by the means of the appropriate  `Function` classes (e.g. `DeleteDecision`, `CreateOtherDecision`, etc. cf. `TwFunctionTypes`)
-	ephemeral;
+// wrapAroundAllD: wrap around correction on all edges
+	wrapAroundAllD,
+
+// wrapAround1D: wrap around correction on one edge only
+	wrapAround1D,
+
+// wrapAround2D: wrap around correction on two edges only
+	wrapAround2D,
+
+// bufferZone: buffer zone around central plot
+	bufferZone,
+
+// bufferAndWrap: wrap around correction on all edges + buffer zone
+	bufferAndWrap;
 	
 	public static String[] toStrings() {
-		String[] result = new String[LifespanType.values().length];
-		for (LifespanType s: LifespanType.values())
+		String[] result = new String[EdgeEffects.values().length];
+		for (EdgeEffects s: EdgeEffects.values())
 			result[s.ordinal()] = s.name();
 		Arrays.sort(result);
 		return result;
@@ -48,18 +60,18 @@ public enum LifespanType {
 
 	public static Set<String> keySet() {
 		Set<String> result = new HashSet<String>();
-		for (LifespanType e: LifespanType.values())
+		for (EdgeEffects e: EdgeEffects.values())
 			result.add(e.toString());
 		return result;
 	}
 
-	public static LifespanType defaultValue() {
-		return permanent;
+	public static EdgeEffects defaultValue() {
+		return noCorrection;
 	}
 
 	static {
-		ValidPropertyTypes.recordPropertyType(LifespanType.class.getSimpleName(), 
-		LifespanType.class.getName(),defaultValue());
+		ValidPropertyTypes.recordPropertyType(EdgeEffects.class.getSimpleName(), 
+		EdgeEffects.class.getName(),defaultValue());
 	}
 
 }

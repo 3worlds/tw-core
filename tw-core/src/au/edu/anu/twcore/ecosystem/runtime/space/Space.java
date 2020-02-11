@@ -1,9 +1,12 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
+import java.util.Collection;
+
 import au.edu.anu.twcore.rngFactory.RngHolder;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
@@ -22,6 +25,13 @@ public interface Space<T extends Located> extends RngHolder {
 	 * @return the space bounding box
 	 */
 	public Box boundingBox();
+	
+	/**
+	 * Every space has an edge effect correction method attached to it.
+	 * 
+	 * @return
+	 */
+	public EdgeEffects edgeEffectCorrection();
 	
 	/**
 	 * Spaces can be 1,2,3,n-dimensional. This function returns their dimension.
@@ -64,7 +74,9 @@ public interface Space<T extends Located> extends RngHolder {
 	 * 
 	 */
 	public void unlocate(T focal);
-	
+
+	public void unlocate(Collection<T> focal);
+
 	/**
 	 * ABSOLUTE precision (in space distance units), ie distance below which locations are considered
 	 * identical.

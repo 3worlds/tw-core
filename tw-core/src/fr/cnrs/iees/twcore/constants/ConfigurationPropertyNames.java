@@ -104,6 +104,7 @@ public enum ConfigurationPropertyNames {
 	P_SPACENAMES				("spaces"),
 	P_SPACE_SEARCHRADIUS		("searchRadius"),
 	P_SPACE_COORDINATES			("coordinates"),
+	P_SPACE_EDGEEFFECTS			("edgeEffects"),
 	;
 
 	private final String pname;
