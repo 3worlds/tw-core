@@ -75,7 +75,8 @@ hasNode widgetSpec
 			"au.edu.anu.twuifx.widgets.SimpleControlWidget2",+		
 			"au.edu.anu.twuifx.widgets.SimpleControlWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleTimeSeriesWidget",+
-			"au.edu.anu.twuifx.widgets.SimpleWidget"))
+			"au.edu.anu.twuifx.widgets.SimpleCommunityWidget1"))
+			
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleDM0Widget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleDM0Widget","3wSA-SimpleDM0Widget.ugt"))
@@ -88,6 +89,10 @@ hasNode widgetSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleTimeWidget","3wSA-SimpleTimeWidget.ugt"))
 
+	mustSatisfyQuery CheckSubArchetypeQueryCommunityWidget1
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleCommunityWidget1","3wSA-SimpleCommunityWidget.ugt"))
+
 	mustSatisfyQuery CheckSubArchetypeQueryPNWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleControlWidget1","3wSA-SimpleControlWidget1.ugt"))
@@ -99,10 +104,6 @@ hasNode widgetSpec
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleTimeSeriesWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleTimeSeriesWidget","3wSA-SimpleTimeSeriesWidget.ugt"))
-
-	mustSatisfyQuery CheckSubArchetypeQuerySimpleWidget
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleWidget","3wSA-SimpleWidget.ugt"))
 
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleControlWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")

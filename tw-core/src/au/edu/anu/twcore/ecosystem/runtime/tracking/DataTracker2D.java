@@ -40,7 +40,7 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 public class DataTracker2D extends AbstractDataTracker<Output2DData, Metadata> {
 
 	public DataTracker2D() {
-		super(DataMessageTypes.MAP);
+		super(DataMessageTypes.DIM2);
 	}
 
 }

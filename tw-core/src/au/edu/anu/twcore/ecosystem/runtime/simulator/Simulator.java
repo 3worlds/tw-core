@@ -78,6 +78,7 @@ public class Simulator {
 			if (hasObservers()) {
 				TimeData output = new TimeData(status,id,metadata.type());
 				output.setTime(lastTime);
+				output.setCommunity(ecosystem.community());
 				sendData(output);
 			}
 		}
