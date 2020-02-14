@@ -115,6 +115,7 @@ public class ProcessNode
 				relation = (RelationType) first;
 			functions = (List<FunctionNode>) get(getChildren(),
 				selectZeroOrMany(hasTheLabel("function")));
+			// space
 			ProcessSpaceEdge pse = (ProcessSpaceEdge) get(edges(Direction.OUT),
 				selectZeroOrOne(hasTheLabel(E_SPACE.label())));
 			if (pse!=null) {

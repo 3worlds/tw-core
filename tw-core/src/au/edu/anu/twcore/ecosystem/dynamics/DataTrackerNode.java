@@ -471,8 +471,11 @@ public class DataTrackerNode
 		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {	
 			result = new DataTracker2D();
 		}		
-//		else if (dataTrackerClass.equals(LabelValuePairTracker.class.getName())) {	
-//			result = new LabelValuePairTracker();
+//		else if (dataTrackerClass.equals(DataTrackerSpace.class.getName())) {	
+//			SpaceNode spn = (SpaceNode) get(getParent().edges(Direction.OUT),
+//				selectZeroOrOne(hasTheLabel(E_SPACE.label())),
+//				endNode());
+//			result = new DataTrackerSpace(index, spn.properties());
 //		}
 		if (result!=null)
 			result.setSender(index);

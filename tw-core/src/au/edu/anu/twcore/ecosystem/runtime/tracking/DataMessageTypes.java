@@ -44,6 +44,7 @@ public interface DataMessageTypes {
 	public static final int TIME_SERIES = VALUE_PAIR + 1;
 	public static final int TIME = TIME_SERIES + 1;// shouldn't this be DIM0?
 	public static final int DIM2 = TIME + 1;
+	public static final int SPACE = DIM2 + 1;
 	// etc...
 
 }

@@ -219,6 +219,9 @@ public class ComponentProcess
 				function.setFocalContext(focalContext);
 				if (function.delete(t, dt, focal)) {
 					container.removeItem(focal); // safe - delayed removal
+					// also remove from space !!!
+					for (Space<SystemComponent> space:((SystemFactory)focal.membership()).spaces())
+						space.unlocate(focal);
 					// remove from tracklist if dead - safe, data sending has already been made
 					for (DataTracker0D tracker:tsTrackers) 
 						if (tracker.isTracked(focal))
