@@ -29,7 +29,11 @@
 
 package au.edu.anu.twcore.data.runtime;
 
+import java.util.Set;
+
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
@@ -40,9 +44,10 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @date 19 Sep 2019
  */
 public class TimeData extends OutputData {
-	/* ensure a known uninitialized value*/
-	private long time=Long.MIN_VALUE;
+	/* ensure a known uninitialized value */
+	private long time = Long.MIN_VALUE;
 	private ComponentContainer community;
+	private Set<Space<SystemComponent>> spaces;
 
 	public TimeData(SimulatorStatus status, int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
@@ -55,13 +60,25 @@ public class TimeData extends OutputData {
 	public long time() {
 		return time;
 	}
-	
+
 	public void setCommunity(ComponentContainer community) {
-		this.community=community;
+		this.community = community;
 	}
-	
+
+	// send whole community - let widget decide what to do with it
 	public ComponentContainer getCommunity() {
 		return community;
+	}
+
+	// send all spaces and let widget decide what to do - it needs an edge to a
+	// SpaceNode then ask for the space by SC id I suppose.
+
+	public void setSpaces(Set<Space<SystemComponent>> spaces) {
+		this.spaces = spaces;
+	}
+
+	public Set<Space<SystemComponent>> getSpaces() {
+		return spaces;
 	}
 
 	@Override
