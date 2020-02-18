@@ -53,8 +53,10 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.data.runtime.Output0DData;
+import au.edu.anu.twcore.data.runtime.SpaceData;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
+import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import au.edu.anu.twcore.experiment.Experiment;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import au.edu.anu.twcore.ui.runtime.StatusWidget;
@@ -94,10 +96,6 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 						| (StateMachineController.class.isAssignableFrom(widgetClass))) {
 					Constructor<? extends Widget> widgetConstructor = widgetClass
 							.getDeclaredConstructor(StateMachineEngine.class);
-					// ah!
-//					Experiment exp = (Experiment) get(getParent().getParent().getParent(),
-//						children(),
-//						selectOne(hasTheLabel(N_EXPERIMENT.label())));
 					TreeNode root = (TreeNode) this;
 					// this could be a function of any TreeNode
 					while (root.getParent() != null)
@@ -113,13 +111,20 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 					widget = widgetConstructor.newInstance();
 				}
 				widget.setProperties(id(), properties());
-				// tracker sending data to this widget
+				// time series tracker sending data to this widget
 				List<DataTrackerNode> timeSeriesTrackers = (List<DataTrackerNode>) get(edges(Direction.OUT),
 					selectZeroOrMany(hasTheLabel(E_TRACKSERIES.label())),
 					edgeListEndNodes()); 
 				for (DataTrackerNode dtn:timeSeriesTrackers)
 					if (widget instanceof DataReceiver)
 						dtn.attachTimeSeriesWidget((DataReceiver<Output0DData, Metadata>) widget);
+				// space trackers sending data to this widget
+				List<SpaceNode> spaces = (List<SpaceNode>) get(edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())),
+					edgeListEndNodes()); 
+				for (SpaceNode spn:spaces)
+					if (widget instanceof DataReceiver)
+						spn.attachSpaceWidget((DataReceiver<SpaceData, Metadata>)widget);
 
 			} catch (Exception e) {
 				e.printStackTrace();
