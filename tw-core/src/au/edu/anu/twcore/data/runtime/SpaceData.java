@@ -97,5 +97,19 @@ public class SpaceData extends LabelledItemData {
 	public boolean delete() {
 		return !action;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("SpaceData: ");
+		if (action==create)
+			sb.append("new item ")
+				.append(itemLabel())
+				.append(" @ ")
+				.append(Point.newPoint(coordinates));
+		else if (action==delete)
+			sb.append("delete item ")
+			.append(itemLabel());
+		return sb.toString();
+	}
 	
 }

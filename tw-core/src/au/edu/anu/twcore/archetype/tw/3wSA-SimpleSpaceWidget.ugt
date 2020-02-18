@@ -13,10 +13,10 @@ archetype 3wSA-SimpleSpaceWidget
 		// ignored
 		hasParent = StringTable(([2]"tab", "container"))
 		multiplicity = IntegerRange("0..*")
-		hasEdge SimpleSpaceWidgetToSimSpec
-			isOfClass = String("trackTime")
-			toNode = String("dynamics")
-			multiplicity = IntegerRange("1..1")
+//		hasEdge SimpleSpaceWidgetToSimSpec
+//			isOfClass = String("trackTime")
+//			toNode = String("dynamics")
+//			multiplicity = IntegerRange("1..1")
 		hasProperty SpacewidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
@@ -24,4 +24,8 @@ archetype 3wSA-SimpleSpaceWidget
 		mustSatisfyQuery SimpleSpaceWidgetParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
-			
+		hasEdge SpaceWidgetToSpaceEdgeSpec
+			isOfClass = String("trackSpace")
+			toNode = String("space:")
+			multiplicity = IntegerRange("1..1")
+		

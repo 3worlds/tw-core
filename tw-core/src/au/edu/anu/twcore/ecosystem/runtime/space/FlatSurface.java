@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.uit.indexing.BoundedRegionIndexingTree;
@@ -64,8 +65,8 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	private final double xmin,xmax,ymin,ymax; // to save access time - redundant with boundingBox()
 
 	public FlatSurface(double xmin, double xmax, double ymin, double ymax, 
-			double prec, String units, EdgeEffects ee) {
-		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,ee);
+			double prec, String units, EdgeEffects ee, DataTrackerSpace dt) {
+		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,ee,dt);
 		indexer = new BoundedRegionIndexingTree<>(boundingBox());
 		this.xmin = boundingBox().lowerBound(0);
 		this.xmax = boundingBox().upperBound(0);

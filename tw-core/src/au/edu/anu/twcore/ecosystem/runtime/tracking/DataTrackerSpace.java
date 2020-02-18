@@ -14,6 +14,8 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * for FlatSurface: x-limits 'Interval) and y-limits (Interval)
  * for SquareGrid: cellSize(double), x-nCells (int), y-nCells (int) (optional, if absent = x-nCells)
  * 
+ * This DataTracker is not instantiated by a DataTrackerNode, but by the SpaceNode it points to.
+ * 
  * @author Jacques Gignoux - 14 févr. 2020
  *
  */
@@ -46,4 +48,9 @@ public class DataTrackerSpace extends AbstractDataTracker<SpaceData, Metadata> {
 		sendData(msg);
 	}
 	
+	@Override
+	public Metadata getInstance() {
+		return metadata;
+	}
+
 }

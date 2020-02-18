@@ -220,8 +220,11 @@ public class ComponentProcess
 				if (function.delete(t, dt, focal)) {
 					container.removeItem(focal); // safe - delayed removal
 					// also remove from space !!!
-					for (Space<SystemComponent> space:((SystemFactory)focal.membership()).spaces())
+					for (Space<SystemComponent> space:((SystemFactory)focal.membership()).spaces()) {
 						space.unlocate(focal);
+						if (spTracker!=null)
+							spTracker.removeItem(currentStatus,focalContext.buildItemId(focal.id()));
+					}
 					// remove from tracklist if dead - safe, data sending has already been made
 					for (DataTracker0D tracker:tsTrackers) 
 						if (tracker.isTracked(focal))
@@ -306,7 +309,10 @@ public class ComponentProcess
 								log.warning("Wrong number of dimensions: default location generated");
 								newLocation = space.defaultLocation();
 							}
-							space.locate(newBorn,newLocation);
+							space.locate(newBorn,newLocation);	
+							if (spTracker!=null)
+								spTracker.recordItem(currentStatus,newLocation,
+									newBornContext.buildItemId(newBorn.id()));
 						}
 						if (function.relateToOther())
 							focal.relateTo(newBorn,parentTo.key()); // delayed addition
@@ -317,21 +323,6 @@ public class ComponentProcess
 			}
 		}
 	}
-
-//	private String[] buildItemId(String itemId) {
-//		List<String> items = new LinkedList<>();
-//		if (focalContext.ecosystemName!=null)
-//			items.add(focalContext.ecosystemName);
-//		if (focalContext.lifeCycleName!=null)
-//			items.add(focalContext.lifeCycleName);
-//		if (focalContext.groupName!=null)
-//			items.add(focalContext.groupName);
-//		if (itemId!=null)
-//			if (!itemId.isBlank())
-//				items.add(itemId);
-//		return items.toArray(new String[items.size()]);
-//	}
-	
 	
 	@Override
 	public void addFunction(TwFunction function) {

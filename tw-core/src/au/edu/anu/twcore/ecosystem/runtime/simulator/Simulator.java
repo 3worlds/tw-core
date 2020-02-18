@@ -51,7 +51,9 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerHolder;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -120,6 +122,7 @@ public class Simulator {
 	/** all spaces used in this simulation */
 	private Set<Space<SystemComponent>> spaces = new HashSet<>();
 	
+	
 	// CONSTRUCTORS
 
 	/**
@@ -158,8 +161,8 @@ public class Simulator {
 		for (List<List<TwProcess>> llp:processCallingOrder.values())
 			for (List<TwProcess> lp:llp)
 				for (TwProcess p:lp) {
-					if (p instanceof DataTrackerHolder)
-						for (DataTracker<?,Metadata> dt:((DataTrackerHolder<Metadata>)p).dataTrackers()) {
+					if (p instanceof MultipleDataTrackerHolder)
+						for (DataTracker<?,Metadata> dt:((MultipleDataTrackerHolder<Metadata>)p).dataTrackers()) {
 							// make metadata
 							Metadata meta = dt.getInstance();
 							meta.addProperties(refTimer.properties());
@@ -174,13 +177,22 @@ public class Simulator {
 							spaces.add(sp);
 					}
 		}
+		// add space data trackers to datatracker list
+		for (Space<SystemComponent> sp:spaces) 
+			if (sp instanceof SingleDataTrackerHolder) {
+				DataTrackerSpace dts = (DataTrackerSpace) ((SingleDataTrackerHolder<Metadata>)sp).dataTracker();
+				if (dts!=null)
+					trackers.put(dts,dts.getInstance());
+		}
 		// copies initial community to current community to start properly
 		// NB this is probably useless?
 		this.ecosystem.reset();
 	}
+	
 	public int id() {
 		return id;
 	}
+	
 	private ReadOnlyPropertyList findTimerProps(List<TimeModel> timeModels,TwProcess p) {
 		for (TimeModel tm:timeModels)
 			for (TreeNode tn:tm.getChildren())
@@ -292,8 +304,9 @@ public class Simulator {
 			t.reset();
 		timetracker.sendData(lastTime);
 		ecosystem.reset();
-		for (Space<SystemComponent> sp:spaces)
+		for (Space<SystemComponent> sp:spaces) {
 			ecosystem.community().resetCoordinates(sp);
+		}
 	}
 
 	// returns true if stopping condition is met

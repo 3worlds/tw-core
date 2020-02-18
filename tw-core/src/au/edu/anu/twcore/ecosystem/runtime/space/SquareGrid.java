@@ -10,6 +10,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
@@ -65,8 +66,10 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 	private SortedMap<Long,List<Duple<Integer,Integer>>> distanceMap = new TreeMap<>();
 	
 	@SuppressWarnings("unchecked")
-	public SquareGrid(double cellSize, int nx, int ny, double prec, String units, EdgeEffects ee) {
-		super(Box.boundingBox(Point.newPoint(0.0,0.0),Point.newPoint(nx*cellSize,ny*cellSize)),prec, units, ee);
+	public SquareGrid(double cellSize, int nx, int ny, double prec, String units, 
+			EdgeEffects ee, DataTrackerSpace dt) {
+		super(Box.boundingBox(Point.newPoint(0.0,0.0),Point.newPoint(nx*cellSize,ny*cellSize)),
+			prec, units, ee, dt);
 		this.cellSize = cellSize;
 		this.nx = nx;
 		this.ny = ny;

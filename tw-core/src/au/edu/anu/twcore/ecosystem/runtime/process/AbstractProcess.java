@@ -45,8 +45,10 @@ import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerHolder;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Sealable;
@@ -58,7 +60,7 @@ import fr.ens.biologie.generic.Sealable;
  *
  */
 public abstract class AbstractProcess 
-		implements TwProcess, Sealable, DataTrackerHolder<Metadata>, Spatialized<SystemComponent> {
+		implements TwProcess, Sealable, MultipleDataTrackerHolder<Metadata>, Spatialized<SystemComponent> {
 
 	private boolean sealed = false;
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
@@ -68,17 +70,23 @@ public abstract class AbstractProcess
 	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
 	protected Timer timer = null;
 	protected Space<SystemComponent> space = null;
+	protected DataTrackerSpace spTracker = null;
 	protected double searchRadius = 0.0;
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
     
-    public AbstractProcess(ComponentContainer world, Timer timer, Space<SystemComponent> space,
+    @SuppressWarnings("unchecked")
+	public AbstractProcess(ComponentContainer world, Timer timer, Space<SystemComponent> space,
     		double searchR) {
     	super();
     	ecosystem = world;
     	this.timer = timer;
     	this.space = space;
     	searchRadius = searchR;
+    	if (this.space!=null) {
+    		if (space instanceof SingleDataTrackerHolder)
+    			spTracker = (DataTrackerSpace) ((SingleDataTrackerHolder<Metadata>)space).dataTracker();
+    	}
     }
 
 	@Override
@@ -86,6 +94,8 @@ public abstract class AbstractProcess
 		sealed = true;
     	trackers.addAll(tsTrackers);
     	trackers.addAll(mapTrackers);
+    	if (spTracker!=null)
+    		trackers.add(spTracker);
  		return this;
 	}
 
@@ -128,7 +138,9 @@ public abstract class AbstractProcess
 	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
 		for (DataTracker0D tracker:tsTrackers)
-			tracker.recordTime(t);		
+			tracker.recordTime(t);	
+		if (spTracker!=null)
+			spTracker.recordTime(t);
 		loop(ecosystem(),timer.userTime(t),timer.userTime(dt));
 	}
 

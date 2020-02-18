@@ -2,6 +2,7 @@ package au.edu.anu.twcore.ecosystem.structure;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,7 +12,9 @@ import au.edu.anu.twcore.ecosystem.runtime.space.FlatSurface;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.space.SquareGrid;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -22,11 +25,9 @@ import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.utils.Interval;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.endNode;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrOne;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_USERNG;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -48,6 +49,7 @@ public class SpaceNode
 	private String units = "arbitrary units";
 	private double precision = 0.0;
 	private RngNode rngNode = null;
+	private boolean attachDataTrackerToSpace = false;
 	
 	public SpaceNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -57,6 +59,7 @@ public class SpaceNode
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
@@ -69,6 +72,9 @@ public class SpaceNode
 		rngNode = (RngNode) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_USERNG.label())),
 			endNode());
+		// if at least one widget is listening to this space, add a datatracker to space
+		List<Edge> l = (List<Edge>) get(edges(Direction.IN),selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())));
+		attachDataTrackerToSpace = !l.isEmpty();
 		seal();
 	}
 
@@ -79,12 +85,15 @@ public class SpaceNode
 	
 	private Space<SystemComponent> makeSpace(int id) {
 		Space<SystemComponent> result = null;
+		DataTrackerSpace dt = null;
+		if (attachDataTrackerToSpace)
+			dt = new DataTrackerSpace(id,properties());
 		switch (stype) {
 			case continuousFlatSurface:
 				Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
 				Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
 				result = new FlatSurface(xlim.inf(),xlim.sup(),ylim.inf(),ylim.sup(),
-					precision,units,eecorr);
+					precision,units,eecorr,dt);
 				break;
 			case linearNetwork:
 				break;
@@ -94,7 +103,7 @@ public class SpaceNode
 				int ny = nx;
 				if (properties().hasProperty("ny"))
 					ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
-				result = new SquareGrid(cellSize,nx,ny,precision,units,eecorr);
+				result = new SquareGrid(cellSize,nx,ny,precision,units,eecorr,dt);
 				break;
 			case topographicSurface:
 				break;

@@ -63,6 +63,7 @@ import au.edu.anu.twcore.ui.TrackFieldEdge;
 import au.edu.anu.twcore.ui.TrackTableEdge;
 import au.edu.anu.twcore.ui.TrackPopulationEdge;
 import au.edu.anu.twcore.ui.TrackComponentEdge;
+import au.edu.anu.twcore.ui.TrackSpaceEdge;
 
 /**
  * 
@@ -107,7 +108,8 @@ public enum ConfigurationEdgeLabels {
 	E_TRACKFIELD	("trackField",		"trksFldOf",	TrackFieldEdge.class),
 	E_TRACKTABLE	("trackTable",		"trksTblOf",	TrackTableEdge.class),
 	E_TRACKPOP		("trackPopulation",	"trksPopOf",	TrackPopulationEdge.class),
-	E_TRACKCOMPONENT("trackComponent",	"trksCmpOf",	TrackComponentEdge.class)
+	E_TRACKCOMPONENT("trackComponent",	"trksCmpOf",	TrackComponentEdge.class),
+	E_TRACKSPACE	("trackSpace",		"trksSpc",		TrackSpaceEdge.class)
 	;
 	//=========================================================================
 	private final String label;
