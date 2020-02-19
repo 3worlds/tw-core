@@ -101,6 +101,7 @@ public class SpaceData extends LabelledItemData {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("SpaceData: ");
+		sb.append("Sender ").append(sender()).append("; ");
 		if (action==create)
 			sb.append("new item ")
 				.append(itemLabel())
