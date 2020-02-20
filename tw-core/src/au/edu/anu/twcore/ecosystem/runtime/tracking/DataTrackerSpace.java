@@ -27,6 +27,7 @@ public class DataTrackerSpace extends AbstractDataTracker<SpaceData, Metadata> {
 	public DataTrackerSpace(int simId, ReadOnlyPropertyList meta) {
 		super(DataMessageTypes.SPACE);
 		metadata = new Metadata(simId,meta);
+		setSender(simId);
 	}
 
 	public void recordTime(long time) {
