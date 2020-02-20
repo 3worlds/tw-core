@@ -61,6 +61,7 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 	private double cellSize = 0.0;
 	
 	private Map<SystemComponent,Location> locatedItems = new HashMap<>();
+	private Map<SystemComponent,Location> unclearableItems = new HashMap<>();
 	private List<SystemComponent> grid[][];
 	// precomputed inverted table of distances vs table indices
 	private SortedMap<Long,List<Duple<Integer,Integer>>> distanceMap = new TreeMap<>();
@@ -189,6 +190,30 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 			grid[loc.loc[0]][loc.loc[1]].remove(sc);
 		}
 		locatedItems.keySet().removeAll(items);
+	}
+
+	@Override
+	public void clear() {
+		for (int i=0; i<nx; i++)
+			for (int j=0; j<ny; j++)
+				grid[i][j].clear();
+		locatedItems.clear();	
+		for (SystemComponent sc:unclearableItems.keySet())
+			locate(sc,unclearableItems.get(sc).asPoint());
+	}
+
+	@Override
+	public void locateUnclearable(SystemComponent focal, double... location) {
+		locate(focal,location);
+		unclearableItems.put(focal,locatedItems.get(focal));
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append(" n = ")
+			.append(locatedItems.size());
+		return sb.toString();
 	}
 
 }

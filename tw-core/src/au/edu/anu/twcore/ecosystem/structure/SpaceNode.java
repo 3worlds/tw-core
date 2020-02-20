@@ -151,8 +151,10 @@ public class SpaceNode
 		for (Space<SystemComponent> sp:spaces.values()) 
 			if (sp instanceof SingleDataTrackerHolder) {
 				SpaceDataTracker dts = (SpaceDataTracker)((SingleDataTrackerHolder<?>) sp).dataTracker();
-				if (dts!=null)
+				if (dts!=null) {
 					dts.addObserver(widget);
+					dts.sendMetadata(dts.getInstance());
+				}
 		}
 	}
 

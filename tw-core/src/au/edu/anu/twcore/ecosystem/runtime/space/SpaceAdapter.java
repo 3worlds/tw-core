@@ -103,4 +103,15 @@ public abstract class SpaceAdapter<T extends Located>
 		dataTracker.addObserver(widget);
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName())
+			.append(" limits = ")
+			.append(limits.toString())
+			.append(" grain = ")
+			.append(precision);
+		return sb.toString();
+	}
+	
 }

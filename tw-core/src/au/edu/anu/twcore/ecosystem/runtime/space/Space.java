@@ -60,6 +60,15 @@ public interface Space<T extends Located> extends RngHolder {
 	public void locate(T focal, Point location);
 	
 	/**
+	 * Sets the location of unclearable items - these locations are not clearable through the 
+	 * clear() method and will be kept forever.
+	 * 
+	 * @param focal
+	 * @param location
+	 */
+	public void locateUnclearable(T focal, double...location);
+	
+	/**
 	 * Finds the location of an item in this space
 	 * 
 	 * @param focal
@@ -128,5 +137,10 @@ public interface Space<T extends Located> extends RngHolder {
 			coords[i] = c.coordinate(i);
 		return coords;
 	}
+
+	/**
+	 * clears all items EXCEPT those that were located with locateUnclearable
+	 */
+	public void clear();
 	
 }

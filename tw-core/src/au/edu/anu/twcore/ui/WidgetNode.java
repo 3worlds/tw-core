@@ -133,7 +133,6 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 				selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())), endNode());
 			if (sim != null)
 				sim.addObserver((DataReceiver<TimeData, Metadata>) widget);
-//			sim.addObserver((DataReceiver<LabelValuePairData, Metadata>) widget);
 			sealed = true;
 		}
 	}

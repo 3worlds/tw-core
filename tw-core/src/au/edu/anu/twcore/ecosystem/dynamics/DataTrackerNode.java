@@ -95,7 +95,7 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
  */
 public class DataTrackerNode 
 		extends InitialisableNode 
-		implements LimitedEdition<DataTracker<?,?>>, Sealable, DefaultStrings {
+		implements LimitedEdition<DataTracker<?,? extends Metadata>>, Sealable, DefaultStrings {
 	
 	// a class to collect metadata on fields, ie min, max, precision, units etc.
 	private class TrackMeta {
@@ -108,7 +108,7 @@ public class DataTrackerNode
 		List<int[]> index = new ArrayList<>();
 	}
 
-	private Map<Integer, DataTracker<?,?>> dataTrackers = new HashMap<>();
+	private Map<Integer, DataTracker<?,Metadata>> dataTrackers = new HashMap<>();
 	private boolean sealed = false;
 	private SamplingMode selection = null;
 	private int sampleSize = 0;
@@ -483,15 +483,19 @@ public class DataTrackerNode
 	 * @param widget
 	 */
 	public void attachTimeSeriesWidget(DataReceiver<Output0DData,Metadata> widget) {
-		for (DataTracker<?,?> dt:dataTrackers.values())
-			if (dt instanceof DataTracker0D)
+		for (DataTracker<?,Metadata> dt:dataTrackers.values())
+			if (dt instanceof DataTracker0D) {
 				((DataTracker0D)dt).addObserver(widget);
+				dt.sendMetadata((Metadata) dt.getInstance());
+			}
 	}
 
 	public void attachMapWidget(DataReceiver<Output2DData,Metadata> widget) {
-		for (DataTracker<?,?> dt:dataTrackers.values())
-			if (dt instanceof DataTracker2D)
+		for (DataTracker<?,Metadata> dt:dataTrackers.values())
+			if (dt instanceof DataTracker2D) {
 				((DataTracker2D)dt).addObserver(widget);
+				dt.sendMetadata((Metadata) dt.getInstance());
+			}
 	}
 
 //	public void attachLabelValuePairWidget(DataReceiver<LabelValuePairData,Metadata> widget) {
@@ -500,12 +504,13 @@ public class DataTrackerNode
 //				((LabelValuePairTracker)dt).addObserver(widget);
 //	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public DataTracker<?, ?> getInstance(int id) {
+	public DataTracker<?, Metadata> getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!dataTrackers.containsKey(id))
-			dataTrackers.put(id,makeDataTracker(id));		
+			dataTrackers.put(id,(DataTracker<?, Metadata>) makeDataTracker(id));		
 		return dataTrackers.get(id);
 	}
 

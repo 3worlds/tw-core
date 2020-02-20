@@ -59,6 +59,7 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	}
 	
 	private Map<SystemComponent,Location> locatedItems = new HashMap<>();
+	private Map<SystemComponent,Location> unclearableItems = new HashMap<>();
 	
 	private BoundedRegionIndexingTree<SystemComponent> indexer;
 	
@@ -185,4 +186,29 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 		locatedItems.keySet().removeAll(items);
 	}
 
+	@Override
+	public void clear() {
+		indexer = new BoundedRegionIndexingTree<>(boundingBox());
+		locatedItems.clear();
+		for (Map.Entry<SystemComponent,Location> e:unclearableItems.entrySet()) {
+			flatSurfaceLocation at = (flatSurfaceLocation) e.getValue();
+			indexer.insert(e.getKey(),Point.add(at.loc,at.locDeviation));
+		}
+		locatedItems.putAll(unclearableItems);
+	}
+
+	@Override
+	public void locateUnclearable(SystemComponent focal, double... location) {
+		locate(focal,location);
+		unclearableItems.put(focal,locatedItems.get(focal));
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append(" n = ")
+			.append(locatedItems.size());
+		return sb.toString();
+	}
+	
 }

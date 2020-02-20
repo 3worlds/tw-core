@@ -145,6 +145,7 @@ public class Simulator {
 			Map<Integer, List<List<TwProcess>>> processCallingOrder,
 			EcosystemGraph ecosystem) {
 		super();
+		log.info("START Simulator "+id+" instantiated");
 		this.id = id;
 		this.stoppingCondition = stoppingCondition;
 //		this.refTimer = refTimer;
@@ -187,6 +188,8 @@ public class Simulator {
 		// copies initial community to current community to start properly
 		// NB this is probably useless?
 		this.ecosystem.reset();
+//		resetDataTrackers();
+		log.info("END Simulator "+id+" instantiated");
 	}
 	
 	public int id() {
@@ -213,8 +216,8 @@ public class Simulator {
 	// run one simulation step
 	@SuppressWarnings("unused")
 	public void step() {
-		if (!isStarted())
-			resetDataTrackers();
+//		if (!isStarted())
+//			resetDataTrackers();
 		status = SimulatorStatus.Active;
 		log.info("Time = "+lastTime);
 		// 1 find next time step by querying timeModels
@@ -292,29 +295,34 @@ public class Simulator {
 		}
 	}
 	
-	// resets data trackers.
-	// DTs must be reset when simulator transitions from
-	// initial to active (active means the simulator sends data)
+	// resets data trackers
+	// this doesnt work the first time because widgets are not yet up when this is called
 	private void resetDataTrackers() {
 		// this to get all data trackers to send their metadata to their widgets
+		log.info("START Simulator "+id+" data trackers reset");
 		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
 			dte.getKey().sendMetadata(dte.getValue());
+		log.info("END Simulator "+id+" data trackers reset");
 	}
 	
 	// resets a simulation at its initial state
 	public void resetSimulation() {
-		lastTime = startTime;
-		stoppingCondition.reset();
-		status = SimulatorStatus.Initial;
+		log.info("START Simulator "+id+" reset");
 		// this to get all data trackers to send their metadata to their widgets
-//		resetDataTrackers();		
+		resetDataTrackers();
+		// now reset here
+		lastTime = startTime;
+		stoppingCondition.reset();		
+		status = SimulatorStatus.Initial;
 		for (Timer t:timerList)
 			t.reset();
 		timetracker.sendData(lastTime);
 		ecosystem.reset();
 		for (Space<SystemComponent> sp:spaces) {
+			sp.clear(); // clears all locations except those of initial items
 			ecosystem.community().resetCoordinates(sp);
 		}
+		log.info("END Simulator "+id+" reset");
 	}
 
 	// returns true if stopping condition is met

@@ -144,7 +144,7 @@ public class Component
 			// including spatial coordinates
 			for (SpaceNode spn:coordinates.keySet()) {
 				Space<SystemComponent> sp = spn.getInstance(id);
-				sp.locate(sc, coordinates.get(spn));
+				sp.locateUnclearable(sc, coordinates.get(spn));
 			}
 			// insert component into container
 			LimitedEdition<ComponentContainer> p = (LimitedEdition<ComponentContainer>) getParent();
