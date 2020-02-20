@@ -48,7 +48,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Sealable;
@@ -70,7 +70,7 @@ public abstract class AbstractProcess
 	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
 	protected Timer timer = null;
 	protected Space<SystemComponent> space = null;
-	protected DataTrackerSpace spTracker = null;
+	protected SpaceDataTracker spTracker = null;
 	protected double searchRadius = 0.0;
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
@@ -85,7 +85,7 @@ public abstract class AbstractProcess
     	searchRadius = searchR;
     	if (this.space!=null) {
     		if (space instanceof SingleDataTrackerHolder)
-    			spTracker = (DataTrackerSpace) ((SingleDataTrackerHolder<Metadata>)space).dataTracker();
+    			spTracker = (SpaceDataTracker) ((SingleDataTrackerHolder<Metadata>)space).dataTracker();
     	}
     }
 

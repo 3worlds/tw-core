@@ -14,7 +14,7 @@ import au.edu.anu.twcore.ecosystem.runtime.space.FlatSurface;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.space.SquareGrid;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.graph.Direction;
@@ -89,9 +89,9 @@ public class SpaceNode
 	
 	private Space<SystemComponent> makeSpace(int id) {
 		Space<SystemComponent> result = null;
-		DataTrackerSpace dt = null;
+		SpaceDataTracker dt = null;
 		if (attachDataTrackerToSpace)
-			dt = new DataTrackerSpace(id,properties());
+			dt = new SpaceDataTracker(id,properties());
 		switch (stype) {
 			case continuousFlatSurface:
 				Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
@@ -150,7 +150,7 @@ public class SpaceNode
 	public void attachSpaceWidget(DataReceiver<SpaceData,Metadata> widget) {
 		for (Space<SystemComponent> sp:spaces.values()) 
 			if (sp instanceof SingleDataTrackerHolder) {
-				DataTrackerSpace dts = (DataTrackerSpace)((SingleDataTrackerHolder<?>) sp).dataTracker();
+				SpaceDataTracker dts = (SpaceDataTracker)((SingleDataTrackerHolder<?>) sp).dataTracker();
 				if (dts!=null)
 					dts.addObserver(widget);
 		}

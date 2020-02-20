@@ -34,7 +34,7 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
@@ -84,7 +84,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	// recursion for below
 	private void resetCoordinates(Space<SystemComponent> space, 
 			LinkedList<String> labels,
-			DataTrackerSpace tracker) {
+			SpaceDataTracker tracker) {
 		for (String scid:items.keySet()) {
 			SystemComponent initSc = itemsToInitials.get(scid);
 			if (initSc!=null) { // means the SC was cloned from an initialItem
@@ -117,10 +117,10 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	// recurses on sub-containers
 	@SuppressWarnings("unchecked")
 	public void resetCoordinates(Space<SystemComponent> space) {
-		DataTrackerSpace tracker = null;
+		SpaceDataTracker tracker = null;
 		if (space instanceof SingleDataTrackerHolder)
 			if (((SingleDataTrackerHolder<?>) space).dataTracker()!=null)
-				tracker = (DataTrackerSpace)((SingleDataTrackerHolder<Metadata>)space).dataTracker();
+				tracker = (SpaceDataTracker)((SingleDataTrackerHolder<Metadata>)space).dataTracker();
 		LinkedList<String> labels = new LinkedList<>();
 		labels.add(id());
 		resetCoordinates(space,labels,tracker);

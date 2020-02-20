@@ -19,12 +19,12 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @author Jacques Gignoux - 14 févr. 2020
  *
  */
-public class DataTrackerSpace extends AbstractDataTracker<SpaceData, Metadata> {
+public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 
 	private long currentTime = Long.MIN_VALUE;
 	private Metadata metadata = null;
 	
-	public DataTrackerSpace(int simId, ReadOnlyPropertyList meta) {
+	public SpaceDataTracker(int simId, ReadOnlyPropertyList meta) {
 		super(DataMessageTypes.SPACE);
 		metadata = new Metadata(simId,meta);
 		setSender(simId);

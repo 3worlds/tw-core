@@ -5,7 +5,7 @@ import java.util.Random;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.twcore.constants.EdgeEffects;
@@ -27,7 +27,7 @@ public abstract class SpaceAdapter<T extends Located>
 	// it is relative to largest space size (diagonal)
 	private static final double minimalPrecision = 0.00001;
 	private Random rng = null;
-	protected DataTrackerSpace dataTracker = null;
+	protected SpaceDataTracker dataTracker = null;
 
 	@Override
 	public Random rng() {
@@ -49,7 +49,7 @@ public abstract class SpaceAdapter<T extends Located>
 	Random jitterRNG = RngFactory.newInstance("SpaceJitterRNG", 0, RngResetType.never, 
 			RngSeedSourceType.secure,RngAlgType.Pcg32).getRandom();
 
-	public SpaceAdapter(Box box, double prec, String units, EdgeEffects ee, DataTrackerSpace dt) {
+	public SpaceAdapter(Box box, double prec, String units, EdgeEffects ee, SpaceDataTracker dt) {
 		super();
 		limits = box;
 // precision based on diagonal, but this is probably unexpected for users		
@@ -84,7 +84,7 @@ public abstract class SpaceAdapter<T extends Located>
 	}
 
 	@Override
-	public DataTrackerSpace dataTracker() {
+	public SpaceDataTracker dataTracker() {
 		return dataTracker;
 	}
 	

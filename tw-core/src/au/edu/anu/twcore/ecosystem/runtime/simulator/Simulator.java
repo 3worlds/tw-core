@@ -53,7 +53,7 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerSpace;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -180,7 +180,7 @@ public class Simulator {
 		// add space data trackers to datatracker list
 		for (Space<SystemComponent> sp:spaces) 
 			if (sp instanceof SingleDataTrackerHolder) {
-				DataTrackerSpace dts = (DataTrackerSpace) ((SingleDataTrackerHolder<Metadata>)sp).dataTracker();
+				SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<Metadata>)sp).dataTracker();
 				if (dts!=null)
 					trackers.put(dts,dts.getInstance());
 		}
