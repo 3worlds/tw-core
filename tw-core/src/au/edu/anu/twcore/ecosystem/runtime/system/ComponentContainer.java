@@ -93,7 +93,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 				if (space.locationOf(sc)!=null)
 					space.unlocate(sc);
 				space.locate(sc,initLoc);
-				if (tracker!=null ) {
+				if (tracker!=null ) {						
 					labels.add(sc.id());
 					double x[] = new double[initLoc.dim()];
 					for (int i=0; i<initLoc.dim(); i++)
@@ -101,8 +101,6 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 					tracker.recordItem(SimulatorStatus.Initial,x,labels.toArray(new String[labels.size()]));
 					labels.remove(sc.id());
 				}
-				// this to make sure searches will not return an initial item
-//				space.unlocate(initSc);
 			}
 		}
 		for (CategorizedContainer<SystemComponent> childContainer: subContainers()) {
@@ -110,7 +108,6 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 			((ComponentContainer)childContainer).resetCoordinates(space,labels,tracker);
 			labels.remove(childContainer.id());
 		}
-//		space.unlocate(initialItems);
 	}
 	
 	// sets the coordinates of components initially present

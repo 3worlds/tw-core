@@ -214,7 +214,7 @@ public class Simulator {
 	@SuppressWarnings("unused")
 	public void step() {
 		if (!isStarted())
-			resetSimulation();
+			resetDataTrackers();
 		status = SimulatorStatus.Active;
 		log.info("Time = "+lastTime);
 		// 1 find next time step by querying timeModels
@@ -292,14 +292,22 @@ public class Simulator {
 		}
 	}
 	
+	// resets data trackers.
+	// DTs must be reset when simulator transitions from
+	// initial to active (active means the simulator sends data)
+	private void resetDataTrackers() {
+		// this to get all data trackers to send their metadata to their widgets
+		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
+			dte.getKey().sendMetadata(dte.getValue());
+	}
+	
 	// resets a simulation at its initial state
 	public void resetSimulation() {
 		lastTime = startTime;
 		stoppingCondition.reset();
 		status = SimulatorStatus.Initial;
 		// this to get all data trackers to send their metadata to their widgets
-		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
-			dte.getKey().sendMetadata(dte.getValue());
+//		resetDataTrackers();		
 		for (Timer t:timerList)
 			t.reset();
 		timetracker.sendData(lastTime);
