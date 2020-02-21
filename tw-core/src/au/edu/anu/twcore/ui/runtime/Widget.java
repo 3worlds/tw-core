@@ -26,20 +26,23 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-
 package au.edu.anu.twcore.ui.runtime;
+
+import fr.cnrs.iees.properties.SimplePropertyList;
 
 /**
  * @author Ian Davies
  *
- * @date 2 Sep 2019
+ * @date 19 Sep 2019
  */
+// a widget that runs without a UI
+//public interface HeadlessWidget {
+	public interface Widget {
 
-// inhertied by widgets with a UI
-public interface Widget extends HeadlessWidget {
+	public void setProperties(String id,SimplePropertyList properties);
 
-	public Object getUserInterfaceContainer();
+	public void putPreferences();
 
-	public Object getMenuContainer();
+	public void getPreferences();
 
 }
