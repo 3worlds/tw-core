@@ -186,9 +186,8 @@ public class Simulator {
 					trackers.put(dts,dts.getInstance());
 		}
 		// copies initial community to current community to start properly
-		// NB this is probably useless?
+		// pb: too early to send anything to widgets here
 		this.ecosystem.reset();
-//		resetDataTrackers();
 		log.info("END Simulator "+id+" instantiated");
 	}
 	
@@ -295,21 +294,12 @@ public class Simulator {
 		}
 	}
 	
-	// resets data trackers
-	// this doesnt work the first time because widgets are not yet up when this is called
-	private void resetDataTrackers() {
-		// this to get all data trackers to send their metadata to their widgets
-		log.info("START Simulator "+id+" data trackers reset");
-		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
-			dte.getKey().sendMetadata(dte.getValue());
-		log.info("END Simulator "+id+" data trackers reset");
-	}
-	
 	// resets a simulation at its initial state
 	public void resetSimulation() {
 		log.info("START Simulator "+id+" reset");
 		// this to get all data trackers to send their metadata to their widgets
-		resetDataTrackers();
+		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
+			dte.getKey().sendMetadata(dte.getValue());
 		// now reset here
 		lastTime = startTime;
 		stoppingCondition.reset();		
@@ -317,10 +307,10 @@ public class Simulator {
 		for (Timer t:timerList)
 			t.reset();
 		timetracker.sendData(lastTime);
-		ecosystem.reset();
+		ecosystem.reset(); // copies initial items back to runtime items
 		for (Space<SystemComponent> sp:spaces) {
 			sp.clear(); // clears all locations except those of initial items
-			ecosystem.community().resetCoordinates(sp);
+			ecosystem.community().resetCoordinates(sp); // sends info to the space data trackers
 		}
 		log.info("END Simulator "+id+" reset");
 	}
