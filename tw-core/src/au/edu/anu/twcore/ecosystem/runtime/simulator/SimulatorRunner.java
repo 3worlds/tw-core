@@ -62,16 +62,19 @@ public class SimulatorRunner {
 		// TODO: remove the UI subtree from the graph if any: (to disconnect widgets from datatrackers)
 //		uiNode = (TreeGraphNode) get(config.root().getChildren(), 
 //			selectZeroOrOne(hasTheLabel(N_UI.label())));
+		// OR this case only if uiNode==null;
 
 		// TODO: check the simulator has a stopping condition
 		// ie infinite time simulations are forbidden
 		
+		//TODO: WHICH SYSTEM - there can be many?
 		SimulatorNode simNode = (SimulatorNode) get(config.root().getChildren(),
 			selectOne(hasTheLabel(N_SYSTEM.label())),
 			children(),
 			selectOne(hasTheLabel(N_DYNAMICS.label())));
+		// TODO: HOW MANY instances - depends on exp design?
+// TODO Create a set of headless widgets to save output files.
 		simulator = simNode.getInstance(id);
-		
 		simulator.resetSimulation();
 		while (!simulator.stop())
 			simulator.step();
