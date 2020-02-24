@@ -1,0 +1,15 @@
+tree
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-HLSimpleControlWidget
+
+	hasNode SimpleControlWidgetSpec
+		isOfClass = String("widget")
+		hasParent = StringTable(([1]"headless:"))
+		multiplicity = IntegerRange("0..1")
+			

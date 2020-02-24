@@ -5,9 +5,38 @@ hasNode userInterfaceSpec
 	multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery musthaveStateMachineControllerQuery
 		className = String("au.edu.anu.twcore.archetype.tw.UIStateMachineControllerQuery")
+	mustSatisfyQuery UICanStopQuery
+		className = String("au.edu.anu.twcore.archetype.tw.UICanStopQuery")
 	mustSatisfyQuery recordNodeAtLeastOneChildLabelOfQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
-		childLabel = StringTable(([3]"top", "bottom","tab"))
+		childLabel = StringTable(([4]"top", "bottom","tab","headless"))
+
+hasNode headlessSpec
+	isOfClass = String("headless")
+	hasParent = StringTable(([1]"userInterface:"))
+	multiplicity = IntegerRange("0..1")
+	// must have at least one child widget headless widget
+
+hasNode HLwidgetSpec
+	isOfClass = String("widget")
+	hasParent = StringTable(([1]"headless:"))
+	multiplicity = IntegerRange("0..*")
+	hasProperty hlWidgetClass
+		hasName = String("subclass")
+		type = String("String")
+		multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery hlwidgetClassInValueSetQuery
+			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
+			values = StringTable(([2]+
+			"au.edu.anu.twuifx.widgets.headless.HLSimpleTimeSeriesWidget",+
+			"au.edu.anu.twuifx.widgets.headless.HLSimpleControlWidget"))
+			
+	mustSatisfyQuery CheckSubArchetypeQuerySimpleTimeSeriesWidget
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLSimpleTimeSeriesWidget","3wSA-HLSimpleTimeSeriesWidget.ugt"))
+	mustSatisfyQuery CheckSubArchetypeQuerySimpleControlWidget
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLSimpleControlWidget","3wSA-HLSimpleControlWidget.ugt"))
 
 hasNode topSpec
 	isOfClass = String("top")

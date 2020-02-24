@@ -94,6 +94,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_DATASOURCE 		("dataSource",		"dSrc",			DataSource.class,			0),//
 			N_DATASINK 			("dataSink",		"dSnk",			DataSink.class,				0),//
 		N_UI 					("userInterface",	"gui",			TwUI.class,					UIBASE+10), // after widget
+		    N_UIHEADLESS        ("headless",        "hl",           UIHeadless.class,           UIBASE),//
 			N_UITOP 			("top",				"top",			UITop.class,				UIBASE),//
 			N_UIBOTTOM 			("bottom",			"btm",			UIBottom.class,				UIBASE),//
 			N_UITAB 			("tab",				"tab",			UITab.class,				UIBASE),//
