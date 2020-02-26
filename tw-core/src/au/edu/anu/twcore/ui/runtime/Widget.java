@@ -36,13 +36,8 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  * @date 19 Sep 2019
  */
 // a widget that runs without a UI
-//public interface HeadlessWidget {
-	public interface Widget {
+public interface Widget {
 
-	public void setProperties(String id,SimplePropertyList properties);
-
-	public void putPreferences();
-
-	public void getPreferences();
+	public void setProperties(String id, SimplePropertyList properties);
 
 }

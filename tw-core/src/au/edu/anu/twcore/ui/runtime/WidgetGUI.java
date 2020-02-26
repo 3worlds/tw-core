@@ -35,12 +35,15 @@ package au.edu.anu.twcore.ui.runtime;
  * @date 2 Sep 2019
  */
 
-// inhertied by widgets with a UI
-//public interface Widget extends HeadlessWidget {
-	public interface WidgetGUI extends Widget {
+// Inherited by widgets with a UI
+public interface WidgetGUI extends Widget {
 
 	public Object getUserInterfaceContainer();
 
 	public Object getMenuContainer();
+
+	public void putUserPreferences();
+
+	public void getUserPreferences();
 
 }
