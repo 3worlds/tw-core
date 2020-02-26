@@ -155,6 +155,7 @@ public class UICanStopQuery extends Query {
 			}
 		}
 		satisfied = false;
+		msg = "Stopping condition required but none found.";
 		return this;
 	}
 
