@@ -87,16 +87,16 @@ import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
- * Class matching the "ecosystem/dynamics/timeLine/timeModel/process/dataTracker" node label in the 
+ * Class matching the
+ * "ecosystem/dynamics/timeLine/timeModel/process/dataTracker" node label in the
  * 3Worlds configuration tree. Had many properties but needs refactoring.
- *  
+ * 
  * @author Jacques Gignoux - 7 juin 2019
  *
  */
-public class DataTrackerNode 
-		extends InitialisableNode 
-		implements LimitedEdition<DataTracker<?,? extends Metadata>>, Sealable, DefaultStrings {
-	
+public class DataTrackerNode extends InitialisableNode
+		implements LimitedEdition<DataTracker<?, ? extends Metadata>>, Sealable, DefaultStrings {
+
 	// a class to collect metadata on fields, ie min, max, precision, units etc.
 	private class TrackMeta {
 		IndexedDataLabel label = null;
@@ -108,7 +108,7 @@ public class DataTrackerNode
 		List<int[]> index = new ArrayList<>();
 	}
 
-	private Map<Integer, DataTracker<?,Metadata>> dataTrackers = new HashMap<>();
+	private Map<Integer, DataTracker<?, Metadata>> dataTrackers = new HashMap<>();
 	private boolean sealed = false;
 	private SamplingMode selection = null;
 	private int sampleSize = 0;
@@ -120,8 +120,8 @@ public class DataTrackerNode
 //	private StringTable track = null;
 	private ExtendablePropertyList fieldMetadata = new ExtendablePropertyListImpl();
 	// a map of all table dimensions
-	private Map<String,int[]> tableDims = new HashMap<>();
-	private Map<String,TrackMeta> expandedTrackList = new HashMap<>();
+	private Map<String, int[]> tableDims = new HashMap<>();
+	private Map<String, TrackMeta> expandedTrackList = new HashMap<>();
 	// target objects of tracking: groups or systemComponents
 	private List<LimitedEdition<ComponentContainer>> trackedGroups = new ArrayList<>();
 	private List<Component> trackedComponents = new ArrayList<>();
@@ -135,19 +135,20 @@ public class DataTrackerNode
 	public DataTrackerNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
-	
+
 	private int[] getTableDims(TableNode tab) {
 		int[] dims = new int[tab.dimensioners().length];
-		for (int i=0; i<dims.length; i++)
+		for (int i = 0; i < dims.length; i++)
 			dims[i] = tab.dimensioners()[i].getLength();
 		return dims;
 	}
-	
-	// search a table for data types - assumes trackVar is the table name WITHOUT index
-	// (ie 'myTable', not 'myTable[0][12]') 
+
+	// search a table for data types - assumes trackVar is the table name WITHOUT
+	// index
+	// (ie 'myTable', not 'myTable[0][12]')
 	// cross-recursive with next method
 	private TrackMeta findTrackMetadata(TableNode tab, String trackVar) {
-		tableDims.put(tab.id(),getTableDims(tab));
+		tableDims.put(tab.id(), getTableDims(tab));
 		TrackMeta result = null;
 		String tv = trackVar;
 		// leaf table, ie with primitive elements
@@ -163,7 +164,7 @@ public class DataTrackerNode
 					result.rrange = (Interval) tab.properties().getPropertyValue(P_TABLE_INTERVAL.key());
 				if (tab.properties().hasProperty(P_TABLE_RANGE.key()))
 					result.irange = (IntegerRange) tab.properties().getPropertyValue(P_TABLE_RANGE.key());
-				if (tab.properties().hasProperty(P_TABLE_PREC.key())) 
+				if (tab.properties().hasProperty(P_TABLE_PREC.key()))
 					result.prec = (Double) tab.properties().getPropertyValue(P_TABLE_PREC.key());
 				try {
 					result.trackType = Class.forName(det.className());
@@ -173,18 +174,19 @@ public class DataTrackerNode
 			}
 		}
 		// table of records - must have exactly one child which is a record
-		else for (TreeNode nn:tab.getChildren()) {
-			result = findTrackMetadata((Record)nn,tv);
-			if (result!=null)
-				break;
-		}
+		else
+			for (TreeNode nn : tab.getChildren()) {
+				result = findTrackMetadata((Record) nn, tv);
+				if (result != null)
+					break;
+			}
 		return result;
 	}
-	
+
 	// cross-recursive with previous
 	private TrackMeta findTrackMetadata(Record rec, String trackVar) {
 		TrackMeta result = null;
-		for (TreeNode n:rec.getChildren()) {
+		for (TreeNode n : rec.getChildren()) {
 			if (n instanceof FieldNode) {
 				if (n.id().equals(trackVar)) {
 					FieldNode f = (FieldNode) n;
@@ -195,19 +197,18 @@ public class DataTrackerNode
 						result.irange = (IntegerRange) f.properties().getPropertyValue(P_FIELD_RANGE.key());
 					if (f.properties().hasProperty(P_FIELD_INTERVAL.key()))
 						result.rrange = (Interval) f.properties().getPropertyValue(P_FIELD_INTERVAL.key());
-					if (f.properties().hasProperty(P_FIELD_PREC.key())) 
+					if (f.properties().hasProperty(P_FIELD_PREC.key()))
 						result.prec = (Double) f.properties().getPropertyValue(P_FIELD_PREC.key());
-					DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELD_TYPE.key());
+					DataElementType det = (DataElementType) f.properties().getPropertyValue(P_FIELD_TYPE.key());
 					try {
 						result.trackType = Class.forName(det.className());
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
 				}
-			}
-			else if (n instanceof TableNode)
-				result = findTrackMetadata((TableNode)n,trackVar);
-			if (result!=null)
+			} else if (n instanceof TableNode)
+				result = findTrackMetadata((TableNode) n, trackVar);
+			if (result != null)
 				break;
 		}
 		return result;
@@ -218,37 +219,37 @@ public class DataTrackerNode
 	private TrackMeta findTrackMetadata(Category cat, String trackVar) {
 		TrackMeta result = null;
 		List<Record> lr = (List<Record>) get(cat.edges(Direction.OUT),
-			selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()),hasTheLabel(E_DECORATORS.label()))),
-			edgeListEndNodes());
-		if (lr!=null) 
-			for (Record r:lr) { // this list may contain at most 2 items
-				result = findTrackMetadata((Record)r,trackVar);
-				if (result!=null)
+				selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()), hasTheLabel(E_DECORATORS.label()))),
+				edgeListEndNodes());
+		if (lr != null)
+			for (Record r : lr) { // this list may contain at most 2 items
+				result = findTrackMetadata((Record) r, trackVar);
+				if (result != null)
 					break;
-		}
+			}
 		return result;
 	}
-	
+
 	private String stripVarName(DataLabel lab) {
 		String trackName = lab.getEnd();
 		if (trackName.contains("["))
-			trackName = trackName.substring(0,trackName.indexOf('['));
+			trackName = trackName.substring(0, trackName.indexOf('['));
 		return trackName;
 	}
-	
+
 	private DataLabel getFullVarName(TreeNode var, StringTable index) {
 		DataLabel result = new DataLabel();
-		Deque<String> l = new LinkedList<>();		
+		Deque<String> l = new LinkedList<>();
 		TreeNode parent = var;
 		int i = 0;
-		if (index!=null)
-			i = index.size()-1;
-		while (parent!=null) {
+		if (index != null)
+			i = index.size() - 1;
+		while (parent != null) {
 			if (parent instanceof FieldNode)
 				l.add(parent.id());
 			else if (parent instanceof TableNode) {
-				if (index!=null)
-					l.add(parent.id()+index.getWithFlatIndex(i--));
+				if (index != null)
+					l.add(parent.id() + index.getWithFlatIndex(i--));
 				else
 					l.add(parent.id());
 			}
@@ -259,39 +260,38 @@ public class DataTrackerNode
 			result.append(it.next());
 		return result;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void setupComponentTracker() {
 		groupTracker = false;
 		List<Node> ln = (List<Node>) get(getParent().edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
-			edgeListEndNodes());
+				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
 		// get all the variables to track
-		for (Node n:ln) {
+		for (Node n : ln) {
 			if (n instanceof RelationType) {
 				// TODO: implement code for relation data trackers
-			}
-			else if (n instanceof Category) {
+			} else if (n instanceof Category) {
 				// 1 - get all the info where indexing and full label is not needed
-				SortedMap<String,TrackMeta> fm = new TreeMap<>();
-				List<Edge> le = (List<Edge>) get(edges(Direction.OUT),
-					selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),hasTheLabel(E_TRACKTABLE.label()))));
-				for (Edge e:le) {
+				SortedMap<String, TrackMeta> fm = new TreeMap<>();
+				List<Edge> le = (List<Edge>) get(edges(Direction.OUT), selectZeroOrMany(
+						orQuery(hasTheLabel(E_TRACKFIELD.label()), hasTheLabel(E_TRACKTABLE.label()))));
+				for (Edge e : le) {
 					String trackName = e.endNode().id();
 					if (!fm.containsKey(trackName)) {
-						TrackMeta tt = findTrackMetadata((Category)n,trackName);
-						if (tt!=null) 
+						TrackMeta tt = findTrackMetadata((Category) n, trackName);
+						if (tt != null)
 							fm.put(trackName, tt);
-						else ; // throw Exception ? this should never happen normally...
+						else
+							; // throw Exception ? this should never happen normally...
 					}
 				}
 				// 2 - expand indexes and develop full labels and store above information
-				for (Edge e:le) {
-					DataLabel unexpanded = getFullVarName((TreeNode)e.endNode(),
-						(StringTable)((ReadOnlyDataHolder)e).properties().getPropertyValue(P_TRACKEDGE_INDEX.key()));
-					List<IndexedDataLabel> labels = IndexedDataLabel.expandIndexes(unexpanded,tableDims);
+				for (Edge e : le) {
+					DataLabel unexpanded = getFullVarName((TreeNode) e.endNode(), (StringTable) ((ReadOnlyDataHolder) e)
+							.properties().getPropertyValue(P_TRACKEDGE_INDEX.key()));
+					List<IndexedDataLabel> labels = IndexedDataLabel.expandIndexes(unexpanded, tableDims);
 					// now there is one label for each index combination
-					for (IndexedDataLabel l:labels) {
+					for (IndexedDataLabel l : labels) {
 						String trackName = stripVarName(l);
 						TrackMeta tm = new TrackMeta();
 						tm.label = l; // the index is in the label, now!
@@ -302,74 +302,73 @@ public class DataTrackerNode
 						tm.trackType = tmm.trackType;
 						tm.units = tmm.units;
 						// this contains in the proper order all the indexes needed to read the data
-						for (int j=0; j<l.size(); j++)
-							if (l.getIndex(j)!=null)
+						for (int j = 0; j < l.size(); j++)
+							if (l.getIndex(j) != null)
 								tm.index.add(l.getIndex(j));
-						expandedTrackList.put(l.toString(),tm);
+						expandedTrackList.put(l.toString(), tm);
 					}
 				}
 				// 3 store results into fieldMetadata
-				for (String trackName:expandedTrackList.keySet()) {
+				for (String trackName : expandedTrackList.keySet()) {
 					TrackMeta tm = expandedTrackList.get(trackName);
-					setFieldMetadata(tm,trackName);
+					setFieldMetadata(tm, trackName);
 				}
 			}
 		}
 		// get the initial components to track
-		// NB: this list either contains initial components OR points to a single group to be tracked
+		// NB: this list either contains initial components OR points to a single group
+		// to be tracked
 		// CAUTION: this is adding the INITIAL components, not the RUNTIME ones
-		List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())));
-		if (ll.size()==1) {
+		List<Edge> ll = (List<Edge>) get(edges(Direction.OUT), selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())));
+		if (ll.size() == 1) {
 			if (ll.get(0).endNode() instanceof Component) {
 				trackedComponents.add((Component) ll.get(0).endNode());
-				LimitedEdition<ComponentContainer> tgroup = (LimitedEdition<ComponentContainer>)trackedComponents.get(0).getParent();
+				LimitedEdition<ComponentContainer> tgroup = (LimitedEdition<ComponentContainer>) trackedComponents
+						.get(0).getParent();
 				if (tgroup instanceof InitialState)
 					ecosystemContainer = (InitialState) tgroup;
 				else
 					trackedGroups.add(tgroup);
-			}
-			else
+			} else
 				trackedGroups.add((LimitedEdition<ComponentContainer>) ll.get(0).endNode());
-		}
-		else {
-			for (Edge e:ll)
+		} else {
+			for (Edge e : ll)
 				trackedComponents.add((Component) e.endNode());
-			trackedGroups.add((LimitedEdition<ComponentContainer>)trackedComponents.get(0).getParent());
+			trackedGroups.add((LimitedEdition<ComponentContainer>) trackedComponents.get(0).getParent());
 		}
 	}
-	
+
 	private void setFieldMetadata(TrackMeta tm, String trackName) {
 		trackName += ".";
-		if (!fieldMetadata.hasProperty(trackName+P_FIELD_TYPE.key()))
-			fieldMetadata.addProperty(trackName+P_FIELD_TYPE.key(),tm.trackType);
-		if (!fieldMetadata.hasProperty(trackName+P_FIELD_LABEL.key()))
-			fieldMetadata.addProperty(trackName+P_FIELD_LABEL.key(),tm.label);
-		if (tm.units!=null)
-			if (!fieldMetadata.hasProperty(trackName+P_FIELD_UNITS.key()))
-				fieldMetadata.addProperty(trackName+P_FIELD_UNITS.key(),tm.units);
-		if (tm.irange!=null)
-			if (!fieldMetadata.hasProperty(trackName+P_FIELD_RANGE.key()))
-				fieldMetadata.addProperty(trackName+P_FIELD_RANGE.key(),tm.irange);
-		if (tm.rrange!=null)
-			if (!fieldMetadata.hasProperty(trackName+P_FIELD_INTERVAL.key()))
-				fieldMetadata.addProperty(trackName+P_FIELD_INTERVAL.key(),tm.rrange);
-		if (tm.prec!=null)
-			if (!fieldMetadata.hasProperty(trackName+P_FIELD_PREC.key()))
-				fieldMetadata.addProperty(trackName+P_FIELD_PREC.key(),tm.prec);
+		if (!fieldMetadata.hasProperty(trackName + P_FIELD_TYPE.key()))
+			fieldMetadata.addProperty(trackName + P_FIELD_TYPE.key(), tm.trackType);
+		if (!fieldMetadata.hasProperty(trackName + P_FIELD_LABEL.key()))
+			fieldMetadata.addProperty(trackName + P_FIELD_LABEL.key(), tm.label);
+		if (tm.units != null)
+			if (!fieldMetadata.hasProperty(trackName + P_FIELD_UNITS.key()))
+				fieldMetadata.addProperty(trackName + P_FIELD_UNITS.key(), tm.units);
+		if (tm.irange != null)
+			if (!fieldMetadata.hasProperty(trackName + P_FIELD_RANGE.key()))
+				fieldMetadata.addProperty(trackName + P_FIELD_RANGE.key(), tm.irange);
+		if (tm.rrange != null)
+			if (!fieldMetadata.hasProperty(trackName + P_FIELD_INTERVAL.key()))
+				fieldMetadata.addProperty(trackName + P_FIELD_INTERVAL.key(), tm.rrange);
+		if (tm.prec != null)
+			if (!fieldMetadata.hasProperty(trackName + P_FIELD_PREC.key()))
+				fieldMetadata.addProperty(trackName + P_FIELD_PREC.key(), tm.prec);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void setupPopulationTracker() {
 		groupTracker = true;
 		List<Edge> trackedEdges = (List<Edge>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_TRACKPOP.label())));
-		for (Edge e:trackedEdges) {
+				selectZeroOrMany(hasTheLabel(E_TRACKPOP.label())));
+		for (Edge e : trackedEdges) {
 			if (e instanceof ReadOnlyDataHolder) {
 				ReadOnlyDataHolder rodh = (ReadOnlyDataHolder) e;
 				if (rodh.properties().hasProperty(P_TRACKPOP_VAR.key())) {
-					for (PopulationVariables pv:((PopulationVariablesSet)rodh.properties()
-						.getPropertyValue(P_TRACKPOP_VAR.key())).values()) {
+					for (PopulationVariables pv : ((PopulationVariablesSet) rodh.properties()
+							.getPropertyValue(P_TRACKPOP_VAR.key())).values()) {
 						TrackMeta tm = new TrackMeta();
 						tm.label = new IndexedDataLabel(pv.shortName());
 						tm.irange = IntegerRange.valueOf(pv.range());
@@ -379,8 +378,8 @@ public class DataTrackerNode
 							e1.printStackTrace();
 						}
 						tm.units = pv.units();
-						setFieldMetadata(tm,pv.shortName());
-						expandedTrackList.put(tm.label.toString(),tm);
+						setFieldMetadata(tm, pv.shortName());
+						expandedTrackList.put(tm.label.toString(), tm);
 					}
 				}
 			}
@@ -388,7 +387,7 @@ public class DataTrackerNode
 			trackedGroups.add(group);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
@@ -407,8 +406,7 @@ public class DataTrackerNode
 					sampleSize = -1;
 				else
 					sampleSize = Integer.valueOf(s);
-			}
-			else 
+			} else
 				sampleSize = -1;
 			if (properties().hasProperty(P_DATATRACKER_STATISTICS.key()))
 				stats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
@@ -419,12 +417,11 @@ public class DataTrackerNode
 			else
 				tstats = StatisticalAggregatesSet.defaultValue();
 			List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
-				selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),hasTheLabel(E_TRACKTABLE.label()))));
+					selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()), hasTheLabel(E_TRACKTABLE.label()))));
 			if (!ll.isEmpty())
 				setupComponentTracker();
 			// population tracker
-			ll = (List<Edge>) get(edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_TRACKPOP.label())));
+			ll = (List<Edge>) get(edges(Direction.OUT), selectZeroOrMany(hasTheLabel(E_TRACKPOP.label())));
 			if (!ll.isEmpty())
 				setupPopulationTracker();
 			// the type of tracker
@@ -448,30 +445,28 @@ public class DataTrackerNode
 	public boolean isSealed() {
 		return sealed;
 	}
-	
-	private DataTracker<?,?> makeDataTracker(int index) {
-		AbstractDataTracker<?,?> result = null;
+
+	private DataTracker<?, ?> makeDataTracker(int index) {
+		AbstractDataTracker<?, ?> result = null;
 		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
 			List<ComponentContainer> lsc = new ArrayList<ComponentContainer>();
-			if (ecosystemContainer!=null) {
+			if (ecosystemContainer != null) {
 				// assuming only 1 component is tracked!
 				SystemComponent sc = trackedComponents.get(0).getInstance(index);
-				String gname = defaultPrefix + "group" + nameSeparator + 
-					sc.membership().categoryId();
-				lsc.add((ComponentContainer)ecosystemContainer.getInstance(index).subContainer(gname));
-			}
-			else for (LimitedEdition<ComponentContainer> group:trackedGroups)
-				lsc.add(group.getInstance(index));
+				String gname = defaultPrefix + "group" + nameSeparator + sc.membership().categoryId();
+				lsc.add((ComponentContainer) ecosystemContainer.getInstance(index).subContainer(gname));
+			} else
+				for (LimitedEdition<ComponentContainer> group : trackedGroups)
+					lsc.add(group.getInstance(index));
 			List<SystemComponent> ls = new ArrayList<SystemComponent>();
-			for (Component c:trackedComponents)
+			for (Component c : trackedComponents)
 				ls.add(c.getInstance(index));
-			result = new DataTracker0D(stats,tstats,selection,sampleSize,
-				lsc, ls, expandedTrackList.keySet(),fieldMetadata,groupTracker); 
-		}		
-		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {	
+			result = new DataTracker0D(stats, tstats, selection, sampleSize, lsc, ls, expandedTrackList.keySet(),
+					fieldMetadata, groupTracker);
+		} else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
 			result = new DataTracker2D();
-		}		
-		if (result!=null)
+		}
+		if (result != null)
 			result.setSender(index);
 		return result;
 	}
@@ -480,20 +475,33 @@ public class DataTrackerNode
 	// the DataTrackers
 	/**
 	 * attach time series widgets to these trackers
+	 * 
 	 * @param widget
 	 */
-	public void attachTimeSeriesWidget(DataReceiver<Output0DData,Metadata> widget) {
-		for (DataTracker<?,Metadata> dt:dataTrackers.values())
+	public void attachTimeSeriesWidget(DataReceiver<Output0DData, Metadata> widget) {
+		for (DataTracker<?, Metadata> dt : dataTrackers.values())
 			if (dt instanceof DataTracker0D) {
-				((DataTracker0D)dt).addObserver(widget);
+				((DataTracker0D) dt).addObserver(widget);
+				// BUG: this method sends metadata to all observed not just this newly added
+				// widget therefore, for example, the first to be initialised will get as many
+				// metadata msgs are there are
+				// timeseries widgets.
+				// we need a method dt.sendMetaDataTo(widget,(Metadata) dt.getInstance());
+				// The alternative is to remove the line below and do it after the whole graph
+				// is initialised.
+				// That may be a bit messy. It would be a static method to search the graph for
+				// dataTrackers, apply all the above instanceof tests and then sendMetaData 
+				
+				// Before doing anything about this cf the consequences in Simulator.resetSimulation.
+				// I suspect that resetSimulation should sendData (i.e. time is now zero etc) if anything.
 				dt.sendMetadata((Metadata) dt.getInstance());
 			}
 	}
 
-	public void attachMapWidget(DataReceiver<Output2DData,Metadata> widget) {
-		for (DataTracker<?,Metadata> dt:dataTrackers.values())
+	public void attachMapWidget(DataReceiver<Output2DData, Metadata> widget) {
+		for (DataTracker<?, Metadata> dt : dataTrackers.values())
 			if (dt instanceof DataTracker2D) {
-				((DataTracker2D)dt).addObserver(widget);
+				((DataTracker2D) dt).addObserver(widget);
 				dt.sendMetadata((Metadata) dt.getInstance());
 			}
 	}
@@ -503,14 +511,14 @@ public class DataTrackerNode
 //			if (dt instanceof LabelValuePairTracker)
 //				((LabelValuePairTracker)dt).addObserver(widget);
 //	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public DataTracker<?, Metadata> getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!dataTrackers.containsKey(id))
-			dataTrackers.put(id,(DataTracker<?, Metadata>) makeDataTracker(id));		
+			dataTrackers.put(id, (DataTracker<?, Metadata>) makeDataTracker(id));
 		return dataTrackers.get(id);
 	}
 
