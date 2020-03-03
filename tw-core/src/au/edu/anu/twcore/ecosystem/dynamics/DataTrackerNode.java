@@ -38,6 +38,7 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.PopulationVariables;
 import fr.cnrs.iees.twcore.constants.PopulationVariablesSet;
@@ -482,7 +483,8 @@ public class DataTrackerNode extends InitialisableNode
 		for (DataTracker<?, Metadata> dt : dataTrackers.values())
 			if (dt instanceof DataTracker0D) {
 				((DataTracker0D) dt).addObserver(widget);
-				// BUG: this method sends metadata to all observed not just this newly added
+				// BUG: dt.sendMetadata(...) sends a msg to all observed not just this newly
+				// added
 				// widget therefore, for example, the first to be initialised will get as many
 				// metadata msgs are there are
 				// timeseries widgets.
@@ -490,11 +492,13 @@ public class DataTrackerNode extends InitialisableNode
 				// The alternative is to remove the line below and do it after the whole graph
 				// is initialised.
 				// That may be a bit messy. It would be a static method to search the graph for
-				// dataTrackers, apply all the above instanceof tests and then sendMetaData 
+				// dataTrackers, apply all the above instanceof tests and then sendMetaData
+
+				// Before doing anything about this cf the consequences in
+				// Simulator.resetSimulation.
 				
-				// Before doing anything about this cf the consequences in Simulator.resetSimulation.
-				// I suspect that resetSimulation should sendData (i.e. time is now zero etc) if anything.
-				dt.sendMetadata((Metadata) dt.getInstance());
+				// dt.sendMetadata((Metadata) dt.getInstance());
+				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
 			}
 	}
 
@@ -502,7 +506,10 @@ public class DataTrackerNode extends InitialisableNode
 		for (DataTracker<?, Metadata> dt : dataTrackers.values())
 			if (dt instanceof DataTracker2D) {
 				((DataTracker2D) dt).addObserver(widget);
-				dt.sendMetadata((Metadata) dt.getInstance());
+				// dt.sendMetadata((Metadata) dt.getInstance());
+				//
+				// cf: above
+				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
 			}
 	}
 

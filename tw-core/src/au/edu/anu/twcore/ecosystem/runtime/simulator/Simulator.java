@@ -57,6 +57,7 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -209,7 +210,9 @@ public class Simulator {
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		timetracker.addObserver(observer);
 		// as metadata, send all properties of the reference TimeLine of this simulator.		
-		timetracker.sendMetadata(metadata);
+//		timetracker.sendMetadata(metadata);
+		// Send only to the newly observed widget. I've checked - it is ready.
+		timetracker.sendMetadataTo((GridNode) observer, metadata);
 	}
 	
 	// run one simulation step
@@ -298,8 +301,9 @@ public class Simulator {
 	public void resetSimulation() {
 		log.info("START Simulator "+id+" reset");
 		// this to get all data trackers to send their metadata to their widgets
-		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
-			dte.getKey().sendMetadata(dte.getValue());
+		// I've removed this for now to see if we can just do this once, not every reset.
+//		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
+//			dte.getKey().sendMetadata(dte.getValue());
 		// now reset here
 		lastTime = startTime;
 		stoppingCondition.reset();		

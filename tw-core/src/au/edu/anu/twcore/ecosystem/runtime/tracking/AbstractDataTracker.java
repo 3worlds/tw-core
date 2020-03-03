@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.rvgrid.rendezvous.AbstractGridNode;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
@@ -41,22 +42,21 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
- * An ancestor for all kinds of DataTrackers - implements the messaging capacity. All its methods
- * inherited from {@link DataTracker} are implemented as {@code final} to prevent erroneous behaviour.
- * Descendants should just set the {@code T} and {@code M} types, and possibly helper methods for 
+ * An ancestor for all kinds of DataTrackers - implements the messaging
+ * capacity. All its methods inherited from {@link DataTracker} are implemented
+ * as {@code final} to prevent erroneous behaviour. Descendants should just set
+ * the {@code T} and {@code M} types, and possibly helper methods for
  * constructing these objects from the raw data.
  * 
  * @author Jacques Gignoux - 3 sept. 2019
  *
  * @param <T>
  */
-public abstract class AbstractDataTracker<T,M> 
-		extends AbstractGridNode 
-		implements DataTracker<T,M> {
-	
+public abstract class AbstractDataTracker<T, M> extends AbstractGridNode implements DataTracker<T, M> {
+
 	private static Logger log = Logging.getLogger(AbstractDataTracker.class);
-	
-	private Set<DataReceiver<T,M>> observers = new HashSet<>();
+
+	private Set<DataReceiver<T, M>> observers = new HashSet<>();
 	private int messageType;
 	protected int senderId = -1;
 
@@ -66,45 +66,62 @@ public abstract class AbstractDataTracker<T,M>
 	}
 
 	@Override
-	public final void addObserver(DataReceiver<T,M> listener) {
+	public final void addObserver(DataReceiver<T, M> listener) {
 		observers.add(listener);
 	}
 
 	@Override
 	public final void sendMessage(int msgType, Object payload) {
-		for (DataReceiver<T,M> dr:observers) 
-			if (dr instanceof GridNode)	{
-				log.info("Sending data to receiver "+dr.toString());
+		for (DataReceiver<T, M> dr : observers)
+			if (dr instanceof GridNode) {
+				log.info("Sending data to receiver " + dr.toString());
 				GridNode gn = (GridNode) dr;
-				RVMessage dataMessage = new RVMessage(msgType,payload,this,gn);
+				RVMessage dataMessage = new RVMessage(msgType, payload, this, gn);
 				gn.callRendezvous(dataMessage);
-		}
+			}
 	}
 
 	@Override
-	public final void removeObserver(DataReceiver<T,M> observer) {
+	public final void removeObserver(DataReceiver<T, M> observer) {
 		observers.remove(observer);
 	}
 
 	@Override
 	public final void sendData(T data) {
-		sendMessage(messageType,data);
+		sendMessage(messageType, data);
 	}
-	
+
+//	@Override
+//	public final void sendMetadata(M meta) {
+//		sendMessage(DataMessageTypes.METADATA, meta);
+//	}
+
 	@Override
-	public final void sendMetadata(M meta) {
-		sendMessage(DataMessageTypes.METADATA,meta);
+	public void sendMetadataTo(GridNode gn, M meta) {
+		if (observers.contains(gn)) {
+			log.info("Sending data to receiver " + gn.toString());
+			RVMessage dataMessage = new RVMessage(DataMessageTypes.METADATA, meta, this, gn);
+			gn.callRendezvous(dataMessage);
+		} else
+			throw new TwcoreException("Attempt to send metadata msg to unobserved receiver. " + gn);
 	}
 
 	@Override
 	public boolean hasObservers() {
 		return !observers.isEmpty();
 	}
-	
+
+	@Override
+	public boolean hasObserver(DataReceiver<T, M> dr) {
+		return observers.contains(dr);
+	}
+
 	public void setSender(int id) {
 		senderId = id;
 	}
 
+	// shouldn't these dummy methods be removed to force descendants to make a
+	// decision about this?
 	@Override
 	public M getInstance() {
 		// dummy - for descendants
@@ -115,10 +132,10 @@ public abstract class AbstractDataTracker<T,M>
 	public void updateTrackList() {
 		// do nothing - for descendants
 	}
-	
+
 	@Override
 	public void removeTrackedItem(SystemComponent wasTracked) {
 		// do nothing - for descendants
 	}
-	
+
 }

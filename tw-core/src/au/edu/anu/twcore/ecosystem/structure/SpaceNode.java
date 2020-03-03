@@ -23,6 +23,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.ens.biologie.generic.LimitedEdition;
@@ -153,7 +154,8 @@ public class SpaceNode
 				SpaceDataTracker dts = (SpaceDataTracker)((SingleDataTrackerHolder<?>) sp).dataTracker();
 				if (dts!=null) {
 					dts.addObserver(widget);
-					dts.sendMetadata(dts.getInstance());
+//					dts.sendMetadata(dts.getInstance());
+					dts.sendMetadataTo((GridNode) widget, dts.getInstance());
 				}
 		}
 	}
