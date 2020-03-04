@@ -153,7 +153,7 @@ public class ComponentType
 				List<SpaceNode> sp = null;
 				if (arena!=null) {
 					sp = (List<SpaceNode>) get(arena.getChildren(),
-						selectZeroOrMany(hasTheLabel("space")));
+						selectZeroOrMany(hasTheLabel(N_SPACE.label())));
 					for (SpaceNode sn:sp)
 						spaces.put(initialUpperCase(sn.id()),sn);
 				}

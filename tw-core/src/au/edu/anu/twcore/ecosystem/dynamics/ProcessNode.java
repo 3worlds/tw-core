@@ -105,7 +105,7 @@ public class ProcessNode
 //			timeModel = (TimeModel)getParent();
 			// 1 - setting up simulation code execution 
 			DynamicList<? extends Node> applies = (DynamicList<? extends Node>) get(edges(Direction.OUT),
-				selectOneOrMany(hasTheLabel("appliesTo")),
+				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
 				edgeListEndNodes());
 			Node first = applies.getFirst();
 			// process applies to a set of categories
@@ -114,7 +114,7 @@ public class ProcessNode
 			else if (first.classId().equals(N_RELATIONTYPE.label()))
 				relation = (RelationType) first;
 			functions = (List<FunctionNode>) get(getChildren(),
-				selectZeroOrMany(hasTheLabel("function")));
+				selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
 			// space
 			ProcessSpaceEdge pse = (ProcessSpaceEdge) get(edges(Direction.OUT),
 				selectZeroOrOne(hasTheLabel(E_SPACE.label())));
