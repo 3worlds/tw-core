@@ -111,16 +111,16 @@ public abstract class AbstractDataTracker<T, M> extends AbstractGridNode impleme
 		return !observers.isEmpty();
 	}
 
-	@Override
-	public boolean hasObserver(DataReceiver<T, M> dr) {
-		return observers.contains(dr);
-	}
+//	@Override
+//	public boolean hasObserver(DataReceiver<T, M> dr) {
+//		return observers.contains(dr);
+//	}
 
 	public void setSender(int id) {
 		senderId = id;
 	}
 
-	// shouldn't these dummy methods be removed to force descendants to make a
+	// As this is an abstract class, shouldn't these dummy methods be removed to force descendants to make a
 	// decision about this?
 	@Override
 	public M getInstance() {

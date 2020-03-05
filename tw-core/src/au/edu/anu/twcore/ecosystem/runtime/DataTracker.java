@@ -98,7 +98,7 @@ public interface DataTracker<T, M> extends Observable<DataReceiver<T, M>>, Singl
 	 */
 	public boolean hasObservers();
 	
-	public boolean hasObserver(DataReceiver<T,M> dr);
+//	public boolean hasObserver(DataReceiver<T,M> dr);
 
 	public void updateTrackList();
 
