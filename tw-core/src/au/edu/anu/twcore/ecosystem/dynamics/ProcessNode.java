@@ -82,7 +82,7 @@ public class ProcessNode
 	private Map<Integer,TwProcess> processes = new HashMap<>();
 	private List<FunctionNode> functions = null;
 	
-	private SpaceNode space = null;
+	private SpaceNode spaceNode = null;
 	private double searchRadius = 0.0;
 
 	// default constructor
@@ -119,7 +119,7 @@ public class ProcessNode
 			ProcessSpaceEdge pse = (ProcessSpaceEdge) get(edges(Direction.OUT),
 				selectZeroOrOne(hasTheLabel(E_SPACE.label())));
 			if (pse!=null) {
-				space = (SpaceNode) pse.endNode();
+				spaceNode = (SpaceNode) pse.endNode();
 				searchRadius = (double) pse.properties().getPropertyValue(P_SPACE_SEARCHRADIUS.key());
 			}
 			sealed = true;
@@ -147,8 +147,8 @@ public class ProcessNode
 		AbstractProcess result = null;
 		TimeModel tm = (TimeModel) getParent();
 		Space<SystemComponent> sp = null;
-		if (space!=null)
-			sp = space.getInstance(index);
+		if (spaceNode!=null)
+			sp = spaceNode.getInstance(index);
 		if (categories!=null)
 			result = new ComponentProcess(ecosystem.getInstance(index),
 				categories,tm.getInstance(index),sp,searchRadius);
