@@ -76,7 +76,7 @@ public class SimpleDeployer extends Deployer {
 	@Override
 	public void waitProc() {
 		if (sim!=null)
-			sim.resetSimulation();
+			sim.reset();
 	}
 
 	@Override

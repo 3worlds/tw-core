@@ -35,7 +35,7 @@ public class RelationContainer
 	}
 	
 	@Override
-	public void reset() {
+	public void postProcess() {
 		relationsToAdd.clear();
 		relationsToRemove.clear();
 	}

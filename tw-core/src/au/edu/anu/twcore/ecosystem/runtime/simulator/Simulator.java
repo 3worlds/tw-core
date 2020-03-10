@@ -28,6 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
+import static fr.cnrs.iees.twcore.constants.SimulatorStatus.Final;
+import static fr.cnrs.iees.twcore.constants.SimulatorStatus.Initial;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +62,7 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -67,17 +71,17 @@ import fr.ens.biologie.generic.utils.Logging;
  * @author Jacques Gignoux - 29 août 2019
  *
  */
-public class Simulator {
+public class Simulator implements Resettable {
 	
 	// CLASSES
 	
 	/** a data tracker to send time data */
-	private class TimeTracker extends AbstractDataTracker<TimeData,Metadata> {
+	class TimeTracker extends AbstractDataTracker<TimeData,Metadata> {
 		private TimeTracker() {
 			super(DataMessageTypes.TIME);
 		}
 		// returns quickly if there are no observers - no point building a TimeData
-		private void sendData(long time) {
+		void sendData(long time) {
 			if (hasObservers()) {
 				TimeData output = new TimeData(status,id,metadata.type());
 				output.setTime(lastTime);
@@ -96,13 +100,13 @@ public class Simulator {
 	/** helper local field to build up and send metadata to data observers */
 	private Metadata metadata;
 	/** the list of timers (timeModels) in use in this simulator */
-	private List<Timer> timerList = null;
+	List<Timer> timerList = null;
 	/** the current time of each timer */
 	private long[] currentTimes;
 	/** a bit pattern uniquely identifying each timer  (NB: this is probably useless optimisation) */
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	/** the time origin */
-	private long startTime = 0L;
+	long startTime = 0L;
 	/** the last time for which a computation with done, ie the one just before current time */
 	protected long lastTime = 0L;
 	/** the stopping condition.
@@ -113,9 +117,9 @@ public class Simulator {
 	 * simultaneous time models */
 	private Map<Integer, List<List<TwProcess>>> processCallingOrder;
 	/** the timeTracker, sending time information to whoever is listening */
-	private TimeTracker timetracker; 
+	TimeTracker timetracker; 
 	/** container for all SystemComponents */
-	private EcosystemGraph ecosystem;
+	EcosystemGraph ecosystem;
 	/** simulator status */
 	private SimulatorStatus status = SimulatorStatus.Initial;
 	/** all data trackers used in this simulator, together with their metadata */
@@ -298,42 +302,67 @@ public class Simulator {
 		}
 	}
 	
-	// resets a simulation at its initial state
-	public void resetSimulation() {
-		log.info("START Simulator "+id+" reset");
-		// this to get all data trackers to send their metadata to their widgets
-		// I've removed this for now to see if we can just do this once, not every reset.
-//		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
-//			dte.getKey().sendMetadata(dte.getValue());
-		// now reset here
-		lastTime = startTime;
-		stoppingCondition.reset();		
-		status = SimulatorStatus.Initial;
+//	// resets a simulation at its initial state
+//	public void resetSimulation() {
+//		log.info("START Simulator "+id+" reset");
+//		// this to get all data trackers to send their metadata to their widgets
+//		// I've removed this for now to see if we can just do this once, not every reset.
+////		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
+////			dte.getKey().sendMetadata(dte.getValue());
+//		// now reset here
+//		lastTime = startTime;
+//		stoppingCondition.reset();		
+//		status = SimulatorStatus.Initial;
+//		for (Timer t:timerList)
+//			t.reset();
+//		timetracker.sendData(lastTime);
+//		ecosystem.reset(); // copies initial items back to runtime items
+//		for (Space<SystemComponent> sp:spaces) {
+//			sp.clear(); // clears all locations except those of initial items
+//			ecosystem.community().resetCoordinates(sp); // sends info to the space data trackers
+//		}
+//		log.info("END Simulator "+id+" reset");
+//	}
+
+	@Override
+	public void preProcess() {
+		status = Initial;
+		stoppingCondition.preProcess();
 		for (Timer t:timerList)
-			t.reset();
-		timetracker.sendData(lastTime);
-		ecosystem.reset(); // copies initial items back to runtime items
+			t.preProcess();
+		timetracker.sendData(startTime);
+		ecosystem.preProcess();
 		for (Space<SystemComponent> sp:spaces) {
 			sp.clear(); // clears all locations except those of initial items
 			ecosystem.community().resetCoordinates(sp); // sends info to the space data trackers
 		}
-		log.info("END Simulator "+id+" reset");
 	}
 
+	@Override
+	public void postProcess() {
+		status = Final;
+		lastTime = startTime;
+		stoppingCondition.postProcess();
+		for (Timer t:timerList)
+			t.postProcess();
+		ecosystem.postProcess();
+	}
+
+	
 	// returns true if stopping condition is met
 	public boolean stop() {
 		boolean finished = stoppingCondition.stop();
 		if (finished)
-			status = SimulatorStatus.Final;
+			status = Final;
 		return finished;
 	}
 	
 	public boolean isStarted() {
-		return (status != SimulatorStatus.Initial);
+		return (status != Initial);
 	}
 	
 	public boolean isFinished() {
-		return (status == SimulatorStatus.Final);
+		return (status == Final);
 	}
 	
 	public long currentTime() {

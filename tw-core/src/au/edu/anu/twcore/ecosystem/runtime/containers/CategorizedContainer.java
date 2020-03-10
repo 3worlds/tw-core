@@ -462,20 +462,57 @@ public abstract class CategorizedContainer<T extends Identity>
 	// Resettable methods
 
 	// NB: Recursive on sub-containers
+//	@Override
+//	public void reset() {
+//		items.clear();
+//		itemsToRemove.clear();
+//		itemsToAdd.clear();
+//		itemsToInitials.clear();
+//		for (T item : initialItems) {
+//			T c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
+//			items.put(c.id(), c);
+//			itemsToInitials.put(c.id(), item);
+//		}
+//		resetCounters();
+//		for (CategorizedContainer<T> sc : subContainers.values())
+//			sc.reset();
+//	}
+
+	// NB: Recursive on sub-containers
 	@Override
-	public void reset() {
-		items.clear();
-		itemsToRemove.clear();
-		itemsToAdd.clear();
-		itemsToInitials.clear();
+	public void preProcess() {
 		for (T item : initialItems) {
 			T c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
 			items.put(c.id(), c);
 			itemsToInitials.put(c.id(), item);
 		}
-		resetCounters();
 		for (CategorizedContainer<T> sc : subContainers.values())
-			sc.reset();
+			sc.preProcess();
+		resetCounters();
+	}
+
+	// NB: Recursive on sub-containers
+	@Override
+	public void postProcess() {
+		items.clear();
+		itemsToRemove.clear();
+		itemsToAdd.clear();
+		itemsToInitials.clear();
+		for (CategorizedContainer<T> sc : subContainers.values())
+			sc.postProcess();
+		resetCounters();
+	}
+
+	@Override
+	public void effectChanges() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clearVariables() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

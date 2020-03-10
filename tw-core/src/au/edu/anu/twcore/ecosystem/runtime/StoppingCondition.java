@@ -40,11 +40,6 @@ public interface StoppingCondition extends Resettable {
 
 	public boolean stop();
 	
-	@Override
-	public default void reset() {
-		// DEFAULT: nothing to do
-	}
-
 	public void attachSimulator(Simulator sim);
 
 	public Simulator simulator();

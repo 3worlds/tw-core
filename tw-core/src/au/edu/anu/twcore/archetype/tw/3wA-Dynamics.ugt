@@ -142,7 +142,7 @@ hasNode consequenceFunctionSpec
 	// recursive - consequence of consequence of ...
 	//hasParent = StringTable(([1]"function:"))
 	multiplicity = IntegerRange("0..*")
-	mustSatisfyQuery functionNameWithUppercaseQuery
+	mustSatisfyQuery functionNameWithUppercaseQuery2
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
 	mustSatisfyQuery functionMatchesWithParentFunctionTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ConsequenceMatchFunctionTypeQuery")
@@ -221,7 +221,7 @@ hasNode dataTrackerSpec
 		mustSatisfyQuery leafTableSpec
 			className = String("au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery")
 			propname = String("dataElementType")
-		hasProperty trackTableIndexSpec
+		hasProperty trackTableIndexSpec2
 			hasName = String("index")
 			type = String("TrackerType")
 			multiplicity = IntegerRange("1..1")

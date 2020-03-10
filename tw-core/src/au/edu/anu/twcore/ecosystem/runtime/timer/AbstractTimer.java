@@ -59,7 +59,7 @@ public abstract class AbstractTimer implements Timer {
 	}
 
 	@Override
-	public void reset() {
+	public void preProcess() {
 		lastTime = 0L;
 	}
 

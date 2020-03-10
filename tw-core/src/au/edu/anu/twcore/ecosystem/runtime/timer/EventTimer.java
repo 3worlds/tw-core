@@ -74,12 +74,20 @@ public class EventTimer extends AbstractTimer {
 		eq.poll();
 	}
 	
+//	@Override
+//	public void reset() {
+//		super.reset();
+//		eq.clearQueue();
+//		queueHead = null;
+//	}
+	
 	@Override
-	public void reset() {
-		super.reset();
+	public void postProcess() {
+		super.postProcess();
 		eq.clearQueue();
 		queueHead = null;
 	}
+
 	public TimeEvent getLastEvent() {
 		return queueHead;
 	}
