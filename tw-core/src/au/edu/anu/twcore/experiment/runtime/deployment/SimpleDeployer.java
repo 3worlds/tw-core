@@ -76,7 +76,7 @@ public class SimpleDeployer extends Deployer {
 	@Override
 	public void waitProc() {
 		if (sim!=null)
-			sim.reset();
+			sim.preProcess();
 	}
 
 	@Override
@@ -110,8 +110,15 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void quitProc() {
+		// open dialog box so that user can check everything is ok before quitting
 		if (runnable != null)
 			runnable.stop();
+	}
+
+	@Override
+	public void resetProc() {
+		if (sim!=null)
+			sim.postProcess();
 	}
 
 	

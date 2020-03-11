@@ -34,6 +34,7 @@ import java.util.List;
 import au.edu.anu.twcore.experiment.runtime.deployment.FinishProcedure;
 import au.edu.anu.twcore.experiment.runtime.deployment.PauseProcedure;
 import au.edu.anu.twcore.experiment.runtime.deployment.QuitProcedure;
+import au.edu.anu.twcore.experiment.runtime.deployment.ResetProcedure;
 import au.edu.anu.twcore.experiment.runtime.deployment.RunProcedure;
 import au.edu.anu.twcore.experiment.runtime.deployment.StepProcedure;
 import au.edu.anu.twcore.experiment.runtime.deployment.WaitProcedure;
@@ -65,16 +66,16 @@ public enum SimulatorStates {
 		running.state.addTransition(new Transition(pausing.state,pause.event()));
 		running.state.addTransition(new Transition(finished.state,finalise.event()));
 		stepping.state.addTransition(new Transition(running.state,goOn.event()));
-		stepping.state.addTransition(new Transition(waiting.state,reset.event()));
+		stepping.state.addTransition(new Transition(waiting.state,reset.event(),new ResetProcedure()));
 		stepping.state.addTransition(new Transition(finished.state,finalise.event()));
 		stepping.state.addTransition(new Transition(quitting.state,quit.event()));
 		stepping.state.addTransition(new Transition(stepping.state,step.event()));
 		pausing.state.addTransition(new Transition(running.state,goOn.event()));
 		pausing.state.addTransition(new Transition(stepping.state,step.event()));
-		pausing.state.addTransition(new Transition(waiting.state,reset.event()));
+		pausing.state.addTransition(new Transition(waiting.state,reset.event(),new ResetProcedure()));
 		pausing.state.addTransition(new Transition(quitting.state,quit.event()));
 		finished.state.addTransition(new Transition(quitting.state,quit.event()));
-		finished.state.addTransition(new Transition(waiting.state,reset.event()));
+		finished.state.addTransition(new Transition(waiting.state,reset.event(),new ResetProcedure()));
 	}
 
 	private final State state;

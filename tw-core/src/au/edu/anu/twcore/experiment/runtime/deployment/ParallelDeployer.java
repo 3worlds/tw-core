@@ -81,4 +81,10 @@ public class ParallelDeployer extends Deployer {
 
 	}
 
+	@Override
+	public void resetProc() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

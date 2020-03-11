@@ -41,5 +41,6 @@ public interface DeployerProcedures {
 	public void finishProc();
 	public void pauseProc();
 	public void quitProc();
+	public void resetProc();
 
 }

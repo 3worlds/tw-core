@@ -116,6 +116,7 @@ public class ProcessNode
 			functions = (List<FunctionNode>) get(getChildren(),
 				selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
 			// space
+			// TODO: component processes may also refer to a space - how to find it ???
 			ProcessSpaceEdge pse = (ProcessSpaceEdge) get(edges(Direction.OUT),
 				selectZeroOrOne(hasTheLabel(E_SPACE.label())));
 			if (pse!=null) {

@@ -54,9 +54,7 @@ public abstract class Deployer
 		implements DeployerProcedures	{
 
 	public Deployer() {
-		// swapping these lines means stateMachine().getCurrentState())==null in any controller?? - Ian
-		//super(new Transition(waiting.state(),initialise.event()),stateList());
-        super(new Transition(waiting.state(),reset.event()),stateList());
+		super(new Transition(waiting.state(),initialise.event()),stateList());
 	}
 
 	public void attachSimulator(Simulator sim) {
