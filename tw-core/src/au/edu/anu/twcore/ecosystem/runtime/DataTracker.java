@@ -32,6 +32,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.rvgrid.observer.Observable;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
+import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.Singleton;
 
 /**
@@ -58,7 +59,8 @@ import fr.ens.biologie.generic.Singleton;
  * @author Jacques Gignoux - 3 sept. 2019
  *
  */
-public interface DataTracker<T, M> extends Observable<DataReceiver<T, M>>, Singleton<M> {
+public interface DataTracker<T, M> 
+		extends Observable<DataReceiver<T, M>>, Singleton<M>, Resettable {
 
 	/**
 	 * Removes an observer from this data tracker's list
@@ -103,5 +105,6 @@ public interface DataTracker<T, M> extends Observable<DataReceiver<T, M>>, Singl
 	public void updateTrackList();
 
 	public void removeTrackedItem(SystemComponent wasTracked);
-
+	
+	
 }

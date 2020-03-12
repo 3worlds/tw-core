@@ -333,7 +333,6 @@ public class Simulator implements Resettable {
 		timetracker.sendData(startTime);
 		ecosystem.preProcess();
 		for (Space<SystemComponent> sp:spaces) {
-			sp.clear(); // clears all locations except those of initial items
 			ecosystem.community().resetCoordinates(sp); // sends info to the space data trackers
 		}
 	}
@@ -346,6 +345,8 @@ public class Simulator implements Resettable {
 		for (Timer t:timerList)
 			t.postProcess();
 		ecosystem.postProcess();
+		for (Space<SystemComponent> sp:spaces)
+			sp.clear(); // clears all locations except those of initial items
 	}
 
 	

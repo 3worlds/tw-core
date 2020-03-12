@@ -129,4 +129,9 @@ public abstract class AbstractDataTracker<T, M> extends AbstractGridNode impleme
 		// do nothing - for descendants
 	}
 
+	@Override
+	public void postProcess() {
+		// send a reset message to all observer widgets
+	}
+
 }
