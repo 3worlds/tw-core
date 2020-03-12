@@ -188,7 +188,7 @@ public class ComponentProcess
 							newRecruit.autoVar().writeDisable();
 							// user-defined carry-overs
 							for (ChangeOtherStateFunction func : function.getConsequences()) {
-								HierarchicalContext otherContext = new HierarchicalContext();
+								HierarchicalContext otherContext = focalContext.clone();
 								otherContext.groupParameters = recruitContainer.parameters();
 								otherContext.groupVariables = recruitContainer.variables();
 								otherContext.groupPopulationData = recruitContainer.populationData();
@@ -221,9 +221,9 @@ public class ComponentProcess
 					container.removeItem(focal); // safe - delayed removal
 					// also remove from space !!!
 					for (Space<SystemComponent> space:((SystemFactory)focal.membership()).spaces()) {
-						space.unlocate(focal);
-						if (spTracker!=null)
-							spTracker.removeItem(currentStatus,focalContext.buildItemId(focal.id()));
+						space.unlocate(focal);						
+						if (space.dataTracker()!=null)
+							space.dataTracker().removeItem(currentStatus,focalContext.buildItemId(focal.id()));
 					}
 					// remove from tracklist if dead - safe, data sending has already been made
 					for (DataTracker0D tracker:tsTrackers) 
@@ -285,7 +285,7 @@ public class ComponentProcess
 						HierarchicalContext newBornContext = null;
 						if ((!function.getChangeOtherStateConsequences().isEmpty()) |
 								(!((SystemFactory)newBorn.membership()).spaces().isEmpty())) {
-							newBornContext = new HierarchicalContext();
+							newBornContext = focalContext.clone();
 							newBornContext.groupParameters = nbs.container.parameters();
 							newBornContext.groupVariables = nbs.container.variables();
 							newBornContext.groupPopulationData = nbs.container.populationData();
@@ -310,8 +310,8 @@ public class ComponentProcess
 								newLocation = space.defaultLocation();
 							}
 							space.locate(newBorn,newLocation);	
-							if (spTracker!=null)
-								spTracker.recordItem(currentStatus,newLocation,
+							if (space.dataTracker()!=null)
+								space.dataTracker().recordItem(currentStatus,newLocation,
 									newBornContext.buildItemId(newBorn.id()));
 						}
 						if (function.relateToOther())

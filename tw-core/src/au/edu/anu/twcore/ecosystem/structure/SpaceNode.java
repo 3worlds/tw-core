@@ -20,7 +20,9 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
@@ -78,7 +80,8 @@ public class SpaceNode
 			selectZeroOrOne(hasTheLabel(E_USERNG.label())),
 			endNode());
 		// if at least one widget is listening to this space, add a datatracker to space
-		List<Edge> l = (List<Edge>) get(edges(Direction.IN),selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())));
+		List<Edge> l = (List<Edge>) get(edges(Direction.IN),
+			selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())));
 		attachDataTrackerToSpace = !l.isEmpty();
 		seal();
 	}
@@ -91,8 +94,19 @@ public class SpaceNode
 	private Space<SystemComponent> makeSpace(int id) {
 		Space<SystemComponent> result = null;
 		SpaceDataTracker dt = null;
-		if (attachDataTrackerToSpace)
-			dt = new SpaceDataTracker(id,properties());
+		if (attachDataTrackerToSpace) {
+			// weird: bug fix: attach time metadata to data tracker ???
+			// space <- arena <- structure <- system -> dynamics -> timeline
+			ReadOnlyDataHolder timeLine = (ReadOnlyDataHolder) get(getParent().getParent().getParent().getChildren(),
+				selectOne(hasTheLabel(N_DYNAMICS.label())),
+				children(),
+				selectOne(hasTheLabel(N_TIMELINE.label())));
+			ExtendablePropertyList l = new ExtendablePropertyListImpl();
+			l.addProperties(timeLine.properties());
+			l.addProperties(properties());
+//			dt = new SpaceDataTracker(id,properties());
+			dt = new SpaceDataTracker(id,l);
+		}
 		switch (stype) {
 			case continuousFlatSurface:
 				Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
@@ -151,7 +165,7 @@ public class SpaceNode
 	public void attachSpaceWidget(DataReceiver<SpaceData,Metadata> widget) {
 		for (Space<SystemComponent> sp:spaces.values()) 
 			if (sp instanceof SingleDataTrackerHolder) {
-				SpaceDataTracker dts = (SpaceDataTracker)((SingleDataTrackerHolder<?>) sp).dataTracker();
+				SpaceDataTracker dts = sp.dataTracker();
 				if (dts!=null) {
 					dts.addObserver(widget);
 //					dts.sendMetadata(dts.getInstance());

@@ -88,4 +88,22 @@ public class HierarchicalContext {
 		return items.toArray(new String[items.size()]);
 	}
 
+	protected HierarchicalContext clone() {
+		HierarchicalContext result = new HierarchicalContext();
+		result.ecosystemName = ecosystemName;
+		result.ecosystemParameters = ecosystemParameters;
+		result.ecosystemPopulationData = ecosystemPopulationData;
+		result.ecosystemVariables = ecosystemVariables;
+		result.groupName = groupName;
+		result.groupParameters = groupParameters;
+		result.groupVariables = groupVariables;
+		result.groupPopulationData = groupPopulationData;
+		result.lifeCycleName = lifeCycleName;
+		result.lifeCycleParameters = lifeCycleParameters;
+		result.lifeCycleVariables = lifeCycleVariables;
+		result.lifeCyclePopulationData = lifeCyclePopulationData;
+		return result;
+	}
+	
+	
 }

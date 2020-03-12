@@ -2,6 +2,9 @@ package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
 
+import au.edu.anu.twcore.data.runtime.Metadata;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.rngFactory.RngHolder;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
@@ -16,7 +19,8 @@ import fr.cnrs.iees.uit.space.Point;
  * @author Jacques Gignoux - 28 janv. 2020
  *
  */
-public interface Space<T extends Located> extends RngHolder {
+public interface Space<T extends Located> 
+		extends RngHolder,SingleDataTrackerHolder<Metadata> {
 
 	/**
 	 * Every space is contained within a n-dim bounding box. This function returns
@@ -142,5 +146,17 @@ public interface Space<T extends Located> extends RngHolder {
 	 * clears all items EXCEPT those that were located with locateUnclearable
 	 */
 	public void clear();
+
+	// default: no tracking assumed
+	@Override
+	default SpaceDataTracker dataTracker() {
+		return null;
+	}
+
+	// default: no tracking assumed
+	@Override
+	default Metadata metadata() {
+		return null;
+	}
 	
 }

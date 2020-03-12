@@ -29,7 +29,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.LinkedList;
-import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
@@ -112,12 +111,11 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	
 	// sets the coordinates of components initially present
 	// recurses on sub-containers
-	@SuppressWarnings("unchecked")
 	public void resetCoordinates(Space<SystemComponent> space) {
 		SpaceDataTracker tracker = null;
 		if (space instanceof SingleDataTrackerHolder)
-			if (((SingleDataTrackerHolder<?>) space).dataTracker()!=null)
-				tracker = (SpaceDataTracker)((SingleDataTrackerHolder<Metadata>)space).dataTracker();
+			if (space.dataTracker()!=null)
+				tracker = space.dataTracker();
 		LinkedList<String> labels = new LinkedList<>();
 		labels.add(id());
 		resetCoordinates(space,labels,tracker);

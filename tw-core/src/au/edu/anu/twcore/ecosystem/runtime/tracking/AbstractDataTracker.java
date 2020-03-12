@@ -91,11 +91,7 @@ public abstract class AbstractDataTracker<T, M> extends AbstractGridNode impleme
 		sendMessage(messageType, data);
 	}
 
-//	@Override
-//	public final void sendMetadata(M meta) {
-//		sendMessage(DataMessageTypes.METADATA, meta);
-//	}
-
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public void sendMetadataTo(GridNode gn, M meta) {
 		if (observers.contains(gn)) {
@@ -110,11 +106,6 @@ public abstract class AbstractDataTracker<T, M> extends AbstractGridNode impleme
 	public boolean hasObservers() {
 		return !observers.isEmpty();
 	}
-
-//	@Override
-//	public boolean hasObserver(DataReceiver<T, M> dr) {
-//		return observers.contains(dr);
-//	}
 
 	public void setSender(int id) {
 		senderId = id;
