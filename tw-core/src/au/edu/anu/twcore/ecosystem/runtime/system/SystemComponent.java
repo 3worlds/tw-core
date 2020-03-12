@@ -170,7 +170,7 @@ public class SystemComponent extends ALDataNode implements DynamicSystem, Clonea
 	@SuppressWarnings("unchecked")
 	public Iterable<SystemRelation> getRelations(String relationType) {
 		List<SystemRelation> list = (List<SystemRelation>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasProperty("type",relationType)));
+			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)));
 //		List<SystemRelation> list = new ArrayList<>();
 //		for (ALEdge e:edges(Direction.OUT)) {
 //			SystemRelation r = (SystemRelation) e;

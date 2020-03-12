@@ -302,28 +302,7 @@ public class Simulator implements Resettable {
 		}
 	}
 	
-//	// resets a simulation at its initial state
-//	public void resetSimulation() {
-//		log.info("START Simulator "+id+" reset");
-//		// this to get all data trackers to send their metadata to their widgets
-//		// I've removed this for now to see if we can just do this once, not every reset.
-////		for (Map.Entry<DataTracker<?,Metadata>,Metadata> dte:trackers.entrySet())
-////			dte.getKey().sendMetadata(dte.getValue());
-//		// now reset here
-//		lastTime = startTime;
-//		stoppingCondition.reset();		
-//		status = SimulatorStatus.Initial;
-//		for (Timer t:timerList)
-//			t.reset();
-//		timetracker.sendData(lastTime);
-//		ecosystem.reset(); // copies initial items back to runtime items
-//		for (Space<SystemComponent> sp:spaces) {
-//			sp.clear(); // clears all locations except those of initial items
-//			ecosystem.community().resetCoordinates(sp); // sends info to the space data trackers
-//		}
-//		log.info("END Simulator "+id+" reset");
-//	}
-
+	// postProcess() + preProcess() = reset a simulation at its initial state
 	@Override
 	public void preProcess() {
 		status = Initial;

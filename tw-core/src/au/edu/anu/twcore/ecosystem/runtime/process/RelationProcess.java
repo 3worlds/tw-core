@@ -30,6 +30,9 @@ package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import au.edu.anu.twcore.ecosystem.Ecosystem;
+import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
@@ -37,9 +40,16 @@ import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+
+import static au.edu.anu.twcore.ecosystem.structure.RelationType.predefinedRelationTypes.returnsTo;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
 /**
@@ -61,60 +71,93 @@ public class RelationProcess extends AbstractRelationProcess {
     private List<ChangeRelationStateFunction> CRfunctions = 
     	new LinkedList<ChangeRelationStateFunction>();
 
+	// local variables for looping
+    // actually all the proper looping code is in SearchProcess and could be moved up to AbstractRelationProcess
+	private HierarchicalContext focalContext = new HierarchicalContext();
+	private HierarchicalContext otherContext = new HierarchicalContext();
+	private LifeCycle lifeCycle = null;
+	private SystemFactory focalGroup = null;
+	private SystemFactory otherGroup = null;
+	private ComponentContainer lifeCycleContainer = null;
+    
+    
 	public RelationProcess(ComponentContainer world, RelationContainer relation, 
 			Timer timer, Space<SystemComponent> space, double searchR) {
 		super(world,relation,timer,space,searchR);
 	}
 
-//	@Override
-//	public void execute(SimulatorStatus status, long t, long dt) {
-//		// loop on this:
-//		Iterable<Edge> relations = myRelation.relations();
-//		for (Edge e:relations) {
-//			SystemComponent focal = (SystemComponent) e.startNode();
-//			SystemComponent target = (SystemComponent) e.endNode();
-//			focal.currentState().writeDisable();
-//			target.currentState().writeDisable();
-//			focal.nextState().writeDisable();
-//			target.nextState().writeEnable();
-//			// change state of another SystemComponent
-//			for (ChangeOtherStateFunction function:COSfunctions) {
-//				function.changeOtherState(t, dt, focal, target);
-//			}			
-//			target.nextState().writeDisable();
-//			// change stage of another SystemComponent
-//			for (ChangeOtherCategoryDecisionFunction function:COCfunctions) {
-//				String result = function.changeCategory(t, dt, focal, target);
-//				if (result!=null) {
-//					SystemComponent newRecruit = target.lifeCycle().newRecruit(target,result);
-//					for (ChangeOtherStateFunction func:function.getConsequences())
-//						func.changeOtherState(t, dt, target, newRecruit);
-//					// TODO: there may be changes due to focal ??
-//					tagSystemForDeletion(target);
-//					tagSystemForInsertion(newRecruit);
-//				}
-//			}
-//			// delete another SystemComponent
-//			for (DeleteOtherDecisionFunction function:DOfunctions) {
-//				if (function.delete(t, dt, focal, target)) {
-//					focal.nextState().writeEnable();
-//					for (ChangeOtherStateFunction func:function.getConsequences())
-//						func.changeOtherState(t, dt, target, focal);
-//					tagSystemForDeletion(target);	
-//				}
-//			}
-//			// maintain a relation
-//			for (MaintainRelationDecisionFunction function:MRfunctions) {
-//				if (!function.maintainRelation(t, dt, e, focal, target))
-//					myRelation.tagRelationForDeletion(e);
-//			}
-//			// change relation state
-//			//TODO: make Edge write enableded<SystemComponent>
-//			for (ChangeRelationStateFunction function:CRfunctions) {
-//				function.changeRelationState(t, dt, focal, target, e);
-//			}
-//		}
-//	}
+	private void executeFunctions(CategorizedContainer<SystemComponent> container, double t, double dt) {
+		for (SystemComponent focal:container.items()) {
+			for (SystemRelation sr:focal.getRelations()) { // this gets only out edges
+				if (sr.membership().to().equals(to())) {
+					SystemComponent other = (SystemComponent) sr.endNode();
+					// cannot get the context for other because no access to its container!
+					// that's badly wrong. Would be much more efficient to loop on relations!
+					
+					// todo: data trackers ? tracking relations ?
+					
+					for (ChangeOtherCategoryDecisionFunction function:COCfunctions) {
+						// TODO
+					}
+					if (other.currentState()!=null) // otherwise no point computing changes
+				        for (ChangeOtherStateFunction function:COSfunctions) {
+				        	function.setFocalContext(focalContext);
+				        	function.setOtherContext(otherContext);
+				        	focal.currentState().writeDisable();
+				        	focal.nextState().writeDisable();
+				        	other.currentState().writeDisable();
+				        	other.nextState().writeEnable();
+				        	function.changeOtherState(t, dt, focal, other);
+				        	other.nextState().writeDisable();
+			        }
+			        for (DeleteOtherDecisionFunction function:DOfunctions) {
+			        	function.setFocalContext(focalContext);
+			        	function.setOtherContext(otherContext);
+			        	if (function.delete(t, dt, focal, other)) {
+			        		// M***! missing access to otherContainer !!
+			        		// otherContainer.removeItem(other);
+							for (Space<SystemComponent> space:((SystemFactory)other.membership()).spaces()) {
+								space.unlocate(other);						
+								if (space.dataTracker()!=null)
+									// PB here: otherContext unknown!!
+									space.dataTracker().removeItem(currentStatus,otherContext.buildItemId(other.id()));
+							}
+							// remove from tracklist if dead - safe, data sending has already been made
+							for (DataTracker0D tracker:tsTrackers) 
+								if (tracker.isTracked(other))
+									tracker.removeTrackedItem(other);
+							// if present, spreads some values to other components 
+							// (e.g. "decomposition", or "erosion")
+							if (!function.getConsequences().isEmpty())
+								// TODO: the "returnsTo" relation type must be predefined somewhere
+								for (SystemRelation to:other.getRelations(returnsTo.key())) {
+									SystemComponent anotherOther = (SystemComponent) to.endNode();
+									for (ChangeOtherStateFunction consequence:function.getConsequences()) {
+										function.setFocalContext(otherContext); // WRONG !!
+										consequence.changeOtherState(t, dt, other, anotherOther);
+									}
+							}
+			        	}
+			        }
+			        for (MaintainRelationDecisionFunction function:MRfunctions) {
+			        	function.setFocalContext(focalContext);
+			        	function.setOtherContext(otherContext);
+			        	if (!function.maintainRelation(t, dt, sr, focal, other)) {
+			        		// TODO: find the relationcontainer.
+			        		// RelationContainer.removeItem(sr);
+			        	}
+			        	// no consequences
+			        }
+			        for (ChangeRelationStateFunction function:CRfunctions) {
+			        	function.setFocalContext(focalContext);
+			        	function.setOtherContext(otherContext);
+			        	function.changeRelationState(t, dt, focal, other, sr);
+			        	// no consequences
+			        }
+				}
+			}
+		}
+	}
 
 	@Override
 	public void addFunction(TwFunction function) {
@@ -134,7 +177,30 @@ public class RelationProcess extends AbstractRelationProcess {
 
 	@Override
 	protected void loop(CategorizedContainer<SystemComponent> container, double t, double dt) {
-		// TODO Auto-generated method stub
+		if (container.categoryInfo() instanceof Ecosystem) {
+			setContext(focalContext,container);
+		}
+		else if (container.categoryInfo() instanceof LifeCycle) {
+			setContext(focalContext,container);
+			lifeCycle = (LifeCycle) container.categoryInfo();
+			lifeCycleContainer = (ComponentContainer) container;
+		}
+		else if (container.categoryInfo() instanceof SystemFactory) 
+			if (container.categoryInfo().belongsTo(focalCategories)) {
+				setContext(focalContext,container);
+				focalGroup = (SystemFactory) container.categoryInfo();
+//				DISABLED FOR WIP
+//				executeFunctions(container,t,dt);
+				// track group state
+				for (DataTracker0D tracker:tsTrackers)
+					if (tracker.isTracked(container)) {
+						tracker.recordItem(focalContext.buildItemId(null));
+						tracker.record(currentStatus,container.populationData());
+				}
+				focalContext.clear();
+		}
+		for (CategorizedContainer<SystemComponent> subc:container.subContainers())
+			loop(subc,t,dt);
 		
 	}
 

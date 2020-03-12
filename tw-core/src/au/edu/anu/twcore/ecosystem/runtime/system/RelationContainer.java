@@ -80,5 +80,9 @@ public class RelationContainer
 	public Categorized<SystemComponent> to() {
 		return relationType.to();
 	}
+	
+	public RelationType type() {
+		return relationType;
+	}
 
 }

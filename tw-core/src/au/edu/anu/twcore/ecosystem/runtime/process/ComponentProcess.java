@@ -148,6 +148,8 @@ public class ComponentProcess
 				for (ChangeStateFunction function : CSfunctions) {
 					function.setFocalContext(focalContext);
 					function.changeState(t, dt, focal);
+					// TODO: function.changeState(t,dt,focal.currentState(),focal.nextState(),
+					//		focalContext.ecosystemPopulationData(),focalContext.groupPopulationData()...
 				}
 				focal.nextState().writeDisable();
 			}

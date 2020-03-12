@@ -127,13 +127,6 @@ public class EcosystemGraph
 		components.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
 	}
 
-//	@Override
-//	public void reset() {
-//		components.reset();
-//		for (RelationContainer rc: relations.values())
-//			rc.reset();		
-//	}
-
 	@Override
 	public void preProcess() {
 		components.preProcess();

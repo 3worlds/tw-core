@@ -64,11 +64,11 @@ public abstract class AbstractProcess
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
     private ComponentContainer ecosystem = null;
     // dataTrackers - common to all process types
+    // NB: space data trackers are contained into spaces
 	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
 	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
 	protected Timer timer = null;
 	protected Space<SystemComponent> space = null;
-//	protected SpaceDataTracker spTracker = null;
 	protected double searchRadius = 0.0;
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
@@ -80,10 +80,6 @@ public abstract class AbstractProcess
     	this.timer = timer;
     	this.space = space;
     	searchRadius = searchR;
-//    	if (this.space!=null) {
-//    		if (space instanceof SingleDataTrackerHolder)
-//    			spTracker = (SpaceDataTracker) ((SingleDataTrackerHolder<Metadata>)space).dataTracker();
-//    	}
     }
 
 	@Override
@@ -91,8 +87,6 @@ public abstract class AbstractProcess
 		sealed = true;
     	trackers.addAll(tsTrackers);
     	trackers.addAll(mapTrackers);
-//    	if (spTracker!=null)
-//    		trackers.add(spTracker);
  		return this;
 	}
 
@@ -136,8 +130,6 @@ public abstract class AbstractProcess
 		currentStatus = status;
 		for (DataTracker0D tracker:tsTrackers)
 			tracker.recordTime(t);	
-//		if (spTracker!=null)
-//			spTracker.recordTime(t);
 		if (space!=null)
 			if (space.dataTracker()!=null)
 				space.dataTracker().recordTime(t);
