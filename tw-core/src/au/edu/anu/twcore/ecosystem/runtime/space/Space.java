@@ -2,10 +2,6 @@ package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
 
-import au.edu.anu.twcore.data.runtime.Metadata;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
-import au.edu.anu.twcore.rngFactory.RngHolder;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
@@ -19,8 +15,7 @@ import fr.cnrs.iees.uit.space.Point;
  * @author Jacques Gignoux - 28 janv. 2020
  *
  */
-public interface Space<T extends Located> 
-		extends RngHolder,SingleDataTrackerHolder<Metadata> {
+public interface Space<T> {
 
 	/**
 	 * Every space is contained within a n-dim bounding box. This function returns
@@ -59,18 +54,20 @@ public interface Space<T extends Located>
 	 * @param focal the system to add
 	 *
 	 */
-	public void locate(T focal, double...location);
+	public Location locate(T focal, double...location);
 	
-	public void locate(T focal, Point location);
+	public Location locate(T focal, Point location);
 	
-	/**
-	 * Sets the location of unclearable items - these locations are not clearable through the 
-	 * clear() method and will be kept forever.
-	 * 
-	 * @param focal
-	 * @param location
-	 */
-	public void locateUnclearable(T focal, double...location);
+	public Location locate(T focal, Location location);
+	
+//	/**
+//	 * Sets the location of unclearable items - these locations are not clearable through the 
+//	 * clear() method and will be kept forever.
+//	 * 
+//	 * @param focal
+//	 * @param location
+//	 */
+//	public void locateUnclearable(T focal, double...location);
 	
 	/**
 	 * Finds the location of an item in this space
@@ -78,7 +75,8 @@ public interface Space<T extends Located>
 	 * @param focal
 	 * @return
 	 */
-	public Point locationOf(T focal);
+//	public Point locationOf(T focal);
+	public Location locationOf(T focal);
 	
 	/**
 	 * Removes the system component focal from this space.
@@ -146,17 +144,20 @@ public interface Space<T extends Located>
 	 * clears all items EXCEPT those that were located with locateUnclearable
 	 */
 	public void clear();
-
-	// default: no tracking assumed
-	@Override
-	default SpaceDataTracker dataTracker() {
-		return null;
-	}
-
-	// default: no tracking assumed
-	@Override
-	default Metadata metadata() {
-		return null;
-	}
+	
+	/**
+	 * return a location from x coordinates
+	 * @param x
+	 * @return
+	 */
+	public Location makeLocation(double...x);
+	
+	/**
+	 * return a location from a point
+	 * @param point
+	 * @return
+	 */
+	public Location makeLocation(Point point);
+	
 	
 }

@@ -41,7 +41,8 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
@@ -58,7 +59,8 @@ import fr.ens.biologie.generic.Sealable;
  *
  */
 public abstract class AbstractProcess 
-		implements TwProcess, Sealable, MultipleDataTrackerHolder<Metadata>, Spatialized<SystemComponent> {
+		implements TwProcess, Sealable, MultipleDataTrackerHolder<Metadata>, 
+			Spatialized<DynamicSpace<SystemComponent,LocatedSystemComponent>> {
 
 	private boolean sealed = false;
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
@@ -68,12 +70,13 @@ public abstract class AbstractProcess
 	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
 	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
 	protected Timer timer = null;
-	protected Space<SystemComponent> space = null;
+	protected DynamicSpace<SystemComponent,LocatedSystemComponent> space = null;
 	protected double searchRadius = 0.0;
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
     
-	public AbstractProcess(ComponentContainer world, Timer timer, Space<SystemComponent> space,
+	public AbstractProcess(ComponentContainer world, Timer timer, 
+			DynamicSpace<SystemComponent,LocatedSystemComponent> space,
     		double searchR) {
     	super();
     	ecosystem = world;
@@ -96,7 +99,7 @@ public abstract class AbstractProcess
 	}
 	
 	@Override
-	public Space<SystemComponent> space() {
+	public DynamicSpace<SystemComponent,LocatedSystemComponent> space() {
 		return space;
 	}
 	

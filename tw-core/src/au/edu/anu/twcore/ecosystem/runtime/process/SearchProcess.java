@@ -9,6 +9,8 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.RelateToDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -42,7 +44,7 @@ public class SearchProcess
 	private ComponentContainer otherGroupContainer = null;
 	
 	public SearchProcess(ComponentContainer world, RelationContainer relation, 
-			Timer timer, Space<SystemComponent> space,double searchR) {
+			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space,double searchR) {
 		super(world, relation, timer, space, searchR);
 	}
 

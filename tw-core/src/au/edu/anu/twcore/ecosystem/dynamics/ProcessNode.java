@@ -36,7 +36,8 @@ import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.RelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
@@ -147,7 +148,7 @@ public class ProcessNode
 	private TwProcess makeProcess(int index) {
 		AbstractProcess result = null;
 		TimeModel tm = (TimeModel) getParent();
-		Space<SystemComponent> sp = null;
+		DynamicSpace<SystemComponent,LocatedSystemComponent> sp = null;
 		if (spaceNode!=null)
 			sp = spaceNode.getInstance(index);
 		if (categories!=null)

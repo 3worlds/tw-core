@@ -10,8 +10,9 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.RngNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.FlatSurface;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.SquareGrid;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
@@ -45,10 +46,10 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  */
 public class SpaceNode 
 		extends InitialisableNode 
-		implements LimitedEdition<Space<SystemComponent>>, Sealable {
+		implements LimitedEdition<DynamicSpace<SystemComponent,LocatedSystemComponent>>, Sealable {
 	
 	private boolean sealed = false;
-	private Map<Integer,Space<SystemComponent>> spaces = new HashMap<>();
+	private Map<Integer,DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces = new HashMap<>();
 	private SpaceType stype = null;
 	private EdgeEffects eecorr = null;
 	// the name of coordinates relative to this space (eg "<this.id()>.x")
@@ -91,8 +92,8 @@ public class SpaceNode
 		return N_SPACE.initRank();
 	}
 	
-	private Space<SystemComponent> makeSpace(int id) {
-		Space<SystemComponent> result = null;
+	private DynamicSpace<SystemComponent,LocatedSystemComponent> makeSpace(int id) {
+		DynamicSpace<SystemComponent,LocatedSystemComponent> result = null;
 		SpaceDataTracker dt = null;
 		if (attachDataTrackerToSpace) {
 			// weird: bug fix: attach time metadata to data tracker ???
@@ -137,7 +138,7 @@ public class SpaceNode
 	}
 
 	@Override
-	public Space<SystemComponent> getInstance(int id) {
+	public DynamicSpace<SystemComponent,LocatedSystemComponent> getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!spaces.containsKey(id))
@@ -163,7 +164,7 @@ public class SpaceNode
 	}
 	
 	public void attachSpaceWidget(DataReceiver<SpaceData,Metadata> widget) {
-		for (Space<SystemComponent> sp:spaces.values()) 
+		for (DynamicSpace<SystemComponent,LocatedSystemComponent> sp:spaces.values()) 
 			if (sp instanceof SingleDataTrackerHolder) {
 				SpaceDataTracker dts = sp.dataTracker();
 				if (dts!=null) {

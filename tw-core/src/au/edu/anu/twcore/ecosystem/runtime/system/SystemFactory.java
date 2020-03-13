@@ -31,6 +31,8 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.RelocateFunction;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -66,7 +68,7 @@ public class SystemFactory
 	private TwData driverTemplate = null;
 	private TwData decoratorTemplate = null;
 	private Map<String, Integer> propertyMap = new HashMap<String, Integer>();
-	private Map<Space<SystemComponent>,RelocateFunction> Rfunctions = new HashMap<>();
+	private Map<DynamicSpace<SystemComponent,LocatedSystemComponent>,RelocateFunction> Rfunctions = new HashMap<>();
 
 	/**
 	 * Constructor. All arguments to constructors are cloned or copied if immutable
@@ -78,7 +80,7 @@ public class SystemFactory
 	 */
 	public SystemFactory(TwData drv, TwData dec, boolean perm,
 			SortedSet<Category> categories, String categoryId, 
-			Map<Space<SystemComponent>,RelocateFunction> spacelocators) {
+			Map<DynamicSpace<SystemComponent,LocatedSystemComponent>,RelocateFunction> spacelocators) {
 		super();
 //		if (par!=null)
 //			parameterTemplate = par.clone();
@@ -97,7 +99,7 @@ public class SystemFactory
 		permanent = perm;
 		this.categories.addAll(categories);
 		this.categoryId = categoryId;
-		for (Space<SystemComponent> sf:spacelocators.keySet()) {
+		for (DynamicSpace<SystemComponent,LocatedSystemComponent> sf:spacelocators.keySet()) {
 			Rfunctions.put(sf,spacelocators.get(sf));
 		}
 	}
@@ -106,7 +108,7 @@ public class SystemFactory
 		return Rfunctions.get(spaceName);
 	}
 
-	public Collection<Space<SystemComponent>> spaces() {
+	public Collection<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces() {
 		return Rfunctions.keySet();
 	}
 	

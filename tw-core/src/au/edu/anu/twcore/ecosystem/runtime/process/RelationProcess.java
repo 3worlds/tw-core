@@ -37,6 +37,8 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -82,7 +84,7 @@ public class RelationProcess extends AbstractRelationProcess {
     
     
 	public RelationProcess(ComponentContainer world, RelationContainer relation, 
-			Timer timer, Space<SystemComponent> space, double searchR) {
+			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
 		super(world,relation,timer,space,searchR);
 	}
 
@@ -116,7 +118,7 @@ public class RelationProcess extends AbstractRelationProcess {
 			        	if (function.delete(t, dt, focal, other)) {
 			        		// M***! missing access to otherContainer !!
 			        		// otherContainer.removeItem(other);
-							for (Space<SystemComponent> space:((SystemFactory)other.membership()).spaces()) {
+							for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:((SystemFactory)other.membership()).spaces()) {
 								space.unlocate(other);						
 								if (space.dataTracker()!=null)
 									// PB here: otherContext unknown!!

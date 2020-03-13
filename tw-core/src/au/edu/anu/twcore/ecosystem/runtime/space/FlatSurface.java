@@ -26,7 +26,7 @@ import fr.ens.biologie.generic.utils.Logging;
  *
  */
 // todo: toroidal correction
-public class FlatSurface extends SpaceAdapter<SystemComponent> {
+public class FlatSurface extends SpaceAdapter {
 	
 	private static Logger log = Logging.getLogger(FlatSurface.class);
 	
@@ -35,7 +35,7 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	private class flatSurfaceLocation implements Location {
 		protected Point loc;
 		protected Point locDeviation;
-		protected flatSurfaceLocation(Located sc,double...xyloc) {
+		protected flatSurfaceLocation(double...xyloc) {
 			super();
 			double p = precision();
 			double x = Math.floor(xyloc[0]/p)*p; // truncates location to nearest precision unit
@@ -44,9 +44,6 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 			// replace truncated part by a random dev to make sure two positions are never exactly the same
 			locDeviation = Point.newPoint(jitterRNG.nextDouble()*p,jitterRNG.nextDouble()*p);
 			checkLocation(this);
-//			if (!boundingBox().contains(loc))
-//				throw new TwcoreException("New spatial coordinates for item "
-//					+sc.toString()+" out of range "+boundingBox().toString());
 		}
 		@Override
 		public Point asPoint() {
@@ -59,7 +56,6 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	}
 	
 	private Map<SystemComponent,Location> locatedItems = new HashMap<>();
-	private Map<SystemComponent,Location> unclearableItems = new HashMap<>();
 	
 	private BoundedRegionIndexingTree<SystemComponent> indexer;
 	
@@ -118,17 +114,13 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	}
 
 	@Override
-	public void locate(SystemComponent focal, double...location) {
-		flatSurfaceLocation at = new flatSurfaceLocation(focal,location);
+	public Location locate(SystemComponent focal, double...location) {
+		flatSurfaceLocation at = new flatSurfaceLocation(location);
 		locatedItems.put(focal,at);
 		// new item is located in the quadtree in the square to the right and above its loc
 		// by 1 precision unit
 		indexer.insert(focal,Point.add(at.loc,at.locDeviation));
-	}
-
-	@Override
-	public void locate(SystemComponent focal, Point location) {
-		locate(focal,location.x(),location.y());		
+		return at;
 	}
 
 	@Override
@@ -169,38 +161,18 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 	}
 
 	@Override
-	public Point locationOf(SystemComponent focal) {
-		if (locatedItems.get(focal)!=null)
-			return locatedItems.get(focal).asPoint();
-		else
-			return null;
+	public Location locationOf(SystemComponent focal) {
+		return locatedItems.get(focal);
 	}
 
 	@Override
 	public void unlocate(Collection<SystemComponent> items) {
 		for (SystemComponent sc:items) {
-			Point loc = locationOf(sc);
+			Point loc = locationOf(sc).asPoint();
 			if (loc!=null)
 				indexer.remove(sc,loc);
 		}
 		locatedItems.keySet().removeAll(items);
-	}
-
-	@Override
-	public void clear() {
-		indexer = new BoundedRegionIndexingTree<>(boundingBox());
-		locatedItems.clear();
-		for (Map.Entry<SystemComponent,Location> e:unclearableItems.entrySet()) {
-			flatSurfaceLocation at = (flatSurfaceLocation) e.getValue();
-			indexer.insert(e.getKey(),Point.add(at.loc,at.locDeviation));
-		}
-		locatedItems.putAll(unclearableItems);
-	}
-
-	@Override
-	public void locateUnclearable(SystemComponent focal, double... location) {
-		locate(focal,location);
-		unclearableItems.put(focal,locatedItems.get(focal));
 	}
 
 	@Override
@@ -209,6 +181,25 @@ public class FlatSurface extends SpaceAdapter<SystemComponent> {
 		sb.append(" n = ")
 			.append(locatedItems.size());
 		return sb.toString();
+	}
+
+	@Override
+	public void clear() {
+		indexer = new BoundedRegionIndexingTree<>(boundingBox());
+		locatedItems.clear();
+	}
+
+	@Override
+	public Location makeLocation(double... x) {
+		return new flatSurfaceLocation(x);
+	}
+
+	@Override
+	public Location makeLocation(Point point) {
+		double[] d = new double[point.dim()];
+		for (int i=0; i< d.length; i++)
+			d[i] = point.coordinate(i);
+		return new flatSurfaceLocation(d);
 	}
 	
 }

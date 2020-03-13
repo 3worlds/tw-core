@@ -47,7 +47,8 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
@@ -96,7 +97,7 @@ public class ComponentProcess
 //	private SystemContainer groupContainer = null;
 	
 	public ComponentProcess(ComponentContainer world, Collection<Category> categories, 
-			Timer timer, Space<SystemComponent> space, double searchR) {
+			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
 		super(world,timer,space,searchR);
 		focalCategories.addAll(categories);
 		categoryId = buildCategorySignature();
@@ -222,7 +223,8 @@ public class ComponentProcess
 				if (function.delete(t, dt, focal)) {
 					container.removeItem(focal); // safe - delayed removal
 					// also remove from space !!!
-					for (Space<SystemComponent> space:((SystemFactory)focal.membership()).spaces()) {
+					for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
+							((SystemFactory)focal.membership()).spaces()) {
 						space.unlocate(focal);						
 						if (space.dataTracker()!=null)
 							space.dataTracker().removeItem(currentStatus,focalContext.buildItemId(focal.id()));
@@ -299,7 +301,7 @@ public class ComponentProcess
 							func.changeOtherState(t, dt, focal, newBorn);
 						}
 						// location of newBorn in space
-						for (Space<SystemComponent> space:((SystemFactory)newBorn.membership()).spaces()) {
+						for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:((SystemFactory)newBorn.membership()).spaces()) {
 							RelocateFunction func = ((SystemFactory)newBorn.membership()).locatorFunction(space);
 							func.setFocalContext(newBornContext);
 							double[] newLocation = func.relocate(t, dt, newBorn, null, space.boundingBox());

@@ -44,7 +44,9 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
@@ -143,8 +145,10 @@ public class Component
 					((VariableValues)tn).fill(sc.currentState());
 			// including spatial coordinates
 			for (SpaceNode spn:coordinates.keySet()) {
-				Space<SystemComponent> sp = spn.getInstance(id);
-				sp.locateUnclearable(sc, coordinates.get(spn));
+				DynamicSpace<SystemComponent,LocatedSystemComponent> sp = spn.getInstance(id);
+				Location loc = sp.makeLocation(coordinates.get(spn));
+				LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
+				sp.addInitialItem(lsc);
 			}
 			// insert component into container
 			LimitedEdition<ComponentContainer> p = (LimitedEdition<ComponentContainer>) getParent();

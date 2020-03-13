@@ -28,14 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import java.util.LinkedList;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.exceptions.TwcoreException;
-import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.cnrs.iees.uit.space.Point;
 
 /**
  * A container for SystemComponents
@@ -45,8 +41,8 @@ import fr.cnrs.iees.uit.space.Point;
  */
 public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 
-	public ComponentContainer(Categorized<SystemComponent> cats, String proposedId, ComponentContainer parent,
-			TwData parameters, TwData variables) {
+	public ComponentContainer(Categorized<SystemComponent> cats, String proposedId, 
+			ComponentContainer parent, TwData parameters, TwData variables) {
 		super(cats, proposedId, parent, parameters, variables);
 	}
 
@@ -77,43 +73,6 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	public void rename(String oldId, String newId) {
 		throw new TwcoreException("Renaming of '" + this.getClass().getSimpleName() + "' is not implemented.");
 	}
-
-	// recursion for below
-	private void resetCoordinates(Space<SystemComponent> space, 
-			LinkedList<String> labels) {
-		for (String scid:items.keySet()) {
-			SystemComponent initSc = itemsToInitials.get(scid);
-			if (initSc!=null) { // means the SC was cloned from an initialItem
-				SystemComponent sc = items.get(scid);
-				Point initLoc = space.locationOf(initSc);
-				if (space.locationOf(sc)!=null)
-					space.unlocate(sc);
-				space.locate(sc,initLoc);
-				if (space.dataTracker()!=null ) {						
-					labels.add(sc.id());
-					double x[] = new double[initLoc.dim()];
-					for (int i=0; i<initLoc.dim(); i++)
-						x[i] = initLoc.coordinate(i);
-					space.dataTracker().recordItem(SimulatorStatus.Initial,x,labels.toArray(new String[labels.size()]));
-					labels.remove(sc.id());
-				}
-			}
-		}
-		for (CategorizedContainer<SystemComponent> childContainer: subContainers()) {
-			labels.add(childContainer.id());
-			((ComponentContainer)childContainer).resetCoordinates(space,labels);
-			labels.remove(childContainer.id());
-		}
-	}
-	
-	// sets the coordinates of components initially present
-	// recurses on sub-containers
-	public void resetCoordinates(Space<SystemComponent> space) {
-		LinkedList<String> labels = new LinkedList<>();
-		labels.add(id());
-		resetCoordinates(space,labels);
-	}
-	
 	/**
 	 * Recursively clears all container items and variables (if any). Used in
 	 * loading new model states with ModelRunner.

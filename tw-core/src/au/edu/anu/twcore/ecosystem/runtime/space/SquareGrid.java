@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.exceptions.TwcoreException;
@@ -28,20 +27,20 @@ import fr.ens.biologie.generic.utils.Duple;
  *
  */
 //todo: toroidal correction
-public class SquareGrid extends SpaceAdapter<SystemComponent> {
+public class SquareGrid extends SpaceAdapter {
 	
 	private static final int ndim = 2;
 
 	private class squareGridLocation implements Location {
 		protected int[] loc = new int[2];
 		private Point ploc = null;
-		protected squareGridLocation(Located lc,double...xyloc) {
+		protected squareGridLocation(double...xyloc) {
 			super();
 			loc[0] = (int) Math.floor(xyloc[0]/cellSize);
 			loc[1] = (int) Math.floor(xyloc[1]/cellSize);
 			if ((loc[0]>nx)|(loc[1]>ny))
-				throw new TwcoreException("New spatial coordinates for item "
-					+lc.toString()+" out of range "+boundingBox().toString());
+				throw new TwcoreException("New spatial coordinates "
+					+loc.toString()+" out of range "+boundingBox().toString());
 			double x = loc[0]*cellSize;
 			double y = loc[1]*cellSize;
 			ploc = Point.newPoint(x,y);
@@ -105,16 +104,13 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 		return null;
 	}
 
+	
 	@Override
-	public void locate(SystemComponent focal, double...xyloc) {
-		squareGridLocation at = new squareGridLocation(focal,xyloc);
+	public Location locate(SystemComponent focal, double...xyloc) {
+		squareGridLocation at = new squareGridLocation(xyloc);
 		locatedItems.put(focal,at);
 		grid[at.loc[0]][at.loc[1]].add(focal);
-	}
-
-	@Override
-	public void locate(SystemComponent focal, Point location) {
-		locate(focal,location.x(),location.y());		
+		return at;
 	}
 
 	@Override
@@ -176,11 +172,8 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 	}
 
 	@Override
-	public Point locationOf(SystemComponent focal) {
-		if (locatedItems.get(focal)!=null)
-			return locatedItems.get(focal).asPoint();
-		else
-			return null;
+	public Location locationOf(SystemComponent focal) {
+		return locatedItems.get(focal);
 	}
 
 	@Override
@@ -201,12 +194,6 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 		for (SystemComponent sc:unclearableItems.keySet())
 			locate(sc,unclearableItems.get(sc).asPoint());
 	}
-
-	@Override
-	public void locateUnclearable(SystemComponent focal, double... location) {
-		locate(focal,location);
-		unclearableItems.put(focal,locatedItems.get(focal));
-	}
 	
 	@Override
 	public String toString() {
@@ -214,6 +201,19 @@ public class SquareGrid extends SpaceAdapter<SystemComponent> {
 		sb.append(" n = ")
 			.append(locatedItems.size());
 		return sb.toString();
+	}
+
+	@Override
+	public Location makeLocation(double... x) {
+		return new squareGridLocation(x);
+	}
+
+	@Override
+	public Location makeLocation(Point point) {
+		double[] d = new double[point.dim()];
+		for (int i=0; i< d.length; i++)
+			d[i] = point.coordinate(i);
+		return new squareGridLocation(d);
 	}
 
 }

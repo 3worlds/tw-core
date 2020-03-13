@@ -33,7 +33,8 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.RelocateFunction;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
@@ -273,13 +274,13 @@ public class ComponentType
 	}
 	
 	private SystemFactory makeFactory(int index) {
-		Map<Space<SystemComponent>,RelocateFunction> spaceLocators = new HashMap<>();
+		Map<DynamicSpace<SystemComponent,LocatedSystemComponent>,RelocateFunction> spaceLocators = new HashMap<>();
 		if (!fConstructors.isEmpty()) {
 			for (String spc:fConstructors.keySet()) {
 				Constructor<? extends RelocateFunction> fc = fConstructors.get(spc);
 				try {
 					RelocateFunction f = fc.newInstance();
-					Space<SystemComponent> sp = spaces.get(spc).getInstance(index);
+					DynamicSpace<SystemComponent,LocatedSystemComponent> sp = spaces.get(spc).getInstance(index);
 					f.setRng(sp.rng());
 					spaceLocators.put(sp,f);
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
