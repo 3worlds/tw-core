@@ -45,8 +45,8 @@ public class TwSetup implements ProjectPaths, TwPaths {
 	public static final String CODEROOT = Path.of(System.getProperty("user.dir")).getParent().getParent().toString();
 	// NB these two names cannot be extracted from the classes because the classes are
 	// in tw-uifx.
-	private static final String MODELMAKER_CLASS = "au.edu.anu.twuifx.mm.Main";
-	private static final String MODELRUNNER_CLASS = "au.edu.anu.twuifx.mr.Main";
+	private static final String MODELMAKER_CLASS = "au.edu.anu.twuifx.mm.MMmain";
+	private static final String MODELRUNNER_CLASS = "au.edu.anu.twuifx.mr.MRmain";
 	
 	private static File buildTwApplicationIvyFile() {
 		String ivyFile = "<ivy-module version=\"2.0\"\n" + 
