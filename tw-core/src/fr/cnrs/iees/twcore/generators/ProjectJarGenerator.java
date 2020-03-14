@@ -63,7 +63,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.FileType;
 
 public class ProjectJarGenerator {
-	public static String mainClass = "au.edu.anu.twuifx.mr.Main";
+	public static String mainClass = "au.edu.anu.twuifx.mr.MRmain";
 	public static final String userCodeRunner = "UserCodeRunner.java";
 
 	@SuppressWarnings("unchecked")

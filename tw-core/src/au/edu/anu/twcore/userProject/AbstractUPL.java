@@ -66,7 +66,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 			"// example: String[] args1 = {\"<projectPath>\", \"OFF\",\"au.edu.anu.twuifx.widgets.SimpleControlWidget:INFO\"};\n"
 			+ "		public static void main(String[] args) {\n" + //
 			"			String[] args1 = {\"<projectPath>\"};\n" + //
-			"			au.edu.anu.twuifx.mr.Main.main(args1);\n" + //
+			"			au.edu.anu.twuifx.mr.MRmain.main(args1);\n" + //
 			"\n" + //
 			"		}\n" + //
 			"\n" + //
