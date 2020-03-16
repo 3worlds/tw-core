@@ -15,6 +15,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
+import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
@@ -24,15 +26,16 @@ import fr.cnrs.iees.uit.space.Point;
 
 /**
  * The base class for all space implementations in 3Worlds.
- * 
+ *
  * @author Jacques Gignoux - 30 janv. 2020
  *
  */
-public abstract class SpaceAdapter 
+public abstract class SpaceAdapter
 		implements DynamicSpace<SystemComponent,LocatedSystemComponent> {
-	
+
+	private Identity id = null;
 	/**
-	 * Space grain - 
+	 * Space grain -
 	 * 	the minimal relative precision of locations is 1E-5
 	 * 	ie points apart from less than this relative distance are considered to have the same location
 	 * 	it is relative to space bounding box diagonal */
@@ -50,7 +53,7 @@ public abstract class SpaceAdapter
 	/** type of edge-effect correction */
 	private EdgeEffects correction;
 	 /** A RNG available to descendants to create jitter around locations if needed */
-	protected Random jitterRNG = RngFactory.newInstance("SpaceJitterRNG", 0, RngResetType.never, 
+	protected Random jitterRNG = RngFactory.newInstance("SpaceJitterRNG", 0, RngResetType.never,
 			RngSeedSourceType.secure,RngAlgType.Pcg32).getRandom();
 	/** list of SystemComponents to insert later */
 	private List<LocatedSystemComponent> toInsert = new LinkedList<>();
@@ -61,10 +64,10 @@ public abstract class SpaceAdapter
 	/** mapping of cloned item to their initial components */
 	private Map<String, LocatedSystemComponent> itemsToInitials = new HashMap<>();
 
-	public SpaceAdapter(Box box, double prec, String units, EdgeEffects ee, SpaceDataTracker dt) {
+	public SpaceAdapter(Box box, double prec, String units, EdgeEffects ee, SpaceDataTracker dt, String proposedId) {
 		super();
 		limits = box;
-// precision based on diagonal, but this is probably unexpected for users		
+// precision based on diagonal, but this is probably unexpected for users
 //		double boxdiag = Math.sqrt(limits.sideLength(0)*limits.sideLength(0)
 //			+limits.sideLength(1)*limits.sideLength(1));
 //		precision = Math.max(prec,minimalPrecision)*boxdiag;
@@ -73,10 +76,12 @@ public abstract class SpaceAdapter
 		this.units = units;
 		correction = ee;
 		dataTracker = dt;
+		DynamicSpace.super.preProcess(); // to set the scope if not set
+		id = scope().newId(true,proposedId);
 	}
 
 	// Space<T>
-	
+
 	@Override
 	public final Box boundingBox() {
 		return limits;
@@ -91,7 +96,7 @@ public abstract class SpaceAdapter
 	public final String units() {
 		return units;
 	}
-	
+
 	@Override
 	public final EdgeEffects edgeEffectCorrection() {
 		return correction;
@@ -99,16 +104,16 @@ public abstract class SpaceAdapter
 
 	@Override
 	public Location locate(SystemComponent focal, Point location) {
-		return locate(focal,location.x(),location.y());		
+		return locate(focal,location.x(),location.y());
 	}
-	
+
 	@Override
 	public Location locate(SystemComponent focal, Location location) {
-		return locate(focal,location.asPoint());	
+		return locate(focal,location.asPoint());
 	}
-	
+
 	// RngHolder
-	
+
 	@Override
 	public final Random rng() {
 		return rng;
@@ -119,33 +124,33 @@ public abstract class SpaceAdapter
 		if (rng==null)
 			rng = arng;
 	}
-	
+
 	// SingleDataTrackerHolder<Metadata>
 
 	@Override
 	public final SpaceDataTracker dataTracker() {
 		return dataTracker;
 	}
-	
+
 	@Override
 	public final Metadata metadata() {
 		return dataTracker.getInstance();
 	}
-	
+
 	// Local methods
-	
+
 	// CAUTION: this method assumes that the widgets have been instantiated AFTER
 	// the DataTrackers
 	/**
-	 * 	attach space display widget to this data tracker 
+	 * 	attach space display widget to this data tracker
 	 * @param widget
 	 */
 	public final void attachSimpleSpaceWidget(DataReceiver<SpaceData,Metadata> widget)  {
 		dataTracker.addObserver(widget);
 	}
-	
+
 	// Object
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -156,7 +161,7 @@ public abstract class SpaceAdapter
 			.append(precision);
 		return sb.toString();
 	}
-	
+
 	// DynamicContainer<T>
 
 	@Override
@@ -168,7 +173,7 @@ public abstract class SpaceAdapter
 	public final void removeItem(LocatedSystemComponent item) {
 		toDelete.add(item);
 	}
-	
+
 	@Override
 	public final void effectChanges() {
 		for (LocatedSystemComponent lsc:toDelete)
@@ -178,7 +183,7 @@ public abstract class SpaceAdapter
 			locate(lsc.item(),lsc.location());
 		toInsert.clear();
 	}
-	
+
 	// ResettableContainer
 
 	@Override
@@ -217,7 +222,7 @@ public abstract class SpaceAdapter
 	public final LocatedSystemComponent initialForItem(String id) {
 		return itemsToInitials.get(id);
 	}
-	
+
 	// Resettable
 
 	@Override
@@ -231,7 +236,12 @@ public abstract class SpaceAdapter
 		toDelete.clear();
 		toInsert.clear();
 		itemsToInitials.clear();
+		((ResettableLocalScope)scope()).postProcess();
 	}
-	
-	
+
+	@Override
+	public String id() {
+		return id.id();
+	}
+
 }

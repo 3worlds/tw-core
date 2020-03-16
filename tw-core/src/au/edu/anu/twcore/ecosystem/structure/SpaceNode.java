@@ -40,14 +40,14 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * 
+ *
  * @author Jacques Gignoux - 28 janv. 2020
  *
  */
-public class SpaceNode 
-		extends InitialisableNode 
+public class SpaceNode
+		extends InitialisableNode
 		implements LimitedEdition<DynamicSpace<SystemComponent,LocatedSystemComponent>>, Sealable {
-	
+
 	private boolean sealed = false;
 	private Map<Integer,DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces = new HashMap<>();
 	private SpaceType stype = null;
@@ -58,15 +58,15 @@ public class SpaceNode
 	private double precision = 0.0;
 	private RngNode rngNode = null;
 	private boolean attachDataTrackerToSpace = false;
-	
+
 	public SpaceNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
-	
+
 	public SpaceNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
@@ -91,7 +91,7 @@ public class SpaceNode
 	public int initRank() {
 		return N_SPACE.initRank();
 	}
-	
+
 	private DynamicSpace<SystemComponent,LocatedSystemComponent> makeSpace(int id) {
 		DynamicSpace<SystemComponent,LocatedSystemComponent> result = null;
 		SpaceDataTracker dt = null;
@@ -113,7 +113,7 @@ public class SpaceNode
 				Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
 				Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
 				result = new FlatSurface(xlim.inf(),xlim.sup(),ylim.inf(),ylim.sup(),
-					precision,units,eecorr,dt);
+					precision,units,eecorr,dt,id());
 				break;
 			case linearNetwork:
 				break;
@@ -123,12 +123,12 @@ public class SpaceNode
 				int ny = nx;
 				if (properties().hasProperty("ny"))
 					ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
-				result = new SquareGrid(cellSize,nx,ny,precision,units,eecorr,dt);
+				result = new SquareGrid(cellSize,nx,ny,precision,units,eecorr,dt,id());
 				break;
 			case topographicSurface:
 				break;
 			default:
-				break;		
+				break;
 		}
 		if (rngNode!=null)
 			result.setRng(rngNode.getInstance(id));
@@ -162,9 +162,9 @@ public class SpaceNode
 			initialise();
 		return coordNames;
 	}
-	
+
 	public void attachSpaceWidget(DataReceiver<SpaceData,Metadata> widget) {
-		for (DynamicSpace<SystemComponent,LocatedSystemComponent> sp:spaces.values()) 
+		for (DynamicSpace<SystemComponent,LocatedSystemComponent> sp:spaces.values())
 			if (sp instanceof SingleDataTrackerHolder) {
 				SpaceDataTracker dts = sp.dataTracker();
 				if (dts!=null) {

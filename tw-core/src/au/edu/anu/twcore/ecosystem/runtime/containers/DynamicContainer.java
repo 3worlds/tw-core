@@ -5,19 +5,19 @@ import fr.cnrs.iees.identity.Identity;
 /**
  * An interface for containers which must delay addition and deletion of items up to
  * a given step
- * 
+ *
  * @author Jacques Gignoux - 24 janv. 2020
  *
  * @param <T>
  */
-public interface DynamicContainer<T extends Identity> {
-	
+public interface DynamicContainer<T extends Identity> extends Container {
+
 	/**
 	 * Tag an item for addition into this container's item list. The item will be
 	 * effectively added only when {@code effectChanges()} or
 	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
 	 * container state consistent over time in discrete time simulations.
-	 * 
+	 *
 	 * @param item the item to add
 	 */
 	public void addItem(T item);
@@ -27,7 +27,7 @@ public interface DynamicContainer<T extends Identity> {
 	 * effectively removed only when {@code effectChanges()} or
 	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
 	 * container state consistent over time in discrete time simulations.
-	 * 
+	 *
 	 * @param id the id of the item to remove
 	 */
 	public void removeItem(T item);

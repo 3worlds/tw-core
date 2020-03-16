@@ -8,17 +8,15 @@ import java.util.Set;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import au.edu.anu.twcore.ecosystem.runtime.Population;
 import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.identity.IdentityScope;
-import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
-public abstract class AbstractPopulationContainer<T extends Identity> 
-		implements SimpleContainer<T>, Population, Identity {
+public abstract class AbstractPopulationContainer<T extends Identity>
+		implements SimpleContainer<T>, Population/*, Identity*/ {
 
 	// class-level constants
-	private static final IdentityScope scope = new LocalScope("3w-runtime-container");
+//	private static final IdentityScope scope = new LocalScope("3w-runtime-container");
 	protected static Set<String> props = new HashSet<String>();
 	protected static PropertyKeys propsPK;
 	static {
@@ -84,14 +82,14 @@ public abstract class AbstractPopulationContainer<T extends Identity>
 	}
 
 	protected popData populationData = new popData();
-	
-	// unique id for this container (matches the parameter set)
-	private Identity id = null;
+
+//	// unique id for this container (matches the parameter set)
+//	private Identity id = null;
 
 
-	public AbstractPopulationContainer(String proposedId) {
+	public AbstractPopulationContainer() {
 		super();
-		id = scope.newId(true, proposedId);
+//		id = scope.newId(true, proposedId);
 	}
 
 	@Override
@@ -115,14 +113,14 @@ public abstract class AbstractPopulationContainer<T extends Identity>
 		populationData.nRemoved = 0;
 	}
 
-	@Override
-	public final String id() {
-		return id.id();
-	}
-	
-	@Override
-	public final IdentityScope scope() {
-		return scope;
-	}
+//	@Override
+//	public final String id() {
+//		return id.id();
+//	}
+
+//	@Override
+//	public final IdentityScope scope() {
+//		return scope;
+//	}
 
 }

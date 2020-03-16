@@ -4,7 +4,7 @@ import fr.cnrs.iees.identity.Identity;
 
 /**
  * A complement to dynamicContainer for nested containers
- * 
+ *
  * @author Jacques Gignoux - 24 janv. 2020
  *
  */

@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -35,13 +35,13 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * A container for SystemComponents
- * 
+ *
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
 public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 
-	public ComponentContainer(Categorized<SystemComponent> cats, String proposedId, 
+	public ComponentContainer(Categorized<SystemComponent> cats, String proposedId,
 			ComponentContainer parent, TwData parameters, TwData variables) {
 		super(cats, proposedId, parent, parameters, variables);
 	}
@@ -92,7 +92,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 		// effectAllChanges() is recursive so don't use here.
 		parentContainer.effectChanges();// counters are handled here
 		parentContainer.clearVariables();
-// replaced by method below		
+// replaced by method below
 //		if (parentContainer.variables() != null) {
 //			/**
 //			 * TODO not tested yet. I assume it's readOnly until executing Twfunctions. If
@@ -131,6 +131,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	public void effectChanges() {
 		for (String id : itemsToRemove) {
 			SystemComponent sc = items.remove(id);
+			sc.removeFromContainer();
 			if (sc != null) {
 				populationData.count--;
 				populationData.nRemoved++;
@@ -143,6 +144,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 			if (items.put(item.id(), item) == null) {
 				populationData.count++;
 				populationData.nAdded++;
+				item.setContainer(this);
 			}
 		itemsToAdd.clear();
 	}

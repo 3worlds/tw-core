@@ -21,15 +21,15 @@ import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * A spatial representation of a rectangular flat surface.
- * 
+ *
  * @author Jacques Gignoux - 28 janv. 2020
  *
  */
 // todo: toroidal correction
 public class FlatSurface extends SpaceAdapter {
-	
+
 	private static Logger log = Logging.getLogger(FlatSurface.class);
-	
+
 	private static final int ndim = 2;
 
 	private class flatSurfaceLocation implements Location {
@@ -54,23 +54,23 @@ public class FlatSurface extends SpaceAdapter {
 			return loc.toString();
 		}
 	}
-	
+
 	private Map<SystemComponent,Location> locatedItems = new HashMap<>();
-	
+
 	private BoundedRegionIndexingTree<SystemComponent> indexer;
-	
+
 	private final double xmin,xmax,ymin,ymax; // to save access time - redundant with boundingBox()
 
-	public FlatSurface(double xmin, double xmax, double ymin, double ymax, 
-			double prec, String units, EdgeEffects ee, SpaceDataTracker dt) {
-		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,ee,dt);
+	public FlatSurface(double xmin, double xmax, double ymin, double ymax,
+			double prec, String units, EdgeEffects ee, SpaceDataTracker dt,String proposedId) {
+		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,ee,dt,proposedId);
 		indexer = new BoundedRegionIndexingTree<>(boundingBox());
 		this.xmin = boundingBox().lowerBound(0);
 		this.xmax = boundingBox().upperBound(0);
 		this.ymin = boundingBox().lowerBound(1);
 		this.ymax = boundingBox().upperBound(1);
 	}
-	
+
 	private void checkLocation(flatSurfaceLocation location) {
 		switch (edgeEffectCorrection()) {
 			case bufferAndWrap:
@@ -81,7 +81,7 @@ public class FlatSurface extends SpaceAdapter {
 				if (!boundingBox().contains(location.loc)) {
 					log.warning("Proposed location "+location.loc+" out of range "+ boundingBox()+
 						" - new location generated.");
-					double x = Math.floor((xmin+rng().nextDouble()*(xmax-xmin))/precision())*precision(); 
+					double x = Math.floor((xmin+rng().nextDouble()*(xmax-xmin))/precision())*precision();
 					double y = Math.floor((ymin+rng().nextDouble()*(ymax-ymin))/precision())*precision();
 					Point newloc = Point.newPoint(x,y);
 					Point locD = Point.newPoint(jitterRNG.nextDouble()*precision(),jitterRNG.nextDouble()*precision());
@@ -101,7 +101,7 @@ public class FlatSurface extends SpaceAdapter {
 				break;
 		}
 	}
-	
+
 	@Override
 	public int ndim() {
 		return ndim;
@@ -126,7 +126,7 @@ public class FlatSurface extends SpaceAdapter {
 	@Override
 	public void unlocate(SystemComponent focal) {
 		indexer.remove(focal,locatedItems.get(focal).asPoint());
-		locatedItems.remove(focal);		
+		locatedItems.remove(focal);
 	}
 
 	@Override
@@ -201,5 +201,5 @@ public class FlatSurface extends SpaceAdapter {
 			d[i] = point.coordinate(i);
 		return new flatSurfaceLocation(d);
 	}
-	
+
 }

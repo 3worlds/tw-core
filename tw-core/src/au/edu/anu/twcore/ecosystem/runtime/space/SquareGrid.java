@@ -22,13 +22,13 @@ import fr.ens.biologie.generic.utils.Duple;
 /**
  * A spatial representation of a rectangular 2D grid with square cells
  * Assumes the origin of the grid is (0,0).
- * 
+ *
  * @author Jacques Gignoux - 30 janv. 2020
  *
  */
 //todo: toroidal correction
 public class SquareGrid extends SpaceAdapter {
-	
+
 	private static final int ndim = 2;
 
 	private class squareGridLocation implements Location {
@@ -54,22 +54,22 @@ public class SquareGrid extends SpaceAdapter {
 			return "["+loc[0]+","+loc[1]+"]";
 		}
 	}
-	
+
 	private int nx = 0;
 	private int ny = 0;
 	private double cellSize = 0.0;
-	
+
 	private Map<SystemComponent,Location> locatedItems = new HashMap<>();
 	private Map<SystemComponent,Location> unclearableItems = new HashMap<>();
 	private List<SystemComponent> grid[][];
 	// precomputed inverted table of distances vs table indices
 	private SortedMap<Long,List<Duple<Integer,Integer>>> distanceMap = new TreeMap<>();
-	
+
 	@SuppressWarnings("unchecked")
-	public SquareGrid(double cellSize, int nx, int ny, double prec, String units, 
-			EdgeEffects ee, SpaceDataTracker dt) {
+	public SquareGrid(double cellSize, int nx, int ny, double prec, String units,
+			EdgeEffects ee, SpaceDataTracker dt,String proposedId) {
 		super(Box.boundingBox(Point.newPoint(0.0,0.0),Point.newPoint(nx*cellSize,ny*cellSize)),
-			prec, units, ee, dt);
+			prec, units, ee, dt,proposedId);
 		this.cellSize = cellSize;
 		this.nx = nx;
 		this.ny = ny;
@@ -104,7 +104,7 @@ public class SquareGrid extends SpaceAdapter {
 		return null;
 	}
 
-	
+
 	@Override
 	public Location locate(SystemComponent focal, double...xyloc) {
 		squareGridLocation at = new squareGridLocation(xyloc);
@@ -122,7 +122,7 @@ public class SquareGrid extends SpaceAdapter {
 	@Override
 	public Iterable<SystemComponent> getNearestItems(SystemComponent item) {
 		squareGridLocation refloc = (squareGridLocation) locatedItems.get(item);
-		List<SystemComponent> result = new ArrayList<>(); 
+		List<SystemComponent> result = new ArrayList<>();
 		result.addAll(grid[refloc.loc[0]][refloc.loc[1]]);
 		result.remove(item);
 		Iterator<List<Duple<Integer,Integer>>> it = distanceMap.values().iterator();
@@ -132,8 +132,8 @@ public class SquareGrid extends SpaceAdapter {
 		}
 		return result;
 	}
-		
-	private void getItemsAtSameDistance(squareGridLocation refloc, 
+
+	private void getItemsAtSameDistance(squareGridLocation refloc,
 			List<Duple<Integer,Integer>> l,
 			List<SystemComponent> result) {
 		for (Duple<Integer,Integer> dup:l) {
@@ -158,12 +158,12 @@ public class SquareGrid extends SpaceAdapter {
 	@Override
 	public Iterable<SystemComponent> getItemsWithin(SystemComponent item, double distance) {
 		squareGridLocation refloc = (squareGridLocation) locatedItems.get(item);
-		List<SystemComponent> result = new ArrayList<>(); 
-		long sqDist = (long) Math.floor((distance/cellSize)*(distance/cellSize));		
+		List<SystemComponent> result = new ArrayList<>();
+		long sqDist = (long) Math.floor((distance/cellSize)*(distance/cellSize));
 		for(long sqd:distanceMap.keySet()) {
 			if (sqd<=sqDist)
 				getItemsAtSameDistance(refloc,distanceMap.get(sqd),result);
-			else 
+			else
 				break;
 			if (sqd==0L)
 				result.remove(item);
@@ -190,11 +190,11 @@ public class SquareGrid extends SpaceAdapter {
 		for (int i=0; i<nx; i++)
 			for (int j=0; j<ny; j++)
 				grid[i][j].clear();
-		locatedItems.clear();	
+		locatedItems.clear();
 		for (SystemComponent sc:unclearableItems.keySet())
 			locate(sc,unclearableItems.get(sc).asPoint());
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(super.toString());

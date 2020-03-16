@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -51,12 +51,12 @@ import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.LocalScope;
 
 /**
- * 
+ *
  * @author Jacques Gignoux - 1 juil. 2019
  *
  */
 class CategorizedContainerTest {
-	
+
 	// a little test class for Categorized
 	private class categorizedAdapter implements Categorized<Identity> {
 		private SortedSet<Category> categories = new TreeSet<>();
@@ -77,7 +77,7 @@ class CategorizedContainerTest {
 	}
 	// a little test class for CategorizedContainer<Identity>
 	private class icontainer extends CategorizedContainer<Identity> {
-		private icontainer(Categorized<Identity> cats, String proposedId, 
+		private icontainer(Categorized<Identity> cats, String proposedId,
 				CategorizedContainer<Identity> parent) {
 			super(cats,proposedId,parent,null,null);
 		}
@@ -88,7 +88,7 @@ class CategorizedContainerTest {
 		}
 		@Override
 		public void rename(String oldId, String newId) {
-			throw new TwcoreException ("Renaming of '"+this.getClass().getSimpleName()+"' is not implemented.");	
+			throw new TwcoreException ("Renaming of '"+this.getClass().getSimpleName()+"' is not implemented.");
 		}
 		@Override
 		public void clearVariables() {
@@ -96,14 +96,19 @@ class CategorizedContainerTest {
 		@Override
 		public void effectChanges() {
 		}
+		@Override
+		public String id() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
-	
+
 	private Category c1, c2, c3, c4, c5, c6;
 	private CategorySet cs1, cs2, cs3;
 	private categorizedAdapter ca, ca2;
 	private CategorizedContainer<Identity> cc, cc2;
 	private IdentityScope scope;
-	
+
 	@BeforeEach
 	private void init() {
 		TreeGraphFactory f = new TreeGraphFactory();
@@ -134,7 +139,7 @@ class CategorizedContainerTest {
 			cc.addItem(scope.newId(true,"whale_"+i));
 		cc.effectChanges();
 	}
-	
+
 	private void init2(String proposedId) {
 		cc2 = new icontainer(ca2,proposedId,cc);
 		for (int i=0; i<4; i++)
@@ -142,7 +147,7 @@ class CategorizedContainerTest {
 		cc2.effectChanges();
 
 	}
-	
+
 	private void show(String method,String text) {
 		System.out.println(method+": "+text);
 	}

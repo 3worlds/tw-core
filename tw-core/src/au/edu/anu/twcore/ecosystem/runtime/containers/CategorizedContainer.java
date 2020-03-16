@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -41,6 +41,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Population;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
@@ -76,22 +77,24 @@ import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
  * initial population that can be <em>reset</em> later, i.e. the whole container
  * can revert to an initial state.
  * </p>
- * 
+ *
  * @author Jacques Gignoux - 1 juil. 2019
  *
  */
 // Tested OK with version 0.1.3 on 1/7/2019
-public abstract class CategorizedContainer<T extends Identity> 
+public abstract class CategorizedContainer<T extends Identity>
 		extends AbstractPopulationContainer<T>
-		implements NestedContainer<T>, NestedDynamicContainer<T>, ResettableContainer<T>, 
+		implements NestedContainer<T>, NestedDynamicContainer<T>, ResettableContainer<T>,
 			StateContainer, Resettable, Sealable {
-	
+
 	static {
 		props.add(TCOUNT.shortName());
 		props.add(TNADDED.shortName());
 		props.add(TNREMOVED.shortName());
 		propsPK = new PropertyKeys(props);
 	}
+
+	private Identity id = null;
 
 	private boolean sealed = false;
 	// category info (shared)
@@ -139,7 +142,8 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	public CategorizedContainer(Categorized<T> cats, String proposedId, CategorizedContainer<T> parent,
 			TwData parameters, TwData variables) {
-		super(proposedId);
+		super();
+		id = scope().newId(true,proposedId);
 		populationData = new popData2();
 		categoryInfo = cats;
 		this.parameters = parameters;
@@ -181,7 +185,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * Returns the set of categories ({@linkplain Category}) associated to this
 	 * container. If this container has variables and parameters, they are specified
 	 * by these categories.
-	 * 
+	 *
 	 * @return the object holding all the category information
 	 */
 	public Categorized<T> categoryInfo() {
@@ -192,7 +196,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * Returns the parameter set associated to this container. It is specified by
 	 * the categories associated to the container, accessible through the
 	 * {@code categoryInfo()} method.
-	 * 
+	 *
 	 * @return the parameter set - may be {@code null}
 	 */
 	public TwData parameters() {
@@ -203,7 +207,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * Returns the variables associated to this container. It is specified by the
 	 * categories associated to the container, accessible through the
 	 * {@code categoryInfo()} method.
-	 * 
+	 *
 	 * @return the variables - may be {@code null}
 	 */
 	public TwData variables() {
@@ -216,7 +220,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * such things as number of items, number of newly created and deleted items).
 	 * Population data are computed internally depending on the dynamics of the
 	 * items stored in the container.
-	 * 
+	 *
 	 * @return the population data as a read-only property list
 	 */
 	public ReadOnlyPropertyList populationData() {
@@ -228,7 +232,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * effectively added only when {@code effectChanges()} or
 	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
 	 * container state consistent over time in discrete time simulations.
-	 * 
+	 *
 	 * @param item the item to add
 	 */
 	public void addItem(T item) {
@@ -240,19 +244,19 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * effectively removed only when {@code effectChanges()} or
 	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
 	 * container state consistent over time in discrete time simulations.
-	 * 
+	 *
 	 * @param id the id of the item to remove
 	 */
 	@Override
 	public void removeItem(T item) {
 		itemsToRemove.add(item.id());
 	}
-	
+
 
 	/**
 	 * Gets the item matching the id passed as argument. Only searches this
 	 * container item list, not those of the sub-containers.
-	 * 
+	 *
 	 * @param id the id to search for
 	 * @return the matching item, {@code null} if not found
 	 */
@@ -264,7 +268,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	/**
 	 * Gets all items contained in this container only, without those contained in
 	 * sub-containers.
-	 * 
+	 *
 	 * @return a read-only item list
 	 */
 	@Override
@@ -275,7 +279,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	/**
 	 * Gets the sub-container matching the id passed as an argument. Only searches
 	 * this container sub-container list, not those of its sub-containers.
-	 * 
+	 *
 	 * @param containerId the sub-container to search for
 	 * @return the matching sub-container, {@code null} if not found
 	 */
@@ -300,7 +304,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	/**
 	 * Gets the sub-container matching the id passed as an argument. Searches this
 	 * container whole sub-container hierarchy, ie including all its sub-containers.
-	 * 
+	 *
 	 * @param containerId the sub-container to search for
 	 * @return the matching sub-container, {@code null} if not found
 	 */
@@ -312,7 +316,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	/**
 	 * Gets all sub-containers contained in this container only, without those
 	 * contained in sub-containers.
-	 * 
+	 *
 	 * @return a read-only container list
 	 */
 	@Override
@@ -331,7 +335,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * Gets all items contained in this container, including those contained in
 	 * sub-containers. CAUTION: these items may belong to different categories, i.e.
 	 * they may not store the same sets of variables/parameters.
-	 * 
+	 *
 	 * @return a read-only list of items
 	 */
 	@Override
@@ -352,7 +356,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	/**
 	 * Gets all items matching a particular category signature. Searches the whole
 	 * sub-container hierarchy.
-	 * 
+	 *
 	 * @param requestedCats the required categories
 	 * @return a read-only list of items
 	 */
@@ -380,7 +384,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	/**
 	 * Returns the initial item from which an item is a copy, null if it's not a
 	 * copy.
-	 * 
+	 *
 	 * @param item
 	 * @return
 	 */
@@ -501,18 +505,19 @@ public abstract class CategorizedContainer<T extends Identity>
 		for (CategorizedContainer<T> sc : subContainers.values())
 			sc.postProcess();
 		resetCounters();
+		((ResettableLocalScope)scope()).postProcess();
 	}
 
 	@Override
 	public void effectChanges() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void clearVariables() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -596,5 +601,11 @@ public abstract class CategorizedContainer<T extends Identity>
 	// NB two methods must be overridden in descendants: clone(item) and
 	// newInstance();
 	protected abstract T cloneItem(T item);
+
+	@Override
+	public String id() {
+		return id.id();
+	}
+
 
 }
