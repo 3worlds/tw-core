@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -58,8 +58,8 @@ import fr.ens.biologie.generic.Sealable;
  * @author gignoux - 10 mars 2017
  *
  */
-public abstract class AbstractProcess 
-		implements TwProcess, Sealable, MultipleDataTrackerHolder<Metadata>, 
+public abstract class AbstractProcess
+		implements TwProcess, Sealable, MultipleDataTrackerHolder<Metadata>,
 			Spatialized<DynamicSpace<SystemComponent,LocatedSystemComponent>> {
 
 	private boolean sealed = false;
@@ -74,8 +74,8 @@ public abstract class AbstractProcess
 	protected double searchRadius = 0.0;
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
-    
-	public AbstractProcess(ComponentContainer world, Timer timer, 
+
+	public AbstractProcess(ComponentContainer world, Timer timer,
 			DynamicSpace<SystemComponent,LocatedSystemComponent> space,
     		double searchR) {
     	super();
@@ -97,23 +97,23 @@ public abstract class AbstractProcess
 	public final boolean isSealed() {
 		return sealed;
 	}
-	
+
 	@Override
 	public DynamicSpace<SystemComponent,LocatedSystemComponent> space() {
 		return space;
 	}
-	
+
 	public final ComponentContainer ecosystem() {
 		return ecosystem;
 	}
-	
+
 	public void setSender(int id) {
 		for (DataTracker0D tracker:tsTrackers)
 			tracker.setSender(id);
 		for (DataTracker2D tracker:mapTrackers)
 			tracker.setSender(id);
 	}
-	
+
 	public void addDataTracker(DataTracker<?,?> tracker) {
 		if (!isSealed()) {
 			if (tracker instanceof DataTracker0D)
@@ -122,7 +122,7 @@ public abstract class AbstractProcess
 				mapTrackers.add((DataTracker2D) tracker);
 		}
 	}
-	
+
 	@Override
 	public Iterable<DataTracker<?,Metadata>> dataTrackers() {
 		return trackers;
@@ -132,7 +132,7 @@ public abstract class AbstractProcess
 	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
 		for (DataTracker0D tracker:tsTrackers)
-			tracker.recordTime(t);	
+			tracker.recordTime(t);
 		if (space!=null)
 			if (space.dataTracker()!=null)
 				space.dataTracker().recordTime(t);
@@ -140,9 +140,10 @@ public abstract class AbstractProcess
 	}
 
 	/**
-	 * Utility for descendants
-	 * @param context
-	 * @param container
+	 * Utility for descendants. Fills a hierarchical context from container information
+	 *
+	 * @param context the context to fill
+	 * @param container the container which information is to add to the context
 	 */
 	protected void setContext(HierarchicalContext context,
 			CategorizedContainer<SystemComponent> container) {
@@ -165,12 +166,33 @@ public abstract class AbstractProcess
 			context.groupName = container.id();
 		}
 	}
-	
+
+	/**
+	 * Utility for descendants. Instantiates and fills a hierarchical context from
+	 * component information.
+	 *
+	 * @param component the component to extract container information from
+	 * @return the new instance of the context
+	 */
+	protected HierarchicalContext getContext(SystemComponent component) {
+		HierarchicalContext context = new HierarchicalContext();
+		// group or ecosystem
+		setContext(context,component.container());
+		// lifecycle or ecosystem
+		if (component.container().parentContainer()!=null) {
+			setContext(context,component.container());
+			// ecosystem
+			if (component.container().parentContainer().parentContainer()!=null)
+				setContext(context,component.container().parentContainer().parentContainer());
+		}
+		return context;
+	}
+
 	public abstract void addFunction(TwFunction function);
-	
+
 	protected abstract void loop(CategorizedContainer<SystemComponent> container,
 			double t, double dt);
-	
+
 
 
 }

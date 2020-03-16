@@ -50,6 +50,7 @@ public class SystemRelation extends ALDataEdge implements Contained<RelationCont
 	protected static PropertyKeys DEFAULT_PROPERTIES = new PropertyKeys(P_RELATIONTYPE.key());
 
 	private Related<SystemComponent> relation = null;
+	private RelationContainer container = null;
 
 	public SystemRelation(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
 		super(id, start, end, props, graph);
@@ -66,19 +67,18 @@ public class SystemRelation extends ALDataEdge implements Contained<RelationCont
 
 	@Override
 	public void setContainer(RelationContainer container) {
-		// TODO Auto-generated method stub
+		if (this.container==null)
+			this.container = container;
 	}
 
 	@Override
 	public RelationContainer container() {
-		// TODO Auto-generated method stub
-		return null;
+		return container;
 	}
 
 	@Override
 	public void removeFromContainer() {
-		// TODO Auto-generated method stub
-
+		container = null;
 	}
 
 }

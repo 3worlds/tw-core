@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.containers;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -95,6 +96,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	private Identity id = null;
+	private String[] fullId = null;
+	int depth = -1;
 
 	private boolean sealed = false;
 	// category info (shared)
@@ -446,13 +449,15 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	@Override
 	public int depth() {
-		int result = 0;
-		CategorizedContainer<?> superC = this;
-		while (superC != null) {
-			result++;
-			superC = superC.superContainer;
+		if (depth==-1) {
+			depth = 0;
+			CategorizedContainer<?> superC = this;
+			while (superC != null) {
+				depth++;
+				superC = superC.superContainer;
+			}
 		}
-		return result;
+		return depth;
 	}
 
 
@@ -506,6 +511,8 @@ public abstract class CategorizedContainer<T extends Identity>
 			sc.postProcess();
 		resetCounters();
 		((ResettableLocalScope)scope()).postProcess();
+		fullId = null;
+		depth = -1;
 	}
 
 	@Override
@@ -607,5 +614,35 @@ public abstract class CategorizedContainer<T extends Identity>
 		return id.id();
 	}
 
+
+	@Override
+	public String[] fullId() {
+		if (fullId==null) {
+			fullId = new String[depth()+1];
+			int i = fullId.length-1;
+			fullId[i] = id();
+			CategorizedContainer<?> superC = this;
+			while (superC != null) {
+				i--;
+				fullId[i] = superC.id();
+				superC = superC.superContainer;
+			}
+		}
+		return fullId;
+	}
+
+	// NB: this will return a valid hierarchical id even if the item is not yet in the container
+	// use with caution.
+	@Override
+	public String[] itemId(String itid) {
+		String[] result = Arrays.copyOf(fullId(),fullId().length+1);
+		result[result.length-1] = itid;
+		return result;
+	}
+
+	@Override
+	public CategorizedContainer<T> parentContainer() {
+		return superContainer;
+	}
 
 }

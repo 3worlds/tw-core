@@ -36,6 +36,9 @@ public interface NestedContainer<T extends Identity> extends Container {
 	 */
 	public Iterable<? extends SimpleContainer<T>> subContainers();
 
+
+	public NestedContainer<T> parentContainer();
+
 	/**
 	 * Gets all items contained in this container, including those contained in
 	 * sub-containers. CAUTION: these items may belong to different categories, i.e.
@@ -61,6 +64,26 @@ public interface NestedContainer<T extends Identity> extends Container {
 		// do nothing
 	}
 
+	/**
+	 * Returns the distance of this container to the root of the nested container hierarchy. Hence
+	 * 0 for the root container, etc.
+	 *
+	 * @return
+	 */
 	public int depth();
+
+	/**
+	 * Returns the full hierarchical name of this container in the hierarchy, starting from the top
+	 *
+	 * @return
+	 */
+	public String[] fullId();
+
+	/**
+	 * Returns the full hierarchical name of an item contained in this container, starting from the top
+	 *
+	 * @return
+	 */
+	public String[] itemId(String itid);
 
 }

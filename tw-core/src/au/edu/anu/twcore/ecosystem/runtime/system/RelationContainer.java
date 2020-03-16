@@ -67,12 +67,16 @@ public class RelationContainer
 		// delete all old relations
 		for (Duple<SystemComponent,SystemComponent> dup : relationsToRemove)
 			for (Edge e:dup.getFirst().edges(Direction.OUT))
-				if (e.endNode().equals(dup.getSecond()))
+				if (e.endNode().equals(dup.getSecond())) {
 					e.disconnect();
+					((SystemRelation)e).removeFromContainer();
+				}
 		relationsToRemove.clear();
 		// establish all new relations
-		for (Duple<SystemComponent,SystemComponent> item : relationsToAdd)
-			item.getFirst().relateTo(item.getSecond(),relationType.id());
+		for (Duple<SystemComponent,SystemComponent> item : relationsToAdd) {
+			SystemRelation sr = item.getFirst().relateTo(item.getSecond(),relationType.id());
+			sr.setContainer(this);
+		}
 		relationsToAdd.clear();
 	}
 

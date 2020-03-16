@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -61,14 +61,14 @@ import fr.ens.biologie.generic.utils.Logging;
 /**
  * A TwProcess that loops on a list of SystemComponents and executes methods on
  * them
- * 
+ *
  * @author gignoux - 10 mars 2017
  *
  */
-public class ComponentProcess 
-		extends AbstractProcess 
+public class ComponentProcess
+		extends AbstractProcess
 		implements Categorized<SystemComponent> {
-	
+
 	private class newBornSettings {
 		SystemFactory factory = null;
 		ComponentContainer container = null;
@@ -76,7 +76,7 @@ public class ComponentProcess
 	}
 
 	private static Logger log = Logging.getLogger(ComponentProcess.class);
-	
+
 	private SortedSet<Category> focalCategories = new TreeSet<>();
 	private String categoryId = null;
 
@@ -85,24 +85,24 @@ public class ComponentProcess
 	private List<DeleteDecisionFunction> Dfunctions = new LinkedList<DeleteDecisionFunction>();
 	private List<CreateOtherDecisionFunction> COfunctions = new LinkedList<CreateOtherDecisionFunction>();
 	private List<RelocateFunction> Rfunctions = new LinkedList<RelocateFunction>();
-	
+
 	// local variables for looping
 	private HierarchicalContext focalContext = new HierarchicalContext();
 	private LifeCycle lifeCycle = null;
 //	private Ecosystem ecosystem = null;
 	private SystemFactory group = null;
-	
+
 	private ComponentContainer lifeCycleContainer = null;
 //	private SystemContainer ecosystemContainer = null;
 //	private SystemContainer groupContainer = null;
-	
-	public ComponentProcess(ComponentContainer world, Collection<Category> categories, 
+
+	public ComponentProcess(ComponentContainer world, Collection<Category> categories,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
 		super(world,timer,space,searchR);
 		focalCategories.addAll(categories);
 		categoryId = buildCategorySignature();
 	}
-	
+
 	// recursive loop on all sub containers of the community
 	protected void loop(CategorizedContainer<SystemComponent> container,
 		double t, double dt) {
@@ -114,7 +114,7 @@ public class ComponentProcess
 			lifeCycle = (LifeCycle) container.categoryInfo();
 			lifeCycleContainer = (ComponentContainer) container;
 		}
-		else if (container.categoryInfo() instanceof SystemFactory) 
+		else if (container.categoryInfo() instanceof SystemFactory)
 			if (container.categoryInfo().belongsTo(focalCategories)) {
 				setContext(focalContext,container);
 				group = (SystemFactory) container.categoryInfo();
@@ -130,13 +130,13 @@ public class ComponentProcess
 		for (CategorizedContainer<SystemComponent> subc:container.subContainers())
 			loop(subc,t,dt);
 	}
-	
+
 	// single loop on a container which matches the process categories
 	private void executeFunctions(CategorizedContainer<SystemComponent> container,
 		double t, double dt) {
 		for (SystemComponent focal:container.items()) {
 			// track component state
-			for (DataTracker0D tracker:tsTrackers) 
+			for (DataTracker0D tracker:tsTrackers)
 				if (tracker.isTracked(focal)) {
 				tracker.recordItem(focalContext.buildItemId(focal.id()));
 				tracker.record(currentStatus,focal.currentState());
@@ -163,7 +163,7 @@ public class ComponentProcess
 						// find the next stage & instantiate new component
 						ComponentContainer recruitContainer = null;
 						for (CategorizedContainer<SystemComponent> subContainer:
-							lifeCycleContainer.subContainers()) 
+							lifeCycleContainer.subContainers())
 							if (subContainer.categoryInfo().categoryId().contains(newCat))
 								recruitContainer = (ComponentContainer) subContainer;
 						if ((recruitContainer==null) |
@@ -204,7 +204,7 @@ public class ComponentProcess
 							container.removeItem(focal);
 							recruitContainer.addItem(newRecruit);
 							// remove from tracklist - safe, data sending has already been made
-							for (DataTracker0D tracker:tsTrackers) 
+							for (DataTracker0D tracker:tsTrackers)
 								if (tracker.isTracked(focal))
 									tracker.removeTrackedItem(focal);
 							// CAUTION: this makes sure the new object takes the place of
@@ -225,15 +225,15 @@ public class ComponentProcess
 					// also remove from space !!!
 					for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
 							((SystemFactory)focal.membership()).spaces()) {
-						space.unlocate(focal);						
+						space.unlocate(focal);
 						if (space.dataTracker()!=null)
-							space.dataTracker().removeItem(currentStatus,focalContext.buildItemId(focal.id()));
+							space.dataTracker().removeItem(currentStatus,container.itemId(focal.id()));
 					}
 					// remove from tracklist if dead - safe, data sending has already been made
-					for (DataTracker0D tracker:tsTrackers) 
+					for (DataTracker0D tracker:tsTrackers)
 						if (tracker.isTracked(focal))
 							tracker.removeTrackedItem(focal);
-					// if present, spreads some values to other components 
+					// if present, spreads some values to other components
 					// (e.g. "decomposition", or "erosion")
 					if (!function.getConsequences().isEmpty())
 						// TODO: the "returnsTo" relation type must be predefined somewhere
@@ -249,12 +249,12 @@ public class ComponentProcess
 			// creation of other SystemComponents
 			for (CreateOtherDecisionFunction function : COfunctions) {
 				// if there is a life cycle, then it will return the next stage(s)
-				List<newBornSettings> newBornSpecs = new ArrayList<>(); 
+				List<newBornSettings> newBornSpecs = new ArrayList<>();
 				if (lifeCycle!=null ) {
 					// search for category signatures of produce targets
 					for (String catSignature:lifeCycle.produceTo(group))
 						for (CategorizedContainer<SystemComponent> subc:
-							lifeCycleContainer.subContainers()) 
+							lifeCycleContainer.subContainers())
 						// since lifeCycle stages only have one category this test should do
 						if (subc.categoryInfo().categoryId().contains(catSignature)) {
 							newBornSettings nbs = new newBornSettings();
@@ -263,7 +263,7 @@ public class ComponentProcess
 							nbs.container = (ComponentContainer) subc;
 							newBornSpecs.add(nbs);
 					}
-				} 
+				}
 				// without a life cycle, only objects of the same type can be created
 				else {
 					newBornSettings nbs = new newBornSettings();
@@ -313,10 +313,11 @@ public class ComponentProcess
 								log.warning("Wrong number of dimensions: default location generated");
 								newLocation = space.defaultLocation();
 							}
-							space.locate(newBorn,newLocation);	
+							space.locate(newBorn,newLocation);
 							if (space.dataTracker()!=null)
 								space.dataTracker().recordItem(currentStatus,newLocation,
-									newBornContext.buildItemId(newBorn.id()));
+									// caution - item not yet in container.
+									nbs.container.itemId(newBorn.id()));
 						}
 						if (function.relateToOther())
 							focal.relateTo(newBorn,parentTo.key()); // delayed addition
@@ -327,7 +328,7 @@ public class ComponentProcess
 			}
 		}
 	}
-	
+
 	@Override
 	public void addFunction(TwFunction function) {
 		if (!isSealed()) {
@@ -353,7 +354,7 @@ public class ComponentProcess
 	public String categoryId() {
 		return categoryId;
 	}
-	
+
 	public static TwFunctionTypes[] compatibleFunctionTypes = {
 		ChangeCategoryDecision,
 		ChangeState,
