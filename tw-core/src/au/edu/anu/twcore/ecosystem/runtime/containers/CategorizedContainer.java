@@ -618,9 +618,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	@Override
 	public String[] fullId() {
 		if (fullId==null) {
-			fullId = new String[depth()+1];
-			int i = fullId.length-1;
-			fullId[i] = id();
+			fullId = new String[depth()];
+			int i = fullId.length;
 			CategorizedContainer<?> superC = this;
 			while (superC != null) {
 				i--;

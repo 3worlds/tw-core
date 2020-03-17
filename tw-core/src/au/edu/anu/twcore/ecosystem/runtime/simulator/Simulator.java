@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -73,14 +73,14 @@ import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * The class which runs a single simulation on a single parameter set
- * 
+ *
  * @author Jacques Gignoux - 29 août 2019
  *
  */
 public class Simulator implements Resettable {
-	
+
 	// CLASSES
-	
+
 	/** a data tracker to send time data */
 	class TimeTracker extends AbstractDataTracker<TimeData,Metadata> {
 		private TimeTracker() {
@@ -97,11 +97,11 @@ public class Simulator implements Resettable {
 			}
 		}
 	}
-	
+
 	// FIELDS
-	
+
 	private static Logger log = Logging.getLogger(Simulator.class);
-	/** this simulator's unique id */ 
+	/** this simulator's unique id */
 	private int id = -1;
 	/** helper local field to build up and send metadata to data observers */
 	private Metadata metadata;
@@ -123,22 +123,22 @@ public class Simulator implements Resettable {
 	 * simultaneous time models */
 	private Map<Integer, List<List<TwProcess>>> processCallingOrder;
 	/** the timeTracker, sending time information to whoever is listening */
-	TimeTracker timetracker; 
+	TimeTracker timetracker;
 	/** container for all SystemComponents */
 	EcosystemGraph ecosystem;
 	/** simulator status */
 	private SimulatorStatus status = SimulatorStatus.Initial;
 	/** all data trackers used in this simulator, together with their metadata */
-	private Map<DataTracker<?,Metadata>,Metadata> trackers = new HashMap<>(); 
+	private Map<DataTracker<?,Metadata>,Metadata> trackers = new HashMap<>();
 	/** all spaces used in this simulation */
 	private Set<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces = new HashSet<>();
-	
-	
+
+
 	// CONSTRUCTORS
 
 	/**
-	 * Every call to this constructor increments N_INSTANCES. Every new instance has a unique id.  
-	 * 
+	 * Every call to this constructor increments N_INSTANCES. Every new instance has a unique id.
+	 *
 	 * @param stoppingCondition
 	 * @param refTimer
 	 * @param timers
@@ -148,7 +148,7 @@ public class Simulator implements Resettable {
 	 */
 	@SuppressWarnings("unchecked")
 	public Simulator(int id,
-			StoppingCondition stoppingCondition, 
+			StoppingCondition stoppingCondition,
 			TimeLine refTimer,
 			List<TimeModel> timeModels,
 			List<Timer> timers,
@@ -185,14 +185,14 @@ public class Simulator implements Resettable {
 							trackers.put(dt, meta);
 						}
 					if (p instanceof Spatialized<?>) {
-						DynamicSpace<SystemComponent,LocatedSystemComponent> sp = 
+						DynamicSpace<SystemComponent,LocatedSystemComponent> sp =
 							((Spatialized<DynamicSpace<SystemComponent,LocatedSystemComponent>>)p).space();
 						if (sp!=null)
 							spaces.add(sp);
 					}
 		}
 		// add space data trackers to datatracker list
-		for (Space<SystemComponent> sp:spaces) 
+		for (Space<SystemComponent> sp:spaces)
 			if (sp instanceof SingleDataTrackerHolder) {
 				SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<Metadata>)sp).dataTracker();
 				if (dts!=null)
@@ -200,11 +200,11 @@ public class Simulator implements Resettable {
 		}
 		log.info("END Simulator "+id+" instantiated");
 	}
-	
+
 	public int id() {
 		return id;
 	}
-	
+
 	private ReadOnlyPropertyList findTimerProps(List<TimeModel> timeModels,TwProcess p) {
 		for (TimeModel tm:timeModels)
 			for (TreeNode tn:tm.getChildren())
@@ -213,17 +213,17 @@ public class Simulator implements Resettable {
 						return tm.properties();
 		return null;
 	}
-	
+
 	// METHODS
-	
+
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		timetracker.addObserver(observer);
-		// as metadata, send all properties of the reference TimeLine of this simulator.		
+		// as metadata, send all properties of the reference TimeLine of this simulator.
 //		timetracker.sendMetadata(metadata);
 		// Send only to the newly observed widget. I've checked - it is ready.
 		timetracker.sendMetadataTo((GridNode) observer, metadata);
 	}
-	
+
 	// run one simulation step
 	@SuppressWarnings("unused")
 	public void step() {
@@ -237,7 +237,7 @@ public class Simulator implements Resettable {
 			nexttime = Math.min(nexttime, currentTimes[i]);
 			i++;
 		}
-		// advance main timer clock 
+		// advance main timer clock
 		if (nexttime == Long.MAX_VALUE)
 			status = SimulatorStatus.Final;
 		else {
@@ -248,7 +248,7 @@ public class Simulator implements Resettable {
 			// searches
 			i = 0;
 			int ctmask = 0;
-			for (Timer tm : timerList) { 
+			for (Timer tm : timerList) {
 				if (currentTimes[i] == nexttime) {
 					ctmask = ctmask | timeModelMasks[i];
 				}
@@ -271,8 +271,8 @@ public class Simulator implements Resettable {
 					tm.advanceTime(lastTime);
 				i++;
 			}
-			// 5 advance age of ALL SystemComponents, including the not update ones.	
-		
+			// 5 advance age of ALL SystemComponents, including the not update ones.
+
 //			int nItems=0;
 			for (SystemComponent sc:ecosystem.community().allItems()) {
 				sc.autoVar().writeEnable();
@@ -281,13 +281,13 @@ public class Simulator implements Resettable {
 //				nItems++;
 			}
 			// apply all changes to community
-			ecosystem.effectChanges(); 
+			ecosystem.effectChanges();
 			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:spaces)
 				space.effectChanges();
 //			System.out.println("Ecosystem: "+ecosystem.nNodes()+" components, "+ecosystem.nEdges()+" relations");
 			for (DataTracker<?,Metadata> tracker:trackers.keySet())
 				tracker.updateTrackList();
-//			
+//
 ////			// 7 Send graph data to whoever is listening
 ////			graphWidgets = getGraphListeners();
 ////			for (GridNode gn:graphWidgets) {
@@ -305,15 +305,14 @@ public class Simulator implements Resettable {
 //			System.out.println("step\t"+nItems+"\t"+(et-st));
 		}
 	}
-	
+
 	/**
 	 * recomputes the coordinates of systemComponents after copied from initial systems
 	 * recursive.
 	 */
-	private void computeInitialCoordinates(CategorizedContainer<SystemComponent> container,
-			List<String> labels) {
+	private void computeInitialCoordinates(CategorizedContainer<SystemComponent> container) {
 		for (SystemComponent sc:container.items()) {
-			Iterable<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces = 
+			Iterable<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces =
 				((SystemFactory)sc.membership()).spaces();
 			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:spaces) {
 				// get the initial item matching this
@@ -325,21 +324,19 @@ public class Simulator implements Resettable {
 						// locate the initial item clone at the location of the initial item
 						Location initLoc = space.locate(sc,lisc.location());
 						// send coordinates to data tracker if needed
-						if (space.dataTracker()!=null ) {						
-							labels.add(sc.id());
+						if (space.dataTracker()!=null ) {
 							double x[] = new double[initLoc.asPoint().dim()];
 							for (int i=0; i<initLoc.asPoint().dim(); i++)
 								x[i] = initLoc.asPoint().coordinate(i);
-							space.dataTracker().recordItem(SimulatorStatus.Initial,x,labels.toArray(new String[labels.size()]));
-							labels.remove(sc.id());
+							space.dataTracker().recordItem(SimulatorStatus.Initial,x,container.itemId(sc.id()));
 						}
 				}
 			}
 		}
 		for (CategorizedContainer<SystemComponent> cc:container.subContainers())
-			computeInitialCoordinates(cc,labels);
+			computeInitialCoordinates(cc);
 	}
-	
+
 	// postProcess() + preProcess() = reset a simulation at its initial state
 	@Override
 	public void preProcess() {
@@ -349,11 +346,9 @@ public class Simulator implements Resettable {
 			t.preProcess();
 		timetracker.sendData(startTime);
 		// clones initial items to ecosystem objects
-		ecosystem.preProcess(); 
+		ecosystem.preProcess();
 		// computes coordinates of items just added before
-		List<String> labels = new LinkedList<>();
-		labels.add(ecosystem.community().id());
-		computeInitialCoordinates(ecosystem.community(),labels);
+		computeInitialCoordinates(ecosystem.community());
 	}
 
 	@Override
@@ -370,7 +365,7 @@ public class Simulator implements Resettable {
 			space.postProcess();
 	}
 
-	
+
 	// returns true if stopping condition is met
 	public boolean stop() {
 		boolean finished = stoppingCondition.stop();
@@ -378,19 +373,19 @@ public class Simulator implements Resettable {
 			status = Final;
 		return finished;
 	}
-	
+
 	public boolean isStarted() {
 		return (status != Initial);
 	}
-	
+
 	public boolean isFinished() {
 		return (status == Final);
 	}
-	
+
 	public long currentTime() {
 		return lastTime;
 	}
-	
+
 	public ComponentContainer community() {
 		return ecosystem.community();
 	}
