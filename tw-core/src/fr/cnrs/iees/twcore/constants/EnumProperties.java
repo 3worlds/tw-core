@@ -47,12 +47,14 @@ public class EnumProperties {
 	public static void recordEnums() {
 		DataElementType.defaultValue();
 		DateTimeType.defaultValue();
+		EdgeEffects.defaultValue();
 		ExperimentDesignType.defaultValue();
 		FileType.defaultValue();
 		Grouping.defaultValue();
 		LifespanType.defaultValue();
 		SamplingMode.defaultValue();
 		SnippetLocation.defaultValue();
+		SpaceType.defaultValue();
 		StatisticalAggregates.defaultValue();
 		StatisticalAggregatesSet.defaultValue();
 		PopulationVariables.defaultValue();
@@ -65,7 +67,6 @@ public class EnumProperties {
 		RngResetType.defaultValue();
 		RngSeedSourceType.defaultValue();
 		RngAlgType.defaultValue();
-		SpaceType.defaultValue();
 	}
 
 }
