@@ -21,14 +21,14 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
  * Processes for searching the SystemComponent lists to establish relations between them.
  * The difference with RelationProcess is that here we do not have relations yet, so we look
  * for pairs of SystemComponents to establish a relation between them
- * 
+ *
  * NB: this Process should not have datatrackers !
- * 
+ *
  * @author Jacques Gignoux - 16 janv. 2020
  *
  */
 @SuppressWarnings("unused")
-public class SearchProcess 
+public class SearchProcess
 		extends AbstractRelationProcess  {
 
 	private List<RelateToDecisionFunction> RTfunctions = new LinkedList<>();
@@ -42,8 +42,8 @@ public class SearchProcess
 	private ComponentContainer otherLifeCycleContainer = null;
 	private SystemFactory otherGroup = null;
 	private ComponentContainer otherGroupContainer = null;
-	
-	public SearchProcess(ComponentContainer world, RelationContainer relation, 
+
+	public SearchProcess(ComponentContainer world, RelationContainer relation,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space,double searchR) {
 		super(world, relation, timer, space, searchR);
 	}
@@ -55,7 +55,7 @@ public class SearchProcess
 				RTfunctions.add((RelateToDecisionFunction) function);
 		}
 	}
-	
+
 	@Override
 	protected void loop(CategorizedContainer<SystemComponent> container, double t, double dt) {
 		if (container.categoryInfo() instanceof Ecosystem) {
@@ -103,7 +103,7 @@ public class SearchProcess
 			}
 		}
 	}
-	
+
 	private void executeFunctions(CategorizedContainer<SystemComponent> focalContainer,
 			CategorizedContainer<SystemComponent> otherContainer,
 			double t, double dt) {
@@ -126,16 +126,17 @@ public class SearchProcess
 			else {
 				// search radius positive, means we only search until this distance
 				if (searchRadius>space.precision()) {
+					// dont search if item already related !
 					Iterable<SystemComponent> lsc = space.getItemsWithin(focal,searchRadius);
 					if (lsc!=null)
 						for (SystemComponent other:lsc) {
 							if (other!=focal)
 								if (other.membership().belongsTo(otherCategories))
 									if (!otherContainer.containsInitialItem(other))
-										doRelate(t,dt,focal,other);	
+										doRelate(t,dt,focal,other);
 						}
 				}
-				// search radius null, means we search for the nearest neighbours only 
+				// search radius null, means we search for the nearest neighbours only
 				else {
 					Iterable<SystemComponent> lsc = space.getNearestItems(focal);
 					if (lsc!=null)

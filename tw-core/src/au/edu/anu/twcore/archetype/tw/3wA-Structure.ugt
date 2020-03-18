@@ -3,7 +3,7 @@ hasNode structureSpec
 	isOfClass = String("structure")
 	hasParent = StringTable(([1]"system:"))
 	multiplicity = IntegerRange("1..1")
-	
+
 hasNode categorySetRootSpec
 	isOfClass = String("categorySet")
 	hasParent = StringTable(([1]"structure:"))
@@ -30,11 +30,11 @@ hasNode categorySpec
 		isOfClass = String("parameters")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
-		
+
 hasNode componentTypeSpec
 	isOfClass = String("componentType")
 	hasParent = StringTable(([1]"structure:"))
-	multiplicity = IntegerRange("1..*") 
+	multiplicity = IntegerRange("1..*")
 	hasProperty componentLifeSpanPropertySpec
 		hasName = String("lifeSpan")
 		type = String("LifespanType")
@@ -55,16 +55,16 @@ hasNode componentTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
 	hasProperty componentParameterSpec
 		hasName = String("parameterClass")
-		type =  String("String") 
-		multiplicity = IntegerRange("0..1") 
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
 	hasProperty componentDecoratorSpec
 		hasName = String("decoratorClass")
-		type =  String("String") 
-		multiplicity = IntegerRange("0..1") 
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
 	hasProperty componentDriverSpec
 		hasName = String("driverClass")
-		type =  String("String") 
-		multiplicity = IntegerRange("0..1") 
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
 	hasProperty autoRelocateFunctionSpec
 		hasName = String("relocateFunctionName")
 		type = String("StringTable")
@@ -82,7 +82,11 @@ hasNode relationTypeSpec
 		isOfClass = String("fromCategory")
 		toNode = String("category:")
 		multiplicity = IntegerRange("1..*")
-		
+	hasProperty relationLifeSpanPropertySpec
+		hasName = String("lifeSpan")
+		type = String("LifespanType")
+		multiplicity = IntegerRange("1..1")
+
 hasNode arenaSpec
 	isOfClass = String("arena")
 	hasParent = StringTable(([1]"structure:"))
@@ -118,7 +122,7 @@ hasNode arenaSpec
 //		isOfClass = String("useRNG")
 //		toNode = String("rng:")
 //		multiplicity = IntegerRange("0..1")
-	
+
 hasNode spaceSpec
 	isOfClass = String("space")
 	hasParent = StringTable(([1]"arena:"))
@@ -171,22 +175,22 @@ hasNode spaceSpec
 		hasName = String("y-nCells")
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
-	
+
 	mustSatisfyQuery RequirePropertyQueryx-limits
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-		conditions = StringTable(([3]"x-limits","type","continuousFlatSurface"))		
+		conditions = StringTable(([3]"x-limits","type","continuousFlatSurface"))
 	mustSatisfyQuery RequirePropertyQueryy-limits
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-		conditions = StringTable(([3]"y-limits","type","continuousFlatSurface"))		
+		conditions = StringTable(([3]"y-limits","type","continuousFlatSurface"))
 
 	mustSatisfyQuery RequirePropertyQuerycellSize
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-		conditions = StringTable(([3]"cellSize","type","squareGrid"))		
+		conditions = StringTable(([3]"cellSize","type","squareGrid"))
 	mustSatisfyQuery RequirePropertyQueryx-nCells
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-		conditions = StringTable(([3]"x-nCells","type","squareGrid"))		
+		conditions = StringTable(([3]"x-nCells","type","squareGrid"))
 	mustSatisfyQuery RequirePropertyQueryy-nCells
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-		conditions = StringTable(([3]"y-nCells","type","squareGrid"))		
-		
+		conditions = StringTable(([3]"y-nCells","type","squareGrid"))
+
 
