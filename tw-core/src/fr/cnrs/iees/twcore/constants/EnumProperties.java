@@ -65,6 +65,7 @@ public class EnumProperties {
 		RngResetType.defaultValue();
 		RngSeedSourceType.defaultValue();
 		RngAlgType.defaultValue();
+		SpaceType.defaultValue();
 	}
 
 }

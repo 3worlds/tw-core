@@ -88,10 +88,42 @@ hasNode arenaSpec
 	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("0..1")
 
+//hasNode spaceSpec
+//	isOfClass = String("space")
+//	hasParent = StringTable(([1]"arena:"))
+//	multiplicity = IntegerRange("1..*")
+//	hasProperty spaceTypeSpec
+//		hasName = String("type")
+//		type = String("SpaceType")
+//		multiplicity = IntegerRange("1..1")
+//	hasProperty edgeEffectsSpec
+//		hasName = String("edgeEffects")
+//		type = String("EdgeEffects")
+//		multiplicity = IntegerRange("1..1")
+//	mustSatisfyQuery CheckSubArchetypeQuerySpaceType1
+//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+//		parameters = StringTable(([3]"type","continuousFlatSurface","3wSA-continuousFlatSurface.ugt"))
+//	mustSatisfyQuery CheckSubArchetypeQuerySpaceType2
+//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+//		parameters = StringTable(([3]"type","squareGrid","3wSA-squareGrid.ugt"))
+//	hasProperty spacePrecisionSpec
+//		hasName = String("precision")
+//		type = String("Double")
+//		multiplicity = IntegerRange("0..1")
+//	hasProperty spaceUnitsSpec
+//		hasName = String("units")
+//		type = String("String")
+//		multiplicity = IntegerRange("0..1")
+//	hasEdge spaceRngSpec
+//		isOfClass = String("useRNG")
+//		toNode = String("rng:")
+//		multiplicity = IntegerRange("0..1")
+	
 hasNode spaceSpec
 	isOfClass = String("space")
 	hasParent = StringTable(([1]"arena:"))
 	multiplicity = IntegerRange("1..*")
+	// common properties
 	hasProperty spaceTypeSpec
 		hasName = String("type")
 		type = String("SpaceType")
@@ -100,12 +132,6 @@ hasNode spaceSpec
 		hasName = String("edgeEffects")
 		type = String("EdgeEffects")
 		multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery CheckSubArchetypeQuerySpaceType1
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"type","continuousFlatSurface","3wSA-continuousFlatSurface.ugt"))
-	mustSatisfyQuery CheckSubArchetypeQuerySpaceType2
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"type","squareGrid","3wSA-squareGrid.ugt"))
 	hasProperty spacePrecisionSpec
 		hasName = String("precision")
 		type = String("Double")
@@ -118,5 +144,49 @@ hasNode spaceSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
+
+	// specific properties
+	hasProperty xLimitsSpec
+		hasName = String("x-limits")
+		type = String("Interval")
+		multiplicity = IntegerRange("1..1")
+		// the ymin and ymax of the rectangular area
+	hasProperty yLimitsSpec
+		hasName = String("y-limits")
+		type = String("Interval")
+		multiplicity = IntegerRange("1..1")
+
+	// the cell size of the grid
+	hasProperty cellSizeSpec
+		hasName = String("cellSize")
+		type = String("Double")
+		multiplicity = IntegerRange("1..1")
+	// the number of cells in x
+	hasProperty xnCellsSpec
+		hasName = String("x-nCells")
+		type = String("Integer")
+		multiplicity = IntegerRange("1..1")
+	// can't have optional properties
+	hasProperty ynCellsSpec
+		hasName = String("y-nCells")
+		type = String("Integer")
+		multiplicity = IntegerRange("1..1")
 	
+	mustSatisfyQuery RequirePropertyQueryx-limits
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([3]"x-limits","type","continuousFlatSurface"))		
+	mustSatisfyQuery RequirePropertyQueryy-limits
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([3]"y-limits","type","continuousFlatSurface"))		
+
+	mustSatisfyQuery RequirePropertyQuerycellSize
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([3]"cellSize","type","squareGrid"))		
+	mustSatisfyQuery RequirePropertyQueryx-nCells
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([3]"x-nCells","type","squareGrid"))		
+	mustSatisfyQuery RequirePropertyQueryy-nCells
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([3]"y-nCells","type","squareGrid"))		
+		
 
