@@ -1,0 +1,33 @@
+hasNode functionSpec
+	isOfClass = String("function")
+	hasParent = StringTable(([1]"process:"))
+	multiplicity = IntegerRange("0..*")
+	mustSatisfyQuery functionNameWithUppercaseQuery
+		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
+	mustSatisfyQuery functionMatchesWithProcessTypeSpec
+		className = String("au.edu.anu.twcore.archetype.tw.FunctionMatchProcessTypeQuery")
+	hasProperty functionTypeSpec
+		hasName = String("type")
+		type = String("TwFunctionTypes")
+		multiplicity = IntegerRange("1..1")
+	hasProperty userFunctionSpec
+		hasName = String("userClassName")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+	// a function may have a node to a RNG. if none is required, default is used
+	// if more than one is needed, then make two functions.
+	hasEdge functionRngSpec
+		isOfClass = String("useRNG")
+		toNode = String("rng:")
+		multiplicity = IntegerRange("0..1")
+
+
+	// specific to createOtherDecision: do we want to keep a parent link between offspring and parent?
+	hasProperty relateToFunctionKeepLinkPropertySpec
+		hasName = String("relateToProduct")
+		type = String("Boolean")
+		multiplicity = IntegerRange("1..1")		
+	mustSatisfyQuery TableIntegerNumberRangeSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([3]"relateToProduct","type","CreateOtherDecision"))
+		
