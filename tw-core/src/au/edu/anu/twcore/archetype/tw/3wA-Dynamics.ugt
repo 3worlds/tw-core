@@ -11,27 +11,27 @@ hasNode initialisationSpec
 	multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery initialiserNameWithUppercaseQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
-	
+
 hasNode timeLineSpec
 	isOfClass = String("timeLine")
 	hasParent = StringTable(([1]"dynamics:"))
 	multiplicity = IntegerRange("1..1")
 	hasProperty scalePropertySpec
 		hasName = String("scale")
-		type =  String("TimeScaleType") 
-		multiplicity = IntegerRange("1..1") 
+		type =  String("TimeScaleType")
+		multiplicity = IntegerRange("1..1")
 	hasProperty shortestTimeUnitPropertySpec
 		hasName = String("shortestTimeUnit")
-		type =  String("TimeUnits") 
-		multiplicity = IntegerRange("1..1") 
+		type =  String("TimeUnits")
+		multiplicity = IntegerRange("1..1")
 	hasProperty longestTimeUnitPropertySpec
 		hasName = String("longestTimeUnit")
-		type =  String("TimeUnits") 
-		multiplicity = IntegerRange("1..1") 
+		type =  String("TimeUnits")
+		multiplicity = IntegerRange("1..1")
 	hasProperty timeOriginPropertySpec
 		hasName = String("timeOrigin")
 		type = String("DateTimeType")
-		multiplicity = IntegerRange("1..1") 
+		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery shortestTimeUnitTimeUnitValidityQuery
 		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
 		values = StringTable(([2]"shortestTimeUnit","scale"))
@@ -53,7 +53,7 @@ hasNode timeModelSpec
 	mustSatisfyQuery timeUnitTimeUnitValidityQuery
 		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
 		values = StringTable(([2]"timeUnit","scale"))
-	hasProperty 
+	hasProperty
 		hasName = String("nTimeUnits")
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
@@ -109,33 +109,6 @@ hasNode processSpec
 			type = String("Double")
 			multiplicity = IntegerRange("1..1")
 
-//hasNode functionSpec
-//	isOfClass = String("function")
-//	hasParent = StringTable(([1]"process:"))
-//	multiplicity = IntegerRange("0..*")
-//	mustSatisfyQuery functionNameWithUppercaseQuery
-//		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
-//	mustSatisfyQuery functionMatchesWithProcessTypeSpec
-//		className = String("au.edu.anu.twcore.archetype.tw.FunctionMatchProcessTypeQuery")
-//	hasProperty functionTypeSpec
-//		hasName = String("type")
-//		type = String("TwFunctionTypes")
-//		multiplicity = IntegerRange("1..1")
-//	hasProperty userFunctionSpec
-//		hasName = String("userClassName")
-//		type = String("String")
-//		multiplicity = IntegerRange("0..1")
-	// a function may have a node to a RNG. if none is required, default is used
-	// if more than one is needed, then make two functions.
-//	hasEdge functionRngSpec
-//		isOfClass = String("useRNG")
-//		toNode = String("rng:")
-//		multiplicity = IntegerRange("0..1")
-	// specific to createOther: do we want to keep a parent link between offspring and parent?
-//	mustSatisfyQuery CheckSubArchetypeQueryCreateOtherDecision
-//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-//		parameters = StringTable(([3]"type","CreateOtherDecision","3wSA-CreateOtherDecision.ugt"))
-
 hasNode functionSpec
 	isOfClass = String("function")
 	hasParent = StringTable(([1]"process:"))
@@ -158,14 +131,12 @@ hasNode functionSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
-
-
 	//------- specific to createOtherDecision
 	// do we want to keep a parent link between offspring and parent?
 	hasProperty relateToFunctionKeepLinkPropertySpec
 		hasName = String("relateToProduct")
 		type = String("Boolean")
-		multiplicity = IntegerRange("1..1")		
+		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery TableIntegerNumberRangeSpecCondition
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([3]"relateToProduct","type","CreateOtherDecision"))
@@ -197,7 +168,7 @@ hasNode consequenceFunctionSpec
 		multiplicity = IntegerRange("0..1")
 	// TODO: specific to 	ChangeOtherStateFunction when consequence of DeleteDecision:
 	// must specify to which other item data should be returned...
-		
+
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")
 	hasParent = StringTable(([1]"process:"))
@@ -215,19 +186,19 @@ hasNode dataTrackerSpec
 	hasProperty SatisticsSpec
 		hasName = String("statistics")
 		type = String("StatisticalAggregatesSet")
-		multiplicity = IntegerRange("0..1") 
+		multiplicity = IntegerRange("0..1")
 	hasProperty tableSatisticsSpec
 		hasName = String("tableStatistics")
 		type = String("StatisticalAggregatesSet")
 		multiplicity = IntegerRange("0..1")
-	// these two properties are only needed if there is a trackComponent edge 
+	// these two properties are only needed if there is a trackComponent edge
 	hasProperty samplingModeSpec
 		hasName = String("samplingMode")
-		type = String("SamplingMode") 
+		type = String("SamplingMode")
 		multiplicity = IntegerRange("0..1") // if absent, only tracks the target component
 	hasProperty sampleSizeSpec
 		hasName = String("sampleSize")
-		type = String("String") // valid values: any >0 number, or "ALL" - defaults to 1 
+		type = String("String") // valid values: any >0 number, or "ALL" - defaults to 1
 		multiplicity = IntegerRange("0..1") // if absent, defaults to 1
 
 	// tracking of data fields
@@ -279,7 +250,7 @@ hasNode dataTrackerSpec
 		isOfClass = String("trackComponent")
 		toNode = String("initialState:")
 		multiplicity = IntegerRange("0..1")
-				
+
 	// tracking of population data, ie groups
 	hasEdge trackPopulationEdgeSpec
 		// todo: check this population is of the proper category?
@@ -313,8 +284,8 @@ hasNode lifeCycleSpec
 	multiplicity = IntegerRange("0..*")
 	hasProperty lifeCycleParameterSpec
 		hasName = String("parameterClass")
-		type =  String("String") 
-		multiplicity = IntegerRange("0..1") 
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
 	hasEdge lifeCycleToCategorySetSpec
 		isOfClass = String("appliesTo")
 		toNode = String("categorySet:")
@@ -349,7 +320,7 @@ hasNode recruitSpec
 		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
 	mustSatisfyQuery validRecruitProcess
 		className = String("au.edu.anu.twcore.archetype.tw.ValidLifeCycleProcessQuery")
-		
+
 hasNode produceSpec
 	isOfClass = String("produce")
 	hasParent = StringTable(([1]"lifeCycle:"))
@@ -408,7 +379,7 @@ hasNode stoppingConditionSpec
 	mustSatisfyQuery CheckSubArchetypeQueryMultipleAndStop
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition","3wSA-MultipleStoppingCondition.ugt"))
-			
+
 // how to specify initial community:
 
 hasNode initialStateSpec
@@ -419,7 +390,7 @@ hasNode initialStateSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
-	
+
 // set of values for a parameter set linked to a group of components or a life cycle
 hasNode groupSpec
 	isOfClass = String("group")
@@ -445,8 +416,8 @@ hasNode groupSpec
 		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
 	mustSatisfyQuery lifeCycleMustHaveNoComponents
 		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleNoComponentsQuery")
-	
-// initial state for an individual component 	
+
+// initial state for an individual component
 hasNode componentSpec
 	isOfClass = String("component")
 	hasParent = StringTable(([2]"initialState:","group:"))
@@ -482,7 +453,7 @@ hasNode parameterValuesSpec
 	mustSatisfyQuery parameterValuesPropertiesMatchDefinitionQuery
 		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
 		values = StringTable(([1]parameters))
-	
+
 hasNode variableValuesSpec
 	isOfClass = String("variableValues")
 	hasParent = StringTable(([1]"component:"))
@@ -491,5 +462,4 @@ hasNode variableValuesSpec
 	mustSatisfyQuery variableValuesPropertiesMatchDefinitionQuery
 		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
 		values = StringTable(([1]drivers))
-	
-	
+

@@ -148,41 +148,39 @@ hasNode spaceSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
-
-	// specific properties
+	// specific properties for continuousFlatSurface
+	// x limits of the plot
 	hasProperty xLimitsSpec
 		hasName = String("x-limits")
 		type = String("Interval")
-		multiplicity = IntegerRange("1..1")
+		multiplicity = IntegerRange("0..1")
 		// the ymin and ymax of the rectangular area
 	hasProperty yLimitsSpec
 		hasName = String("y-limits")
 		type = String("Interval")
-		multiplicity = IntegerRange("1..1")
-
-	// the cell size of the grid
-	hasProperty cellSizeSpec
-		hasName = String("cellSize")
-		type = String("Double")
-		multiplicity = IntegerRange("1..1")
-	// the number of cells in x
-	hasProperty xnCellsSpec
-		hasName = String("x-nCells")
-		type = String("Integer")
-		multiplicity = IntegerRange("1..1")
-	// can't have optional properties
-	hasProperty ynCellsSpec
-		hasName = String("y-nCells")
-		type = String("Integer")
-		multiplicity = IntegerRange("1..1")
-
+		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery RequirePropertyQueryx-limits
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([3]"x-limits","type","continuousFlatSurface"))
 	mustSatisfyQuery RequirePropertyQueryy-limits
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([3]"y-limits","type","continuousFlatSurface"))
-
+	// specific properties for squareGrid
+	// the cell size of the grid
+	hasProperty cellSizeSpec
+		hasName = String("cellSize")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+	// the number of cells in x
+	hasProperty xnCellsSpec
+		hasName = String("x-nCells")
+		type = String("Integer")
+		multiplicity = IntegerRange("0..1")
+	// can't have optional properties
+	hasProperty ynCellsSpec
+		hasName = String("y-nCells")
+		type = String("Integer")
+		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery RequirePropertyQuerycellSize
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([3]"cellSize","type","squareGrid"))

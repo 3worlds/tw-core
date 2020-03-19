@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.Collection;
 import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.TwData;
@@ -104,6 +105,14 @@ public class SystemComponent
 		return null;
 	}
 
+	public TwData decorators() {
+		return ((SystemComponentPropertyListImpl) properties()).decorators();
+	}
+
+	public TwData parameters() {
+		return container.parameters();
+	}
+
 	@Override
 	public TwData previousState(int stepsBack) {
 		// TODO fix this
@@ -173,15 +182,17 @@ public class SystemComponent
 	}
 
 	@SuppressWarnings("unchecked")
-	public Iterable<SystemRelation> getRelations(String relationType) {
+	public Collection<SystemRelation> getRelations(String relationType) {
 		List<SystemRelation> list = (List<SystemRelation>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)));
-//		List<SystemRelation> list = new ArrayList<>();
-//		for (ALEdge e:edges(Direction.OUT)) {
-//			SystemRelation r = (SystemRelation) e;
-//			if (r.properties().getPropertyValue("type").equals(relationType))
-//				list.add(r);
-//		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Collection<SystemComponent> getRelatives(String relationType) {
+		List<SystemComponent> list = (List<SystemComponent>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)),
+			edgeListEndNodes());
 		return list;
 	}
 

@@ -11,11 +11,13 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.RelateToDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
+import fr.cnrs.iees.uit.space.Point;
 
 /**
  * Processes for searching the SystemComponent lists to establish relations between them.
@@ -92,11 +94,12 @@ public class SearchProcess
 		}
 	}
 
-	private void doRelate(double t, double dt, SystemComponent focal, SystemComponent other) {
+	private void doRelate(double t, double dt, SystemComponent focal, SystemComponent other,
+			Location focalLocation, Location otherLocation) {
 		for (RelateToDecisionFunction function: RTfunctions) {
 			function.setFocalContext(focalContext);
 			function.setOtherContext(otherContext);
-			if (function.relate(t,dt,focal,other)) {
+			if (function.relate(t,dt,focal,other,focalLocation,otherLocation)) {
 				// tag items for future relation
 //						System.out.println("Relating "+focal.id()+ " to "+other.id());
 				relContainer.addItem(focal,other);
@@ -120,7 +123,7 @@ public class SearchProcess
 			if (space==null) {
 				for (SystemComponent other:otherContainer.items())
 					if (other!=focal)
-						doRelate(t,dt,focal,other);
+						doRelate(t,dt,focal,other,null,null);
 			}
 			// optimised approach using space indexers
 			else {
@@ -130,10 +133,16 @@ public class SearchProcess
 					Iterable<SystemComponent> lsc = space.getItemsWithin(focal,searchRadius);
 					if (lsc!=null)
 						for (SystemComponent other:lsc) {
+							Location focalLoc = space.locationOf(focal);
+							// focal cannot relate to itself
 							if (other!=focal)
-								if (other.membership().belongsTo(otherCategories))
-									if (!otherContainer.containsInitialItem(other))
-										doRelate(t,dt,focal,other);
+								// do no check already related components [should be done before]
+								if (!focal.getRelatives(relContainer.type().id()).contains(other))
+									if (other.membership().belongsTo(otherCategories))
+										if (!otherContainer.containsInitialItem(other))
+											doRelate(t,dt,focal,other,
+												focalLoc,
+												space.locationOf(other));
 						}
 				}
 				// search radius null, means we search for the nearest neighbours only
@@ -141,11 +150,15 @@ public class SearchProcess
 					Iterable<SystemComponent> lsc = space.getNearestItems(focal);
 					if (lsc!=null)
 						for (SystemComponent other:lsc) {
+							Location focalLoc = space.locationOf(focal);
 							if (other!=focal)
-								if (other.membership().belongsTo(otherCategories))
-									if (!otherContainer.containsInitialItem(other))
-										doRelate(t,dt,focal,other);
-						}
+								if (!focal.getRelatives(relContainer.type().id()).contains(other))
+									if (other.membership().belongsTo(otherCategories))
+										if (!otherContainer.containsInitialItem(other))
+											doRelate(t,dt,focal,other,
+												focalLoc,
+												space.locationOf(other));
+					}
 				}
 			}
 		}

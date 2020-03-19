@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -65,7 +65,7 @@ import fr.ens.biologie.generic.utils.Logging;
 /**
  * A class to generate a skeleton java file for a single EcologicalProcess
  * descendant
- * 
+ *
  * @author J. Gignoux - 23 nov. 2016
  *
  */
@@ -105,7 +105,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			 * fileRoot then import it to file root But then where do these properities come
 			 * from? Bit of a mess. We need a different class for each project sub dir
 			 * (graphs,jars files etc??).
-			 * 
+			 *
 			 *
 			 */
 			if (!snip.properties().hasProperty("file"))
@@ -122,12 +122,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		}
 		if (inBodyCode==null) {
 			inBodyCode = new ArrayList<String>();
-			// TODO: this is useful for debugging only, should be replaced by some 
+			// TODO: this is useful for debugging only, should be replaced by some
 			// logging in the final version
 			String defLine = "System.out.println(getClass().getSimpleName()+\"\tTime\t\"+t)";
 			inBodyCode.add(defLine);
 		}
-		
+
 	}
 
 	private List<String> snippetCode(TreeGraphDataNode snippet) {
@@ -160,10 +160,16 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
 		generator.setImport(SystemComponent.class.getCanonicalName());
 		generator.setImport(Table.class.getPackageName()+".*");
+		generator.setImport("static java.lang.Math.*");
 		if (type.equals(TwFunctionTypes.Relocate)) {
 			generator.setImport(Location.class.getCanonicalName());
 			generator.setImport(Box.class.getCanonicalName());
 		}
+		if (type.equals(TwFunctionTypes.RelateToDecision)) {
+			generator.setImport(Location.class.getCanonicalName());
+			generator.setImport("static fr.cnrs.iees.uit.space.Distance.*");
+		}
+
 		// generator.setImport("java.util.Map");
 		Collection<MethodGenerator> lmg = generator.getMethods();
 		for (MethodGenerator mg : lmg) {
@@ -171,7 +177,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			mg.setReturnType(type.returnType());
 			if (type.returnType().equals("void"))
 				mg.setReturnStatement("");
-			else 
+			else
 				mg.setReturnStatement("return "+zero(checkType(type.returnType())));
 			if (inBodyCode != null)
 				for (String s : inBodyCode)
@@ -186,7 +192,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 
 //		JavaCompiler compiler = new JavaCompiler();
 //		String result =  compiler.compileCode(file,Project.makeFile());
-//		if (result!=null) 
+//		if (result!=null)
 //			ComplianceManager.add(new CompileErr(file, result));
 		return true; //result==null;
 	}
