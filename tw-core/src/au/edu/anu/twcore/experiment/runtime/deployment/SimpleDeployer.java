@@ -121,30 +121,13 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void stepSimulators() {
-		// was previously in StepProc()
 		if (sim!=null) {
-//			if (sim.stop()) {
-//				// this sends a message to itself to switch to the finished state
-//				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
-//				callRendezvous(message);
-//			}
-//			else {
-//				sim.step();
-//				if (sim.isFinished()) {
-//					RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
-//					callRendezvous(message);
-//				}
-//			}
 			if (sim.stop()) {
 				// this sends a message to itself to switch to the finished state
 				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
 				callRendezvous(message);
 			}
-			if (sim.isFinished()) {
-//				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
-//				callRendezvous(message);
-			}
-			else
+			if (!sim.isFinished())
 				sim.step();
 		}
 	}

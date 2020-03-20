@@ -217,9 +217,6 @@ public class Simulator implements Resettable {
 
 	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
 		timetracker.addObserver(observer);
-		// as metadata, send all properties of the reference TimeLine of this simulator.
-//		timetracker.sendMetadata(metadata);
-		// Send only to the newly observed widget. I've checked - it is ready.
 		timetracker.sendMetadataTo((GridNode) observer, metadata);
 	}
 
@@ -228,6 +225,7 @@ public class Simulator implements Resettable {
 	public void step() {
 		status = SimulatorStatus.Active;
 		log.info("Time = "+lastTime);
+		timetracker.sendData(lastTime);
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;
@@ -240,7 +238,6 @@ public class Simulator implements Resettable {
 		if (nexttime == Long.MAX_VALUE)
 			status = SimulatorStatus.Final;
 		else {
-//			long st = System.currentTimeMillis();
 			long step = nexttime - lastTime;
 			lastTime = nexttime;
 			// 2 find all timeModels which must execute now - using bitmasks for
@@ -272,36 +269,17 @@ public class Simulator implements Resettable {
 			}
 			// 5 advance age of ALL SystemComponents, including the not update ones.
 
-//			int nItems=0;
 			for (SystemComponent sc:ecosystem.community().allItems()) {
 				sc.autoVar().writeEnable();
 				sc.autoVar().age(nexttime-sc.autoVar().birthDate());
 				sc.autoVar().writeDisable();
-//				nItems++;
 			}
 			// apply all changes to community
 			ecosystem.effectChanges();
 			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:spaces)
 				space.effectChanges();
-//			System.out.println("Ecosystem: "+ecosystem.nNodes()+" components, "+ecosystem.nEdges()+" relations");
 			for (DataTracker<?,Metadata> tracker:trackers.keySet())
 				tracker.updateTrackList();
-//
-////			// 7 Send graph data to whoever is listening
-////			graphWidgets = getGraphListeners();
-////			for (GridNode gn:graphWidgets) {
-////				Payload p = new Payload().startWriting();
-////				p.writeInt(Sim3wMessageType.GRAPH_NEW);
-////				p.writeNodeList(configuration);
-////				p.endWriting();
-////				GraphMessage msg = new GraphMessage(
-////					new MessageHeader((Integer)gn.getPropertyValue("messageID")+Sim3wMessageType.GRAPH_NEW,this,gn),
-////					p);
-////				gn.callRendezvous(msg);
-////			}
-			timetracker.sendData(lastTime);
-//			long et = System.currentTimeMillis();
-//			System.out.println("step\t"+nItems+"\t"+(et-st));
 		}
 	}
 
