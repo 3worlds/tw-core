@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -32,7 +32,7 @@ import au.edu.anu.twcore.experiment.runtime.Deployer;
 
 /**
  * The thread in which a (single) simulator is running
- * 
+ *
  * @author Jacques Gignoux - 30 août 2019 - copied from Shayne's Simulator$RunningStateThread
  *
  */
@@ -44,12 +44,12 @@ public class SimulatorThread implements Runnable {
 		super();
 		this.dep = dep;
 	}
-	
+
 	// code found there: https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
 	private volatile boolean running = true;
 	private volatile boolean paused = false;
 	private final Object pauseLock = new Object();
-	
+
     @Override
     public void run() {
         while (running) {
@@ -61,10 +61,10 @@ public class SimulatorThread implements Runnable {
                 if (paused) {
                     try {
                         synchronized (pauseLock) {
-                            pauseLock.wait(); // will cause this Thread to block until 
+                            pauseLock.wait(); // will cause this Thread to block until
                             // another thread calls pauseLock.notifyAll()
-                            // Note that calling wait() will 
-                            // relinquish the synchronized lock that this 
+                            // Note that calling wait() will
+                            // relinquish the synchronized lock that this
                             // thread holds on pauseLock so another thread
                             // can acquire the lock to call notifyAll()
                             // (link with explanation below this code)
@@ -78,13 +78,13 @@ public class SimulatorThread implements Runnable {
                 }
             }
             // Your code here
-            dep.stepProc();
+            dep.stepSimulators();
         }
     }
 
     public void stop() {
         running = false;
-        // you might also want to interrupt() the Thread that is 
+        // you might also want to interrupt() the Thread that is
         // running this Runnable, too, or perhaps call:
         resume();
         // to unblock
@@ -102,13 +102,13 @@ public class SimulatorThread implements Runnable {
         }
     }
 
-// Shayne's code	    
-	
+// Shayne's code
+
 //	private boolean quit = false;
 //	private final Object lock = new Object();
 //	private Deployer dep = null;
-//	
-//	
+//
+//
 //
 //	@Override
 //	public void run() {
@@ -117,21 +117,21 @@ public class SimulatorThread implements Runnable {
 //			Thread.yield();
 //		}
 //	}
-//	
+//
 //	public void quit() {
 //		synchronized (lock) {
 //			quit = true;
 //		}
 //	}
-//	
-//	
+//
+//
 //	private boolean runContinue() {
 //		synchronized (lock) {
 //			return !quit;
 //		}
 //	}
 
-	
-	
-	
+
+
+
 }

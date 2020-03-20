@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -37,7 +37,7 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 /**
  * A simple deployer running a single simulator in a single thread
  * (copied from Shayne' Simulator)
- * 
+ *
  * @author Jacques Gignoux - 30 août 2019
  *
  */
@@ -46,12 +46,12 @@ public class SimpleDeployer extends Deployer {
 	private Simulator sim = null;
 	private SimulatorThread runnable = null;
 	private boolean threadUp = false;
-	
+
 	public SimpleDeployer() {
 		super();
 		runnable = new SimulatorThread(this);
 	}
-	
+
 	@Override
 	public void attachSimulator(Simulator sim) {
 		this.sim = sim;
@@ -69,7 +69,7 @@ public class SimpleDeployer extends Deployer {
 			runningStateThread.start();
 			threadUp = true;
 		}
-		else 
+		else
 			runnable.resume();
 	}
 
@@ -81,18 +81,16 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void stepProc() {
-		if (sim!=null)
-			if (sim.stop()) {
-				// this sends a message to itself to switch to the finished state
-				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
-				callRendezvous(message);
-			}
-			else {
-				sim.step();
-				if (sim.isFinished()) {
-					RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
-					callRendezvous(message);
-				}
+		if (!threadUp) {
+			Thread runningStateThread = new Thread(runnable);
+			runningStateThread.start();
+			threadUp = true;
+			runnable.pause();
+		}
+		else
+			if (runnable != null) {
+				runnable.resume();
+				runnable.pause();
 			}
 	}
 
@@ -121,5 +119,35 @@ public class SimpleDeployer extends Deployer {
 			sim.postProcess();
 	}
 
-	
+	@Override
+	public void stepSimulators() {
+		// was previously in StepProc()
+		if (sim!=null) {
+//			if (sim.stop()) {
+//				// this sends a message to itself to switch to the finished state
+//				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
+//				callRendezvous(message);
+//			}
+//			else {
+//				sim.step();
+//				if (sim.isFinished()) {
+//					RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
+//					callRendezvous(message);
+//				}
+//			}
+			if (sim.stop()) {
+				// this sends a message to itself to switch to the finished state
+				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
+				callRendezvous(message);
+			}
+			if (sim.isFinished()) {
+//				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
+//				callRendezvous(message);
+			}
+			else
+				sim.step();
+		}
+	}
+
+
 }
