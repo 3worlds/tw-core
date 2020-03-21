@@ -81,15 +81,17 @@ public class Simulator implements Resettable {
 	// CLASSES
 
 	/** a data tracker to send time data */
-	class TimeTracker extends AbstractDataTracker<TimeData,Metadata> {
+	class TimeTracker extends AbstractDataTracker<TimeData, Metadata> {
 		private TimeTracker() {
 			super(DataMessageTypes.TIME);
 		}
+
 		// returns quickly if there are no observers - no point building a TimeData
 		void sendData(long time) {
 			if (hasObservers()) {
-				TimeData output = new TimeData(status,id,metadata.type());
-				output.setTime(lastTime);
+				TimeData output = new TimeData(status, id, metadata.type());
+//				output.setTime(lastTime);
+				output.setTime(time);// used the passed in parameter to avoid side effects.
 				output.setCommunity(ecosystem.community());
 				output.setSpaces(spaces);
 				sendData(output);
@@ -108,18 +110,27 @@ public class Simulator implements Resettable {
 	List<Timer> timerList = null;
 	/** the current time of each timer */
 	private long[] currentTimes;
-	/** a bit pattern uniquely identifying each timer  (NB: this is probably useless optimisation) */
+	/**
+	 * a bit pattern uniquely identifying each timer (NB: this is probably useless
+	 * optimisation)
+	 */
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	/** the time origin */
 	long startTime = 0L;
-	/** the last time for which a computation with done, ie the one just before current time */
+	/**
+	 * the last time for which a computation with done, ie the one just before
+	 * current time
+	 */
 	protected long lastTime = 0L;
-	/** the stopping condition.
-	 There is always exactly one stopping condition.
-	 When there are many, they are organized as a tree */
+	/**
+	 * the stopping condition. There is always exactly one stopping condition. When
+	 * there are many, they are organized as a tree
+	 */
 	protected StoppingCondition stoppingCondition;
-	/** the calling order of processes depending on the combination of
-	 * simultaneous time models */
+	/**
+	 * the calling order of processes depending on the combination of simultaneous
+	 * time models
+	 */
 	private Map<Integer, List<List<TwProcess>>> processCallingOrder;
 	/** the timeTracker, sending time information to whoever is listening */
 	TimeTracker timetracker;
@@ -128,15 +139,15 @@ public class Simulator implements Resettable {
 	/** simulator status */
 	private SimulatorStatus status = SimulatorStatus.Initial;
 	/** all data trackers used in this simulator, together with their metadata */
-	private Map<DataTracker<?,Metadata>,Metadata> trackers = new HashMap<>();
+	private Map<DataTracker<?, Metadata>, Metadata> trackers = new HashMap<>();
 	/** all spaces used in this simulation */
-	private Set<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces = new HashSet<>();
-
+	private Set<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces = new HashSet<>();
 
 	// CONSTRUCTORS
 
 	/**
-	 * Every call to this constructor increments N_INSTANCES. Every new instance has a unique id.
+	 * Every call to this constructor increments N_INSTANCES. Every new instance has
+	 * a unique id.
 	 *
 	 * @param stoppingCondition
 	 * @param refTimer
@@ -146,20 +157,15 @@ public class Simulator implements Resettable {
 	 * @param ecosystem
 	 */
 	@SuppressWarnings("unchecked")
-	public Simulator(int id,
-			StoppingCondition stoppingCondition,
-			TimeLine refTimer,
-			List<TimeModel> timeModels,
-			List<Timer> timers,
-			int[] timeModelMasks,
-			Map<Integer, List<List<TwProcess>>> processCallingOrder,
+	public Simulator(int id, StoppingCondition stoppingCondition, TimeLine refTimer, List<TimeModel> timeModels,
+			List<Timer> timers, int[] timeModelMasks, Map<Integer, List<List<TwProcess>>> processCallingOrder,
 			EcosystemGraph ecosystem) {
 		super();
-		log.info("START Simulator "+id+" instantiated");
+		log.info("START Simulator " + id + " instantiated");
 		this.id = id;
 		this.stoppingCondition = stoppingCondition;
 //		this.refTimer = refTimer;
-		this.timerList=timers;
+		this.timerList = timers;
 		this.timeModelMasks = timeModelMasks;
 		this.processCallingOrder = processCallingOrder;
 		this.ecosystem = ecosystem;
@@ -168,54 +174,54 @@ public class Simulator implements Resettable {
 		// data tracking - record all data trackers and make their metadata
 		timetracker = new TimeTracker();
 		timetracker.setSender(id);
-		metadata = new Metadata(id,refTimer.properties());
-		trackers.put(timetracker,metadata);
-		for (List<List<TwProcess>> llp:processCallingOrder.values())
-			for (List<TwProcess> lp:llp)
-				for (TwProcess p:lp) {
+		metadata = new Metadata(id, refTimer.properties());
+		trackers.put(timetracker, metadata);
+		for (List<List<TwProcess>> llp : processCallingOrder.values())
+			for (List<TwProcess> lp : llp)
+				for (TwProcess p : lp) {
 					if (p instanceof MultipleDataTrackerHolder)
-						for (DataTracker<?,Metadata> dt:((MultipleDataTrackerHolder<Metadata>)p).dataTrackers()) {
+						for (DataTracker<?, Metadata> dt : ((MultipleDataTrackerHolder<Metadata>) p).dataTrackers()) {
 							// make metadata
 							Metadata meta = dt.getInstance();
 							meta.addProperties(refTimer.properties());
-							ReadOnlyPropertyList timerProps = findTimerProps(timeModels,p);
-							if (timerProps!=null)
+							ReadOnlyPropertyList timerProps = findTimerProps(timeModels, p);
+							if (timerProps != null)
 								meta.addProperties(timerProps);
 							trackers.put(dt, meta);
 						}
 					if (p instanceof Spatialized<?>) {
-						DynamicSpace<SystemComponent,LocatedSystemComponent> sp =
-							((Spatialized<DynamicSpace<SystemComponent,LocatedSystemComponent>>)p).space();
-						if (sp!=null)
+						DynamicSpace<SystemComponent, LocatedSystemComponent> sp = ((Spatialized<DynamicSpace<SystemComponent, LocatedSystemComponent>>) p)
+								.space();
+						if (sp != null)
 							spaces.add(sp);
 					}
-		}
+				}
 		// add space data trackers to datatracker list
-		for (Space<SystemComponent> sp:spaces)
+		for (Space<SystemComponent> sp : spaces)
 			if (sp instanceof SingleDataTrackerHolder) {
-				SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<Metadata>)sp).dataTracker();
-				if (dts!=null)
-					trackers.put(dts,dts.getInstance());
-		}
-		log.info("END Simulator "+id+" instantiated");
+				SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<Metadata>) sp).dataTracker();
+				if (dts != null)
+					trackers.put(dts, dts.getInstance());
+			}
+		log.info("END Simulator " + id + " instantiated");
 	}
 
 	public int id() {
 		return id;
 	}
 
-	private ReadOnlyPropertyList findTimerProps(List<TimeModel> timeModels,TwProcess p) {
-		for (TimeModel tm:timeModels)
-			for (TreeNode tn:tm.getChildren())
+	private ReadOnlyPropertyList findTimerProps(List<TimeModel> timeModels, TwProcess p) {
+		for (TimeModel tm : timeModels)
+			for (TreeNode tn : tm.getChildren())
 				if (tn instanceof ProcessNode)
-					if (p==((ProcessNode)tn).getInstance(id))
+					if (p == ((ProcessNode) tn).getInstance(id))
 						return tm.properties();
 		return null;
 	}
 
 	// METHODS
 
-	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
+	public void addObserver(DataReceiver<TimeData, Metadata> observer) {
 		timetracker.addObserver(observer);
 		timetracker.sendMetadataTo((GridNode) observer, metadata);
 	}
@@ -224,8 +230,8 @@ public class Simulator implements Resettable {
 	@SuppressWarnings("unused")
 	public void step() {
 		status = SimulatorStatus.Active;
-		log.info("Time = "+lastTime);
-		timetracker.sendData(lastTime);
+		log.info("Time = " + lastTime);
+//		timetracker.sendData(lastTime);
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;
@@ -239,6 +245,8 @@ public class Simulator implements Resettable {
 			status = SimulatorStatus.Final;
 		else {
 			long step = nexttime - lastTime;
+			// send the time as supplied to the processes in this step
+			timetracker.sendData(nexttime); 
 			lastTime = nexttime;
 			// 2 find all timeModels which must execute now - using bitmasks for
 			// searches
@@ -257,7 +265,7 @@ public class Simulator implements Resettable {
 				List<TwProcess> torun = currentProcesses.get(j);
 				// execute all processes at the same dependency level
 				for (TwProcess p : torun) {
-					p.execute(status,nexttime,step);
+					p.execute(status, nexttime, step);
 				}
 			}
 			// 4 advance time ONLY for those time models that were processed
@@ -269,48 +277,48 @@ public class Simulator implements Resettable {
 			}
 			// 5 advance age of ALL SystemComponents, including the not update ones.
 
-			for (SystemComponent sc:ecosystem.community().allItems()) {
+			for (SystemComponent sc : ecosystem.community().allItems()) {
 				sc.autoVar().writeEnable();
-				sc.autoVar().age(nexttime-sc.autoVar().birthDate());
+				sc.autoVar().age(nexttime - sc.autoVar().birthDate());
 				sc.autoVar().writeDisable();
 			}
 			// apply all changes to community
 			ecosystem.effectChanges();
-			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:spaces)
+			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : spaces)
 				space.effectChanges();
-			for (DataTracker<?,Metadata> tracker:trackers.keySet())
+			for (DataTracker<?, Metadata> tracker : trackers.keySet())
 				tracker.updateTrackList();
 		}
 	}
 
 	/**
-	 * recomputes the coordinates of systemComponents after copied from initial systems
-	 * recursive.
+	 * recomputes the coordinates of systemComponents after copied from initial
+	 * systems recursive.
 	 */
 	private void computeInitialCoordinates(CategorizedContainer<SystemComponent> container) {
-		for (SystemComponent sc:container.items()) {
-			Iterable<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces =
-				((SystemFactory)sc.membership()).spaces();
-			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:spaces) {
+		for (SystemComponent sc : container.items()) {
+			Iterable<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces = ((SystemFactory) sc.membership())
+					.spaces();
+			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : spaces) {
 				// get the initial item matching this
 				SystemComponent isc = container.initialForItem(sc.id());
 //				if (isc!=null) // must always be non null, normally
 				// get the location of this initial item
-				for (LocatedSystemComponent lisc:space.getInitialItems())
-					if (lisc.item()==isc) {
+				for (LocatedSystemComponent lisc : space.getInitialItems())
+					if (lisc.item() == isc) {
 						// locate the initial item clone at the location of the initial item
-						Location initLoc = space.locate(sc,lisc.location());
+						Location initLoc = space.locate(sc, lisc.location());
 						// send coordinates to data tracker if needed
-						if (space.dataTracker()!=null ) {
+						if (space.dataTracker() != null) {
 							double x[] = new double[initLoc.asPoint().dim()];
-							for (int i=0; i<initLoc.asPoint().dim(); i++)
+							for (int i = 0; i < initLoc.asPoint().dim(); i++)
 								x[i] = initLoc.asPoint().coordinate(i);
-							space.dataTracker().recordItem(SimulatorStatus.Initial,x,container.itemId(sc.id()));
+							space.dataTracker().recordItem(SimulatorStatus.Initial, x, container.itemId(sc.id()));
 						}
-				}
+					}
 			}
 		}
-		for (CategorizedContainer<SystemComponent> cc:container.subContainers())
+		for (CategorizedContainer<SystemComponent> cc : container.subContainers())
 			computeInitialCoordinates(cc);
 	}
 
@@ -319,7 +327,7 @@ public class Simulator implements Resettable {
 	public void preProcess() {
 		status = Initial;
 		stoppingCondition.preProcess();
-		for (Timer t:timerList)
+		for (Timer t : timerList)
 			t.preProcess();
 		timetracker.sendData(startTime);
 		// clones initial items to ecosystem objects
@@ -333,15 +341,14 @@ public class Simulator implements Resettable {
 		status = Final;
 		lastTime = startTime;
 		stoppingCondition.postProcess();
-		for (Timer t:timerList)
+		for (Timer t : timerList)
 			t.postProcess();
 		// remove all items from containers
 		ecosystem.postProcess();
 		// remove all items from spaces
-		for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:spaces)
+		for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : spaces)
 			space.postProcess();
 	}
-
 
 	// returns true if stopping condition is met
 	public boolean stop() {
