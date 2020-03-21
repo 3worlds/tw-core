@@ -35,8 +35,8 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 
 /**
- * A simple deployer running a single simulator in a single thread
- * (copied from Shayne' Simulator)
+ * A simple deployer running a single simulator in a single thread (copied from
+ * Shayne' Simulator)
  *
  * @author Jacques Gignoux - 30 août 2019
  *
@@ -68,14 +68,13 @@ public class SimpleDeployer extends Deployer {
 			Thread runningStateThread = new Thread(runnable);
 			runningStateThread.start();
 			threadUp = true;
-		}
-		else
+		} else
 			runnable.resume();
 	}
 
 	@Override
 	public void waitProc() {
-		if (sim!=null)
+		if (sim != null)
 			sim.preProcess();
 	}
 
@@ -86,12 +85,10 @@ public class SimpleDeployer extends Deployer {
 			runningStateThread.start();
 			threadUp = true;
 			runnable.pause();
+		} else if (runnable != null) {
+			runnable.resume();
+			runnable.pause();
 		}
-		else
-			if (runnable != null) {
-				runnable.resume();
-				runnable.pause();
-			}
 	}
 
 	@Override
@@ -115,22 +112,28 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void resetProc() {
-		if (sim!=null)
+		if (sim != null)
 			sim.postProcess();
 	}
 
 	@Override
 	public void stepSimulators() {
-		if (sim!=null) {
+		if (sim != null) {
 			if (sim.stop()) {
 				// this sends a message to itself to switch to the finished state
-				RVMessage message = new RVMessage(finalise.event().getMessageType(),null,this,this);
+				RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
 				callRendezvous(message);
 			}
-			if (!sim.isFinished())
+			if (!sim.isFinished()) {
 				sim.step();
+				if (sim.stop()) {
+					// this sends a message to itself to switch to the finished state
+					RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
+					callRendezvous(message);
+
+				}
+			}
 		}
 	}
-
 
 }
