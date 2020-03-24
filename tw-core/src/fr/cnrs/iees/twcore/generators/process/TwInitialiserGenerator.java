@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -71,8 +71,8 @@ import fr.ens.biologie.generic.utils.Logging;
  */
 public class TwInitialiserGenerator extends TwCodeGenerator {
 
-	private static String INITIALISER_ROOT_PACKAGE = SecondaryParametersInitialiser.class.getPackageName(); 
-	
+	private static String INITIALISER_ROOT_PACKAGE = SecondaryParametersInitialiser.class.getPackageName();
+
 	private static Logger log = Logging.getLogger(TwInitialiserGenerator.class);
 	private String name = null;
 	private String model = null;
@@ -81,7 +81,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 	private String generatedClassName = null;
 	private String packageName = null;
 	private String packagePath;
-	
+
 	@SuppressWarnings("unchecked")
 	public TwInitialiserGenerator(String className, TreeGraphDataNode spec,String modelName) {
 		super(spec);
@@ -89,7 +89,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		model = modelName;
 		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 
-		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), 
+		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT),
 			edgeListEndNodes(),
 			selectZeroOrMany(hasTheLabel("snippet")));
 		for (TreeGraphDataNode snip:snippets) {
@@ -97,14 +97,14 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 				continue;
 			FileType ft = (FileType) snip.properties().getPropertyValue("file");
 			if (!ft.getFile().exists())
-				continue;			
+				continue;
 			SnippetLocation insert = (SnippetLocation) snip.properties().getPropertyValue("insertion");
 			if (insert.equals(SnippetLocation.inClassBody)) inClassCode = snippetCode(snip);
 			else inBodyCode = snippetCode(snip);
 		}
 		if (inBodyCode==null) {
 			inBodyCode = new ArrayList<String>();
-			String defLine = "System.out.println(getClass().getName());";
+			String defLine = "System.out.println(getClass().getSimpleName())";
 			inBodyCode.add(defLine);
 		}
 	}
@@ -121,17 +121,17 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		}
 		return code;
 	}
-	
+
 	@Override
 	public boolean generateCode() {
 		log.info("    generating file "+name+".java ...");
 		log.info("  done.");
-		File ctGeneratedCodeDir =  getModelCodeDir(model);			
+		File ctGeneratedCodeDir =  getModelCodeDir(model);
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
-		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+ctmodel;		
-		String ancestorClassName = INITIALISER_ROOT_PACKAGE+".SecondaryParametersInitialiser";		
-		String comment = comment(general,classComment(name),generatedCode(false,model, ""));				
+		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+ctmodel;
+		String ancestorClassName = INITIALISER_ROOT_PACKAGE+".SecondaryParametersInitialiser";
+		String comment = comment(general,classComment(name),generatedCode(true,model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName,comment,name,ancestorClassName);
 		generator.setImport(SystemComponent.class.getCanonicalName());
 		generator.setImport(Table.class.getPackageName()+".*");
@@ -141,7 +141,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		for (MethodGenerator mg:lmg) {
 			mg.insertCodeInsertionComment();
 			if  (mg.name().equals("setSecondaryParameters")) {
-				mg.setArgumentNames("speciesParameters","stageParameters","timeOrigin","timeUnit");
+				mg.setArgumentNames("groupParameters","lifeCycleParameters","ecosystemParameters");
 			}
 			if (inBodyCode!=null) {
 				String ss = "";
@@ -155,16 +155,17 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		writeFile(generator,file,name);
 		generatedClassName = packageName+"."+name;
 		log.info("  done.");
-		
-		JavaCompiler compiler = new JavaCompiler();
-		String result= compiler.compileCode(file,Project.makeFile());
-		if (result!=null) 
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, file,
-					result));
+
+//		JavaCompiler compiler = new JavaCompiler();
+//		String result= compiler.compileCode(file,Project.makeFile());
+//		if (result!=null)
+//			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, file,
+//					result));
 			//ComplianceManager.add(new CompileErr(file, result));
-		return result==null;
+//		return result==null;
+		return true;
 	}
-	
+
 	public String generatedClassName() {
 		return generatedClassName;
 	}

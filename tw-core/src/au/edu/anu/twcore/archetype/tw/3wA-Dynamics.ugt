@@ -11,6 +11,10 @@ hasNode initialisationSpec
 	multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery initialiserNameWithUppercaseQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
+	hasEdge initAppliesToCategorySpec
+		isOfClass = String("appliesTo")
+		toNode = String("category:")
+		multiplicity = IntegerRange("1..*")
 
 hasNode timeLineSpec
 	isOfClass = String("timeLine")
