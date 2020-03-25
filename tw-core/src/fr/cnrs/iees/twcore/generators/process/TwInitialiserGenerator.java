@@ -133,10 +133,11 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		String ancestorClassName = INITIALISER_ROOT_PACKAGE+".SecondaryParametersInitialiser";
 		String comment = comment(general,classComment(name),generatedCode(true,model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName,comment,name,ancestorClassName);
-		generator.setImport(SystemComponent.class.getCanonicalName());
+//		generator.setImport(SystemComponent.class.getCanonicalName());
 		generator.setImport(Table.class.getPackageName()+".*");
 		generator.setImport(TwData.class.getCanonicalName());
-		generator.setImport(TimeUnits.class.getCanonicalName());
+//		generator.setImport(TimeUnits.class.getCanonicalName());
+		generator.setImport("static java.lang.Math.*");
 		Collection<MethodGenerator> lmg = generator.getMethods();
 		for (MethodGenerator mg:lmg) {
 			mg.insertCodeInsertionComment();

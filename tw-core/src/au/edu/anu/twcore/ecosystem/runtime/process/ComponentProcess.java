@@ -304,7 +304,8 @@ public class ComponentProcess
 						for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:((SystemFactory)newBorn.membership()).spaces()) {
 							RelocateFunction func = ((SystemFactory)newBorn.membership()).locatorFunction(space);
 							func.setFocalContext(newBornContext);
-							double[] newLocation = func.relocate(t, dt, newBorn, null, space.boundingBox());
+							double[] newLocation = func.relocate(t, dt, newBorn, null,
+								focal, space.locationOf(focal), space.boundingBox());
 							if (newLocation==null) {
 								log.warning("No location returned by relocate(...): default location generated");
 								newLocation = space.defaultLocation();
@@ -326,6 +327,7 @@ public class ComponentProcess
 					}
 				}
 			}
+			// TODO: relocate self (ie movement)
 		}
 	}
 
