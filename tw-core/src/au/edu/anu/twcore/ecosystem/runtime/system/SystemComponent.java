@@ -173,6 +173,7 @@ public class SystemComponent
 	public SystemComponent clone() {
 		SystemComponent result = ((SystemFactory)cats).newInstance();
 		result.properties().setProperties(properties());
+		result.setContainer(container());
 		return result;
 	}
 

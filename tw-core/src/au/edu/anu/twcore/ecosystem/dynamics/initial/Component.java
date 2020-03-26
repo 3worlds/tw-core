@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -60,12 +60,12 @@ import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 
 /**
- * 
+ *
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class Component 
-		extends InitialisableNode 
+public class Component
+		extends InitialisableNode
 		implements Sealable, LimitedEdition<SystemComponent>, DefaultStrings {
 
 	private boolean sealed = false;
@@ -74,7 +74,7 @@ public class Component
 	// This is FLAWED: assumes only ONE component per simulator ???, no, its fine, different components
 	// have different Component nodes
 	private Map<Integer,SystemComponent> individuals = new HashMap<>();
-	
+
 	private Map<SpaceNode,double[]> coordinates = new HashMap<>();
 
 	// default constructor
@@ -99,7 +99,7 @@ public class Component
 			selectZeroOrMany(hasTheLabel(E_LOCATION.label())));
 		for (LocationEdge spe:spaces) {
 			SpaceNode space = (SpaceNode) spe.endNode();
-			DoubleTable tab = (DoubleTable) spe.properties().getPropertyValue(P_SPACE_COORDINATES.key()); 
+			DoubleTable tab = (DoubleTable) spe.properties().getPropertyValue(P_SPACE_COORDINATES.key());
 			double[] coord = new double[tab.size()];
 			for (int i=0; i<coord.length; i++)
 				coord[i] = tab.getWithFlatIndex(i);
@@ -112,7 +112,7 @@ public class Component
 	public int initRank() {
 		return N_COMPONENT.initRank();
 	}
-	
+
 //	public TwData getVariables() {
 //		if (sealed)
 //			return variables;
@@ -159,10 +159,10 @@ public class Component
 			// and put the new SC into it. The ecosystem container cannot store any SC directly because
 			// it's got no categories.
 			if (p instanceof InitialState) {
-				ComponentContainer ecoCont = p.getInstance(id); 
+				ComponentContainer ecoCont = p.getInstance(id);
 				CategorizedContainer<SystemComponent> theCont = null;
 				for (CategorizedContainer<SystemComponent> cont:ecoCont.subContainers()) {
-					if (cont.categoryInfo().categories().equals(sc.membership().categories())) {						
+					if (cont.categoryInfo().categories().equals(sc.membership().categories())) {
 						theCont = cont;
 						break;
 					}
@@ -185,14 +185,18 @@ public class Component
 						pv.fill(theCont.parameters());
 					}
 					theCont.addInitialItem(sc);
+					sc.setContainer((ComponentContainer) theCont);
 				}
 			}
 			// second case: the container has categories, then they must match those of the component
-			else if	(sc.membership().categories().equals(p.getInstance(id).categoryInfo().categories()))
-				p.getInstance(id).addInitialItem(sc);
+			else if	(sc.membership().categories().equals(p.getInstance(id).categoryInfo().categories())) {
+				ComponentContainer c = p.getInstance(id);
+				c.addInitialItem(sc);
+				sc.setContainer(c);
+			}
 			individuals.put(id,sc);
 		}
 		return individuals.get(id);
 	}
-	
+
 }

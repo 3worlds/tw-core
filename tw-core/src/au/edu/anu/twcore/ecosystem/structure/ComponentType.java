@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -68,15 +68,15 @@ import java.util.TreeSet;
 
 /**
  * Class matching the "ecosystem/structure/component" node label in the 3Worlds configuration tree.
- *  
+ *
  * @author Jacques Gignoux - 25 avr. 2013
  *
  */
-public class ComponentType 
-		extends InitialisableNode 
+public class ComponentType
+		extends InitialisableNode
 		implements LimitedEdition<SystemFactory>, Categorized<SystemComponent>, Sealable {
-	
-	
+
+
 //	// the factory for SystemComponents and SystemRelations
 //	private static GraphFactory SCfactory = null;
 //	static {
@@ -85,7 +85,7 @@ public class ComponentType
 //		labels.put("relation", SystemRelation.class.getName());
 //		SCfactory = new ALGraphFactory("3w",labels);
 //	}
-	
+
 	private SortedSet<Category> categories = new TreeSet<>();
 	private String categoryId = null;
 	private boolean sealed = false;
@@ -97,7 +97,7 @@ public class ComponentType
 	private Map<String,Constructor<? extends RelocateFunction>> fConstructors = new HashMap<>();
 	private Map<String,SpaceNode> spaces = new HashMap<>();
 	private Map<Integer,SystemFactory> factories = new HashMap<>();
-	
+
 	// The SystemComponent containers instantiated by this SystemFactory
 	private Map<Integer,Map<String,ComponentContainer>> containers = new HashMap<>();
 
@@ -108,7 +108,7 @@ public class ComponentType
 	public ComponentType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
-	
+
 	public ComponentType(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
@@ -121,7 +121,7 @@ public class ComponentType
 			super.initialise();
 			sealed = false;
 			Collection<Category> nl = (Collection<Category>) get(edges(Direction.OUT),
-				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
+				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
 				edgeListEndNodes());
 			categories.addAll(getSuperCategories(nl));
 			permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
@@ -163,18 +163,19 @@ public class ComponentType
 				for (int i=0; i<st.size(); i++) {
 					Class<? extends RelocateFunction> functionClass;
 					String className = st.getWithFlatIndex(i);
-					try {
-						functionClass = (Class<? extends RelocateFunction>) Class.forName(className,true,classLoader);
-						String spaceName = functionClass.getSimpleName()
-							.substring(0,functionClass.getSimpleName().indexOf('_'));
-						fConstructors.put(spaceName,functionClass.getConstructor());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					if (!className.trim().isEmpty())
+						try {
+							functionClass = (Class<? extends RelocateFunction>) Class.forName(className,true,classLoader);
+							String spaceName = functionClass.getSimpleName()
+								.substring(0,functionClass.getSimpleName().indexOf('_'));
+							fConstructors.put(spaceName,functionClass.getConstructor());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 				}
 			}
-			
+
 //			if (driverTemplate != null)
 //				for (String key : driverTemplate.getKeysAsSet())
 //					propertyMap.put(key, DRIVERS);
@@ -201,8 +202,8 @@ public class ComponentType
 		else
 			return null;
 	}
-	
-	/** returns a new variableSet of the proper structure for this SystemFactory 
+
+	/** returns a new variableSet of the proper structure for this SystemFactory
 	 * NB for use at initialisation only*/
 	public final TwData newVariableSet() {
 		if (driverTemplate != null)
@@ -211,7 +212,7 @@ public class ComponentType
 			return null;
 	}
 
-	
+
 	@Override
 	public Set<Category> categories() {
 		if (sealed)
@@ -219,14 +220,14 @@ public class ComponentType
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
-	
+
 	public boolean isPermanent() {
 		if (sealed)
 			return permanent;
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
-	
+
 	@Override
 	public Sealable seal() {
 		sealed = true;
@@ -237,7 +238,7 @@ public class ComponentType
 	public boolean isSealed() {
 		return sealed;
 	}
-	
+
 	@Override
 	public String categoryId() {
 		if (sealed)
@@ -245,11 +246,11 @@ public class ComponentType
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
-	
+
 	/**
 	 * Returns a new container, either nested in a group container or in the Ecosystem
 	 * container, depending on what is found.
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -272,7 +273,7 @@ public class ComponentType
 		} else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
-	
+
 	private SystemFactory makeFactory(int index) {
 		Map<DynamicSpace<SystemComponent,LocatedSystemComponent>,RelocateFunction> spaceLocators = new HashMap<>();
 		if (!fConstructors.isEmpty()) {
@@ -307,7 +308,7 @@ public class ComponentType
 			factories.put(id,makeFactory(id));
 		return factories.get(id);
 	}
-	
+
 	public Map<Integer,SystemFactory> getFactories(){
 		return factories;
 	}
