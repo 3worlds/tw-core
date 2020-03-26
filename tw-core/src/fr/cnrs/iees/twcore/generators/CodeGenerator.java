@@ -241,16 +241,23 @@ public class CodeGenerator {
 	}
 
 	private void generateRelocateFunction(TreeGraphDataNode comp, String space, String modelName) {
-		// NB: we need to flag if and only if a change in this parameter has taken place
-		// as per other generate functions. cf lines with GraphState.setChanged() is
+		// NB: we need to flag if and only if a change in this StringTable property has
+		// taken place
+		// as per other generate functions (cf lines with GraphState.setChanged() in
 		// this file.
 		// Unfortunately, to be properly reentrant, this needs to be done carefully
 		// so the flag is set only if there has truly been a change or you will never
 		// be able to save. This will prove difficult because sometimes classes are
-		// added here and as the graph is edited things change leaving entries which are
-		// no longer valid. Possibly, the only sure way of doing this is to copy the
+		// added here and, as the graph is edited, things change leaving entries which
+		// are
+		// no longer valid.
+
+		// Possibly, the only sure way of doing this is to copy the
 		// stringTables and clear the property at the start of codeGen and then compare
-		// and set the flag as required at the end of codeGen.
+		// and set the flag as required at the end of codeGen. Note that codeGen runs
+		// when every the graph changes and is valid so the checking falls through to
+		// code gen. So if you rename nodes all entries need to be check that the
+		// appropriate file exists and if not remove it.
 		String funcname = initialUpperCase(space) + DefaultStrings.defaultPrefix // this to make sure the space name can
 																					// be easily extracted
 				+ initialUpperCase(comp.id()) + initialUpperCase(TwFunctionTypes.Relocate.toString()) + "Function";
