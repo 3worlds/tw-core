@@ -40,6 +40,9 @@ import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
+import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -77,7 +80,7 @@ public class PropertiesMatchDefinitionQuery extends Query {
 	private String msg;
 
 	@Override
-	public Query process(Object input) {
+	public Query process(Object input) { // input is a variableValues or parameterValues node
 		defaultProcess(input);
 		TreeGraphDataNode targetNode = (TreeGraphDataNode) input;
 		Collection<TreeGraphDataNode> defs = getDataDefs(targetNode, dataCategory);
@@ -146,7 +149,8 @@ public class PropertiesMatchDefinitionQuery extends Query {
 
 	}
 
-	/* Public static - available for use by MM f or matching purpose */
+	/* Public static - available for use by MM for matching purpose */
+	// argument 'node' is a variableValues or parameterValues node
 	@SuppressWarnings("unchecked")
 	public static Collection<TreeGraphDataNode> getDataDefs(TreeGraphDataNode node, String dataCategory) {
 		// can't allow exceptions to arise here if used from MM
@@ -154,12 +158,36 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		if (parent == null)
 			return null;
 		TreeGraphDataNode ct = null;
+		// drivers and decorators: find the component type through instanceOf edge
 		if (dataCategory.equals(E_DRIVERS.label()) || dataCategory.equals(E_DECORATORS.label())) {
 			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-					selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
+				selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
+				endNode());
+		// parameters: find the component type through groupOf edge
 		} else if (dataCategory.equals(E_PARAMETERS.label())) {
-			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+				endNode());
+//			 check the case there is only one component directly declared under initialState
+//			 in which case the edge will be an instanceOf edge
+			if (ct==null ) {
+				ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
+					selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
 					endNode());
+//				WIP
+				// check that node is the only child of Parent of its category type.
+//				Set<Category> ctg = ((ComponentType)ct).categories();
+//				int i=0;
+//				List<TreeGraphDataNode> children = (List<TreeGraphDataNode>) get(parent.getChildren());
+//				for (TreeGraphDataNode cn: children) {
+//					// search instanceOf or groupOf links
+//					if (cn instanceof Categorized)
+//						if (((Categorized<?>)cn).belongsTo(ctg))
+//							i++;
+//				}
+//				if (i>1)
+//					ct = null;
+			}
 		}
 		if (ct == null)
 			return null;
