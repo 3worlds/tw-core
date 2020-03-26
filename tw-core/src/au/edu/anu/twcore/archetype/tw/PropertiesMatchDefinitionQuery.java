@@ -82,7 +82,7 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		TreeGraphDataNode targetNode = (TreeGraphDataNode) input;
 		Collection<TreeGraphDataNode> defs = getDataDefs(targetNode, dataCategory);
 		satisfied = true;
-		if (defs == null) {
+		if (defs == null || defs.isEmpty()) {
 			msg = "No property definitions found.";
 			satisfied = false;
 			return this;
@@ -106,15 +106,15 @@ public class PropertiesMatchDefinitionQuery extends Query {
 					Table trgValue = (Table) trgProps.getPropertyValue(def.id());
 					Dimensioner[] trgDims = trgValue.getDimensioners();
 					if (trgDims.length != defDims.length) {
-						msg = "Property '" + def.id() + "' has " + defDims.length + " dimensions but has " + trgDims.length
-								+ ".";
+						msg = "Property '" + def.id() + "' has " + defDims.length + " dimensions but has "
+								+ trgDims.length + ".";
 						satisfied = false;
 						return this;
 					}
 					for (int i = 0; i < trgDims.length; i++) {
 						if (trgDims[i].getLength() != defDims[i].getLength()) {
-							msg = "Property '" + def.id() + "' dimension [" + i + "] has length " + trgDims[i].getLength()
-									+ " but should be length " + defDims[i].getLength();
+							msg = "Property '" + def.id() + "' dimension [" + i + "] has length "
+									+ trgDims[i].getLength() + " but should be length " + defDims[i].getLength();
 							satisfied = false;
 							return this;
 
@@ -154,26 +154,25 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		if (parent == null)
 			return null;
 		TreeGraphDataNode ct = null;
-		if (dataCategory.equals(E_DRIVERS.label())||dataCategory.equals(E_DECORATORS.label())) {
+		if (dataCategory.equals(E_DRIVERS.label()) || dataCategory.equals(E_DECORATORS.label())) {
 			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
-		}
-		else if (dataCategory.equals(E_PARAMETERS.label())) {
-			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_GROUPOF.label())), endNode());
+					selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
+		} else if (dataCategory.equals(E_PARAMETERS.label())) {
+			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+					endNode());
 		}
 		if (ct == null)
 			return null;
 		List<TreeGraphDataNode> cats = (List<TreeGraphDataNode>) get(ct.edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 		if (cats.isEmpty())
 			return null;
 		Set<TreeGraphDataNode> result = new HashSet<>();
-		for (TreeGraphDataNode cat:cats) {
-			Record rootRecord = (Record) get(cat.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(dataCategory)),
-				endNode());
-			result.addAll(Record.getLeaves(rootRecord));
+		for (TreeGraphDataNode cat : cats) {
+			Record rootRecord = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(dataCategory)),
+					endNode());
+			if (rootRecord != null)
+				result.addAll(Record.getLeaves(rootRecord));
 		}
 		return result;
 	}
