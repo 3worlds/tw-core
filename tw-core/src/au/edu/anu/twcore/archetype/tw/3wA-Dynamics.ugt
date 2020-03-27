@@ -15,6 +15,10 @@ hasNode initialisationSpec
 		isOfClass = String("appliesTo")
 		toNode = String("category:")
 		multiplicity = IntegerRange("1..*")
+	hasProperty userInitialiserSpec
+		hasName = String("userClassName")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
 
 hasNode timeLineSpec
 	isOfClass = String("timeLine")

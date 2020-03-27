@@ -42,6 +42,7 @@ import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
 import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.dynamics.Initialiser;
 import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
 import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
@@ -141,8 +142,12 @@ public class Component
 			SystemComponent sc = componentFactory.getInstance(id).newInstance();
 			// fill component with initial values
 			for (TreeNode tn:getChildren())
-				if (tn instanceof VariableValues)
+				if (tn instanceof VariableValues) {
+					// this copies all variables contained in Drivers but ignores automatc variables
 					((VariableValues)tn).fill(sc.currentState());
+					// this copies automatic variables, if any
+					((VariableValues)tn).fill(sc.autoVar());
+				}
 			// including spatial coordinates
 			for (SpaceNode spn:coordinates.keySet()) {
 				DynamicSpace<SystemComponent,LocatedSystemComponent> sp = spn.getInstance(id);
@@ -160,10 +165,10 @@ public class Component
 			// it's got no categories.
 			if (p instanceof InitialState) {
 				ComponentContainer ecoCont = p.getInstance(id);
-				CategorizedContainer<SystemComponent> theCont = null;
+				ComponentContainer theCont = null;
 				for (CategorizedContainer<SystemComponent> cont:ecoCont.subContainers()) {
 					if (cont.categoryInfo().categories().equals(sc.membership().categories())) {
-						theCont = cont;
+						theCont = (ComponentContainer) cont;
 						break;
 					}
 				}
@@ -183,6 +188,8 @@ public class Component
 						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,
 							componentFactory.newParameterSet(),null);
 						pv.fill(theCont.parameters());
+						// compute secondary parameters if initialiser present
+						Initialiser.computeSecondaryParameters(this,theCont,id);
 					}
 					theCont.addInitialItem(sc);
 					sc.setContainer((ComponentContainer) theCont);
