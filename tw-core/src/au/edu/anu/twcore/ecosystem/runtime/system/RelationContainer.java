@@ -76,6 +76,7 @@ public class RelationContainer
 		for (Duple<SystemComponent,SystemComponent> item : relationsToAdd) {
 			SystemRelation sr = item.getFirst().relateTo(item.getSecond(),relationType.id());
 			sr.setContainer(this);
+			sr.setRelated(relationType);
 		}
 		relationsToAdd.clear();
 	}

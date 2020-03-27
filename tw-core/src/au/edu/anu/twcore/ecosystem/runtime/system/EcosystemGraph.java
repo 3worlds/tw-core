@@ -13,26 +13,26 @@ import fr.cnrs.iees.graph.NodeFactory;
 import fr.ens.biologie.generic.Resettable;
 /**
  * Read-only graph view of the 3worlds ecosystem
- * 
+ *
  * @author Jacques Gignoux - 23 janv. 2020
  *
  */
-public class EcosystemGraph 
+public class EcosystemGraph
 		implements Graph<SystemComponent,SystemRelation>, Resettable {
 
 	/** "nodes" */
 	private ComponentContainer components = null;
 	/** "edges" (NB edges are not contained in there) */
 	private Map<String,RelationContainer> relations = null;
-	
+
 	public EcosystemGraph(ComponentContainer components, Map<String,RelationContainer> relations) {
 		super();
 		this.components = components;
 		this.relations = relations;
 	}
-	
+
 	// GRAPH interface
-	
+
 	@Override
 	public Iterable<SystemComponent> nodes() {
 		return components.allItems();
@@ -91,7 +91,7 @@ public class EcosystemGraph
 	}
 
 	// CAUTION: SLOW!
-	@Override	
+	@Override
 	public SystemRelation findEdge(String id) {
 		SystemRelation result = null;
 		for (SystemComponent sc:components.allItems()) {
@@ -103,26 +103,27 @@ public class EcosystemGraph
 	}
 
 	// LOCAL methods
-	
+
 	public ComponentContainer community() {
 		return components;
 	}
-	
+
 	public RelationContainer relations(RelationType rel) {
 		return relations.get(rel.id());
 	}
-	
+
 	public RelationContainer relations(String rel) {
 		return relations.get(rel);
 	}
 
 	public void effectChanges() {
 		// First, graph structural changes
-		// remove and create all components
-		components.effectAllChanges();
 		// remove and create all relations
 		for (RelationContainer relc:relations.values())
 			relc.effectChanges();
+		// remove and create all components
+		// this may possibly remove relations set just before
+		components.effectAllChanges();
 		// Second, graph state changes
 		components.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
 	}
@@ -131,14 +132,14 @@ public class EcosystemGraph
 	public void preProcess() {
 		components.preProcess();
 		for (RelationContainer rc: relations.values())
-			rc.preProcess();		
+			rc.preProcess();
 	}
 
 	@Override
 	public void postProcess() {
 		components.postProcess();
 		for (RelationContainer rc: relations.values())
-			rc.postProcess();		
+			rc.postProcess();
 	}
-	
+
 }

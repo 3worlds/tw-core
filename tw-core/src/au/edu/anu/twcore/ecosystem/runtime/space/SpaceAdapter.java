@@ -67,12 +67,10 @@ public abstract class SpaceAdapter
 	public SpaceAdapter(Box box, double prec, String units, EdgeEffects ee, SpaceDataTracker dt, String proposedId) {
 		super();
 		limits = box;
-// precision based on diagonal, but this is probably unexpected for users
-//		double boxdiag = Math.sqrt(limits.sideLength(0)*limits.sideLength(0)
-//			+limits.sideLength(1)*limits.sideLength(1));
-//		precision = Math.max(prec,minimalPrecision)*boxdiag;
-//	precision based on shortest side of plot
-		precision = Math.max(prec,minimalPrecision)*Math.min(limits.sideLength(0),limits.sideLength(1));
+		//	precision based on shortest side of plot - NB I think that's a mistake - cf below
+//		precision = Math.max(prec,minimalPrecision)*Math.min(limits.sideLength(0),limits.sideLength(1));
+		// absolute precision, i.e. in units of measurement.
+		precision = Math.max(prec,minimalPrecision);
 		this.units = units;
 		correction = ee;
 		dataTracker = dt;
