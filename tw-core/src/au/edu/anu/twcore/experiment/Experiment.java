@@ -107,7 +107,7 @@ public class Experiment
 				// TODO
 				controller = new StateMachineController(deployer);
 				// this puts the deployer in "waiting" state
-				controller.sendEvent(initialise.event());
+				//controller.sendEvent(initialise.event());
 			}
 			sealed = true;
 		}
