@@ -246,7 +246,7 @@ public class Simulator implements Resettable {
 		else {
 			long step = nexttime - lastTime;
 			// send the time as supplied to the processes in this step
-			timetracker.sendData(nexttime); 
+			timetracker.sendData(nexttime);
 			lastTime = nexttime;
 			// 2 find all timeModels which must execute now - using bitmasks for
 			// searches
@@ -259,6 +259,7 @@ public class Simulator implements Resettable {
 				i++;
 			}
 			// 3 execute all the processes depending on these time models
+			// NB sending data to datatrackers is performed in this loop
 			List<List<TwProcess>> currentProcesses = processCallingOrder.get(ctmask);
 			// loop on dependency rank
 			for (int j = 0; j < currentProcesses.size(); j++) {
@@ -268,6 +269,9 @@ public class Simulator implements Resettable {
 					p.execute(status, nexttime, step);
 				}
 			}
+			// 3b resetting decorators and population counters to zero for next step
+			// only for those processes that were run just before
+			ecosystem.community().prepareStepAll();
 			// 4 advance time ONLY for those time models that were processed
 			i = 0;
 			for (Timer tm : timerList) {
@@ -276,7 +280,6 @@ public class Simulator implements Resettable {
 				i++;
 			}
 			// 5 advance age of ALL SystemComponents, including the not update ones.
-
 			for (SystemComponent sc : ecosystem.community().allItems()) {
 				sc.autoVar().writeEnable();
 				sc.autoVar().age(nexttime - sc.autoVar().birthDate());

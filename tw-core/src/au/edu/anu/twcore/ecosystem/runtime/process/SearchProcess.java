@@ -90,6 +90,7 @@ public class SearchProcess
 			}
 		}
 		if ((focalGroup!=null)&&(otherGroup!=null)) {
+			focalGroupContainer.change();
 			executeFunctions(focalGroupContainer,otherGroupContainer,t,dt);
 		}
 	}

@@ -69,6 +69,36 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 			((ComponentContainer) sc).stepAll();
 	}
 
+
+	/**
+	 * clears decorators and population counters for next time step,
+	 * only if was changed
+	 */
+	public void prepareStep() {
+		if (changed()) {
+			resetCounters();
+			for (SystemComponent item:items()) {
+				if (item.decorators()!=null) {
+					item.decorators().writeEnable();
+					item.decorators().clear();
+					item.decorators().writeDisable();
+				}
+				else
+					break; // since all items in a SystemContainer have the same categories
+			}
+		}
+	}
+
+	/**
+	 * recursively clears decorators and population counters for next time step,
+	 * only in sub-containers that were changed
+	 */
+	public void prepareStepAll() {
+		prepareStep();
+		for (CategorizedContainer<SystemComponent> sc : subContainers())
+			((ComponentContainer) sc).prepareStepAll();
+	}
+
 	@Override
 	public void rename(String oldId, String newId) {
 		throw new TwcoreException("Renaming of '" + this.getClass().getSimpleName() + "' is not implemented.");

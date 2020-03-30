@@ -125,7 +125,7 @@ public class FlatSurface extends SpaceAdapter {
 
 	@Override
 	public void unlocate(SystemComponent focal) {
-		indexer.remove(focal,locatedItems.get(focal).asPoint());
+		indexer.remove(focal);
 		locatedItems.remove(focal);
 	}
 
@@ -170,7 +170,7 @@ public class FlatSurface extends SpaceAdapter {
 		for (SystemComponent sc:items) {
 			Point loc = locationOf(sc).asPoint();
 			if (loc!=null)
-				indexer.remove(sc,loc);
+				indexer.remove(sc);
 		}
 		locatedItems.keySet().removeAll(items);
 	}

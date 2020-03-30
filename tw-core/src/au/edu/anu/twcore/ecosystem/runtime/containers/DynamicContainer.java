@@ -41,4 +41,15 @@ public interface DynamicContainer<T extends Identity> extends Container {
 	 */
 	public void effectChanges();
 
+	/**
+	 * Flag used to signal if the container has been changed during a computation step
+	 *
+	 * @return true if changed since last effectChanges()
+	 */
+	public boolean changed();
+
+	/**
+	 * Sets the changed flag to true
+	 */
+	public void change();
 }

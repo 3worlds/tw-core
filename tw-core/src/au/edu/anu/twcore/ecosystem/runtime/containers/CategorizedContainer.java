@@ -119,6 +119,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	// data for housework
 	protected Set<String> itemsToRemove = new HashSet<>();
 	protected Set<T> itemsToAdd = new HashSet<>();
+	private boolean changed = false;
 
 	// Population data
 	private class popData2 extends popData {
@@ -517,14 +518,12 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	@Override
 	public void effectChanges() {
-		// TODO Auto-generated method stub
-
+		changed = false;
 	}
 
 	@Override
 	public void clearVariables() {
-		// TODO Auto-generated method stub
-
+		changed = false;
 	}
 
 	@Override
@@ -642,6 +641,16 @@ public abstract class CategorizedContainer<T extends Identity>
 	@Override
 	public CategorizedContainer<T> parentContainer() {
 		return superContainer;
+	}
+
+	@Override
+	public boolean changed() {
+		return changed;
+	}
+
+	@Override
+	public void change() {
+		changed = true;
 	}
 
 }

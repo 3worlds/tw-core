@@ -64,6 +64,8 @@ public abstract class SpaceAdapter
 	/** mapping of cloned item to their initial components */
 	private Map<String, LocatedSystemComponent> itemsToInitials = new HashMap<>();
 
+	private boolean changed = false;
+
 	public SpaceAdapter(Box box, double prec, String units, EdgeEffects ee, SpaceDataTracker dt, String proposedId) {
 		super();
 		limits = box;
@@ -180,6 +182,7 @@ public abstract class SpaceAdapter
 		for (LocatedSystemComponent lsc:toInsert)
 			locate(lsc.item(),lsc.location());
 		toInsert.clear();
+		changed = false;
 	}
 
 	// ResettableContainer
@@ -240,6 +243,16 @@ public abstract class SpaceAdapter
 	@Override
 	public String id() {
 		return id.id();
+	}
+
+	@Override
+	public boolean changed() {
+		return changed;
+	}
+
+	@Override
+	public void change() {
+		changed = true;
 	}
 
 }

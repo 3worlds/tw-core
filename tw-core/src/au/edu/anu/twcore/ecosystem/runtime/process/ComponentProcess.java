@@ -116,6 +116,7 @@ public class ComponentProcess
 		}
 		else if (container.categoryInfo() instanceof SystemFactory)
 			if (container.categoryInfo().belongsTo(focalCategories)) {
+				container.change(); // means data in here will have changed after this loop
 				setContext(focalContext,container);
 				group = (SystemFactory) container.categoryInfo();
 				executeFunctions(container,t,dt);

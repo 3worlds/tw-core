@@ -31,6 +31,7 @@ public class RelationContainer
 	// the list of system component pairs to later relate
 	private Set<Duple<SystemComponent,SystemComponent>> relationsToAdd = new HashSet<>();
 	private Set<Duple<SystemComponent,SystemComponent>> relationsToRemove = new HashSet<>();
+	private boolean changed = false;
 
 	public RelationContainer(RelationType rel) {
 		super(); // since they are different local scopes it may work...
@@ -79,6 +80,7 @@ public class RelationContainer
 			sr.setRelated(relationType);
 		}
 		relationsToAdd.clear();
+		changed = false;
 	}
 
 	@Override
@@ -98,6 +100,16 @@ public class RelationContainer
 	@Override
 	public String id() {
 		return id.id();
+	}
+
+	@Override
+	public boolean changed() {
+		return changed;
+	}
+
+	@Override
+	public void change() {
+		changed = true;
 	}
 
 }

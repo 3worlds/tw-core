@@ -241,6 +241,7 @@ public class RelationProcess extends AbstractRelationProcess {
 		}
 		else if (container.categoryInfo() instanceof SystemFactory)
 			if (container.categoryInfo().belongsTo(focalCategories)) {
+				container.change();
 				setContext(focalContext,container);
 //				focalGroup = (SystemFactory) container.categoryInfo();
 				executeFunctions(container,t,dt);

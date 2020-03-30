@@ -13,10 +13,9 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 public abstract class AbstractPopulationContainer<T extends Identity>
-		implements SimpleContainer<T>, Population/*, Identity*/ {
+		implements SimpleContainer<T>, Population {
 
 	// class-level constants
-//	private static final IdentityScope scope = new LocalScope("3w-runtime-container");
 	protected static Set<String> props = new HashSet<String>();
 	protected static PropertyKeys propsPK;
 	static {
@@ -83,13 +82,9 @@ public abstract class AbstractPopulationContainer<T extends Identity>
 
 	protected popData populationData = new popData();
 
-//	// unique id for this container (matches the parameter set)
-//	private Identity id = null;
-
 
 	public AbstractPopulationContainer() {
 		super();
-//		id = scope.newId(true, proposedId);
 	}
 
 	@Override
@@ -112,15 +107,5 @@ public abstract class AbstractPopulationContainer<T extends Identity>
 		populationData.nAdded = 0;
 		populationData.nRemoved = 0;
 	}
-
-//	@Override
-//	public final String id() {
-//		return id.id();
-//	}
-
-//	@Override
-//	public final IdentityScope scope() {
-//		return scope;
-//	}
 
 }
