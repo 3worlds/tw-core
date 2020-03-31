@@ -47,6 +47,8 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
+import fr.cnrs.iees.twcore.constants.LifespanType;
+import fr.ens.biologie.generic.utils.Duple;
 
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -83,7 +85,10 @@ public class PropertiesMatchDefinitionQuery extends Query {
 	public Query process(Object input) { // input is a variableValues or parameterValues node
 		defaultProcess(input);
 		TreeGraphDataNode targetNode = (TreeGraphDataNode) input;
-		Collection<TreeGraphDataNode> defs = getDataDefs(targetNode, dataCategory);
+		
+		Duple<Boolean,Collection<TreeGraphDataNode>> defData = getDataDefs(targetNode, dataCategory);
+		Collection<TreeGraphDataNode> defs = defData.getSecond();
+		Boolean useAutoVars = defData.getFirst();
 		satisfied = true;
 		if (defs == null || defs.isEmpty()) {
 			msg = "No property definitions found.";
@@ -91,6 +96,23 @@ public class PropertiesMatchDefinitionQuery extends Query {
 			return this;
 		}
 		SimplePropertyList trgProps = targetNode.properties();
+		if (useAutoVars) {
+			if (!trgProps.hasProperty("birthDate")) {
+				msg = "Property 'birthDate' not found.";
+				satisfied = false;
+				return this;
+			}
+			if (!trgProps.hasProperty("age")) {
+				msg = "Property 'age' not found.";
+				satisfied = false;
+				return this;
+			}
+//			if (!trgProps.hasProperty("name")) {
+//				msg = "Property 'name' not found.";
+//				satisfied = false;
+//				return this;
+//			}
+		}
 		for (TreeGraphDataNode def : defs) {
 			if (trgProps.hasProperty(def.id())) {
 				if (def.classId().equals(N_FIELD.label())) {
@@ -152,8 +174,9 @@ public class PropertiesMatchDefinitionQuery extends Query {
 	/* Public static - available for use by MM for matching purpose */
 	// argument 'node' is a variableValues or parameterValues node
 	@SuppressWarnings("unchecked")
-	public static Collection<TreeGraphDataNode> getDataDefs(TreeGraphDataNode node, String dataCategory) {
+	public static Duple<Boolean,Collection<TreeGraphDataNode>> getDataDefs(TreeGraphDataNode node, String dataCategory) {
 		// can't allow exceptions to arise here if used from MM
+		Boolean addAutoVars = false;
 		TreeGraphDataNode parent = (TreeGraphDataNode) node.getParent();
 		if (parent == null)
 			return null;
@@ -161,19 +184,21 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		// drivers and decorators: find the component type through instanceOf edge
 		if (dataCategory.equals(E_DRIVERS.label()) || dataCategory.equals(E_DECORATORS.label())) {
 			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
-				endNode());
-		// parameters: find the component type through groupOf edge
+					selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
+			if (ct != null) {
+				LifespanType lst = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
+				if (lst.equals(LifespanType.ephemeral))
+					addAutoVars = true;
+			}
+			// parameters: find the component type through groupOf edge
 		} else if (dataCategory.equals(E_PARAMETERS.label())) {
-			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
-				endNode());
+			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+					endNode());
 //			 check the case there is only one component directly declared under initialState
 //			 in which case the edge will be an instanceOf edge
-			if (ct==null ) {
+			if (ct == null) {
 				ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-					selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
-					endNode());
+						selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
 //				WIP
 				// check that node is the only child of Parent of its category type.
 //				Set<Category> ctg = ((ComponentType)ct).categories();
@@ -195,13 +220,14 @@ public class PropertiesMatchDefinitionQuery extends Query {
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 		if (cats.isEmpty())
 			return null;
-		Set<TreeGraphDataNode> result = new HashSet<>();
+		Set<TreeGraphDataNode> definitions = new HashSet<>();
 		for (TreeGraphDataNode cat : cats) {
 			Record rootRecord = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(dataCategory)),
 					endNode());
 			if (rootRecord != null)
-				result.addAll(Record.getLeaves(rootRecord));
+				definitions.addAll(Record.getLeaves(rootRecord));
 		}
-		return result;
+			
+		return new Duple<Boolean,Collection<TreeGraphDataNode> >(addAutoVars,definitions);
 	}
 }
