@@ -34,19 +34,23 @@ import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.util.Collection;
+
 /**
- * A Query to check that a consequence type is compatible with its master function type 
+ * A Query to check that a consequence type is compatible with its master
+ * function type
  * 
  * @author Jacques Gignoux - 8 Jan. 2020
  *
  */
 public class ConsequenceMatchFunctionTypeQuery extends Query {
-	
+
 	private String consequenceType = null;
 	private String functionType = null;
+	private String strValidTypes;
 
 	public ConsequenceMatchFunctionTypeQuery() {
-		
+
 	}
 
 	@Override
@@ -57,7 +61,14 @@ public class ConsequenceMatchFunctionTypeQuery extends Query {
 			TwFunctionTypes csqtype = (TwFunctionTypes) fn.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 			FunctionNode pn = (FunctionNode) fn.getParent();
 			TwFunctionTypes ftype = (TwFunctionTypes) pn.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-			satisfied = TwFunction.consequenceTypes(ftype).contains(csqtype);
+			Collection<TwFunctionTypes> validTypes = TwFunction.consequenceTypes(ftype);
+			satisfied = validTypes.contains(csqtype);
+			String s = "";
+			for (TwFunctionTypes ft : validTypes)
+				s += ", " + ft.name();
+			s = s.replaceFirst(", ", "[");
+			s += "]";
+			strValidTypes = s;
 			consequenceType = csqtype.name();
 			functionType = ftype.name();
 		}
@@ -65,8 +76,8 @@ public class ConsequenceMatchFunctionTypeQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + "Consequence type '" + consequenceType + 
-				"' incompatible with a " + functionType + " function.";
+		return "[" + stateString() + "Consequence function type must be one of " + strValidTypes + " for function '"
+				+ functionType + "' but found '" + consequenceType + "'.";
 	}
 
 }
