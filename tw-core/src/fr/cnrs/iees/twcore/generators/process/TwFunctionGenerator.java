@@ -45,9 +45,14 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
+import au.edu.anu.twcore.ecosystem.runtime.containers.NestedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.containers.SimpleContainer;
 import au.edu.anu.twcore.ecosystem.runtime.space.Location;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
@@ -57,6 +62,7 @@ import fr.cnrs.iees.twcore.constants.SnippetLocation;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
@@ -169,7 +175,14 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			generator.setImport(Location.class.getCanonicalName());
 			generator.setImport("static fr.cnrs.iees.uit.space.Distance.*");
 		}
-
+		// TODO: change this by an analysis of method arguments -> set of classes to add as imports
+		if (type.equals(TwFunctionTypes.ChangeState)) {
+			generator.setImport(TwData.class.getCanonicalName());
+			generator.setImport(ComponentContainer.class.getCanonicalName());
+			generator.setImport(Box.class.getCanonicalName());
+			generator.setImport(Point.class.getCanonicalName());
+			generator.setImport(SystemData.class.getCanonicalName());
+		}
 		// generator.setImport("java.util.Map");
 		Collection<MethodGenerator> lmg = generator.getMethods();
 		for (MethodGenerator mg : lmg) {

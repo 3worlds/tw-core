@@ -3,12 +3,12 @@
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *                    *** 3Worlds - A software for the simulation of ecosystems ***
@@ -33,7 +33,10 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 public enum TwFunctionTypes {
 
 // ChangeState: change the state, ie the values of internal variables, of a system component
-	ChangeState ("changeState", "t,dt,focal", "double,double,SystemComponent", "void"),
+	ChangeState ("changeState",
+		"t,dt,ecosystemPar,ecosystemPopulationData,lifeCyclePar,lifeCyclePopulationData,groupPar,groupPopulationData,limits,auto,drv,ltc,loc,dec,nextDrv,nextLoc",
+		"double,double,TwData,ComponentContainer,TwData,ComponentContainer,TwData,ComponentContainer,Box,SystemData,TwData,TwData,Point,TwData,TwData,double[]",
+		"void"),
 
 // ChangeCategoryDecision: change category of a system component according to life cycle (has no effect if no life cycle is specified)
 	ChangeCategoryDecision ("changeCategory", "t,dt,focal", "double,double,SystemComponent", "String"),
@@ -67,7 +70,7 @@ public enum TwFunctionTypes {
 
 // Relocate: compute or change the location of a system component
 	Relocate ("relocate", "t, dt, focal, ctLoc, limits", "double, double, SystemComponent, Location, Box", "double[]");
-	
+
 	private final String method;
 	private final String argumentNames;
 	private final String argumentTypes;
@@ -116,7 +119,7 @@ public enum TwFunctionTypes {
 	}
 
 	static {
-		ValidPropertyTypes.recordPropertyType(TwFunctionTypes.class.getSimpleName(), 
+		ValidPropertyTypes.recordPropertyType(TwFunctionTypes.class.getSimpleName(),
 		TwFunctionTypes.class.getName(),defaultValue());
 	}
 

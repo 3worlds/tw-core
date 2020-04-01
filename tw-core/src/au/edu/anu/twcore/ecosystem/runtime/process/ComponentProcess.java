@@ -56,6 +56,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -149,9 +151,24 @@ public class ComponentProcess
 				// change state of this SystemComponent - easy
 				for (ChangeStateFunction function : CSfunctions) {
 					function.setFocalContext(focalContext);
-					function.changeState(t, dt, focal);
-					// TODO: function.changeState(t,dt,focal.currentState(),focal.nextState(),
-					//		focalContext.ecosystemPopulationData(),focalContext.groupPopulationData()...
+//					function.changeState(t, dt, focal);
+					// NEW code for new TwFunction API
+					Box limits = null;
+					Point location = null;
+					double[] newLoc = null;
+					if (space!=null) {
+						limits = space.boundingBox();
+						location = space.locationOf(focal).asPoint();
+						newLoc = new double[location.dim()];
+					}
+					function.changeState(t, dt,
+						focalContext.ecosystemParameters, ecosystem(),
+						focalContext.lifeCycleParameters, lifeCycleContainer,
+						focalContext.groupParameters, focal.container(),
+						limits,
+						focal.autoVar(), focal.currentState(), null, location,
+						focal.decorators(), focal.nextState(), newLoc);
+					// end new code
 				}
 				focal.nextState().writeDisable();
 			}
@@ -285,7 +302,9 @@ public class ComponentProcess
 						SystemComponent newBorn = nbs.factory.newInstance();
 						for (ChangeStateFunction func : function.getChangeStateConsequences()) {
 							function.setFocalContext(focalContext);
-							func.changeState(t, dt, newBorn);
+						// WIP  disabled - replace with new version of changeSate
+//							func.changeState(t, dt, newBorn);
+
 						}
 						HierarchicalContext newBornContext = null;
 						if ((!function.getChangeOtherStateConsequences().isEmpty()) |
