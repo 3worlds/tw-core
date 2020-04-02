@@ -64,6 +64,7 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
+import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwInitialiserGenerator;
 import fr.ens.biologie.codeGeneration.JavaCompiler;
@@ -81,6 +82,8 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 public class CodeGenerator {
 
 	private TreeGraph<TreeGraphDataNode, ALEdge> graph = null;
+	// the generator for the single user model file
+	private ModelGenerator modelgen = null;
 
 	public CodeGenerator(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		super();
@@ -131,6 +134,8 @@ public class CodeGenerator {
 					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			if (!cats.isEmpty())
 				generateDataCode(ecology, ecology.id());
+			// prepare user modifiable model file
+			modelgen = new ModelGenerator(graph.root().id(),ecology.id(),null);
 			// generate TwFunction classes
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
@@ -149,6 +154,8 @@ public class CodeGenerator {
 			for (TreeGraphDataNode initialiser : initialisers)
 				generateInitialiserCode(initialiser, ecology.id());
 		}
+		// write the user code file
+		modelgen.generateCode();
 
 		// compile whole code directory here
 		JavaCompiler compiler = new JavaCompiler();
@@ -362,6 +369,7 @@ public class CodeGenerator {
 	}
 
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
+		modelgen.getMethod(function.id()).setReturnType("void");
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.generateCode();
 		UserProjectLink.addFunctionFile(generator.getFile());
