@@ -94,6 +94,7 @@ public class ComponentType
 	private TwData parameterTemplate = null;
 	private TwData driverTemplate = null;
 	private TwData decoratorTemplate = null;
+	private TwData lifetimeConstantTemplate = null;
 	private Map<String,Constructor<? extends RelocateFunction>> fConstructors = new HashMap<>();
 	private Map<String,SpaceNode> spaces = new HashMap<>();
 	private Map<Integer,SystemFactory> factories = new HashMap<>();
@@ -144,6 +145,12 @@ public class ComponentType
 				if (s!=null)
 					if (!s.trim().isEmpty())
 						decoratorTemplate = loadDataClass(s);
+			}
+			if (properties().hasProperty(P_LTCONSTANTCLASS.key())) {
+				s = (String) properties().getPropertyValue(P_LTCONSTANTCLASS.key());
+				if (s!=null)
+					if (!s.trim().isEmpty())
+						lifetimeConstantTemplate = loadDataClass(s);
 			}
 			// add automatically generated relocate functions
 			if (properties().hasProperty(P_RELOCATEFUNCTION.key())) {
@@ -203,15 +210,15 @@ public class ComponentType
 			return null;
 	}
 
-	/** returns a new variableSet of the proper structure for this SystemFactory
-	 * NB for use at initialisation only*/
-	public final TwData newVariableSet() {
-		if (driverTemplate != null)
-			return driverTemplate.clone().clear();
-		else
-			return null;
-	}
-
+	// NB: never used
+//	/** returns a new variableSet of the proper structure for this SystemFactory
+//	 * NB for use at initialisation only*/
+//	public final TwData newVariableSet() {
+//		if (driverTemplate != null)
+//			return driverTemplate.clone().clear();
+//		else
+//			return null;
+//	}
 
 	@Override
 	public Set<Category> categories() {
@@ -293,6 +300,7 @@ public class ComponentType
 		}
 		SystemFactory result = new SystemFactory(driverTemplate,
 			decoratorTemplate,
+			lifetimeConstantTemplate,
 			permanent,
 			categories,
 			categoryId,

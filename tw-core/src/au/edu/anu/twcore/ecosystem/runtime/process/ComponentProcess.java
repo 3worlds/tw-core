@@ -166,7 +166,7 @@ public class ComponentProcess
 						focalContext.lifeCycleParameters, lifeCycleContainer,
 						focalContext.groupParameters, focal.container(),
 						limits,
-						focal.autoVar(), focal.currentState(), null, location,
+						focal.autoVar(), focal.currentState(), focal.constants(), location,
 						focal.decorators(), focal.nextState(), newLoc);
 					// end new code
 				}

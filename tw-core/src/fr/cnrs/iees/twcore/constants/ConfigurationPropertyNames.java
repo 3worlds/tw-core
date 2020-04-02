@@ -56,6 +56,7 @@ public enum ConfigurationPropertyNames {
 	P_PARAMETERCLASS			("parameterClass"),
 	P_DRIVERCLASS				("driverClass"),
 	P_DECORATORCLASS			("decoratorClass"),
+	P_LTCONSTANTCLASS			("constantClass"),
 	P_DYNAMIC					("dynamic"),
 	P_FUNCTIONTYPE				("type"),
 	P_FUNCTIONCLASS				("userClassName"),

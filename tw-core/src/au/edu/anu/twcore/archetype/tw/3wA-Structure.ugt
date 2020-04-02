@@ -26,6 +26,10 @@ hasNode categorySpec
 		isOfClass = String("decorators")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToLifetimeConstantsSpec
+		isOfClass = String("lifetimeConstants")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
 	hasEdge edgeToParametersSpec
 		isOfClass = String("parameters")
 		toNode = String("record:")
@@ -63,6 +67,10 @@ hasNode componentTypeSpec
 		multiplicity = IntegerRange("0..1")
 	hasProperty componentDriverSpec
 		hasName = String("driverClass")
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
+	hasProperty componentLifeTimeConstantSpec
+		hasName = String("constantClass")
 		type =  String("String")
 		multiplicity = IntegerRange("0..1")
 	hasProperty autoRelocateFunctionSpec

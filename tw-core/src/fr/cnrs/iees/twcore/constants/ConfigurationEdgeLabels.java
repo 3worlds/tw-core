@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -39,6 +39,7 @@ import au.edu.anu.twcore.experiment.SourceEdge;
 import au.edu.anu.twcore.ecosystem.structure.DriverEdge;
 import au.edu.anu.twcore.ecosystem.structure.DecoratorEdge;
 import au.edu.anu.twcore.ecosystem.structure.ParameterEdge;
+import au.edu.anu.twcore.ecosystem.structure.LifetimeConstantEdge;
 import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 import au.edu.anu.twcore.ecosystem.structure.InitialisedByEdge;
 import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
@@ -66,13 +67,13 @@ import au.edu.anu.twcore.ui.TrackComponentEdge;
 import au.edu.anu.twcore.ui.TrackSpaceEdge;
 
 /**
- * 
+ *
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
 public enum ConfigurationEdgeLabels {
 	//=========================================================================
-	//			| label					|def name		| 	class				
+	//			| label					|def name		| 	class
 	//-------------------------------------------------------------------------
 	// data definition
 	E_SIZEDBY 		("sizedBy",			"szBy",			SizedByEdge.class),
@@ -84,6 +85,7 @@ public enum ConfigurationEdgeLabels {
 	// ecosystem / structure
 	E_DRIVERS		("drivers",			"drvs",			DriverEdge.class),
 	E_DECORATORS	("decorators",		"decs",			DecoratorEdge.class),
+	E_LTCONSTANTS	("lifetimeConstants","ltcs",		LifetimeConstantEdge.class),
 	E_PARAMETERS	("parameters",		"pars",			ParameterEdge.class),
 	E_BELONGSTO		("belongsTo",		"blngsTo",		BelongsToEdge.class),
 	E_INITIALISEDBY	("initialisedBy",	"initBy",		InitialisedByEdge.class),
@@ -94,7 +96,7 @@ public enum ConfigurationEdgeLabels {
 	E_DEPENDSON		("dependsOn",		"depsOn",		DependsOnEdge.class),
 	E_EFFECTEDBY	("effectedBy",		"effdBy",		EffectedByEdge.class),
 	E_STOPSYSTEM	("stopSystem",		"stpSys",		StopSystemEdge.class),
-	E_CONDITION		("condition",		"condOf",			ConditionEdge.class),
+	E_CONDITION		("condition",		"condOf",		ConditionEdge.class),
 	E_GROUPOF		("groupOf",			"grpOf",		GroupOfEdge.class),
 	E_CYCLE			("cycle",			"cycl",			CycleEdge.class),
 	E_INSTANCEOF	("instanceOf",		"instOf",		InstanceOfEdge.class),
@@ -115,21 +117,21 @@ public enum ConfigurationEdgeLabels {
 	private final String label;
 	private final String defName;
 	private final Class<?> type;
-	
+
 	private ConfigurationEdgeLabels(String label,String defName,Class<?> type) {
 		this.label = label;
 		this.defName=defName;
 		this.type = type;
 	}
-	
+
 	public String label() {
 		return label;
 	}
-	
+
 	public String defName() {
 		return defName;
 	}
-	
+
 	public Class<?> type() {
 		return type;
 	}

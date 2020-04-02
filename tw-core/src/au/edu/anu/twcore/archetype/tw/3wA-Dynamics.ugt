@@ -174,7 +174,7 @@ hasNode consequenceFunctionSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
-	mustSatisfyQuery FunctionTypePropertySpecQuery
+	mustSatisfyQuery FunctionConsequenceTypePropertySpecQuery
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([3]"relateToProduct","type","CreateOtherDecision"))
 	// TODO: specific to 	ChangeOtherStateFunction when consequence of DeleteDecision:

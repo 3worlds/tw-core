@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -60,10 +60,10 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  * NB from AOT, only the current state is visible
  * </p>
  *
- * 
+ *
  * @author gignoux - 20 févr. 2017<br/>
- * 
- * 
+ *
+ *
  */
 public class SystemComponentPropertyListImpl implements SimplePropertyList {
 
@@ -74,8 +74,10 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	private TwData[] drivers = null;
 	/** state variables that undergo the dynamics */
 	private TwData decorators = null;
+	/** lifetime constants (never change after initialisation */
+	private TwData constants = null;
 
-	// AOT side
+	// Graph side
 	// NB: only current state is visible
 	/** map of TwData indices by keys */
 	private Map<String, Integer> propertyMap = null;
@@ -84,18 +86,20 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	protected static int DRIVERS = 0;
 	protected static int AUTO = 1;
 	protected static int DECO = 2;
+	protected static int CONST = 3;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param parameters
 	 * @param variables
 	 * @param depth
-	 *            the depth in past (could be zero)
+	 *            the depth in past (could be zero) [maybe useful for diff equation computation]
 	 * @param propertyMap
 	 */
-	protected SystemComponentPropertyListImpl(TwData driverVariables, 
-			TwData decoratorVariables, 
+	protected SystemComponentPropertyListImpl(TwData driverVariables,
+			TwData decoratorVariables,
+			TwData lifetimeConstants,
 			int depth,
 			Map<String, Integer> propertyMap) {
 		super();
@@ -110,12 +114,15 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 				drivers[i] = driverVariables.clone();
 		if (decoratorVariables != null)
 			decorators = decoratorVariables.clone();
+		if (lifetimeConstants!=null)
+			constants = lifetimeConstants.clone();
 		// graph side - a flat propertyList
 		this.propertyMap = propertyMap; // shared (save memory space)
-		properties = new TwData[3];
+		properties = new TwData[4];
 		properties[DRIVERS] = drivers[CURRENT];
 		properties[AUTO] = autoState;
 		properties[DECO] = decorators;
+		properties[CONST] = constants;
 	}
 
 	// Graph Side - slow access but as any node.
@@ -147,8 +154,8 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	}
 
 	protected SystemComponentPropertyListImpl cloneStructure() {
-		SystemComponentPropertyListImpl result = new SystemComponentPropertyListImpl(/* parameters, */
-				drivers[0], decorators, drivers.length, propertyMap);
+		SystemComponentPropertyListImpl result = new SystemComponentPropertyListImpl(
+			drivers[0], decorators, constants, drivers.length, propertyMap);
 		return result;
 	}
 
@@ -171,7 +178,7 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 			properties[i].fillWith(value);
 		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(1024);
@@ -184,7 +191,7 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 				sb.append(' ').append(key).append("=").append(getPropertyValue(key));
 		return sb.toString();
 	}
-	
+
 	// 3Worlds Side - for user & simulator interaction.
 	// ======================================================
 
@@ -200,8 +207,12 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 		return drivers;
 	}
 
+	protected TwData constants() {
+		return constants;
+	}
+
 	// needed technically by SystemComponent.stepForward() - only to be used by SystemComponent
-	protected void rotateDriverProperties(TwData newDrivers) {
+	void rotateDriverProperties(TwData newDrivers) {
 		properties[DRIVERS] = newDrivers;
 	}
 

@@ -109,6 +109,10 @@ public class SystemComponent
 		return ((SystemComponentPropertyListImpl) properties()).decorators();
 	}
 
+	public TwData constants() {
+		return ((SystemComponentPropertyListImpl) properties()).constants();
+	}
+
 	public TwData parameters() {
 		return container.parameters();
 	}
