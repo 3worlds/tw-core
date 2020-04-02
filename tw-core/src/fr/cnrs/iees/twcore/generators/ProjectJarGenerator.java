@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,7 +65,8 @@ import fr.cnrs.iees.twcore.constants.FileType;
 
 public class ProjectJarGenerator {
 	public static String mainClass = "au.edu.anu.twuifx.mr.MRmain";
-	public static final String userCodeRunner = "UserCodeRunner.java";
+	public static final String userCodeRunnerSrc = "UserCodeRunner.java";
+	public static final String userCodeRunnerCls = "UserCodeRunner.class";
 
 	@SuppressWarnings("unchecked")
 	public void generate(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
@@ -129,12 +131,13 @@ public class ProjectJarGenerator {
 	}
 
 	private void pullAllCodeFiles() {
+		// if we search on .class files we can ignore unpaired ones as they will be inner classes
 		// File localDir = Project.makeFile(ProjectPaths.LOCALCODE);
 		File localDir = Project.makeFile(ProjectPaths.JAVAPROJECT);
-		String[] extensions = new String[] { "java" };
-		List<File> remoteSrcFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
+		String[] srcExtensions = new String[] { "java" };
+		List<File> remoteSrcFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), srcExtensions, true);
 		for (File remoteSrcFile : remoteSrcFiles) {
-			if (!remoteSrcFile.getName().equals(userCodeRunner)) {
+			if (!remoteSrcFile.getName().equals(userCodeRunnerSrc)) {
 				File remoteClsFile = UserProjectLink.classForSource(remoteSrcFile);
 				File localSrcFile = replaceParentPath(remoteSrcFile, UserProjectLink.srcRoot(), localDir);
 				File localClsFile = replaceParentPath(remoteClsFile, UserProjectLink.classRoot(), localDir);
@@ -159,6 +162,19 @@ public class ProjectJarGenerator {
 				}
 			}
 		}
+		// any class files not already copied must be inner classes
+		String[] clsExtensions = new String[] { "class" };
+		List<File> remoteClsFiles = (List<File>) FileUtils.listFiles(UserProjectLink.classRoot(), clsExtensions, true);
+		for (File remoteClsFile: remoteClsFiles) {
+			File localClsFile = replaceParentPath(remoteClsFile, UserProjectLink.classRoot(), localDir);
+			if (!localClsFile.exists()) {
+				String name = remoteClsFile.getName();
+				if (name.contains("$"))// just to be sure and also excludes the codeRunner
+				  FileUtilities.copyFileReplace(remoteClsFile,localClsFile);	
+			}
+		}
+
+
 	}
 
 	private void pullAllResources() {

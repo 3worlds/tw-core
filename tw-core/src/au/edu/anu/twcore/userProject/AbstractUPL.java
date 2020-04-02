@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +107,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	}
 
 	private void writeUserCodeRunner() {
-		File ucrFile = new File(this.srcRoot().getAbsolutePath() + File.separator + ProjectJarGenerator.userCodeRunner);
+		File ucrFile = new File(this.srcRoot().getAbsolutePath() + File.separator + ProjectJarGenerator.userCodeRunnerSrc);
 		if (!ucrFile.exists()) {
 			String ucrStr = userCoderRunnerStr;
 			String contents = ucrStr.replace(ppph, Project.getProjectFile().getName());
@@ -154,6 +155,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		pushDataFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushFunctionFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushInitialiserFiles(localPath, remoteSrcPath, remoteClsPath);
+		//pushInnerClasses(localPath,remoteSrcPath, remoteClsPath);
 	}
 
 	// Always overwrite
@@ -169,7 +171,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	}
 
 	// Never overwrite unless a class change is detected. In this case backup old
-	// work.
+	// file as a text file first.
 	public void pushFunctionFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File localSrcFile : functionFiles) {
 			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
@@ -200,7 +202,37 @@ public abstract class AbstractUPL implements IUserProjectLink {
 			}
 		}
 	}
-
+//	public void pushInnerClasses(String localPath, String remoteSrcPath, String remoteClsPath) {
+//		// find any .class files that have no matching .java file
+//		File jDir = new File(remoteSrcPath);
+//		File[] jFiles = jDir.listFiles(new FilenameFilter() {
+//
+//			@Override
+//			public boolean accept(File dir, String name) {
+//				return name.endsWith(".java");
+//			}
+//			
+//		});
+//		File cDir = new File(remoteClsPath);
+//		File[] cFiles = cDir.listFiles(new FilenameFilter() {
+//
+//			@Override
+//			public boolean accept(File dir, String name) {
+//				return name.endsWith(".class");
+//			}
+//			
+//		});
+//		List<File> srcFiles = new ArrayList<>();
+//		List<File> clsFiles = new ArrayList<>();
+//		List<File> innFiles = new ArrayList<>();
+//		for (File f:jFiles)
+//			srcFiles.add(f);
+//		for (File f:cFiles)
+//			clsFiles.add(f);
+//			
+//		
+//		
+//	}
 	// Never overwrite.
 	public void pushInitialiserFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File inSrcFile : initialiserFiles) {
@@ -269,6 +301,11 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	public File classForSource(File srcFile) {
 		return new File(srcFile.getAbsolutePath().replace(srcRoot().getAbsolutePath(), classRoot().getAbsolutePath())
 				.replace(".java", ".class"));
+	}
+	@Override
+	public File sourceForClass(File clsFile) {
+		return new File(clsFile.getAbsolutePath().replace(srcRoot().getAbsolutePath(), classRoot().getAbsolutePath())
+				.replace(".class", ".java"));
 	}
 
 }

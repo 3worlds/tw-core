@@ -51,6 +51,8 @@ public interface IUserProjectLink {
 	public void clearFiles();
 	
 	public File classForSource(File srcFile);
+	
+	public File sourceForClass(File clsFile);
 
 	public void addDataFile(File f);
 
