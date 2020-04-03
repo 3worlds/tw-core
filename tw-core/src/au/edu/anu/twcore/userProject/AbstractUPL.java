@@ -62,11 +62,11 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	private List<File> initialiserFiles;
 	public static String extOrig = ".orig";
 	private static Logger log = Logging.getLogger(AbstractUPL.class);
-	private String userCoderRunnerStr = "public class UserCodeRunner {\n" + //
+	private String userCodeRunnerStr = "public class UserCodeRunner {\n" + //
 			"\n" + //
-			"// example: String[] args1 = {\"<projectPath>\", \"OFF\",\"au.edu.anu.twuifx.widgets.SimpleControlWidget:INFO\"};\n"
+			"// example: String[] args1 = {\"0\", \"<projectPath>\", \"OFF\",\"au.edu.anu.twuifx.widgets.SimpleControlWidget:INFO\"};\n"
 			+ "		public static void main(String[] args) {\n" + //
-			"			String[] args1 = {\"<projectPath>\"};\n" + //
+			"			String[] args1 = {\"0\", \"<projectPath>\"};\n" + //
 			"			au.edu.anu.twuifx.mr.MRmain.main(args1);\n" + //
 			"\n" + //
 			"		}\n" + //
@@ -107,9 +107,10 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	}
 
 	private void writeUserCodeRunner() {
-		File ucrFile = new File(this.srcRoot().getAbsolutePath() + File.separator + ProjectJarGenerator.userCodeRunnerSrc);
+		File ucrFile = new File(
+				this.srcRoot().getAbsolutePath() + File.separator + ProjectJarGenerator.userCodeRunnerSrc);
 		if (!ucrFile.exists()) {
-			String ucrStr = userCoderRunnerStr;
+			String ucrStr = userCodeRunnerStr;
 			String contents = ucrStr.replace(ppph, Project.getProjectFile().getName());
 			BufferedWriter outfile;
 			try {
@@ -155,7 +156,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		pushDataFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushFunctionFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushInitialiserFiles(localPath, remoteSrcPath, remoteClsPath);
-		//pushInnerClasses(localPath,remoteSrcPath, remoteClsPath);
+		// pushInnerClasses(localPath,remoteSrcPath, remoteClsPath);
 	}
 
 	// Always overwrite
@@ -196,12 +197,13 @@ public abstract class AbstractUPL implements IUserProjectLink {
 					remoteSrcFile.renameTo(backup);
 					FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
 					FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
-					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.PROCESS_CLASS_CHANGE,
-							localAncestorClass, remoteAncestorClass, localSrcFile));
+					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.PROCESS_CLASS_CHANGE, localAncestorClass,
+							remoteAncestorClass, localSrcFile));
 				}
 			}
 		}
 	}
+
 //	public void pushInnerClasses(String localPath, String remoteSrcPath, String remoteClsPath) {
 //		// find any .class files that have no matching .java file
 //		File jDir = new File(remoteSrcPath);
@@ -302,6 +304,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		return new File(srcFile.getAbsolutePath().replace(srcRoot().getAbsolutePath(), classRoot().getAbsolutePath())
 				.replace(".java", ".class"));
 	}
+
 	@Override
 	public File sourceForClass(File clsFile) {
 		return new File(clsFile.getAbsolutePath().replace(srcRoot().getAbsolutePath(), classRoot().getAbsolutePath())
