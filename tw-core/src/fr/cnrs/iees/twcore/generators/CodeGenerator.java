@@ -369,7 +369,7 @@ public class CodeGenerator {
 	}
 
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
-		modelgen.getMethod(function.id()).setReturnType("void");
+		modelgen.setMethod(function);
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.generateCode();
 		UserProjectLink.addFunctionFile(generator.getFile());

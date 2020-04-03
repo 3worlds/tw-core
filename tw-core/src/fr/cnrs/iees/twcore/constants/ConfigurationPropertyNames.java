@@ -37,6 +37,7 @@ public enum ConfigurationPropertyNames {
 	P_FIELD_INTERVAL 			("interval"),
 	P_FIELD_PREC 				("precision"),
 	P_FIELD_UNITS 				("units"),
+	P_FIELD_DESCRIPTION			("description"),
 	P_FIELD_LABEL 				("hlabel"),
 	P_DESIGN_TYPE				("type"),
 	P_DESIGN_FILE				("file"),

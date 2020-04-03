@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -44,7 +44,7 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
  *
  */
 public class SystemData extends TwData {
-	
+
 	/** the name of this system  - for compatibility with graph */
 	private String name = "";
 	/** the age of the system since its creation, in mainTimer units */
@@ -52,7 +52,7 @@ public class SystemData extends TwData {
 	/** the birth date of the system, in mainTimer units */
 	private long birthDate = 0L;
 
-	
+
 	private static String[] keyArray = {"name","age","birthDate"};
 	protected static Set<String> keySet = new HashSet<String>(Arrays.asList(keyArray));
 
@@ -60,27 +60,27 @@ public class SystemData extends TwData {
 		super();
 	}
 
-	// quick getters and setters 
+	// quick getters and setters
 	//
-	
+
 	public long age() {
 		return age;
 	}
-	
+
 	public void age(long value) {
 		if (isReadOnly()) throw new TwcoreException("attempt to write to read-only data");
 		age = value;
 	}
-	
+
 	public long birthDate() {
 		return birthDate;
 	}
-	
+
 	public void birthDate(long value) {
 		if (isReadOnly()) throw new TwcoreException("attempt to write to read-only data");
 		birthDate = value;
 	}
-	
+
 	public String name() {
 		return name;
 	}
@@ -91,7 +91,7 @@ public class SystemData extends TwData {
 	}
 
 	// generic methods inherited from TwData
-	
+
 	@Override
 	public SystemData setProperty(String key, Object value) {
 		if (key.equals("age")) age = (Long)value;
@@ -145,14 +145,14 @@ public class SystemData extends TwData {
         s += ")";
         return s;
     }
-	
+
 	@Override
 	public boolean hasProperty(String key) {
 		if (key.equals("age")|key.equals("birthDate")|key.equals("name"))
 			return true;
 		return false;
 	}
-	
+
 	@Override
 	public String propertyToString(String key) {
 		if (key.equals("age")) return String.valueOf(age);
@@ -160,22 +160,22 @@ public class SystemData extends TwData {
 		else if (key.equals("name")) return name;
 		return null;
 	}
-	
+
 	@Override
 	public String getPropertyClassName(String key) {
 		return getPropertyClass(key).getName();
 	}
-	
+
 	@Override
 	public Set<String> getKeysAsSet() {
 		return keySet;
 	}
-	
+
 	@Override
 	public int size() {
 		return 5;
 	}
-	
+
 	@Override
 	public Class<?> getPropertyClass(String key) {
 		if (key.equals("age")) return Long.class;
