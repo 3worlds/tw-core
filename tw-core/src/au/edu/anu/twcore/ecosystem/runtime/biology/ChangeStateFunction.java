@@ -29,10 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.runtime.containers.NestedContainer;
-import au.edu.anu.twcore.ecosystem.runtime.containers.SimpleContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;

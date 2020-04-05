@@ -50,7 +50,6 @@ import au.edu.anu.twcore.experiment.runtime.deployment.SimpleDeployer;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ExperimentDesignType.*;
-import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 
 /**
  * Class matching the "experiment" node label in the 3Worlds configuration tree.

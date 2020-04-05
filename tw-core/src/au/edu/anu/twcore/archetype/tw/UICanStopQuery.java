@@ -30,31 +30,14 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
-import au.edu.anu.twcore.data.Record;
-import au.edu.anu.twcore.data.TableNode;
-import au.edu.anu.twcore.ui.WidgetNode;
-import au.edu.anu.twcore.ui.runtime.WidgetGUI;
-import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.twcore.constants.DataElementType;
-
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
  * A query to check that if controller is headless then a StoppingCondition must exist. 
@@ -119,7 +102,7 @@ public class UICanStopQuery extends Query {
 			satisfied = true;
 			return this;
 		}
-		WidgetNode ctrlNodeHl = (WidgetNode) controllersHl.get(0);
+		//WidgetNode ctrlNodeHl = (WidgetNode) controllersHl.get(0);
 		// ok we need a stopping condition but only if system.dynamics exists
 		TreeNode root = ui.getParent();
 		if (root == null) {
