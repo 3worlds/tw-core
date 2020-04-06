@@ -40,15 +40,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
+
+import org.bouncycastle.util.Strings;
 
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
-import au.edu.anu.twcore.ecosystem.runtime.containers.NestedContainer;
-import au.edu.anu.twcore.ecosystem.runtime.containers.SimpleContainer;
 import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -66,6 +68,7 @@ import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
+import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -217,6 +220,87 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		String name = generatedClassName.replace(this.packageName+".", "");
 		String path = packagePath+File.separator+name;
 		return new File(path+".java");
+	}
+
+	private Map<String,String> innerClassCode = new HashMap<>();
+
+	public void setArgumentCalls(String classToCall,Map<ArgumentGroups,List<Duple<String,String>>> reqArgs) {
+		String indent = "\\t";
+		String callStatement = indent+indent+classToCall+"."+
+			Strings.toLowerCase(name.substring(0,1))+
+			name.substring(1)+"(\\n";
+		for (ArgumentGroups ag: reqArgs.keySet())
+			for (Duple<String,String> d: reqArgs.get(ag)){
+				String an = d.getFirst();
+//				String at = d.getSecond();
+				String callArg = null;
+				switch (ag) {
+				case t:
+					callArg = "t";
+					break;
+				case dt:
+					callArg = "dt";
+					break;
+				case ecosystemPar:
+					callArg = "// ecosystemPar";
+					break;
+				case ecosystemPop:
+					callArg = "// ecosystemPop";
+					break;
+				case lifeCyclePar:
+					callArg = "// lifeCyclePar";
+					break;
+				case lifeCyclePop:
+					callArg = "// lifeCyclePopData";
+					break;
+				case groupPar:
+					callArg = "(" + /*typecast*/ "groupPar)."+an+"()";
+					break;
+				case groupPop:
+					callArg = "// groupPopData";
+					break;
+				case limits:
+					callArg = "limits";
+					break;
+				case focalAuto:
+					callArg = "auto."+an+"()";
+					break;
+				case focalDec:
+					callArg = "// focalDec";
+					break;
+				case focalDrv:
+					callArg = "// focalDrv";
+					break;
+				case focalLoc:
+					callArg = "// focalLoc";
+					break;
+				case focalLtc:
+					callArg = "// focalLtc";
+					break;
+				case otherAuto:
+					callArg = "// otherAuto";
+					break;
+				case otherDec:
+					callArg = "// otherDec";
+					break;
+				case otherDrv:
+					callArg = "// otherDrv";
+					break;
+				case otherLoc:
+					callArg = "// otherLoc";
+					break;
+				case otherLtc:
+					callArg = "// otherLtc";
+					break;
+				default:
+					break;
+				} //switch
+				if (callArg!=null)
+					callStatement += indent+indent+indent+ callArg + ",\n";
+		} // for
+		callStatement = callStatement.substring(0, callStatement.length()-2);
+		callStatement +=")";
+		System.out.println(callStatement);
 	}
 
 }

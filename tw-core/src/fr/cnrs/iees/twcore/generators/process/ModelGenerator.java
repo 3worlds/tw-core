@@ -7,10 +7,12 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
 
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,15 +33,19 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.ALDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Distance;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.JavaCode;
+import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -60,13 +66,15 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	// class comment
 	private String classComment = null;
 	// all the imports
-	private List<String> imports = new LinkedList<String>();
+	private Set<String> imports = new HashSet<String>();
 	// all the methods to add to this code
 	private Map<String,ModelMethodGenerator> methods = new HashMap<>();
 	// method scope
 	private static String methodScope = "public static";
 	// set to make sure there are no two fields with the same name
 	private Set<String> replicateNames = new HashSet<>();
+//	// a map of the argument names grouped by role for Twfunction code generation
+//	private EnumMap<ArgumentGroups,List<Duple<String,String>>> argumentGroups = new EnumMap<>(ArgumentGroups.class);
 
 	/**
 	 * Constructor able to manage previously generated code
@@ -109,41 +117,56 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 	}
 
-	private void addRecordFields(ModelMethodGenerator method, Record rec) {
+	public ModelMethodGenerator method(String name) {
+		return methods.get(name);
+	}
+
+	// prepare comments to explain arguments to end user
+	private String argComment(TreeGraphDataNode f,
+			ConfigurationPropertyNames descro,
+			ConfigurationPropertyNames units,
+			ConfigurationPropertyNames prec,
+			ConfigurationPropertyNames interval,
+			ConfigurationPropertyNames range) {
+		StringBuilder comment = new StringBuilder();
+		if (f.properties().hasProperty(descro.key()))
+			if (f.properties().getPropertyValue(descro.key())!=null)
+				comment.append(f.properties().getPropertyValue(descro.key()));
+			else
+				comment.append(f.id());
+		else
+			comment.append(f.id());
+		if (f.properties().hasProperty(units.key()))
+			if (f.properties().getPropertyValue(units.key())!=null)
+				if (!f.properties().getPropertyValue(units.key()).toString().isEmpty())
+					comment.append(" (")
+						.append(f.properties().getPropertyValue(units.key()))
+						.append(")");
+		if (f.properties().hasProperty(prec.key()))
+			if (f.properties().getPropertyValue(prec.key())!=null)
+				comment.append(" ± ")
+					.append(f.properties().getPropertyValue(prec.key()));
+		if (f.properties().hasProperty(interval.key()))
+			if (f.properties().getPropertyValue(interval.key())!=null)
+				comment.append(" ")
+					.append(f.properties().getPropertyValue(interval.key()));
+		if (f.properties().hasProperty(range.key()))
+			if (f.properties().getPropertyValue(range.key())!=null)
+				comment.append(" [")
+					.append(f.properties().getPropertyValue(range.key()))
+					.append(']');
+		return comment.toString();
+	}
+
+	private void addRecordFields(ModelMethodGenerator method, Record rec, ArgumentGroups argGroup) {
 		for (TreeNode tn:rec.getChildren()) {
 			if (tn instanceof FieldNode) {
 				FieldNode f = (FieldNode) tn;
-				if (replicateNames.contains(f.id())) {
+				if (replicateNames.contains(f.id()))
 					log.warning(()->"Replicated field name ("+f.id()+") in function "+method.name());
-				}
 				else {
-					StringBuilder comment = new StringBuilder();
-					if (f.properties().hasProperty(P_FIELD_DESCRIPTION.key()))
-						if (f.properties().getPropertyValue(P_FIELD_DESCRIPTION.key())!=null)
-							comment.append(f.properties().getPropertyValue(P_FIELD_DESCRIPTION.key()));
-						else
-							comment.append(f.id());
-					else
-						comment.append(f.id());
-					if (f.properties().hasProperty(P_FIELD_UNITS.key()))
-						if (f.properties().getPropertyValue(P_FIELD_UNITS.key())!=null)
-							if (!f.properties().getPropertyValue(P_FIELD_UNITS.key()).toString().isEmpty())
-								comment.append(" (")
-									.append(f.properties().getPropertyValue(P_FIELD_UNITS.key()))
-									.append(")");
-					if (f.properties().hasProperty(P_FIELD_PREC.key()))
-						if (f.properties().getPropertyValue(P_FIELD_PREC.key())!=null)
-							comment.append(" ± ")
-								.append(f.properties().getPropertyValue(P_FIELD_PREC.key()));
-					if (f.properties().hasProperty(P_FIELD_INTERVAL.key()))
-						if (f.properties().getPropertyValue(P_FIELD_INTERVAL.key())!=null)
-							comment.append(" ")
-								.append(f.properties().getPropertyValue(P_FIELD_INTERVAL.key()));
-					if (f.properties().hasProperty(P_FIELD_RANGE.key()))
-						if (f.properties().getPropertyValue(P_FIELD_RANGE.key())!=null)
-							comment.append(" [")
-								.append(f.properties().getPropertyValue(P_FIELD_RANGE.key()))
-								.append(']');
+					String comment = argComment(f,P_FIELD_DESCRIPTION,P_FIELD_UNITS,P_FIELD_PREC,
+						P_FIELD_INTERVAL,P_FIELD_RANGE);
 					String type = f.properties().getPropertyValue(P_FIELD_TYPE.key()).toString();
 					if (ValidPropertyTypes.isPrimitiveType(type)) {
 						if (type.equals("Integer"))
@@ -151,12 +174,30 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						else
 							type = Strings.toLowerCase(type.substring(0,1)) + type.substring(1);
 					}
-					method.addArgument(f.id(),type,comment.toString());
+					method.addArgument(argGroup,f.id(),type,comment.toString());
 					replicateNames.add(f.id());
 				}
 			}
 			else if (tn instanceof TableNode) {
-				// TODO: tables! + recursion with records !
+				TableNode t = (TableNode) tn;
+				if (replicateNames.contains(t.id()))
+					log.warning(()->"Replicated table name ("+t.id()+") in function "+method.name());
+				else {
+					String comment = argComment(t,P_TABLE_DESCRIPTION,P_TABLE_UNITS,P_TABLE_PREC,
+						P_TABLE_INTERVAL,P_TABLE_RANGE);
+					// Add table dimensions to comment
+					String type = t.properties().getPropertyValue(P_DATAELEMENTTYPE.key()).toString();
+					if (ValidPropertyTypes.isPrimitiveType(type)) {
+						if (type.equals("Integer"))
+							type = "IntTable";
+						else
+							type += "Table";
+					}
+					imports.add(ValidPropertyTypes.getJavaClassName(type));
+					method.addArgument(argGroup,t.id(),type,comment.toString());
+					replicateNames.add(t.id());
+					// TODO: other table types (tables of fields)
+				}
 			}
 		}
 	}
@@ -178,17 +219,22 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// in all cases, retrieve all the parameters and parameter types
 		replicateNames.clear();
 		//always present parameters
-		method.addArgument("t","double","current time");
-		method.addArgument("dt","double","current time step");
+		method.addArgument(t,"t","double","current time");
+		replicateNames.add("t");
+		method.addArgument(dt,"dt","double","current time step");
+		replicateNames.add("dt");
 
 		// methods applying to ComponentProceses:
 		for (TwFunctionTypes tft:ComponentProcess.compatibleFunctionTypes)
 			if (tft.equals(ftype)) {
 				// focal arguments
 				// TODO: groups etc.
-				method.addArgument("limits","Box" ,"space limits");
-				method.addArgument("age", "double", "focal cpt. age");
-				method.addArgument("birthDate", "double", "focal cpt. creation time");
+				method.addArgument(limits,"limits","Box" ,"space limits");
+				replicateNames.add("limits");
+				method.addArgument(focalAuto,"age", "double", "focal cpt. age");
+				replicateNames.add("age");
+				method.addArgument(focalAuto,"birthDate", "double", "focal cpt. creation time");
+				replicateNames.add("birthDate");
 				TreeNode fp = function.getParent();
 				if (fp instanceof ProcessNode) { // must be this or a consequence
 					ProcessNode pn = (ProcessNode) fp;
@@ -201,22 +247,22 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 							selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
 							endNode());
 						if (rec!=null)
-							addRecordFields(method,rec);
+							addRecordFields(method,rec,groupPar);
 						rec = (Record) get(cat.edges(Direction.OUT),
 							selectZeroOrOne(hasTheLabel(E_LTCONSTANTS.label())),
 							endNode());
 						if (rec!=null)
-							addRecordFields(method,rec);
+							addRecordFields(method,rec,focalLtc);
 						rec = (Record) get(cat.edges(Direction.OUT),
 							selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
 							endNode());
 						if (rec!=null)
-							addRecordFields(method,rec);
+							addRecordFields(method,rec,focalDrv);
 						rec = (Record) get(cat.edges(Direction.OUT),
 							selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
 							endNode());
 						if (rec!=null)
-							addRecordFields(method,rec);
+							addRecordFields(method,rec,focalDec);
 
 						// TODO: Decorators and next maybe read/write
 					}
@@ -224,7 +270,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				else { // must be a consequence
 
 				}
-				method.addArgument("location", "Point", "focal cpt. location");
+				method.addArgument(focalLoc,"location","Point","focal cpt. location");
 				break;
 		}
 
@@ -276,6 +322,10 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 //				result += s+"\n";
 		result += "}\n"; // 1
 		return result;
+	}
+
+	public String className() {
+		return className;
 	}
 
 	public String generatedClassName() {

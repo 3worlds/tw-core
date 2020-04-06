@@ -1,16 +1,16 @@
-tree 
+tree
 hasNode dataDefinitionSpec
 	isOfClass = String("dataDefinition")
 	hasParent = StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..1")
-	
+
 hasNode  dimSpec
 	isOfClass = String("dimensioner")
 	hasParent = StringTable(([1]"dataDefinition:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty dimNameSpec
 		hasName = String("size")
-		type = String("Integer") 
+		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery dimIsInRangeQuerySpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
@@ -21,24 +21,24 @@ hasNode  rngSpec
 	multiplicity = IntegerRange("0..*")
 	hasProperty dimAlgSpec
 		hasName = String("algorithm")
-		type = String("RngAlgType") 
+		type = String("RngAlgType")
 		multiplicity = IntegerRange("1..1")
 	hasProperty dimSeedSpec
 		hasName = String("seedSource")
-		type = String("RngSeedSourceType") 
+		type = String("RngSeedSourceType")
 		multiplicity = IntegerRange("1..1")
 	hasProperty dimResetSpec
 		hasName = String("resetTime")
-		type = String("RngResetType") 
+		type = String("RngResetType")
 		multiplicity = IntegerRange("1..1")
 	hasProperty dimSeedIndexSpec
 		hasName = String("tableIndex")
-		type = String("Integer") 
+		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery tableIndexIsInRangeQuerySpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 			interval = IntTable(("[2]0,999"))
-				
+
 hasNode recordRootSpec
 	isOfClass = String("record")
 	hasParent = StringTable(([1]"dataDefinition:"))
@@ -58,8 +58,8 @@ hasNode recordTableSpec
 		childLabel = StringTable(([2]"field", "table"))
 //	mustSatisfyQuery  recordOfTableNameWithUppercaseQuery
 //		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
-		
-		
+
+
 hasNode tableSpec
 	isOfClass = String("table")
 	hasParent = StringTable(([1]"record:"))
@@ -69,7 +69,7 @@ hasNode tableSpec
 		type = String("DataElementType")
 		multiplicity = IntegerRange("0..1")
 	hasEdge dimEdgeSpec
-		isOfClass = String("sizedBy")            
+		isOfClass = String("sizedBy")
 		toNode = String("dimensioner:")
 		multiplicity = IntegerRange("1..*")
 		hasProperty dimRankSpec
@@ -85,7 +85,7 @@ hasNode tableSpec
 		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery NumberTableUnitsSpecCondition
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-		conditions = StringTable(([8]"units","dataElementType","Double","Float","Integer","Long","Short","Byte"))		
+		conditions = StringTable(([8]"units","dataElementType","Double","Float","Integer","Long","Short","Byte"))
 	hasProperty RealNumberTablePrecSpec
 		hasName = String("precision")
 		type = String("Double")
@@ -107,7 +107,7 @@ hasNode tableSpec
 	mustSatisfyQuery TableIntegerNumberRangeSpecCondition
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([7]"range","dataElementType","Integer","Long","Boolean","Short","Byte"))
-		
+
 hasNode recordFieldSpec
 	isOfClass = String("field")
 	hasParent = StringTable(([1]"record:"))
@@ -122,7 +122,7 @@ hasNode recordFieldSpec
 		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery NumberFieldUnitsSpecCondition
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-		conditions = StringTable(([8]"units","type","Double","Float","Integer","Long","Short","Byte"))		
+		conditions = StringTable(([8]"units","type","Double","Float","Integer","Long","Short","Byte"))
 	hasProperty RealNumberFieldPrecSpec
 		hasName = String("precision")
 		type = String("Double")
@@ -143,4 +143,4 @@ hasNode recordFieldSpec
 		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery IntegerNumberRangeSpecCondition
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-		conditions = StringTable(([7]"range","type","Integer","Long","Boolean","Short","Byte"))
+		conditions = StringTable(([7]"range","type","Integer","Long","Short","Byte"))

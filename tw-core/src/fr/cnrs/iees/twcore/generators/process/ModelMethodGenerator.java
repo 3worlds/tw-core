@@ -1,13 +1,16 @@
 package fr.cnrs.iees.twcore.generators.process;
 
-import static fr.ens.biologie.codeGeneration.Comments.endCodeInsertion;
-import static fr.ens.biologie.codeGeneration.Comments.singleLineComment;
-import static fr.ens.biologie.codeGeneration.Comments.startCodeInsertion;
+import static fr.ens.biologie.codeGeneration.Comments.*;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import fr.ens.biologie.codeGeneration.MethodGenerator;
+import fr.ens.biologie.generic.utils.Duple;
 
 /**
  * A descendant of MethodGenerator with a different formatting of methods
@@ -18,15 +21,22 @@ import fr.ens.biologie.codeGeneration.MethodGenerator;
 public class ModelMethodGenerator extends MethodGenerator {
 
 	private String[] argComments = null;
+	// a map of the argument names grouped by role for Twfunction code generation
+	private EnumMap<ArgumentGroups,List<Duple<String,String>>> argumentGroups =
+		new EnumMap<>(ArgumentGroups.class);
 
 	public ModelMethodGenerator(Method method) {
 		super(method);
 		insertCodeInsertionComment = false;
+		for (ArgumentGroups a:ArgumentGroups.values())
+			argumentGroups.put(a,new LinkedList<>());
 	}
 
 	public ModelMethodGenerator(String scope, String returnType, String name, String... argTypes) {
 		super(scope, returnType, name, argTypes);
 		insertCodeInsertionComment = true;
+		for (ArgumentGroups a:ArgumentGroups.values())
+			argumentGroups.put(a,new LinkedList<>());
 	}
 
 	/**
@@ -35,7 +45,7 @@ public class ModelMethodGenerator extends MethodGenerator {
 	 * @param type
 	 * @return
 	 */
-	public MethodGenerator addArgument(String name, String type, String comment) {
+	public MethodGenerator addArgument(ArgumentGroups grp, String name, String type, String comment) {
 		if (argNames==null) {
 			argNames = new String[1];
 			argTypes = new String[1];
@@ -49,6 +59,7 @@ public class ModelMethodGenerator extends MethodGenerator {
 		argNames[argNames.length-1] = name;
 		argTypes[argTypes.length-1] = type;
 		argComments[argComments.length-1] = comment;
+		argumentGroups.get(grp).add(new Duple<>(name,type));
 		return this;
 	}
 
@@ -61,7 +72,6 @@ public class ModelMethodGenerator extends MethodGenerator {
 		argNames = null;
 		return this;
 	}
-
 
 	@Override
 	public String asText(String indent) {
@@ -101,5 +111,8 @@ public class ModelMethodGenerator extends MethodGenerator {
 		return result;
 	}
 
+	public Map<ArgumentGroups,List<Duple<String,String>>> callerArguments () {
+		return this.argumentGroups;
+	}
 
 }

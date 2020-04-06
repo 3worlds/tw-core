@@ -112,12 +112,6 @@ public class CodeGenerator {
 					selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(),
 					selectOne(hasTheLabel(N_STRUCTURE.label())));
-//			TreeGraphDataNode arena =  (TreeGraphDataNode) get(structure.getChildren(),
-//				selectZeroOrOne(hasTheLabel(N_ARENA.label())));
-//			List<TreeGraphDataNode> spaces = null;
-//			if (arena!=null)
-//				spaces = (List<TreeGraphDataNode>) get(arena.getChildren(),
-//					selectOneOrMany(hasTheLabel(N_SPACE.label())));
 			// generate data classes for SystemComponents
 			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENTTYPE.label());
 			for (TreeGraphDataNode system : systems) {
@@ -369,8 +363,11 @@ public class CodeGenerator {
 	}
 
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
-		modelgen.setMethod(function);
+		// WIP: comment when finished
+//		modelgen.setMethod(function);
+		// ---
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
+//		generator.setArgumentCalls(modelgen.className(),modelgen.method(function.id()).callerArguments());
 		generator.generateCode();
 		UserProjectLink.addFunctionFile(generator.getFile());
 		String genClassName = generator.generatedClassName();
