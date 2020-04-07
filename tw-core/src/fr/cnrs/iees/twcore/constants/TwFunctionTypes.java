@@ -80,7 +80,7 @@ public enum TwFunctionTypes {
 		"focalLtc,focalDrv,focalLoc"),
 
 // SetOtherInitialStae: sets the initial state of a newly createdSystemComponent given a parent component
-	SetOtherInitialStae ("setOtherInitialState",
+	SetOtherInitialState ("setOtherInitialState",
 		"t,dt,ecosystemPar,ecosystemPop,lifeCyclePar,lifeCyclePop,groupPar,groupPop,otherGroupPar,otherGroupPop,limits,focalAuto,focalLtc,focalDrv,focalDec,focalLoc",
 		"double,double,TwData,ComponentContainer,TwData,ComponentContainer,TwData,ComponentContainer,TwData,ComponentContainer,Box,SystemData,TwData,TwData,Point",
 		"void",

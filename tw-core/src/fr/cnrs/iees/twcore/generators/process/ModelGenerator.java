@@ -12,6 +12,7 @@ import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.bouncycastle.util.Strings;
@@ -27,7 +30,9 @@ import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
+import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
@@ -37,7 +42,9 @@ import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
@@ -75,6 +82,15 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private Set<String> replicateNames = new HashSet<>();
 //	// a map of the argument names grouped by role for Twfunction code generation
 //	private EnumMap<ArgumentGroups,List<Duple<String,String>>> argumentGroups = new EnumMap<>(ArgumentGroups.class);
+	// store all the generated data class matchings to categories
+	private Map<Set<Category>,generatedData> dataClassNames = new HashMap<>();
+
+	private class generatedData {
+		private String drivers;
+		private String decorators;
+		private String parameters;
+		private String lifetimeConstants;
+	}
 
 	/**
 	 * Constructor able to manage previously generated code
@@ -82,9 +98,10 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	 * @param spec speccification for this model
 	 * @param previousModel the previousModel class, if any
 	 */
-	public ModelGenerator(String modelName, String modelDir, Class<?> previousModel) {
+	@SuppressWarnings("unchecked")
+	public ModelGenerator(TreeGraphNode root3w, String modelDir, Class<?> previousModel) {
 		super(null);
-		className = validJavaName(wordUpperCaseName(initialUpperCase(modelName)));
+		className = validJavaName(wordUpperCaseName(initialUpperCase(root3w.id())));
 		this.modelName = modelDir;
 		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+modelDir;
 		this.previousModel = previousModel;
@@ -115,7 +132,97 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			imports.add(Point.class.getCanonicalName());
 			imports.add(Box.class.getCanonicalName());
 		}
+		List<TreeGraphDataNode> cpt = (List<TreeGraphDataNode>) get(root3w, children(),selectOne(hasTheLabel(N_SYSTEM.label())),
+			children(),selectOne(hasTheLabel(N_STRUCTURE.label())),
+			children(),selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+		for (TreeGraphDataNode tn:cpt) {
+			generatedData cl = new generatedData();
+			if (tn.properties().hasProperty(P_PARAMETERCLASS.key()))
+				if (tn.properties().getPropertyValue(P_PARAMETERCLASS.key())!=null) {
+					String s = (String) tn.properties().getPropertyValue(P_PARAMETERCLASS.key());
+					if (s.isEmpty())
+						cl.parameters = null;
+					else
+						cl.parameters = s;
+			}
+			if (tn.properties().hasProperty(P_LTCONSTANTCLASS.key()))
+				if (tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key())!=null) {
+					String s = (String) tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key());
+					if (s.isEmpty())
+						cl.lifetimeConstants = null;
+					else
+						cl.lifetimeConstants = s;
+			}
+			if (tn.properties().hasProperty(P_DRIVERCLASS.key()))
+				if (tn.properties().getPropertyValue(P_DRIVERCLASS.key())!=null) {
+					String s = (String) tn.properties().getPropertyValue(P_DRIVERCLASS.key());
+					if (s.isEmpty())
+						cl.drivers = null;
+					else
+						cl.drivers = s;
+			}
+			if (tn.properties().hasProperty(P_DECORATORCLASS.key()))
+				if (tn.properties().getPropertyValue(P_DECORATORCLASS.key())!=null) {
+					String s = (String) tn.properties().getPropertyValue(P_DECORATORCLASS.key());
+					if (s.isEmpty())
+						cl.decorators = null;
+					else
+						cl.decorators = s;
+			}
+			// this because ComponentType is unsealed at that time
+			SortedSet<Category> categories = new TreeSet<>();	 // caution: sorted set !
+			Collection<Category> nl = (Collection<Category>) get(tn.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+				edgeListEndNodes());
+			categories.addAll(((Categorized<SystemComponent>)tn).getSuperCategories(nl));
+			dataClassNames.put(categories,cl);
+		}
 	}
+
+	// returns the generated data class that contains a given field name
+	// this works because fields and tables all have unique names
+	public String containingClass(String field) {
+		for (Set<Category> set: dataClassNames.keySet()) {
+			for (Category c:set) {
+				TreeGraphDataNode rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+					selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
+					endNode());
+				if (rec!=null) {
+					for (TreeNode t:rec.getChildren())
+						// this works for tables and fields
+						if (field.equals(t.id()))
+							return dataClassNames.get(set).drivers;
+				}
+				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+					selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
+					endNode());
+				if (rec!=null) {
+					for (TreeNode t:rec.getChildren())
+						if (field.equals(t.id()))
+							return dataClassNames.get(set).decorators;
+				}
+				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+					selectZeroOrOne(hasTheLabel(E_LTCONSTANTS.label())),
+					endNode());
+				if (rec!=null) {
+					for (TreeNode t:rec.getChildren())
+						if (field.equals(t.id()))
+							return dataClassNames.get(set).lifetimeConstants;
+				}
+				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+					selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
+					endNode());
+				if (rec!=null) {
+					for (TreeNode t:rec.getChildren())
+						// this works for tables and fields
+						if (field.equals(t.id()))
+							return dataClassNames.get(set).parameters;
+				}
+			}
+		}
+		return null;
+	}
+
 
 	public ModelMethodGenerator method(String name) {
 		return methods.get(name);
@@ -263,8 +370,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 							endNode());
 						if (rec!=null)
 							addRecordFields(method,rec,focalDec);
-
-						// TODO: Decorators and next maybe read/write
 					}
 				}
 				else { // must be a consequence

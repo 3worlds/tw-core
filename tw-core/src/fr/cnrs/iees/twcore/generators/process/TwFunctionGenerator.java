@@ -34,6 +34,7 @@ import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,9 +42,11 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bouncycastle.util.Strings;
@@ -91,7 +94,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private String packageName=null;
 	private String packagePath;
 	private List<String> inBodyCode = null;
-	private List<String> inClassCode = null;
+//	private List<String> inClassCode = null;
 
 	@SuppressWarnings("unchecked")
 	public TwFunctionGenerator(String className, TreeGraphDataNode spec, String modelName) {
@@ -124,8 +127,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			if (!ft.getFile().exists())
 				continue;
 			SnippetLocation insert = (SnippetLocation) snip.properties().getPropertyValue("insertion");
-			if (insert.equals(SnippetLocation.inClassBody))
-				inClassCode = snippetCode(snip);
+			if (insert.equals(SnippetLocation.inClassBody));
+//				inClassCode = snippetCode(snip);
 			else
 				inBodyCode = snippetCode(snip);
 		}
@@ -187,19 +190,33 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			generator.setImport(SystemData.class.getCanonicalName());
 		}
 		// generator.setImport("java.util.Map");
+		List<String> innerClasses = new LinkedList<>();
+		for (String s:innerClassDecl.keySet())
+			innerClasses.addAll(innerClassDecl.get(s));
+		generator.setRawMethodCode(innerClasses);
 		Collection<MethodGenerator> lmg = generator.getMethods();
-		for (MethodGenerator mg : lmg) {
+		for (MethodGenerator mg : lmg) { // only 1 assumed?
 			mg.setArgumentNames(type.argumentNames().split(","));
 			mg.setReturnType(type.returnType());
 			if (type.returnType().equals("void"))
 				mg.setReturnStatement("");
 			else
 				mg.setReturnStatement("return "+zero(checkType(type.returnType())));
-			if (inBodyCode != null)
-				for (String s : inBodyCode)
+			// preparing call to user model function: initialising read-write data
+			for (String k:innerVarInit.keySet())
+				for (String s: innerVarInit.get(k))
 					mg.setStatement(s);
+			// call to user code
+			mg.setStatement(callStatement);
+			// getting results from user code
+			for (String k:innerVarCopy.keySet())
+				for (String s: innerVarCopy.get(k))
+					mg.setStatement(s);
+//			if (inBodyCode != null)
+//				for (String s : inBodyCode)
+//					mg.setStatement(s);
 		}
-		generator.setRawMethodCode(inClassCode);
+//		generator.setRawMethodCode(inClassCode);
 //		File file = Project.makeFile(ctmodel,TW_CODE, name + ".java");
 		File file = Project.makeFile(LOCALCODE,ctmodel, name + ".java");
 		writeFile(generator, file, name);
@@ -222,85 +239,113 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		return new File(path+".java");
 	}
 
-	private Map<String,String> innerClassCode = new HashMap<>();
+	// interfacing statements indexed by group (varname)
+	private Map<String,List<String>> innerClassDecl = new HashMap<>();
+	private Map<String,List<String>> innerVarInit = new HashMap<>();
+	private Map<String,List<String>> innerVarCopy = new HashMap<>();
+	private Set<String> dataClassesToImport = new HashSet<>();
+	private String callStatement ="";
+	//TODO: pass the class,var name pair back to the ModelGenerator
+	// TODO: import the inner classes to modelgenerator
+	// TODO: special case for locations
 
-	public void setArgumentCalls(String classToCall,Map<ArgumentGroups,List<Duple<String,String>>> reqArgs) {
-		String indent = "\\t";
-		String callStatement = indent+indent+classToCall+"."+
+	private boolean isWriteableArg (ArgumentGroups group, TwFunctionTypes ftype) {
+		String wargs = ftype.writeableArguments();
+		if (!wargs.isEmpty()) {
+			String[] w = wargs.split(",");
+			for (String wag:w)
+				if (group.toString().equals(wag))
+					return true;
+		}
+		return false;
+	}
+
+	public void setArgumentCalls(ModelGenerator gen) {
+		String classToCall = gen.className();
+		Map<ArgumentGroups,List<Duple<String,String>>> reqArgs = gen.method(name).callerArguments();
+		System.out.println("***** Statement generation for "+name+" ("+type+") *****");
+		String indent = "\t";
+		callStatement = classToCall+"."+
 			Strings.toLowerCase(name.substring(0,1))+
-			name.substring(1)+"(\\n";
-		for (ArgumentGroups ag: reqArgs.keySet())
+			name.substring(1)+"(\n";
+		String innerClass = "";
+		String innerVar = "";
+		boolean makeInnerClass = false;
+		for (ArgumentGroups ag: reqArgs.keySet()) {
+			makeInnerClass = isWriteableArg(ag,type);
+			if (makeInnerClass) {
+				innerVar = ag.toString();
+				innerClass = Strings.toUpperCase(innerVar.substring(0,1))+innerVar.substring(1);
+				List<String> innerClassDeclaration = innerClassDecl.get(innerVar);
+				if (innerClassDeclaration==null) {
+					innerClassDeclaration = new LinkedList<>();
+					innerClassDecl.put(innerVar,innerClassDeclaration);
+					innerClassDeclaration.add(indent+"public class "+innerClass+" {");
+				}
+				List<String> innerVarInitialisation = innerVarInit.get(innerVar);
+				if (innerVarInitialisation==null) {
+					innerVarInitialisation = new LinkedList<>();
+					innerVarInit.put(innerVar,innerVarInitialisation);
+					innerVarInitialisation.add(innerClass+" "+innerVar+" = new "+innerClass+"()");
+				}
+				List<String> innerVarBackCopy = innerVarCopy.get(innerVar);
+				if (innerVarBackCopy==null) {
+					innerVarBackCopy = new LinkedList<>();
+					innerVarCopy.put(innerVar,innerVarBackCopy);
+					innerVarBackCopy.add("// copy back statements");
+				}
+			}
 			for (Duple<String,String> d: reqArgs.get(ag)){
-				String an = d.getFirst();
-//				String at = d.getSecond();
+				String an = d.getFirst(); // argument name
+				String at = d.getSecond(); // argument type
 				String callArg = null;
-				switch (ag) {
-				case t:
-					callArg = "t";
-					break;
-				case dt:
-					callArg = "dt";
-					break;
-				case ecosystemPar:
-					callArg = "// ecosystemPar";
-					break;
-				case ecosystemPop:
-					callArg = "// ecosystemPop";
-					break;
-				case lifeCyclePar:
-					callArg = "// lifeCyclePar";
-					break;
-				case lifeCyclePop:
-					callArg = "// lifeCyclePopData";
-					break;
-				case groupPar:
-					callArg = "(" + /*typecast*/ "groupPar)."+an+"()";
-					break;
-				case groupPop:
-					callArg = "// groupPopData";
-					break;
-				case limits:
-					callArg = "limits";
-					break;
-				case focalAuto:
-					callArg = "auto."+an+"()";
-					break;
-				case focalDec:
-					callArg = "// focalDec";
-					break;
-				case focalDrv:
-					callArg = "// focalDrv";
-					break;
-				case focalLoc:
-					callArg = "// focalLoc";
-					break;
-				case focalLtc:
-					callArg = "// focalLtc";
-					break;
-				case otherAuto:
-					callArg = "// otherAuto";
-					break;
-				case otherDec:
-					callArg = "// otherDec";
-					break;
-				case otherDrv:
-					callArg = "// otherDrv";
-					break;
-				case otherLoc:
-					callArg = "// otherLoc";
-					break;
-				case otherLtc:
-					callArg = "// otherLtc";
-					break;
-				default:
-					break;
-				} //switch
+				if ((ag==t) || (ag==dt) || (ag==limits))
+					callArg = ag.toString();
+				else if ((ag==ecosystemPar) || (ag==lifeCyclePar))
+					;
+				else if ((ag==ecosystemPop) || (ag==lifeCyclePop))
+					;
+				else if ((ag==groupPop))
+					;
+				else if ((ag==focalAuto) || (ag==otherAuto))
+					callArg = ag.toString()+"."+an+"()";
+				else if ((ag==focalLoc) || (ag==otherLoc))
+					;
+				else {
+					String lc = gen.containingClass(an);
+					dataClassesToImport.add(lc);
+					String sc = lc.split("\\.")[lc.split("\\.").length-1];
+					callArg = "((" + sc+ ")"+ag.toString()+")."+an+"()";
+					if (makeInnerClass) {
+						innerClassDecl.get(innerVar).add(indent+indent+at+" "+an+";");
+						innerVarInit.get(innerVar).add(innerVar+"."+an+" = "+callArg);
+						innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.toString()+")."+an+"("+innerVar+"."+an+")");
+					}
+				}
 				if (callArg!=null)
 					callStatement += indent+indent+indent+ callArg + ",\n";
+			}
+			if (makeInnerClass) {
+				innerClassDecl.get(innerVar).add(indent+"}\n");
+			}
 		} // for
+		// inner class declarations
+		for (String s:innerClassDecl.keySet()) {
+			System.out.println(innerClassDecl.get(s));
+			callStatement += indent+indent+indent+ s + ",\n";
+		}
+		// before user method call
+		for (String s:innerVarInit.keySet())
+			System.out.println(innerVarInit.get(s));
+
+		// completion of user method call
 		callStatement = callStatement.substring(0, callStatement.length()-2);
 		callStatement +=")";
+		// inner var initialisation
 		System.out.println(callStatement);
+		// after method call
+		for (String s:innerVarCopy.keySet())
+			System.out.println(innerVarCopy.get(s));
 	}
 
 }
