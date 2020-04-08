@@ -38,6 +38,7 @@ import fr.cnrs.iees.uit.space.Box;
  * @author Jacques Gignoux - 30 janv. 2020
  *
  */
+@Deprecated
 public abstract class RelocateFunction extends TwFunctionAdapter {
 
 //	A very rare bug in French:

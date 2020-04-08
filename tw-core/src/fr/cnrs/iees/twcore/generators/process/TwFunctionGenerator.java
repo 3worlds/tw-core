@@ -47,6 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.bouncycastle.util.Strings;
@@ -104,34 +105,35 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		type = (TwFunctionTypes) spec.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		model = modelName;
 		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
-
-		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), edgeListEndNodes(),
-			selectZeroOrMany(hasTheLabel("snippet")));
-		for (TreeGraphDataNode snip : snippets) {
-			/*
-			 * (Ian) dont report error here if file is missing. Actually, this can't work
-			 * because these files are relative to PROJECT_MODEL_GRAPH dir There is no way
-			 * to independently know the project root of a File object. Therefore the
-			 * property editor for File class can never work! For file handling in 3w we
-			 * actually need a class that allows the class to select a file, if not in
-			 * fileRoot then import it to file root But then where do these properities come
-			 * from? Bit of a mess. We need a different class for each project sub dir
-			 * (graphs,jars files etc??).
-			 *
-			 *
-			 */
-			if (!snip.properties().hasProperty("file"))
-				// file: java.io.File("local/models/snippet-main-t3.txt")
-				continue;
-			FileType ft = (FileType) snip.properties().getPropertyValue("file");
-			if (!ft.getFile().exists())
-				continue;
-			SnippetLocation insert = (SnippetLocation) snip.properties().getPropertyValue("insertion");
-			if (insert.equals(SnippetLocation.inClassBody));
-//				inClassCode = snippetCode(snip);
-			else
-				inBodyCode = snippetCode(snip);
-		}
+// OLD CODE - dealing with snippet files.
+		// maybe useful in model generator though
+//		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), edgeListEndNodes(),
+//			selectZeroOrMany(hasTheLabel("snippet")));
+//		for (TreeGraphDataNode snip : snippets) {
+//			/*
+//			 * (Ian) dont report error here if file is missing. Actually, this can't work
+//			 * because these files are relative to PROJECT_MODEL_GRAPH dir There is no way
+//			 * to independently know the project root of a File object. Therefore the
+//			 * property editor for File class can never work! For file handling in 3w we
+//			 * actually need a class that allows the class to select a file, if not in
+//			 * fileRoot then import it to file root But then where do these properities come
+//			 * from? Bit of a mess. We need a different class for each project sub dir
+//			 * (graphs,jars files etc??).
+//			 *
+//			 *
+//			 */
+//			if (!snip.properties().hasProperty("file"))
+//				// file: java.io.File("local/models/snippet-main-t3.txt")
+//				continue;
+//			FileType ft = (FileType) snip.properties().getPropertyValue("file");
+//			if (!ft.getFile().exists())
+//				continue;
+//			SnippetLocation insert = (SnippetLocation) snip.properties().getPropertyValue("insertion");
+//			if (insert.equals(SnippetLocation.inClassBody));
+////				inClassCode = snippetCode(snip);
+//			else
+//				inBodyCode = snippetCode(snip);
+//		}
 		if (inBodyCode==null) {
 			inBodyCode = new ArrayList<String>();
 			// TODO: this is useful for debugging only, should be replaced by some
@@ -142,22 +144,24 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 
 	}
 
-	private List<String> snippetCode(TreeGraphDataNode snippet) {
-		List<String> code = new LinkedList<String>();
-		// File f =
-		// Project.makeFile(PROJECT_MODEL_GRAPHS,(String)((File)snippet.getPropertyValue("file")).getName());
-		FileType ft = (FileType) snippet.properties().getPropertyValue("file");
-		File f = ft.getFile();
-		if (!f.isDirectory() & f.exists()) {
-			try {
-				code = Files.readAllLines(f.toPath());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else
-			return null;
-		return code;
-	}
+// OLD CODE - dealing with snippet files.
+// maybe useful in model generator though
+//	private List<String> snippetCode(TreeGraphDataNode snippet) {
+//		List<String> code = new LinkedList<String>();
+//		// File f =
+//		// Project.makeFile(PROJECT_MODEL_GRAPHS,(String)((File)snippet.getPropertyValue("file")).getName());
+//		FileType ft = (FileType) snippet.properties().getPropertyValue("file");
+//		File f = ft.getFile();
+//		if (!f.isDirectory() & f.exists()) {
+//			try {
+//				code = Files.readAllLines(f.toPath());
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		} else
+//			return null;
+//		return code;
+//	}
 
 	@Override
 	public boolean generateCode() {
@@ -165,38 +169,75 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		File ctGeneratedCodeDir = getModelCodeDir(model);
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
-//		String packageName = ctmodel + "." + TW_CODE;
 		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+ctmodel;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(true, model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
+		// imports in the TwFunction descendant
 		generator.setImport(SystemComponent.class.getCanonicalName());
 		generator.setImport(Table.class.getPackageName()+".*");
-		generator.setImport("static java.lang.Math.*");
-		if (type.equals(TwFunctionTypes.Relocate)) {
-			generator.setImport(Location.class.getCanonicalName());
-			generator.setImport(Box.class.getCanonicalName());
+		Set<Class<?>> argClasses = new TreeSet<>(); // constant order
+		for (ArgumentGroups arggrp:type.readOnlyArguments()) {
+			Class<?> argclass = null;
+			try {
+				argclass = Class.forName(arggrp.type());
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (argclass!=null)
+				argClasses.add(argclass);
 		}
-		if (type.equals(TwFunctionTypes.RelateToDecision)) {
-			generator.setImport(Location.class.getCanonicalName());
-			generator.setImport("static fr.cnrs.iees.uit.space.Distance.*");
-		}
-		// TODO: change this by an analysis of method arguments -> set of classes to add as imports
-		if (type.equals(TwFunctionTypes.ChangeState)) {
-			generator.setImport(TwData.class.getCanonicalName());
-			generator.setImport(ComponentContainer.class.getCanonicalName());
-			generator.setImport(Box.class.getCanonicalName());
-			generator.setImport(Point.class.getCanonicalName());
-			generator.setImport(SystemData.class.getCanonicalName());
-		}
+		for (Class<?> argClass:argClasses)
+			if (!argClass.isPrimitive())
+				generator.setImport(argClass.getCanonicalName());
+
+//		generator.setImport("static java.lang.Math.*");
+//		if (type.equals(TwFunctionTypes.Relocate)) {
+//			generator.setImport(Location.class.getCanonicalName());
+//			generator.setImport(Box.class.getCanonicalName());
+//		}
+//		if (type.equals(TwFunctionTypes.RelateToDecision)) {
+//			generator.setImport(Location.class.getCanonicalName());
+//			generator.setImport("static fr.cnrs.iees.uit.space.Distance.*");
+//		}
+//		// TODO: change this by an analysis of method arguments -> set of classes to add as imports
+//		if (type.equals(TwFunctionTypes.ChangeState)) {
+//			generator.setImport(TwData.class.getCanonicalName());
+//			generator.setImport(ComponentContainer.class.getCanonicalName());
+//			generator.setImport(Box.class.getCanonicalName());
+//			generator.setImport(Point.class.getCanonicalName());
+//			generator.setImport(SystemData.class.getCanonicalName());
+//		}
 		// generator.setImport("java.util.Map");
+
+		// inner classes for returned values
 		List<String> innerClasses = new LinkedList<>();
 		for (String s:innerClassDecl.keySet())
 			innerClasses.addAll(innerClassDecl.get(s));
 		generator.setRawMethodCode(innerClasses);
+		// main method settings
 		Collection<MethodGenerator> lmg = generator.getMethods();
 		for (MethodGenerator mg : lmg) { // only 1 assumed?
-			mg.setArgumentNames(type.argumentNames().split(","));
+			//argument list
+			Set<ArgumentGroups> argSet = new TreeSet<>();
+			argSet.addAll(type.readOnlyArguments());
+			argSet.addAll(type.writeableArguments());
+			// argument names
+			String[] argNames = new String[argSet.size()];
+			int i=0;
+			for (ArgumentGroups ag:argSet)
+				argNames[i++] = ag.name();
+			mg.setArgumentNames(argNames);
+			// argument types (not from ancestor, for consistency here)
+			// BUT the ancestor TwFunction MUST have its arguments in the proper order!
+			String[] argTypes = new String[argSet.size()];
+			i=0;
+			for (ArgumentGroups ag:argSet)
+				argTypes[i++] = ag.type();
+			for (int j=0; j<argTypes.length; j++)
+				mg.setArgumentType(j,argTypes[j]);
+			// return type
 			mg.setReturnType(type.returnType());
 			if (type.returnType().equals("void"))
 				mg.setReturnStatement("");
@@ -217,7 +258,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //					mg.setStatement(s);
 		}
 //		generator.setRawMethodCode(inClassCode);
-//		File file = Project.makeFile(ctmodel,TW_CODE, name + ".java");
 		File file = Project.makeFile(LOCALCODE,ctmodel, name + ".java");
 		writeFile(generator, file, name);
 		generatedClassName = packageName + "." + name;
@@ -250,16 +290,19 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	// TODO: special case for locations
 
 	private boolean isWriteableArg (ArgumentGroups group, TwFunctionTypes ftype) {
-		String wargs = ftype.writeableArguments();
-		if (!wargs.isEmpty()) {
-			String[] w = wargs.split(",");
-			for (String wag:w)
-				if (group.toString().equals(wag))
-					return true;
-		}
-		return false;
+		return ftype.writeableArguments().contains(group);
+//
+//		String wargs = ftype.writeableArguments();
+//		if (!wargs.isEmpty()) {
+//			String[] w = wargs.split(",");
+//			for (String wag:w)
+//				if (group.toString().equals(wag))
+//					return true;
+//		}
+//		return false;
 	}
 
+	// TODO: Must check ll this
 	public void setArgumentCalls(ModelGenerator gen) {
 		String classToCall = gen.className();
 		Map<ArgumentGroups,List<Duple<String,String>>> reqArgs = gen.method(name).callerArguments();

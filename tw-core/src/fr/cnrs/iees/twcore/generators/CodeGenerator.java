@@ -246,55 +246,55 @@ public class CodeGenerator {
 
 	}
 
-	private void generateRelocateFunction(TreeGraphDataNode comp, String space, String modelName) {
-		// NB: we need to flag if and only if a change in this StringTable property has
-		// taken place
-		// as per other generate functions (cf lines with GraphState.setChanged() in
-		// this file.
-		// Unfortunately, to be properly reentrant, this needs to be done carefully
-		// so the flag is set only if there has truly been a change or you will never
-		// be able to save. This will prove difficult because sometimes classes are
-		// added here and, as the graph is edited, things change leaving entries which
-		// are
-		// no longer valid.
-
-		// Possibly, the only sure way of doing this is to copy the
-		// stringTables and clear the property at the start of codeGen and then compare
-		// and set the flag as required at the end of codeGen. Note that codeGen runs
-		// when every the graph changes and is valid so the checking falls through to
-		// code gen. So if you rename nodes all entries need to be check that the
-		// appropriate file exists and if not remove it.
-		String funcname = initialUpperCase(space) + DefaultStrings.defaultPrefix // this to make sure the space name can
-																					// be easily extracted
-				+ initialUpperCase(comp.id()) + initialUpperCase(TwFunctionTypes.Relocate.toString()) + "Function";
-		ExtendablePropertyList props = new ExtendablePropertyListImpl();
-		props.addProperty(P_FUNCTIONTYPE.key(), TwFunctionTypes.Relocate);
-		// QAD: do not use NodeFactory otherwise it's included in the graph
-		// this is a throw-away free-floating Node just for initialisation of code
-		// generator
-		TreeGraphDataNode function = new TreeGraphDataNode(null, props, null);
-		TwFunctionGenerator generator = new TwFunctionGenerator(funcname, function, modelName);
-		generator.generateCode();
-		UserProjectLink.addFunctionFile(generator.getFile());
-		String genClassName = generator.generatedClassName();
-		if (!comp.properties().hasProperty(P_RELOCATEFUNCTION.key())) {
-			StringTable tb = new StringTable(new Dimensioner(1));
-			tb.setWithFlatIndex(genClassName, 0);
-			((ExtendablePropertyList) comp.properties()).addProperty(P_RELOCATEFUNCTION.key(), tb);
-		} else {
-			StringTable prop = (StringTable) comp.properties().getPropertyValue(P_RELOCATEFUNCTION.key());
-			Set<String> set = new HashSet<>();
-			for (int i = 0; i < prop.size(); i++)
-				set.add(prop.getWithFlatIndex(i));
-			set.add(genClassName);
-			StringTable tb = new StringTable(new Dimensioner(set.size()));
-			// CAUTION HERE: no repeats !
-			int i = 0;
-			for (String s : set)
-				tb.setWithFlatIndex(s, i++);
-			((ExtendablePropertyList) comp.properties()).setProperty(P_RELOCATEFUNCTION.key(), tb);
-		}
-	}
+//	private void generateRelocateFunction(TreeGraphDataNode comp, String space, String modelName) {
+//		// NB: we need to flag if and only if a change in this StringTable property has
+//		// taken place
+//		// as per other generate functions (cf lines with GraphState.setChanged() in
+//		// this file.
+//		// Unfortunately, to be properly reentrant, this needs to be done carefully
+//		// so the flag is set only if there has truly been a change or you will never
+//		// be able to save. This will prove difficult because sometimes classes are
+//		// added here and, as the graph is edited, things change leaving entries which
+//		// are
+//		// no longer valid.
+//
+//		// Possibly, the only sure way of doing this is to copy the
+//		// stringTables and clear the property at the start of codeGen and then compare
+//		// and set the flag as required at the end of codeGen. Note that codeGen runs
+//		// when every the graph changes and is valid so the checking falls through to
+//		// code gen. So if you rename nodes all entries need to be check that the
+//		// appropriate file exists and if not remove it.
+//		String funcname = initialUpperCase(space) + DefaultStrings.defaultPrefix // this to make sure the space name can
+//																					// be easily extracted
+//				+ initialUpperCase(comp.id()) + initialUpperCase(TwFunctionTypes.Relocate.toString()) + "Function";
+//		ExtendablePropertyList props = new ExtendablePropertyListImpl();
+//		props.addProperty(P_FUNCTIONTYPE.key(), TwFunctionTypes.Relocate);
+//		// QAD: do not use NodeFactory otherwise it's included in the graph
+//		// this is a throw-away free-floating Node just for initialisation of code
+//		// generator
+//		TreeGraphDataNode function = new TreeGraphDataNode(null, props, null);
+//		TwFunctionGenerator generator = new TwFunctionGenerator(funcname, function, modelName);
+//		generator.generateCode();
+//		UserProjectLink.addFunctionFile(generator.getFile());
+//		String genClassName = generator.generatedClassName();
+//		if (!comp.properties().hasProperty(P_RELOCATEFUNCTION.key())) {
+//			StringTable tb = new StringTable(new Dimensioner(1));
+//			tb.setWithFlatIndex(genClassName, 0);
+//			((ExtendablePropertyList) comp.properties()).addProperty(P_RELOCATEFUNCTION.key(), tb);
+//		} else {
+//			StringTable prop = (StringTable) comp.properties().getPropertyValue(P_RELOCATEFUNCTION.key());
+//			Set<String> set = new HashSet<>();
+//			for (int i = 0; i < prop.size(); i++)
+//				set.add(prop.getWithFlatIndex(i));
+//			set.add(genClassName);
+//			StringTable tb = new StringTable(new Dimensioner(set.size()));
+//			// CAUTION HERE: no repeats !
+//			int i = 0;
+//			for (String s : set)
+//				tb.setWithFlatIndex(s, i++);
+//			((ExtendablePropertyList) comp.properties()).setProperty(P_RELOCATEFUNCTION.key(), tb);
+//		}
+//	}
 
 	@SuppressWarnings("unchecked")
 	private void generateProcessCode(TreeGraphDataNode process, String modelName) {
@@ -342,8 +342,8 @@ public class CodeGenerator {
 					cptypes.addAll(lcomp);
 				}
 				// generate functions
-				for (TreeGraphDataNode comp : cptypes)
-					generateRelocateFunction(comp, spaceEdge.endNode().id(), modelName);
+//				for (TreeGraphDataNode comp : cptypes)
+//					generateRelocateFunction(comp, spaceEdge.endNode().id(), modelName);
 			}
 			// CategoryProcess:
 			// a function is generated for every ComponentType depending on the categories
@@ -357,18 +357,18 @@ public class CodeGenerator {
 					cptypes.addAll(lcomp);
 				}
 				// generate functions
-				for (TreeGraphDataNode comp : cptypes)
-					generateRelocateFunction(comp, spaceEdge.endNode().id(), modelName);
+//				for (TreeGraphDataNode comp : cptypes)
+//					generateRelocateFunction(comp, spaceEdge.endNode().id(), modelName);
 			}
 		}
 	}
 
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
 		// WIP: comment when finished
-//		modelgen.setMethod(function);
+		modelgen.setMethod(function);
 		// ---
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
-//		generator.setArgumentCalls(modelgen);
+		generator.setArgumentCalls(modelgen);
 		generator.generateCode();
 		UserProjectLink.addFunctionFile(generator.getFile());
 		String genClassName = generator.generatedClassName();
