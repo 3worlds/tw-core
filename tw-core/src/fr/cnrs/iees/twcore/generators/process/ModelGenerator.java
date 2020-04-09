@@ -13,14 +13,16 @@ import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -31,16 +33,15 @@ import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.ALDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
@@ -52,7 +53,6 @@ import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Distance;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.JavaCode;
-import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -309,7 +309,119 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 	}
 
+	private String simpleType(String className) {
+		String[] ss = className.split("\\.");
+		return ss[ss.length-1];
+	}
+
+	class memberInfo {
+		String name;
+		String type;
+		String comment;
+	}
+
+	// gets all the fields and tables of a give category set. Returns them in always the same order
+	protected Map<ConfigurationEdgeLabels,SortedSet<memberInfo>> getAllMembers(Collection<Category> cats) {
+		Map<ConfigurationEdgeLabels,SortedSet<memberInfo>> result = new HashMap<>();
+		for (Category cat:cats)
+			for (ConfigurationEdgeLabels cel:
+				EnumSet.of(E_PARAMETERS,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS)) {
+			Record rec = (Record) get(cat.edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(cel.label())),
+				endNode());
+			if (rec!=null) {
+				for (TreeNode tn:rec.getChildren()) {
+					memberInfo mb = new memberInfo();
+					if (tn instanceof FieldNode) {
+						FieldNode f = (FieldNode) tn;
+						mb.name = f.id();
+						mb.comment = argComment(f,P_FIELD_DESCRIPTION,P_FIELD_UNITS,P_FIELD_PREC,
+							P_FIELD_INTERVAL,P_FIELD_RANGE);
+						mb.type = f.properties().getPropertyValue(P_FIELD_TYPE.key()).toString();
+						if (ValidPropertyTypes.isPrimitiveType(mb.type)) {
+							if (mb.type.equals("Integer"))
+								mb.type = "int";
+							else
+								mb.type = Strings.toLowerCase(mb.type) + mb.type.substring(1);
+						}
+					}
+					else if (tn instanceof TableNode) {
+						TableNode t = (TableNode) tn;
+						mb.name = t.id();
+						mb.comment = argComment(t,P_TABLE_DESCRIPTION,P_TABLE_UNITS,P_TABLE_PREC,
+							P_TABLE_INTERVAL,P_TABLE_RANGE);
+						// Add table dimensions to comment
+						if (t.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
+							mb.type = t.properties().getPropertyValue(P_DATAELEMENTTYPE.key()).toString();
+							if (ValidPropertyTypes.isPrimitiveType(mb.type)) {
+								if (mb.type.equals("Integer"))
+									mb.type = "IntTable";
+								else
+									mb.type += "Table";
+							}
+						}
+						else {
+							Record ttype = (Record) get(t.getChildren(),selectOne(hasTheLabel(N_RECORD.label())));
+							mb.type = ttype.id();
+						}
+						if (result.get(cel)==null)
+							result.put(cel,new TreeSet<>());
+						result.get(cel).add(mb);
+					}
+				}
+			}
+			else
+				result.put(cel,new TreeSet<>()); // empty
+		}
+		return result;
+	}
+
 	@SuppressWarnings("unchecked")
+	protected SortedSet<Category> findCategories(TreeGraphDataNode function, boolean focal) {
+		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+		TreeNode fp = function.getParent();
+		SortedSet<Category> cats = new TreeSet<>();
+		// function parent is a process
+		if (fp instanceof ProcessNode) {
+			ProcessNode pn = (ProcessNode) fp;
+			if (focal)
+				for (TwFunctionTypes tft:ComponentProcess.compatibleFunctionTypes)
+					if (tft.equals(ftype)) {
+					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+						edgeListEndNodes()));
+					return cats;
+			}
+			for (TwFunctionTypes tft:AbstractRelationProcess.compatibleFunctionTypes)
+				if (tft.equals(ftype)) {
+					RelationType relnode = (RelationType) get(pn.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
+						endNode());
+					if (focal) {
+						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
+							selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+							edgeListEndNodes()));
+						return cats;
+					}
+					else {
+						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
+							selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+							edgeListEndNodes()));
+						return cats;
+					}
+			}
+		}
+		// function parent is a function
+		else {
+			// TODO: categories of consequence functions ??? good luck!
+			// if createOther --> lifeCycle
+			// if deleteOther --> returnTo relation
+			// if changeCategory --> life cycle
+			// there may be more than one set in each case --> multiple method generation
+		}
+		return cats;
+	}
+
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
 		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		String fname = function.id();
@@ -323,78 +435,138 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				method.setReturnStatement("return "+zero(ftype.returnType()));
 			method.clearArguments();
 		}
-		// in all cases, retrieve all the parameters and parameter types
+		// retrieve all the parameters and parameter types
 		replicateNames.clear();
-		//always present parameters
-		method.addArgument(t,"t","double","current time");
-		replicateNames.add("t");
-		method.addArgument(dt,"dt","double","current time step");
-		replicateNames.add("dt");
-
-		// methods applying to ComponentProceses:
-		for (TwFunctionTypes tft:ComponentProcess.compatibleFunctionTypes)
-			if (tft.equals(ftype)) {
-				// focal arguments
-				// TODO: groups etc.
-				method.addArgument(limits,"limits","Box" ,"space limits");
-				replicateNames.add("limits");
-				method.addArgument(focalAuto,"age", "double", "focal cpt. age");
-				replicateNames.add("age");
-				method.addArgument(focalAuto,"birthDate", "double", "focal cpt. creation time");
-				replicateNames.add("birthDate");
-				TreeNode fp = function.getParent();
-				if (fp instanceof ProcessNode) { // must be this or a consequence
-					ProcessNode pn = (ProcessNode) fp;
-					// must be categories
-					List<Category> cats = (List<Category>) get(pn.edges(Direction.OUT),
-						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
-						edgeListEndNodes());
-					for (Category cat:cats) {
-						Record rec = (Record) get(cat.edges(Direction.OUT),
-							selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
-							endNode());
-						if (rec!=null)
-							addRecordFields(method,rec,groupPar);
-						rec = (Record) get(cat.edges(Direction.OUT),
-							selectZeroOrOne(hasTheLabel(E_LTCONSTANTS.label())),
-							endNode());
-						if (rec!=null)
-							addRecordFields(method,rec,focalLtc);
-						rec = (Record) get(cat.edges(Direction.OUT),
-							selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
-							endNode());
-						if (rec!=null)
-							addRecordFields(method,rec,focalDrv);
-						rec = (Record) get(cat.edges(Direction.OUT),
-							selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
-							endNode());
-						if (rec!=null)
-							addRecordFields(method,rec,focalDec);
-					}
-				}
-				else { // must be a consequence
-
-				}
-				method.addArgument(focalLoc,"location","Point","focal cpt. location");
+		EnumSet<ArgumentGroups> argSet = EnumSet.noneOf(ArgumentGroups.class);
+		argSet.addAll(ftype.readOnlyArguments());
+		argSet.addAll(ftype.writeableArguments());
+		for (ArgumentGroups arg:argSet) {
+			switch (arg) {
+			case t:
+			case dt:
+				method.addArgument(arg,arg.name(),arg.type(),arg.description());
+				replicateNames.add(arg.name());
 				break;
+			case limits:
+				method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
+				replicateNames.add(arg.name());
+				break;
+			case ecosystemPar:
+			case lifeCyclePar:
+				// TODO: groups etc.
+				break;
+			case ecosystemPop:
+			case lifeCyclePop:
+			case groupPop:
+			case otherGroupPop:
+				// TODO: groups etc.
+				break;
+			case focalAuto:
+			case otherAuto:
+				method.addArgument(arg,"age", "double", arg.description()+"age");
+				replicateNames.add("age");
+				method.addArgument(arg,"birthDate", "double", arg.description()+"birth date");
+				replicateNames.add("birthDate");
+				break;
+			case groupPar:
+				for (memberInfo mb:getAllMembers(findCategories(function,true)).get(E_PARAMETERS)) {
+					if (!ValidPropertyTypes.isPrimitiveType(mb.type))
+						imports.add(ValidPropertyTypes.getJavaClassName(mb.type));
+					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					replicateNames.add(mb.name);
+				}
+//				for (Category cat:findCategories(function,true)) {
+//					Record rec = (Record) get(cat.edges(Direction.OUT),
+//						selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
+//						endNode());
+//					if (rec!=null)
+//						addRecordFields(method,rec,groupPar);
+//				}
+				break;
+			case focalLtc:
+				for (Category cat:findCategories(function,true)) {
+					Record rec = (Record) get(cat.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_LTCONSTANTS.label())),
+						endNode());
+					if (rec!=null)
+						addRecordFields(method,rec,focalLtc);
+				}
+				break;
+			case focalDrv:
+				for (Category cat:findCategories(function,true)) {
+					Record rec = (Record) get(cat.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
+						endNode());
+					if (rec!=null)
+						addRecordFields(method,rec,focalDrv);
+				}
+				break;
+			case focalDec:
+				for (Category cat:findCategories(function,true)) {
+					Record rec = (Record) get(cat.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
+						endNode());
+					if (rec!=null)
+						addRecordFields(method,rec,focalDec);
+				}
+				// TODO:if readwrite, do otherwise
+				break;
+			case otherGroupPar:
+				for (Category cat:findCategories(function,false)) {
+					Record rec = (Record) get(cat.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
+						endNode());
+					if (rec!=null)
+						addRecordFields(method,rec,groupPar);
+				}
+				break;
+			case otherLtc:
+				for (Category cat:findCategories(function,false)) {
+					Record rec = (Record) get(cat.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_LTCONSTANTS.label())),
+						endNode());
+					if (rec!=null)
+						addRecordFields(method,rec,focalLtc);
+				}
+				break;
+			case otherDrv:
+				for (Category cat:findCategories(function,false)) {
+					Record rec = (Record) get(cat.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
+						endNode());
+					if (rec!=null)
+						addRecordFields(method,rec,focalDrv);
+				}
+				break;
+			case otherDec:
+				for (Category cat:findCategories(function,false)) {
+					Record rec = (Record) get(cat.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
+						endNode());
+					if (rec!=null)
+						addRecordFields(method,rec,focalDec);
+				}
+				// TODO:if readwrite, do otherwise
+				break;
+			case focalLoc:
+			case otherLoc:
+				method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
+				replicateNames.add(arg.name());
+				break;
+			case nextFocalDrv:
+				String argt = function.id()+"."+
+						Strings.toUpperCase(arg.name().substring(0,1))+arg.name().substring(1);
+				method.addArgument(arg,arg.name(),argt,arg.description());
+				replicateNames.add(arg.name());
+				break;
+			case nextFocalLoc:
+				method.addArgument(arg,arg.name(),arg.type(),arg.description());
+				replicateNames.add(arg.name());
+				break;
+			}
 		}
-
-
-		// other arguments (optional: test on function)
-
-
-		return method;
+		return method; // contains the arguments in the order in which they should be called
 	}
-
-//	public MethodGenerator getMethod(String name) {
-//		MethodGenerator result = methods.get(name);
-//		if (result==null) {
-//			MethodGenerator meth = new MethodGenerator(methodScope,null,name);
-//			methods.put(name,meth);
-//			result = meth;
-//		}
-//		return result;
-//	}
 
 	@Override
 	public boolean generateCode() {

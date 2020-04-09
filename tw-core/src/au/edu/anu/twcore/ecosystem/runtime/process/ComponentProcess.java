@@ -86,7 +86,7 @@ public class ComponentProcess
 	private List<ChangeStateFunction> CSfunctions = new LinkedList<ChangeStateFunction>();
 	private List<DeleteDecisionFunction> Dfunctions = new LinkedList<DeleteDecisionFunction>();
 	private List<CreateOtherDecisionFunction> COfunctions = new LinkedList<CreateOtherDecisionFunction>();
-	private List<RelocateFunction> Rfunctions = new LinkedList<RelocateFunction>();
+//	private List<RelocateFunction> Rfunctions = new LinkedList<RelocateFunction>();
 
 	// local variables for looping
 	private HierarchicalContext focalContext = new HierarchicalContext();
@@ -346,8 +346,8 @@ public class ComponentProcess
 						SystemComponent newBorn = nbs.factory.newInstance();
 						for (SetOtherInitialStateFunction func : function.getConsequences()) {
 //							function.setFocalContext(focalContext);
-						// WIP  disabled - replace with new version of changeSate
 //							func.changeState(t, dt, newBorn);
+							// TODO workout multiple category sets for descendants
 							HierarchicalContext newBornContext = focalContext.clone();
 							newBornContext.groupParameters = nbs.container.parameters();
 							newBornContext.groupVariables = nbs.container.variables();
@@ -431,8 +431,8 @@ public class ComponentProcess
 				Dfunctions.add((DeleteDecisionFunction) function);
 			else if (function instanceof CreateOtherDecisionFunction)
 				COfunctions.add((CreateOtherDecisionFunction) function);
-			else if (function instanceof RelocateFunction)
-				Rfunctions.add((RelocateFunction) function);
+//			else if (function instanceof RelocateFunction)
+//				Rfunctions.add((RelocateFunction) function);
 		}
 	}
 

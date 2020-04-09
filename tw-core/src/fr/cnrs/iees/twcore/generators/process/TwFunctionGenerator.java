@@ -63,6 +63,7 @@ import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.twcore.constants.FileType;
 import fr.cnrs.iees.twcore.constants.SnippetLocation;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
@@ -173,43 +174,20 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(true, model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
+
 		// imports in the TwFunction descendant
 		generator.setImport(SystemComponent.class.getCanonicalName());
 		generator.setImport(Table.class.getPackageName()+".*");
-		Set<Class<?>> argClasses = new TreeSet<>(); // constant order
-		for (ArgumentGroups arggrp:type.readOnlyArguments()) {
-			Class<?> argclass = null;
-			try {
-				argclass = Class.forName(arggrp.type());
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if (argclass!=null)
-				argClasses.add(argclass);
-		}
-		for (Class<?> argClass:argClasses)
-			if (!argClass.isPrimitive())
-				generator.setImport(argClass.getCanonicalName());
-
-//		generator.setImport("static java.lang.Math.*");
-//		if (type.equals(TwFunctionTypes.Relocate)) {
-//			generator.setImport(Location.class.getCanonicalName());
-//			generator.setImport(Box.class.getCanonicalName());
-//		}
-//		if (type.equals(TwFunctionTypes.RelateToDecision)) {
-//			generator.setImport(Location.class.getCanonicalName());
-//			generator.setImport("static fr.cnrs.iees.uit.space.Distance.*");
-//		}
-//		// TODO: change this by an analysis of method arguments -> set of classes to add as imports
-//		if (type.equals(TwFunctionTypes.ChangeState)) {
-//			generator.setImport(TwData.class.getCanonicalName());
-//			generator.setImport(ComponentContainer.class.getCanonicalName());
-//			generator.setImport(Box.class.getCanonicalName());
-//			generator.setImport(Point.class.getCanonicalName());
-//			generator.setImport(SystemData.class.getCanonicalName());
-//		}
-		// generator.setImport("java.util.Map");
+		Set<String> argClasses = new TreeSet<>(); // constant order
+		for (ArgumentGroups arggrp:type.readOnlyArguments())
+			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
+				argClasses.add(arggrp.type());
+		for (ArgumentGroups arggrp:type.writeableArguments())
+			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
+				if (!arggrp.type().equals("double[]"))
+					argClasses.add(arggrp.type());
+		for (String s:argClasses)
+			generator.setImport(s);
 
 		// inner classes for returned values
 		List<String> innerClasses = new LinkedList<>();
@@ -233,8 +211,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			// BUT the ancestor TwFunction MUST have its arguments in the proper order!
 			String[] argTypes = new String[argSet.size()];
 			i=0;
-			for (ArgumentGroups ag:argSet)
-				argTypes[i++] = ag.type();
+			for (ArgumentGroups ag:argSet) {
+				String[] ss = ag.type().split("\\.");
+				argTypes[i++] = ss[ss.length-1];
+			}
 			for (int j=0; j<argTypes.length; j++)
 				mg.setArgumentType(j,argTypes[j]);
 			// return type
@@ -289,19 +269,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	// TODO: import the inner classes to modelgenerator
 	// TODO: special case for locations
 
-	private boolean isWriteableArg (ArgumentGroups group, TwFunctionTypes ftype) {
-		return ftype.writeableArguments().contains(group);
-//
-//		String wargs = ftype.writeableArguments();
-//		if (!wargs.isEmpty()) {
-//			String[] w = wargs.split(",");
-//			for (String wag:w)
-//				if (group.toString().equals(wag))
-//					return true;
-//		}
-//		return false;
-	}
-
 	// TODO: Must check ll this
 	public void setArgumentCalls(ModelGenerator gen) {
 		String classToCall = gen.className();
@@ -315,7 +282,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		String innerVar = "";
 		boolean makeInnerClass = false;
 		for (ArgumentGroups ag: reqArgs.keySet()) {
-			makeInnerClass = isWriteableArg(ag,type);
+			makeInnerClass = type.writeableArguments().contains(ag) & !ag.name().contains("Loc");
 			if (makeInnerClass) {
 				innerVar = ag.toString();
 				innerClass = Strings.toUpperCase(innerVar.substring(0,1))+innerVar.substring(1);
@@ -342,8 +309,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				String an = d.getFirst(); // argument name
 				String at = d.getSecond(); // argument type
 				String callArg = null;
-				if ((ag==t) || (ag==dt) || (ag==limits))
-					callArg = ag.toString();
+				if ((ag==t) || (ag==dt) || (ag==limits) ||
+					(ag==focalLoc) || (ag==otherLoc) || (ag==nextFocalLoc))
+					callArg = ag.name();
 				else if ((ag==ecosystemPar) || (ag==lifeCyclePar))
 					;
 				else if ((ag==ecosystemPop) || (ag==lifeCyclePop))
@@ -351,25 +319,64 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				else if ((ag==groupPop))
 					;
 				else if ((ag==focalAuto) || (ag==otherAuto))
-					callArg = ag.toString()+"."+an+"()";
-				else if ((ag==focalLoc) || (ag==otherLoc))
-					;
+					callArg = ag.name()+"."+an+"()*1.0"; // TODO: remove the *1.0 and replace by proper timer conversion
+				else if (type.writeableArguments().contains(ag)) {
+
+// ================================== example code to generate
+
+//					class NextFocalDrv { // OK
+//						double x;
+//						double r;
+//					} // OK
+//
+//					NextFocalDrv nextFocalDrv = new NextFocalDrv(); // OK
+//					nextFocalDrv.x = ((MyDrvClass)focalDrv).x();
+//					nextFocalDrv.r = ((MyDrvClass)focalDrv).r();
+//
+//					method call arg: nextFocalDrv // OK
+//
+//					((MyDrvClass)focalDrv).x(nextFocalDrv.x);
+//					((MyDrvClass)focalDrv).r(nextFocalDrv.r);
+//	======================================
+					// the information to generate the members is not in reqArgs, oris it there but
+					// not at the proper place.
+
+					// these are the inner classes
+					callArg = innerVar; //OK
+
+					// get the categories for this function
+					gen.findCategories(spec, true); // this is for focal objects
+
+//					String lc = null;
+//					String sc = lc.split("\\.")[lc.split("\\.").length-1];
+//					dataClassesToImport.add(lc);
+					if (makeInnerClass) {
+						innerClassDecl.get(innerVar).add(indent+indent+at+" "+an+";");
+//						innerVarInit.get(innerVar).add(innerVar+"."+an+" = ((" + sc+ ")"+ag.toString()+")."+an+"()");
+//						innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.toString()+")."+an+"("+innerVar+"."+an+")");
+					}
+				}
 				else {
 					String lc = gen.containingClass(an);
 					dataClassesToImport.add(lc);
 					String sc = lc.split("\\.")[lc.split("\\.").length-1];
 					callArg = "((" + sc+ ")"+ag.toString()+")."+an+"()";
-					if (makeInnerClass) {
-						innerClassDecl.get(innerVar).add(indent+indent+at+" "+an+";");
-						innerVarInit.get(innerVar).add(innerVar+"."+an+" = "+callArg);
-						innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.toString()+")."+an+"("+innerVar+"."+an+")");
-					}
+//					if (makeInnerClass) {
+//						innerClassDecl.get(innerVar).add(indent+indent+at+" "+an+";");
+//						innerVarInit.get(innerVar).add(innerVar+"."+an+" = "+callArg);
+//						innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.toString()+")."+an+"("+innerVar+"."+an+")");
+//					}
 				}
 				if (callArg!=null)
 					callStatement += indent+indent+indent+ callArg + ",\n";
 			}
 			if (makeInnerClass) {
 				innerClassDecl.get(innerVar).add(indent+"}\n");
+				if (innerClassDecl.get(innerVar).size()<=2) { // means the class has no fields
+					innerClassDecl.remove(innerVar);
+					innerVarInit.remove(innerVar);
+					innerVarCopy.remove(innerVar);
+				}
 			}
 		} // for
 		// inner class declarations

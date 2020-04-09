@@ -91,7 +91,7 @@ public class ModelMethodGenerator extends MethodGenerator {
 				pLine += ") {";
 			else
 				pLine += ",";
-			int commentStart = Math.max(20, pLine.length()+1);
+			int commentStart = Math.max(40, pLine.length()+1);
 			result += pLine+" ".repeat(commentStart-pLine.length())+"// ";
 			result += argComments[i];
 			result += "\n";

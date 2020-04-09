@@ -46,6 +46,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.utils.Logging;
 
 import static au.edu.anu.twcore.ecosystem.structure.RelationType.predefinedRelationTypes.returnsTo;
@@ -75,7 +77,8 @@ public class RelationProcess extends AbstractRelationProcess {
     // actually all the proper looping code is in SearchProcess and could be moved up to AbstractRelationProcess
 	private HierarchicalContext focalContext = new HierarchicalContext();
 	private HierarchicalContext otherContext = new HierarchicalContext();
-
+	private ComponentContainer ecosystemContainer = null;
+	private ComponentContainer lifeCycleContainer = null;
 
 	public RelationProcess(ComponentContainer world, RelationContainer relation,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
@@ -83,17 +86,36 @@ public class RelationProcess extends AbstractRelationProcess {
 	}
 
 	private void executeFunctions(CategorizedContainer<SystemComponent> container, double t, double dt) {
+		Box limits = null;
+		if (space!=null)
+			limits = space.boundingBox();
 		for (SystemComponent focal:container.items()) {
+			Point focalLocation = null;
+			if (space!=null)
+				focalLocation = space.locationOf(focal).asPoint();
 			for (SystemRelation sr:focal.getRelations()) { // this gets only out edges
 				if (sr.membership().to().equals(to())) {
 					SystemComponent other = (SystemComponent) sr.endNode();
 					otherContext = getContext(other);
+					Point otherLocation = null;
+					if (space!=null)
+						otherLocation = space.locationOf(other).asPoint();
+
 					// todo: data trackers ? tracking relations ?
 
 					for (ChangeOtherCategoryDecisionFunction function:COCfunctions) {
 			        	function.setFocalContext(focalContext);
 			        	function.setOtherContext(otherContext);
-			        	String newCat = function.changeCategory(t, dt, focal, other);
+//			        	String newCat = function.changeCategory(t, dt, focal, other);
+			        	String newCat = function.changeCategory(t, dt, limits,
+			        		focalContext.ecosystemParameters, ecosystemContainer,
+			        		focalContext.lifeCycleParameters, lifeCycleContainer,
+			        		focalContext.groupParameters, (ComponentContainer) container,
+			        		otherContext.groupParameters, other.container(),
+			        		focal.autoVar(), focal.constants(), focal.currentState(),
+			        		focal.decorators(), focalLocation,
+			        		other.autoVar(), other.constants(), other.currentState(),
+			        		other.decorators(), otherLocation);
 			        	if (newCat!=null) {
 			        		// if other is involved in a lifecycle, it must be it's container's parent
 			        		ComponentContainer otherLifeCycle = (ComponentContainer) other.container().parentContainer();
@@ -128,12 +150,27 @@ public class RelationProcess extends AbstractRelationProcess {
 									newRecruit.autoVar().birthDate(other.autoVar().birthDate());
 									newRecruit.autoVar().writeDisable();
 									// user-defined carry-overs
-									for (ChangeOtherStateFunction func : function.getConsequences()) {
+									// NB carry over from other to newRecruit - focal doesnt change!
+									// NB recruits belong to the same life cycle as pre-recruits
+									// but maybe not as focals
+									for (SetOtherInitialStateFunction func : function.getConsequences()) {
 										HierarchicalContext newRecruitContext = otherContext.clone();
 										setContext(newRecruitContext,recruitContainer);
 										function.setOtherContext(newRecruitContext);
 										function.setFocalContext(otherContext);
-										func.changeOtherState(t, dt, other, newRecruit);
+//										func.changeOtherState(t, dt, other, newRecruit);
+										double[] newRecruitLoc = new double[otherLocation.dim()];
+										func.setOtherInitialState(t, dt, limits,
+							        		focalContext.ecosystemParameters, ecosystemContainer,
+							        		otherContext.lifeCycleParameters, lifeCycleContainer, // check this one
+							        		otherContext.groupParameters, other.container(),
+							        		newRecruitContext.groupParameters, recruitContainer,
+							        		other.autoVar(), other.constants(), other.currentState(),
+							        		other.decorators(), otherLocation,
+							        		newRecruit.constants(), newRecruit.nextState(),newRecruitLoc);
+										// TODO here: set new location !!
+										//
+										//
 									}
 									// replacement of old component by new one.
 									other.container().removeItem(other);
@@ -159,17 +196,43 @@ public class RelationProcess extends AbstractRelationProcess {
 				        for (ChangeOtherStateFunction function:COSfunctions) {
 				        	function.setFocalContext(focalContext);
 				        	function.setOtherContext(otherContext);
+				        	// these shouldnt be needed anymore because user code cannot write in there
 				        	focal.currentState().writeDisable();
 				        	focal.nextState().writeDisable();
 				        	other.currentState().writeDisable();
 				        	other.nextState().writeEnable();
-				        	function.changeOtherState(t, dt, focal, other);
+//				        	function.changeOtherState(t, dt, focal, other);
+				        	double[] nextOtherLoc = null;
+				        	if (otherLocation!=null)
+				        		nextOtherLoc = new double[otherLocation.dim()];
+				        	function.changeOtherState(t, dt, limits,
+				        		focalContext.ecosystemParameters, ecosystemContainer,
+				        		focalContext.lifeCycleParameters, lifeCycleContainer,
+				        		focalContext.groupParameters, (ComponentContainer) container,
+				        		otherContext.groupParameters, other.container(),
+				        		focal.autoVar(), focal.constants(), focal.currentState(),
+				        		focal.decorators(), focalLocation,
+				        		other.autoVar(), other.constants(), other.currentState(),
+				        		other.decorators(), otherLocation,
+				        		other.nextState(), nextOtherLoc);
+				        	// TODO: set new other location
+				        	//
+				        	//
 				        	other.nextState().writeDisable();
 			        }
 			        for (DeleteOtherDecisionFunction function:DOfunctions) {
 			        	function.setFocalContext(focalContext);
 			        	function.setOtherContext(otherContext);
-			        	if (function.delete(t, dt, focal, other)) {
+//			        	if (function.delete(t, dt, focal, other)) {
+			        	if (function.delete(t, dt, limits,
+			        		focalContext.ecosystemParameters, ecosystemContainer,
+			        		focalContext.lifeCycleParameters, lifeCycleContainer,
+			        		focalContext.groupParameters, (ComponentContainer) container,
+			        		otherContext.groupParameters, other.container(),
+			        		focal.autoVar(), focal.constants(), focal.currentState(),
+			        		focal.decorators(), focalLocation,
+			        		other.autoVar(), other.constants(), other.currentState(),
+			        		other.decorators(), otherLocation)) {
 			        		other.container().removeItem(other);
 							for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:((SystemFactory)other.membership()).spaces()) {
 								space.unlocate(other);
@@ -183,29 +246,85 @@ public class RelationProcess extends AbstractRelationProcess {
 									tracker.removeTrackedItem(other);
 							// if present, spreads some values to other components
 							// (e.g. "decomposition", or "erosion")
-							if (!function.getConsequences().isEmpty())
-								// TODO: the "returnsTo" relation type must be predefined somewhere
+							// NB: carry-over data is from other to another other
+							for (ChangeOtherStateFunction consequence:function.getConsequences()) {
 								for (SystemRelation to:other.getRelations(returnsTo.key())) {
 									SystemComponent anotherOther = (SystemComponent) to.endNode();
-									for (ChangeOtherStateFunction consequence:function.getConsequences()) {
-										function.setFocalContext(otherContext);
-										function.setOtherContext(getContext(anotherOther));
-										consequence.changeOtherState(t, dt, other, anotherOther);
+									// FLAW? here how does code generation know about the categories ?
+									Point anotherOtherLoc = null;
+									double[] newLoc = null;
+									if (space!=null) {
+										anotherOtherLoc = space.locationOf(anotherOther).asPoint();
+										newLoc = new double[anotherOtherLoc.dim()];
 									}
+									consequence.changeOtherState(t, dt, limits,
+										focalContext.ecosystemParameters, ecosystem(),
+										otherContext.lifeCycleParameters, lifeCycleContainer, // check this one
+										otherContext.groupParameters, other.container(),
+										other.container().parameters(), other.container(),
+										other.autoVar(), other.constants(),
+										other.currentState(), other.decorators(), otherLocation,
+										anotherOther.autoVar(), anotherOther.constants(),
+										anotherOther.currentState(), anotherOther.decorators(),
+										anotherOtherLoc,
+										anotherOther.nextState(),newLoc);
+									// TODO: set newLoc
+									//
+									//
+								}
 							}
+//							if (!function.getConsequences().isEmpty())
+//								// TODO: the "returnsTo" relation type must be predefined somewhere
+//								for (SystemRelation to:other.getRelations(returnsTo.key())) {
+//									SystemComponent anotherOther = (SystemComponent) to.endNode();
+//									for (ChangeOtherStateFunction consequence:function.getConsequences()) {
+//										function.setFocalContext(otherContext);
+//										function.setOtherContext(getContext(anotherOther));
+//										consequence.changeOtherState(t, dt, other, anotherOther);
+//									}
+//							}
 			        	}
 			        }
+			        // this should bein a loop on relations as it is symmetrical
 			        for (MaintainRelationDecisionFunction function:MRfunctions) {
 			        	function.setFocalContext(focalContext);
 			        	function.setOtherContext(otherContext);
-			        	if (!function.maintainRelation(t, dt, sr, focal, other))
+//			        	if (!function.maintainRelation(t, dt, sr, focal, other))
+			        	if (!function.maintainRelation(t, dt, limits,
+			        		focalContext.ecosystemParameters, ecosystemContainer,
+			        		focalContext.lifeCycleParameters, lifeCycleContainer,
+			        		focalContext.groupParameters, (ComponentContainer) container,
+			        		otherContext.groupParameters, other.container(),
+			        		focal.autoVar(), focal.constants(), focal.currentState(),
+			        		focal.decorators(), focalLocation,
+			        		other.autoVar(), other.constants(), other.currentState(),
+			        		other.decorators(), otherLocation))
 			        		sr.container().removeItem(sr);
 			        	// no consequences
 			        }
+			        // this should be in a loop on relations as it is symmetrical
 			        for (ChangeRelationStateFunction function:CRfunctions) {
 			        	function.setFocalContext(focalContext);
 			        	function.setOtherContext(otherContext);
-			        	function.changeRelationState(t, dt, focal, other, sr);
+						double[] focalNextLoc = null;
+						double[] otherNextLoc = null;
+						if (space!=null) {
+							focalNextLoc = new double[focalLocation.dim()];
+							otherNextLoc = new double[otherLocation.dim()];
+						}
+
+//			        	function.changeRelationState(t, dt, focal, other, sr);
+			        	function.changeRelationState(t, dt, limits,
+				        		focalContext.ecosystemParameters, ecosystemContainer,
+				        		focalContext.lifeCycleParameters, lifeCycleContainer,
+				        		focalContext.groupParameters, (ComponentContainer) container,
+				        		otherContext.groupParameters, other.container(),
+				        		focal.autoVar(), focal.constants(), focal.currentState(),
+				        		focal.decorators(), focalLocation,
+				        		other.autoVar(), other.constants(), other.currentState(),
+				        		other.decorators(), otherLocation,
+				        		focal.nextState(), focalNextLoc,
+				        		other.nextState(), otherNextLoc);
 			        	// no consequences
 			        }
 				}
@@ -233,11 +352,12 @@ public class RelationProcess extends AbstractRelationProcess {
 	protected void loop(CategorizedContainer<SystemComponent> container, double t, double dt) {
 		if (container.categoryInfo() instanceof Ecosystem) {
 			setContext(focalContext,container);
+			ecosystemContainer = (ComponentContainer) container;
 		}
 		else if (container.categoryInfo() instanceof LifeCycle) {
 			setContext(focalContext,container);
 //			lifeCycle = (LifeCycle) container.categoryInfo();
-//			lifeCycleContainer = (ComponentContainer) container;
+			lifeCycleContainer = (ComponentContainer) container;
 		}
 		else if (container.categoryInfo() instanceof SystemFactory)
 			if (container.categoryInfo().belongsTo(focalCategories)) {

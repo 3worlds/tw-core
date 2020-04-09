@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -45,6 +45,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
+import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 
 /**
@@ -64,6 +65,7 @@ public class SearchProcess
 	private List<RelateToDecisionFunction> RTfunctions = new LinkedList<>();
 	private HierarchicalContext focalContext = new HierarchicalContext();
 	private HierarchicalContext otherContext = new HierarchicalContext();
+	private ComponentContainer ecosystemContainer = null;
 	private LifeCycle focalLifeCycle = null;
 	private ComponentContainer focalLifeCycleContainer = null;
 	private SystemFactory focalGroup = null;
@@ -91,6 +93,8 @@ public class SearchProcess
 		if (container.categoryInfo() instanceof Ecosystem) {
 			setContext(focalContext,container);
 			setContext(otherContext,container);
+			focalContext.ecosystemParameters = container.parameters();
+			ecosystemContainer = (ComponentContainer)container;
 		}
 		for (CategorizedContainer<SystemComponent> subc:container.subContainers()) {
 			if (subc.categoryInfo() instanceof LifeCycle) {
@@ -124,13 +128,20 @@ public class SearchProcess
 	}
 
 	private void doRelate(double t, double dt, SystemComponent focal, SystemComponent other,
-			Location focalLocation, Location otherLocation) {
+			Location focalLocation, Location otherLocation, Box limits) {
 		for (RelateToDecisionFunction function: RTfunctions) {
 			function.setFocalContext(focalContext);
 			function.setOtherContext(otherContext);
-			if (function.relate(t,dt,focal,other,focalLocation,otherLocation)) {
-				// tag items for future relation
-//						System.out.println("Relating "+focal.id()+ " to "+other.id());
+//			if (function.relate(t,dt,focal,other,focalLocation,otherLocation)) {
+			if (function.relate(t, dt, limits,
+				focalContext.ecosystemParameters, ecosystemContainer,
+				focalContext.lifeCycleParameters, focalLifeCycleContainer,
+				focalContext.groupParameters, focalGroupContainer,
+				otherContext.groupParameters, otherGroupContainer,
+				focal.autoVar(),focal.constants(),focal.currentState(),focal.decorators(),
+				focalLocation.asPoint(),
+				other.autoVar(),other.constants(),other.currentState(),other.decorators(),
+				otherLocation.asPoint())) {
 				relContainer.addItem(focal,other);
 			}
 		}
@@ -139,20 +150,12 @@ public class SearchProcess
 	private void executeFunctions(CategorizedContainer<SystemComponent> focalContainer,
 			CategorizedContainer<SystemComponent> otherContainer,
 			double t, double dt) {
-		// NB: problem here:
-//		Exception in thread "Thread-4" java.util.ConcurrentModificationException
-//		at java.base/java.util.HashMap$HashIterator.nextNode(HashMap.java:1493)
-//		at java.base/java.util.HashMap$ValueIterator.next(HashMap.java:1521)
-//		at au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess.executeFunctions(SearchProcess.java:108)
-//		at au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess.loop(SearchProcess.java:89)
-//		at au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess.execute(AbstractProcess.java:132)
-//		at au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator.step(Simulator.java:238)
 		for (SystemComponent focal:focalContainer.items()) {
 			// brute force approach - SLOW O(n²) - maybe a warning should be issued in MM
 			if (space==null) {
 				for (SystemComponent other:otherContainer.items())
 					if (other!=focal)
-						doRelate(t,dt,focal,other,null,null);
+						doRelate(t,dt,focal,other,null,null,null);
 			}
 			// optimised approach using space indexers
 			else {
@@ -170,8 +173,7 @@ public class SearchProcess
 									if (other.membership().belongsTo(otherCategories))
 										if (!otherContainer.containsInitialItem(other))
 											doRelate(t,dt,focal,other,
-												focalLoc,
-												space.locationOf(other));
+												focalLoc,space.locationOf(other),space.boundingBox());
 						}
 				}
 				// search radius null, means we search for the nearest neighbours only
@@ -186,7 +188,8 @@ public class SearchProcess
 										if (!otherContainer.containsInitialItem(other))
 											doRelate(t,dt,focal,other,
 												focalLoc,
-												space.locationOf(other));
+												space.locationOf(other),
+												space.boundingBox());
 					}
 				}
 			}

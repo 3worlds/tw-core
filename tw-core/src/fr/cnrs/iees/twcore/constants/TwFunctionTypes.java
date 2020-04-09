@@ -157,7 +157,7 @@ public enum TwFunctionTypes {
 	            return EnumSet.of(focalDrv,focalDec,focalLoc,
 	                otherDrv,otherDec,otherLoc); // also add relation state in a far future
 	        case ChangeState:
-	            return EnumSet.of(focalDrv,focalDec,focalLoc);
+	            return EnumSet.of(nextFocalDrv,focalDec,nextFocalLoc);
 	        case SetInitialState:
 	            return EnumSet.of(focalLtc,focalDrv,focalLoc);
 	        case SetOtherInitialState:
