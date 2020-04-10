@@ -3,13 +3,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -20,7 +20,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +56,7 @@ import fr.ens.biologie.generic.utils.Logging;
  * @date 29 Sep 2019
  */
 public abstract class AbstractUPL implements IUserProjectLink {
+	private File modelFile;
 	private List<File> dataFiles;
 	private List<File> functionFiles;
 	private List<File> initialiserFiles;
@@ -76,6 +76,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	private String ppph = "<projectPath>";
 
 	public AbstractUPL() {
+		modelFile = null;
 		dataFiles = new ArrayList<>();
 		functionFiles = new ArrayList<>();
 		initialiserFiles = new ArrayList<>();
@@ -83,9 +84,16 @@ public abstract class AbstractUPL implements IUserProjectLink {
 
 	@Override
 	public void clearFiles() {
+		modelFile = null;
 		dataFiles.clear();
 		functionFiles.clear();
 		initialiserFiles.clear();
+	}
+
+	@Override
+	public void addModelFile(File f) {
+		modelFile = f;
+		log.info(f.getAbsolutePath());
 	}
 
 	@Override
@@ -127,25 +135,28 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	/**
 	 * Pushes files from the ThreeWorlds code generator (LOCAL) to an associated
 	 * user java project (REMOTE) (if one exists).
-	 * 
+	 *
 	 * There are three types of java files generated: Data, Function and
 	 * Initialiser. The rules for pushing and overwriting are as follows:
-	 * 
+	 *
 	 * Data: LOCAL ALWAYS overwrites REMOTE. It is not intended that remote projects
 	 * modify this code.
-	 * 
+	 *
 	 * Function: LOCAL NEVER overwrites REMOTE. This is the rule UNLESS the Function
 	 * class has changed. As Function templates all differ, a change in function
 	 * class requires that a new java template file be created. To avoid losing
 	 * work, old files are backed up as *.orig<n> so the developers can move their
 	 * code into the new class as they see fit.
-	 * 
+	 *
 	 * Initialiser: LOCAL NEVER overwrites REMOTE.
-	 * 
+	 *
 	 * This method also creates a main class (UserCodeRunner.java) in the default
 	 * package to launch their model from the IDE. This allows break-points to be
 	 * inserted in the developed code for debugging purposes.
 	 */
+	// NEW (8/4/2020 JG: there is now a 4th file type, ModelFile
+	// new organisaion: only class files are pushed for function and data files
+	// the only java file pushed is the model file
 	@Override
 	public void pushFiles() {
 		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + ProjectPaths.REMOTECODE;
@@ -153,10 +164,21 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		String localPath = Project.makeFile(ProjectPaths.LOCALCODE).getAbsolutePath();
 		writeUserCodeRunner();
 		log.info(localPath + "-> [" + remoteSrcPath + "," + remoteClsPath + "]");
+		pushModelFile(localPath,remoteSrcPath, remoteClsPath);
 		pushDataFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushFunctionFiles(localPath, remoteSrcPath, remoteClsPath);
 		pushInitialiserFiles(localPath, remoteSrcPath, remoteClsPath);
 		// pushInnerClasses(localPath,remoteSrcPath, remoteClsPath);
+	}
+
+	// experimental - always overwrites
+	private void pushModelFile(String localPath, String remoteSrcPath, String remoteClsPath) {
+		File localClsFile = new File(modelFile.getAbsolutePath().replace(".java", ".class"));
+		File remoteSrcFile = new File(modelFile.getAbsolutePath().replace(localPath, remoteSrcPath));
+		File remoteClsFile = new File(
+				modelFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
+		FileUtilities.copyFileReplace(modelFile, remoteSrcFile);
+		FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
 	}
 
 	// Always overwrite
@@ -171,38 +193,52 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		}
 	}
 
-	// Never overwrite unless a class change is detected. In this case backup old
-	// file as a text file first.
+	// NEW version which always overwrites and only copies class files
 	public void pushFunctionFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
 		for (File localSrcFile : functionFiles) {
 			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
 			File remoteSrcFile = new File(localSrcFile.getAbsolutePath().replace(localPath, remoteSrcPath));
 			File remoteClsFile = new File(
 					localSrcFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
-			// Don't overwrite. This is a user editable file
-			if (!remoteSrcFile.exists()) {
-				FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
-				FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
-			} else {
-				/*
-				 * ... unless the function class has changed. If it has changed, backup the old
-				 * user file with a unique name before overwriting.
-				 */
-				String localAncestorClass = getAncestorName(localSrcFile);
-				String remoteAncestorClass = getAncestorName(remoteSrcFile);
-				if (!localAncestorClass.equals(remoteAncestorClass)) {
-					// Prepare a backup file
-					File backup = createUniqueBackUp(
-							new File(remoteSrcFile.getAbsolutePath().replace(".java", extOrig + "0")));
-					remoteSrcFile.renameTo(backup);
-					FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
-					FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
-					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.PROCESS_CLASS_CHANGE, localAncestorClass,
-							remoteAncestorClass, localSrcFile));
-				}
-			}
+			FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
+			FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
 		}
 	}
+
+
+// NEW JG: code kept for recycling
+	// Never overwrite unless a class change is detected. In this case backup old
+	// file as a text file first.
+//	public void pushFunctionFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
+//		for (File localSrcFile : functionFiles) {
+//			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
+//			File remoteSrcFile = new File(localSrcFile.getAbsolutePath().replace(localPath, remoteSrcPath));
+//			File remoteClsFile = new File(
+//					localSrcFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
+//			// Don't overwrite. This is a user editable file
+//			if (!remoteSrcFile.exists()) {
+//				FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
+//				FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
+//			} else {
+//				/*
+//				 * ... unless the function class has changed. If it has changed, backup the old
+//				 * user file with a unique name before overwriting.
+//				 */
+//				String localAncestorClass = getAncestorName(localSrcFile);
+//				String remoteAncestorClass = getAncestorName(remoteSrcFile);
+//				if (!localAncestorClass.equals(remoteAncestorClass)) {
+//					// Prepare a backup file
+//					File backup = createUniqueBackUp(
+//							new File(remoteSrcFile.getAbsolutePath().replace(".java", extOrig + "0")));
+//					remoteSrcFile.renameTo(backup);
+//					FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
+//					FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
+//					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.PROCESS_CLASS_CHANGE, localAncestorClass,
+//							remoteAncestorClass, localSrcFile));
+//				}
+//			}
+//		}
+//	}
 
 //	public void pushInnerClasses(String localPath, String remoteSrcPath, String remoteClsPath) {
 //		// find any .class files that have no matching .java file
@@ -213,7 +249,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 //			public boolean accept(File dir, String name) {
 //				return name.endsWith(".java");
 //			}
-//			
+//
 //		});
 //		File cDir = new File(remoteClsPath);
 //		File[] cFiles = cDir.listFiles(new FilenameFilter() {
@@ -222,7 +258,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 //			public boolean accept(File dir, String name) {
 //				return name.endsWith(".class");
 //			}
-//			
+//
 //		});
 //		List<File> srcFiles = new ArrayList<>();
 //		List<File> clsFiles = new ArrayList<>();
@@ -231,9 +267,9 @@ public abstract class AbstractUPL implements IUserProjectLink {
 //			srcFiles.add(f);
 //		for (File f:cFiles)
 //			clsFiles.add(f);
-//			
-//		
-//		
+//
+//
+//
 //	}
 	// Never overwrite.
 	public void pushInitialiserFiles(String localPath, String remoteSrcPath, String remoteClsPath) {

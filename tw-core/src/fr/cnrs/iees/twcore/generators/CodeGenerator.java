@@ -131,7 +131,7 @@ public class CodeGenerator {
 			if (!cats.isEmpty())
 				generateDataCode(ecology, ecology.id());
 			// prepare user modifiable model file
-			modelgen = new ModelGenerator(graph.root(),ecology.id(),null);
+			modelgen = new ModelGenerator(graph.root(),ecology.id());
 			// generate TwFunction classes
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
@@ -152,6 +152,7 @@ public class CodeGenerator {
 		}
 		// write the user code file
 		modelgen.generateCode();
+		UserProjectLink.addModelFile(modelgen.getFile());
 		// compile whole code directory here
 		JavaCompiler compiler = new JavaCompiler();
 		String result = compiler.compileCode(ecologyFiles);

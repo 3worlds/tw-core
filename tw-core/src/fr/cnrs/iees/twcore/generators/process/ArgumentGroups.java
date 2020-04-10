@@ -35,8 +35,10 @@ public enum ArgumentGroups {
 	otherLoc		("fr.cnrs.iees.uit.space.Point", "other component location "),
 
 	// writeable arguments
-	nextFocalDrv	("au.edu.anu.twcore.data.runtime.TwData", "focal component next "),
-	nextFocalLoc	("double[]", "focal component new location "),
+	nextFocalDrv	("au.edu.anu.twcore.data.runtime.TwData", "focal component next drivers"),
+	nextFocalLoc	("double[]", "focal component new location"),
+	nextOtherDrv	("au.edu.anu.twcore.data.runtime.TwData", "other component next drivers"),
+	nextOtherLoc	("double[]", "other component new location"),
 ;
 	private final String type;
 	private final String description;

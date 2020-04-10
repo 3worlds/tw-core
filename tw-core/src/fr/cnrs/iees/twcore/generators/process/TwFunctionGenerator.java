@@ -33,6 +33,10 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_DECORATORS;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_DRIVERS;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_LTCONSTANTS;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_PARAMETERS;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
 
@@ -41,12 +45,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -64,10 +70,12 @@ import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.FileType;
 import fr.cnrs.iees.twcore.constants.SnippetLocation;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
+import fr.cnrs.iees.twcore.generators.process.ModelGenerator.memberInfo;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
@@ -219,16 +227,17 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				mg.setArgumentType(j,argTypes[j]);
 			// return type
 			mg.setReturnType(type.returnType());
-			if (type.returnType().equals("void"))
-				mg.setReturnStatement("");
-			else
-				mg.setReturnStatement("return "+zero(checkType(type.returnType())));
 			// preparing call to user model function: initialising read-write data
 			for (String k:innerVarInit.keySet())
 				for (String s: innerVarInit.get(k))
 					mg.setStatement(s);
 			// call to user code
-			mg.setStatement(callStatement);
+			if (type.returnType().equals("void")) {
+				mg.setReturnStatement("");
+				mg.setStatement(callStatement);
+			}
+			else
+				mg.setReturnStatement("return "+callStatement);
 			// getting results from user code
 			for (String k:innerVarCopy.keySet())
 				for (String s: innerVarCopy.get(k))
@@ -253,8 +262,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	public String generatedClassName() {
 		return generatedClassName;
 	}
+
 	public File getFile() {
-		String name = generatedClassName.replace(this.packageName+".", "");
+		String name = generatedClassName.replace(packageName+".", "");
 		String path = packagePath+File.separator+name;
 		return new File(path+".java");
 	}
@@ -267,25 +277,28 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private String callStatement ="";
 	//TODO: pass the class,var name pair back to the ModelGenerator
 	// TODO: import the inner classes to modelgenerator
-	// TODO: special case for locations
 
 	// TODO: Must check ll this
 	public void setArgumentCalls(ModelGenerator gen) {
 		String classToCall = gen.className();
 		Map<ArgumentGroups,List<Duple<String,String>>> reqArgs = gen.method(name).callerArguments();
-		System.out.println("***** Statement generation for "+name+" ("+type+") *****");
 		String indent = "\t";
 		callStatement = classToCall+"."+
 			Strings.toLowerCase(name.substring(0,1))+
 			name.substring(1)+"(\n";
 		String innerClass = "";
 		String innerVar = "";
+		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal =
+			gen.getAllMembers(gen.findCategories(spec,true));
+		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther =
+			gen.getAllMembers(gen.findCategories(spec,false));
 		boolean makeInnerClass = false;
 		for (ArgumentGroups ag: reqArgs.keySet()) {
 			makeInnerClass = type.writeableArguments().contains(ag) & !ag.name().contains("Loc");
 			if (makeInnerClass) {
 				innerVar = ag.toString();
-				innerClass = Strings.toUpperCase(innerVar.substring(0,1))+innerVar.substring(1);
+				innerClass = initialUpperCase(innerVar);
+//				innerClass = Strings.toUpperCase(innerVar.substring(0,1))+innerVar.substring(1);
 				List<String> innerClassDeclaration = innerClassDecl.get(innerVar);
 				if (innerClassDeclaration==null) {
 					innerClassDeclaration = new LinkedList<>();
@@ -296,13 +309,13 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				if (innerVarInitialisation==null) {
 					innerVarInitialisation = new LinkedList<>();
 					innerVarInit.put(innerVar,innerVarInitialisation);
-					innerVarInitialisation.add(innerClass+" "+innerVar+" = new "+innerClass+"()");
+					innerVarInitialisation.add(innerClass+" _"+innerVar+" = new "+innerClass+"()");
 				}
 				List<String> innerVarBackCopy = innerVarCopy.get(innerVar);
 				if (innerVarBackCopy==null) {
 					innerVarBackCopy = new LinkedList<>();
 					innerVarCopy.put(innerVar,innerVarBackCopy);
-					innerVarBackCopy.add("// copy back statements");
+//					innerVarBackCopy.add("// copy back statements");
 				}
 			}
 			for (Duple<String,String> d: reqArgs.get(ag)){
@@ -321,39 +334,26 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				else if ((ag==focalAuto) || (ag==otherAuto))
 					callArg = ag.name()+"."+an+"()*1.0"; // TODO: remove the *1.0 and replace by proper timer conversion
 				else if (type.writeableArguments().contains(ag)) {
-
-// ================================== example code to generate
-
-//					class NextFocalDrv { // OK
-//						double x;
-//						double r;
-//					} // OK
-//
-//					NextFocalDrv nextFocalDrv = new NextFocalDrv(); // OK
-//					nextFocalDrv.x = ((MyDrvClass)focalDrv).x();
-//					nextFocalDrv.r = ((MyDrvClass)focalDrv).r();
-//
-//					method call arg: nextFocalDrv // OK
-//
-//					((MyDrvClass)focalDrv).x(nextFocalDrv.x);
-//					((MyDrvClass)focalDrv).r(nextFocalDrv.r);
-//	======================================
-					// the information to generate the members is not in reqArgs, oris it there but
-					// not at the proper place.
-
-					// these are the inner classes
-					callArg = innerVar; //OK
-
-					// get the categories for this function
-					gen.findCategories(spec, true); // this is for focal objects
-
-//					String lc = null;
-//					String sc = lc.split("\\.")[lc.split("\\.").length-1];
-//					dataClassesToImport.add(lc);
-					if (makeInnerClass) {
-						innerClassDecl.get(innerVar).add(indent+indent+at+" "+an+";");
-//						innerVarInit.get(innerVar).add(innerVar+"."+an+" = ((" + sc+ ")"+ag.toString()+")."+an+"()");
-//						innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.toString()+")."+an+"("+innerVar+"."+an+")");
+					callArg = "_"+innerVar;
+					Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> searchList = null;
+					if (ag.name().contains("ocal")) // "F" or "f" are possible
+						searchList = membersForFocal;
+					else if (ag.name().contains("ther")) // "O" or "o" are possible
+						searchList = membersForOther;
+					for (ConfigurationEdgeLabels cel: // not the most efficient way to search, this loop
+						EnumSet.of(E_PARAMETERS,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS)) {
+						String sc = null;
+						for (memberInfo mb:searchList.get(cel)) {
+							if (sc==null) {
+								String lc = gen.containingClass(mb.name);
+								dataClassesToImport.add(lc);
+								sc = lc.split("\\.")[lc.split("\\.").length-1];
+							}
+							innerClassDecl.get(innerVar).add(indent+indent+mb.type+" "+mb.name+";");
+							innerVarInit.get(innerVar).add("_"+innerVar+"."+mb.name+" = ((" + sc+ ")"+ag.name()+")."+mb.name+"()");
+							if (!mb.isTable)
+								innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.name()+")."+mb.name+"(_"+innerVar+"."+mb.name+")");
+						}
 					}
 				}
 				else {
@@ -361,11 +361,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					dataClassesToImport.add(lc);
 					String sc = lc.split("\\.")[lc.split("\\.").length-1];
 					callArg = "((" + sc+ ")"+ag.toString()+")."+an+"()";
-//					if (makeInnerClass) {
-//						innerClassDecl.get(innerVar).add(indent+indent+at+" "+an+";");
-//						innerVarInit.get(innerVar).add(innerVar+"."+an+" = "+callArg);
-//						innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.toString()+")."+an+"("+innerVar+"."+an+")");
-//					}
 				}
 				if (callArg!=null)
 					callStatement += indent+indent+indent+ callArg + ",\n";
@@ -379,23 +374,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				}
 			}
 		} // for
-		// inner class declarations
-		for (String s:innerClassDecl.keySet()) {
-			System.out.println(innerClassDecl.get(s));
-			callStatement += indent+indent+indent+ s + ",\n";
-		}
-		// before user method call
-		for (String s:innerVarInit.keySet())
-			System.out.println(innerVarInit.get(s));
-
 		// completion of user method call
 		callStatement = callStatement.substring(0, callStatement.length()-2);
 		callStatement +=")";
-		// inner var initialisation
-		System.out.println(callStatement);
-		// after method call
-		for (String s:innerVarCopy.keySet())
-			System.out.println(innerVarCopy.get(s));
 	}
 
 }

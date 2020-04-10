@@ -152,10 +152,10 @@ public enum TwFunctionTypes {
 	        case RelateToDecision:
 	            return EnumSet.noneOf(ArgumentGroups.class);
 	        case ChangeOtherState:
-	            return EnumSet.of(otherDrv,otherDec,otherLoc);
+	            return EnumSet.of(nextOtherDrv,otherDec,nextOtherLoc);
 	        case ChangeRelationState:
-	            return EnumSet.of(focalDrv,focalDec,focalLoc,
-	                otherDrv,otherDec,otherLoc); // also add relation state in a far future
+	            return EnumSet.of(nextFocalDrv,focalDec,nextFocalLoc,
+	                nextOtherDrv,otherDec,nextOtherLoc); // also add relation state in a far future
 	        case ChangeState:
 	            return EnumSet.of(nextFocalDrv,focalDec,nextFocalLoc);
 	        case SetInitialState:

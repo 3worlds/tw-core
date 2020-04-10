@@ -7,11 +7,11 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
-
-
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -20,9 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -40,6 +38,7 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -69,7 +68,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private String generatedClassName = null;
 	private String packageName=null;
 	private String packagePath;
-	private Class<?> previousModel = null;
 	// class comment
 	private String classComment = null;
 	// all the imports
@@ -84,6 +82,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 //	private EnumMap<ArgumentGroups,List<Duple<String,String>>> argumentGroups = new EnumMap<>(ArgumentGroups.class);
 	// store all the generated data class matchings to categories
 	private Map<Set<Category>,generatedData> dataClassNames = new HashMap<>();
+	private Map<String,List<String>> snippets =new HashMap<>();
 
 	private class generatedData {
 		private String drivers;
@@ -95,35 +94,47 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	/**
 	 * Constructor able to manage previously generated code
 	 *
-	 * @param spec speccification for this model
-	 * @param previousModel the previousModel class, if any
 	 */
-	@SuppressWarnings("unchecked")
-	public ModelGenerator(TreeGraphNode root3w, String modelDir, Class<?> previousModel) {
+	@SuppressWarnings("unchecked")	// graph root,   ecology.id()
+	public ModelGenerator(TreeGraphNode root3w, String modelDir) {
 		super(null);
 		className = validJavaName(wordUpperCaseName(initialUpperCase(root3w.id())));
-		this.modelName = modelDir;
+		modelName = modelDir;
 		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+modelDir;
-		this.previousModel = previousModel;
+		//check if a file was already generated for this model in user project
+		// if yes, extract all user code as snippets.
 		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelDir))).getAbsolutePath();
-		if (previousModel!=null) {
-			// get all imports from file ?
-			Method[] lm = previousModel.getDeclaredMethods();
-			for (Method m:lm) {
-				// TODO get the code from previous version.
-				String methname = m.getName();
-				String returnType = m.getReturnType().getSimpleName();
-				// how to get the method statements ???- we need the java file - cant us reflection.
-				// any line starting with public static is a method - grab the name and return type, that's
-				// all we need
-				// if return type not void end of method = return <sthing> ; }
-				// if return type void end of method = } matching previous {
-				// this assumes valid code, ie not code with compile errors
-				// all code between method opening and end is stored in a stringlist
-				// once method has its new parameter list and eturn type, statements are added
-				// what about imports ? well, we cant do everything!
-				ModelMethodGenerator meth = new ModelMethodGenerator(methodScope,returnType,methname);
-				methods.put(methname,meth);
+		String previousModel = UserProjectLink.srcRoot()+File.separator+
+			ProjectPaths.REMOTECODE+File.separator+
+			validJavaName(wordUpperCaseName(modelDir))+File.separator+
+			className+".java";
+		if (Files.exists(Path.of(previousModel))) {
+			File previousFile = new File(previousModel);
+			List<String> lines = new LinkedList<>();
+			try {
+				lines = Files.readAllLines(previousFile.toPath());
+			} catch (IOException e) {
+				log.severe(()->"File "+previousFile+" could not be read - file regenerated instead");
+			}
+			String record = null;
+			for (String line:lines) {
+				if (line.contains("import"))
+					imports.add(line.substring(line.indexOf("import")+6,line.indexOf(';')).strip());
+				if (line.contains("END CODE INSERTION ZONE"))
+					record = null;
+				if (record!=null) {
+					if (snippets.get(record)==null)
+						snippets.put(record,new LinkedList<>());
+					snippets.get(record).add(line);
+				}
+				if (line.contains("INSERT YOUR CODE BELOW THIS LINE"))
+					record = line.substring(line.indexOf("//")+2,line.indexOf('*')).strip();
+			}
+			// debugging
+			for (String s:snippets.keySet()) {
+				System.out.println("Snippet for method'"+s+"': ");
+				for (String ss: snippets.get(s))
+					System.out.println("\t"+ss);
 			}
 		}
 		else {
@@ -265,59 +276,21 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return comment.toString();
 	}
 
-	private void addRecordFields(ModelMethodGenerator method, Record rec, ArgumentGroups argGroup) {
-		for (TreeNode tn:rec.getChildren()) {
-			if (tn instanceof FieldNode) {
-				FieldNode f = (FieldNode) tn;
-				if (replicateNames.contains(f.id()))
-					log.warning(()->"Replicated field name ("+f.id()+") in function "+method.name());
-				else {
-					String comment = argComment(f,P_FIELD_DESCRIPTION,P_FIELD_UNITS,P_FIELD_PREC,
-						P_FIELD_INTERVAL,P_FIELD_RANGE);
-					String type = f.properties().getPropertyValue(P_FIELD_TYPE.key()).toString();
-					if (ValidPropertyTypes.isPrimitiveType(type)) {
-						if (type.equals("Integer"))
-							type = "int";
-						else
-							type = Strings.toLowerCase(type.substring(0,1)) + type.substring(1);
-					}
-					method.addArgument(argGroup,f.id(),type,comment.toString());
-					replicateNames.add(f.id());
-				}
-			}
-			else if (tn instanceof TableNode) {
-				TableNode t = (TableNode) tn;
-				if (replicateNames.contains(t.id()))
-					log.warning(()->"Replicated table name ("+t.id()+") in function "+method.name());
-				else {
-					String comment = argComment(t,P_TABLE_DESCRIPTION,P_TABLE_UNITS,P_TABLE_PREC,
-						P_TABLE_INTERVAL,P_TABLE_RANGE);
-					// Add table dimensions to comment
-					String type = t.properties().getPropertyValue(P_DATAELEMENTTYPE.key()).toString();
-					if (ValidPropertyTypes.isPrimitiveType(type)) {
-						if (type.equals("Integer"))
-							type = "IntTable";
-						else
-							type += "Table";
-					}
-					imports.add(ValidPropertyTypes.getJavaClassName(type));
-					method.addArgument(argGroup,t.id(),type,comment.toString());
-					replicateNames.add(t.id());
-					// TODO: other table types (tables of fields)
-				}
-			}
-		}
-	}
-
 	private String simpleType(String className) {
 		String[] ss = className.split("\\.");
 		return ss[ss.length-1];
 	}
 
-	class memberInfo {
+	class memberInfo implements Comparable<memberInfo> {
 		String name;
 		String type;
+		String fullType;
 		String comment;
+		boolean isTable;
+		@Override
+		public int compareTo(memberInfo m) {
+			return name.compareTo(m.name);
+		}
 	}
 
 	// gets all the fields and tables of a give category set. Returns them in always the same order
@@ -334,7 +307,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					memberInfo mb = new memberInfo();
 					if (tn instanceof FieldNode) {
 						FieldNode f = (FieldNode) tn;
-						mb.name = f.id();
+						mb.isTable = false;
+						mb.name = validJavaName(wordUpperCaseName(f.id()));
 						mb.comment = argComment(f,P_FIELD_DESCRIPTION,P_FIELD_UNITS,P_FIELD_PREC,
 							P_FIELD_INTERVAL,P_FIELD_RANGE);
 						mb.type = f.properties().getPropertyValue(P_FIELD_TYPE.key()).toString();
@@ -342,15 +316,18 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 							if (mb.type.equals("Integer"))
 								mb.type = "int";
 							else
-								mb.type = Strings.toLowerCase(mb.type) + mb.type.substring(1);
+								mb.type = Strings.toLowerCase(mb.type.substring(0,1)) + mb.type.substring(1);
 						}
+						mb.fullType = ValidPropertyTypes.getJavaClassName(mb.type);
 					}
 					else if (tn instanceof TableNode) {
 						TableNode t = (TableNode) tn;
-						mb.name = t.id();
+						mb.isTable = true;
+						mb.name = validJavaName(wordUpperCaseName(t.id()));
 						mb.comment = argComment(t,P_TABLE_DESCRIPTION,P_TABLE_UNITS,P_TABLE_PREC,
 							P_TABLE_INTERVAL,P_TABLE_RANGE);
 						// Add table dimensions to comment
+						// table of primitive types
 						if (t.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
 							mb.type = t.properties().getPropertyValue(P_DATAELEMENTTYPE.key()).toString();
 							if (ValidPropertyTypes.isPrimitiveType(mb.type)) {
@@ -359,15 +336,18 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 								else
 									mb.type += "Table";
 							}
+							mb.fullType = ValidPropertyTypes.getJavaClassName(mb.type);
 						}
+						// table of user-defined records
 						else {
-							Record ttype = (Record) get(t.getChildren(),selectOne(hasTheLabel(N_RECORD.label())));
-							mb.type = ttype.id();
+							mb.type = validJavaName(initialUpperCase(wordUpperCaseName(t.id())));
+							mb.fullType = null;
 						}
-						if (result.get(cel)==null)
-							result.put(cel,new TreeSet<>());
-						result.get(cel).add(mb);
+
 					}
+					if (result.get(cel)==null)
+						result.put(cel,new TreeSet<>());
+					result.get(cel).add(mb);
 				}
 			}
 			else
@@ -434,12 +414,18 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			if (!ftype.returnType().equals("void"))
 				method.setReturnStatement("return "+zero(ftype.returnType()));
 			method.clearArguments();
+			if (snippets.containsKey(mname))
+				method.setRawCode(snippets.get(mname));
 		}
 		// retrieve all the parameters and parameter types
 		replicateNames.clear();
 		EnumSet<ArgumentGroups> argSet = EnumSet.noneOf(ArgumentGroups.class);
 		argSet.addAll(ftype.readOnlyArguments());
 		argSet.addAll(ftype.writeableArguments());
+		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal =
+			getAllMembers(findCategories(function,true));
+		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther =
+			getAllMembers(findCategories(function,false));
 		for (ArgumentGroups arg:argSet) {
 			switch (arg) {
 			case t:
@@ -469,82 +455,68 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				replicateNames.add("birthDate");
 				break;
 			case groupPar:
-				for (memberInfo mb:getAllMembers(findCategories(function,true)).get(E_PARAMETERS)) {
+				for (memberInfo mb:membersForFocal.get(E_PARAMETERS)) {
+					if (mb.fullType!=null)
+						imports.add(mb.fullType);
+					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					replicateNames.add(mb.name);
+				}
+				break;
+			case focalLtc:
+				for (memberInfo mb:membersForFocal.get(E_LTCONSTANTS)) {
+					if (mb.fullType!=null)
+						imports.add(mb.fullType);
+					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					replicateNames.add(mb.name);
+				}
+				break;
+			case focalDrv:
+				for (memberInfo mb:membersForFocal.get(E_DRIVERS)) {
+					if (mb.fullType!=null)
+						imports.add(mb.fullType);
+					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					replicateNames.add(mb.name);
+				}
+				break;
+			case focalDec:
+				for (memberInfo mb:membersForFocal.get(E_DECORATORS)) {
+					if (mb.fullType!=null)
+						imports.add(mb.fullType);
+					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					replicateNames.add(mb.name);
+				}
+				// TODO:if readwrite, do otherwise
+				break;
+			case otherGroupPar:
+				for (memberInfo mb:membersForOther.get(E_PARAMETERS)) {
+					if (mb.fullType!=null)
+						imports.add(mb.fullType);
+					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					replicateNames.add(mb.name);
+				}
+				break;
+			case otherLtc:
+				for (memberInfo mb:membersForOther.get(E_LTCONSTANTS)) {
 					if (!ValidPropertyTypes.isPrimitiveType(mb.type))
 						imports.add(ValidPropertyTypes.getJavaClassName(mb.type));
 					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
 					replicateNames.add(mb.name);
 				}
-//				for (Category cat:findCategories(function,true)) {
-//					Record rec = (Record) get(cat.edges(Direction.OUT),
-//						selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
-//						endNode());
-//					if (rec!=null)
-//						addRecordFields(method,rec,groupPar);
-//				}
-				break;
-			case focalLtc:
-				for (Category cat:findCategories(function,true)) {
-					Record rec = (Record) get(cat.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_LTCONSTANTS.label())),
-						endNode());
-					if (rec!=null)
-						addRecordFields(method,rec,focalLtc);
-				}
-				break;
-			case focalDrv:
-				for (Category cat:findCategories(function,true)) {
-					Record rec = (Record) get(cat.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
-						endNode());
-					if (rec!=null)
-						addRecordFields(method,rec,focalDrv);
-				}
-				break;
-			case focalDec:
-				for (Category cat:findCategories(function,true)) {
-					Record rec = (Record) get(cat.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
-						endNode());
-					if (rec!=null)
-						addRecordFields(method,rec,focalDec);
-				}
-				// TODO:if readwrite, do otherwise
-				break;
-			case otherGroupPar:
-				for (Category cat:findCategories(function,false)) {
-					Record rec = (Record) get(cat.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
-						endNode());
-					if (rec!=null)
-						addRecordFields(method,rec,groupPar);
-				}
-				break;
-			case otherLtc:
-				for (Category cat:findCategories(function,false)) {
-					Record rec = (Record) get(cat.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_LTCONSTANTS.label())),
-						endNode());
-					if (rec!=null)
-						addRecordFields(method,rec,focalLtc);
-				}
 				break;
 			case otherDrv:
-				for (Category cat:findCategories(function,false)) {
-					Record rec = (Record) get(cat.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
-						endNode());
-					if (rec!=null)
-						addRecordFields(method,rec,focalDrv);
+				for (memberInfo mb:membersForOther.get(E_DRIVERS)) {
+					if (mb.fullType!=null)
+						imports.add(mb.fullType);
+					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					replicateNames.add(mb.name);
 				}
 				break;
 			case otherDec:
-				for (Category cat:findCategories(function,false)) {
-					Record rec = (Record) get(cat.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
-						endNode());
-					if (rec!=null)
-						addRecordFields(method,rec,focalDec);
+				for (memberInfo mb:membersForOther.get(E_DECORATORS)) {
+					if (mb.fullType!=null)
+						imports.add(mb.fullType);
+					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					replicateNames.add(mb.name);
 				}
 				// TODO:if readwrite, do otherwise
 				break;
@@ -554,8 +526,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				replicateNames.add(arg.name());
 				break;
 			case nextFocalDrv:
-				String argt = function.id()+"."+
-						Strings.toUpperCase(arg.name().substring(0,1))+arg.name().substring(1);
+				String argt = function.id()+"."+ initialUpperCase(arg.name());
+//						Strings.toUpperCase(arg.name().substring(0,1))+arg.name().substring(1);
 				method.addArgument(arg,arg.name(),argt,arg.description());
 				replicateNames.add(arg.name());
 				break;
@@ -609,5 +581,10 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return generatedClassName;
 	}
 
+	public File getFile() {
+		String name = generatedClassName.replace(this.packageName+".", "");
+		String path = packagePath+File.separator+name;
+		return new File(path+".java");
+	}
 
 }

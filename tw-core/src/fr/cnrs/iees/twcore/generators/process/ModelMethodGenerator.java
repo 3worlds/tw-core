@@ -24,6 +24,7 @@ public class ModelMethodGenerator extends MethodGenerator {
 	// a map of the argument names grouped by role for Twfunction code generation
 	private EnumMap<ArgumentGroups,List<Duple<String,String>>> argumentGroups =
 		new EnumMap<>(ArgumentGroups.class);
+	private List<String> rawCode = new LinkedList<>();
 
 	public ModelMethodGenerator(Method method) {
 		super(method);
@@ -37,6 +38,15 @@ public class ModelMethodGenerator extends MethodGenerator {
 		insertCodeInsertionComment = true;
 		for (ArgumentGroups a:ArgumentGroups.values())
 			argumentGroups.put(a,new LinkedList<>());
+	}
+
+	public void setRawCode(List<String> code) {
+		rawCode.addAll(code);
+	}
+
+	public void setRawCode(String... code) {
+		for (String s:code)
+			rawCode.add(s);
 	}
 
 	/**
@@ -97,16 +107,26 @@ public class ModelMethodGenerator extends MethodGenerator {
 			result += "\n";
 		}
 
-		if (insertCodeInsertionComment)
-			result += indent+singleLineComment(startCodeInsertion);
-		for (String s:statements) {
-			result += indent+indent+s+";\n";
+		if (insertCodeInsertionComment) {
+			String[] cmt = Arrays.copyOf(startCodeInsertion,1);
+			cmt[0] = name + " " + cmt[0];
+			result += indent+singleLineComment(cmt);
 		}
+		if (rawCode.isEmpty())
+			for (String s:statements)
+				result += indent+indent+s+";\n";
+		else
+			for (String s:rawCode)
+				result += s+"\n";
 		if (returnType==null) ;
 		else if (returnType.equals("void")) ;
-		else result += indent+indent+returnStatement+";\n";
-		if (insertCodeInsertionComment)
-			result += indent+singleLineComment(endCodeInsertion);
+		else if (rawCode.isEmpty())
+			result += indent+indent+returnStatement+";\n";
+		if (insertCodeInsertionComment) {
+			String[] cmt = Arrays.copyOf(endCodeInsertion,1);
+			cmt[0] = name + " " + cmt[0];
+			result += indent+singleLineComment(cmt);
+		}
 		result += indent+"}\n\n";
 		return result;
 	}
