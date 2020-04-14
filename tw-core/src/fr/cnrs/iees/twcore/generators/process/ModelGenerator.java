@@ -5,14 +5,18 @@ import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static au.edu.anu.twcore.DefaultStrings.*;
+import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,8 +28,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import org.apache.commons.text.WordUtils;
 import org.bouncycastle.util.Strings;
 
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
@@ -46,6 +52,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
+import fr.cnrs.iees.twcore.constants.PopulationVariables;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.uit.space.Box;
@@ -68,6 +75,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private String generatedClassName = null;
 	private String packageName=null;
 	private String packagePath;
+	// general comment / package comment
+	private String packageComment = null;
 	// class comment
 	private String classComment = null;
 	// all the imports
@@ -83,6 +92,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	// store all the generated data class matchings to categories
 	private Map<Set<Category>,generatedData> dataClassNames = new HashMap<>();
 	private Map<String,List<String>> snippets =new HashMap<>();
+	// if applies to a relation type, its name
+	private String relationType =null;
 
 	private class generatedData {
 		private String drivers;
@@ -96,11 +107,17 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	 *
 	 */
 	@SuppressWarnings("unchecked")	// graph root,   ecology.id()
-	public ModelGenerator(TreeGraphNode root3w, String modelDir) {
+	public ModelGenerator(TreeGraphDataNode root3w, String modelDir) {
 		super(null);
 		className = validJavaName(wordUpperCaseName(initialUpperCase(root3w.id())));
 		modelName = modelDir;
 		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+modelDir;
+		// package comment - standard
+		packageComment = comment(general, license, separatingLine);
+		// class comment - with authorship etc.
+		generateClassComment(root3w);
+			// method comments:
+			// working explanations
 		//check if a file was already generated for this model in user project
 		// if yes, extract all user code as snippets.
 		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelDir))).getAbsolutePath();
@@ -118,7 +135,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			}
 			String record = null;
 			for (String line:lines) {
-				if (line.contains("import"))
+				if (line.strip().startsWith("import "))
 					imports.add(line.substring(line.indexOf("import")+6,line.indexOf(';')).strip());
 				if (line.contains("END CODE INSERTION ZONE"))
 					record = null;
@@ -130,12 +147,12 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				if (line.contains("INSERT YOUR CODE BELOW THIS LINE"))
 					record = line.substring(line.indexOf("//")+2,line.indexOf('*')).strip();
 			}
-			// debugging
-			for (String s:snippets.keySet()) {
-				System.out.println("Snippet for method'"+s+"': ");
-				for (String ss: snippets.get(s))
-					System.out.println("\t"+ss);
-			}
+//			// debugging
+//			for (String s:snippets.keySet()) {
+//				System.out.println("Snippet for method'"+s+"': ");
+//				for (String ss: snippets.get(s))
+//					System.out.println("\t"+ss);
+//			}
 		}
 		else {
 			imports.add("static java.lang.Math.*");
@@ -188,6 +205,64 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			categories.addAll(((Categorized<SystemComponent>)tn).getSuperCategories(nl));
 			dataClassNames.put(categories,cl);
 		}
+	}
+
+	private void generateClassComment(TreeGraphDataNode root3w) {
+		StringBuilder sb = new StringBuilder();
+		String version = "<em>NA</em>";
+		if (root3w.properties().hasProperty(P_MODEL_VERSION.key()))
+			version = root3w.properties().getPropertyValue(P_MODEL_VERSION.key()).toString();
+		sb.append("<h2>Model-specific code for model <em>").append(className).append("</em></h2>\n")
+			.append("<p>version ").append(version).append(' ').append(dashSpacer).append(' ')
+			.append(new Date().toString()).append("</p>\n");
+		sb.append("\n<p><strong>Authors: </strong>");
+		if (root3w.properties().hasProperty(P_MODEL_AUTHORS.key())) {
+			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_AUTHORS.key());
+			for (int i=0; i<auths.size(); i++) {
+				sb.append(auths.getWithFlatIndex(i)).append("<br/>\n");
+				if (i>0)
+					sb.append("         ");
+			}
+		}
+		else {
+			sb.append("&lt;Use the <em>").append(P_MODEL_AUTHORS.key()).append("</em> property of the <em>")
+				.append(N_ROOT.label()).append("</em> node to display author names here&gt;");
+		}
+		sb.append("</p>\n");
+		sb.append("\n<p><strong>Contacts: </strong>");
+		if (root3w.properties().hasProperty(P_MODEL_CONTACTS.key())) {
+			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_CONTACTS.key());
+			for (int i=0; i<auths.size(); i++) {
+				sb.append(auths.getWithFlatIndex(i)).append("<br/>\n");
+				if (i>0)
+					sb.append("         ");
+			}
+		}
+		else {
+			sb.append("&lt;Use the <em>").append(P_MODEL_CONTACTS.key()).append("</em> property of the <em>")
+				.append(N_ROOT.label()).append("</em> node to display author contacts here&gt;");
+		}
+		sb.append("</p>\n");
+		sb.append("\n<p><strong>Reference publications: </strong></p>");
+		if (root3w.properties().hasProperty(P_MODEL_CITATIONS.key())) {
+			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_CITATIONS.key());
+			sb.append("<ol>");
+			for (int i=0; i<auths.size(); i++)
+				sb.append("<li>").append(auths.getWithFlatIndex(i)).append("</li>\n");
+			sb.append("</ol>");
+		}
+		else {
+			sb.append("&lt;Use the <em>").append(P_MODEL_CITATIONS.key()).append("</em> property of the <em>")
+				.append(N_ROOT.label()).append("</em> node to display model reference publication(s) here&gt;");
+		}
+		sb.append('\n');
+		sb.append("<h3>Instructions to model developers:</h3>\n");
+		sb.append("<ol><li>Non 3worlds-generated extra methods should be placed in other files linked to the present file through imports.</li>\n");
+		sb.append("<li><strong>Do not</strong> remove any generated comment - they are used to retrieve your code when regenerating this file.</li>\n");
+		sb.append("<li><strong>Do not</strong> modify code outside of the insertion zones (except for point (1) above)- this will cause malfunction of the ModelRunner software.</li>\n");
+		sb.append("<li>For your programming confort, all the static methods of the {@link Math} and {@link Distance} classes are directly accessible here</li></ol>\n");
+		String cs = WordUtils.wrap(sb.toString(), 80,"\n",false);
+		classComment = javaDocComment("",cs.split("\\n"));
 	}
 
 	// returns the generated data class that contains a given field name
@@ -312,13 +387,14 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						mb.comment = argComment(f,P_FIELD_DESCRIPTION,P_FIELD_UNITS,P_FIELD_PREC,
 							P_FIELD_INTERVAL,P_FIELD_RANGE);
 						mb.type = f.properties().getPropertyValue(P_FIELD_TYPE.key()).toString();
+						mb.fullType = ValidPropertyTypes.getJavaClassName(mb.type);
 						if (ValidPropertyTypes.isPrimitiveType(mb.type)) {
+							mb.fullType = null;
 							if (mb.type.equals("Integer"))
 								mb.type = "int";
 							else
 								mb.type = Strings.toLowerCase(mb.type.substring(0,1)) + mb.type.substring(1);
 						}
-						mb.fullType = ValidPropertyTypes.getJavaClassName(mb.type);
 					}
 					else if (tn instanceof TableNode) {
 						TableNode t = (TableNode) tn;
@@ -377,6 +453,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					RelationType relnode = (RelationType) get(pn.edges(Direction.OUT),
 						selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
 						endNode());
+					relationType = relnode.id();
 					if (focal) {
 						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
 							selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
@@ -402,17 +479,45 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return cats;
 	}
 
+	public String simpleCatSignature(Set<Category> set) {
+		String result = " ";
+		for (Category c:set)
+			result += c.id()+" ";
+		return result;
+	}
+
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
+		StringBuilder headerComment = new StringBuilder();
+		String returnComment = null;
 		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		String fname = function.id();
+		headerComment.append("<p><strong>").append(fname).append("</strong> method of type <em>")
+			.append(ftype).append("</em>: ").append(ftype.description()).append("</p>\n");
+		// applies to : rel or cat
+		SortedSet<Category> focalCats = findCategories(function,true);
+		SortedSet<Category> otherCats = findCategories(function,false);
+		if (otherCats.isEmpty())
+			headerComment.append("<p>- applies to categories {<em>")
+				.append(simpleCatSignature(focalCats))
+				.append("</em>}</p>\n");
+		else {
+			headerComment.append("<	p>- applies to relation <em>")
+				.append(relationType)
+				.append(": {").append(simpleCatSignature(focalCats))
+				.append("} → {").append(simpleCatSignature(otherCats))
+				.append("}</em></p>\n");
+		}
+		// follow time model:
 		ModelMethodGenerator method = methods.get(fname);
 		// if method does not exist, create it and set its header, return type and return statement
 		if (method==null) {
 			String mname  = Strings.toLowerCase(fname.substring(0,1)) + fname.substring(1);
 			method = new ModelMethodGenerator(methodScope,ftype.returnType(),mname);
 			methods.put(fname,method);
-			if (!ftype.returnType().equals("void"))
+			if (!ftype.returnType().equals("void")) {
 				method.setReturnStatement("return "+zero(ftype.returnType()));
+				returnComment = ftype.returnJavaDoc();
+			}
 			method.clearArguments();
 			if (snippets.containsKey(mname))
 				method.setRawCode(snippets.get(mname));
@@ -422,19 +527,21 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		EnumSet<ArgumentGroups> argSet = EnumSet.noneOf(ArgumentGroups.class);
 		argSet.addAll(ftype.readOnlyArguments());
 		argSet.addAll(ftype.writeableArguments());
-		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal =
-			getAllMembers(findCategories(function,true));
-		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther =
-			getAllMembers(findCategories(function,false));
+		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal = getAllMembers(focalCats);
+		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther = getAllMembers(otherCats);
 		for (ArgumentGroups arg:argSet) {
 			switch (arg) {
 			case t:
 			case dt:
 				method.addArgument(arg,arg.name(),arg.type(),arg.description());
+				headerComment.append("@param ").append(arg.name()).append(' ')
+					.append(arg.description()).append('\n');
 				replicateNames.add(arg.name());
 				break;
 			case limits:
 				method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
+				headerComment.append("@param ").append(arg.name()).append(' ')
+					.append(arg.description()).append('\n');
 				replicateNames.add(arg.name());
 				break;
 			case ecosystemPar:
@@ -443,15 +550,25 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				break;
 			case ecosystemPop:
 			case lifeCyclePop:
+				// TODO
+				break;
 			case groupPop:
+				for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
+					String popname = validJavaName(wordUpperCaseName("group."+pv.longName()));
+					method.addArgument(arg, popname, ValidPropertyTypes.getType(pv.type()), pv.description());
+					headerComment.append("@param ").append(popname).append(' ').append(arg.description()).append("\n");
+				}
+				break;
 			case otherGroupPop:
-				// TODO: groups etc.
+				// TODO
 				break;
 			case focalAuto:
 			case otherAuto:
 				method.addArgument(arg,"age", "double", arg.description()+"age");
+				headerComment.append("@param age ").append(arg.description()).append("age\n");
 				replicateNames.add("age");
 				method.addArgument(arg,"birthDate", "double", arg.description()+"birth date");
+				headerComment.append("@param birthDate ").append(arg.description()).append("birth date\n");
 				replicateNames.add("birthDate");
 				break;
 			case groupPar:
@@ -459,6 +576,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (mb.fullType!=null)
 						imports.add(mb.fullType);
 					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					headerComment.append("@param ").append(mb.name).append(' ')
+						.append(arg.description()).append(mb.comment).append('\n');
 					replicateNames.add(mb.name);
 				}
 				break;
@@ -467,6 +586,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (mb.fullType!=null)
 						imports.add(mb.fullType);
 					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					headerComment.append("@param ").append(mb.name).append(' ')
+					.append(arg.description()).append(mb.comment).append('\n');
 					replicateNames.add(mb.name);
 				}
 				break;
@@ -475,6 +596,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (mb.fullType!=null)
 						imports.add(mb.fullType);
 					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					headerComment.append("@param ").append(mb.name).append(' ')
+						.append(arg.description()).append(mb.comment).append('\n');
 					replicateNames.add(mb.name);
 				}
 				break;
@@ -483,6 +606,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (mb.fullType!=null)
 						imports.add(mb.fullType);
 					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					headerComment.append("@param ").append(mb.name).append(' ')
+						.append(arg.description()).append(mb.comment).append('\n');
 					replicateNames.add(mb.name);
 				}
 				// TODO:if readwrite, do otherwise
@@ -492,14 +617,18 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (mb.fullType!=null)
 						imports.add(mb.fullType);
 					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					headerComment.append("@param ").append(mb.name).append(' ')
+						.append(arg.description()).append(mb.comment).append('\n');
 					replicateNames.add(mb.name);
 				}
 				break;
 			case otherLtc:
 				for (memberInfo mb:membersForOther.get(E_LTCONSTANTS)) {
-					if (!ValidPropertyTypes.isPrimitiveType(mb.type))
+					if (mb.fullType!=null)
 						imports.add(ValidPropertyTypes.getJavaClassName(mb.type));
 					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					headerComment.append("@param ").append(mb.name).append(' ')
+						.append(arg.description()).append(mb.comment).append('\n');
 					replicateNames.add(mb.name);
 				}
 				break;
@@ -508,6 +637,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (mb.fullType!=null)
 						imports.add(mb.fullType);
 					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					headerComment.append("@param ").append(mb.name).append(' ')
+						.append(arg.description()).append(mb.comment).append('\n');
 					replicateNames.add(mb.name);
 				}
 				break;
@@ -516,6 +647,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (mb.fullType!=null)
 						imports.add(mb.fullType);
 					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+					headerComment.append("@param ").append(mb.name).append(' ')
+						.append(arg.description()).append(mb.comment).append('\n');
 					replicateNames.add(mb.name);
 				}
 				// TODO:if readwrite, do otherwise
@@ -523,20 +656,31 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			case focalLoc:
 			case otherLoc:
 				method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
+				headerComment.append("@param ").append(arg.name()).append(' ')
+					.append(arg.description()).append('\n');
 				replicateNames.add(arg.name());
 				break;
 			case nextFocalDrv:
+			case nextOtherDrv:
 				String argt = function.id()+"."+ initialUpperCase(arg.name());
-//						Strings.toUpperCase(arg.name().substring(0,1))+arg.name().substring(1);
 				method.addArgument(arg,arg.name(),argt,arg.description());
+				headerComment.append("@param ").append(arg.name()).append(' ')
+					.append(arg.description()).append('\n');
 				replicateNames.add(arg.name());
 				break;
 			case nextFocalLoc:
+			case nextOtherLoc:
 				method.addArgument(arg,arg.name(),arg.type(),arg.description());
+				headerComment.append("@param ").append(arg.name()).append(' ')
+					.append(arg.description()).append('\n');
 				replicateNames.add(arg.name());
 				break;
 			}
 		}
+		if (returnComment!=null)
+			headerComment.append("@return ").append(returnComment).append('\n');
+		String cs = WordUtils.wrap(headerComment.toString(),80,"\n",false);
+		method.setMethodComment(javaDocComment("\t",cs.split("\\n")));
 		return method; // contains the arguments in the order in which they should be called
 	}
 
@@ -555,13 +699,16 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	@Override
 	public String asText(String indent) {
 		String result = "";
+		if (packageComment!=null)
+			result += packageComment+"\n";
 		result += "package "+packageName+";\n\n";
 		for (String imp:imports)
 			result += "import "+imp+";\n";
+		result += "// Hey, model developer! You may add your own imports here as needed\n";
 		if (imports.size()>0)
 			result += "\n";
 		if (classComment!=null)
-			result += classComment+"\n";
+			result += classComment;
 		result += "public interface "+className;
 		result += " {\n\n"; // 1
 		for (ModelMethodGenerator m:methods.values())

@@ -20,6 +20,7 @@ import fr.ens.biologie.generic.utils.Duple;
  */
 public class ModelMethodGenerator extends MethodGenerator {
 
+	private String methodComment = null;
 	private String[] argComments = null;
 	// a map of the argument names grouped by role for Twfunction code generation
 	private EnumMap<ArgumentGroups,List<Duple<String,String>>> argumentGroups =
@@ -73,6 +74,10 @@ public class ModelMethodGenerator extends MethodGenerator {
 		return this;
 	}
 
+	public void setMethodComment(String comment) {
+		methodComment = comment;
+	}
+
 	/**
 	 * Use this method to cleanup argument list (after initialisation with a Method for example).
 	 * @return
@@ -88,8 +93,8 @@ public class ModelMethodGenerator extends MethodGenerator {
 		String result = "";
 		if (override!=null)	result += indent + override + "\n";
 		// place javadoc comment here
-
-
+		if (methodComment!=null)
+			result += methodComment;
 		if (returnType==null) // constructors only
 			result += indent + scope + " " + name + "(";
 		else

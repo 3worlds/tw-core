@@ -30,6 +30,10 @@ package fr.cnrs.iees.twcore.constants;
 
 public enum ConfigurationPropertyNames {
 
+	P_MODEL_AUTHORS 			("authors"),
+	P_MODEL_CONTACTS 			("contacts"),
+	P_MODEL_CITATIONS 			("publication"),
+	P_MODEL_VERSION 			("version"),
 	P_DIMENSIONER_SIZE 			("size"),
 	P_DIMENSIONER_RANK 			("rank"),
 	P_FIELD_TYPE 				("type"),

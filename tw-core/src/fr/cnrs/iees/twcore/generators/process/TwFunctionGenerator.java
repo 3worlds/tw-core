@@ -33,13 +33,13 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_DECORATORS;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_DRIVERS;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_LTCONSTANTS;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_PARAMETERS;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.constants.PopulationVariables.COUNT;
+import static fr.cnrs.iees.twcore.constants.PopulationVariables.NADDED;
+import static fr.cnrs.iees.twcore.constants.PopulationVariables.NREMOVED;
 import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
-
+import static au.edu.anu.twcore.DefaultStrings.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -72,6 +72,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.FileType;
+import fr.cnrs.iees.twcore.constants.PopulationVariables;
 import fr.cnrs.iees.twcore.constants.SnippetLocation;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
@@ -180,11 +181,11 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		String ctmodel = validJavaName(wordUpperCaseName(model));
 		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+ctmodel;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
-		String comment = comment(general, classComment(name), generatedCode(true, model, ""));
+		String comment = comment(general, classComment(name), generatedCode(false, model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
 
 		// imports in the TwFunction descendant
-		generator.setImport(SystemComponent.class.getCanonicalName());
+//		generator.setImport(SystemComponent.class.getCanonicalName());
 		generator.setImport(Table.class.getPackageName()+".*");
 		Set<String> argClasses = new TreeSet<>(); // constant order
 		for (ArgumentGroups arggrp:type.readOnlyArguments())
@@ -328,13 +329,19 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				else if ((ag==ecosystemPar) || (ag==lifeCyclePar))
 					;
 				else if ((ag==ecosystemPop) || (ag==lifeCyclePop))
+					// CAUTION: call to totalCount totalAdded and totalRemoved
+					// are extremely slow as they are recomputed everytime -  a better solution must
+					// be found
 					;
 				else if ((ag==groupPop))
-					;
+					for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
+						if (an.equals(validJavaName(wordUpperCaseName("group."+pv.longName()))))
+							callArg = ag.name()+"."+pv.getter()+"()";
+					}
 				else if ((ag==focalAuto) || (ag==otherAuto))
 					callArg = ag.name()+"."+an+"()*1.0"; // TODO: remove the *1.0 and replace by proper timer conversion
 				else if (type.writeableArguments().contains(ag)) {
-					callArg = "_"+innerVar;
+					callArg = defaultPrefix+innerVar;
 					Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> searchList = null;
 					if (ag.name().contains("ocal")) // "F" or "f" are possible
 						searchList = membersForFocal;
@@ -350,9 +357,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 								sc = lc.split("\\.")[lc.split("\\.").length-1];
 							}
 							innerClassDecl.get(innerVar).add(indent+indent+mb.type+" "+mb.name+";");
-							innerVarInit.get(innerVar).add("_"+innerVar+"."+mb.name+" = ((" + sc+ ")"+ag.name()+")."+mb.name+"()");
+							innerVarInit.get(innerVar).add(defaultPrefix+innerVar+"."+mb.name+" = ((" + sc+ ")"+ag.name()+")."+mb.name+"()");
 							if (!mb.isTable)
-								innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.name()+")."+mb.name+"(_"+innerVar+"."+mb.name+")");
+								innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.name()+")."+mb.name+"("+defaultPrefix+innerVar+"."+mb.name+")");
 						}
 					}
 				}

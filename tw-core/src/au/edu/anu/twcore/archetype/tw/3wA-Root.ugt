@@ -2,4 +2,20 @@ tree
 hasNode rootSpec
 	isOfClass = String("3worlds")
 	hasParent =  StringTable(([1]""))
-	multiplicity = IntegerRange("1..1")	
+	multiplicity = IntegerRange("1..1")
+	hasProperty twModelAuthorshipSpec
+		hasName = String("authors")
+		type =  String("StringTable")
+		multiplicity = IntegerRange("0..1")
+	hasProperty twModelReferencePublicationSpec
+		hasName = String("publication")
+		type =  String("StringTable")
+		multiplicity = IntegerRange("0..1")
+	hasProperty twModelAuthorContactSpec
+		hasName = String("contacts")
+		type =  String("StringTable")
+		multiplicity = IntegerRange("0..1")
+	hasProperty twModelVersionSpec
+		hasName = String("version")
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")

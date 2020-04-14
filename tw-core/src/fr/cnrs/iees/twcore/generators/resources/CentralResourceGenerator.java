@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -46,9 +46,9 @@ import org.odftoolkit.simple.table.Table;
 
 /**
  * <h1>A utility class to generate core 3worlds components.</h1>
- * 
+ *
  * @author Jacques Gignoux - 07-06-2018
- * 
+ *
  *         <p>
  *         Use this class to generate simultaneously (hence, consistently):
  *         </p>
@@ -279,13 +279,20 @@ public class CentralResourceGenerator {
 		// enum values
 		int extraFieldCount = 0;
 		for (int i = 0; i < enumSheet.getColumnCount(); i++)
-			if (!" value description dependency option ".contains(cols.get(i).getCellByIndex(HEADERS).getStringValue()))
+//			if (!" value description dependency option ".contains(cols.get(i).getCellByIndex(HEADERS).getStringValue()))
+//				extraFieldCount++;
+			// new: generate a description field in enums
+			if (!" value dependency option ".contains(cols.get(i).getCellByIndex(HEADERS).getStringValue()))
 				extraFieldCount++;
 		int[] extraFields = new int[extraFieldCount];
 		if (extraFieldCount > 0) {
 			int count = 0;
 			for (int i = 0; i < enumSheet.getColumnCount(); i++)
-				if (!" value description dependency option "
+//				if (!" value description dependency option "
+//						.contains(cols.get(i).getCellByIndex(HEADERS).getStringValue()))
+//					extraFields[count++] = i;
+				// new: generate a description field in enums
+				if (!" value dependency option "
 						.contains(cols.get(i).getCellByIndex(HEADERS).getStringValue()))
 					extraFields[count++] = i;
 		}
@@ -305,7 +312,7 @@ public class CentralResourceGenerator {
 					if (extraFieldType.equals("String"))
 						output.append('"');
 					if (j < extraFields.length - 1)
-						output.append(", ");
+						output.append(",\n\t\t");
 				}
 				output.append(")");
 			}
@@ -373,11 +380,11 @@ public class CentralResourceGenerator {
 		output.append("\t}\n\n");
 
 		// static initialisation block - to record this enum type as a valid property for parsers
-		output.append("\tstatic {\n"); 
-		output.append("\t\tValidPropertyTypes.recordPropertyType(").append(propName).append(".class.getSimpleName(), \n"); 
-		output.append("\t\t").append(propName).append(".class.getName(),defaultValue());\n"); 
-		output.append("\t}\n\n"); 
-		
+		output.append("\tstatic {\n");
+		output.append("\t\tValidPropertyTypes.recordPropertyType(").append(propName).append(".class.getSimpleName(), \n");
+		output.append("\t\t").append(propName).append(".class.getName(),defaultValue());\n");
+		output.append("\t}\n\n");
+
 		// code snippets, if any
 		String extra = extraCode.get(propName);
 		if (extra != null)
@@ -517,7 +524,7 @@ public class CentralResourceGenerator {
 						.append(propType).append("Set.class.getSimpleName(),\n\t\t\t")
 						.append(propType).append("Set.class.getName(),defaultValue());\n");
 					output.append("\t}\n\n");
-					
+
 					// footer code
 					output.append("}\n");
 
