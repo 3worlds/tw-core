@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -64,25 +64,25 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 /**
- * Class matching the "ecosystem/dynamics/timeLine/timeModel/Process" node label in the 
- * 3Worlds configuration tree. Has no properties. 
- * 
+ * Class matching the "ecosystem/dynamics/timeLine/timeModel/Process" node label in the
+ * 3Worlds configuration tree. Has no properties.
+ *
  * @author Jacques Gignoux - 10 mars 2017
  *
  */
-public class ProcessNode 
-		extends InitialisableNode 
+public class ProcessNode
+		extends InitialisableNode
 		implements LimitedEdition<TwProcess>, Sealable {
-	
+
 	private boolean sealed = false;
 	private Ecosystem ecosystem = null;
-	
+
 	private Collection<Category> categories = null;
 	private RelationType relation = null;
-	
+
 	private Map<Integer,TwProcess> processes = new HashMap<>();
 	private List<FunctionNode> functions = null;
-	
+
 	private SpaceNode spaceNode = null;
 	private double searchRadius = 0.0;
 
@@ -100,11 +100,11 @@ public class ProcessNode
 	@Override
 	public void initialise() {
 		if (!sealed) {
-			super.initialise();		
+			super.initialise();
 			sealed = false;			// timeModel  timeLine    dynamics    ecosystem
 			ecosystem = (Ecosystem) getParent().getParent().getParent().getParent();
 //			timeModel = (TimeModel)getParent();
-			// 1 - setting up simulation code execution 
+			// 1 - setting up simulation code execution
 			DynamicList<? extends Node> applies = (DynamicList<? extends Node>) get(edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
 				edgeListEndNodes());
@@ -117,17 +117,21 @@ public class ProcessNode
 			functions = (List<FunctionNode>) get(getChildren(),
 				selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
 			// space
-			// TODO: component processes may also refer to a space - how to find it ???
-			ProcessSpaceEdge pse = (ProcessSpaceEdge) get(edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_SPACE.label())));
-			if (pse!=null) {
-				spaceNode = (SpaceNode) pse.endNode();
-				searchRadius = (double) pse.properties().getPropertyValue(P_SPACE_SEARCHRADIUS.key());
-			}
+			getSpace();
 			sealed = true;
 		}
 	}
-	
+
+	private void getSpace() {
+		// TODO: component processes may also refer to a space - how to find it ???
+		ProcessSpaceEdge pse = (ProcessSpaceEdge) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_SPACE.label())));
+		if (pse!=null) {
+			spaceNode = (SpaceNode) pse.endNode();
+			searchRadius = (double) pse.properties().getPropertyValue(P_SPACE_SEARCHRADIUS.key());
+		}
+	}
+
 	@Override
 	public int initRank() {
 		return N_PROCESS.initRank();
@@ -143,7 +147,7 @@ public class ProcessNode
 	public boolean isSealed() {
 		return sealed;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private TwProcess makeProcess(int index) {
 		AbstractProcess result = null;
@@ -155,7 +159,7 @@ public class ProcessNode
 			result = new ComponentProcess(ecosystem.getInstance(index),
 				categories,tm.getInstance(index),sp,searchRadius);
 		else if (relation!=null) {
-			if ((functions.size()==1) && 
+			if ((functions.size()==1) &&
 				(functions.get(0).properties().getPropertyValue(P_FUNCTIONTYPE.key())
 					.equals(TwFunctionTypes.RelateToDecision)))
 				result = new SearchProcess(ecosystem.getInstance(index),
@@ -182,6 +186,12 @@ public class ProcessNode
 		if (!processes.containsKey(id))
 			processes.put(id, makeProcess(id));
 		return processes.get(id);
+	}
+
+	public boolean hasSpace() {
+		if (!sealed)
+			getSpace();
+		return (spaceNode!=null);
 	}
 
 }

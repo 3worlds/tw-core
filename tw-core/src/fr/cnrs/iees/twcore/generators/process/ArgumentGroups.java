@@ -17,6 +17,7 @@ public enum ArgumentGroups {
 	ecosystemPop	("au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer", "ecosystem "),
 	lifeCyclePar	("au.edu.anu.twcore.data.runtime.TwData", "life cycle "),
 	lifeCyclePop	("au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer", "life cycle "),
+	// FLAW: what about OTHER life cycle ? it may exist and be different ?
 	groupPar		("au.edu.anu.twcore.data.runtime.TwData", "focal component group "),
 	groupPop		("au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer", "focal component group "),
 	otherGroupPar	("au.edu.anu.twcore.data.runtime.TwData", "other component group "),
@@ -39,7 +40,11 @@ public enum ArgumentGroups {
 	nextFocalLoc	("double[]", "focal component new location"),
 	nextOtherDrv	("au.edu.anu.twcore.data.runtime.TwData", "other component next drivers"),
 	nextOtherLoc	("double[]", "other component new location"),
-;
+
+	// utilities
+	random			("java.util.Random", "random number generator"),
+	decider			("au.edu.anu.twcore.ecosystem.runtime.biology.DecisionFunction", "decision function")
+	;
 	private final String type;
 	private final String description;
 

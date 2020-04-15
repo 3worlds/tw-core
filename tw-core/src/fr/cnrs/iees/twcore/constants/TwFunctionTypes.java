@@ -3,12 +3,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *                    *** 3Worlds - A software for the simulation of ecosystems ***
@@ -107,7 +107,7 @@ public enum TwFunctionTypes {
 		"setOtherInitialState",
 		"void",
 		"");
-	
+
 	private final String description;
 	private final String method;
 	private final String returnType;
@@ -156,23 +156,23 @@ public enum TwFunctionTypes {
 	}
 
 	static {
-		ValidPropertyTypes.recordPropertyType(TwFunctionTypes.class.getSimpleName(), 
+		ValidPropertyTypes.recordPropertyType(TwFunctionTypes.class.getSimpleName(),
 		TwFunctionTypes.class.getName(),defaultValue());
 	}
 
     public Set<ArgumentGroups> readOnlyArguments() {
         switch (this) {
             case ChangeOtherCategoryDecision:
-            case ChangeOtherState:
-            case ChangeRelationState:
             case DeleteOtherDecision:
             case MaintainRelationDecision:
             case RelateToDecision:
-                return EnumSet.allOf(ArgumentGroups.class);
+            case ChangeOtherState:
+            case ChangeRelationState:
+                return EnumSet.complementOf(EnumSet.of(random,decider));
             case ChangeCategoryDecision:
-            case ChangeState:
             case CreateOtherDecision:
             case DeleteDecision:
+            case ChangeState:
                 return EnumSet.of(t,dt,limits,
                     ecosystemPar,ecosystemPop,lifeCyclePar,lifeCyclePop,groupPar,groupPop,
                     focalAuto,focalLtc,focalDrv,focalDec,focalLoc);
@@ -213,6 +213,27 @@ public enum TwFunctionTypes {
             default:
                 return EnumSet.noneOf(ArgumentGroups.class);
         }
+    }
+
+    public Set<ArgumentGroups> localArguments() {
+	    switch (this) {
+		case ChangeCategoryDecision:
+		case ChangeOtherCategoryDecision:
+		case CreateOtherDecision:
+		case DeleteDecision:
+		case DeleteOtherDecision:
+		case MaintainRelationDecision:
+		case RelateToDecision:
+			return EnumSet.of(random,decider);
+		case ChangeOtherState:
+		case ChangeRelationState:
+		case ChangeState:
+		case SetInitialState:
+		case SetOtherInitialState:
+			return EnumSet.of(random);
+		default:
+			return EnumSet.noneOf(ArgumentGroups.class);
+	    }
     }
 
 }

@@ -100,37 +100,6 @@ hasNode arenaSpec
 	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("0..1")
 
-//hasNode spaceSpec
-//	isOfClass = String("space")
-//	hasParent = StringTable(([1]"arena:"))
-//	multiplicity = IntegerRange("1..*")
-//	hasProperty spaceTypeSpec
-//		hasName = String("type")
-//		type = String("SpaceType")
-//		multiplicity = IntegerRange("1..1")
-//	hasProperty edgeEffectsSpec
-//		hasName = String("edgeEffects")
-//		type = String("EdgeEffects")
-//		multiplicity = IntegerRange("1..1")
-//	mustSatisfyQuery CheckSubArchetypeQuerySpaceType1
-//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-//		parameters = StringTable(([3]"type","continuousFlatSurface","3wSA-continuousFlatSurface.ugt"))
-//	mustSatisfyQuery CheckSubArchetypeQuerySpaceType2
-//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-//		parameters = StringTable(([3]"type","squareGrid","3wSA-squareGrid.ugt"))
-//	hasProperty spacePrecisionSpec
-//		hasName = String("precision")
-//		type = String("Double")
-//		multiplicity = IntegerRange("0..1")
-//	hasProperty spaceUnitsSpec
-//		hasName = String("units")
-//		type = String("String")
-//		multiplicity = IntegerRange("0..1")
-//	hasEdge spaceRngSpec
-//		isOfClass = String("useRNG")
-//		toNode = String("rng:")
-//		multiplicity = IntegerRange("0..1")
-
 hasNode spaceSpec
 	isOfClass = String("space")
 	hasParent = StringTable(([1]"arena:"))
@@ -156,6 +125,7 @@ hasNode spaceSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
+
 	// specific properties for continuousFlatSurface
 	// x limits of the plot
 	hasProperty xLimitsSpec
@@ -173,6 +143,7 @@ hasNode spaceSpec
 	mustSatisfyQuery RequirePropertyQueryy-limits
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([3]"y-limits","type","continuousFlatSurface"))
+
 	// specific properties for squareGrid
 	// the cell size of the grid
 	hasProperty cellSizeSpec

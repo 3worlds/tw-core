@@ -38,6 +38,9 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.PopulationVariables.COUNT;
 import static fr.cnrs.iees.twcore.constants.PopulationVariables.NADDED;
 import static fr.cnrs.iees.twcore.constants.PopulationVariables.NREMOVED;
+import static fr.cnrs.iees.twcore.constants.PopulationVariables.TCOUNT;
+import static fr.cnrs.iees.twcore.constants.PopulationVariables.TNADDED;
+import static fr.cnrs.iees.twcore.constants.PopulationVariables.TNREMOVED;
 import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
 import static au.edu.anu.twcore.DefaultStrings.*;
 import java.io.File;
@@ -328,18 +331,32 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					callArg = ag.name();
 				else if ((ag==ecosystemPar) || (ag==lifeCyclePar))
 					;
-				else if ((ag==ecosystemPop) || (ag==lifeCyclePop))
-					// CAUTION: call to totalCount totalAdded and totalRemoved
-					// are extremely slow as they are recomputed everytime -  a better solution must
-					// be found
-					;
+				else if (ag==ecosystemPop)
+					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
+						if (an.equals(validJavaName(wordUpperCaseName("ecosystem."+pv.longName()))))
+							callArg = ag.name()+"."+pv.getter()+"()";
+					}
+				else if (ag==lifeCyclePop)
+					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
+						if (an.equals(validJavaName(wordUpperCaseName("lifeCycle."+pv.longName()))))
+							callArg = ag.name()+"."+pv.getter()+"()";
+					}
 				else if ((ag==groupPop))
 					for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
 						if (an.equals(validJavaName(wordUpperCaseName("group."+pv.longName()))))
 							callArg = ag.name()+"."+pv.getter()+"()";
 					}
+				else if ((ag==otherGroupPop))
+					for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
+						if (an.equals(validJavaName(wordUpperCaseName("other.group."+pv.longName()))))
+							callArg = ag.name()+"."+pv.getter()+"()";
+					}
 				else if ((ag==focalAuto) || (ag==otherAuto))
 					callArg = ag.name()+"."+an+"()*1.0"; // TODO: remove the *1.0 and replace by proper timer conversion
+				else if (ag==random)
+					callArg = "rng()";
+				else if (ag==decider)
+					callArg = "this";
 				else if (type.writeableArguments().contains(ag)) {
 					callArg = defaultPrefix+innerVar;
 					Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> searchList = null;

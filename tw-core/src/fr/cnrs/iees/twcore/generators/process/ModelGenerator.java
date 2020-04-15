@@ -12,7 +12,6 @@ import static au.edu.anu.twcore.DefaultStrings.*;
 import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -28,19 +27,21 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import org.apache.commons.text.WordUtils;
 import org.bouncycastle.util.Strings;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
+import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
+import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -48,11 +49,11 @@ import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
 import fr.cnrs.iees.twcore.constants.PopulationVariables;
+import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.uit.space.Box;
@@ -142,7 +143,14 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				if (record!=null) {
 					if (snippets.get(record)==null)
 						snippets.put(record,new LinkedList<>());
-					snippets.get(record).add(line);
+					// TODO: this will fail if there are more than one return statement per method
+					if (line.strip().startsWith("return "))
+						snippets.get(record).add(line);
+					else
+						if (line.startsWith("//"))
+							snippets.get(record).add(line);
+						else
+							snippets.get(record).add("//"+line);
 				}
 				if (line.contains("INSERT YOUR CODE BELOW THIS LINE"))
 					record = line.substring(line.indexOf("//")+2,line.indexOf('*')).strip();
@@ -156,9 +164,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 		else {
 			imports.add("static java.lang.Math.*");
-			imports.add("static "+Distance.class.getCanonicalName()+".*");
-			imports.add(Point.class.getCanonicalName());
-			imports.add(Box.class.getCanonicalName());
 		}
 		List<TreeGraphDataNode> cpt = (List<TreeGraphDataNode>) get(root3w, children(),selectOne(hasTheLabel(N_SYSTEM.label())),
 			children(),selectOne(hasTheLabel(N_STRUCTURE.label())),
@@ -215,7 +220,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		sb.append("<h2>Model-specific code for model <em>").append(className).append("</em></h2>\n")
 			.append("<p>version ").append(version).append(' ').append(dashSpacer).append(' ')
 			.append(new Date().toString()).append("</p>\n");
-		sb.append("\n<p><strong>Authors: </strong>");
+		sb.append("\n<p><strong>Authors: </strong>\n");
 		if (root3w.properties().hasProperty(P_MODEL_AUTHORS.key())) {
 			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_AUTHORS.key());
 			for (int i=0; i<auths.size(); i++) {
@@ -229,7 +234,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				.append(N_ROOT.label()).append("</em> node to display author names here&gt;");
 		}
 		sb.append("</p>\n");
-		sb.append("\n<p><strong>Contacts: </strong>");
+		sb.append("\n<p><strong>Contacts: </strong>\n");
 		if (root3w.properties().hasProperty(P_MODEL_CONTACTS.key())) {
 			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_CONTACTS.key());
 			for (int i=0; i<auths.size(); i++) {
@@ -243,7 +248,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				.append(N_ROOT.label()).append("</em> node to display author contacts here&gt;");
 		}
 		sb.append("</p>\n");
-		sb.append("\n<p><strong>Reference publications: </strong></p>");
+		sb.append("\n<p><strong>Reference publications: </strong></p>\n");
 		if (root3w.properties().hasProperty(P_MODEL_CITATIONS.key())) {
 			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_CITATIONS.key());
 			sb.append("<ol>");
@@ -255,14 +260,17 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			sb.append("&lt;Use the <em>").append(P_MODEL_CITATIONS.key()).append("</em> property of the <em>")
 				.append(N_ROOT.label()).append("</em> node to display model reference publication(s) here&gt;");
 		}
-		sb.append('\n');
+		sb.append("\n\n");
 		sb.append("<h3>Instructions to model developers:</h3>\n");
-		sb.append("<ol><li>Non 3worlds-generated extra methods should be placed in other files linked to the present file through imports.</li>\n");
-		sb.append("<li><strong>Do not</strong> remove any generated comment - they are used to retrieve your code when regenerating this file.</li>\n");
-		sb.append("<li><strong>Do not</strong> modify code outside of the insertion zones (except for point (1) above)- this will cause malfunction of the ModelRunner software.</li>\n");
-		sb.append("<li>For your programming confort, all the static methods of the {@link Math} and {@link Distance} classes are directly accessible here</li></ol>\n");
-		String cs = WordUtils.wrap(sb.toString(), 80,"\n",false);
-		classComment = javaDocComment("",cs.split("\\n"));
+		sb.append("<ol><li>Non 3worlds-generated extra methods should be placed in other files linked\n to the present file through imports.</li>\n");
+		sb.append("<li><strong>Do not</strong> remove any generated comment - they are used to retrieve\n your code when regenerating this file.</li>\n");
+		sb.append("<li><strong>Do not</strong> modify code outside of the insertion zones (except for\n point (1) above)- this will cause malfunction of the ModelRunner software.</li>\n");
+		sb.append("<li>For your programming confort, all the static methods of the {@link Math} and\n {@link Distance} classes are directly accessible here</li>\n");
+		sb.append("<li>The particular random number stream attached to each {@link TwFunction} is \npassed as the <em>random</em> argument.</li>\n");
+		sb.append("<li>For all <em>Decision-</em> functions, a <em>decider</em> argument is provided \nto help make decisions out of probabilities</li></ol>\n");
+
+		//		String cs = WordUtils.wrap(sb.toString(), 80,"\n",false);
+		classComment = javaDocComment("",sb.toString().split("\\n"));
 	}
 
 	// returns the generated data class that contains a given field name
@@ -486,6 +494,33 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return result;
 	}
 
+	public boolean hasLifeCycle(Set<Category> cats) {
+		for (Category cat:cats) {
+			CategorySet cs = (CategorySet) cat.getParent();
+			LifeCycle lc = (LifeCycle) get(cs.edges(Direction.IN),
+				selectZeroOrOne(hasTheLabel(N_LIFECYCLE.label())),
+				startNode());
+			if (lc!=null)
+				return true;
+		}
+		return false;
+	}
+
+	public String timerComment(TreeGraphDataNode function) {
+		ProcessNode proc = null;
+		if (function.getParent() instanceof ProcessNode)
+			proc = (ProcessNode) function.getParent();
+		else
+			proc = (ProcessNode) function.getParent().getParent();
+		TimeModel tm = (TimeModel) proc.getParent();
+		String subc = tm.properties().getPropertyValue(P_TIMEMODEL_SUBCLASS.key()).toString();
+		return "<p>- follows timer <em>"+tm.id()+"</em> of type {@link "
+			+ subc.split("\\.")[subc.split("\\.").length-1]
+			+ "}, with time unit = "
+			+ tm.properties().getPropertyValue(P_TIMEMODEL_NTU.key()) + " "
+			+ ((TimeUnits)tm.properties().getPropertyValue(P_TIMEMODEL_TU.key())).abbreviation()+"</p>\n";
+	}
+
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
 		StringBuilder headerComment = new StringBuilder();
 		String returnComment = null;
@@ -496,17 +531,30 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// applies to : rel or cat
 		SortedSet<Category> focalCats = findCategories(function,true);
 		SortedSet<Category> otherCats = findCategories(function,false);
+		boolean hasLifeCycle = hasLifeCycle(focalCats);
+		boolean hasSpace = false;
+		if (function.getParent() instanceof ProcessNode)
+			hasSpace = ((ProcessNode)function.getParent()).hasSpace();
+		else if (function.getParent().getParent() instanceof ProcessNode)
+			// check this: it's probably completely wrong!
+			hasSpace = ((ProcessNode)function.getParent().getParent()).hasSpace();
+		if (hasSpace) {
+			imports.add("static "+Distance.class.getCanonicalName()+".*");
+			imports.add(Point.class.getCanonicalName());
+			imports.add(Box.class.getCanonicalName());
+		}
 		if (otherCats.isEmpty())
 			headerComment.append("<p>- applies to categories {<em>")
 				.append(simpleCatSignature(focalCats))
-				.append("</em>}</p>\n");
+				.append("</em>}</p>\n\n");
 		else {
 			headerComment.append("<	p>- applies to relation <em>")
 				.append(relationType)
 				.append(": {").append(simpleCatSignature(focalCats))
 				.append("} → {").append(simpleCatSignature(otherCats))
-				.append("}</em></p>\n");
+				.append("}</em></p>\n\n");
 		}
+		headerComment.append(timerComment(function)).append('\n');
 		// follow time model:
 		ModelMethodGenerator method = methods.get(fname);
 		// if method does not exist, create it and set its header, return type and return statement
@@ -527,6 +575,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		EnumSet<ArgumentGroups> argSet = EnumSet.noneOf(ArgumentGroups.class);
 		argSet.addAll(ftype.readOnlyArguments());
 		argSet.addAll(ftype.writeableArguments());
+		argSet.addAll(ftype.localArguments());
 		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal = getAllMembers(focalCats);
 		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther = getAllMembers(otherCats);
 		for (ArgumentGroups arg:argSet) {
@@ -539,31 +588,66 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				replicateNames.add(arg.name());
 				break;
 			case limits:
-				method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
-				headerComment.append("@param ").append(arg.name()).append(' ')
-					.append(arg.description()).append('\n');
-				replicateNames.add(arg.name());
+				if (hasSpace) {
+					method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
+					headerComment.append("@param ").append(arg.name()).append(' ')
+						.append(arg.description()).append('\n');
+					replicateNames.add(arg.name());
+				}
 				break;
 			case ecosystemPar:
 			case lifeCyclePar:
+				if (hasLifeCycle);
 				// TODO: groups etc.
 				break;
 			case ecosystemPop:
+				for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
+					String popname = validJavaName(wordUpperCaseName("ecosystem."+pv.longName()));
+					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
+					if (poptype.equals("integer"))
+						poptype = "int";
+					method.addArgument(arg, popname, poptype, pv.description());
+					headerComment.append("@param ").append(popname).append(" ")
+						.append(pv.description()).append(" of ecosystem").append("\n");
+				}
+				break;
 			case lifeCyclePop:
-				// TODO
+				if (hasLifeCycle)
+					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
+						String popname = validJavaName(wordUpperCaseName("lifeCycle."+pv.longName()));
+						String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
+						if (poptype.equals("integer"))
+							poptype = "int";
+						method.addArgument(arg, popname, poptype, pv.description());
+						headerComment.append("@param ").append(popname).append(" ")
+							.append(pv.description()).append(" of life cycle").append("\n");
+				}
 				break;
 			case groupPop:
 				for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
 					String popname = validJavaName(wordUpperCaseName("group."+pv.longName()));
-					method.addArgument(arg, popname, ValidPropertyTypes.getType(pv.type()), pv.description());
-					headerComment.append("@param ").append(popname).append(' ').append(arg.description()).append("\n");
+					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
+					if (poptype.equals("integer"))
+						poptype = "int";
+					method.addArgument(arg, popname, poptype, pv.description());
+					headerComment.append("@param ").append(popname).append(" ")
+						.append(pv.description()).append(" of focal group").append("\n");
 				}
 				break;
 			case otherGroupPop:
-				// TODO
+				for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
+					String popname = validJavaName(wordUpperCaseName("other.group."+pv.longName()));
+					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
+					if (poptype.equals("integer"))
+						poptype = "int";
+					method.addArgument(arg, popname, poptype, pv.description());
+					headerComment.append("@param ").append(popname).append(" ")
+						.append(pv.description()).append(" of other group").append("\n");
+				}
 				break;
 			case focalAuto:
 			case otherAuto:
+				// TODO: convert age properly using Timer.userTime(long)
 				method.addArgument(arg,"age", "double", arg.description()+"age");
 				headerComment.append("@param age ").append(arg.description()).append("age\n");
 				replicateNames.add("age");
@@ -655,10 +739,12 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				break;
 			case focalLoc:
 			case otherLoc:
-				method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
-				headerComment.append("@param ").append(arg.name()).append(' ')
-					.append(arg.description()).append('\n');
-				replicateNames.add(arg.name());
+				if (hasSpace) {
+					method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
+					headerComment.append("@param ").append(arg.name()).append(' ')
+						.append(arg.description()).append('\n');
+					replicateNames.add(arg.name());
+				}
 				break;
 			case nextFocalDrv:
 			case nextOtherDrv:
@@ -670,17 +756,29 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				break;
 			case nextFocalLoc:
 			case nextOtherLoc:
-				method.addArgument(arg,arg.name(),arg.type(),arg.description());
+				if (hasSpace) {
+					method.addArgument(arg,arg.name(),arg.type(),arg.description());
+					headerComment.append("@param ").append(arg.name()).append(' ')
+						.append(arg.description()).append('\n');
+					replicateNames.add(arg.name());
+				}
+				break;
+			case random:
+			case decider:
+				imports.add(arg.type());
+				method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
 				headerComment.append("@param ").append(arg.name()).append(' ')
 					.append(arg.description()).append('\n');
 				replicateNames.add(arg.name());
+				break;
+			default:
 				break;
 			}
 		}
 		if (returnComment!=null)
 			headerComment.append("@return ").append(returnComment).append('\n');
-		String cs = WordUtils.wrap(headerComment.toString(),80,"\n",false);
-		method.setMethodComment(javaDocComment("\t",cs.split("\\n")));
+//		String cs = WordUtils.wrap(headerComment.toString(),80,"\\n",false); // ***
+		method.setMethodComment(javaDocComment("\t",headerComment.toString().split("\\n")));
 		return method; // contains the arguments in the order in which they should be called
 	}
 

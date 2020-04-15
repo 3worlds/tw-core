@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -45,7 +45,7 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * Ancestor for the class doing the user-defined computation
- * 
+ *
  * @author Jacques Gignoux - 7 juin 2019
  *
  */
@@ -88,7 +88,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	public void setFocalContext(HierarchicalContext context) {
 		focalContext = context;
 	}
-	
+
 	@Override
 	public void setOtherContext(HierarchicalContext context) {
 		otherContext = context;
@@ -108,14 +108,14 @@ public abstract class TwFunctionAdapter implements TwFunction {
 		if (rng==null)
 			rng = arng;
 	}
-	
+
 	/*-
 	 * IDD: Nobody knows about this default rng so it can't be reset or stored in
 	 * any initial state file i.e it is unmanaged.
 	 * To avoid this, the edge to a RngNode must be 1..1 (or 1..*?)
 	 * To get and therefore save the state of the rng use gen.getState()
 	 * To set the state of an rng use gen.setStage(long state);
-	 * To reset use gen.reset(); or 
+	 * To reset use gen.reset(); or
 	 * RngFactory,find(key).reset();
 	 * Since defRngName has RngResetType.never it can never be reset anyway
 	 */
@@ -127,7 +127,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 			if (gen != null)
 				this.rng = gen.getRandom();
 			else {
-				gen = RngFactory.newInstance(defRngName+":"+index, 0, RngResetType.never, 
+				gen = RngFactory.newInstance(defRngName+":"+index, 0, RngResetType.never,
 					RngSeedSourceType.secure,RngAlgType.Pcg32);
 				this.rng = gen.getRandom();
 			}
