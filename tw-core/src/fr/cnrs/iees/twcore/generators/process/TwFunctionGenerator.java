@@ -334,22 +334,22 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				else if (ag==ecosystemPop)
 					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
 						if (an.equals(validJavaName(wordUpperCaseName("ecosystem."+pv.longName()))))
-							callArg = ag.name()+"."+pv.getter()+"()";
+							callArg = ag.name()+".populationData()."+pv.getter()+"()";
 					}
 				else if (ag==lifeCyclePop)
 					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
 						if (an.equals(validJavaName(wordUpperCaseName("lifeCycle."+pv.longName()))))
-							callArg = ag.name()+"."+pv.getter()+"()";
+							callArg = ag.name()+".populationData()."+pv.getter()+"()";
 					}
 				else if ((ag==groupPop))
 					for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
 						if (an.equals(validJavaName(wordUpperCaseName("group."+pv.longName()))))
-							callArg = ag.name()+"."+pv.getter()+"()";
+							callArg = ag.name()+".populationData()."+pv.getter()+"()";
 					}
 				else if ((ag==otherGroupPop))
 					for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
 						if (an.equals(validJavaName(wordUpperCaseName("other.group."+pv.longName()))))
-							callArg = ag.name()+"."+pv.getter()+"()";
+							callArg = ag.name()+".populationData()."+pv.getter()+"()";
 					}
 				else if ((ag==focalAuto) || (ag==otherAuto))
 					callArg = ag.name()+"."+an+"()*1.0"; // TODO: remove the *1.0 and replace by proper timer conversion

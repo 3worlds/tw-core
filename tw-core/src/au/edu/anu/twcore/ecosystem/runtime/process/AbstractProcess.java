@@ -40,10 +40,10 @@ import au.edu.anu.twcore.ecosystem.runtime.Spatialized;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
-import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
@@ -149,19 +149,19 @@ public abstract class AbstractProcess
 			CategorizedContainer<SystemComponent> container) {
 		if (container.categoryInfo() instanceof Ecosystem) {
 			context.ecosystemParameters = container.parameters();
-			context.ecosystemVariables = container.variables();
+//			context.ecosystemVariables = container.variables();
 			context.ecosystemPopulationData = container.populationData();
 			context.ecosystemName = container.id();
 		}
 		else if (container.categoryInfo() instanceof LifeCycle) {
 			context.lifeCycleParameters = container.parameters();
-			context.lifeCycleVariables = container.variables();
+//			context.lifeCycleVariables = container.variables();
 			context.lifeCyclePopulationData = container.populationData();
 			context.lifeCycleName = container.id();
 		}
 		else if (container.categoryInfo() instanceof SystemFactory)  {
 			context.groupParameters = container.parameters();
-			context.groupVariables = container.variables();
+//			context.groupVariables = container.variables();
 			context.groupPopulationData = container.populationData();
 			context.groupName = container.id();
 		}

@@ -36,7 +36,7 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 /**
- * A Data object to contain automatic ComplexSystem variables, i.e. those variables which
+ * A Data object to contain automatic SystemComponent variables, i.e. those variables which
  * are common to any SystemComponent.
  * <p>3Worlds: component threeWorlds</p>
  * @author Jacques Gignoux - 28 sept. 2012

@@ -26,7 +26,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.runtime.containers;
+package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,19 +36,19 @@ import java.util.Map;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
-import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Population;
+import au.edu.anu.twcore.ecosystem.runtime.containers.ContainerHierarchicalView;
+import au.edu.anu.twcore.ecosystem.runtime.containers.NestedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.containers.NestedDynamicContainer;
+import au.edu.anu.twcore.ecosystem.runtime.containers.ResettableContainer;
+import au.edu.anu.twcore.ecosystem.runtime.containers.SimpleContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.Sealable;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
 
 /**
  * <p>
@@ -84,16 +84,17 @@ import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
  */
 // Tested OK with version 0.1.3 on 1/7/2019
 public abstract class CategorizedContainer<T extends Identity>
-		extends AbstractPopulationContainer<T>
+//		extends AbstractPopulationContainer<T>
 		implements NestedContainer<T>, NestedDynamicContainer<T>, ResettableContainer<T>,
-			StateContainer, Resettable, Sealable {
+		SimpleContainer<T>,
+		ContainerHierarchicalView, Resettable, Sealable {
 
-	static {
-		props.add(TCOUNT.shortName());
-		props.add(TNADDED.shortName());
-		props.add(TNREMOVED.shortName());
-		propsPK = new PropertyKeys(props);
-	}
+//	static {
+//		props.add(TCOUNT.shortName());
+//		props.add(TNADDED.shortName());
+//		props.add(TNREMOVED.shortName());
+//		propsPK = new PropertyKeys(props);
+//	}
 
 	private Identity id = null;
 	private String[] fullId = null;
@@ -105,7 +106,10 @@ public abstract class CategorizedContainer<T extends Identity>
 	// parameters (unique, owned)
 	private TwData parameters = null;
 	// variables (unique, owned)
-	private TwData variables = null;
+//	private TwData variables = null;
+	// replace with:
+	private HierarchicalComponent avatar = null;
+
 	// items contained at this level (owned)
 	protected Map<String, T> items = new HashMap<>();
 	// items contained at lower levels
@@ -122,36 +126,39 @@ public abstract class CategorizedContainer<T extends Identity>
 	private boolean changed = false;
 
 	// Population data
-	private class popData2 extends popData {
-		@Override
-		public Object getPropertyValue(String key) {
-			Object result = super.getPropertyValue(key);
-			if (result==null) {
-				if (key.equals(TCOUNT.shortName()))
-					return totalCount();
-				else if (key.equals(TNADDED.shortName()))
-					return totalAdded();
-				else if (key.equals(TNREMOVED.shortName()))
-					return totalRemoved();
-			}
-			return result;
-		}
-		@Override
-		public ReadOnlyPropertyList clone() {
-			SimplePropertyList pl = new SharedPropertyListImpl(propsPK);
-			pl.setProperties(this);
-			return pl;
-		}
-	}
+//	private class popData2 extends popData {
+//		@Override
+//		public Object getPropertyValue(String key) {
+//			Object result = super.getPropertyValue(key);
+//			if (result==null) {
+//				if (key.equals(TCOUNT.shortName()))
+//					return totalCount();
+//				else if (key.equals(TNADDED.shortName()))
+//					return totalAdded();
+//				else if (key.equals(TNREMOVED.shortName()))
+//					return totalRemoved();
+//			}
+//			return result;
+//		}
+//		@Override
+//		public ReadOnlyPropertyList clone() {
+//			SimplePropertyList pl = new SharedPropertyListImpl(propsPK);
+//			pl.setProperties(this);
+//			return pl;
+//		}
+//	}
+
+	// temporary - to keep the code running
+	protected NestedContainerData populationData;
 
 	public CategorizedContainer(Categorized<T> cats, String proposedId, CategorizedContainer<T> parent,
 			TwData parameters, TwData variables) {
 		super();
 		id = scope().newId(true,proposedId);
-		populationData = new popData2();
+		populationData = new NestedContainerData(this);
 		categoryInfo = cats;
-		this.parameters = parameters;
-		this.variables = variables;
+		this.parameters = parameters; // will be those of the HierarchicalComponent
+//		this.variables = variables;
 		if (parent != null) {
 			superContainer = parent;
 			superContainer.subContainers.put(id(), this);
@@ -208,17 +215,6 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	/**
-	 * Returns the variables associated to this container. It is specified by the
-	 * categories associated to the container, accessible through the
-	 * {@code categoryInfo()} method.
-	 *
-	 * @return the variables - may be {@code null}
-	 */
-	public TwData variables() {
-		return variables;
-	}
-
-	/**
 	 * Returns the {@linkplain Population} data associated to this container.
 	 * Population data are automatic variables added to any container (they include
 	 * such things as number of items, number of newly created and deleted items).
@@ -227,7 +223,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 *
 	 * @return the population data as a read-only property list
 	 */
-	public ReadOnlyPropertyList populationData() {
+	public NestedContainerData populationData() {
 		return populationData;
 	}
 
@@ -409,45 +405,6 @@ public abstract class CategorizedContainer<T extends Identity>
 			c.effectAllChanges();
 	}
 
-	private int totalCount(CategorizedContainer<T> container, int cumulator) {
-		cumulator += container.populationData.count;
-		for (CategorizedContainer<T> subc : container.subContainers.values())
-			cumulator += totalCount(subc, cumulator);
-		return cumulator;
-	}
-
-	/** counts the total number of items, including those of subContainers */
-	@Override
-	public int totalCount() {
-		return totalCount(this, 0);
-	}
-
-	private int totalAdded(CategorizedContainer<T> container, int cumulator) {
-		cumulator += container.populationData.nAdded;
-		for (CategorizedContainer<T> subc : container.subContainers.values())
-			cumulator += totalCount(subc, cumulator);
-		return cumulator;
-	}
-
-	/** counts the total number of added items, including those of subContainers */
-	@Override
-	public int totalAdded() {
-		return totalAdded(this, 0);
-	}
-
-	private int totalRemoved(CategorizedContainer<T> container, int cumulator) {
-		cumulator += container.populationData.nRemoved;
-		for (CategorizedContainer<T> subc : container.subContainers.values())
-			cumulator += totalCount(subc, cumulator);
-		return cumulator;
-	}
-
-	/** counts the total number of added items, including those of subContainers */
-	@Override
-	public int totalRemoved() {
-		return totalRemoved(this, 0);
-	}
-
 	@Override
 	public int depth() {
 		if (depth==-1) {
@@ -461,12 +418,10 @@ public abstract class CategorizedContainer<T extends Identity>
 		return depth;
 	}
 
-
-	@Override
+	// CAUTION HERE!
+//	@Override
 	public void resetCounters() {
-		populationData.count = items.size();
-		populationData.nAdded = 0;
-		populationData.nRemoved = 0;
+		populationData.resetCounters();
 	}
 
 	// Resettable methods
@@ -521,9 +476,14 @@ public abstract class CategorizedContainer<T extends Identity>
 		changed = false;
 	}
 
-	@Override
+//	@Override
 	public void clearVariables() {
 		changed = false;
+	}
+
+	@Override
+	public HierarchicalComponent hierarchicalView() {
+		return avatar;
 	}
 
 	@Override

@@ -33,7 +33,6 @@ import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -55,13 +54,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIO
  */
 public class SystemComponent
 		extends ALDataNode
-		implements DynamicSystem, Cloneable, Contained<ComponentContainer> {
+		implements CategorizedComponent, Contained<ComponentContainer> {
 
-
-	/** indexes to access state variable table */
-	protected static int CURRENT = 1;
-	protected static int NEXT = CURRENT - 1;
-	protected static int PAST0 = CURRENT + 1;
 	private Categorized<SystemComponent> cats = null;
 	/** container */
 	private ComponentContainer container = null;
@@ -80,85 +74,13 @@ public class SystemComponent
 	 *
 	 * @return all the category information relevant to this component
 	 */
+	@Override
 	public Categorized<SystemComponent> membership() {
 		return cats;
 	}
 
-	@Override
-	public TwData currentState() {
-		if (((SystemComponentPropertyListImpl) properties()).drivers().length > 0)
-			return ((SystemComponentPropertyListImpl) properties()).drivers()[CURRENT];
-		return null;
-	}
-
-	@Override
-	public TwData nextState() {
-		if (((SystemComponentPropertyListImpl) properties()).drivers().length > 0)
-			return ((SystemComponentPropertyListImpl) properties()).drivers()[NEXT];
-		return null;
-	}
-
-	@Override
-	public TwData previousState() {
-		if (((SystemComponentPropertyListImpl) properties()).drivers().length > 0)
-			return ((SystemComponentPropertyListImpl) properties()).drivers()[PAST0];
-		return null;
-	}
-
-	public TwData decorators() {
-		return ((SystemComponentPropertyListImpl) properties()).decorators();
-	}
-
-	public TwData constants() {
-		return ((SystemComponentPropertyListImpl) properties()).constants();
-	}
-
 	public TwData parameters() {
 		return container.parameters();
-	}
-
-	@Override
-	public TwData previousState(int stepsBack) {
-		// TODO fix this
-//		if (stepsBack <= parent.memory())
-//			return ((SystemComponentPropertyListImpl) properties()).drivers()[CURRENT + stepsBack];
-//		else
-//			throw new AotException("ComplexSystem.previous(): Attempt to recall unmemorized past state");
-		return null;
-	}
-
-	@Override
-	public TwData state(int stepIndex) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void stepBackward() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void stepBackward(int nSteps) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void stepForward() {
-		TwData[] state = ((SystemComponentPropertyListImpl)properties()).drivers();
-		if (state != null) {
-			// circular buffer
-			TwData last = state[state.length - 1]; // this is the last
-			for (int i = state.length - 1; i > 0; i--)
-				state[i] = state[i - 1];
-			state[0] = last;
-			// copy back current values into next
-			if (last != null)
-				last.setProperties(state[CURRENT]);
-			((SystemComponentPropertyListImpl) properties()).rotateDriverProperties(state[CURRENT]);
-		}
 	}
 
 	@Override

@@ -69,7 +69,8 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 
 	// 3Worlds side
 	/** automatic state variables */
-	private SystemData autoState = null;
+//	private SystemData autoState = null;
+	private TwData autoState = null;
 	/** state variables that drive the dynamics */
 	private TwData[] drivers = null;
 	/** state variables that undergo the dynamics */
@@ -196,7 +197,7 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	// ======================================================
 
 	protected SystemData auto() {
-		return autoState;
+		return (SystemData) autoState;
 	}
 
 	protected TwData decorators() {

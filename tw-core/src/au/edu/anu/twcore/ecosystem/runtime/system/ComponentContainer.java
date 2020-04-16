@@ -30,7 +30,6 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
@@ -140,14 +139,14 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 
 	@Override
 	public void clearVariables() {
-		if (variables() != null) {
-			boolean readOnly = variables().isReadOnly();
-			if (readOnly)
-				variables().writeEnable();
-			variables().clear();
-			if (readOnly)
-				variables().writeDisable();
-		}
+//		if (variables() != null) {
+//			boolean readOnly = variables().isReadOnly();
+//			if (readOnly)
+//				variables().writeEnable();
+//			variables().clear();
+//			if (readOnly)
+//				variables().writeDisable();
+//		}
 	}
 
 	@Override
@@ -159,12 +158,13 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 
 	@Override
 	public void effectChanges() {
+		populationData.resetCounters(); // Pb: values are actually delayed by 1 time step doing this ???
 		for (String id : itemsToRemove) {
 			SystemComponent sc = items.remove(id);
 			sc.removeFromContainer();
 			if (sc != null) {
-				populationData.count--;
-				populationData.nRemoved++;
+//				populationData.count--;
+//				populationData.nRemoved++;
 				itemsToInitials.remove(id);
 				sc.disconnect();
 			}
@@ -172,8 +172,8 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 		itemsToRemove.clear();
 		for (SystemComponent item : itemsToAdd)
 			if (items.put(item.id(), item) == null) {
-				populationData.count++;
-				populationData.nAdded++;
+//				populationData.count++;
+//				populationData.nAdded++;
 				item.setContainer(this);
 			}
 		itemsToAdd.clear();

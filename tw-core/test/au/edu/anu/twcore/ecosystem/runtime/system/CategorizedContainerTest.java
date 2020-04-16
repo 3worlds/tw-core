@@ -41,7 +41,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.exceptions.TwcoreException;
@@ -182,22 +181,22 @@ class CategorizedContainerTest {
 
 	@Test
 	final void testAddItem() {
-		int currentCount = cc.count();
+		int currentCount = cc.populationData().count();
 		for (int i=0; i<10; i++)
 			cc.addItem(scope.newId(true,"whale "+i));
-		assertEquals(cc.count(),currentCount);
+		assertEquals(cc.populationData().count(),currentCount);
 		cc.effectChanges();
-		assertEquals(cc.count(),currentCount+10);
+		assertEquals(cc.populationData().count(),currentCount+10);
 	}
 
 	@Test
 	final void testRemoveItem() {
-		int currentCount = cc.count();
+		int currentCount = cc.populationData().count();
 		for (int i=0; i<3; i++)
 			cc.removeItem(cc.item("whale_"+i));
-		assertEquals(cc.count(),currentCount);
+		assertEquals(cc.populationData().count(),currentCount);
 		cc.effectChanges();
-		assertEquals(cc.count(),currentCount-3);
+		assertEquals(cc.populationData().count(),currentCount-3);
 	}
 
 	@Test
@@ -249,23 +248,23 @@ class CategorizedContainerTest {
 	final void testEffectChanges() {
 		cc.resetCounters();
 		cc.addItem(scope.newId(true,"whale 127"));
-		assertEquals(cc.nAdded(),0);
-		assertEquals(cc.count(),3);
-		assertEquals(cc.nRemoved(),0);
+		assertEquals(cc.populationData().nAdded(),0);
+		assertEquals(cc.populationData().count(),3);
+		assertEquals(cc.populationData().nRemoved(),0);
 		cc.effectChanges();
-		assertEquals(cc.nAdded(),1);
-		assertEquals(cc.count(),4);
+		assertEquals(cc.populationData().nAdded(),1);
+		assertEquals(cc.populationData().count(),4);
 		cc.removeItem(cc.item("whale_1"));
-		assertEquals(cc.count(),4);
-		assertEquals(cc.nRemoved(),0);
+		assertEquals(cc.populationData().count(),4);
+		assertEquals(cc.populationData().nRemoved(),0);
 		cc.effectChanges();
-		assertEquals(cc.count(),3);
-		assertEquals(cc.nRemoved(),1);
+		assertEquals(cc.populationData().count(),3);
+		assertEquals(cc.populationData().nRemoved(),1);
 	}
 
 	@Test
 	final void testCount() {
-		assertEquals(cc.count(),3);
+		assertEquals(cc.populationData().count(),3);
 	}
 
 	@Test
@@ -274,10 +273,10 @@ class CategorizedContainerTest {
 		for (int i=0; i<2; i++) {
 			cc.addItem(scope.newId(true,"whale "+i));
 			cc.effectChanges();
-			show("testNAdded",Integer.toString(cc.nAdded())+"/"+Integer.toString(cc.count()));
+			show("testNAdded",Integer.toString(cc.populationData().nAdded())+"/"+Integer.toString(cc.populationData().count()));
 		}
-		assertEquals(cc.nAdded(),2);
-		assertEquals(cc.count(),5);
+		assertEquals(cc.populationData().nAdded(),2);
+		assertEquals(cc.populationData().count(),5);
 	}
 
 	@Test
@@ -286,23 +285,23 @@ class CategorizedContainerTest {
 		for (int i=0; i<2; i++) {
 			cc.removeItem(cc.item("whale_"+i));
 			cc.effectChanges();
-			show("testNRemoved",Integer.toString(cc.nRemoved())+"/"+Integer.toString(cc.count()));
+			show("testNRemoved",Integer.toString(cc.populationData().nRemoved())+"/"+Integer.toString(cc.populationData().count()));
 		}
-		assertEquals(cc.nRemoved(),2);
-		assertEquals(cc.count(),1);
+		assertEquals(cc.populationData().nRemoved(),2);
+		assertEquals(cc.populationData().count(),1);
 	}
 
 	@Test
 	final void testResetCounters() {
 		cc.removeItem(cc.item("whale_2"));
 		cc.effectChanges();
-		assertEquals(cc.nAdded(),3);
-		assertEquals(cc.nRemoved(),1);
-		assertEquals(cc.count(),2);
+		assertEquals(cc.populationData().nAdded(),3);
+		assertEquals(cc.populationData().nRemoved(),1);
+		assertEquals(cc.populationData().count(),2);
 		cc.resetCounters();
-		assertEquals(cc.nAdded(),0);
-		assertEquals(cc.nRemoved(),0);
-		assertEquals(cc.count(),2);
+		assertEquals(cc.populationData().nAdded(),0);
+		assertEquals(cc.populationData().nRemoved(),0);
+		assertEquals(cc.populationData().count(),2);
 	}
 
 	@Test
@@ -315,16 +314,16 @@ class CategorizedContainerTest {
 		init2("zorgl");
 		for (Identity item:cc.items())
 			show("testReset",item.id());
-		assertEquals(cc.nAdded(),3);
-		assertEquals(cc.count(),3);
-		assertEquals(cc.nRemoved(),0);
+		assertEquals(cc.populationData().nAdded(),3);
+		assertEquals(cc.populationData().count(),3);
+		assertEquals(cc.populationData().nRemoved(),0);
 		cc.setInitialItems(cc.subContainer("zorgl").items());
 		cc.reset();
 		for (Identity item:cc.items())
 			show("testReset",item.id());
-		assertEquals(cc.nAdded(),0);
-		assertEquals(cc.count(),4);
-		assertEquals(cc.nRemoved(),0);
+		assertEquals(cc.populationData().nAdded(),0);
+		assertEquals(cc.populationData().count(),4);
+		assertEquals(cc.populationData().nRemoved(),0);
 	}
 
 }

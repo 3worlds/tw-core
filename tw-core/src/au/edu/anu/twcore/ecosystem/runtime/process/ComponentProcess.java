@@ -46,10 +46,10 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
-import au.edu.anu.twcore.ecosystem.runtime.containers.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
@@ -218,7 +218,7 @@ public class ComponentProcess
 							for (SetOtherInitialStateFunction func : function.getConsequences()) {
 								HierarchicalContext otherContext = focalContext.clone();
 								otherContext.groupParameters = recruitContainer.parameters();
-								otherContext.groupVariables = recruitContainer.variables();
+//								otherContext.groupVariables = recruitContainer.variables();
 								otherContext.groupPopulationData = recruitContainer.populationData();
 								otherContext.groupName = recruitContainer.id();
 //								function.setOtherContext(otherContext);
@@ -350,7 +350,7 @@ public class ComponentProcess
 							// TODO workout multiple category sets for descendants
 							HierarchicalContext newBornContext = focalContext.clone();
 							newBornContext.groupParameters = nbs.container.parameters();
-							newBornContext.groupVariables = nbs.container.variables();
+//							newBornContext.groupVariables = nbs.container.variables();
 							newBornContext.groupPopulationData = nbs.container.populationData();
 							newBornContext.groupName = nbs.container.id();
 							func.setOtherInitialState(t, dt, limits,
