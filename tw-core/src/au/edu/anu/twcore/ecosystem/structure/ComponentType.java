@@ -36,7 +36,9 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.RelocateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.OmugiClassLoader;
@@ -44,6 +46,7 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.LifespanType;
@@ -55,6 +58,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.twcore.ecosystem.structure.Category.*;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -90,7 +94,10 @@ public class ComponentType
 	private String categoryId = null;
 	private boolean sealed = false;
 	private boolean permanent;
+	private boolean isLeaf;
+	private boolean isGroup;
 	/** TwData templates to clone to create new systems */
+	private ReadOnlyPropertyList autoVarTemplate = null;
 	private TwData parameterTemplate = null;
 	private TwData driverTemplate = null;
 	private TwData decoratorTemplate = null;
@@ -114,6 +121,25 @@ public class ComponentType
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+//	@SuppressWarnings("unchecked")
+//	public static String defaultCategory(ComponentType ct) {
+//		Collection<Category> nl = (Collection<Category>) get(ct.edges(Direction.OUT),
+//			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+//			edgeListEndNodes());
+//		for (Category c:nl) {
+//			switch (c.id()) {
+//			case SYSTEM_CATEGORY:
+//			case LIFE_CYCLE_CATEGORY:
+//			case GROUP_CATEGORY:
+//			case COMPONENT_CATEGORY:
+//				return c.id();
+//			}
+//		}
+//		throw new TwcoreException("Every component must belong to 1 default category ("+
+//			SYSTEM_CATEGORY+", "+LIFE_CYCLE_CATEGORY+", "+
+//			GROUP_CATEGORY+", "+COMPONENT_CATEGORY+")");
+//	}
+
 	// assumes user-specific classes have been generated before
 	@SuppressWarnings("unchecked")
 	@Override
@@ -126,6 +152,41 @@ public class ComponentType
 				edgeListEndNodes());
 			categories.addAll(getSuperCategories(nl));
 			permanent = ((LifespanType) properties().getPropertyValue(P_COMPONENT_LIFESPAN.key()))==LifespanType.permanent;
+			Collection<ComponentType> ctl = (Collection<ComponentType>) get(getParent().getChildren(),
+				selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+			isGroup = true;
+			isLeaf= true;
+			for (Category c:nl) {
+				switch (c.id()) {
+				case SYSTEM_CATEGORY:
+					if (ctl.size()>1) // only case where it is leaf is when it's alone
+						isLeaf=false;
+					break;
+				case LIFE_CYCLE_CATEGORY: // never leaf and always group
+					isLeaf = false;
+					break;
+				case GROUP_CATEGORY:
+					// only groups that have component types linked to them with an instanceOf edge
+					// are not leaf
+					Collection<Object> instances = (Collection<Object>) get(edges(Direction.IN),
+						selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())),
+						edgeListStartNodes());
+					if (instances.isEmpty())
+						isLeaf = false;
+					break;
+				case COMPONENT_CATEGORY:
+					isGroup = false;
+					break;
+				}
+			}
+
+			// TODO HERE:
+			// select an AutoVar type depending on permanent/ephemeral and leaf/not leaf in the hierarchy
+			if (!permanent) // NB when non permanent, isLeaf = true
+				autoVarTemplate = new SystemData();
+//			if (!isLeaf)
+//				autoVarTemplate = new ContainerData();
+
 			// These ARE optional - inserted by codeGenerator!
 			String s = null;
 			if (properties().hasProperty(P_PARAMETERCLASS.key())) {
@@ -282,6 +343,14 @@ public class ComponentType
 	}
 
 	private SystemFactory makeFactory(int index) {
+
+		// TODO
+		// if isGroup: make a factory for HierarchicalCompnent and associate with a container
+		// ie each new HComponent has a new container
+		// if not: make a factory for SystemCOmponents and pt them in a container
+		// container must exist already from a previous Group Component
+		// SystemFactory calls setInitialState() at Component instancitation time
+
 		Map<DynamicSpace<SystemComponent,LocatedSystemComponent>,RelocateFunction> spaceLocators = new HashMap<>();
 		if (!fConstructors.isEmpty()) {
 			for (String spc:fConstructors.keySet()) {
@@ -298,7 +367,8 @@ public class ComponentType
 				}
 			}
 		}
-		SystemFactory result = new SystemFactory(driverTemplate,
+		SystemFactory result = new SystemFactory(autoVarTemplate,
+			driverTemplate,
 			decoratorTemplate,
 			lifetimeConstantTemplate,
 			permanent,

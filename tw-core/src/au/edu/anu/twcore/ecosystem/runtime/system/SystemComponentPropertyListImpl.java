@@ -98,14 +98,17 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	 *            the depth in past (could be zero) [maybe useful for diff equation computation]
 	 * @param propertyMap
 	 */
-	protected SystemComponentPropertyListImpl(TwData driverVariables,
+	protected SystemComponentPropertyListImpl(SystemData autoVariables,
+			TwData driverVariables,
 			TwData decoratorVariables,
 			TwData lifetimeConstants,
 			int depth,
 			Map<String, Integer> propertyMap) {
 		super();
 		// 3worlds side
-		this.autoState = new SystemData();
+//		this.autoState = new SystemData();
+		if (autoVariables!=null)
+			this.autoState = autoVariables.clone();
 		drivers = new TwData[depth];
 		if (driverVariables == null)
 			for (int i = 0; i < drivers.length; i++)
@@ -156,7 +159,7 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 
 	protected SystemComponentPropertyListImpl cloneStructure() {
 		SystemComponentPropertyListImpl result = new SystemComponentPropertyListImpl(
-			drivers[0], decorators, constants, drivers.length, propertyMap);
+			(SystemData)autoState, drivers[0], decorators, constants, drivers.length, propertyMap);
 		return result;
 	}
 

@@ -36,6 +36,7 @@ import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.Factory;
 import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentPropertyListImpl.*;
@@ -63,6 +64,7 @@ public class SystemFactory
 	private String categoryId = null;
 	private boolean permanent;
 	/** TwData templates to clone to create new systems */
+	private ReadOnlyPropertyList autoVarTemplate = null;
 	private TwData driverTemplate = null;
 	private TwData decoratorTemplate = null;
 	private TwData lifetimeConstantTemplate = null;
@@ -77,10 +79,12 @@ public class SystemFactory
 	 * @param categories
 	 * @param categoryId
 	 */
-	public SystemFactory(TwData drv, TwData dec, TwData ltc, boolean perm,
+	public SystemFactory(ReadOnlyPropertyList auto, TwData drv, TwData dec, TwData ltc, boolean perm,
 			SortedSet<Category> categories, String categoryId,
 			Map<DynamicSpace<SystemComponent,LocatedSystemComponent>,RelocateFunction> spacelocators) {
 		super();
+		if (auto!=null)
+			autoVarTemplate = auto.clone();
 		if (drv!=null)
 			driverTemplate = drv.clone();
 		if (dec!=null)
@@ -90,8 +94,9 @@ public class SystemFactory
 		if (driverTemplate != null)
 			for (String key : driverTemplate.getKeysAsSet())
 				propertyMap.put(key, DRIVERS);
-		for (String key : SystemData.keySet)
-			propertyMap.put(key, AUTO);
+		if (autoVarTemplate!=null)
+			for (String key : SystemData.keySet)
+				propertyMap.put(key, AUTO);
 		if (decoratorTemplate != null)
 			for (String key : decoratorTemplate.getKeysAsSet())
 				propertyMap.put(key, DECO);
@@ -120,8 +125,9 @@ public class SystemFactory
 	 */
 	@Override
 	public final SystemComponent newInstance() {
-		SimplePropertyList props = new SystemComponentPropertyListImpl(driverTemplate,
-			decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);
+		SimplePropertyList props = new SystemComponentPropertyListImpl(
+			(SystemData)autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
+			2,propertyMap);
 		SystemComponent result = (SystemComponent)
 			SCfactory.makeNode(SystemComponent.class,"C0",props);
 		result.setCategorized(this);
