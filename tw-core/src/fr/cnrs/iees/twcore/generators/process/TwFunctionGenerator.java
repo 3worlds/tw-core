@@ -382,9 +382,11 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				}
 				else {
 					String lc = gen.containingClass(an);
-					dataClassesToImport.add(lc);
-					String sc = lc.split("\\.")[lc.split("\\.").length-1];
-					callArg = "((" + sc+ ")"+ag.toString()+")."+an+"()";
+					if (lc!=null) { // fix for a bug ue to entering here with a wrong argument
+						dataClassesToImport.add(lc);
+						String sc = lc.split("\\.")[lc.split("\\.").length-1];
+						callArg = "((" + sc+ ")"+ag.toString()+")."+an+"()";
+					}
 				}
 				if (callArg!=null)
 					callStatement += indent+indent+indent+ callArg + ",\n";

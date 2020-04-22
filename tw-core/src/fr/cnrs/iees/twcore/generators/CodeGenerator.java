@@ -41,12 +41,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
-import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -62,15 +60,12 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwInitialiserGenerator;
 import fr.ens.biologie.codeGeneration.JavaCompiler;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.ResizeablePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 
 /**
  * @author Ian Davies
@@ -80,6 +75,8 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
  *       code and a linked user project
  */
 public class CodeGenerator {
+
+	private static Logger log = Logger.getLogger(CodeGenerator.class.getName());
 
 	private TreeGraph<TreeGraphDataNode, ALEdge> graph = null;
 	// the generator for the single user model file
@@ -230,17 +227,19 @@ public class CodeGenerator {
 //	}
 
 	private void generateDataCode(TreeGraphDataNode system, String modelName) {
+		// 0. Automatic variables
+		// NO CODE GENERATION for automatic variables!
 		// 1. drivers
-		TreeGraphDataNode spec = Categorized.buildUniqueDataList(system, E_DRIVERS.label());
+		TreeGraphDataNode spec = Categorized.buildUniqueDataList(system, E_DRIVERS.label(),log);
 		generateDataCode(spec, system, modelName, P_DRIVERCLASS.key());
 		// 2. parameters
-		spec = Categorized.buildUniqueDataList(system, E_PARAMETERS.label());
+		spec = Categorized.buildUniqueDataList(system, E_PARAMETERS.label(),log);
 		generateDataCode(spec, system, modelName, P_PARAMETERCLASS.key());
 		// 3. decorators
-		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label());
+		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label(),log);
 		generateDataCode(spec, system, modelName, P_DECORATORCLASS.key());
 		// 4. lifetime constants
-		spec = Categorized.buildUniqueDataList(system, E_LTCONSTANTS.label());
+		spec = Categorized.buildUniqueDataList(system, E_LTCONSTANTS.label(),log);
 		generateDataCode(spec, system, modelName, P_LTCONSTANTCLASS.key());
 		// add space coordinates for every space in which this component type will go
 		// (immobile components)

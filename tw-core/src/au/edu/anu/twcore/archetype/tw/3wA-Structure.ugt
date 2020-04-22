@@ -18,6 +18,10 @@ hasNode categorySpec
 	isOfClass = String("category")
 	hasParent = StringTable(([1]"categorySet:"))
 	multiplicity = IntegerRange("1..*")
+	hasEdge edgeToAutoVarsSpec
+		isOfClass = String("autoVar")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
 	hasEdge edgeToDriversSpec
 		isOfClass = String("drivers")
 		toNode = String("record:")

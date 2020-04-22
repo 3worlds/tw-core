@@ -49,10 +49,19 @@ import au.edu.anu.twcore.InitialisableNode;
 public class Category extends InitialisableNode implements Comparable<Category> {
 
 	// default categories present in ALL models
-	public final static String SYSTEM_CATEGORY = "SYSTEM";
-	public final static String LIFE_CYCLE_CATEGORY = "LIFE_CYCLE";
-	public final static String GROUP_CATEGORY = "GROUP";
-	public final static String COMPONENT_CATEGORY = "COMPONENT";
+	// hierarchy
+	public final static String arena 		= "arena";
+	public final static String lifeCycle 	= "life cycle";
+	public final static String group 		= "group";
+	public final static String component 	= "component";
+	public final static String relation 	= "relation";
+	public final static String space 		= "space";
+	// lifespan
+	public final static String permanent 	= "permanent";
+	public final static String ephemeral 	= "ephemeral";
+	// Composition: Population vs individual
+	public final static String population 	= "population";
+	public final static String individual 	= "individual";
 
 	// default constructor
 	public Category(Identity id, SimplePropertyList props, GraphFactory gfactory) {

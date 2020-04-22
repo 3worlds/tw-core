@@ -38,23 +38,25 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class ComponentContainer extends CategorizedContainer<SystemComponent> {
+public class ComponentContainer extends CategorizedContainer<CategorizedComponent> {
 
-	public ComponentContainer(Categorized<SystemComponent> cats, String proposedId,
+	public ComponentContainer(Categorized<CategorizedComponent> cats, String proposedId,
 			ComponentContainer parent, TwData parameters, TwData variables) {
 		super(cats, proposedId, parent, parameters, variables);
 	}
 
 	@Override
-	public final SystemComponent cloneItem(SystemComponent item) {
-		return item.clone();
+	public final CategorizedComponent cloneItem(CategorizedComponent item) {
+		if (item instanceof SystemComponent)
+			return ((SystemComponent)item).clone();
+		return null;
 	}
 
 	/**
 	 * Advances state of all SystemComponents contained in this container only.
 	 */
 	public void step() {
-		for (SystemComponent sc : items())
+		for (CategorizedComponent sc : items())
 			sc.stepForward();
 	}
 
@@ -64,7 +66,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	 */
 	public void stepAll() {
 		step();
-		for (CategorizedContainer<SystemComponent> sc : subContainers())
+		for (CategorizedContainer<CategorizedComponent> sc : subContainers())
 			((ComponentContainer) sc).stepAll();
 	}
 
@@ -76,7 +78,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	public void prepareStep() {
 		if (changed()) {
 			resetCounters();
-			for (SystemComponent item:items()) {
+			for (CategorizedComponent item:items()) {
 				if (item.decorators()!=null) {
 					item.decorators().writeEnable();
 					item.decorators().clear();
@@ -94,7 +96,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	 */
 	public void prepareStepAll() {
 		prepareStep();
-		for (CategorizedContainer<SystemComponent> sc : subContainers())
+		for (CategorizedContainer<CategorizedComponent> sc : subContainers())
 			((ComponentContainer) sc).prepareStepAll();
 	}
 
@@ -113,10 +115,10 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 
 	// best if static to avoid errors
 	// TO IAN: note that the clearAllVariables() and clearAllItems() methods do the same job now
-	private static void clearState(CategorizedContainer<SystemComponent> parentContainer) {
-		for (CategorizedContainer<SystemComponent> childContainer : parentContainer.subContainers())
+	private static void clearState(CategorizedContainer<CategorizedComponent> parentContainer) {
+		for (CategorizedContainer<CategorizedComponent> childContainer : parentContainer.subContainers())
 			clearState(childContainer);
-		for (SystemComponent item : parentContainer.items())
+		for (CategorizedComponent item : parentContainer.items())
 			parentContainer.removeItem(item);
 		// effectAllChanges() is recursive so don't use here.
 		parentContainer.effectChanges();// counters are handled here
@@ -152,7 +154,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	@Override
 	public void clearAllVariables() {
 		clearVariables();
-		for (CategorizedContainer<SystemComponent> childContainer: subContainers())
+		for (CategorizedContainer<CategorizedComponent> childContainer: subContainers())
 			childContainer.clearAllVariables();
 	}
 
@@ -160,8 +162,8 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	public void effectChanges() {
 		populationData.resetCounters(); // Pb: values are actually delayed by 1 time step doing this ???
 		for (String id : itemsToRemove) {
-			SystemComponent sc = items.remove(id);
-			sc.removeFromContainer();
+			CategorizedComponent sc = items.remove(id);
+			((SystemComponent)sc).removeFromContainer();
 			if (sc != null) {
 //				populationData.count--;
 //				populationData.nRemoved++;
@@ -170,11 +172,11 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 			}
 		}
 		itemsToRemove.clear();
-		for (SystemComponent item : itemsToAdd)
+		for (CategorizedComponent item : itemsToAdd)
 			if (items.put(item.id(), item) == null) {
 //				populationData.count++;
 //				populationData.nAdded++;
-				item.setContainer(this);
+				((SystemComponent)item).setContainer(this);
 			}
 		itemsToAdd.clear();
 	}

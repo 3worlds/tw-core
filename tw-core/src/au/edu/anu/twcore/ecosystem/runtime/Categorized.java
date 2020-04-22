@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -37,12 +37,10 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DYNAMIC
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.DynamicList;
 import au.edu.anu.rscs.aot.graph.property.Property;
@@ -50,7 +48,6 @@ import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
-import au.edu.anu.twcore.ecosystem.structure.Structure;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.NodeFactory;
@@ -65,27 +62,27 @@ import fr.ens.biologie.generic.SaveableAsText;
 
 /**
  * To be associated to objects of class T sorted by category
- * 
+ *
  * @author Jacques Gignoux - 23 avr. 2013
  *
  */
 public interface Categorized<T extends Identity> {
 
 	public static final char CATEGORY_SEPARATOR = SaveableAsText.COLON;
-	
+
 	/** checks if this instance belongs to all categories specified in the argument */
 	public default boolean belongsTo(Set<Category> cs) {
 		if (categories()==null)
 			return false;
 		return categories().containsAll(cs);
 	}
-	
+
 	/** returns the category stamp of this instance for easy comparison */
 	public Set<Category> categories();
-	
+
 	/** returns a string representation of the category set */
 	public String categoryId();
-		
+
 	/** utility to work out a signature from a category list */
 	public default String buildCategorySignature() {
 		StringBuilder sb = new StringBuilder();
@@ -99,8 +96,8 @@ public interface Categorized<T extends Identity> {
 		}
 		return sb.toString();
 	}
-	
-	/** if data structures are associated to the categories, return them based on a 
+
+	/** if data structures are associated to the categories, return them based on a
 	 * type selector - eg "parameters" and "drivers" or "variables"...
 	 * */
 	public default ReadOnlyPropertyList newDataStructure(String type) {
@@ -110,7 +107,7 @@ public interface Categorized<T extends Identity> {
 	/**
 	 * Climbs up the category tree to get all the categories this object is nested
 	 * in (helper method for below).
-	 *  
+	 *
 	 * RECURSIVE
 	 */
 	private static void getSuperCategories(Category cat,Collection<Category> result) {
@@ -129,8 +126,8 @@ public interface Categorized<T extends Identity> {
 	 * Given a list of {@link Category} objects, gets all the super-categories in which they are nested
 	 * and returns the full list of all categories. Use this to setup the category list associated
 	 * to a Categorized object.
-	 * 
-	 * @param cats the initial category list 
+	 *
+	 * @param cats the initial category list
 	 * @return the final category list, including all nesting super-categories
 	 */
 	public default Collection<Category> getSuperCategories(Collection<Category> cats) {
@@ -140,11 +137,11 @@ public interface Categorized<T extends Identity> {
 			getSuperCategories(cat,result);
 		return result;
 	}
-		
+
 	/**
 	 * Static method to build the full category list of any node having 'belongsTo' edges
 	 * to categories
-	 * 
+	 *
 	 * @param node
 	 * @return
 	 */
@@ -152,34 +149,37 @@ public interface Categorized<T extends Identity> {
 	public static Collection<Category> getSuperCategories(TreeGraphDataNode node) {
 		// there was a bug here caused by selectOneOrMany because lifeCycle may have no belongsTo edge
 		Collection<Category> cats = (Collection<Category>) get(node.edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
+			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
 			edgeListEndNodes());
-		Collection<Category> result = new HashSet<Category>();
+//		Collection<Category> result = new HashSet<Category>();
+		Collection<Category> result = new TreeSet<Category>();
 		result.addAll(cats);
 		for (Category cat:cats)
 			getSuperCategories(cat,result);
 		// sort categories by hierarchical order
-		if (!result.isEmpty()) {
-			List<Category> l = new LinkedList<>();
-			l.addAll(result);
-			SortedMap<Integer,Category> sortedres = new TreeMap<>();
-			sortedres.put(0,l.get(0));
-			while (sortedres.size()<result.size()) {
-				for (Category c:result)
-					for (int i:sortedres.keySet()) 
-						if (sortedres.get(i)!=c) {
-							if (c.getParent().getParent() instanceof Structure) {
-								sortedres.put(-result.size(), c);
-								break;
-							}
-							else if (c.getParent().getParent().equals(sortedres.get(i))) {
-								sortedres.put(i+1,c);
-								break;
-							}
-					}
-			}
-			return sortedres.values();
-		}
+		// BUT WHY ??? why not use a SortedSet?
+		// Anyway this is bugged - doesnt work with multiple category trees
+//		if (!result.isEmpty()) {
+//			List<Category> l = new LinkedList<>();
+//			l.addAll(result);
+//			SortedMap<Integer,Category> sortedres = new TreeMap<>();
+//			sortedres.put(0,l.get(0));
+//			while (sortedres.size()<result.size()) {
+//				for (Category c:result)
+//					for (int i:sortedres.keySet())
+//						if (sortedres.get(i)!=c) {
+//							if (c.getParent().getParent() instanceof Structure) {
+//								sortedres.put(-result.size(), c);
+//								break;
+//							}
+//							else if (c.getParent().getParent().equals(sortedres.get(i))) {
+//								sortedres.put(i+1,c);
+//								break;
+//							}
+//					}
+//			}
+//			return sortedres.values();
+//		}
 		return result;
 	}
 
@@ -192,7 +192,7 @@ public interface Categorized<T extends Identity> {
 	 * every non-record sub-data node and for every record sub-data node, put all
 	 * its components in.
 	 * </p>
-	 * 
+	 *
 	 * @param system
 	 *            the system for which the data merging is made
 	 * @param categoryList
@@ -202,15 +202,16 @@ public interface Categorized<T extends Identity> {
 	 *            structure is built
 	 * @return
 	 */
-	public static TreeGraphDataNode buildUniqueDataList(TreeGraphDataNode node, 
-			String dataGroup) {
+	public static TreeGraphDataNode buildUniqueDataList(TreeGraphDataNode node,
+			String dataGroup,Logger log) {
+		log.info("Building unique data list from categories for "+node.toShortString());
 		TreeGraphDataNode mergedRoot = null;
 		DynamicList<TreeGraphDataNode> roots = new DynamicList<TreeGraphDataNode>();
 		Collection<Category> cats = getSuperCategories(node);
 		// put them in roots in category hierarchy order !
 		for (Category cat:cats) {
-			TreeGraphDataNode n = (TreeGraphDataNode) get(cat.edges(Direction.OUT), 
-				selectZeroOrOne(hasTheLabel(dataGroup)), 
+			TreeGraphDataNode n = (TreeGraphDataNode) get(cat.edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(dataGroup)),
 				endNode());
 			if (n != null)
 				roots.add(n);
@@ -241,7 +242,7 @@ public interface Categorized<T extends Identity> {
 					}
 //					// caution: this changes the graph
 //					// and this is a very bad idea ! causes crashes !
-//					mergedRoot.connectChildren(n.getChildren()); 
+//					mergedRoot.connectChildren(n.getChildren());
 				} else {
 					SimplePropertyList pl = new SimplePropertyListImpl("type");
 					pl.setProperty("type", "forCodeGeneration");
@@ -257,7 +258,7 @@ public interface Categorized<T extends Identity> {
 				((ExtendablePropertyList)mergedRoot.properties()).addProperty(P_DYNAMIC.key(), false);
 		return mergedRoot;
 	}
-	
+
 	// utility for descendants
 	@SuppressWarnings("unchecked")
 	public default TwData loadDataClass(String className) {

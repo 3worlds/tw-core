@@ -158,14 +158,14 @@ public class ComponentType
 			isLeaf= true;
 			for (Category c:nl) {
 				switch (c.id()) {
-				case SYSTEM_CATEGORY:
+				case arena:
 					if (ctl.size()>1) // only case where it is leaf is when it's alone
 						isLeaf=false;
 					break;
-				case LIFE_CYCLE_CATEGORY: // never leaf and always group
+				case lifeCycle: // never leaf and always group
 					isLeaf = false;
 					break;
-				case GROUP_CATEGORY:
+				case group:
 					// only groups that have component types linked to them with an instanceOf edge
 					// are not leaf
 					Collection<Object> instances = (Collection<Object>) get(edges(Direction.IN),
@@ -174,7 +174,7 @@ public class ComponentType
 					if (instances.isEmpty())
 						isLeaf = false;
 					break;
-				case COMPONENT_CATEGORY:
+				case component:
 					isGroup = false;
 					break;
 				}

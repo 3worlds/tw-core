@@ -36,6 +36,7 @@ import au.edu.anu.twcore.experiment.ModelSetupEdge;
 import au.edu.anu.twcore.experiment.StopOnEdge;
 import au.edu.anu.twcore.experiment.SourceEdge;
 
+import au.edu.anu.twcore.ecosystem.structure.AutoVarEdge;
 import au.edu.anu.twcore.ecosystem.structure.DriverEdge;
 import au.edu.anu.twcore.ecosystem.structure.DecoratorEdge;
 import au.edu.anu.twcore.ecosystem.structure.ParameterEdge;
@@ -83,6 +84,7 @@ public enum ConfigurationEdgeLabels {
 	E_STOPON		("stopOn",			"stpOn",		StopOnEdge.class),
 	E_SOURCE		("source",			"srcd",			SourceEdge.class),
 	// ecosystem / structure
+	E_AUTOVAR		("autoVar",			"auto",			AutoVarEdge.class),
 	E_DRIVERS		("drivers",			"drvs",			DriverEdge.class),
 	E_DECORATORS	("decorators",		"decs",			DecoratorEdge.class),
 	E_LTCONSTANTS	("lifetimeConstants","ltcs",		LifetimeConstantEdge.class),

@@ -69,6 +69,12 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 //		double dt,
 //		SystemComponent focal);
 
+	// new new version
+//	public abstract void changeState(double t, double dt,
+//	Box limits,Point focalLoc,
+//	CategorizedComponent ecosystem, CategorizedComponent lifeCycle, CategorizedComponent group,
+//	CategorizedComponent focal);
+
 	// new version
 	public abstract void changeState (
 			double t,

@@ -56,7 +56,7 @@ public class SystemComponent
 		extends ALDataNode
 		implements CategorizedComponent, Contained<ComponentContainer> {
 
-	private Categorized<SystemComponent> cats = null;
+	private Categorized<CategorizedComponent> cats = null;
 	/** container */
 	private ComponentContainer container = null;
 
@@ -65,7 +65,7 @@ public class SystemComponent
 	}
 
 	// used only once at init time
-	public void setCategorized(Categorized<SystemComponent> cat) {
+	public void setCategorized(Categorized<CategorizedComponent> cat) {
 		if (cats==null)
 			cats = cat;
 	}
@@ -75,7 +75,7 @@ public class SystemComponent
 	 * @return all the category information relevant to this component
 	 */
 	@Override
-	public Categorized<SystemComponent> membership() {
+	public Categorized<CategorizedComponent> membership() {
 		return cats;
 	}
 
@@ -97,7 +97,7 @@ public class SystemComponent
 
 	@Override
 	public SystemComponent clone() {
-		SystemComponent result = ((SystemFactory)cats).newInstance();
+		SystemComponent result = (SystemComponent) ((SystemFactory)cats).newInstance();
 		result.properties().setProperties(properties());
 		result.setContainer(container());
 		return result;

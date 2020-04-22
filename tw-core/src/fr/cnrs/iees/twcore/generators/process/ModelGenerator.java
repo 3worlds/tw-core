@@ -97,6 +97,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private String relationType =null;
 
 	private class generatedData {
+		private String autoVars;
 		private String drivers;
 		private String decorators;
 		private String parameters;
@@ -312,6 +313,14 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						if (field.equals(t.id()))
 							return dataClassNames.get(set).parameters;
 				}
+				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
+						endNode());
+					if (rec!=null) {
+						for (TreeNode t:rec.getChildren())
+							if (field.equals(t.id()))
+								return dataClassNames.get(set).autoVars;
+					}
 			}
 		}
 		return null;
@@ -381,7 +390,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		Map<ConfigurationEdgeLabels,SortedSet<memberInfo>> result = new HashMap<>();
 		for (Category cat:cats)
 			for (ConfigurationEdgeLabels cel:
-				EnumSet.of(E_PARAMETERS,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS)) {
+				EnumSet.of(E_AUTOVAR,E_PARAMETERS,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS)) {
 			Record rec = (Record) get(cat.edges(Direction.OUT),
 				selectZeroOrOne(hasTheLabel(cel.label())),
 				endNode());
@@ -521,6 +530,17 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			+ ((TimeUnits)tm.properties().getPropertyValue(P_TIMEMODEL_TU.key())).abbreviation()+"</p>\n";
 	}
 
+	private void addArgumentGroup(ArgumentGroups arg, memberInfo mb,
+			ModelMethodGenerator method, StringBuilder headerComment) {
+		// TODO: convert age properly using Timer.userTime(long)
+		if (mb.fullType!=null)
+			imports.add(mb.fullType);
+		method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+		headerComment.append("@param ").append(mb.name).append(' ')
+			.append(arg.description()).append(mb.comment).append('\n');
+		replicateNames.add(mb.name);
+	}
+
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
 		StringBuilder headerComment = new StringBuilder();
 		String returnComment = null;
@@ -578,6 +598,36 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		argSet.addAll(ftype.localArguments());
 		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal = getAllMembers(focalCats);
 		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther = getAllMembers(otherCats);
+		for (String category:Category.SET_HIERARCHY) {
+			for (ConfigurationEdgeLabels cel:
+				EnumSet.of(E_AUTOVAR,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS))
+				System.out.println(category+"."+cel.toString());
+			// generates this:
+//			SYSTEM.E_AUTOVAR
+//			SYSTEM.E_DRIVERS
+//			SYSTEM.E_DECORATORS
+//			SYSTEM.E_LTCONSTANTS
+//			LIFE_CYCLE.E_AUTOVAR
+//			LIFE_CYCLE.E_DRIVERS
+//			LIFE_CYCLE.E_DECORATORS
+//			LIFE_CYCLE.E_LTCONSTANTS
+//			GROUP.E_AUTOVAR
+//			GROUP.E_DRIVERS
+//			GROUP.E_DECORATORS
+//			GROUP.E_LTCONSTANTS
+//			COMPONENT.E_AUTOVAR
+//			COMPONENT.E_DRIVERS
+//			COMPONENT.E_DECORATORS
+//			COMPONENT.E_LTCONSTANTS
+//			RELATION.E_AUTOVAR
+//			RELATION.E_DRIVERS
+//			RELATION.E_DECORATORS
+//			RELATION.E_LTCONSTANTS
+		}
+		// particular case for space and utilities at the moment
+		//PLus need: t dt, limits, locs, nexts, random,decider
+
+		// old code
 		for (ArgumentGroups arg:argSet) {
 			switch (arg) {
 			case t:
@@ -646,94 +696,108 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				}
 				break;
 			case focalAuto:
+				// TODO: convert age properly using Timer.userTime(long)
+				for (memberInfo mb:membersForFocal.get(E_AUTOVAR))
+					addArgumentGroup(arg,mb,method,headerComment);
+				break;
 			case otherAuto:
 				// TODO: convert age properly using Timer.userTime(long)
-				method.addArgument(arg,"age", "double", arg.description()+"age");
-				headerComment.append("@param age ").append(arg.description()).append("age\n");
-				replicateNames.add("age");
-				method.addArgument(arg,"birthDate", "double", arg.description()+"birth date");
-				headerComment.append("@param birthDate ").append(arg.description()).append("birth date\n");
-				replicateNames.add("birthDate");
+				for (memberInfo mb:membersForOther.get(E_AUTOVAR))
+					addArgumentGroup(arg,mb,method,headerComment);
+//				method.addArgument(arg,"age", "double", arg.description()+"age");
+//				headerComment.append("@param age ").append(arg.description()).append("age\n");
+//				replicateNames.add("age");
+//				method.addArgument(arg,"birthDate", "double", arg.description()+"birth date");
+//				headerComment.append("@param birthDate ").append(arg.description()).append("birth date\n");
+//				replicateNames.add("birthDate");
 				break;
 			case groupPar:
 				for (memberInfo mb:membersForFocal.get(E_PARAMETERS)) {
-					if (mb.fullType!=null)
-						imports.add(mb.fullType);
-					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-					headerComment.append("@param ").append(mb.name).append(' ')
-						.append(arg.description()).append(mb.comment).append('\n');
-					replicateNames.add(mb.name);
+					addArgumentGroup(arg,mb,method,headerComment);
+//					if (mb.fullType!=null)
+//						imports.add(mb.fullType);
+//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+//					headerComment.append("@param ").append(mb.name).append(' ')
+//						.append(arg.description()).append(mb.comment).append('\n');
+//					replicateNames.add(mb.name);
 				}
 				break;
 			case focalLtc:
 				for (memberInfo mb:membersForFocal.get(E_LTCONSTANTS)) {
-					if (mb.fullType!=null)
-						imports.add(mb.fullType);
-					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-					headerComment.append("@param ").append(mb.name).append(' ')
-					.append(arg.description()).append(mb.comment).append('\n');
-					replicateNames.add(mb.name);
+					addArgumentGroup(arg,mb,method,headerComment);
+//					if (mb.fullType!=null)
+//						imports.add(mb.fullType);
+//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+//					headerComment.append("@param ").append(mb.name).append(' ')
+//					.append(arg.description()).append(mb.comment).append('\n');
+//					replicateNames.add(mb.name);
 				}
 				break;
 			case focalDrv:
 				for (memberInfo mb:membersForFocal.get(E_DRIVERS)) {
-					if (mb.fullType!=null)
-						imports.add(mb.fullType);
-					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-					headerComment.append("@param ").append(mb.name).append(' ')
-						.append(arg.description()).append(mb.comment).append('\n');
-					replicateNames.add(mb.name);
+					addArgumentGroup(arg,mb,method,headerComment);
+//					if (mb.fullType!=null)
+//						imports.add(mb.fullType);
+//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+//					headerComment.append("@param ").append(mb.name).append(' ')
+//						.append(arg.description()).append(mb.comment).append('\n');
+//					replicateNames.add(mb.name);
 				}
 				break;
 			case focalDec:
 				for (memberInfo mb:membersForFocal.get(E_DECORATORS)) {
-					if (mb.fullType!=null)
-						imports.add(mb.fullType);
-					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-					headerComment.append("@param ").append(mb.name).append(' ')
-						.append(arg.description()).append(mb.comment).append('\n');
-					replicateNames.add(mb.name);
+					addArgumentGroup(arg,mb,method,headerComment);
+//					if (mb.fullType!=null)
+//						imports.add(mb.fullType);
+//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+//					headerComment.append("@param ").append(mb.name).append(' ')
+//						.append(arg.description()).append(mb.comment).append('\n');
+//					replicateNames.add(mb.name);
 				}
 				// TODO:if readwrite, do otherwise
 				break;
 			case otherGroupPar:
 				for (memberInfo mb:membersForOther.get(E_PARAMETERS)) {
-					if (mb.fullType!=null)
-						imports.add(mb.fullType);
-					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-					headerComment.append("@param ").append(mb.name).append(' ')
-						.append(arg.description()).append(mb.comment).append('\n');
-					replicateNames.add(mb.name);
+					addArgumentGroup(arg,mb,method,headerComment);
+//					if (mb.fullType!=null)
+//						imports.add(mb.fullType);
+//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+//					headerComment.append("@param ").append(mb.name).append(' ')
+//						.append(arg.description()).append(mb.comment).append('\n');
+//					replicateNames.add(mb.name);
 				}
 				break;
 			case otherLtc:
 				for (memberInfo mb:membersForOther.get(E_LTCONSTANTS)) {
-					if (mb.fullType!=null)
-						imports.add(ValidPropertyTypes.getJavaClassName(mb.type));
-					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-					headerComment.append("@param ").append(mb.name).append(' ')
-						.append(arg.description()).append(mb.comment).append('\n');
-					replicateNames.add(mb.name);
+					addArgumentGroup(arg,mb,method,headerComment);
+//					if (mb.fullType!=null)
+//						imports.add(ValidPropertyTypes.getJavaClassName(mb.type));
+//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+//					headerComment.append("@param ").append(mb.name).append(' ')
+//						.append(arg.description()).append(mb.comment).append('\n');
+//					replicateNames.add(mb.name);
 				}
 				break;
 			case otherDrv:
 				for (memberInfo mb:membersForOther.get(E_DRIVERS)) {
-					if (mb.fullType!=null)
-						imports.add(mb.fullType);
-					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-					headerComment.append("@param ").append(mb.name).append(' ')
-						.append(arg.description()).append(mb.comment).append('\n');
-					replicateNames.add(mb.name);
+					addArgumentGroup(arg,mb,method,headerComment);
+//					if (mb.fullType!=null)
+//						imports.add(mb.fullType);
+//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+//					headerComment.append("@param ").append(mb.name).append(' ')
+//						.append(arg.description()).append(mb.comment).append('\n');
+//					replicateNames.add(mb.name);
 				}
 				break;
 			case otherDec:
 				for (memberInfo mb:membersForOther.get(E_DECORATORS)) {
-					if (mb.fullType!=null)
-						imports.add(mb.fullType);
-					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-					headerComment.append("@param ").append(mb.name).append(' ')
-						.append(arg.description()).append(mb.comment).append('\n');
-					replicateNames.add(mb.name);
+					addArgumentGroup(arg,mb,method,headerComment);
+//					if (mb.fullType!=null)
+//						imports.add(mb.fullType);
+//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+//					headerComment.append("@param ").append(mb.name).append(' ')
+//						.append(arg.description()).append(mb.comment).append('\n');
+//					replicateNames.add(mb.name);
 				}
 				// TODO:if readwrite, do otherwise
 				break;
@@ -747,12 +811,22 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				}
 				break;
 			case nextFocalDrv:
+				if (!membersForFocal.get(E_DRIVERS).isEmpty()) {
+					String argt = function.id()+"."+ initialUpperCase(arg.name());
+					method.addArgument(arg,arg.name(),argt,arg.description());
+					headerComment.append("@param ").append(arg.name()).append(' ')
+						.append(arg.description()).append('\n');
+					replicateNames.add(arg.name());
+				}
+				break;
 			case nextOtherDrv:
-				String argt = function.id()+"."+ initialUpperCase(arg.name());
-				method.addArgument(arg,arg.name(),argt,arg.description());
-				headerComment.append("@param ").append(arg.name()).append(' ')
-					.append(arg.description()).append('\n');
-				replicateNames.add(arg.name());
+				if (!membersForOther.get(E_DRIVERS).isEmpty()) {
+					String argt = function.id()+"."+ initialUpperCase(arg.name());
+					method.addArgument(arg,arg.name(),argt,arg.description());
+					headerComment.append("@param ").append(arg.name()).append(' ')
+						.append(arg.description()).append('\n');
+					replicateNames.add(arg.name());
+				}
 				break;
 			case nextFocalLoc:
 			case nextOtherLoc:

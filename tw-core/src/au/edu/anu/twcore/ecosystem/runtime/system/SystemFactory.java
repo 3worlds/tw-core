@@ -55,7 +55,7 @@ import java.util.TreeSet;
  *
  */
 public class SystemFactory
-		implements Factory<SystemComponent>, Categorized<SystemComponent> {
+		implements Factory<CategorizedComponent>, Categorized<CategorizedComponent> {
 
 	// the factory for SystemComponents and SystemRelations
 	private static GraphFactory SCfactory = new TwGraphFactory();
@@ -69,6 +69,7 @@ public class SystemFactory
 	private TwData decoratorTemplate = null;
 	private TwData lifetimeConstantTemplate = null;
 	private Map<String, Integer> propertyMap = new HashMap<String, Integer>();
+	// repla
 	private Map<DynamicSpace<SystemComponent,LocatedSystemComponent>,RelocateFunction> Rfunctions = new HashMap<>();
 
 	/**
@@ -124,7 +125,7 @@ public class SystemFactory
 	 * @return a new SystemComponent with the proper data structure
 	 */
 	@Override
-	public final SystemComponent newInstance() {
+	public final CategorizedComponent newInstance() {
 		SimplePropertyList props = new SystemComponentPropertyListImpl(
 			(SystemData)autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 			2,propertyMap);

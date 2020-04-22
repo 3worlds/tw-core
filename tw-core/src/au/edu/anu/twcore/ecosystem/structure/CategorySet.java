@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -33,17 +33,24 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static au.edu.anu.twcore.ecosystem.structure.Category.*;
 
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
  * Class matching the "categorySet" node label in the 3Worlds configuration tree.
  * Has no properties.
- * 
+ *
  * @author Jacques Gignoux - 29 mai 2019
  *
  */
 public class CategorySet extends InitialisableNode {
+
+	// default category sets present in ALL models
+	public final static String[] concepts		= {arena,lifeCycle,group,component,relation,space};
+	public final static String[] lifespan 		= {permanent,ephemeral};
+	public final static String[] composition 	= {population,individual};
+
 
 	// default constructor
 	public CategorySet(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -69,7 +76,7 @@ public class CategorySet extends InitialisableNode {
 	public Iterable<Category> categories() {
 		return (Iterable<Category>) getChildren();
 	}
-	
+
 	public String name() {
 		return classId();
 	}

@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -41,7 +41,7 @@ import au.edu.anu.twcore.root.World;
 /**
  * Mapping of 3w tree node labels to class types (for use in a factory)
  * + initialisation order for the init sequence
- * 
+ *
  * @author Jacques Gignoux - 23 mai 2019
  *
  */
@@ -59,11 +59,11 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_RECORD 			("record",			"rec",			Record.class,				0),//
 			N_FIELD 			("field",			"fld",			FieldNode.class,				0),//
 			N_RNG               ("rng",				"gen",			RngNode.class,              DIMBASE),//
-		N_SYSTEM 				("system",			"sys",			Ecosystem.class,			ECOBASE),// 
-			N_DYNAMICS 			("dynamics",		"dyns",			SimulatorNode.class,Math.max(SIMBASE+10,// after stopping conditions 
+		N_SYSTEM 				("system",			"sys",			Ecosystem.class,			ECOBASE),//
+			N_DYNAMICS 			("dynamics",		"dyns",			SimulatorNode.class,Math.max(SIMBASE+10,// after stopping conditions
 																						Math.max(TIMEBASE+20,	// AND TimerModels
 																							CATEGORYBASE+60))), // AND a fully initialised ECOSYSTEM
-				N_TIMELINE 		("timeLine",		"tmLn",			TimeLine.class,				TIMEBASE),// 
+				N_TIMELINE 		("timeLine",		"tmLn",			TimeLine.class,				TIMEBASE),//
 				N_TIMEMODEL		("timeModel",		"tmMo",			TimeModel.class,			TIMEBASE+10),// after timeLine
 				N_EVENTQUEUE	("eventQueue",		"evntq",		EventQueue.class,			TIMEBASE+20),// after timeModel
 				N_PROCESS 		("process",			"proc",			ProcessNode.class,			TIMEBASE+30),	// after TimeModel, Function & EventQueue
@@ -76,16 +76,17 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_INITIALISER 	("initialiser",		"init",			Initialiser.class,			CATEGORYBASE+20), // after relation
 				N_INITIALSTATE 	("initialState",	"state",		InitialState.class,			ECOBASE+10), // after Ecosystem
 				N_GROUP 		("group",			"grp",			Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
-				N_COMPONENT 	("component",		"comp",			Component.class,			CATEGORYBASE+30), // after Group 
+				N_COMPONENT 	("component",		"comp",			Component.class,			CATEGORYBASE+30), // after Group
 				N_PARAMETERVALUES("parameterValues","parVals",		ParameterValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
 				N_VARIABLEVALUES("variableValues",	"varVals",		VariableValues.class,		CATEGORYBASE+50), // after ParameterValues
 			N_STRUCTURE 		("structure",		"struc",		Structure.class,			0),//
 				N_CATEGORYSET 	("categorySet",		"catSet",		CategorySet.class,			0),//
-				N_CATEGORY 		("category",		"cat",			Category.class,				CATEGORYBASE), 
-				N_COMPONENTTYPE ("componentType",	"compTyp",		ComponentType.class,	CATEGORYBASE+10), // after category and categorySet
+				N_CATEGORY 		("category",		"cat",			Category.class,				CATEGORYBASE),
+				N_TEMPLATE 		("template",		"tpl",			Template.class,				CATEGORYBASE+10),
+				N_COMPONENTTYPE ("componentType",	"compTyp",		ComponentType.class,		CATEGORYBASE+10), // after category and categorySet
 				N_RELATIONTYPE 	("relationType",	"relTyp",		RelationType.class,			CATEGORYBASE+10), // after category
-				N_ARENA 		("arena",			"arena",		ArenaNode.class,				CATEGORYBASE),
-				N_SPACE 		("space",			"space",		SpaceNode.class,				CATEGORYBASE),
+				N_ARENA 		("arena",			"arena",		ArenaNode.class,			CATEGORYBASE),
+				N_SPACE 		("space",			"space",		SpaceNode.class,			CATEGORYBASE),
 		N_EXPERIMENT 			("experiment",		"expt",			Experiment.class,			SIMBASE+20),	// after fully iinitialised simulator
 			N_DESIGN 			("design",			"dsgn",			Design.class,				0),//
 			N_TREATMENT 		("treatment",		"trt",			Treatment.class,			0),//
@@ -106,26 +107,26 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 	private final String defName;
 	private final Class<?> type;
 	private final int initRank;
-		
+
 	private ConfigurationNodeLabels(String label, String defName,Class<?> type, int initRank) {
 				this.label = label;
 		this.defName= defName;
 		this.type = type;
 		this.initRank = initRank;
 	}
-	
+
 	public String label() {
 		return label;
 	}
-	
+
 	public String defName() {
 		return defName;
 	}
-	
+
 	public Class<?> type() {
 		return type;
 	}
-	
+
 	public int initRank() {
 		return initRank;
 	}
