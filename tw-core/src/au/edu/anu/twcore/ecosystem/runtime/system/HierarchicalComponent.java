@@ -1,6 +1,5 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -17,38 +16,26 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 
 // The group parameters are actually this class lifetime constants !
 
-public class HierarchicalComponent
+public abstract class HierarchicalComponent
 		extends TreeGraphDataNode
 		implements CategorizedComponent {
 
+	private Categorized<? extends CategorizedComponent> cats = null;
+
 	public HierarchicalComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public void extrapolateState(long time) {
-		// TODO Auto-generated method stub
-
+	public Categorized<? extends CategorizedComponent> membership() {
+		return cats;
 	}
 
 	@Override
-	public void interpolateState(long time) {
-		// TODO Auto-generated method stub
+	public void setCategorized(Categorized<? extends CategorizedComponent> cats) {
+		if (cats==null)
+			this.cats = cats;
 
 	}
-
-	@Override
-	public Categorized<CategorizedComponent> membership() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TwData parameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 }

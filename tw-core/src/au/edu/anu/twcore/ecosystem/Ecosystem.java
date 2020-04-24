@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -62,26 +62,27 @@ import au.edu.anu.twcore.ecosystem.structure.ComponentType;
  * Class matching the "ecosystem" node label in the 3Worlds configuration tree.
  * Has properties. Also, produces the singleton top-container for the community of
  * SystemComponents which constitute this ecosystem.
- * 
+ *
  * TODO: add systemrelations in the community !
- * 
+ *
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class Ecosystem 
-		extends InitialisableNode 
+@Deprecated // replaced by ArenaType
+public class Ecosystem
+		extends InitialisableNode
 		implements Categorized<SystemComponent>, LimitedEdition<ComponentContainer>, Sealable {
 
-	// this is the top of the system, so it doesnt belong to any category	
+	// this is the top of the system, so it doesnt belong to any category
 	// except if we want to attach parameters/variables to it
 	private boolean sealed = false;
 	// a 'null' category in case no category is set by the user
 	private static final String rootCategoryId = ".";
 	// a set of categories in case the user set some
 	private String categoryId = null;
-	private Set<Category> categories = new TreeSet<Category>(); 
+	private Set<Category> categories = new TreeSet<Category>();
 	private TwData parameters = null;
-	
+
 	private Map<Integer,ComponentContainer> communities = new HashMap<>();
 
 	public Ecosystem(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -110,7 +111,7 @@ public class Ecosystem
 			// to set its variables, it cannot have any initial item
 			// FLAW: this is not going to work because no process will ever be called in this case
 			Collection<Category> cats = (Collection<Category>) get(edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
 				edgeListEndNodes());
 			if (!cats.isEmpty()) {
 				categories.addAll(getSuperCategories(cats));
@@ -130,14 +131,14 @@ public class Ecosystem
 					if (il.isEmpty())
 						categoryId = rootCategoryId;
 					// case 3: initial individuals have been specified, the ecosystem
-					// categories are set to those of the first individual in the list				
+					// categories are set to those of the first individual in the list
 					else {
 						Component i = il.get(0);
 						ComponentType scn = (ComponentType) get(i.edges(Direction.OUT),
 							selectOne(hasTheLabel(E_INSTANCEOF.label())),
 							endNode());
 						Collection<Category> nl = (Collection<Category>) get(scn.edges(Direction.OUT),
-							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
+							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
 							edgeListEndNodes());
 						categories.addAll(getSuperCategories(nl));
 						categoryId = buildCategorySignature();
@@ -160,7 +161,7 @@ public class Ecosystem
 	public int initRank() {
 		return N_SYSTEM.initRank();
 	}
-	
+
 	@Override
 	public Set<Category> categories() {
 		if (!categories.isEmpty())
@@ -172,13 +173,13 @@ public class Ecosystem
 	public String categoryId() {
 		return categoryId;
 	}
-	
+
 	private ComponentContainer makeCommunity() {
 		ComponentContainer community = null;
-		if (parameters!=null) // is it known here that this is definitely an "ecosystem"?
-			community = new ComponentContainer(this,"system",null,parameters.clone(),null);
-		else
-			community = new ComponentContainer(this,"system",null,null,null);
+//		if (parameters!=null) // is it known here that this is definitely an "ecosystem"?
+//			community = new ComponentContainer(this,"system",null,parameters.clone(),null);
+//		else
+//			community = new ComponentContainer(this,"system",null,null,null);
 		return community;
 	}
 

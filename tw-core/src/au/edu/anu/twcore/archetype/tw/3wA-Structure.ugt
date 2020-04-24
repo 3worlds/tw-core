@@ -42,7 +42,7 @@ hasNode categorySpec
 hasNode componentTypeSpec
 	isOfClass = String("componentType")
 	hasParent = StringTable(([1]"structure:"))
-	multiplicity = IntegerRange("1..*")
+	multiplicity = IntegerRange("0..*")
 	hasProperty componentLifeSpanPropertySpec
 		hasName = String("lifeSpan")
 		type = String("LifespanType")

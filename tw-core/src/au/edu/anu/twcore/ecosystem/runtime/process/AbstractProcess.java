@@ -43,8 +43,10 @@ import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
@@ -64,7 +66,7 @@ public abstract class AbstractProcess
 
 	private boolean sealed = false;
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
-    private ComponentContainer ecosystem = null;
+    private ArenaComponent ecosystem = null;
     // dataTrackers - common to all process types
     // NB: space data trackers are contained into spaces
 	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
@@ -75,7 +77,7 @@ public abstract class AbstractProcess
 
 	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
 
-	public AbstractProcess(ComponentContainer world, Timer timer,
+	public AbstractProcess(ArenaComponent world, Timer timer,
 			DynamicSpace<SystemComponent,LocatedSystemComponent> space,
     		double searchR) {
     	super();
@@ -103,7 +105,7 @@ public abstract class AbstractProcess
 		return space;
 	}
 
-	public final ComponentContainer ecosystem() {
+	public final ArenaComponent ecosystem() {
 		return ecosystem;
 	}
 
@@ -150,19 +152,19 @@ public abstract class AbstractProcess
 		if (container.categoryInfo() instanceof Ecosystem) {
 			context.ecosystemParameters = container.parameters();
 //			context.ecosystemVariables = container.variables();
-			context.ecosystemPopulationData = container.populationData();
+//			context.ecosystemPopulationData = container.populationData();
 			context.ecosystemName = container.id();
 		}
 		else if (container.categoryInfo() instanceof LifeCycle) {
 			context.lifeCycleParameters = container.parameters();
 //			context.lifeCycleVariables = container.variables();
-			context.lifeCyclePopulationData = container.populationData();
+//			context.lifeCyclePopulationData = container.populationData();
 			context.lifeCycleName = container.id();
 		}
 		else if (container.categoryInfo() instanceof SystemFactory)  {
 			context.groupParameters = container.parameters();
 //			context.groupVariables = container.variables();
-			context.groupPopulationData = container.populationData();
+//			context.groupPopulationData = container.populationData();
 			context.groupName = container.id();
 		}
 	}
@@ -190,9 +192,6 @@ public abstract class AbstractProcess
 
 	public abstract void addFunction(TwFunction function);
 
-	protected abstract void loop(CategorizedContainer<SystemComponent> container,
-			double t, double dt);
-
-
+	protected abstract void loop(HierarchicalComponent container, double t, double dt);
 
 }

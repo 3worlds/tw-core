@@ -98,7 +98,7 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	 *            the depth in past (could be zero) [maybe useful for diff equation computation]
 	 * @param propertyMap
 	 */
-	protected SystemComponentPropertyListImpl(SystemData autoVariables,
+	protected SystemComponentPropertyListImpl(TwData autoVariables,
 			TwData driverVariables,
 			TwData decoratorVariables,
 			TwData lifetimeConstants,
@@ -199,8 +199,8 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	// 3Worlds Side - for user & simulator interaction.
 	// ======================================================
 
-	protected SystemData auto() {
-		return (SystemData) autoState;
+	protected TwData auto() {
+		return autoState;
 	}
 
 	protected TwData decorators() {

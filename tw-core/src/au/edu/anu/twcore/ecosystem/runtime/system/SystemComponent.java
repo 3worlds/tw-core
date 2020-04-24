@@ -47,7 +47,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIO
 /**
  * The main runtime object in 3worlds, representing "individuals" or "agents" or "system
  * components".
- * NB:
+ * NB: not a TreeGraphNode ! this may be a problem in the future...
  *
  * @author Jacques Gignoux - 4 juin 2019
  *
@@ -56,7 +56,7 @@ public class SystemComponent
 		extends ALDataNode
 		implements CategorizedComponent, Contained<ComponentContainer> {
 
-	private Categorized<CategorizedComponent> cats = null;
+	private Categorized<SystemComponent> cats = null;
 	/** container */
 	private ComponentContainer container = null;
 
@@ -65,9 +65,11 @@ public class SystemComponent
 	}
 
 	// used only once at init time
-	public void setCategorized(Categorized<CategorizedComponent> cat) {
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setCategorized(Categorized<? extends CategorizedComponent> cat) {
 		if (cats==null)
-			cats = cat;
+			cats = (Categorized<SystemComponent>) cat;
 	}
 
 	/**
@@ -75,7 +77,7 @@ public class SystemComponent
 	 * @return all the category information relevant to this component
 	 */
 	@Override
-	public Categorized<CategorizedComponent> membership() {
+	public Categorized<SystemComponent> membership() {
 		return cats;
 	}
 
@@ -84,20 +86,8 @@ public class SystemComponent
 	}
 
 	@Override
-	public void extrapolateState(long time) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void interpolateState(long time) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public SystemComponent clone() {
-		SystemComponent result = (SystemComponent) ((SystemFactory)cats).newInstance();
+		SystemComponent result = (SystemComponent) ((ComponentFactory)cats).newInstance();
 		result.properties().setProperties(properties());
 		result.setContainer(container());
 		return result;
@@ -130,7 +120,7 @@ public class SystemComponent
 		return rel;
 	}
 
-	public SystemData autoVar() {
+	public TwData autoVar() {
 		return ((SystemComponentPropertyListImpl)properties()).auto();
 	}
 

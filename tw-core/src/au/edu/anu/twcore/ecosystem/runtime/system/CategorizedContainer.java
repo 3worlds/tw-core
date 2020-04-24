@@ -102,9 +102,9 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	private boolean sealed = false;
 	// category info (shared)
-	private Categorized<T> categoryInfo = null;
+//	private Categorized<T> categoryInfo = null;
 	// parameters (unique, owned)
-	private TwData parameters = null;
+//	private TwData parameters = null;
 	// variables (unique, owned)
 //	private TwData variables = null;
 	// replace with:
@@ -149,20 +149,29 @@ public abstract class CategorizedContainer<T extends Identity>
 //	}
 
 	// temporary - to keep the code running
-	protected NestedContainerData populationData;
+//	protected ContainerData populationData;
 
-	public CategorizedContainer(Categorized<T> cats, String proposedId, CategorizedContainer<T> parent,
-			TwData parameters, TwData variables) {
+	public CategorizedContainer(//Categorized<T> cats,
+			String proposedId,
+			CategorizedContainer<T> parent,
+			HierarchicalComponent data) {
+//			TwData parameters, TwData variables) {
 		super();
 		id = scope().newId(true,proposedId);
-		populationData = new NestedContainerData(this);
-		categoryInfo = cats;
-		this.parameters = parameters; // will be those of the HierarchicalComponent
+//		populationData = new NestedContainerData(this);
+//		categoryInfo = cats;
+//		this.parameters = data.constants(); // will be those of the HierarchicalComponent
 //		this.variables = variables;
+		avatar = data;
 		if (parent != null) {
 			superContainer = parent;
 			superContainer.subContainers.put(id(), this);
 		}
+	}
+
+	protected void setData(HierarchicalComponent data) {
+		if (avatar==null)
+			avatar = data;
 	}
 
 	// four ways to add items to the initialItems list
@@ -199,8 +208,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	 *
 	 * @return the object holding all the category information
 	 */
-	public Categorized<T> categoryInfo() {
-		return categoryInfo;
+	public Categorized<? extends CategorizedComponent> categoryInfo() {
+		return avatar.membership();
 	}
 
 	/**
@@ -211,7 +220,9 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * @return the parameter set - may be {@code null}
 	 */
 	public TwData parameters() {
-		return parameters;
+		if (avatar!=null)
+			return avatar.constants();
+		return null;
 	}
 
 	/**
@@ -223,9 +234,10 @@ public abstract class CategorizedContainer<T extends Identity>
 	 *
 	 * @return the population data as a read-only property list
 	 */
-	public NestedContainerData populationData() {
-		return populationData;
-	}
+//	public TwData populationData() {
+//		if (avatar!=null)
+//			return avatar.autoVar();
+//	}
 
 	/**
 	 * Tag an item for addition into this container's item list. The item will be
@@ -421,7 +433,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	// CAUTION HERE!
 //	@Override
 	public void resetCounters() {
-		populationData.resetCounters();
+		if (avatar.autoVar() instanceof ContainerData)
+			((ContainerData)avatar.autoVar()).resetCounters();
 	}
 
 	// Resettable methods
@@ -493,21 +506,21 @@ public abstract class CategorizedContainer<T extends Identity>
 		sb.append("container:");
 		sb.append(id().toString());
 		sb.append('[');
-		if (categoryInfo.categories() != null) {
+		if (categoryInfo().categories() != null) {
 			if (first)
 				first = false;
 			else
 				sb.append(' ');
 			sb.append("categories:");
-			sb.append(categoryInfo.categories().toString());
+			sb.append(categoryInfo().categories().toString());
 		}
-		if (parameters != null) {
+		if (avatar.constants() != null) {
 			if (first)
 				first = false;
 			else
 				sb.append(' ');
-			sb.append("parameters:(");
-			sb.append(parameters.toString());
+			sb.append("constants:(");
+			sb.append(avatar.constants().toString());
 			sb.append(')');
 		}
 		if (first)
@@ -515,8 +528,10 @@ public abstract class CategorizedContainer<T extends Identity>
 		else
 			sb.append(' ');
 		sb.append("variables:(");
-		sb.append(populationData.toString());
+		if (avatar.autoVar() != null)
+			sb.append(avatar.autoVar().toString());
 		sb.append(')');
+		// TODO: adapt this !
 		if (!initialItems.isEmpty()) {
 			sb.append(" initial_items:");
 			sb.append(initialItems.toString());

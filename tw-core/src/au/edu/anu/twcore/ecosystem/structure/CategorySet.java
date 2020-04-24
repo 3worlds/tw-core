@@ -47,7 +47,7 @@ import au.edu.anu.twcore.InitialisableNode;
 public class CategorySet extends InitialisableNode {
 
 	// default category sets present in ALL models
-	public final static String[] concepts		= {arena,lifeCycle,group,component,relation,space};
+	public final static String[] systemElements	= {arena,lifeCycle,group,component,relation,space};
 	public final static String[] lifespan 		= {permanent,ephemeral};
 	public final static String[] composition 	= {population,individual};
 

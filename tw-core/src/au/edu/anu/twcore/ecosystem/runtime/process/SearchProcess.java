@@ -42,8 +42,10 @@ import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
@@ -75,7 +77,7 @@ public class SearchProcess
 	private SystemFactory otherGroup = null;
 	private ComponentContainer otherGroupContainer = null;
 
-	public SearchProcess(ComponentContainer world, RelationContainer relation,
+	public SearchProcess(ArenaComponent world, RelationContainer relation,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space,double searchR) {
 		super(world, relation, timer, space, searchR);
 	}
@@ -89,42 +91,42 @@ public class SearchProcess
 	}
 
 	@Override
-	protected void loop(CategorizedContainer<SystemComponent> container, double t, double dt) {
-		if (container.categoryInfo() instanceof Ecosystem) {
-			setContext(focalContext,container);
-			setContext(otherContext,container);
-			focalContext.ecosystemParameters = container.parameters();
-			ecosystemContainer = (ComponentContainer)container;
-		}
-		for (CategorizedContainer<SystemComponent> subc:container.subContainers()) {
-			if (subc.categoryInfo() instanceof LifeCycle) {
-				loop(subc,t,dt);
-			}
-			if (subc.categoryInfo().belongsTo(focalCategories)) {
-				if (container.categoryInfo() instanceof LifeCycle) {
-					setContext(focalContext,container);
-					focalLifeCycle = (LifeCycle) container.categoryInfo();
-					focalLifeCycleContainer = (ComponentContainer) container;
-				}
-				setContext(focalContext,subc);
-				focalGroup = (SystemFactory) subc.categoryInfo();
-				focalGroupContainer = (ComponentContainer) subc;
-			}
-			if (subc.categoryInfo().belongsTo(otherCategories)) {
-				if (container.categoryInfo() instanceof LifeCycle) {
-					setContext(otherContext,container);
-					otherLifeCycle = (LifeCycle) container.categoryInfo();
-					otherLifeCycleContainer = (ComponentContainer) container;
-				}
-				setContext(otherContext,subc);
-				otherGroup = (SystemFactory) subc.categoryInfo();
-				otherGroupContainer = (ComponentContainer) subc;
-			}
-		}
-		if ((focalGroup!=null)&&(otherGroup!=null)) {
-			focalGroupContainer.change();
-			executeFunctions(focalGroupContainer,otherGroupContainer,t,dt);
-		}
+	protected void loop(HierarchicalComponent container, double t, double dt) {
+//		if (container.categoryInfo() instanceof Ecosystem) {
+//			setContext(focalContext,container);
+//			setContext(otherContext,container);
+//			focalContext.ecosystemParameters = container.parameters();
+//			ecosystemContainer = (ComponentContainer)container;
+//		}
+//		for (CategorizedContainer<SystemComponent> subc:container.subContainers()) {
+//			if (subc.categoryInfo() instanceof LifeCycle) {
+//				loop(subc,t,dt);
+//			}
+//			if (subc.categoryInfo().belongsTo(focalCategories)) {
+//				if (container.categoryInfo() instanceof LifeCycle) {
+//					setContext(focalContext,container);
+//					focalLifeCycle = (LifeCycle) container.categoryInfo();
+//					focalLifeCycleContainer = (ComponentContainer) container;
+//				}
+//				setContext(focalContext,subc);
+//				focalGroup = (SystemFactory) subc.categoryInfo();
+//				focalGroupContainer = (ComponentContainer) subc;
+//			}
+//			if (subc.categoryInfo().belongsTo(otherCategories)) {
+//				if (container.categoryInfo() instanceof LifeCycle) {
+//					setContext(otherContext,container);
+//					otherLifeCycle = (LifeCycle) container.categoryInfo();
+//					otherLifeCycleContainer = (ComponentContainer) container;
+//				}
+//				setContext(otherContext,subc);
+//				otherGroup = (SystemFactory) subc.categoryInfo();
+//				otherGroupContainer = (ComponentContainer) subc;
+//			}
+//		}
+//		if ((focalGroup!=null)&&(otherGroup!=null)) {
+//			focalGroupContainer.change();
+//			executeFunctions(focalGroupContainer,otherGroupContainer,t,dt);
+//		}
 	}
 
 	private void doRelate(double t, double dt, SystemComponent focal, SystemComponent other,
@@ -133,17 +135,17 @@ public class SearchProcess
 			function.setFocalContext(focalContext);
 			function.setOtherContext(otherContext);
 //			if (function.relate(t,dt,focal,other,focalLocation,otherLocation)) {
-			if (function.relate(t, dt, limits,
-				focalContext.ecosystemParameters, ecosystemContainer,
-				focalContext.lifeCycleParameters, focalLifeCycleContainer,
-				focalContext.groupParameters, focalGroupContainer,
-				otherContext.groupParameters, otherGroupContainer,
-				focal.autoVar(),focal.constants(),focal.currentState(),focal.decorators(),
-				focalLocation.asPoint(),
-				other.autoVar(),other.constants(),other.currentState(),other.decorators(),
-				otherLocation.asPoint())) {
-				relContainer.addItem(focal,other);
-			}
+//			if (function.relate(t, dt, limits,
+//				focalContext.ecosystemParameters, ecosystemContainer,
+//				focalContext.lifeCycleParameters, focalLifeCycleContainer,
+//				focalContext.groupParameters, focalGroupContainer,
+//				otherContext.groupParameters, otherGroupContainer,
+//				focal.autoVar(),focal.constants(),focal.currentState(),focal.decorators(),
+//				focalLocation.asPoint(),
+//				other.autoVar(),other.constants(),other.currentState(),other.decorators(),
+//				otherLocation.asPoint())) {
+//				relContainer.addItem(focal,other);
+//			}
 		}
 	}
 

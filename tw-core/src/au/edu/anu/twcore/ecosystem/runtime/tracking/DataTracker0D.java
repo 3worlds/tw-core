@@ -244,11 +244,15 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 				if (!container.contains(isc.next()))
 					isc.remove();
 			}
-			if ((trackSampleSize == -1) || // means the whole container is tracked
-					(container.populationData().count() <= trackSampleSize)) { // means there are not enough components to select them
-				trackedComponents.clear();
-				for (SystemComponent sc : container.items())
-					trackedComponents.add(sc);
+
+			if (false) { // means there are not enough components to select them
+//	TODO: CODE BROKEN HERE
+//
+//			if ((trackSampleSize == -1) || // means the whole container is tracked
+//					(container.populationData().count() <= trackSampleSize)) { // means there are not enough components to select them
+//				trackedComponents.clear();
+//				for (SystemComponent sc : container.items())
+//					trackedComponents.add(sc);
 			}
 			// only a selected subset is tracked
 			else if (trackedComponents.size() < trackSampleSize) {

@@ -1,16 +1,14 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.COUNT;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.NADDED;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.NREMOVED;
+import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Population;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 
 /**
  * A class to contain ComponentContainer automatic data, ie mainly population
@@ -21,7 +19,9 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
  * @author J. Gignoux - 16 avr. 2020
  *
  */
-public class ContainerData implements Population, ReadOnlyPropertyList {
+public class ContainerData
+		extends TwData
+		implements Population {
 
 	// the lists of items which sizes are tracked here
 	final Collection<?> items;
@@ -132,6 +132,23 @@ public class ContainerData implements Population, ReadOnlyPropertyList {
 			} else
 				sb.append(' ').append(key).append("=").append(getPropertyValue(key));
 		return sb.toString();
+	}
+
+	@Override
+	public TwData setProperty(String key, Object value) {
+		// do nothing
+		return this;
+	}
+
+	@Override
+	protected TwData cloneStructure() {
+		return new ContainerData(items,itemsAdded,itemsRemoved);
+	}
+
+	@Override
+	public TwData clear() {
+		// do nothing
+		return this;
 	}
 
 }

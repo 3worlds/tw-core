@@ -54,6 +54,7 @@ import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
@@ -271,7 +272,8 @@ public class Simulator implements Resettable {
 			}
 			// 3b resetting decorators and population counters to zero for next step
 			// only for those processes that were run just before
-			ecosystem.community().prepareStepAll();
+			if (ecosystem.community()!=null) // TODO improve this treatment
+				ecosystem.community().prepareStepAll();
 			// 4 advance time ONLY for those time models that were processed
 			i = 0;
 			for (Timer tm : timerList) {
@@ -280,10 +282,14 @@ public class Simulator implements Resettable {
 				i++;
 			}
 			// 5 advance age of ALL SystemComponents, including the not update ones.
-			for (SystemComponent sc : ecosystem.community().allItems()) {
-				sc.autoVar().writeEnable();
-				sc.autoVar().age(nexttime - sc.autoVar().birthDate());
-				sc.autoVar().writeDisable();
+			if (ecosystem.community()!=null) // TODO improve this treatment
+				for (SystemComponent sc : ecosystem.community().allItems())
+				if (sc.autoVar()!=null)
+					if (sc.autoVar() instanceof SystemData){
+						SystemData au = (SystemData) sc.autoVar();
+						au.writeEnable();
+						au.age(nexttime - au.birthDate());
+						au.writeDisable();
 			}
 			// apply all changes to community
 			ecosystem.effectChanges();
@@ -336,7 +342,8 @@ public class Simulator implements Resettable {
 		// clones initial items to ecosystem objects
 		ecosystem.preProcess();
 		// computes coordinates of items just added before
-		computeInitialCoordinates(ecosystem.community());
+		if (ecosystem.community()!=null)
+			computeInitialCoordinates(ecosystem.community());
 	}
 
 	@Override

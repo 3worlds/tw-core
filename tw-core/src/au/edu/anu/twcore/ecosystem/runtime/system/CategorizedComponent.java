@@ -3,7 +3,6 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
-import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.Node;
 
 /**
@@ -13,7 +12,7 @@ import fr.cnrs.iees.graph.Node;
  *
  */
 public interface CategorizedComponent
-		extends Node, DataHolder, DynamicSystem, Cloneable {
+		extends DataElement, Node, DynamicSystem, Cloneable {
 
 	/** indexes to access state variable table */
 	static final int CURRENT = 1;
@@ -21,6 +20,8 @@ public interface CategorizedComponent
 	static final int PAST0 = CURRENT + 1;
 
 	public Categorized<? extends CategorizedComponent> membership();
+
+	public void setCategorized(Categorized<? extends CategorizedComponent> cats);
 
 	@Override
 	public default TwData currentState() {
@@ -71,6 +72,19 @@ public interface CategorizedComponent
 	}
 
 	@Override
+	public default void extrapolateState(long time) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public default void interpolateState(long time) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
 	public default void stepForward() {
 		TwData[] state = ((SystemComponentPropertyListImpl)properties()).drivers();
 		if (state != null) {
@@ -94,6 +108,13 @@ public interface CategorizedComponent
 		return ((SystemComponentPropertyListImpl) properties()).constants();
 	}
 
-	public TwData parameters();
+	public default TwData autoVar() {
+		return ((SystemComponentPropertyListImpl) properties()).auto();
+	}
+
+	// TODO: get rid of this method !
+	public default TwData parameters() {
+		return null;
+	}
 
 }

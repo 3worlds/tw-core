@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -66,24 +66,26 @@ import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.Structure;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
  * Class matching the "ecosystem/dynamics" node label in the 3Worlds configuration tree.
  * Has no properties. This <em>is</em> the simulator.
- * 
+ *
  * NB: possible flaw here - Simulator is a factory while processNode is a singleton - does it mean
  * the same process instance will be used in many simulators ? if yes, that's wrong...
- * 
+ *
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class SimulatorNode 
-		extends InitialisableNode 
+public class SimulatorNode
+		extends InitialisableNode
 		implements LimitedEdition<Simulator>, Sealable {
-	
+
 	private boolean sealed = false;
 	private TimeLine timeLine = null;
 	private Map<Integer,Simulator> simulators = new HashMap<>();
@@ -98,7 +100,7 @@ public class SimulatorNode
 	public SimulatorNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
-	
+
 	public SimulatorNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
@@ -122,7 +124,7 @@ public class SimulatorNode
 	public int initRank() {
 		return N_DYNAMICS.initRank();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private Simulator makeSimulator(int index) {
 		// *** TimeModel --> Timer
@@ -144,7 +146,7 @@ public class SimulatorNode
 			for (StoppingConditionNode scn:scnodes)
 				lsc.add(scn.getInstance());
 			rootStop = new MultipleOrStoppingCondition(lsc);
-		} 
+		}
 		// when there is only one stopping condition, then it is used
 		else
 			rootStop = scnodes.get(0).getInstance();
@@ -161,11 +163,13 @@ public class SimulatorNode
 			pco.put(e.getKey(),nllp);
 		}
 		// *** Initial community
-		ComponentContainer comm = (ComponentContainer)((Ecosystem) getParent()).getInstance(index);
+//		ComponentContainer comm = (ComponentContainer)((Ecosystem) getParent()).getInstance(index);
+		ArenaComponent arena = ((ArenaType) getParent()).getInstance(index).getInstance();
+		ComponentContainer comm = arena.content();
 		setInitialCommunity(index);
 		// *** ecosystem graph
-		Structure str = (Structure) get(getParent(), 
-			children(), 
+		Structure str = (Structure) get(getParent(),
+			children(),
 			selectOne(hasTheLabel(N_STRUCTURE.label())));
 		EcosystemGraph ecosystem = new EcosystemGraph(comm,str.getInstance(index));
 		// *** finally, instantiate simulator
@@ -173,7 +177,7 @@ public class SimulatorNode
 		rootStop.attachSimulator(sim);
 		return sim;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void scanSubGroups(Group group,int index) {
 		group.getInstance(index);
@@ -186,7 +190,7 @@ public class SimulatorNode
 		for (Group g:lg)
 			scanSubGroups(g,index);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void setInitialCommunity(int index) {
 		InitialState init = (InitialState) get(getChildren(), selectZeroOrOne(hasTheLabel(N_INITIALSTATE.label())));
@@ -205,7 +209,7 @@ public class SimulatorNode
 	public Simulator getInstance(int index) {
 		if (!sealed)
 			initialise();
-		if (!simulators.containsKey(index)) 
+		if (!simulators.containsKey(index))
 			simulators.put(index,makeSimulator(index));
 		return simulators.get(index);
 	}
@@ -226,17 +230,17 @@ public class SimulatorNode
 	public boolean isSealed() {
 		return sealed;
 	}
-	
+
 	/**
 	 * recursive method to build up the list of all possible simultaneous
 	 * timeModel combinations. NOTE that this must be called with a non-empty
 	 * list, otherwise the recursion will never start. works fine (3 timeModels
 	 * generate 7 sets as expected)
-	 * 
+	 *
 	 * @param combinationList
 	 *            - the list of timeModel combinations
 	 */
-	private void computeTMCombinations(Set<HashSet<TimeModel>> 
+	private void computeTMCombinations(Set<HashSet<TimeModel>>
 		combinationList,List<TimeModel> timerList) {
 		int initSize = combinationList.size();
 		Set<HashSet<TimeModel>> addList = new HashSet<HashSet<TimeModel>>();
@@ -252,10 +256,10 @@ public class SimulatorNode
 		if (combinationList.size() != initSize)
 			computeTMCombinations(combinationList,timerList);
 	}
-	
+
 	/**
 	 * compute the dependency rank of a Process - recursive
-	 * 
+	 *
 	 * @return
 	 */
 	private int dependencyRank(int rank, ProcessNode p,
@@ -265,7 +269,7 @@ public class SimulatorNode
 			result = Math.max(result, dependencyRank(rank + 1, dp, deps));
 		return result;
 	}
-	
+
 	/**
 	 * computes the order of process calls for any combination of time models
 	 * possibly occurring simultaneously. Results are stored in
@@ -273,7 +277,7 @@ public class SimulatorNode
 	 * processes index by execution rank. Process lists are executed by order of
 	 * execution rank. Within a list, order doesnt matter (and process execution
 	 * could in theory be parallelized here).
-	 * 
+	 *
 	 * Code checked & tested with procesRankingTest.dsl.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
@@ -329,7 +333,7 @@ public class SimulatorNode
 			for (ProcessNode p : simultaneousProcesses)
 				spl.add(p);
 			for (ProcessNode p : simultaneousProcesses) {
-				List<ProcessNode> deps = (List<ProcessNode>) get(p.edges(Direction.OUT), 
+				List<ProcessNode> deps = (List<ProcessNode>) get(p.edges(Direction.OUT),
 					selectZeroOrMany(hasTheLabel(E_DEPENDSON.label())),
 					edgeListEndNodes());
 				List<ProcessNode> dep = new LinkedList<ProcessNode>();
@@ -360,5 +364,5 @@ public class SimulatorNode
 			processCallingOrder.put(allTMMasks.get(stm), processesByRank);
 		}
 	}
-	
+
 }

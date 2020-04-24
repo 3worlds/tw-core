@@ -16,6 +16,7 @@ import au.edu.anu.twcore.ecosystem.runtime.containers.SimpleContainer;
  * @author J. Gignoux - 16 avr. 2020
  *
  */
+@Deprecated// this class is actually not needed
 public class NestedContainerData extends ContainerData {
 
 	private int totalCount = 0;
@@ -45,12 +46,12 @@ public class NestedContainerData extends ContainerData {
 	// Note: little trick here: both arguments are actually the same object.
 	private void addAll(NestedContainer<?> cont,
 		SimpleContainer<?> pop) {
-		totalCount += pop.populationData().count();
-		totalAdded += pop.populationData().nAdded();
-		totalRemoved += pop.populationData().nRemoved();
-		for (SimpleContainer<?> subc : cont.subContainers())
-			if (subc instanceof NestedContainer<?>)
-				addAll((NestedContainer<?>) subc,subc);
+//		totalCount += pop.populationData().count();
+//		totalAdded += pop.populationData().nAdded();
+//		totalRemoved += pop.populationData().nRemoved();
+//		for (SimpleContainer<?> subc : cont.subContainers())
+//			if (subc instanceof NestedContainer<?>)
+//				addAll((NestedContainer<?>) subc,subc);
 	}
 
 	// this must be called at te end of every time step, BEFORE new cp are added and old ones deleted

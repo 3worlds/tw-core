@@ -63,12 +63,16 @@ public class EcosystemGraph
 
 	@Override
 	public Iterable<SystemComponent> nodes() {
-		return components.allItems();
+		if (components!=null)
+			return components.allItems();
+		return null;
 	}
 
 	@Override
 	public boolean contains(SystemComponent node) {
-		return components.contains(node);
+		if (components!=null)
+			return components.contains(node);
+		return false;
 	}
 
 	@Override
@@ -88,20 +92,26 @@ public class EcosystemGraph
 
 	@Override
 	public int nNodes() {
-		return components.populationData().totalCount();
+		// TODO
+//		if (components!=null)
+//			return components.populationData().totalCount();
+		return 0;
 	}
 
 	@Override
 	public SystemComponent findNode(String id) {
-		return components.item(id);
+		if (components!=null)
+			return components.item(id);
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Iterable<SystemRelation> edges() {
 		QuickListOfLists<SystemRelation> ql = new QuickListOfLists<>();
-		for (SystemComponent sc:components.allItems())
-			ql.addList((Iterable<SystemRelation>)sc.edges(Direction.OUT));
+		if (components!=null)
+			for (SystemComponent sc:components.allItems())
+				ql.addList((Iterable<SystemRelation>)sc.edges(Direction.OUT));
 		return ql;
 	}
 
@@ -113,8 +123,9 @@ public class EcosystemGraph
 	@Override
 	public int nEdges() {
 		int n=0;
-		for (SystemComponent sc:components.allItems())
-			n += sc.degree(Direction.OUT);
+		if (components!=null)
+			for (SystemComponent sc:components.allItems())
+				n += sc.degree(Direction.OUT);
 		return n;
 	}
 
@@ -122,10 +133,11 @@ public class EcosystemGraph
 	@Override
 	public SystemRelation findEdge(String id) {
 		SystemRelation result = null;
-		for (SystemComponent sc:components.allItems()) {
-			for (Edge e:sc.edges(Direction.OUT))
-				if (e.id().equals(id))
-					return (SystemRelation) e;
+		if (components!=null)
+			for (SystemComponent sc:components.allItems()) {
+				for (Edge e:sc.edges(Direction.OUT))
+					if (e.id().equals(id))
+						return (SystemRelation) e;
 		}
 		return result;
 	}
@@ -150,22 +162,26 @@ public class EcosystemGraph
 		for (RelationContainer relc:relations.values())
 			relc.effectChanges();
 		// remove and create all components
-		// this may possibly remove relations set just before
-		components.effectAllChanges();
-		// Second, graph state changes
-		components.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
+		if (components!=null) {
+			// this may possibly remove relations set just before
+			components.effectAllChanges();
+			// Second, graph state changes
+			components.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
+		}
 	}
 
 	@Override
 	public void preProcess() {
-		components.preProcess();
+		if (components!=null)
+			components.preProcess();
 		for (RelationContainer rc: relations.values())
 			rc.preProcess();
 	}
 
 	@Override
 	public void postProcess() {
-		components.postProcess();
+		if (components!=null)
+			components.postProcess();
 		for (RelationContainer rc: relations.values())
 			rc.postProcess();
 	}

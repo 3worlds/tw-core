@@ -100,7 +100,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		private String autoVars;
 		private String drivers;
 		private String decorators;
-		private String parameters;
+//		private String parameters;
 		private String lifetimeConstants;
 	}
 
@@ -166,19 +166,30 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		else {
 			imports.add("static java.lang.Math.*");
 		}
-		List<TreeGraphDataNode> cpt = (List<TreeGraphDataNode>) get(root3w, children(),selectOne(hasTheLabel(N_SYSTEM.label())),
-			children(),selectOne(hasTheLabel(N_STRUCTURE.label())),
-			children(),selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+		// get all nodes susceptible to require generated data
+		TreeGraphDataNode systemNode = (TreeGraphDataNode) get(root3w,
+			children(),
+			selectOne(hasTheLabel(N_SYSTEM.label())));
+		List<TreeGraphDataNode> cpt = (List<TreeGraphDataNode>) get(systemNode,
+			children(),
+			selectOne(hasTheLabel(N_STRUCTURE.label())),
+			children(),
+			selectZeroOrMany(
+				orQuery(hasTheLabel(N_LIFECYCLE.label()),
+					hasTheLabel(N_GROUP.label()),
+					hasTheLabel(N_SPACE.label()),
+					hasTheLabel(N_COMPONENTTYPE.label()))));
+		cpt.add(systemNode);
 		for (TreeGraphDataNode tn:cpt) {
 			generatedData cl = new generatedData();
-			if (tn.properties().hasProperty(P_PARAMETERCLASS.key()))
-				if (tn.properties().getPropertyValue(P_PARAMETERCLASS.key())!=null) {
-					String s = (String) tn.properties().getPropertyValue(P_PARAMETERCLASS.key());
-					if (s.isEmpty())
-						cl.parameters = null;
-					else
-						cl.parameters = s;
-			}
+//			if (tn.properties().hasProperty(P_PARAMETERCLASS.key()))
+//				if (tn.properties().getPropertyValue(P_PARAMETERCLASS.key())!=null) {
+//					String s = (String) tn.properties().getPropertyValue(P_PARAMETERCLASS.key());
+//					if (s.isEmpty())
+//						cl.parameters = null;
+//					else
+//						cl.parameters = s;
+//			}
 			if (tn.properties().hasProperty(P_LTCONSTANTCLASS.key()))
 				if (tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key())!=null) {
 					String s = (String) tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key());
@@ -304,15 +315,15 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						if (field.equals(t.id()))
 							return dataClassNames.get(set).lifetimeConstants;
 				}
-				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
-					selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
-					endNode());
-				if (rec!=null) {
-					for (TreeNode t:rec.getChildren())
-						// this works for tables and fields
-						if (field.equals(t.id()))
-							return dataClassNames.get(set).parameters;
-				}
+//				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+//					selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
+//					endNode());
+//				if (rec!=null) {
+//					for (TreeNode t:rec.getChildren())
+//						// this works for tables and fields
+//						if (field.equals(t.id()))
+//							return dataClassNames.get(set).parameters;
+//				}
 				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
 						selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
 						endNode());
@@ -598,7 +609,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		argSet.addAll(ftype.localArguments());
 		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal = getAllMembers(focalCats);
 		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther = getAllMembers(otherCats);
-		for (String category:Category.SET_HIERARCHY) {
+		for (String category:CategorySet.systemElements) {
 			for (ConfigurationEdgeLabels cel:
 				EnumSet.of(E_AUTOVAR,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS))
 				System.out.println(category+"."+cel.toString());
@@ -651,49 +662,49 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				// TODO: groups etc.
 				break;
 			case ecosystemPop:
-				for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
-					String popname = validJavaName(wordUpperCaseName("ecosystem."+pv.longName()));
-					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
-					if (poptype.equals("integer"))
-						poptype = "int";
-					method.addArgument(arg, popname, poptype, pv.description());
-					headerComment.append("@param ").append(popname).append(" ")
-						.append(pv.description()).append(" of ecosystem").append("\n");
-				}
+//				for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
+//					String popname = validJavaName(wordUpperCaseName("ecosystem."+pv.longName()));
+//					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
+//					if (poptype.equals("integer"))
+//						poptype = "int";
+//					method.addArgument(arg, popname, poptype, pv.description());
+//					headerComment.append("@param ").append(popname).append(" ")
+//						.append(pv.description()).append(" of ecosystem").append("\n");
+//				}
 				break;
 			case lifeCyclePop:
-				if (hasLifeCycle)
-					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
-						String popname = validJavaName(wordUpperCaseName("lifeCycle."+pv.longName()));
-						String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
-						if (poptype.equals("integer"))
-							poptype = "int";
-						method.addArgument(arg, popname, poptype, pv.description());
-						headerComment.append("@param ").append(popname).append(" ")
-							.append(pv.description()).append(" of life cycle").append("\n");
-				}
+//				if (hasLifeCycle)
+//					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
+//						String popname = validJavaName(wordUpperCaseName("lifeCycle."+pv.longName()));
+//						String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
+//						if (poptype.equals("integer"))
+//							poptype = "int";
+//						method.addArgument(arg, popname, poptype, pv.description());
+//						headerComment.append("@param ").append(popname).append(" ")
+//							.append(pv.description()).append(" of life cycle").append("\n");
+//				}
 				break;
 			case groupPop:
-				for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
-					String popname = validJavaName(wordUpperCaseName("group."+pv.longName()));
-					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
-					if (poptype.equals("integer"))
-						poptype = "int";
-					method.addArgument(arg, popname, poptype, pv.description());
-					headerComment.append("@param ").append(popname).append(" ")
-						.append(pv.description()).append(" of focal group").append("\n");
-				}
+//				for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
+//					String popname = validJavaName(wordUpperCaseName("group."+pv.longName()));
+//					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
+//					if (poptype.equals("integer"))
+//						poptype = "int";
+//					method.addArgument(arg, popname, poptype, pv.description());
+//					headerComment.append("@param ").append(popname).append(" ")
+//						.append(pv.description()).append(" of focal group").append("\n");
+//				}
 				break;
 			case otherGroupPop:
-				for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
-					String popname = validJavaName(wordUpperCaseName("other.group."+pv.longName()));
-					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
-					if (poptype.equals("integer"))
-						poptype = "int";
-					method.addArgument(arg, popname, poptype, pv.description());
-					headerComment.append("@param ").append(popname).append(" ")
-						.append(pv.description()).append(" of other group").append("\n");
-				}
+//				for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
+//					String popname = validJavaName(wordUpperCaseName("other.group."+pv.longName()));
+//					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
+//					if (poptype.equals("integer"))
+//						poptype = "int";
+//					method.addArgument(arg, popname, poptype, pv.description());
+//					headerComment.append("@param ").append(popname).append(" ")
+//						.append(pv.description()).append(" of other group").append("\n");
+//				}
 				break;
 			case focalAuto:
 				// TODO: convert age properly using Timer.userTime(long)

@@ -1,9 +1,8 @@
-package au.edu.anu.twcore.ecosystem.structure;
+package au.edu.anu.twcore.ecosystem.structure.newapi;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,14 +14,16 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
+import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
+import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
+import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
@@ -30,41 +31,39 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOneOrMany;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BELONGSTO;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DECORATORCLASS;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DRIVERCLASS;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_LTCONSTANTCLASS;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_PARAMETERCLASS;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * Matches the structure&gt;template node of the specifications.
+ * An ancestor to nodes that produce factories that create SystemCOmponents with data in
  *
  * @author J. Gignoux - 22 avr. 2020
  *
  */
-public class TemplateNode
+public abstract class ElementType<T extends ElementFactory<U>,U extends DataElement>
 		extends InitialisableNode
-		implements LimitedEdition<Template>, Categorized<SystemComponent>, Sealable {
+		implements LimitedEdition<T>, Categorized<U>, Sealable {
 
-	private boolean sealed = false;
-	private Map<Integer,Template> templates = new HashMap<>();
-	private SortedSet<Category> categories = new TreeSet<>();
+	boolean sealed = false;
+	Map<Integer,T> templates = new HashMap<>();
+	SortedSet<Category> categories = new TreeSet<>();
 	private List<String> categoryNames = null;
 	private String categoryId = null;
 	/** TwData templates to clone to create new systems */
-	private ReadOnlyPropertyList autoVarTemplate = null;
-	private TwData parameterTemplate = null;
-	private TwData driverTemplate = null;
-	private TwData decoratorTemplate = null;
-	private TwData lifetimeConstantTemplate = null;
+	protected TwData autoVarTemplate = null;
+//	private TwData parameterTemplate = null;
+	protected TwData driverTemplate = null;
+	protected TwData decoratorTemplate = null;
+	protected TwData lifetimeConstantTemplate = null;
+	SimplePropertyList properties = null;
+	SetInitialStateFunction setinit = null;
 
 	// default constructor
-	public TemplateNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public ElementType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
 	// constructor with no properties
-	public TemplateNode(Identity id, GraphFactory gfactory) {
+	public ElementType(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
@@ -79,6 +78,13 @@ public class TemplateNode
 		categoryNames = new ArrayList<>(categories.size());
 		for (Category c:categories)
 			categoryNames.add(c.id()); // order is maintained
+		if (categoryNames.contains(Category.ephemeral))
+			autoVarTemplate = new SystemData();
+		// NB: maybe permanent systems should have a different scope for their identities, so that
+		// the same name can be used at every reset
+		// on the other hand, the container name can be used for unicity
+		if (categoryNames.contains(Category.population))
+			autoVarTemplate = null; // this must be done in descendants
 		// user-defined data structures
 		// These ARE optional - inserted by codeGenerator!
 		String s = null;
@@ -100,13 +106,10 @@ public class TemplateNode
 				if (!s.trim().isEmpty())
 					lifetimeConstantTemplate = loadDataClass(s);
 		}
+		// TODO: Find the setInitialState function
+//		setinit = ???
 		sealed = true; // important - next statement access this class methods
 		categoryId = buildCategorySignature();
-	}
-
-	@Override
-	public int initRank() {
-		return N_TEMPLATE.initRank();
 	}
 
 	@Override
@@ -121,7 +124,7 @@ public class TemplateNode
 	}
 
 	@Override
-	public Template getInstance(int id) {
+	public T getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!templates.containsKey(id))
@@ -129,44 +132,7 @@ public class TemplateNode
 		return templates.get(id);
 	}
 
-	private Template makeTemplate(int id) {
-		Template result = null;
-		// predefined categories of the composition category set
-		if (categoryNames.contains(Category.population)) {
-			// make container
-		}
-		else if (categoryNames.contains(Category.individual)) {
-			// find container
-		}
-		// predefined categories of the lifespan category set
-		if (categoryNames.contains(Category.permanent)) {
-
-		}
-		else if (categoryNames.contains(Category.ephemeral)) {
-			autoVarTemplate = new SystemData();
-		}
-		// in the next statement different factories are produced
-		// predefined categories of the concepts category set
-		if (categoryNames.contains(Category.arena)) {
-			// must be unique - make a singleton factory
-		}
-		else if (categoryNames.contains(Category.lifeCycle)) {
-
-		}
-		else if (categoryNames.contains(Category.group)) {
-
-		}
-		else if (categoryNames.contains(Category.component)) {
-			// make a componentfactory ( currently systemfactory)
-		}
-		else if (categoryNames.contains(Category.relation)) {
-			// get the fromCat and toCat to generate a relationFactory
-		}
-		else if (categoryNames.contains(Category.space)) {
-
-		}
-		return result;
-	}
+	abstract T makeTemplate(int id);
 
 	@Override
 	public Set<Category> categories() {

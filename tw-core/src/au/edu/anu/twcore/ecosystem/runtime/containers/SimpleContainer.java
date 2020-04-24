@@ -49,7 +49,7 @@ public interface SimpleContainer<T extends Identity> extends Container {
 	 *
 	 * @return the population data as a read-only property list
 	 */
-	public ContainerData populationData();
+//	public ContainerData populationData(); // TODO: temporary
 
 	/**
 	 * Gets the item matching the id passed as argument. Only searches this

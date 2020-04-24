@@ -30,7 +30,6 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 
 import au.edu.anu.rscs.aot.collections.DynamicList;
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
@@ -42,6 +41,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
@@ -75,7 +75,7 @@ public class ProcessNode
 		implements LimitedEdition<TwProcess>, Sealable {
 
 	private boolean sealed = false;
-	private Ecosystem ecosystem = null;
+	private ArenaType ecosystem = null;
 
 	private Collection<Category> categories = null;
 	private RelationType relation = null;
@@ -102,7 +102,8 @@ public class ProcessNode
 		if (!sealed) {
 			super.initialise();
 			sealed = false;			// timeModel  timeLine    dynamics    ecosystem
-			ecosystem = (Ecosystem) getParent().getParent().getParent().getParent();
+//			ecosystem = (Ecosystem) getParent().getParent().getParent().getParent();
+			ecosystem = (ArenaType) getParent().getParent().getParent().getParent();
 //			timeModel = (TimeModel)getParent();
 			// 1 - setting up simulation code execution
 			DynamicList<? extends Node> applies = (DynamicList<? extends Node>) get(edges(Direction.OUT),
@@ -156,16 +157,16 @@ public class ProcessNode
 		if (spaceNode!=null)
 			sp = spaceNode.getInstance(index);
 		if (categories!=null)
-			result = new ComponentProcess(ecosystem.getInstance(index),
+			result = new ComponentProcess(ecosystem.getInstance(index).getInstance(),
 				categories,tm.getInstance(index),sp,searchRadius);
 		else if (relation!=null) {
 			if ((functions.size()==1) &&
 				(functions.get(0).properties().getPropertyValue(P_FUNCTIONTYPE.key())
 					.equals(TwFunctionTypes.RelateToDecision)))
-				result = new SearchProcess(ecosystem.getInstance(index),
+				result = new SearchProcess(ecosystem.getInstance(index).getInstance(),
 					relation.getInstance(index),tm.getInstance(index),sp,searchRadius);
 			else
-				result = new RelationProcess(ecosystem.getInstance(index),
+				result = new RelationProcess(ecosystem.getInstance(index).getInstance(),
 					relation.getInstance(index),tm.getInstance(index),sp,searchRadius);
 		}
 		for (FunctionNode func:functions)

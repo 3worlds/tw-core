@@ -29,13 +29,14 @@
 package fr.cnrs.iees.twcore.constants;
 
 import au.edu.anu.twcore.data.*;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
 import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.ecosystem.dynamics.*;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.*;
+import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
 import au.edu.anu.twcore.root.World;
 
 /**
@@ -59,7 +60,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_RECORD 			("record",			"rec",			Record.class,				0),//
 			N_FIELD 			("field",			"fld",			FieldNode.class,				0),//
 			N_RNG               ("rng",				"gen",			RngNode.class,              DIMBASE),//
-		N_SYSTEM 				("system",			"sys",			Ecosystem.class,			ECOBASE),//
+		N_SYSTEM 				("system",			"sys",			ArenaType.class,			ECOBASE),//
 			N_DYNAMICS 			("dynamics",		"dyns",			SimulatorNode.class,Math.max(SIMBASE+10,// after stopping conditions
 																						Math.max(TIMEBASE+20,	// AND TimerModels
 																							CATEGORYBASE+60))), // AND a fully initialised ECOSYSTEM
@@ -82,7 +83,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_STRUCTURE 		("structure",		"struc",		Structure.class,			0),//
 				N_CATEGORYSET 	("categorySet",		"catSet",		CategorySet.class,			0),//
 				N_CATEGORY 		("category",		"cat",			Category.class,				CATEGORYBASE),
-				N_TEMPLATE 		("template",		"tpl",			Template.class,				CATEGORYBASE+10),
+				N_TEMPLATE 		("template",		"tpl",			ElementFactory.class,				CATEGORYBASE+10),
 				N_COMPONENTTYPE ("componentType",	"compTyp",		ComponentType.class,		CATEGORYBASE+10), // after category and categorySet
 				N_RELATIONTYPE 	("relationType",	"relTyp",		RelationType.class,			CATEGORYBASE+10), // after category
 				N_ARENA 		("arena",			"arena",		ArenaNode.class,			CATEGORYBASE),

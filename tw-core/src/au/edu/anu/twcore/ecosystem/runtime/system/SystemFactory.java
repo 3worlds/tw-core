@@ -54,8 +54,9 @@ import java.util.TreeSet;
  * @author Jacques Gignoux - 25 avr. 2013
  *
  */
+@Deprecated // replaced by ComponentFactory
 public class SystemFactory
-		implements Factory<CategorizedComponent>, Categorized<CategorizedComponent> {
+		implements Factory<SystemComponent>, Categorized<SystemComponent> {
 
 	// the factory for SystemComponents and SystemRelations
 	private static GraphFactory SCfactory = new TwGraphFactory();
@@ -125,7 +126,7 @@ public class SystemFactory
 	 * @return a new SystemComponent with the proper data structure
 	 */
 	@Override
-	public final CategorizedComponent newInstance() {
+	public final SystemComponent newInstance() {
 		SimplePropertyList props = new SystemComponentPropertyListImpl(
 			(SystemData)autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 			2,propertyMap);

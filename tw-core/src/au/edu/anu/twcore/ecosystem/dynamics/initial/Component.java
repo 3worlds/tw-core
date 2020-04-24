@@ -182,15 +182,18 @@ public class Component
 							pv = (ParameterValues) tn;
 							break;
 					}
-					if (pv==null)
-						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,null,null);
-					else {
-						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,
-							componentFactory.newParameterSet(),null);
-						pv.fill(theCont.parameters());
-						// compute secondary parameters if initialiser present
-						Initialiser.computeSecondaryParameters(this,theCont,id);
-					}
+
+					// CODE BROKEN HERE!
+
+//					if (pv==null)
+//						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,null,null);
+//					else {
+//						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,
+//							componentFactory.newParameterSet(),null);
+//						pv.fill(theCont.parameters());
+//						// compute secondary parameters if initialiser present
+//						Initialiser.computeSecondaryParameters(this,theCont,id);
+//					}
 					theCont.addInitialItem(sc);
 					sc.setContainer((ComponentContainer) theCont);
 				}

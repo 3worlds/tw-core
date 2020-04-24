@@ -49,8 +49,11 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
@@ -98,7 +101,7 @@ public class ComponentProcess
 //	private SystemContainer ecosystemContainer = null;
 //	private SystemContainer groupContainer = null;
 
-	public ComponentProcess(ComponentContainer world, Collection<Category> categories,
+	public ComponentProcess(ArenaComponent world, Collection<Category> categories,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
 		super(world,timer,space,searchR);
 		focalCategories.addAll(categories);
@@ -106,318 +109,331 @@ public class ComponentProcess
 	}
 
 	// recursive loop on all sub containers of the community
-	protected void loop(CategorizedContainer<SystemComponent> container,
-		double t, double dt) {
-		if (container.categoryInfo() instanceof Ecosystem) {
-			setContext(focalContext,container);
+	protected void loop(HierarchicalComponent container, double t, double dt) {
+		if (container instanceof ArenaComponent) {
+			ArenaComponent arena = (ArenaComponent) container;
+			if (arena.content()!=null) {
+				// TODO: recurse
+			}
+			else
+				executeFunctions(arena, t, dt);
 		}
-		else if (container.categoryInfo() instanceof LifeCycle) {
-			setContext(focalContext,container);
-			lifeCycle = (LifeCycle) container.categoryInfo();
-			lifeCycleContainer = (ComponentContainer) container;
+		else {
+//			if (container.categoryInfo() instanceof Ecosystem) {
+//				setContext(focalContext,container);
+//			}
+//			else if (container.categoryInfo() instanceof LifeCycle) {
+//				setContext(focalContext,container);
+//				lifeCycle = (LifeCycle) container.categoryInfo();
+//				lifeCycleContainer = (ComponentContainer) container;
+//			}
+//			else if (container.categoryInfo() instanceof SystemFactory)
+//				if (container.categoryInfo().belongsTo(focalCategories)) {
+//					container.change(); // means data in here will have changed after this loop
+//					setContext(focalContext,container);
+//					group = (SystemFactory) container.categoryInfo();
+//					executeFunctions(container,t,dt);
+//					// track group state
+//					for (DataTracker0D tracker:tsTrackers)
+//						if (tracker.isTracked(container)) {
+//							tracker.recordItem(focalContext.buildItemId(null));
+//							tracker.record(currentStatus,container.populationData());
+//					}
+//					focalContext.clear();
+//			}
+//			for (CategorizedContainer<SystemComponent> subc:container.subContainers())
+//				loop(subc,t,dt);
 		}
-		else if (container.categoryInfo() instanceof SystemFactory)
-			if (container.categoryInfo().belongsTo(focalCategories)) {
-				container.change(); // means data in here will have changed after this loop
-				setContext(focalContext,container);
-				group = (SystemFactory) container.categoryInfo();
-				executeFunctions(container,t,dt);
-				// track group state
-				for (DataTracker0D tracker:tsTrackers)
-					if (tracker.isTracked(container)) {
-						tracker.recordItem(focalContext.buildItemId(null));
-						tracker.record(currentStatus,container.populationData());
-				}
-				focalContext.clear();
-		}
-		for (CategorizedContainer<SystemComponent> subc:container.subContainers())
-			loop(subc,t,dt);
+	}
+
+	private void executeFunctions(CategorizedComponent focal, double t, double dt) {
+		System.out.println("coucou from "+focal.toShortString()+" t = "+t);
 	}
 
 	// single loop on a container which matches the process categories
 	private void executeFunctions(CategorizedContainer<SystemComponent> container,
 		double t, double dt) {
-		Box limits = null;
-		if (space!=null)
-			limits = space.boundingBox();
-		for (SystemComponent focal:container.items()) {
-			// track component state
-			for (DataTracker0D tracker:tsTrackers)
-				if (tracker.isTracked(focal)) {
-				tracker.recordItem(focalContext.buildItemId(focal.id()));
-				tracker.record(currentStatus,focal.currentState());
-			}
-			// compute changes
-			Point location = null;
-			double[] newLoc = null;
-			if (space!=null) {
-				limits = space.boundingBox();
-				location = space.locationOf(focal).asPoint();
-				newLoc = new double[location.dim()];
-			}
-			if (focal.currentState() != null) { // otherwise no point computing changes!
-				focal.currentState().writeDisable();
-				focal.nextState().writeEnable();
-				// change state of this SystemComponent - easy
-				for (ChangeStateFunction function : CSfunctions) {
-					function.setFocalContext(focalContext);
-//					function.changeState(t, dt, focal);
-					// NEW code for new TwFunction API
-					function.changeState(t, dt, limits,
-						focalContext.ecosystemParameters, ecosystem(),
-						focalContext.lifeCycleParameters, lifeCycleContainer,
-						focalContext.groupParameters, focal.container(),
-						focal.autoVar(), focal.constants(), focal.currentState(), focal.decorators(),
-						location, focal.nextState(), newLoc);
-					// end new code
-				}
-				focal.nextState().writeDisable();
-			}
-			// recruit to other component type ("change category")
-			for (ChangeCategoryDecisionFunction function : CCfunctions) {
-//				function.setFocalContext(focalContext);
-//				String newCat = function.changeCategory(t, dt, focal);
-				String newCat = function.changeCategory(t, dt, limits,
-					focalContext.ecosystemParameters, ecosystem(),
-					focalContext.lifeCycleParameters, lifeCycleContainer,
-					focalContext.groupParameters, focal.container(),
-					focal.autoVar(), focal.constants(), focal.currentState(), focal.decorators(),
-					location);
-				if (newCat != null) {
-					if (lifeCycle!=null) {
-						// find the next stage & instantiate new component
-						ComponentContainer recruitContainer = null;
-						for (CategorizedContainer<SystemComponent> subContainer:
-							lifeCycleContainer.subContainers())
-							if (subContainer.categoryInfo().categoryId().contains(newCat))
-								recruitContainer = (ComponentContainer) subContainer;
-						if ((recruitContainer==null) |
-							!(recruitContainer.categoryInfo() instanceof SystemFactory)) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("'")
-								.append(focalContext.groupName)
-								.append("' cannot recruit to '")
-								.append(newCat)
-								.append("'");
-							log.severe(sb.toString());
-						}
-						else {
-							SystemComponent newRecruit = null;
-							newRecruit = ((SystemFactory)recruitContainer.categoryInfo()).newInstance();
-							newRecruit.autoVar().writeEnable();
-							// carry over former ID as name
-							if (focal.autoVar().name().isBlank())
-								newRecruit.autoVar().name(focal.id());
-							else
-								newRecruit.autoVar().name(focal.autoVar().name());
-							// carry over age and birthDate
-							newRecruit.autoVar().age(focal.autoVar().age());
-							newRecruit.autoVar().birthDate(focal.autoVar().birthDate());
-							newRecruit.autoVar().writeDisable();
-							// user-defined carry-overs
-							for (SetOtherInitialStateFunction func : function.getConsequences()) {
-								HierarchicalContext otherContext = focalContext.clone();
-								otherContext.groupParameters = recruitContainer.parameters();
-//								otherContext.groupVariables = recruitContainer.variables();
-								otherContext.groupPopulationData = recruitContainer.populationData();
-								otherContext.groupName = recruitContainer.id();
-//								function.setOtherContext(otherContext);
-//								function.setFocalContext(focalContext);
-//								func.changeOtherState(t, dt, focal, newRecruit);
-								func.setOtherInitialState(t, dt, limits,
-									focalContext.ecosystemParameters, ecosystem(),
-									focalContext.lifeCycleParameters, lifeCycleContainer,
-									focalContext.groupParameters, focal.container(),
-									otherContext.groupParameters, recruitContainer,
-									focal.autoVar(), focal.constants(),
-									focal.currentState(), focal.decorators(), location,
-									newRecruit.constants(), newRecruit.nextState(), newLoc);
-							}
-							// replacement of old component by new one.
-							container.removeItem(focal);
-							recruitContainer.addItem(newRecruit);
-							// remove from tracklist - safe, data sending has already been made
-							for (DataTracker0D tracker:tsTrackers)
-								if (tracker.isTracked(focal))
-									tracker.removeTrackedItem(focal);
-							// CAUTION: this makes sure the new object takes the place of
-							// the former one in any graph it is part of.
-							// THIS WILL NOT WORK if there are edges to SystemFactory etc.
-							// It is of tremendous importance that edges are only to
-							// other SystemComponents.
-							newRecruit.replace(focal);
-						}
-					}
-				}
-			}
-			// delete itself
-			for (DeleteDecisionFunction function : Dfunctions) {
-//				function.setFocalContext(focalContext); // not needed anymore
-//				if (function.delete(t, dt, focal)) {
-				if (function.delete(t, dt, limits,
-					focalContext.ecosystemParameters, ecosystem(),
-					focalContext.lifeCycleParameters, lifeCycleContainer,
-					focalContext.groupParameters, focal.container(),
-					focal.autoVar(), focal.constants(),
-					focal.currentState(), focal.decorators(), location)) {
-					container.removeItem(focal); // safe - delayed removal
-					// also remove from space !!!
-					for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
-							((SystemFactory)focal.membership()).spaces()) {
-						space.unlocate(focal);
-						if (space.dataTracker()!=null)
-							space.dataTracker().removeItem(currentStatus,container.itemId(focal.id()));
-					}
-					// remove from tracklist if dead - safe, data sending has already been made
-					for (DataTracker0D tracker:tsTrackers)
-						if (tracker.isTracked(focal))
-							tracker.removeTrackedItem(focal);
-					// if present, spreads some values to other components
-					// (e.g. "decomposition", or "erosion")
-					for (ChangeOtherStateFunction consequence:function.getConsequences()) {
-						for (SystemRelation to:focal.getRelations(returnsTo.key())) {
-							SystemComponent other = (SystemComponent) to.endNode();
-							// FLAW? here how does code generation know about the categories ?
-							consequence.changeOtherState(t, dt, limits,
-								focalContext.ecosystemParameters, ecosystem(),
-								focalContext.lifeCycleParameters, lifeCycleContainer,
-								focalContext.groupParameters, focal.container(),
-								other.container().parameters(), other.container(),
-								focal.autoVar(), focal.constants(),
-								focal.currentState(), focal.decorators(), location,
-								other.autoVar(), other.constants(),
-								other.currentState(), other.decorators(), location,
-								other.nextState(), newLoc);
-						}
-					}
-//					replaced by the above
-//					if (!function.getConsequences().isEmpty())
-//						// TODO: the "returnsTo" relation type must be predefined somewhere
+//		Box limits = null;
+//		if (space!=null)
+//			limits = space.boundingBox();
+//		for (SystemComponent focal:container.items()) {
+//			// track component state
+//			for (DataTracker0D tracker:tsTrackers)
+//				if (tracker.isTracked(focal)) {
+//				tracker.recordItem(focalContext.buildItemId(focal.id()));
+//				tracker.record(currentStatus,focal.currentState());
+//			}
+//			// compute changes
+//			Point location = null;
+//			double[] newLoc = null;
+//			if (space!=null) {
+//				limits = space.boundingBox();
+//				location = space.locationOf(focal).asPoint();
+//				newLoc = new double[location.dim()];
+//			}
+//			if (focal.currentState() != null) { // otherwise no point computing changes!
+//				focal.currentState().writeDisable();
+//				focal.nextState().writeEnable();
+//				// change state of this SystemComponent - easy
+//				for (ChangeStateFunction function : CSfunctions) {
+//					function.setFocalContext(focalContext);
+////					function.changeState(t, dt, focal);
+//					// NEW code for new TwFunction API
+//					function.changeState(t, dt, limits,
+//						focalContext.ecosystemParameters, ecosystem(),
+//						focalContext.lifeCycleParameters, lifeCycleContainer,
+//						focalContext.groupParameters, focal.container(),
+//						focal.autoVar(), focal.constants(), focal.currentState(), focal.decorators(),
+//						location, focal.nextState(), newLoc);
+//					// end new code
+//				}
+//				focal.nextState().writeDisable();
+//			}
+//			// recruit to other component type ("change category")
+//			for (ChangeCategoryDecisionFunction function : CCfunctions) {
+////				function.setFocalContext(focalContext);
+////				String newCat = function.changeCategory(t, dt, focal);
+//				String newCat = function.changeCategory(t, dt, limits,
+//					focalContext.ecosystemParameters, ecosystem(),
+//					focalContext.lifeCycleParameters, lifeCycleContainer,
+//					focalContext.groupParameters, focal.container(),
+//					focal.autoVar(), focal.constants(), focal.currentState(), focal.decorators(),
+//					location);
+//				if (newCat != null) {
+//					if (lifeCycle!=null) {
+//						// find the next stage & instantiate new component
+//						ComponentContainer recruitContainer = null;
+//						for (CategorizedContainer<SystemComponent> subContainer:
+//							lifeCycleContainer.subContainers())
+//							if (subContainer.categoryInfo().categoryId().contains(newCat))
+//								recruitContainer = (ComponentContainer) subContainer;
+//						if ((recruitContainer==null) |
+//							!(recruitContainer.categoryInfo() instanceof SystemFactory)) {
+//							StringBuilder sb = new StringBuilder();
+//							sb.append("'")
+//								.append(focalContext.groupName)
+//								.append("' cannot recruit to '")
+//								.append(newCat)
+//								.append("'");
+//							log.severe(sb.toString());
+//						}
+//						else {
+//							SystemComponent newRecruit = null;
+//							newRecruit = ((SystemFactory)recruitContainer.categoryInfo()).newInstance();
+//							newRecruit.autoVar().writeEnable();
+//							// carry over former ID as name
+//							if (focal.autoVar().name().isBlank())
+//								newRecruit.autoVar().name(focal.id());
+//							else
+//								newRecruit.autoVar().name(focal.autoVar().name());
+//							// carry over age and birthDate
+//							newRecruit.autoVar().age(focal.autoVar().age());
+//							newRecruit.autoVar().birthDate(focal.autoVar().birthDate());
+//							newRecruit.autoVar().writeDisable();
+//							// user-defined carry-overs
+//							for (SetOtherInitialStateFunction func : function.getConsequences()) {
+//								HierarchicalContext otherContext = focalContext.clone();
+//								otherContext.groupParameters = recruitContainer.parameters();
+////								otherContext.groupVariables = recruitContainer.variables();
+//								otherContext.groupPopulationData = recruitContainer.populationData();
+//								otherContext.groupName = recruitContainer.id();
+////								function.setOtherContext(otherContext);
+////								function.setFocalContext(focalContext);
+////								func.changeOtherState(t, dt, focal, newRecruit);
+//								func.setOtherInitialState(t, dt, limits,
+//									focalContext.ecosystemParameters, ecosystem(),
+//									focalContext.lifeCycleParameters, lifeCycleContainer,
+//									focalContext.groupParameters, focal.container(),
+//									otherContext.groupParameters, recruitContainer,
+//									focal.autoVar(), focal.constants(),
+//									focal.currentState(), focal.decorators(), location,
+//									newRecruit.constants(), newRecruit.nextState(), newLoc);
+//							}
+//							// replacement of old component by new one.
+//							container.removeItem(focal);
+//							recruitContainer.addItem(newRecruit);
+//							// remove from tracklist - safe, data sending has already been made
+//							for (DataTracker0D tracker:tsTrackers)
+//								if (tracker.isTracked(focal))
+//									tracker.removeTrackedItem(focal);
+//							// CAUTION: this makes sure the new object takes the place of
+//							// the former one in any graph it is part of.
+//							// THIS WILL NOT WORK if there are edges to SystemFactory etc.
+//							// It is of tremendous importance that edges are only to
+//							// other SystemComponents.
+//							newRecruit.replace(focal);
+//						}
+//					}
+//				}
+//			}
+//			// delete itself
+//			for (DeleteDecisionFunction function : Dfunctions) {
+////				function.setFocalContext(focalContext); // not needed anymore
+////				if (function.delete(t, dt, focal)) {
+//				if (function.delete(t, dt, limits,
+//					focalContext.ecosystemParameters, ecosystem(),
+//					focalContext.lifeCycleParameters, lifeCycleContainer,
+//					focalContext.groupParameters, focal.container(),
+//					focal.autoVar(), focal.constants(),
+//					focal.currentState(), focal.decorators(), location)) {
+//					container.removeItem(focal); // safe - delayed removal
+//					// also remove from space !!!
+//					for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
+//							((SystemFactory)focal.membership()).spaces()) {
+//						space.unlocate(focal);
+//						if (space.dataTracker()!=null)
+//							space.dataTracker().removeItem(currentStatus,container.itemId(focal.id()));
+//					}
+//					// remove from tracklist if dead - safe, data sending has already been made
+//					for (DataTracker0D tracker:tsTrackers)
+//						if (tracker.isTracked(focal))
+//							tracker.removeTrackedItem(focal);
+//					// if present, spreads some values to other components
+//					// (e.g. "decomposition", or "erosion")
+//					for (ChangeOtherStateFunction consequence:function.getConsequences()) {
 //						for (SystemRelation to:focal.getRelations(returnsTo.key())) {
 //							SystemComponent other = (SystemComponent) to.endNode();
-//							for (ChangeOtherStateFunction consequence:function.getConsequences()) {
-//								function.setFocalContext(focalContext);
-//								consequence.changeOtherState(t, dt, focal, other);
-//							}
+//							// FLAW? here how does code generation know about the categories ?
+//							consequence.changeOtherState(t, dt, limits,
+//								focalContext.ecosystemParameters, ecosystem(),
+//								focalContext.lifeCycleParameters, lifeCycleContainer,
+//								focalContext.groupParameters, focal.container(),
+//								other.container().parameters(), other.container(),
+//								focal.autoVar(), focal.constants(),
+//								focal.currentState(), focal.decorators(), location,
+//								other.autoVar(), other.constants(),
+//								other.currentState(), other.decorators(), location,
+//								other.nextState(), newLoc);
+//						}
 //					}
-				}
-			}
-			// creation of other SystemComponents
-			for (CreateOtherDecisionFunction function : COfunctions) {
-				// if there is a life cycle, then it will return the next stage(s)
-				List<newBornSettings> newBornSpecs = new ArrayList<>();
-				if (lifeCycle!=null ) {
-					// search for category signatures of produce targets
-					for (String catSignature:lifeCycle.produceTo(group))
-						for (CategorizedContainer<SystemComponent> subc:
-							lifeCycleContainer.subContainers())
-						// since lifeCycle stages only have one category this test should do
-						if (subc.categoryInfo().categoryId().contains(catSignature)) {
-							newBornSettings nbs = new newBornSettings();
-							nbs.name = subc.categoryInfo().categoryId();
-							nbs.factory = (SystemFactory) subc.categoryInfo();
-							nbs.container = (ComponentContainer) subc;
-							newBornSpecs.add(nbs);
-					}
-				}
-				// without a life cycle, only objects of the same type can be created
-				else {
-					newBornSettings nbs = new newBornSettings();
-					nbs.factory = group;
-					nbs.name = group.categoryId();
-					nbs.container = (ComponentContainer) container;
-					newBornSpecs.add(nbs);
-				}
-				function.setFocalContext(focalContext);
-				for (newBornSettings nbs:newBornSpecs) {
-//					double result = function.nNew(t, dt, focal, nbs.name);
-					double result = function.nNew(t, dt, limits,
-						focalContext.ecosystemParameters, ecosystem(),
-						focalContext.lifeCycleParameters, lifeCycleContainer,
-						focalContext.groupParameters, focal.container(),
-						focal.autoVar(), focal.constants(),
-						focal.currentState(), focal.decorators(), location);
-					// compute effective number of newBorns (taking the decimal part as a probability)
-					double proba = function.rng().nextDouble();
-					long n = (long) Math.floor(result);
-					if (proba < (result - n))
-						n += 1;
-					for (int i = 0; i < n; i++) {
-						SystemComponent newBorn = nbs.factory.newInstance();
-						for (SetOtherInitialStateFunction func : function.getConsequences()) {
-//							function.setFocalContext(focalContext);
-//							func.changeState(t, dt, newBorn);
-							// TODO workout multiple category sets for descendants
-							HierarchicalContext newBornContext = focalContext.clone();
-							newBornContext.groupParameters = nbs.container.parameters();
-//							newBornContext.groupVariables = nbs.container.variables();
-							newBornContext.groupPopulationData = nbs.container.populationData();
-							newBornContext.groupName = nbs.container.id();
-							func.setOtherInitialState(t, dt, limits,
-								focalContext.ecosystemParameters, ecosystem(),
-								focalContext.lifeCycleParameters, lifeCycleContainer,
-								focalContext.groupParameters, focal.container(),
-								newBornContext.groupParameters, nbs.container,
-								focal.autoVar(), focal.constants(),
-								focal.currentState(), focal.decorators(), location,
-								newBorn.constants(), newBorn.nextState(), newLoc);
-							if (newLoc==null) {
-								log.warning("No location returned by relocate(...): default location generated");
-								newLoc = space.defaultLocation();
-							}
-							if (newLoc.length!=space.ndim()) {
-								log.warning("Wrong number of dimensions: default location generated");
-								newLoc = space.defaultLocation();
-							}
-							space.locate(newBorn,newLoc);
-							if (space.dataTracker()!=null)
-								space.dataTracker().recordItem(currentStatus,newLoc,
-									// caution - item not yet in container.
-									nbs.container.itemId(newBorn.id()));
-						}
-//						HierarchicalContext newBornContext = null;
-//						if ((!function.getChangeOtherStateConsequences().isEmpty()) |
-//								(!((SystemFactory)newBorn.membership()).spaces().isEmpty())) {
-//							newBornContext = focalContext.clone();
+////					replaced by the above
+////					if (!function.getConsequences().isEmpty())
+////						// TODO: the "returnsTo" relation type must be predefined somewhere
+////						for (SystemRelation to:focal.getRelations(returnsTo.key())) {
+////							SystemComponent other = (SystemComponent) to.endNode();
+////							for (ChangeOtherStateFunction consequence:function.getConsequences()) {
+////								function.setFocalContext(focalContext);
+////								consequence.changeOtherState(t, dt, focal, other);
+////							}
+////					}
+//				}
+//			}
+//			// creation of other SystemComponents
+//			for (CreateOtherDecisionFunction function : COfunctions) {
+//				// if there is a life cycle, then it will return the next stage(s)
+//				List<newBornSettings> newBornSpecs = new ArrayList<>();
+//				if (lifeCycle!=null ) {
+//					// search for category signatures of produce targets
+//					for (String catSignature:lifeCycle.produceTo(group))
+//						for (CategorizedContainer<SystemComponent> subc:
+//							lifeCycleContainer.subContainers())
+//						// since lifeCycle stages only have one category this test should do
+//						if (subc.categoryInfo().categoryId().contains(catSignature)) {
+//							newBornSettings nbs = new newBornSettings();
+//							nbs.name = subc.categoryInfo().categoryId();
+//							nbs.factory = (SystemFactory) subc.categoryInfo();
+//							nbs.container = (ComponentContainer) subc;
+//							newBornSpecs.add(nbs);
+//					}
+//				}
+//				// without a life cycle, only objects of the same type can be created
+//				else {
+//					newBornSettings nbs = new newBornSettings();
+//					nbs.factory = group;
+//					nbs.name = group.categoryId();
+//					nbs.container = (ComponentContainer) container;
+//					newBornSpecs.add(nbs);
+//				}
+//				function.setFocalContext(focalContext);
+//				for (newBornSettings nbs:newBornSpecs) {
+////					double result = function.nNew(t, dt, focal, nbs.name);
+//					double result = function.nNew(t, dt, limits,
+//						focalContext.ecosystemParameters, ecosystem(),
+//						focalContext.lifeCycleParameters, lifeCycleContainer,
+//						focalContext.groupParameters, focal.container(),
+//						focal.autoVar(), focal.constants(),
+//						focal.currentState(), focal.decorators(), location);
+//					// compute effective number of newBorns (taking the decimal part as a probability)
+//					double proba = function.rng().nextDouble();
+//					long n = (long) Math.floor(result);
+//					if (proba < (result - n))
+//						n += 1;
+//					for (int i = 0; i < n; i++) {
+//						SystemComponent newBorn = nbs.factory.newInstance();
+//						for (SetOtherInitialStateFunction func : function.getConsequences()) {
+////							function.setFocalContext(focalContext);
+////							func.changeState(t, dt, newBorn);
+//							// TODO workout multiple category sets for descendants
+//							HierarchicalContext newBornContext = focalContext.clone();
 //							newBornContext.groupParameters = nbs.container.parameters();
-//							newBornContext.groupVariables = nbs.container.variables();
+////							newBornContext.groupVariables = nbs.container.variables();
 //							newBornContext.groupPopulationData = nbs.container.populationData();
 //							newBornContext.groupName = nbs.container.id();
-//						}
-//						for (ChangeOtherStateFunction func : function.getChangeOtherStateConsequences()) {
-//							function.setOtherContext(newBornContext);
-//							function.setFocalContext(focalContext);
-//							func.changeOtherState(t, dt, focal, newBorn);
-//						}
-						// location of newBorn in space // now done in init
-//						for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:((SystemFactory)newBorn.membership()).spaces()) {
-//							RelocateFunction func = ((SystemFactory)newBorn.membership()).locatorFunction(space);
-//							func.setFocalContext(newBornContext);
-//							double[] newLocation = func.relocate(t, dt, newBorn, null,
-//								focal, space.locationOf(focal), space.boundingBox());
-//							if (newLocation==null) {
+//							func.setOtherInitialState(t, dt, limits,
+//								focalContext.ecosystemParameters, ecosystem(),
+//								focalContext.lifeCycleParameters, lifeCycleContainer,
+//								focalContext.groupParameters, focal.container(),
+//								newBornContext.groupParameters, nbs.container,
+//								focal.autoVar(), focal.constants(),
+//								focal.currentState(), focal.decorators(), location,
+//								newBorn.constants(), newBorn.nextState(), newLoc);
+//							if (newLoc==null) {
 //								log.warning("No location returned by relocate(...): default location generated");
-//								newLocation = space.defaultLocation();
+//								newLoc = space.defaultLocation();
 //							}
-//							if (newLocation.length!=space.ndim()) {
+//							if (newLoc.length!=space.ndim()) {
 //								log.warning("Wrong number of dimensions: default location generated");
-//								newLocation = space.defaultLocation();
+//								newLoc = space.defaultLocation();
 //							}
-//							space.locate(newBorn,newLocation);
+//							space.locate(newBorn,newLoc);
 //							if (space.dataTracker()!=null)
-//								space.dataTracker().recordItem(currentStatus,newLocation,
+//								space.dataTracker().recordItem(currentStatus,newLoc,
 //									// caution - item not yet in container.
 //									nbs.container.itemId(newBorn.id()));
 //						}
-						if (function.relateToOther())
-							focal.relateTo(newBorn,parentTo.key()); // delayed addition
-						// welcome newBorn in container!
-						nbs.container.addItem(newBorn); // safe - delayed addition
-					}
-				}
-			}
-			// TODO: relocate self (ie movement)
-		}
+////						HierarchicalContext newBornContext = null;
+////						if ((!function.getChangeOtherStateConsequences().isEmpty()) |
+////								(!((SystemFactory)newBorn.membership()).spaces().isEmpty())) {
+////							newBornContext = focalContext.clone();
+////							newBornContext.groupParameters = nbs.container.parameters();
+////							newBornContext.groupVariables = nbs.container.variables();
+////							newBornContext.groupPopulationData = nbs.container.populationData();
+////							newBornContext.groupName = nbs.container.id();
+////						}
+////						for (ChangeOtherStateFunction func : function.getChangeOtherStateConsequences()) {
+////							function.setOtherContext(newBornContext);
+////							function.setFocalContext(focalContext);
+////							func.changeOtherState(t, dt, focal, newBorn);
+////						}
+//						// location of newBorn in space // now done in init
+////						for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:((SystemFactory)newBorn.membership()).spaces()) {
+////							RelocateFunction func = ((SystemFactory)newBorn.membership()).locatorFunction(space);
+////							func.setFocalContext(newBornContext);
+////							double[] newLocation = func.relocate(t, dt, newBorn, null,
+////								focal, space.locationOf(focal), space.boundingBox());
+////							if (newLocation==null) {
+////								log.warning("No location returned by relocate(...): default location generated");
+////								newLocation = space.defaultLocation();
+////							}
+////							if (newLocation.length!=space.ndim()) {
+////								log.warning("Wrong number of dimensions: default location generated");
+////								newLocation = space.defaultLocation();
+////							}
+////							space.locate(newBorn,newLocation);
+////							if (space.dataTracker()!=null)
+////								space.dataTracker().recordItem(currentStatus,newLocation,
+////									// caution - item not yet in container.
+////									nbs.container.itemId(newBorn.id()));
+////						}
+//						if (function.relateToOther())
+//							focal.relateTo(newBorn,parentTo.key()); // delayed addition
+//						// welcome newBorn in container!
+//						nbs.container.addItem(newBorn); // safe - delayed addition
+//					}
+//				}
+//			}
+//			// TODO: relocate self (ie movement)
+//		}
 	}
 
 	@Override

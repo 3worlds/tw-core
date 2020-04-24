@@ -28,8 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
@@ -38,15 +36,15 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class ComponentContainer extends CategorizedContainer<CategorizedComponent> {
+public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 
-	public ComponentContainer(Categorized<CategorizedComponent> cats, String proposedId,
-			ComponentContainer parent, TwData parameters, TwData variables) {
-		super(cats, proposedId, parent, parameters, variables);
+	public ComponentContainer(String proposedId,
+			ComponentContainer parent, HierarchicalComponent data) {
+		super(proposedId, parent, data);
 	}
 
 	@Override
-	public final CategorizedComponent cloneItem(CategorizedComponent item) {
+	public final SystemComponent cloneItem(SystemComponent item) {
 		if (item instanceof SystemComponent)
 			return ((SystemComponent)item).clone();
 		return null;
@@ -56,7 +54,7 @@ public class ComponentContainer extends CategorizedContainer<CategorizedComponen
 	 * Advances state of all SystemComponents contained in this container only.
 	 */
 	public void step() {
-		for (CategorizedComponent sc : items())
+		for (SystemComponent sc : items())
 			sc.stepForward();
 	}
 
@@ -66,7 +64,7 @@ public class ComponentContainer extends CategorizedContainer<CategorizedComponen
 	 */
 	public void stepAll() {
 		step();
-		for (CategorizedContainer<CategorizedComponent> sc : subContainers())
+		for (CategorizedContainer<SystemComponent> sc : subContainers())
 			((ComponentContainer) sc).stepAll();
 	}
 
@@ -76,9 +74,15 @@ public class ComponentContainer extends CategorizedContainer<CategorizedComponen
 	 * only if was changed
 	 */
 	public void prepareStep() {
+		HierarchicalComponent hv = hierarchicalView();
+		if (hv.decorators()!=null) {
+			hv.decorators().writeEnable();
+			hv.decorators().clear();
+			hv.decorators().writeDisable();
+		}
 		if (changed()) {
 			resetCounters();
-			for (CategorizedComponent item:items()) {
+			for (SystemComponent item:items()) {
 				if (item.decorators()!=null) {
 					item.decorators().writeEnable();
 					item.decorators().clear();
@@ -96,7 +100,7 @@ public class ComponentContainer extends CategorizedContainer<CategorizedComponen
 	 */
 	public void prepareStepAll() {
 		prepareStep();
-		for (CategorizedContainer<CategorizedComponent> sc : subContainers())
+		for (CategorizedContainer<SystemComponent> sc : subContainers())
 			((ComponentContainer) sc).prepareStepAll();
 	}
 
@@ -115,10 +119,10 @@ public class ComponentContainer extends CategorizedContainer<CategorizedComponen
 
 	// best if static to avoid errors
 	// TO IAN: note that the clearAllVariables() and clearAllItems() methods do the same job now
-	private static void clearState(CategorizedContainer<CategorizedComponent> parentContainer) {
-		for (CategorizedContainer<CategorizedComponent> childContainer : parentContainer.subContainers())
+	private static void clearState(CategorizedContainer<SystemComponent> parentContainer) {
+		for (CategorizedContainer<SystemComponent> childContainer : parentContainer.subContainers())
 			clearState(childContainer);
-		for (CategorizedComponent item : parentContainer.items())
+		for (SystemComponent item : parentContainer.items())
 			parentContainer.removeItem(item);
 		// effectAllChanges() is recursive so don't use here.
 		parentContainer.effectChanges();// counters are handled here
@@ -154,15 +158,15 @@ public class ComponentContainer extends CategorizedContainer<CategorizedComponen
 	@Override
 	public void clearAllVariables() {
 		clearVariables();
-		for (CategorizedContainer<CategorizedComponent> childContainer: subContainers())
+		for (CategorizedContainer<SystemComponent> childContainer: subContainers())
 			childContainer.clearAllVariables();
 	}
 
 	@Override
 	public void effectChanges() {
-		populationData.resetCounters(); // Pb: values are actually delayed by 1 time step doing this ???
+		resetCounters(); // Pb: values are actually delayed by 1 time step doing this ???
 		for (String id : itemsToRemove) {
-			CategorizedComponent sc = items.remove(id);
+			SystemComponent sc = items.remove(id);
 			((SystemComponent)sc).removeFromContainer();
 			if (sc != null) {
 //				populationData.count--;
@@ -172,7 +176,7 @@ public class ComponentContainer extends CategorizedContainer<CategorizedComponen
 			}
 		}
 		itemsToRemove.clear();
-		for (CategorizedComponent item : itemsToAdd)
+		for (SystemComponent item : itemsToAdd)
 			if (items.put(item.id(), item) == null) {
 //				populationData.count++;
 //				populationData.nAdded++;

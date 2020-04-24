@@ -40,6 +40,7 @@ import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
@@ -60,7 +61,7 @@ public abstract class AbstractRelationProcess
 	protected SortedSet<Category> focalCategories = new TreeSet<>();
 	protected SortedSet<Category> otherCategories = new TreeSet<>();
 
-	public AbstractRelationProcess(ComponentContainer world, RelationContainer relation,
+	public AbstractRelationProcess(ArenaComponent world, RelationContainer relation,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
 		super(world, timer, space, searchR);
 		relContainer = relation;

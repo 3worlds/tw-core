@@ -76,6 +76,7 @@ import java.util.TreeSet;
  * @author Jacques Gignoux - 25 avr. 2013
  *
  */
+@Deprecated // replaced by the ComponentType class in subpackage newapi
 public class ComponentType
 		extends InitialisableNode
 		implements LimitedEdition<SystemFactory>, Categorized<SystemComponent>, Sealable {
@@ -329,10 +330,10 @@ public class ComponentType
 				containers.put(index,new HashMap<>());
 			ComponentContainer result = containers.get(index).get(name);
 			if (result==null) {
-				if (parameterTemplate!=null)
-					result = new ComponentContainer(getInstance(index), name, parent, parameterTemplate.clone(), null);
-				else
-					result = new ComponentContainer(getInstance(index), name, parent, null, null);
+//				if (parameterTemplate!=null)
+//					result = new ComponentContainer(getInstance(index), name, parent, parameterTemplate.clone(), null);
+//				else
+//					result = new ComponentContainer(getInstance(index), name, parent, null, null);
 				if (!result.id().equals(name))
 					log.warning("Unable to instantiate a container with id '"+name+"' - '"+result.id()+"' used instead");
 				containers.get(index).put(result.id(),result);
