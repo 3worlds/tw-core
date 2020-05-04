@@ -369,7 +369,7 @@ public class CodeGenerator {
 		// ---
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 //		generator.setArgumentCalls(modelgen);
-		generator.setArgumentCalls2(modelgen);
+		generator.setArgumentCalls(modelgen);
 		generator.generateCode();
 		UserProjectLink.addFunctionFile(generator.getFile());
 		String genClassName = generator.generatedClassName();

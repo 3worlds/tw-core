@@ -28,15 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
 
 /**
  * @author Jacques Gignoux - 4/8/2014

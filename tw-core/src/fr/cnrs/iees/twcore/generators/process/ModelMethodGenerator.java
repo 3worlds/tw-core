@@ -174,7 +174,7 @@ public class ModelMethodGenerator extends MethodGenerator {
 //		return this.argumentGroups;
 //	}
 
-	public Map<TwFunctionArguments,List<Tuple<ConfigurationEdgeLabels,String,String>>> callerArguments2 () {
+	public Map<TwFunctionArguments,List<Tuple<ConfigurationEdgeLabels,String,String>>> callerArguments () {
 		return argumentGroups2;
 	}
 

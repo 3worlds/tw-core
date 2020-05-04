@@ -31,17 +31,8 @@ package fr.cnrs.iees.twcore.generators.process;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.COUNT;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.NADDED;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.NREMOVED;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.TCOUNT;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.TNADDED;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.TNREMOVED;
-import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
 import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
-import static au.edu.anu.twcore.DefaultStrings.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +43,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -64,8 +54,6 @@ import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
-import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
-import fr.cnrs.iees.twcore.constants.PopulationVariables;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator.memberInfo;
@@ -73,7 +61,6 @@ import fr.cnrs.iees.twcore.generators.process.ModelGenerator.recInfo;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
-import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -98,7 +85,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private List<String> inBodyCode = null;
 //	private List<String> inClassCode = null;
 
-	@SuppressWarnings("unchecked")
 	public TwFunctionGenerator(String className, TreeGraphDataNode spec, String modelName) {
 		super(spec);
 		name = className;
@@ -182,10 +168,11 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //		for (ArgumentGroups arggrp:type.readOnlyArguments())
 //			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
 //				argClasses.add(arggrp.type());
-		for (TwFunctionArguments arggrp:type.arguments())
+		for (TwFunctionArguments arggrp:type.readOnlyArguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
 				argClasses.add(arggrp.type());
-		for (ArgumentGroups arggrp:type.writeableArguments())
+		// TODO: CHECk THIS: it's probably wrong
+		for (TwFunctionArguments arggrp:type.writeableArguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
 				if (!arggrp.type().equals("double[]"))
 					argClasses.add(arggrp.type());
@@ -202,7 +189,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		for (MethodGenerator mg : lmg) { // only 1 assumed
 			//argument list
 			Set<TwFunctionArguments> argSet = new TreeSet<>();
-			argSet.addAll(type.arguments());
+			argSet.addAll(type.readOnlyArguments());
 			// argument names
 			String[] argNames = new String[argSet.size()];
 			int i=0;
@@ -285,7 +272,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		return result;
 	}
 
-	public void setArgumentCalls2(ModelGenerator gen) {
+	public void setArgumentCalls(ModelGenerator gen) {
 		// mapping between inerVar names and rec.name
 		Map<String,String> recToInnerVar = new HashMap<>();
 		recToInnerVar.put("autoVar",null);
@@ -372,7 +359,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		// location arguments ?
 
 		// random, decide
-		for (TwFunctionArguments arg:type.localArguments2()) {
+		for (TwFunctionArguments arg:type.localArguments()) {
 			String callArg = null;
 			if (arg==_random)
 				callArg = "rng()";

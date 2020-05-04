@@ -33,10 +33,7 @@ import java.util.Set;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
 import java.util.EnumSet;
-import fr.cnrs.iees.twcore.generators.process.ArgumentGroups;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionArguments;
-
-import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
 import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 
 
@@ -166,7 +163,7 @@ public enum TwFunctionTypes {
 		TwFunctionTypes.class.getName(),defaultValue());
 	}
 
-	public Set<TwFunctionArguments> arguments() {
+	public Set<TwFunctionArguments> readOnlyArguments() {
 		switch (this) {
 		case SetInitialState:
 		case ChangeState:
@@ -187,7 +184,7 @@ public enum TwFunctionTypes {
 		}
 	}
 
-    public Set<TwFunctionArguments> localArguments2() {
+    public Set<TwFunctionArguments> localArguments() {
 	    switch (this) {
 		case ChangeCategoryDecision:
 		case ChangeOtherCategoryDecision:
@@ -239,7 +236,7 @@ public enum TwFunctionTypes {
     	 return result;
     }
 
-    public Set<TwFunctionArguments> writeableArguments2() {
+    public Set<TwFunctionArguments> writeableArguments() {
 	    switch (this) {
 		case ChangeRelationState:
 		case ChangeOtherState:
@@ -248,86 +245,6 @@ public enum TwFunctionTypes {
 			return EnumSet.of(_nextFocalLoc);
 		default:
 			return EnumSet.noneOf(TwFunctionArguments.class);
-	    }
-    }
-
-
-	@Deprecated
-    public Set<ArgumentGroups> readOnlyArguments() {
-        switch (this) {
-            case ChangeOtherCategoryDecision:
-            case DeleteOtherDecision:
-            case MaintainRelationDecision:
-            case RelateToDecision:
-            case ChangeOtherState:
-            case ChangeRelationState:
-                return EnumSet.complementOf(EnumSet.of(random,decider));
-            case ChangeCategoryDecision:
-            case CreateOtherDecision:
-            case DeleteDecision:
-            case ChangeState:
-                return EnumSet.of(t,dt,limits,
-                    ecosystemPar,ecosystemPop,lifeCyclePar,lifeCyclePop,groupPar,groupPop,
-                    focalAuto,focalLtc,focalDrv,focalDec,focalLoc);
-            case SetInitialState:
-                return EnumSet.of(t,dt,limits,
-                    ecosystemPar,ecosystemPop,lifeCyclePar,lifeCyclePop,groupPar,groupPop);
-            case SetOtherInitialState:
-                return EnumSet.of(t,dt,limits,
-                    ecosystemPar,ecosystemPop,lifeCyclePar,lifeCyclePop,
-                    groupPar,groupPop,otherGroupPar,otherGroupPop,
-                    focalAuto,focalLtc,focalDrv,focalDec,focalLoc);
-            default:
-                return EnumSet.noneOf(ArgumentGroups.class);
-        }
-    }
-
-	@Deprecated
-    public Set<ArgumentGroups> writeableArguments() {
-        switch (this) {
-            case ChangeCategoryDecision:
-            case CreateOtherDecision:
-            case DeleteDecision:
-            case ChangeOtherCategoryDecision:
-            case DeleteOtherDecision:
-            case MaintainRelationDecision:
-            case RelateToDecision:
-                return EnumSet.noneOf(ArgumentGroups.class);
-            case ChangeOtherState:
-                return EnumSet.of(nextOtherDrv,otherDec,nextOtherLoc);
-            case ChangeRelationState:
-                return EnumSet.of(nextFocalDrv,focalDec,nextFocalLoc,
-                    nextOtherDrv,otherDec,nextOtherLoc); // also add relation state in a far future
-            case ChangeState:
-                return EnumSet.of(nextFocalDrv,focalDec,nextFocalLoc);
-            case SetInitialState:
-                return EnumSet.of(focalLtc,focalDrv,focalLoc);
-            case SetOtherInitialState:
-                return EnumSet.of(otherLtc,otherDrv,otherLoc);
-            default:
-                return EnumSet.noneOf(ArgumentGroups.class);
-        }
-    }
-
-	@Deprecated
-    public Set<ArgumentGroups> localArguments() {
-	    switch (this) {
-		case ChangeCategoryDecision:
-		case ChangeOtherCategoryDecision:
-		case CreateOtherDecision:
-		case DeleteDecision:
-		case DeleteOtherDecision:
-		case MaintainRelationDecision:
-		case RelateToDecision:
-			return EnumSet.of(random,decider);
-		case ChangeOtherState:
-		case ChangeRelationState:
-		case ChangeState:
-		case SetInitialState:
-		case SetOtherInitialState:
-			return EnumSet.of(random);
-		default:
-			return EnumSet.noneOf(ArgumentGroups.class);
 	    }
     }
 

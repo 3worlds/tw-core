@@ -545,53 +545,53 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	}
 
 
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	protected SortedSet<Category> findCategories(TreeGraphDataNode function, boolean focal) {
-		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-		TreeNode fp = function.getParent();
-		SortedSet<Category> cats = new TreeSet<>();
-		// function parent is a process
-		if (fp instanceof ProcessNode) {
-			ProcessNode pn = (ProcessNode) fp;
-			if (focal)
-				for (TwFunctionTypes tft:ComponentProcess.compatibleFunctionTypes)
-					if (tft.equals(ftype)) {
-					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
-						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
-						edgeListEndNodes()));
-					return cats;
-			}
-			for (TwFunctionTypes tft:AbstractRelationProcess.compatibleFunctionTypes)
-				if (tft.equals(ftype)) {
-					RelationType relnode = (RelationType) get(pn.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
-						endNode());
-					relationType = relnode.id();
-					if (focal) {
-						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
-							selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
-							edgeListEndNodes()));
-						return cats;
-					}
-					else {
-						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
-							selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
-							edgeListEndNodes()));
-						return cats;
-					}
-			}
-		}
-		// function parent is a function
-		else {
-			// TODO: categories of consequence functions ??? good luck!
-			// if createOther --> lifeCycle
-			// if deleteOther --> returnTo relation
-			// if changeCategory --> life cycle
-			// there may be more than one set in each case --> multiple method generation
-		}
-		return cats;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Deprecated
+//	protected SortedSet<Category> findCategories(TreeGraphDataNode function, boolean focal) {
+//		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+//		TreeNode fp = function.getParent();
+//		SortedSet<Category> cats = new TreeSet<>();
+//		// function parent is a process
+//		if (fp instanceof ProcessNode) {
+//			ProcessNode pn = (ProcessNode) fp;
+//			if (focal)
+//				for (TwFunctionTypes tft:ComponentProcess.compatibleFunctionTypes)
+//					if (tft.equals(ftype)) {
+//					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
+//						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+//						edgeListEndNodes()));
+//					return cats;
+//			}
+//			for (TwFunctionTypes tft:AbstractRelationProcess.compatibleFunctionTypes)
+//				if (tft.equals(ftype)) {
+//					RelationType relnode = (RelationType) get(pn.edges(Direction.OUT),
+//						selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
+//						endNode());
+//					relationType = relnode.id();
+//					if (focal) {
+//						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
+//							selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+//							edgeListEndNodes()));
+//						return cats;
+//					}
+//					else {
+//						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
+//							selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+//							edgeListEndNodes()));
+//						return cats;
+//					}
+//			}
+//		}
+//		// function parent is a function
+//		else {
+//			// TODO: categories of consequence functions ??? good luck!
+//			// if createOther --> lifeCycle
+//			// if deleteOther --> returnTo relation
+//			// if changeCategory --> life cycle
+//			// there may be more than one set in each case --> multiple method generation
+//		}
+//		return cats;
+//	}
 
 	public String simpleCatSignature(Set<Category> set) {
 		String result = " ";
@@ -646,7 +646,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			TwFunctionTypes ftype = (TwFunctionTypes) functions.get(method).properties().getPropertyValue(P_FUNCTIONTYPE.key());
 			EnumMap<TwFunctionArguments,List<recInfo>> newDS = new EnumMap<>(TwFunctionArguments.class);
 			dataStructures.put(method,newDS);
-			for (TwFunctionArguments a: ftype.arguments())
+			for (TwFunctionArguments a: ftype.readOnlyArguments())
 				if ((a!=_t)&(a!=_dt)) {
 				newDS.put(a,new LinkedList<recInfo>());
 				// TODO: make sure all categories are searched for all the context classes
@@ -754,9 +754,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// retrieve all the parameters and parameter types
 		replicateNames.clear();
 		EnumSet<TwFunctionArguments> argSet2 = EnumSet.noneOf(TwFunctionArguments.class);
-		argSet2.addAll(ftype.arguments());
-		argSet2.addAll(ftype.localArguments2());
-		argSet2.addAll(ftype.writeableArguments2());
+		argSet2.addAll(ftype.readOnlyArguments());
+		argSet2.addAll(ftype.localArguments());
+		argSet2.addAll(ftype.writeableArguments());
 
 		// t, dt
 		for (TwFunctionArguments arg:EnumSet.of(_t,_dt)) {
@@ -809,7 +809,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// location arguments ?
 
 		// random, decide
-		for (TwFunctionArguments arg:ftype.localArguments2()) {
+		for (TwFunctionArguments arg:ftype.localArguments()) {
 			imports.add(arg.type());
 			method.addArgument(arg,null,arg.name(),simpleType(arg.type()),arg.description());
 			headerComment.append("@param ").append(arg.name()).append(' ')
