@@ -170,7 +170,7 @@ public enum TwFunctionTypes {
 		case ChangeCategoryDecision:
 		case CreateOtherDecision:
 		case DeleteDecision:
-			return EnumSet.of(_t,_dt,arena,lifeCycle,group,space,focal);
+			return EnumSet.of(t,dt,arena,lifeCycle,group,space,focal);
 		case SetOtherInitialState:
 		case ChangeOtherState:
 		case ChangeOtherCategoryDecision:
@@ -178,7 +178,7 @@ public enum TwFunctionTypes {
 		case MaintainRelationDecision:
 		case RelateToDecision:
 		case ChangeRelationState:
-			return EnumSet.complementOf(EnumSet.of(_random,_decider));
+			return EnumSet.complementOf(EnumSet.of(random,decider));
 		default:
 			return EnumSet.noneOf(TwFunctionArguments.class);
 		}
@@ -193,13 +193,13 @@ public enum TwFunctionTypes {
 		case DeleteOtherDecision:
 		case MaintainRelationDecision:
 		case RelateToDecision:
-			return EnumSet.of(_random,_decider);
+			return EnumSet.of(random,decider);
 		case ChangeOtherState:
 		case ChangeRelationState:
 		case ChangeState:
 		case SetInitialState:
 		case SetOtherInitialState:
-			return EnumSet.of(_random);
+			return EnumSet.of(random);
 		default:
 			return EnumSet.noneOf(TwFunctionArguments.class);
 	    }
@@ -240,9 +240,9 @@ public enum TwFunctionTypes {
 	    switch (this) {
 		case ChangeRelationState:
 		case ChangeOtherState:
-			return EnumSet.of(_nextFocalLoc,_nextOtherLoc);
+			return EnumSet.of(nextFocalLoc,nextOtherLoc);
 		case ChangeState:
-			return EnumSet.of(_nextFocalLoc);
+			return EnumSet.of(nextFocalLoc);
 		default:
 			return EnumSet.noneOf(TwFunctionArguments.class);
 	    }

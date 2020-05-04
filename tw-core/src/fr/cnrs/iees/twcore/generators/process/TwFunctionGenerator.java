@@ -289,7 +289,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		innerVarInit.clear();
 		innerVarCopy.clear();
 		//t, dt
-		for (TwFunctionArguments arg:EnumSet.of(_t,_dt))
+		for (TwFunctionArguments arg:EnumSet.of(t,dt))
 			callStatement += indent+indent+indent+ arg.name() + ",\n";
 		// arena, lifeCycle, group, space focal, other, otherGroup, otherLifeCycle
 		// including return values
@@ -361,9 +361,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		// random, decide
 		for (TwFunctionArguments arg:type.localArguments()) {
 			String callArg = null;
-			if (arg==_random)
+			if (arg==random)
 				callArg = "rng()";
-			else if (arg==_decider)
+			else if (arg==decider)
 				callArg = "this";
 			if (callArg!=null)
 				callStatement += indent+indent+indent+ callArg + ",\n";

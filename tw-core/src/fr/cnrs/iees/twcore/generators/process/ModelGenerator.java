@@ -647,7 +647,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			EnumMap<TwFunctionArguments,List<recInfo>> newDS = new EnumMap<>(TwFunctionArguments.class);
 			dataStructures.put(method,newDS);
 			for (TwFunctionArguments a: ftype.readOnlyArguments())
-				if ((a!=_t)&(a!=_dt)) {
+				if ((a!=t)&(a!=dt)) {
 				newDS.put(a,new LinkedList<recInfo>());
 				// TODO: make sure all categories are searched for all the context classes
 				// ie goup, life cycle, arena etc.
@@ -668,20 +668,20 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					}
 				}
 			}
-			// debug
-			for (String m:dataStructures.keySet()) {
-				System.out.println(m);
-				for (TwFunctionArguments a:dataStructures.get(m).keySet()) {
-					System.out.println("\t"+a);
-					for (recInfo r:dataStructures.get(m).get(a)) {
-						System.out.println("\t\t"+r.name+":"+r.klass);
-						if (r.members!=null)
-							for (memberInfo mb:r.members)
-								System.out.println("\t\t\t"+mb);
-					}
-				}
-			}
-			// end debug
+//			// debug
+//			for (String m:dataStructures.keySet()) {
+//				System.out.println(m);
+//				for (TwFunctionArguments a:dataStructures.get(m).keySet()) {
+//					System.out.println("\t"+a);
+//					for (recInfo r:dataStructures.get(m).get(a)) {
+//						System.out.println("\t\t"+r.name+":"+r.klass);
+//						if (r.members!=null)
+//							for (memberInfo mb:r.members)
+//								System.out.println("\t\t\t"+mb);
+//					}
+//				}
+//			}
+//			// end debug
 		}
 		return dataStructures.get(method);
 	}
@@ -759,7 +759,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		argSet2.addAll(ftype.writeableArguments());
 
 		// t, dt
-		for (TwFunctionArguments arg:EnumSet.of(_t,_dt)) {
+		for (TwFunctionArguments arg:EnumSet.of(t,dt)) {
 			method.addArgument(arg,null,arg.name(),arg.type(),arg.description());
 			headerComment.append("@param ").append(arg.name()).append(' ')
 				.append(arg.description()).append('\n');
@@ -776,9 +776,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (rec!=null)
 						if (rec.members!=null) {
 							for (memberInfo mb: rec.members) {
-
-					System.out.println(nameLabelMatches.get(rec.name)+": "+mb);
-
+//					System.out.println(nameLabelMatches.get(rec.name)+": "+mb);
 					if (mb.name!=null) {
 						if (mb.fullType!=null)
 							imports.add(mb.fullType);

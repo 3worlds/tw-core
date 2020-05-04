@@ -8,8 +8,8 @@ package fr.cnrs.iees.twcore.generators.process;
  */
 public enum TwFunctionArguments {
 
-	_t				("double", "current time"),
-	_dt				("double", "current time step"),
+	t				("double", "current time"),
+	dt				("double", "current time step"),
 	// component Processes
 	arena			("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "whole system "),
 	lifeCycle		("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "focal life cycle "),
@@ -21,11 +21,11 @@ public enum TwFunctionArguments {
 	otherGroup		("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "other group "),
 	other			("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "other component "),
 	// writeable arguments
-	_nextFocalLoc	("double[]", "focal component new location"),
-	_nextOtherLoc	("double[]", "other component new location"),
+	nextFocalLoc	("double[]", "focal component new location"),
+	nextOtherLoc	("double[]", "other component new location"),
 	// utilities
-	_random			("java.util.Random", "random number generator"),
-	_decider		("au.edu.anu.twcore.ecosystem.runtime.biology.DecisionFunction", "decision function")
+	random			("java.util.Random", "random number generator"),
+	decider		("au.edu.anu.twcore.ecosystem.runtime.biology.DecisionFunction", "decision function")
 	;
 	private final String type;
 	private final String description;
