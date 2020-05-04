@@ -56,7 +56,7 @@ public class SystemComponent
 		extends ALDataNode
 		implements CategorizedComponent, Contained<ComponentContainer> {
 
-	private Categorized<SystemComponent> cats = null;
+	private Categorized<SystemComponent> categories = null;
 	/** container */
 	private ComponentContainer container = null;
 
@@ -68,8 +68,8 @@ public class SystemComponent
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setCategorized(Categorized<? extends CategorizedComponent> cat) {
-		if (cats==null)
-			cats = (Categorized<SystemComponent>) cat;
+		if (categories==null)
+			categories = (Categorized<SystemComponent>) cat;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class SystemComponent
 	 */
 	@Override
 	public Categorized<SystemComponent> membership() {
-		return cats;
+		return categories;
 	}
 
 	public TwData parameters() {
@@ -87,7 +87,7 @@ public class SystemComponent
 
 	@Override
 	public SystemComponent clone() {
-		SystemComponent result = (SystemComponent) ((ComponentFactory)cats).newInstance();
+		SystemComponent result = (SystemComponent) ((ComponentFactory)categories).newInstance();
 		result.properties().setProperties(properties());
 		result.setContainer(container());
 		return result;

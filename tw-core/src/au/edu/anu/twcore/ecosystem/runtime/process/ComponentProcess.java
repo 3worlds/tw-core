@@ -32,6 +32,7 @@ import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 import static au.edu.anu.twcore.ecosystem.structure.RelationType.predefinedRelationTypes.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,6 +54,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
@@ -101,6 +103,12 @@ public class ComponentProcess
 //	private SystemContainer ecosystemContainer = null;
 //	private SystemContainer groupContainer = null;
 
+	// new API
+	// the whole system component - always valie, always here, always unique
+	private ArenaComponent arena = null;
+	// lifecycle
+	private GroupComponent focalGroup = null;
+
 	public ComponentProcess(ArenaComponent world, Collection<Category> categories,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
 		super(world,timer,space,searchR);
@@ -109,45 +117,62 @@ public class ComponentProcess
 	}
 
 	// recursive loop on all sub containers of the community
-	protected void loop(HierarchicalComponent container, double t, double dt) {
-		if (container instanceof ArenaComponent) {
-			ArenaComponent arena = (ArenaComponent) container;
-			if (arena.content()!=null) {
-				// TODO: recurse
+	@Override
+	protected void loop( double t, double dt,
+			HierarchicalComponent component) {
+		// execute function on this item if proper categories
+		if (component.membership().belongsTo(focalCategories))
+			executeFunctions(t, dt, component);
+		else if (component.content()!=null) {
+			// set contextual information
+			if (component instanceof ArenaComponent) {
+				arena = (ArenaComponent) component;
+				// lifeCycle =null;
+				focalGroup = null;
 			}
-			else
-				executeFunctions(arena, t, dt);
-		}
-		else {
-//			if (container.categoryInfo() instanceof Ecosystem) {
-//				setContext(focalContext,container);
-//			}
-//			else if (container.categoryInfo() instanceof LifeCycle) {
-//				setContext(focalContext,container);
-//				lifeCycle = (LifeCycle) container.categoryInfo();
-//				lifeCycleContainer = (ComponentContainer) container;
-//			}
-//			else if (container.categoryInfo() instanceof SystemFactory)
-//				if (container.categoryInfo().belongsTo(focalCategories)) {
-//					container.change(); // means data in here will have changed after this loop
-//					setContext(focalContext,container);
-//					group = (SystemFactory) container.categoryInfo();
-//					executeFunctions(container,t,dt);
-//					// track group state
-//					for (DataTracker0D tracker:tsTrackers)
-//						if (tracker.isTracked(container)) {
-//							tracker.recordItem(focalContext.buildItemId(null));
-//							tracker.record(currentStatus,container.populationData());
-//					}
-//					focalContext.clear();
-//			}
-//			for (CategorizedContainer<SystemComponent> subc:container.subContainers())
-//				loop(subc,t,dt);
+			// lifecycle
+			else if (component instanceof GroupComponent)
+				focalGroup = (GroupComponent) component;
+			// execute function on contained items, if any, and of proper categories
+			if (component.content().categoryInfo().belongsTo(focalCategories))
+				for (SystemComponent sc:component.content().items())
+					executeFunctions(t, dt, component);
+			// in all cases, recurse on subcontainers to find more matching items
+			// and recursively add context information to context.
+			for (CategorizedContainer<SystemComponent> cc:component.content().subContainers()) {
+				loop(t,dt,cc.hierarchicalView());
+			}
 		}
 	}
 
-	private void executeFunctions(CategorizedComponent focal, double t, double dt) {
+	private void executeFunctions(double t, double dt, CategorizedComponent focal) {
+		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
 		System.out.println("coucou from "+focal.toShortString()+" t = "+t);
+
+//		if (space!=null) {
+//			Box limits = space.boundingBox();
+//			Point location = space.locationOf(focal).asPoint();
+//			double[] newLoc = new double[location.dim()];
+//		}
+		if (focal.currentState() != null) { // otherwise no point computing changes! yes if only location !
+			focal.currentState().writeDisable(); // we dont care anymore about that, except for tables...
+			focal.nextState().writeEnable();
+			// change state of this SystemComponent - easy
+			for (ChangeStateFunction function : CSfunctions) {
+				function.changeState(t,dt,arena,null,focalGroup,null,focal,/*newLoc*/null);
+				// NEW code for new TwFunction API
+				// end new code
+//				function.changeState(t, dt, limits,
+//					focalContext.ecosystemParameters, ecosystem(),
+//					focalContext.lifeCycleParameters, lifeCycleContainer,
+//					focalContext.groupParameters, focal.container(),
+//					focal.autoVar(), focal.constants(), focal.currentState(), focal.decorators(),
+//					location, focal.nextState(), newLoc);
+			}
+			focal.nextState().writeDisable();
+		}
+
+
 	}
 
 	// single loop on a container which matches the process categories

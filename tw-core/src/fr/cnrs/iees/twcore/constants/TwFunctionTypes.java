@@ -25,14 +25,20 @@
 */
 package fr.cnrs.iees.twcore.constants;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
 import java.util.EnumSet;
 import fr.cnrs.iees.twcore.generators.process.ArgumentGroups;
+import fr.cnrs.iees.twcore.generators.process.TwFunctionArguments;
+
 import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
+import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
+
 
 public enum TwFunctionTypes {
 
@@ -160,6 +166,93 @@ public enum TwFunctionTypes {
 		TwFunctionTypes.class.getName(),defaultValue());
 	}
 
+	public Set<TwFunctionArguments> arguments() {
+		switch (this) {
+		case SetInitialState:
+		case ChangeState:
+		case ChangeCategoryDecision:
+		case CreateOtherDecision:
+		case DeleteDecision:
+			return EnumSet.of(_t,_dt,arena,lifeCycle,group,space,focal);
+		case SetOtherInitialState:
+		case ChangeOtherState:
+		case ChangeOtherCategoryDecision:
+		case DeleteOtherDecision:
+		case MaintainRelationDecision:
+		case RelateToDecision:
+		case ChangeRelationState:
+			return EnumSet.complementOf(EnumSet.of(_random,_decider));
+		default:
+			return EnumSet.noneOf(TwFunctionArguments.class);
+		}
+	}
+
+    public Set<TwFunctionArguments> localArguments2() {
+	    switch (this) {
+		case ChangeCategoryDecision:
+		case ChangeOtherCategoryDecision:
+		case CreateOtherDecision:
+		case DeleteDecision:
+		case DeleteOtherDecision:
+		case MaintainRelationDecision:
+		case RelateToDecision:
+			return EnumSet.of(_random,_decider);
+		case ChangeOtherState:
+		case ChangeRelationState:
+		case ChangeState:
+		case SetInitialState:
+		case SetOtherInitialState:
+			return EnumSet.of(_random);
+		default:
+			return EnumSet.noneOf(TwFunctionArguments.class);
+	    }
+    }
+
+    public List<String> innerVars() {
+    	List<String> result = new ArrayList<>();
+    	switch (this) {
+		case ChangeOtherState:
+			result.add("otherDrv");
+			result.add("otherDec");
+			break;
+		case ChangeRelationState:
+			result.add("focalDrv");
+			result.add("focalDec");
+			result.add("otherDrv");
+			result.add("otherDec");
+			break;
+		case ChangeState:
+			result.add("focalDrv");
+			result.add("focalDec");
+			break;
+		case SetInitialState:
+			result.add("focalDrv");
+			result.add("focalLtc");
+			break;
+		case SetOtherInitialState:
+			result.add("otherDrv");
+			result.add("otherLtc");
+			break;
+		default:
+			break;
+    	 }
+    	 return result;
+    }
+
+    public Set<TwFunctionArguments> writeableArguments2() {
+	    switch (this) {
+		case ChangeRelationState:
+		case ChangeOtherState:
+			return EnumSet.of(_nextFocalLoc,_nextOtherLoc);
+		case ChangeState:
+			return EnumSet.of(_nextFocalLoc);
+		default:
+			return EnumSet.noneOf(TwFunctionArguments.class);
+	    }
+    }
+
+
+	@Deprecated
     public Set<ArgumentGroups> readOnlyArguments() {
         switch (this) {
             case ChangeOtherCategoryDecision:
@@ -189,6 +282,7 @@ public enum TwFunctionTypes {
         }
     }
 
+	@Deprecated
     public Set<ArgumentGroups> writeableArguments() {
         switch (this) {
             case ChangeCategoryDecision:
@@ -215,6 +309,7 @@ public enum TwFunctionTypes {
         }
     }
 
+	@Deprecated
     public Set<ArgumentGroups> localArguments() {
 	    switch (this) {
 		case ChangeCategoryDecision:

@@ -138,7 +138,7 @@ public abstract class AbstractProcess
 		if (space!=null)
 			if (space.dataTracker()!=null)
 				space.dataTracker().recordTime(t);
-		loop(ecosystem(),timer.userTime(t),timer.userTime(dt));
+		loop(timer.userTime(t),timer.userTime(dt),ecosystem());
 	}
 
 	/**
@@ -192,6 +192,6 @@ public abstract class AbstractProcess
 
 	public abstract void addFunction(TwFunction function);
 
-	protected abstract void loop(HierarchicalComponent container, double t, double dt);
+	protected abstract void loop(double t, double dt, HierarchicalComponent container);
 
 }

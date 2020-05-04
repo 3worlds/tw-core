@@ -29,7 +29,11 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
@@ -75,26 +79,44 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 //	CategorizedComponent ecosystem, CategorizedComponent lifeCycle, CategorizedComponent group,
 //	CategorizedComponent focal);
 
+//	// new new new version
+//	public abstract void changeState(double t, double dt,
+//			ArenaComponent arena,
+////			SpaceComponent space,
+////			LifeCYcleComponent lifecycle,
+////			GroupComponent group,
+//			CategorizedComponent focal );
+
+	public abstract void changeState(double t, double dt,
+		CategorizedComponent arena,
+		CategorizedComponent lifeCycle,
+		CategorizedComponent group,
+		CategorizedComponent space,
+		CategorizedComponent focal,
+		double[] nextFocalLoc);
+
+
+
 	// new version
-	public abstract void changeState (
-			double t,
-			double dt,
-			Box limits,
-			TwData ecosystemPar,
-			ComponentContainer ecosystemPop,
-			TwData lifeCyclePar,
-			ComponentContainer lifeCyclePop,
-			TwData groupPar,
-			ComponentContainer groupPop,
-			SystemData focalAuto,
-			TwData focalLtc,
-			TwData focalDrv,
-			TwData focalDec, // read write
-			Point focalLoc,
-			// returning data (read write parameters)
-			TwData nextFocalDrv,
-			double[] nextFocalLoc
-			);
+//	public abstract void changeState (
+//			double t,
+//			double dt,
+//			Box limits,
+//			TwData ecosystemPar,
+//			ComponentContainer ecosystemPop,
+//			TwData lifeCyclePar,
+//			ComponentContainer lifeCyclePop,
+//			TwData groupPar,
+//			ComponentContainer groupPop,
+//			SystemData focalAuto,
+//			TwData focalLtc,
+//			TwData focalDrv,
+//			TwData focalDec, // read write
+//			Point focalLoc,
+//			// returning data (read write parameters)
+//			TwData nextFocalDrv,
+//			double[] nextFocalLoc
+//			);
 //			// read only arguments
 //			// time, always present
 //			double t,

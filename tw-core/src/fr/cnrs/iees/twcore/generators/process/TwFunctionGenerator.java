@@ -28,8 +28,6 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators.process;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
@@ -42,10 +40,9 @@ import static fr.cnrs.iees.twcore.constants.PopulationVariables.TCOUNT;
 import static fr.cnrs.iees.twcore.constants.PopulationVariables.TNADDED;
 import static fr.cnrs.iees.twcore.constants.PopulationVariables.TNREMOVED;
 import static fr.cnrs.iees.twcore.generators.process.ArgumentGroups.*;
+import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 import static au.edu.anu.twcore.DefaultStrings.*;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -62,26 +59,17 @@ import java.util.logging.Logger;
 import org.bouncycastle.util.Strings;
 
 import au.edu.anu.rscs.aot.collections.tables.Table;
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
-import au.edu.anu.twcore.ecosystem.runtime.space.Location;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
-import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
-import fr.cnrs.iees.twcore.constants.FileType;
 import fr.cnrs.iees.twcore.constants.PopulationVariables;
-import fr.cnrs.iees.twcore.constants.SnippetLocation;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator.memberInfo;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
+import fr.cnrs.iees.twcore.generators.process.ModelGenerator.recInfo;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
@@ -191,7 +179,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //		generator.setImport(SystemComponent.class.getCanonicalName());
 		generator.setImport(Table.class.getPackageName()+".*");
 		Set<String> argClasses = new TreeSet<>(); // constant order
-		for (ArgumentGroups arggrp:type.readOnlyArguments())
+//		for (ArgumentGroups arggrp:type.readOnlyArguments())
+//			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
+//				argClasses.add(arggrp.type());
+		for (TwFunctionArguments arggrp:type.arguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
 				argClasses.add(arggrp.type());
 		for (ArgumentGroups arggrp:type.writeableArguments())
@@ -208,22 +199,23 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		generator.setRawMethodCode(innerClasses);
 		// main method settings
 		Collection<MethodGenerator> lmg = generator.getMethods();
-		for (MethodGenerator mg : lmg) { // only 1 assumed?
+		for (MethodGenerator mg : lmg) { // only 1 assumed
 			//argument list
-			Set<ArgumentGroups> argSet = new TreeSet<>();
-			argSet.addAll(type.readOnlyArguments());
-			argSet.addAll(type.writeableArguments());
+			Set<TwFunctionArguments> argSet = new TreeSet<>();
+			argSet.addAll(type.arguments());
 			// argument names
 			String[] argNames = new String[argSet.size()];
 			int i=0;
-			for (ArgumentGroups ag:argSet)
+//			for (ArgumentGroups ag:argSet)
+			for (TwFunctionArguments ag:argSet)
 				argNames[i++] = ag.name();
 			mg.setArgumentNames(argNames);
 			// argument types (not from ancestor, for consistency here)
 			// BUT the ancestor TwFunction MUST have its arguments in the proper order!
 			String[] argTypes = new String[argSet.size()];
 			i=0;
-			for (ArgumentGroups ag:argSet) {
+//			for (ArgumentGroups ag:argSet)
+			for (TwFunctionArguments ag:argSet) {
 				String[] ss = ag.type().split("\\.");
 				argTypes[i++] = ss[ss.length-1];
 			}
@@ -274,135 +266,251 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	}
 
 	// interfacing statements indexed by group (varname)
+	// Statements to declare an Inner class to handle returned values for drivers, decorators or lifetime constants
 	private Map<String,List<String>> innerClassDecl = new HashMap<>();
+	// statements to instantiate and initialise all fields of the previous classes to pass as arguments to the user method
 	private Map<String,List<String>> innerVarInit = new HashMap<>();
+	// statements to copy returned values back to the proper spots.
 	private Map<String,List<String>> innerVarCopy = new HashMap<>();
 	private Set<String> dataClassesToImport = new HashSet<>();
 	private String callStatement ="";
-	//TODO: pass the class,var name pair back to the ModelGenerator
-	// TODO: import the inner classes to modelgenerator
 
-	// TODO: Must check ll this
-	public void setArgumentCalls(ModelGenerator gen) {
+	// extracts the simple class name from a full class name
+	private String classShortName(String classFullName) {
+		String result = classFullName;
+		if (classFullName.contains(".")) {
+			String[] s = classFullName.split("\\.");
+			result = s[s.length-1];
+		}
+		return result;
+	}
+
+	public void setArgumentCalls2(ModelGenerator gen) {
+		// mapping between inerVar names and rec.name
+		Map<String,String> recToInnerVar = new HashMap<>();
+		recToInnerVar.put("autoVar",null);
+		recToInnerVar.put("constants","Ltc");
+		recToInnerVar.put("decorators","Dec");
+		recToInnerVar.put("currentState","Drv");
+//		Map<TwFunctionArguments,List<Tuple<ConfigurationEdgeLabels,String,String>>> reqArgs = gen.method(name).callerArguments2();
 		String classToCall = gen.className();
-		Map<ArgumentGroups,List<Duple<String,String>>> reqArgs = gen.method(name).callerArguments();
 		String indent = "\t";
 		callStatement = classToCall+"."+
 			Strings.toLowerCase(name.substring(0,1))+
 			name.substring(1)+"(\n";
-		String innerClass = "";
-		String innerVar = "";
-		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal =
-			gen.getAllMembers(gen.findCategories(spec,true));
-		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther =
-			gen.getAllMembers(gen.findCategories(spec,false));
-		boolean makeInnerClass = false;
-		for (ArgumentGroups ag: reqArgs.keySet()) {
-			makeInnerClass = type.writeableArguments().contains(ag) & !ag.name().contains("Loc");
-			if (makeInnerClass) {
-				innerVar = ag.toString();
-				innerClass = initialUpperCase(innerVar);
-//				innerClass = Strings.toUpperCase(innerVar.substring(0,1))+innerVar.substring(1);
-				List<String> innerClassDeclaration = innerClassDecl.get(innerVar);
-				if (innerClassDeclaration==null) {
-					innerClassDeclaration = new LinkedList<>();
-					innerClassDecl.put(innerVar,innerClassDeclaration);
-					innerClassDeclaration.add(indent+"public class "+innerClass+" {");
+		innerClassDecl.clear();
+		innerVarInit.clear();
+		innerVarCopy.clear();
+		//t, dt
+		for (TwFunctionArguments arg:EnumSet.of(_t,_dt))
+			callStatement += indent+indent+indent+ arg.name() + ",\n";
+		// arena, lifeCycle, group, space focal, other, otherGroup, otherLifeCycle
+		// including return values
+		boolean skipArena = true; // TODO: compute proper value
+		for (TwFunctionArguments arg:gen.dataStructure(name).keySet()) {
+			List<recInfo> comp = gen.dataStructure(name).get(arg);
+			// generation of inner classes for return values
+			if (!(arg.equals(arena) & skipArena))
+				for (recInfo rec:comp)
+					if (rec!=null)
+						if (rec.members!=null) {
+				for (String innerVar:type.innerVars() ) {
+					// generation of inner classes for return values: unique statements
+					if (innerVar.contains(recToInnerVar.get(rec.name))) {
+						String innerClass = initialUpperCase(innerVar);
+						List<String> innerClassDeclaration = new LinkedList<>();
+						// e.g.: public class FocalDrv {
+						innerClassDeclaration.add(indent+"public class "+innerClass+" {");
+						innerClassDecl.put(innerVar,innerClassDeclaration);
+						List<String> innerVarInitialisation = new LinkedList<>();
+						// e.g.: FocalDrv _focalDrv = new FocalDrv();
+						innerVarInitialisation.add(innerClass+" _"+innerVar+" = new "+innerClass+"()");
+						innerVarInit.put(innerVar,innerVarInitialisation);
+						List<String> innerVarBackCopy = new LinkedList<>();
+						innerVarCopy.put(innerVar,innerVarBackCopy);
+						// e.g.: Vars focalDrv = (Vars)focal.nextState();
+						if (rec.name.equals("currentState"))
+							innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+".nextState()");
+						else
+							innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+"."+rec.name+"()");
+					}
 				}
-				List<String> innerVarInitialisation = innerVarInit.get(innerVar);
-				if (innerVarInitialisation==null) {
-					innerVarInitialisation = new LinkedList<>();
-					innerVarInit.put(innerVar,innerVarInitialisation);
-					innerVarInitialisation.add(innerClass+" _"+innerVar+" = new "+innerClass+"()");
-				}
-				List<String> innerVarBackCopy = innerVarCopy.get(innerVar);
-				if (innerVarBackCopy==null) {
-					innerVarBackCopy = new LinkedList<>();
-					innerVarCopy.put(innerVar,innerVarBackCopy);
-//					innerVarBackCopy.add("// copy back statements");
-				}
+				for (memberInfo field:rec.members) {
+					// generate calls to inner methods to write as arguments to user method
+					String callArg = null;
+					// ((Vars)focal.currentState()).y()),
+					callArg = "((" + classShortName(rec.klass)+ ")"+arg.toString()+"."+rec.name+"())."+field.name+"()";
+					if (callArg!=null)
+						callStatement += indent+indent+indent+ callArg + ",\n";
+					// for returned values, generate inner class and proper calls
+					for (String innerVar:type.innerVars() )
+						if (innerVar.contains(recToInnerVar.get(rec.name))) {
+							// imports needed for non primitive field classes
+							if (field.fullType!=null)
+								dataClassesToImport.add(field.fullType);
+							// e.g.: double y;
+							innerClassDecl.get(innerVar).add(indent+indent+field.type+" "+field.name+";");
+							// e.g.: _focalDrv.y = focalDrv.y();
+							innerVarInit.get(innerVar).add("_"+innerVar+"."+field.name+" = "+innerVar+"."+field.name+"()");
+							// e.g.: focalDrv.y(_focalDrv.y);
+							innerVarCopy.get(innerVar).add(innerVar+"."+field.name+"(_"+innerVar+"."+field.name+")");
+							// TODO: tables ?
+////								if (!mb.isTable)
+//									// example code: ((MyDrvRec)x).drivers(focalDrv.x))
+//									// should be: ((MyDrvRec)focal.getNextState()).
+//									innerVarCopy.get(innerVar).add("((" + sc+ ")"+arg.name()+")."+at+"("+defaultPrefix+innerVar+"."+an+")");
+
+					}
+				} // rec.members
+				for (String innerVar:type.innerVars() )
+					if (innerVar.contains(recToInnerVar.get(rec.name)))
+//						if (innerVar.contains("Drv"))
+						// e.g.:_focalDrv // next value
+						callStatement += indent+indent+indent+"_"+innerVar+ ",\n";
 			}
-			for (Duple<String,String> d: reqArgs.get(ag)){
-				String an = d.getFirst(); // argument name
-				String at = d.getSecond(); // argument type
-				String callArg = null;
-				if ((ag==t) || (ag==dt) || (ag==limits) ||
-					(ag==focalLoc) || (ag==otherLoc) || (ag==nextFocalLoc))
-					callArg = ag.name();
-				else if ((ag==ecosystemPar) || (ag==lifeCyclePar))
-					;
-				else if (ag==ecosystemPop)
-					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
-//						if (an.equals(validJavaName(wordUpperCaseName("ecosystem."+pv.longName()))))
-//							callArg = ag.name()+".populationData()."+pv.getter()+"()";
-					}
-				else if (ag==lifeCyclePop)
-					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
-//						if (an.equals(validJavaName(wordUpperCaseName("lifeCycle."+pv.longName()))))
-//							callArg = ag.name()+".populationData()."+pv.getter()+"()";
-					}
-				else if ((ag==groupPop))
-					for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
-//						if (an.equals(validJavaName(wordUpperCaseName("group."+pv.longName()))))
-//							callArg = ag.name()+".populationData()."+pv.getter()+"()";
-					}
-				else if ((ag==otherGroupPop))
-					for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
-//						if (an.equals(validJavaName(wordUpperCaseName("other.group."+pv.longName()))))
-//							callArg = ag.name()+".populationData()."+pv.getter()+"()";
-					}
-				else if ((ag==focalAuto) || (ag==otherAuto))
-					callArg = ag.name()+"."+an+"()*1.0"; // TODO: remove the *1.0 and replace by proper timer conversion
-				else if (ag==random)
-					callArg = "rng()";
-				else if (ag==decider)
-					callArg = "this";
-				else if (type.writeableArguments().contains(ag)) {
-					callArg = defaultPrefix+innerVar;
-					Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> searchList = null;
-					if (ag.name().contains("ocal")) // "F" or "f" are possible
-						searchList = membersForFocal;
-					else if (ag.name().contains("ther")) // "O" or "o" are possible
-						searchList = membersForOther;
-					for (ConfigurationEdgeLabels cel: // not the most efficient way to search, this loop
-						EnumSet.of(E_PARAMETERS,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS)) {
-						String sc = null;
-						for (memberInfo mb:searchList.get(cel)) {
-							if (sc==null) {
-								String lc = gen.containingClass(mb.name);
-								dataClassesToImport.add(lc);
-								sc = lc.split("\\.")[lc.split("\\.").length-1];
-							}
-							innerClassDecl.get(innerVar).add(indent+indent+mb.type+" "+mb.name+";");
-							innerVarInit.get(innerVar).add(defaultPrefix+innerVar+"."+mb.name+" = ((" + sc+ ")"+ag.name()+")."+mb.name+"()");
-							if (!mb.isTable)
-								innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.name()+")."+mb.name+"("+defaultPrefix+innerVar+"."+mb.name+")");
-						}
-					}
-				}
-				else {
-					String lc = gen.containingClass(an);
-					if (lc!=null) { // fix for a bug ue to entering here with a wrong argument
-						dataClassesToImport.add(lc);
-						String sc = lc.split("\\.")[lc.split("\\.").length-1];
-						callArg = "((" + sc+ ")"+ag.toString()+")."+an+"()";
-					}
-				}
-				if (callArg!=null)
-					callStatement += indent+indent+indent+ callArg + ",\n";
-			}
-			if (makeInnerClass) {
+		}
+		// location arguments ?
+
+		// random, decide
+		for (TwFunctionArguments arg:type.localArguments2()) {
+			String callArg = null;
+			if (arg==_random)
+				callArg = "rng()";
+			else if (arg==_decider)
+				callArg = "this";
+			if (callArg!=null)
+				callStatement += indent+indent+indent+ callArg + ",\n";
+		}
+		for (String innerVar:type.innerVars())
+			if (innerClassDecl.get(innerVar)!=null)
 				innerClassDecl.get(innerVar).add(indent+"}\n");
-				if (innerClassDecl.get(innerVar).size()<=2) { // means the class has no fields
-					innerClassDecl.remove(innerVar);
-					innerVarInit.remove(innerVar);
-					innerVarCopy.remove(innerVar);
-				}
-			}
-		} // for
 		// completion of user method call
 		callStatement = callStatement.substring(0, callStatement.length()-2);
 		callStatement +=")";
 	}
+
+//	// TODO: Must check ll this
+//	@Deprecated
+//	public void setArgumentCalls(ModelGenerator gen) {
+//		String classToCall = gen.className();
+//		Map<ArgumentGroups,List<Duple<String,String>>> reqArgs = gen.method(name).callerArguments();
+//		String indent = "\t";
+//		callStatement = classToCall+"."+
+//			Strings.toLowerCase(name.substring(0,1))+
+//			name.substring(1)+"(\n";
+//		String innerClass = "";
+//		String innerVar = "";
+//		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal =
+//			gen.getAllMembers(gen.findCategories(spec,true));
+//		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther =
+//			gen.getAllMembers(gen.findCategories(spec,false));
+//		boolean makeInnerClass = false;
+//		for (ArgumentGroups ag: reqArgs.keySet()) {
+//			makeInnerClass = type.writeableArguments().contains(ag) & !ag.name().contains("Loc");
+//			if (makeInnerClass) {
+//				innerVar = ag.toString();
+//				innerClass = initialUpperCase(innerVar);
+////				innerClass = Strings.toUpperCase(innerVar.substring(0,1))+innerVar.substring(1);
+//				List<String> innerClassDeclaration = innerClassDecl.get(innerVar);
+//				if (innerClassDeclaration==null) {
+//					innerClassDeclaration = new LinkedList<>();
+//					innerClassDecl.put(innerVar,innerClassDeclaration);
+//					innerClassDeclaration.add(indent+"public class "+innerClass+" {");
+//				}
+//				List<String> innerVarInitialisation = innerVarInit.get(innerVar);
+//				if (innerVarInitialisation==null) {
+//					innerVarInitialisation = new LinkedList<>();
+//					innerVarInit.put(innerVar,innerVarInitialisation);
+//					innerVarInitialisation.add(innerClass+" _"+innerVar+" = new "+innerClass+"()");
+//				}
+//				List<String> innerVarBackCopy = innerVarCopy.get(innerVar);
+//				if (innerVarBackCopy==null) {
+//					innerVarBackCopy = new LinkedList<>();
+//					innerVarCopy.put(innerVar,innerVarBackCopy);
+////					innerVarBackCopy.add("// copy back statements");
+//				}
+//			}
+//			for (Duple<String,String> d: reqArgs.get(ag)){
+//				String an = d.getFirst(); // argument name
+//				String at = d.getSecond(); // argument type
+//				String callArg = null;
+//				if ((ag==t) || (ag==dt) || (ag==limits) ||
+//					(ag==focalLoc) || (ag==otherLoc) || (ag==nextFocalLoc))
+//					callArg = ag.name();
+//				else if ((ag==ecosystemPar) || (ag==lifeCyclePar))
+//					;
+//				else if (ag==ecosystemPop)
+//					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
+////						if (an.equals(validJavaName(wordUpperCaseName("ecosystem."+pv.longName()))))
+////							callArg = ag.name()+".populationData()."+pv.getter()+"()";
+//					}
+//				else if (ag==lifeCyclePop)
+//					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
+////						if (an.equals(validJavaName(wordUpperCaseName("lifeCycle."+pv.longName()))))
+////							callArg = ag.name()+".populationData()."+pv.getter()+"()";
+//					}
+//				else if ((ag==groupPop))
+//					for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
+////						if (an.equals(validJavaName(wordUpperCaseName("group."+pv.longName()))))
+////							callArg = ag.name()+".populationData()."+pv.getter()+"()";
+//					}
+//				else if ((ag==otherGroupPop))
+//					for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
+////						if (an.equals(validJavaName(wordUpperCaseName("other.group."+pv.longName()))))
+////							callArg = ag.name()+".populationData()."+pv.getter()+"()";
+//					}
+//				else if ((ag==focalAuto) || (ag==otherAuto))
+//					callArg = ag.name()+"."+an+"()*1.0"; // TODO: remove the *1.0 and replace by proper timer conversion
+//				else if (ag==random)
+//					callArg = "rng()";
+//				else if (ag==decider)
+//					callArg = "this";
+//				else if (type.writeableArguments().contains(ag)) {
+//					callArg = defaultPrefix+innerVar;
+//					Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> searchList = null;
+//					if (ag.name().contains("ocal")) // "F" or "f" are possible
+//						searchList = membersForFocal;
+//					else if (ag.name().contains("ther")) // "O" or "o" are possible
+//						searchList = membersForOther;
+//					for (ConfigurationEdgeLabels cel: // not the most efficient way to search, this loop
+//						EnumSet.of(E_PARAMETERS,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS)) {
+//						String sc = null;
+//						for (memberInfo mb:searchList.get(cel)) {
+//							if (sc==null) {
+//								String lc = gen.containingClass(mb.name);
+//								dataClassesToImport.add(lc);
+//								sc = lc.split("\\.")[lc.split("\\.").length-1];
+//							}
+//							innerClassDecl.get(innerVar).add(indent+indent+mb.type+" "+mb.name+";");
+//							innerVarInit.get(innerVar).add(defaultPrefix+innerVar+"."+mb.name+" = ((" + sc+ ")"+ag.name()+")."+mb.name+"()");
+//							if (!mb.isTable)
+//								innerVarCopy.get(innerVar).add("((" + sc+ ")"+ag.name()+")."+mb.name+"("+defaultPrefix+innerVar+"."+mb.name+")");
+//						}
+//					}
+//				}
+//				else {
+//					String lc = gen.containingClass(an);
+//					if (lc!=null) { // fix for a bug ue to entering here with a wrong argument
+//						dataClassesToImport.add(lc);
+//						String sc = lc.split("\\.")[lc.split("\\.").length-1];
+//						callArg = "((" + sc+ ")"+ag.toString()+")."+an+"()";
+//					}
+//				}
+//				if (callArg!=null)
+//					callStatement += indent+indent+indent+ callArg + ",\n";
+//			}
+//			if (makeInnerClass) {
+//				innerClassDecl.get(innerVar).add(indent+"}\n");
+//				if (innerClassDecl.get(innerVar).size()<=2) { // means the class has no fields
+//					innerClassDecl.remove(innerVar);
+//					innerVarInit.remove(innerVar);
+//					innerVarCopy.remove(innerVar);
+//				}
+//			}
+//		} // for
+//		// completion of user method call
+//		callStatement = callStatement.substring(0, callStatement.length()-2);
+//		callStatement +=")";
+//	}
 
 }

@@ -1,6 +1,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.containers.Containing;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
@@ -18,9 +19,10 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 
 public abstract class HierarchicalComponent
 		extends TreeGraphDataNode
-		implements CategorizedComponent {
+		implements CategorizedComponent, Containing<ComponentContainer> {
 
-	private Categorized<? extends CategorizedComponent> cats = null;
+	private Categorized<? extends CategorizedComponent> categories = null;
+	private ComponentContainer content = null;
 
 	public HierarchicalComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -28,14 +30,31 @@ public abstract class HierarchicalComponent
 
 	@Override
 	public Categorized<? extends CategorizedComponent> membership() {
-		return cats;
+		return categories;
+	}
+
+	/**
+	 * CAUTION: can be set only once, ideally just after construction
+	 */
+	@Override
+	public void setCategorized(Categorized<? extends CategorizedComponent> cats) {
+		if (categories==null)
+			categories = cats;
+	}
+
+	/**
+	 * CAUTION: can be set only once, ideally just after construction
+	 */
+	@Override
+	public void setContent(ComponentContainer container) {
+		if (content==null)
+			content = container;
 	}
 
 	@Override
-	public void setCategorized(Categorized<? extends CategorizedComponent> cats) {
-		if (cats==null)
-			this.cats = cats;
-
+	public ComponentContainer content() {
+		return content;
 	}
+
 
 }

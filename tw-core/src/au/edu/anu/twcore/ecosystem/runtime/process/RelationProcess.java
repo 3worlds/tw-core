@@ -351,7 +351,7 @@ public class RelationProcess extends AbstractRelationProcess {
 	}
 
 	@Override
-	protected void loop(HierarchicalComponent container, double t, double dt) {
+	protected void loop(double t, double dt, HierarchicalComponent container) {
 //		if (container.categoryInfo() instanceof Ecosystem) {
 //			setContext(focalContext,container);
 //			ecosystemContainer = (ComponentContainer) container;

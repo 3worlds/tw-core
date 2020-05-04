@@ -6,16 +6,17 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
+import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static au.edu.anu.twcore.DefaultStrings.*;
-import static fr.cnrs.iees.twcore.constants.PopulationVariables.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,7 +53,6 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
-import fr.cnrs.iees.twcore.constants.PopulationVariables;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
@@ -88,8 +88,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private static String methodScope = "public static";
 	// set to make sure there are no two fields with the same name
 	private Set<String> replicateNames = new HashSet<>();
-//	// a map of the argument names grouped by role for Twfunction code generation
-//	private EnumMap<ArgumentGroups,List<Duple<String,String>>> argumentGroups = new EnumMap<>(ArgumentGroups.class);
 	// store all the generated data class matchings to categories
 	private Map<Set<Category>,generatedData> dataClassNames = new HashMap<>();
 	private Map<String,List<String>> snippets =new HashMap<>();
@@ -384,8 +382,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return ss[ss.length-1];
 	}
 
+	// helper classes to gather all the required information
 	class memberInfo implements Comparable<memberInfo> {
-		String name;
+		String name = null;
 		String type;
 		String fullType;
 		String comment;
@@ -394,14 +393,43 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		public int compareTo(memberInfo m) {
 			return name.compareTo(m.name);
 		}
+		@Override
+		public String toString() {
+			String s = "["+name+":"+type+"("+fullType+")]";
+			return s;
+		}
 	}
+	class recInfo {
+		String name = null;
+		String klass;
+		Collection<memberInfo> members = null;
+		@Override
+		public String toString() {
+			String s = "[" + name + ":" + klass + " [ ";
+			for (memberInfo f:members)
+				s+= f.toString()+" ";
+			s+="]]";
+			return s;
+		}
+	}
+	// access stings to dataGroups of CategorizedComponents (excl. nextState)
+	static EnumMap<ConfigurationEdgeLabels,String> dataAccessors = new EnumMap<>(ConfigurationEdgeLabels.class);
+	static {
+		dataAccessors.put(E_AUTOVAR,"autoVar");
+		dataAccessors.put(E_LTCONSTANTS,"constants");
+		dataAccessors.put(E_DECORATORS,"decorators");
+		dataAccessors.put(E_DRIVERS,"currentState");// nextState ?
+	}
+	// A Map of all data structure information required by all methods
+	private Map<String,EnumMap<TwFunctionArguments,List<recInfo>>> dataStructures = new HashMap<>();
+
 
 	// gets all the fields and tables of a give category set. Returns them in always the same order
 	protected Map<ConfigurationEdgeLabels,SortedSet<memberInfo>> getAllMembers(Collection<Category> cats) {
 		Map<ConfigurationEdgeLabels,SortedSet<memberInfo>> result = new HashMap<>();
 		for (Category cat:cats)
 			for (ConfigurationEdgeLabels cel:
-				EnumSet.of(E_AUTOVAR,E_PARAMETERS,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS)) {
+				EnumSet.of(E_AUTOVAR,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS)) {
 			Record rec = (Record) get(cat.edges(Direction.OUT),
 				selectZeroOrOne(hasTheLabel(cel.label())),
 				endNode());
@@ -461,6 +489,64 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	}
 
 	@SuppressWarnings("unchecked")
+	protected SortedSet<Category> findCategories(TreeGraphDataNode function, TwFunctionArguments arg) {
+		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+		TreeNode fp = function.getParent();
+		SortedSet<Category> cats = new TreeSet<>();
+		// function parent is a process
+		if (fp instanceof ProcessNode) {
+			// get arena data types
+			if (arg==arena) {									//    timeModel   timeLine    dynamics    system
+				TreeGraphDataNode systemNode = (TreeGraphDataNode) fp.getParent().getParent().getParent().getParent();
+				cats.addAll((Collection<Category>) get(systemNode.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+					edgeListEndNodes()));
+				return cats;
+			}
+			ProcessNode pn = (ProcessNode) fp;
+			if ((arg==lifeCycle)||(arg==space)||(arg==group)) {
+				// TODO: get the component type matching process categories, then get the grouptype
+				// and lifecycle type to get their categories
+			}
+			if (arg==focal)
+				// component Process
+				for (TwFunctionTypes tft:ComponentProcess.compatibleFunctionTypes)
+					if (tft.equals(ftype)) {
+					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+						edgeListEndNodes()));
+					return cats;
+			}
+			// relation process
+			for (TwFunctionTypes tft:AbstractRelationProcess.compatibleFunctionTypes)
+				if (tft.equals(ftype)) {
+					RelationType relnode = (RelationType) get(pn.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
+						endNode());
+					relationType = relnode.id();
+					if ((arg==focal)) {
+						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
+							selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+							edgeListEndNodes()));
+						return cats;
+					}
+					else if (arg==other) {
+						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
+							selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+							edgeListEndNodes()));
+						return cats;
+					}
+					else if  ((arg==otherLifeCycle)||(arg==otherGroup)) {
+						// TODO
+					}
+			}
+		}
+		return cats;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Deprecated
 	protected SortedSet<Category> findCategories(TreeGraphDataNode function, boolean focal) {
 		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		TreeNode fp = function.getParent();
@@ -540,29 +626,88 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			+ tm.properties().getPropertyValue(P_TIMEMODEL_NTU.key()) + " "
 			+ ((TimeUnits)tm.properties().getPropertyValue(P_TIMEMODEL_TU.key())).abbreviation()+"</p>\n";
 	}
+//
+//	private void addArgumentGroup(ArgumentGroups arg, memberInfo mb,
+//			ModelMethodGenerator method, StringBuilder headerComment) {
+//		// TODO: convert age properly using Timer.userTime(long)
+//		if (mb.fullType!=null)
+//			imports.add(mb.fullType);
+//		method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
+//		headerComment.append("@param ").append(mb.name).append(' ')
+//			.append(arg.description()).append(mb.comment).append('\n');
+//		replicateNames.add(mb.name);
+//	}
 
-	private void addArgumentGroup(ArgumentGroups arg, memberInfo mb,
-			ModelMethodGenerator method, StringBuilder headerComment) {
-		// TODO: convert age properly using Timer.userTime(long)
-		if (mb.fullType!=null)
-			imports.add(mb.fullType);
-		method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-		headerComment.append("@param ").append(mb.name).append(' ')
-			.append(arg.description()).append(mb.comment).append('\n');
-		replicateNames.add(mb.name);
+	// match between function names and spec nodes
+	private Map<String,TreeGraphDataNode> functions = new HashMap<>();
+
+	public EnumMap<TwFunctionArguments,List<recInfo>> dataStructure(String method) {
+		if (dataStructures.get(method)==null) {
+			TwFunctionTypes ftype = (TwFunctionTypes) functions.get(method).properties().getPropertyValue(P_FUNCTIONTYPE.key());
+			EnumMap<TwFunctionArguments,List<recInfo>> newDS = new EnumMap<>(TwFunctionArguments.class);
+			dataStructures.put(method,newDS);
+			for (TwFunctionArguments a: ftype.arguments())
+				if ((a!=_t)&(a!=_dt)) {
+				newDS.put(a,new LinkedList<recInfo>());
+				// TODO: make sure all categories are searched for all the context classes
+				// ie goup, life cycle, arena etc.
+				SortedSet<Category> cats = findCategories(functions.get(method),a);
+				Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> fields = getAllMembers(cats);
+				for (ConfigurationEdgeLabels el: EnumSet.of(E_AUTOVAR,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS)) {
+					recInfo ri = new recInfo();
+					ri.name = dataAccessors.get(el);
+					ri.klass = null;
+					newDS.get(a).add(ri);
+					if (fields.get(el)!=null)
+						for (memberInfo mi:fields.get(el)) {
+							if (ri.klass==null) {
+								ri.klass = containingClass(mi.name);
+								ri.members = fields.get(el);
+								break;
+							}
+					}
+				}
+			}
+			// debug
+			for (String m:dataStructures.keySet()) {
+				System.out.println(m);
+				for (TwFunctionArguments a:dataStructures.get(m).keySet()) {
+					System.out.println("\t"+a);
+					for (recInfo r:dataStructures.get(m).get(a)) {
+						System.out.println("\t\t"+r.name+":"+r.klass);
+						if (r.members!=null)
+							for (memberInfo mb:r.members)
+								System.out.println("\t\t\t"+mb);
+					}
+				}
+			}
+			// end debug
+		}
+		return dataStructures.get(method);
 	}
 
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
+		Map<String,ConfigurationEdgeLabels> nameLabelMatches = new HashMap<>();
+		nameLabelMatches.put ("autoVar",E_AUTOVAR);
+		nameLabelMatches.put ("constants",E_LTCONSTANTS);
+		nameLabelMatches.put ("decorators",E_DECORATORS);
+		nameLabelMatches.put ("currentState",E_DRIVERS);
+		// mapping between inerVar names and rec.name
+		Map<String,String> recToInnerVar = new HashMap<>();
+		recToInnerVar.put("autoVar",null);
+		recToInnerVar.put("constants","Ltc");
+		recToInnerVar.put("decorators","Dec");
+		recToInnerVar.put("currentState","Drv");
+
 		StringBuilder headerComment = new StringBuilder();
 		String returnComment = null;
 		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		String fname = function.id();
+		functions.put(fname,function);
+		EnumMap<TwFunctionArguments,List<recInfo>> dataStruk = dataStructure(fname);
+
 		headerComment.append("<p><strong>").append(fname).append("</strong> method of type <em>")
 			.append(ftype).append("</em>: ").append(ftype.description()).append("</p>\n");
-		// applies to : rel or cat
-		SortedSet<Category> focalCats = findCategories(function,true);
-		SortedSet<Category> otherCats = findCategories(function,false);
-		boolean hasLifeCycle = hasLifeCycle(focalCats);
 		boolean hasSpace = false;
 		if (function.getParent() instanceof ProcessNode)
 			hasSpace = ((ProcessNode)function.getParent()).hasSpace();
@@ -574,6 +719,11 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			imports.add(Point.class.getCanonicalName());
 			imports.add(Box.class.getCanonicalName());
 		}
+		// applies to : rel or cat
+		// NB: now this is only used to generate the comment below
+		SortedSet<Category> focalCats = findCategories(function,focal);
+		SortedSet<Category> otherCats = findCategories(function,other);
+//		boolean hasLifeCycle = hasLifeCycle(focalCats);
 		if (otherCats.isEmpty())
 			headerComment.append("<p>- applies to categories {<em>")
 				.append(simpleCatSignature(focalCats))
@@ -603,263 +753,89 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 		// retrieve all the parameters and parameter types
 		replicateNames.clear();
-		EnumSet<ArgumentGroups> argSet = EnumSet.noneOf(ArgumentGroups.class);
-		argSet.addAll(ftype.readOnlyArguments());
-		argSet.addAll(ftype.writeableArguments());
-		argSet.addAll(ftype.localArguments());
-		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForFocal = getAllMembers(focalCats);
-		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> membersForOther = getAllMembers(otherCats);
-		for (String category:CategorySet.systemElements) {
-			for (ConfigurationEdgeLabels cel:
-				EnumSet.of(E_AUTOVAR,E_LTCONSTANTS,E_DECORATORS,E_DRIVERS))
-				System.out.println(category+"."+cel.toString());
-			// generates this:
-//			SYSTEM.E_AUTOVAR
-//			SYSTEM.E_DRIVERS
-//			SYSTEM.E_DECORATORS
-//			SYSTEM.E_LTCONSTANTS
-//			LIFE_CYCLE.E_AUTOVAR
-//			LIFE_CYCLE.E_DRIVERS
-//			LIFE_CYCLE.E_DECORATORS
-//			LIFE_CYCLE.E_LTCONSTANTS
-//			GROUP.E_AUTOVAR
-//			GROUP.E_DRIVERS
-//			GROUP.E_DECORATORS
-//			GROUP.E_LTCONSTANTS
-//			COMPONENT.E_AUTOVAR
-//			COMPONENT.E_DRIVERS
-//			COMPONENT.E_DECORATORS
-//			COMPONENT.E_LTCONSTANTS
-//			RELATION.E_AUTOVAR
-//			RELATION.E_DRIVERS
-//			RELATION.E_DECORATORS
-//			RELATION.E_LTCONSTANTS
-		}
-		// particular case for space and utilities at the moment
-		//PLus need: t dt, limits, locs, nexts, random,decider
+		EnumSet<TwFunctionArguments> argSet2 = EnumSet.noneOf(TwFunctionArguments.class);
+		argSet2.addAll(ftype.arguments());
+		argSet2.addAll(ftype.localArguments2());
+		argSet2.addAll(ftype.writeableArguments2());
 
-		// old code
-		for (ArgumentGroups arg:argSet) {
-			switch (arg) {
-			case t:
-			case dt:
-				method.addArgument(arg,arg.name(),arg.type(),arg.description());
-				headerComment.append("@param ").append(arg.name()).append(' ')
-					.append(arg.description()).append('\n');
-				replicateNames.add(arg.name());
-				break;
-			case limits:
-				if (hasSpace) {
-					method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
-					headerComment.append("@param ").append(arg.name()).append(' ')
-						.append(arg.description()).append('\n');
-					replicateNames.add(arg.name());
+		// t, dt
+		for (TwFunctionArguments arg:EnumSet.of(_t,_dt)) {
+			method.addArgument(arg,null,arg.name(),arg.type(),arg.description());
+			headerComment.append("@param ").append(arg.name()).append(' ')
+				.append(arg.description()).append('\n');
+			replicateNames.add(arg.name());
+		}
+
+		// arena, lifeCycle, group, space focal, other, otherGroup, otherLifeCycle
+		// including return values
+		boolean skipArena = true; // TODO: compute proper value
+		for (TwFunctionArguments arg:dataStruk.keySet()) {
+			List<recInfo> comp = dataStruk.get(arg);
+			if (!(arg.equals(arena) & skipArena))
+				for (recInfo rec:comp)
+					if (rec!=null)
+						if (rec.members!=null) {
+							for (memberInfo mb: rec.members) {
+
+					System.out.println(nameLabelMatches.get(rec.name)+": "+mb);
+
+					if (mb.name!=null) {
+						if (mb.fullType!=null)
+							imports.add(mb.fullType);
+						method.addArgument(arg,nameLabelMatches.get(rec.name),mb.name,mb.type,arg.description()+mb.comment);
+						headerComment.append("@param ").append(mb.name).append(' ')
+							.append(arg.description()).append(mb.comment).append('\n');
+						replicateNames.add(mb.name);
+					}
 				}
-				break;
-			case ecosystemPar:
-			case lifeCyclePar:
-				if (hasLifeCycle);
-				// TODO: groups etc.
-				break;
-			case ecosystemPop:
-//				for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
-//					String popname = validJavaName(wordUpperCaseName("ecosystem."+pv.longName()));
-//					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
-//					if (poptype.equals("integer"))
-//						poptype = "int";
-//					method.addArgument(arg, popname, poptype, pv.description());
-//					headerComment.append("@param ").append(popname).append(" ")
-//						.append(pv.description()).append(" of ecosystem").append("\n");
-//				}
-				break;
-			case lifeCyclePop:
-//				if (hasLifeCycle)
-//					for (PopulationVariables pv: EnumSet.of(TCOUNT,TNADDED,TNREMOVED)) {
-//						String popname = validJavaName(wordUpperCaseName("lifeCycle."+pv.longName()));
-//						String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
-//						if (poptype.equals("integer"))
-//							poptype = "int";
-//						method.addArgument(arg, popname, poptype, pv.description());
-//						headerComment.append("@param ").append(popname).append(" ")
-//							.append(pv.description()).append(" of life cycle").append("\n");
-//				}
-				break;
-			case groupPop:
-//				for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
-//					String popname = validJavaName(wordUpperCaseName("group."+pv.longName()));
-//					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
-//					if (poptype.equals("integer"))
-//						poptype = "int";
-//					method.addArgument(arg, popname, poptype, pv.description());
-//					headerComment.append("@param ").append(popname).append(" ")
-//						.append(pv.description()).append(" of focal group").append("\n");
-//				}
-				break;
-			case otherGroupPop:
-//				for (PopulationVariables pv: EnumSet.of(COUNT,NADDED,NREMOVED)) {
-//					String popname = validJavaName(wordUpperCaseName("other.group."+pv.longName()));
-//					String poptype = Strings.toLowerCase(ValidPropertyTypes.getType(pv.type()));
-//					if (poptype.equals("integer"))
-//						poptype = "int";
-//					method.addArgument(arg, popname, poptype, pv.description());
-//					headerComment.append("@param ").append(popname).append(" ")
-//						.append(pv.description()).append(" of other group").append("\n");
-//				}
-				break;
-			case focalAuto:
-				// TODO: convert age properly using Timer.userTime(long)
-				for (memberInfo mb:membersForFocal.get(E_AUTOVAR))
-					addArgumentGroup(arg,mb,method,headerComment);
-				break;
-			case otherAuto:
-				// TODO: convert age properly using Timer.userTime(long)
-				for (memberInfo mb:membersForOther.get(E_AUTOVAR))
-					addArgumentGroup(arg,mb,method,headerComment);
-//				method.addArgument(arg,"age", "double", arg.description()+"age");
-//				headerComment.append("@param age ").append(arg.description()).append("age\n");
-//				replicateNames.add("age");
-//				method.addArgument(arg,"birthDate", "double", arg.description()+"birth date");
-//				headerComment.append("@param birthDate ").append(arg.description()).append("birth date\n");
-//				replicateNames.add("birthDate");
-				break;
-			case groupPar:
-				for (memberInfo mb:membersForFocal.get(E_PARAMETERS)) {
-					addArgumentGroup(arg,mb,method,headerComment);
-//					if (mb.fullType!=null)
-//						imports.add(mb.fullType);
-//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-//					headerComment.append("@param ").append(mb.name).append(' ')
-//						.append(arg.description()).append(mb.comment).append('\n');
-//					replicateNames.add(mb.name);
+				for (String innerVar:ftype.innerVars() ) // otherDrv etc
+					if (innerVar.contains(recToInnerVar.get(rec.name))) {
+						String s = "";
+						if (innerVar.contains("Drv"))
+							s = "next drivers for ";
+						else if (innerVar.contains("Ltc"))
+							s = "new constants for ";
+						else if (innerVar.contains("Dec"))
+							s = "new decorators for ";
+						// e.g.: Chaos.FocalDrv focalDrv // next
+						method.addArgument(arg,nameLabelMatches.get(rec.name),
+							innerVar,fname+"."+initialUpperCase(innerVar),s+arg.description());
+						headerComment.append("@param ").append(innerVar).append(s)
+							.append(arg.description()).append('\n');
+						replicateNames.add(innerVar);
 				}
-				break;
-			case focalLtc:
-				for (memberInfo mb:membersForFocal.get(E_LTCONSTANTS)) {
-					addArgumentGroup(arg,mb,method,headerComment);
-//					if (mb.fullType!=null)
-//						imports.add(mb.fullType);
-//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-//					headerComment.append("@param ").append(mb.name).append(' ')
-//					.append(arg.description()).append(mb.comment).append('\n');
-//					replicateNames.add(mb.name);
-				}
-				break;
-			case focalDrv:
-				for (memberInfo mb:membersForFocal.get(E_DRIVERS)) {
-					addArgumentGroup(arg,mb,method,headerComment);
-//					if (mb.fullType!=null)
-//						imports.add(mb.fullType);
-//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-//					headerComment.append("@param ").append(mb.name).append(' ')
-//						.append(arg.description()).append(mb.comment).append('\n');
-//					replicateNames.add(mb.name);
-				}
-				break;
-			case focalDec:
-				for (memberInfo mb:membersForFocal.get(E_DECORATORS)) {
-					addArgumentGroup(arg,mb,method,headerComment);
-//					if (mb.fullType!=null)
-//						imports.add(mb.fullType);
-//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-//					headerComment.append("@param ").append(mb.name).append(' ')
-//						.append(arg.description()).append(mb.comment).append('\n');
-//					replicateNames.add(mb.name);
-				}
-				// TODO:if readwrite, do otherwise
-				break;
-			case otherGroupPar:
-				for (memberInfo mb:membersForOther.get(E_PARAMETERS)) {
-					addArgumentGroup(arg,mb,method,headerComment);
-//					if (mb.fullType!=null)
-//						imports.add(mb.fullType);
-//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-//					headerComment.append("@param ").append(mb.name).append(' ')
-//						.append(arg.description()).append(mb.comment).append('\n');
-//					replicateNames.add(mb.name);
-				}
-				break;
-			case otherLtc:
-				for (memberInfo mb:membersForOther.get(E_LTCONSTANTS)) {
-					addArgumentGroup(arg,mb,method,headerComment);
-//					if (mb.fullType!=null)
-//						imports.add(ValidPropertyTypes.getJavaClassName(mb.type));
-//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-//					headerComment.append("@param ").append(mb.name).append(' ')
-//						.append(arg.description()).append(mb.comment).append('\n');
-//					replicateNames.add(mb.name);
-				}
-				break;
-			case otherDrv:
-				for (memberInfo mb:membersForOther.get(E_DRIVERS)) {
-					addArgumentGroup(arg,mb,method,headerComment);
-//					if (mb.fullType!=null)
-//						imports.add(mb.fullType);
-//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-//					headerComment.append("@param ").append(mb.name).append(' ')
-//						.append(arg.description()).append(mb.comment).append('\n');
-//					replicateNames.add(mb.name);
-				}
-				break;
-			case otherDec:
-				for (memberInfo mb:membersForOther.get(E_DECORATORS)) {
-					addArgumentGroup(arg,mb,method,headerComment);
-//					if (mb.fullType!=null)
-//						imports.add(mb.fullType);
-//					method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-//					headerComment.append("@param ").append(mb.name).append(' ')
-//						.append(arg.description()).append(mb.comment).append('\n');
-//					replicateNames.add(mb.name);
-				}
-				// TODO:if readwrite, do otherwise
-				break;
-			case focalLoc:
-			case otherLoc:
-				if (hasSpace) {
-					method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
-					headerComment.append("@param ").append(arg.name()).append(' ')
-						.append(arg.description()).append('\n');
-					replicateNames.add(arg.name());
-				}
-				break;
-			case nextFocalDrv:
-				if (!membersForFocal.get(E_DRIVERS).isEmpty()) {
-					String argt = function.id()+"."+ initialUpperCase(arg.name());
-					method.addArgument(arg,arg.name(),argt,arg.description());
-					headerComment.append("@param ").append(arg.name()).append(' ')
-						.append(arg.description()).append('\n');
-					replicateNames.add(arg.name());
-				}
-				break;
-			case nextOtherDrv:
-				if (!membersForOther.get(E_DRIVERS).isEmpty()) {
-					String argt = function.id()+"."+ initialUpperCase(arg.name());
-					method.addArgument(arg,arg.name(),argt,arg.description());
-					headerComment.append("@param ").append(arg.name()).append(' ')
-						.append(arg.description()).append('\n');
-					replicateNames.add(arg.name());
-				}
-				break;
-			case nextFocalLoc:
-			case nextOtherLoc:
-				if (hasSpace) {
-					method.addArgument(arg,arg.name(),arg.type(),arg.description());
-					headerComment.append("@param ").append(arg.name()).append(' ')
-						.append(arg.description()).append('\n');
-					replicateNames.add(arg.name());
-				}
-				break;
-			case random:
-			case decider:
-				imports.add(arg.type());
-				method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
-				headerComment.append("@param ").append(arg.name()).append(' ')
-					.append(arg.description()).append('\n');
-				replicateNames.add(arg.name());
-				break;
-			default:
-				break;
 			}
 		}
+		// location arguments ?
+
+		// random, decide
+		for (TwFunctionArguments arg:ftype.localArguments2()) {
+			imports.add(arg.type());
+			method.addArgument(arg,null,arg.name(),simpleType(arg.type()),arg.description());
+			headerComment.append("@param ").append(arg.name()).append(' ')
+				.append(arg.description()).append('\n');
+			replicateNames.add(arg.name());
+		}
+
+		// old code
+//			case focalLoc:
+//			case otherLoc:
+//				if (hasSpace) {
+//					method.addArgument(arg,arg.name(),simpleType(arg.type()),arg.description());
+//					headerComment.append("@param ").append(arg.name()).append(' ')
+//						.append(arg.description()).append('\n');
+//					replicateNames.add(arg.name());
+//				}
+//				break;
+//			case nextFocalLoc:
+//			case nextOtherLoc:
+//				if (hasSpace) {
+//					method.addArgument(arg,arg.name(),arg.type(),arg.description());
+//					headerComment.append("@param ").append(arg.name()).append(' ')
+//						.append(arg.description()).append('\n');
+//					replicateNames.add(arg.name());
+//				}
+//				break;
 		if (returnComment!=null)
 			headerComment.append("@return ").append(returnComment).append('\n');
 //		String cs = WordUtils.wrap(headerComment.toString(),80,"\\n",false); // ***

@@ -1,16 +1,15 @@
 package fr.cnrs.iees.twcore.generators.process;
 
 import static fr.ens.biologie.codeGeneration.Comments.*;
-
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
+import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
-import fr.ens.biologie.generic.utils.Duple;
+import fr.ens.biologie.generic.utils.Tuple;
 
 /**
  * A descendant of MethodGenerator with a different formatting of methods
@@ -23,22 +22,31 @@ public class ModelMethodGenerator extends MethodGenerator {
 	private String methodComment = null;
 	private String[] argComments = null;
 	// a map of the argument names grouped by role for Twfunction code generation
-	private EnumMap<ArgumentGroups,List<Duple<String,String>>> argumentGroups =
-		new EnumMap<>(ArgumentGroups.class);
+//	@Deprecated
+//	private EnumMap<ArgumentGroups,List<Duple<String,String>>> argumentGroups =
+//		new EnumMap<>(ArgumentGroups.class);
+	private EnumMap<TwFunctionArguments,List<Tuple<ConfigurationEdgeLabels,String,String>>> argumentGroups2 =
+		new EnumMap<>(TwFunctionArguments.class);
+
 	private List<String> rawCode = new LinkedList<>();
+
 
 	public ModelMethodGenerator(Method method) {
 		super(method);
 		insertCodeInsertionComment = false;
-		for (ArgumentGroups a:ArgumentGroups.values())
-			argumentGroups.put(a,new LinkedList<>());
+//		for (ArgumentGroups a:ArgumentGroups.values())
+//			argumentGroups.put(a,new LinkedList<>());
+		for (TwFunctionArguments a: TwFunctionArguments.values())
+			argumentGroups2.put(a, new LinkedList<>());
 	}
 
 	public ModelMethodGenerator(String scope, String returnType, String name, String... argTypes) {
 		super(scope, returnType, name, argTypes);
 		insertCodeInsertionComment = true;
-		for (ArgumentGroups a:ArgumentGroups.values())
-			argumentGroups.put(a,new LinkedList<>());
+//		for (ArgumentGroups a:ArgumentGroups.values())
+//			argumentGroups.put(a,new LinkedList<>());
+		for (TwFunctionArguments a: TwFunctionArguments.values())
+			argumentGroups2.put(a, new LinkedList<>());
 	}
 
 	public void setRawCode(List<String> code) {
@@ -50,13 +58,37 @@ public class ModelMethodGenerator extends MethodGenerator {
 			rawCode.add(s);
 	}
 
-	/**
-	 * Use this only to add arguments to the existing ones - with caution.
-	 * @param name
-	 * @param type
-	 * @return
-	 */
-	public MethodGenerator addArgument(ArgumentGroups grp, String name, String type, String comment) {
+//	/**
+//	 * Use this only to add arguments to the existing ones - with caution.
+//	 * @param name
+//	 * @param type
+//	 * @return
+//	 */
+//	@Deprecated
+//	public MethodGenerator addArgument(ArgumentGroups grp, String name, String type, String comment) {
+//		if (argNames==null) {
+//			argNames = new String[1];
+//			argTypes = new String[1];
+//			argComments = new String[1];
+//		}
+//		else {
+//			argNames = Arrays.copyOf(argNames,argNames.length+1);
+//			argTypes = Arrays.copyOf(argTypes,argTypes.length+1);
+//			argComments = Arrays.copyOf(argComments,argComments.length+1);
+//		}
+//		argNames[argNames.length-1] = name;
+//		argTypes[argTypes.length-1] = type;
+//		argComments[argComments.length-1] = comment;
+////		argumentGroups.get(grp).add(new Duple<>(name,type));
+//		return this;
+//	}
+
+
+	public MethodGenerator addArgument(TwFunctionArguments arg,
+			ConfigurationEdgeLabels dataGroup,
+			String name,
+			String type,
+			String comment) {
 		if (argNames==null) {
 			argNames = new String[1];
 			argTypes = new String[1];
@@ -70,9 +102,10 @@ public class ModelMethodGenerator extends MethodGenerator {
 		argNames[argNames.length-1] = name;
 		argTypes[argTypes.length-1] = type;
 		argComments[argComments.length-1] = comment;
-		argumentGroups.get(grp).add(new Duple<>(name,type));
+		argumentGroups2.get(arg).add(new Tuple<>(dataGroup,name,type));
 		return this;
 	}
+
 
 	public void setMethodComment(String comment) {
 		methodComment = comment;
@@ -136,8 +169,14 @@ public class ModelMethodGenerator extends MethodGenerator {
 		return result;
 	}
 
-	public Map<ArgumentGroups,List<Duple<String,String>>> callerArguments () {
-		return this.argumentGroups;
+//	@Deprecated
+//	public Map<ArgumentGroups,List<Duple<String,String>>> callerArguments () {
+//		return this.argumentGroups;
+//	}
+
+	public Map<TwFunctionArguments,List<Tuple<ConfigurationEdgeLabels,String,String>>> callerArguments2 () {
+		return argumentGroups2;
 	}
+
 
 }
