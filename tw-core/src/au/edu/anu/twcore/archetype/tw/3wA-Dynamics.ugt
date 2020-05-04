@@ -259,7 +259,7 @@ hasNode dataTrackerSpec
 	hasEdge trackComponentEcosystemEdgeSpec // track any components at the ecosystem level
 		// todo: check this component is of the proper category?
 		isOfClass = String("trackComponent")
-		toNode = String("initialState:")
+		toNode = String("system:") // was: initialState
 		multiplicity = IntegerRange("0..1")
 
 	// tracking of population data, ie groups

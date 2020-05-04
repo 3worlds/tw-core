@@ -147,7 +147,7 @@ public class ComponentProcess
 
 	private void executeFunctions(double t, double dt, CategorizedComponent focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
-		System.out.println("coucou from "+focal.toShortString()+" t = "+t);
+//		System.out.println("coucou from "+focal.toShortString()+" t = "+t);
 
 //		if (space!=null) {
 //			Box limits = space.boundingBox();
