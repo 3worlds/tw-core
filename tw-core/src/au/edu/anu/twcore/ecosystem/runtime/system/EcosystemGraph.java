@@ -53,10 +53,13 @@ public class EcosystemGraph
 	/** "edges" (NB edges are not contained in there) */
 	private Map<String,RelationContainer> relations = null;
 
-	public EcosystemGraph(ComponentContainer components, Map<String,RelationContainer> relations) {
+	private ArenaComponent arena = null;
+
+	public EcosystemGraph(ArenaComponent arena, Map<String,RelationContainer> relations) {
 		super();
-		this.components = components;
 		this.relations = relations;
+		this.arena = arena;
+		this.components = arena.content(); // may be null
 	}
 
 	// GRAPH interface
@@ -144,6 +147,10 @@ public class EcosystemGraph
 
 	// LOCAL methods
 
+	public CategorizedComponent arena() {
+		return arena;
+	}
+
 	public ComponentContainer community() {
 		return components;
 	}
@@ -168,6 +175,7 @@ public class EcosystemGraph
 			// Second, graph state changes
 			components.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
 		}
+		arena.stepForward();
 	}
 
 	@Override

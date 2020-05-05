@@ -165,13 +165,12 @@ public class SimulatorNode
 		// *** Initial community
 //		ComponentContainer comm = (ComponentContainer)((Ecosystem) getParent()).getInstance(index);
 		ArenaComponent arena = ((ArenaType) getParent()).getInstance(index).getInstance();
-		ComponentContainer comm = arena.content();
 		setInitialCommunity(index);
 		// *** ecosystem graph
 		Structure str = (Structure) get(getParent(),
 			children(),
 			selectOne(hasTheLabel(N_STRUCTURE.label())));
-		EcosystemGraph ecosystem = new EcosystemGraph(comm,str.getInstance(index));
+		EcosystemGraph ecosystem = new EcosystemGraph(arena,str.getInstance(index));
 		// *** finally, instantiate simulator
 		Simulator sim = new Simulator(index,rootStop,timeLine,timeModels,timers,timeModelMasks.clone(),pco,ecosystem);
 		rootStop.attachSimulator(sim);
