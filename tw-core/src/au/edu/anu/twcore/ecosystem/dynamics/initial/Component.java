@@ -176,10 +176,10 @@ public class Component
 					String groupName = defaultPrefix + "group" + nameSeparator + sc.membership().categoryId();
 					// if there were parameters attached to the SC, attach them to its group
 					// CAUTION: this is only possible if there is just ONE permanent component
-					ParameterValues pv = null;
+					ConstantValues pv = null;
 					for (TreeNode tn:getChildren())
-						if (tn instanceof ParameterValues) {
-							pv = (ParameterValues) tn;
+						if (tn instanceof ConstantValues) {
+							pv = (ConstantValues) tn;
 							break;
 					}
 

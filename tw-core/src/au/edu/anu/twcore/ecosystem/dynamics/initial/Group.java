@@ -141,8 +141,8 @@ public class Group
 		}
 		// fill container with initial values
 		for (TreeNode tn:getChildren())
-			if (tn instanceof ParameterValues)
-				((ParameterValues) tn).fill(container.parameters());
+			if (tn instanceof ConstantValues)
+				((ConstantValues) tn).fill(container.parameters());
 		// compute secondary parameters if initialiser present
 		Initialiser.computeSecondaryParameters(this, container, index);
 		return container;

@@ -82,7 +82,7 @@ public class PropertiesMatchDefinitionQuery extends Query {
 	public Query process(Object input) { // input is a variableValues or parameterValues node
 		defaultProcess(input);
 		TreeGraphDataNode targetNode = (TreeGraphDataNode) input;
-		
+
 		Duple<Boolean,Collection<TreeGraphDataNode>> defData = getDataDefs(targetNode, dataCategory);
 		Collection<TreeGraphDataNode> defs = defData.getSecond();
 		Boolean useAutoVars = defData.getFirst();
@@ -179,23 +179,42 @@ public class PropertiesMatchDefinitionQuery extends Query {
 			return null;
 		TreeGraphDataNode ct = null;
 		// drivers and decorators: find the component type through instanceOf edge
-		if (dataCategory.equals(E_DRIVERS.label()) || dataCategory.equals(E_DECORATORS.label())) {
-			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-					selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
-			if (ct != null) {
+		// NB: decorators are not supposed to be initialised anymore
+		// NB: for arena, there is no instance of edge - the parent of constantVaues or variableValues
+		// is the instance itself
+			// usual case: parent is an instance of an ElementType-derved node
+		ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
+			endNode());
+		// special case for arena: parent is the ElementType
+		if (ct == null)
+			ct = parent;
+		if (dataCategory.equals(E_DRIVERS.label())) {
+			addAutoVars = false;
+			if (ct.properties().hasProperty(P_COMPONENT_LIFESPAN.key())) {
 				LifespanType lst = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
 				if (lst.equals(LifespanType.ephemeral))
 					addAutoVars = true;
 			}
-			// parameters: find the component type through groupOf edge
-		} else if (dataCategory.equals(E_PARAMETERS.label())) {
-			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
-					endNode());
-//			 check the case there is only one component directly declared under initialState
-//			 in which case the edge will be an instanceOf edge
-			if (ct == null) {
-				ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
+		}
+
+//		if (dataCategory.equals(E_DRIVERS.label()) || dataCategory.equals(E_DECORATORS.label())) {
+//			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
+//					selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
+//			if (ct != null) {
+//				LifespanType lst = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
+//				if (lst.equals(LifespanType.ephemeral))
+//					addAutoVars = true;
+//			}
+//			// parameters: find the component type through groupOf edge
+//		} else if (dataCategory.equals(E_PARAMETERS.label())) {
+//			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+//					endNode());
+////			 check the case there is only one component directly declared under initialState
+////			 in which case the edge will be an instanceOf edge
+//			if (ct == null) {
+//				ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
+//						selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
 //				WIP
 				// check that node is the only child of Parent of its category type.
 //				Set<Category> ctg = ((ComponentType)ct).categories();
@@ -209,22 +228,22 @@ public class PropertiesMatchDefinitionQuery extends Query {
 //				}
 //				if (i>1)
 //					ct = null;
-			}
-		}
-		if (ct == null)
-			return null;
+//			}
+//		}
 		List<TreeGraphDataNode> cats = (List<TreeGraphDataNode>) get(ct.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+			edgeListEndNodes());
 		if (cats.isEmpty())
 			return null;
 		Set<TreeGraphDataNode> definitions = new HashSet<>();
 		for (TreeGraphDataNode cat : cats) {
-			Record rootRecord = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(dataCategory)),
-					endNode());
+			Record rootRecord = (Record) get(cat.edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(dataCategory)),
+				endNode());
 			if (rootRecord != null)
 				definitions.addAll(Record.getLeaves(rootRecord));
 		}
-			
+
 		return new Duple<Boolean,Collection<TreeGraphDataNode> >(addAutoVars,definitions);
 	}
 }

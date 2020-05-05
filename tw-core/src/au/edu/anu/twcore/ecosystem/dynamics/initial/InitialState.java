@@ -116,8 +116,8 @@ public class InitialState
 			Ecosystem ecosystem = (Ecosystem) getParent().getParent();
 			containers.put(id,ecosystem.getInstance(id));
 			for (TreeNode tn:getChildren())
-				if (tn instanceof ParameterValues)
-					((ParameterValues) tn).fill(containers.get(id).parameters());
+				if (tn instanceof ConstantValues)
+					((ConstantValues) tn).fill(containers.get(id).parameters());
 		}
 		return containers.get(id);
 	}

@@ -13,11 +13,14 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.TwData;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.ConstantValues;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.VariableValues;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
@@ -91,8 +94,12 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		if (properties().hasProperty(P_DRIVERCLASS.key())) {
 			s = (String) properties().getPropertyValue(P_DRIVERCLASS.key());
 			if (s!=null)
-				if (!s.trim().isEmpty())
+				if (!s.trim().isEmpty()) {
 					driverTemplate = loadDataClass(s);
+					for (TreeNode tn:getChildren())
+						if (tn instanceof VariableValues)
+							((VariableValues) tn).fill(driverTemplate);
+				}
 		}
 		if (properties().hasProperty(P_DECORATORCLASS.key())) {
 			s = (String) properties().getPropertyValue(P_DECORATORCLASS.key());
@@ -103,8 +110,12 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		if (properties().hasProperty(P_LTCONSTANTCLASS.key())) {
 			s = (String) properties().getPropertyValue(P_LTCONSTANTCLASS.key());
 			if (s!=null)
-				if (!s.trim().isEmpty())
+				if (!s.trim().isEmpty()) {
 					lifetimeConstantTemplate = loadDataClass(s);
+					for (TreeNode tn:getChildren())
+						if (tn instanceof ConstantValues)
+							((ConstantValues) tn).fill(lifetimeConstantTemplate);
+				}
 		}
 		// TODO: Find the setInitialState function
 //		setinit = ???

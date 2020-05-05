@@ -42,15 +42,15 @@ import au.edu.anu.twcore.data.runtime.TwData;
  * @author Jacques Gignoux - 17 juin 2019
  *
  */
-public class ParameterValues extends InitialisableNode {
+public class ConstantValues extends InitialisableNode {
 
 	// default constructor
-	public ParameterValues(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public ConstantValues(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
 	// constructor with no properties
-	public ParameterValues(Identity id, GraphFactory gfactory) {
+	public ConstantValues(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
@@ -70,7 +70,7 @@ public class ParameterValues extends InitialisableNode {
 
 	@Override
 	public int initRank() {
-		return N_PARAMETERVALUES.initRank();
+		return N_CONSTANTVALUES.initRank();
 	}
 
 }

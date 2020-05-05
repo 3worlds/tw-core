@@ -88,7 +88,7 @@ public enum ConfigurationEdgeLabels {
 	E_DRIVERS		("drivers",			"drvs",			DriverEdge.class),
 	E_DECORATORS	("decorators",		"decs",			DecoratorEdge.class),
 	E_LTCONSTANTS	("lifetimeConstants","ltcs",		LifetimeConstantEdge.class),
-	E_PARAMETERS	("parameters",		"pars",			ParameterEdge.class),
+	E_PARAMETERS	("parameters",		"pars",			ParameterEdge.class), // should be deprecated
 	E_BELONGSTO		("belongsTo",		"blngsTo",		BelongsToEdge.class),
 	E_INITIALISEDBY	("initialisedBy",	"initBy",		InitialisedByEdge.class),
 	E_TOCATEGORY	("toCategory",		"to",			ToCategoryEdge.class),
