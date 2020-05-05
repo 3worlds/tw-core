@@ -36,12 +36,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.exceptions.TwcoreException;
-import fr.cnrs.iees.identity.IdentityScope;
-import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.io.GraphFileFormats;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -95,20 +95,16 @@ public class Project implements ProjectPaths, TwPaths {
 	private static final char sepch = '_';
 	private static final String klassName = Project.class.getName();
 	private static Logger log = Logging.getLogger(Project.class);
-	private static final IdentityScope pScope = new LocalScope("Projects");
+	// private static final IdentityScope pScope = new LocalScope("Projects");
 	// important that this comes last here
-	static {
-		initialiseScope();
-	}
 
-	public static String proposeId(String proposedId) {
-		return pScope.newId(false, proposedId).id();
-	}
+//	public static String proposeId(String proposedId) {
+//		return pScope.newId(false, proposedId).id();
+//	}
 
 	// prevent instantiation
 	private Project() {
 	};
-
 
 	/**
 	 * @param name any string.
@@ -156,7 +152,7 @@ public class Project implements ProjectPaths, TwPaths {
 			log.severe(msg);
 			throw new TwcoreException(msg);
 		}
-		pScope.newId(true, projectDirectory.getName().split(sep)[1]);
+		// pScope.newId(true, projectDirectory.getName().split(sep)[1]);
 		log.exiting(klassName, "create");
 		return name;
 	}
@@ -167,6 +163,7 @@ public class Project implements ProjectPaths, TwPaths {
 		result = WordUtils.uncapitalize(result);
 		return result;
 	}
+
 	/**
 	 * Closes the project
 	 * 
@@ -366,6 +363,7 @@ public class Project implements ProjectPaths, TwPaths {
 		String[] items = parseProjectName(directory);
 		return items[2];
 	}
+
 	/**
 	 * @param directories array of 3Worlds directories
 	 * @return array of display name strings as {@code Name(Date)}
@@ -413,12 +411,14 @@ public class Project implements ProjectPaths, TwPaths {
 		}
 	}
 
-	private static void initialiseScope() {
+	public static Iterable<String> getAllProjectNames() {
+		Set<String> result = new HashSet<>();
 		File[] dirs = getAllProjectPaths();
 		for (File dir : dirs) {
 			String name = dir.getName();
-			pScope.newId(true, name.split(sep)[1]);
+			result.add(name.split(sep)[1]);
 		}
+		return result;
 	}
 
 }
