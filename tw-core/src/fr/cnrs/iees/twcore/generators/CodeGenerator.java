@@ -99,8 +99,7 @@ public class CodeGenerator {
 		} catch (IOException e1) {
 			throw new TwcoreException("Unable to delete [" + codeDir + "]", e1);
 		}
-		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
-				N_SYSTEM.label());
+		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),N_SYSTEM.label());
 		File ecologyFiles = null;
 		for (TreeGraphDataNode ecology : ecologies) {
 			ecologyFiles = Project.makeFile(ProjectPaths.LOCALCODE, wordUpperCaseName(ecology.id()));
@@ -133,8 +132,9 @@ public class CodeGenerator {
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
 			List<TreeGraphDataNode> timeModels = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
-					selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
-					selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
+				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())),
+				children(),
+				selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
 			if (timeModels != null)
 				for (TreeGraphDataNode timeModel : timeModels) {
 					List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
@@ -142,10 +142,25 @@ public class CodeGenerator {
 						generateProcessCode(process, ecology.id());
 					}
 				}
-			// generate Initialiser classes
-			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
-			for (TreeGraphDataNode initialiser : initialisers)
-				generateInitialiserCode(initialiser, ecology.id());
+			// TODO: put initialiser function code here
+			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(ecology,
+				children(),
+				selectOne(hasTheLabel(N_STRUCTURE.label())),
+				children(),
+				selectZeroOrMany(
+					orQuery(hasTheLabel(N_LIFECYCLE.label()),
+						hasTheLabel(N_GROUP.label()),
+						hasTheLabel(N_SPACE.label()),
+						hasTheLabel(N_COMPONENTTYPE.label()))));
+			for (TreeGraphDataNode tgn:initables) {
+				List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_FUNCTION.label());
+				// NB there is only one func.
+				generateFunctionCode(initFuncs.get(0),ecology.id());
+			}
+//			// generate Initialiser classes
+//			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
+//			for (TreeGraphDataNode initialiser : initialisers)
+//				generateInitialiserCode(initialiser, ecology.id());
 		}
 		// write the user code file
 		modelgen.generateCode();
@@ -243,7 +258,6 @@ public class CodeGenerator {
 		generateDataCode(spec, system, modelName, P_LTCONSTANTCLASS.key());
 		// add space coordinates for every space in which this component type will go
 		// (immobile components)
-
 	}
 
 //	private void generateRelocateFunction(TreeGraphDataNode comp, String space, String modelName) {
@@ -309,6 +323,8 @@ public class CodeGenerator {
 			for (TreeGraphDataNode csq : consequences)
 				generateFunctionCode(csq, modelName);
 		}
+
+		// this code is now useless
 		// 3 if the process has a space, then a relocatefunction is always generated
 		// CAUTION: relocate functions are only attached to category processes, so if
 		// the space applies to a relation process, two relocate functions are
@@ -329,16 +345,16 @@ public class CodeGenerator {
 						selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
 				for (TreeGraphDataNode cat : fromcats) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 				List<TreeGraphDataNode> tocats = (List<TreeGraphDataNode>) get(ltgn.get(0).edges(Direction.OUT),
 						selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
 				for (TreeGraphDataNode cat : tocats) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 				// generate functions
@@ -352,8 +368,8 @@ public class CodeGenerator {
 				Set<TreeGraphDataNode> cptypes = new HashSet<>();
 				for (TreeGraphDataNode cat : ltgn) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 				// generate functions
@@ -364,11 +380,8 @@ public class CodeGenerator {
 	}
 
 	private void generateFunctionCode(TreeGraphDataNode function, String modelName) {
-		// WIP: comment when finished
 		modelgen.setMethod(function);
-		// ---
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
-//		generator.setArgumentCalls(modelgen);
 		generator.setArgumentCalls(modelgen);
 		generator.generateCode();
 		UserProjectLink.addFunctionFile(generator.getFile());

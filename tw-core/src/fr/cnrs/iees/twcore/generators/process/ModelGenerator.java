@@ -164,7 +164,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		else {
 			imports.add("static java.lang.Math.*");
 		}
-		// get all nodes susceptible to require generated data
+		// get all nodes susceptible to require generated data:
+		// system/arena, lifecycle, group, component, space
+		// NB these nodes may also have setInitialState functions
 		TreeGraphDataNode systemNode = (TreeGraphDataNode) get(root3w,
 			children(),
 			selectOne(hasTheLabel(N_SYSTEM.label())));
@@ -180,14 +182,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		cpt.add(systemNode);
 		for (TreeGraphDataNode tn:cpt) {
 			generatedData cl = new generatedData();
-//			if (tn.properties().hasProperty(P_PARAMETERCLASS.key()))
-//				if (tn.properties().getPropertyValue(P_PARAMETERCLASS.key())!=null) {
-//					String s = (String) tn.properties().getPropertyValue(P_PARAMETERCLASS.key());
-//					if (s.isEmpty())
-//						cl.parameters = null;
-//					else
-//						cl.parameters = s;
-//			}
 			if (tn.properties().hasProperty(P_LTCONSTANTCLASS.key()))
 				if (tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key())!=null) {
 					String s = (String) tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key());
