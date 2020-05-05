@@ -230,43 +230,62 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		sb.append("<h2>Model-specific code for model <em>").append(className).append("</em></h2>\n")
 			.append("<p>version ").append(version).append(' ').append(dashSpacer).append(' ')
 			.append(new Date().toString()).append("</p>\n");
-		sb.append("\n<p><strong>Authors: </strong>\n");
 		if (root3w.properties().hasProperty(P_MODEL_AUTHORS.key())) {
 			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_AUTHORS.key());
+			if (auths.size()==1)
+				sb.append("\n<dl><dt>Author: </dt><dd>\n");
+			else
+				sb.append("\n<dl><dt>Authors: </dt><dd>\n");
 			for (int i=0; i<auths.size(); i++) {
 				sb.append(auths.getWithFlatIndex(i)).append("<br/>\n");
 				if (i>0)
 					sb.append("         ");
 			}
+			sb.append("</dd></dl>\n");
 		}
 		else {
+			sb.append("\n<p><strong>Authors: </strong>\n");
 			sb.append("&lt;Use the <em>").append(P_MODEL_AUTHORS.key()).append("</em> property of the <em>")
 				.append(N_ROOT.label()).append("</em> node to display author names here&gt;");
+			sb.append("</p>");
 		}
-		sb.append("</p>\n");
-		sb.append("\n<p><strong>Contacts: </strong>\n");
+		sb.append("\n");
 		if (root3w.properties().hasProperty(P_MODEL_CONTACTS.key())) {
-			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_CONTACTS.key());
-			for (int i=0; i<auths.size(); i++) {
-				sb.append(auths.getWithFlatIndex(i)).append("<br/>\n");
+			StringTable contacts = (StringTable) root3w.properties().getPropertyValue(P_MODEL_CONTACTS.key());
+			if (contacts.size()==1)
+				sb.append("\n<dl><dt>Contact: </dt><dd>\n");
+			else
+				sb.append("\n<dl><dt>Contacts: </dt><dd>\n");
+			for (int i=0; i<contacts.size(); i++) {
+				sb.append(contacts.getWithFlatIndex(i)).append("<br/>\n");
 				if (i>0)
 					sb.append("         ");
 			}
+			sb.append("</dd></dl>\n");
 		}
 		else {
+			sb.append("\n<p><strong>Contacts: </strong>\n");
 			sb.append("&lt;Use the <em>").append(P_MODEL_CONTACTS.key()).append("</em> property of the <em>")
 				.append(N_ROOT.label()).append("</em> node to display author contacts here&gt;");
+			sb.append("</p>");
 		}
-		sb.append("</p>\n");
-		sb.append("\n<p><strong>Reference publications: </strong></p>\n");
+		sb.append("\n");
 		if (root3w.properties().hasProperty(P_MODEL_CITATIONS.key())) {
-			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_CITATIONS.key());
-			sb.append("<ol>");
-			for (int i=0; i<auths.size(); i++)
-				sb.append("<li>").append(auths.getWithFlatIndex(i)).append("</li>\n");
-			sb.append("</ol>");
+			StringTable refs = (StringTable) root3w.properties().getPropertyValue(P_MODEL_CITATIONS.key());
+			if (refs.size()==1) {
+				sb.append("\n<dl><dt>Reference publication: </dt><dd>\n");
+				sb.append(refs.getWithFlatIndex(0)).append("</dd></dl>");
+			}
+			else {
+				sb.append("\n<p><strong>Reference publications: </strong></p>\n");
+				sb.append("<ol>");
+				for (int i=0; i<refs.size(); i++)
+					sb.append("<li>").append(refs.getWithFlatIndex(i)).append("</li>\n");
+				sb.append("</ol>");
+			}
 		}
 		else {
+			sb.append("\n<p><strong>Reference publications: </strong></p>\n");
 			sb.append("&lt;Use the <em>").append(P_MODEL_CITATIONS.key()).append("</em> property of the <em>")
 				.append(N_ROOT.label()).append("</em> node to display model reference publication(s) here&gt;");
 		}
