@@ -112,9 +112,13 @@ public interface CategorizedComponent
 		return ((SystemComponentPropertyListImpl) properties()).auto();
 	}
 
-	// TODO: get rid of this method !
-	public default TwData parameters() {
-		return null;
+	public default boolean isPermanent() {
+		return true;
 	}
+
+//	// TODO: get rid of this method !
+//	public default TwData parameters() {
+//		return null;
+//	}
 
 }

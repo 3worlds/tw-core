@@ -10,8 +10,6 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  * @author J. Gignoux - 23 avr. 2020
  *
  */
-// Arena would be a better name
-// TODO: get the initial valuuuues !!!
 public class ArenaComponent
 		extends HierarchicalComponent {
 

@@ -148,6 +148,11 @@ public class ComponentProcess
 	private void executeFunctions(double t, double dt, CategorizedComponent focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
 //		System.out.println("coucou from "+focal.toShortString()+" t = "+t);
+		for (DataTracker0D tracker:tsTrackers)
+			if (tracker.isTracked(focal)) {
+				tracker.recordItem(focalContext.buildItemId(focal.id()));
+				tracker.record(currentStatus,focal.currentState());
+		}
 
 //		if (space!=null) {
 //			Box limits = space.boundingBox();
