@@ -192,8 +192,19 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		CategorySets: 
 		"*systemElements*", "*lifespan*", "*composition*".
 	
-		Categories: 
-		arena,lifecycle,group,component,relation,space,permanent,ephemeral,population,individual*/
+		Categories:
+		arena,lifecycle,group,component,relation,space,permanent,ephemeral,population,individual
+		
+		To collect all root records:
+		Do we care about these special names?
+		* 1) if system or structure does not exist return null
+		* 2) find all categories through recursion.
+		* 3) if not categories return empty list.
+		* 4) if "constantValues" collect all endnodes of  edges called E_LTCONSTANTS, E_PARAMETERS
+		* 5) if "variableValues" collect all endnodes of  edges called E_DRIVERS, E_AUTOVAR
+		* -is that it?
+		*
+		*/
 
 		
 		// can't allow exceptions to arise here if used from MM
