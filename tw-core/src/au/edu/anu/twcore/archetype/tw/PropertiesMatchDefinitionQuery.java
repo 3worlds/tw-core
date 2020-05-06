@@ -79,7 +79,7 @@ public class PropertiesMatchDefinitionQuery extends Query {
 	private String msg;
 
 	@Override
-	public Query process(Object input) { // input is a variableValues or parameterValues node
+	public Query process(Object input) { // input is a variableValues or constantValues node
 		defaultProcess(input);
 		TreeGraphDataNode targetNode = (TreeGraphDataNode) input;
 
@@ -169,7 +169,7 @@ public class PropertiesMatchDefinitionQuery extends Query {
 	}
 
 	/* Public static - available for use by MM for matching purpose */
-	// argument 'node' is a variableValues or parameterValues node
+	// argument 'node' is a variableValues or constantValues node
 	@SuppressWarnings("unchecked")
 	public static Duple<Boolean,Collection<TreeGraphDataNode>> getDataDefs(TreeGraphDataNode node, String dataCategory) {
 		// can't allow exceptions to arise here if used from MM
