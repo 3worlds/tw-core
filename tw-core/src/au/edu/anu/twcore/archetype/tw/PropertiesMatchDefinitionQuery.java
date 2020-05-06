@@ -185,6 +185,10 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		TreeGraphDataNode ls = (TreeGraphDataNode) get(struct.getChildren(), selectZeroOrOne(hasTheName("*lifespan*")));
 		TreeGraphDataNode cmp = (TreeGraphDataNode) get(struct.getChildren(),
 				selectZeroOrOne(hasTheName("*composition*")));
+				
+				or should we just get all categorysets and all categories and all edges to
+				E_LTCONSTANTS, E_AUTOVAR, E_PARAMETERS,E_DRIVERS??
+				but generic ones are recursive
 
 		// E_LTCONSTANTS, E_AUTOVAR, E_PARAMETERS,E_DRIVERS
 		// "*systemElements*", "*lifespan*", "*composition*".
