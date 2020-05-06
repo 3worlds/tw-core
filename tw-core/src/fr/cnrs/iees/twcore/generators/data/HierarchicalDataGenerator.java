@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -33,9 +33,11 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -49,6 +51,7 @@ import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
@@ -63,7 +66,7 @@ import fr.ens.biologie.generic.utils.Logging;
  *
  *
  *
- *javac -sourcepath ~/.3w/project_test1_2019-10-15-11-05-36-408/local/java/code/my_ecosystem/*.java -classpath ~/.3w/tw-dep.jar 
+ *javac -sourcepath ~/.3w/project_test1_2019-10-15-11-05-36-408/local/java/code/my_ecosystem/*.java -classpath ~/.3w/tw-dep.jar
  *
  * @author Jacques Gignoux - dec. 2014
  */
@@ -73,13 +76,13 @@ import fr.ens.biologie.generic.utils.Logging;
 // fails because dependent classes are not compiled, where as this command:
 // javac *.java -classpath ~/.3w/tw-dep.jar
 // works, because javac manages the dependencies of all classes in the directory
-// ALL the java compiling code has been moved to CodeGenerator.generate() 
-public abstract class HierarchicalDataGenerator 
+// ALL the java compiling code has been moved to CodeGenerator.generate()
+public abstract class HierarchicalDataGenerator
 	extends TwCodeGenerator
 	implements ProjectPaths {
-	
-	private static Logger log = Logging.getLogger(HierarchicalDataGenerator.class); 
-	
+
+	private static Logger log = Logging.getLogger(HierarchicalDataGenerator.class);
+
 	/** the name of the class to generate */
 	protected String className = null;
 	/** the name of the package in which the class will be generated (ie with "." as separators) */
@@ -87,21 +90,21 @@ public abstract class HierarchicalDataGenerator
 	/** the directory name matching package name */
 	protected String packagePath = null;
 	/** the model name (matching the ecology node name */
-	protected String modelName = null;		
-	
+	protected String modelName = null;
+
 	private boolean hadErrors = false;
 
 	protected abstract ClassGenerator getRecordClassGenerator(String className,String comment);
-	
+
 	protected abstract ClassGenerator getTableClassGenerator(String className, String contentType,String comment);
-	
+
 	protected HierarchicalDataGenerator(String modelName,TreeGraphDataNode spec) {
 		super(spec);
 		this.modelName = modelName;
-		packageName =REMOTECODE+"."+ validJavaName(wordUpperCaseName(modelName));	
+		packageName =REMOTECODE+"."+ validJavaName(wordUpperCaseName(modelName));
 		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private final String generateRecordCode(TreeGraphDataNode spec) {
 		String cn = null;
@@ -111,7 +114,7 @@ public abstract class HierarchicalDataGenerator
 			cn = spec.id();
 		cn = validJavaName(initialUpperCase(wordUpperCaseName(cn)));
 		log.info("Generating data class '"+cn+"'");
-		String comment = comment(general,classComment(cn),generatedCode(false,modelName, ""));		
+		String comment = comment(general,classComment(cn),generatedCode(false,modelName, ""));
 		ClassGenerator cg = getRecordClassGenerator(cn,comment);
 		headerCode(cg,cn);
 		Iterable<TreeNode> childrenList = null;
@@ -137,7 +140,7 @@ public abstract class HierarchicalDataGenerator
 			else {
 				primitiveFieldCode(cg,fname,ftype);
 			}
-			fieldCode(cg,fname,ftype);			
+			fieldCode(cg,fname,ftype);
 		}
 		finalCode(cg);
 		log.info("    generating file "+cn+".java ...");
@@ -147,7 +150,7 @@ public abstract class HierarchicalDataGenerator
 		log.info("  ...done.");
 		return cn;
 	}
-	
+
 	protected abstract void headerCode(ClassGenerator cg, String className);
 	protected abstract void fieldCode(ClassGenerator cg,String fname,String ftype);
 	protected abstract void tableFieldCode(ClassGenerator cg,String fname,String ftype);
@@ -155,7 +158,7 @@ public abstract class HierarchicalDataGenerator
 	protected abstract void finalCode(ClassGenerator cg);
 
 	/**
-	 * 
+	 *
 	 * @param spec
 	 * @return the type of the generated Table
 	 */
@@ -165,10 +168,18 @@ public abstract class HierarchicalDataGenerator
 		String fpack = "";
 		String fname = validJavaName(wordUpperCaseName(spec.id()));
 		// get the dimensioners
-		List<TreeGraphDataNode> dims = (List<TreeGraphDataNode>) get(spec,
+		// NB although this is valid code, it doesnt work if two edges are pointing on the same dim
+		// hence the fix below for that particular case
+//		List<TreeGraphDataNode> dims = (List<TreeGraphDataNode>) get(spec,
+//			outEdges(),
+//			selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
+//			edgeListEndNodes());
+		List<Edge> edims = (List<Edge>) get(spec,
 			outEdges(),
-			edgeListEndNodes(),
-			selectOneOrMany(hasTheLabel(N_DIMENSIONER.label())));
+			selectOneOrMany(hasTheLabel(E_SIZEDBY.label())));
+		List<TreeGraphDataNode> dims = new LinkedList<>();
+		for (Edge e:edims)
+			dims.add((TreeGraphDataNode)e.endNode());
 		// order them by rank
 		SortedMap<Integer,TreeGraphDataNode> sortedDims = new TreeMap<>();
 		int rank = 0;
@@ -179,14 +190,14 @@ public abstract class HierarchicalDataGenerator
 					throw new TwcoreException("Wrong ordering of dimensioners");
 				}
 			}
-			else 
+			else
 				sortedDims.put(rank++,d);
 		}
 		// get the table element type
 		if (spec.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
 			DataElementType tet = (DataElementType) spec.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 			String t = tet.name();
-			if (t.equals("Integer")) { 
+			if (t.equals("Integer")) {
 				ftype = IntTable.class.getSimpleName();
 				fpack = IntTable.class.getCanonicalName();
 			}
@@ -197,16 +208,16 @@ public abstract class HierarchicalDataGenerator
 		}
 		else { // this must be a record - superclass will be generated from the record name, but doesnt exist yet !
 			// a table is never the root of a data definition, so there should not be problems here
-			TreeGraphDataNode rec = (TreeGraphDataNode) get(spec, 
-				children(), 
+			TreeGraphDataNode rec = (TreeGraphDataNode) get(spec,
+				children(),
 				selectOne(hasTheLabel(N_RECORD.label())));
 			generateRecordCode(rec);
 			ftype = validJavaName(initialUpperCase(wordUpperCaseName(spec.id())));
 			log.info("    generating file "+ftype+".java ...");
 			fpack = packageName+"."+ftype;
 			String contentType = validJavaName(initialUpperCase(wordUpperCaseName(rec.id())));
-			String comment = comment(general,classComment(fname),generatedCode(false,modelName, ""));		
-			ClassGenerator cg = getTableClassGenerator(ftype,contentType,comment);	
+			String comment = comment(general,classComment(fname),generatedCode(false,modelName, ""));
+			ClassGenerator cg = getTableClassGenerator(ftype,contentType,comment);
 			tableCode(cg,ftype,contentType,dims);
 			File file = new File(packagePath+File.separator+ftype+".java");
 			writeFile(cg,file,ftype);
@@ -217,7 +228,7 @@ public abstract class HierarchicalDataGenerator
 			parentCG.setImport(fpack);
 			parentCG.setImport(Dimensioner.class.getCanonicalName());
 			tableInitCode(parentCG,fname,ftype,dims);
-		}		
+		}
 		return ftype;
 	}
 
@@ -225,14 +236,14 @@ public abstract class HierarchicalDataGenerator
 	protected abstract void tableCode(ClassGenerator cg,String ftype,String contentType,Iterable<TreeGraphDataNode> dimList);
 
 	@Override
-	public final boolean generateCode() {		
-		if (spec.classId().equals(N_RECORD.label())) 
+	public final boolean generateCode() {
+		if (spec.classId().equals(N_RECORD.label()))
 			className = packageName+"."+generateRecordCode(spec);
-		else if (spec.classId().equals(N_TABLE.label())) 
+		else if (spec.classId().equals(N_TABLE.label()))
 			className = packageName+"."+generateTableCode(spec,null);
 		return hadErrors;
 	}
-	
+
 	public final String generatedClassName() {
 		return className;
 	}
