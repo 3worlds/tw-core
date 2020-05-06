@@ -28,9 +28,13 @@ public class ComponentType extends ElementType<ComponentFactory, SystemComponent
 
 	@Override
 	ComponentFactory makeTemplate(int id) {
-		return new ComponentFactory(categories,categoryId(),
-			autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-			(SetInitialStateFunction)setinit.getInstance(id));
+		if (setinit!=null)
+			return new ComponentFactory(categories,categoryId(),
+				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
+				(SetInitialStateFunction)setinit.getInstance(id));
+		else
+			return new ComponentFactory(categories,categoryId(),
+				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,null);
 	}
 
 	@Override

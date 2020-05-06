@@ -61,9 +61,14 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 			// TODO ! get the proper life cycle container !
 			throw new TwcoreException("Not yet implemented!");
 		}
-		return new GroupFactory(categories,categoryId(),
-			autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-			(SetInitialStateFunction)setinit.getInstance(id),id(),superContainer);
+		if (setinit!=null)
+			return new GroupFactory(categories,categoryId(),
+				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
+				(SetInitialStateFunction)setinit.getInstance(id),id(),superContainer);
+		else
+			return new GroupFactory(categories,categoryId(),
+				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
+				null,id(),superContainer);
 	}
 
 }

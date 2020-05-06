@@ -342,13 +342,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 							// e.g.: _focalDrv.y = focalDrv.y();
 							innerVarInit.get(innerVar).add("_"+innerVar+"."+field.name+" = "+innerVar+"."+field.name+"()");
 							// e.g.: focalDrv.y(_focalDrv.y);
-							innerVarCopy.get(innerVar).add(innerVar+"."+field.name+"(_"+innerVar+"."+field.name+")");
-							// TODO: tables ?
-////								if (!mb.isTable)
-//									// example code: ((MyDrvRec)x).drivers(focalDrv.x))
-//									// should be: ((MyDrvRec)focal.getNextState()).
-//									innerVarCopy.get(innerVar).add("((" + sc+ ")"+arg.name()+")."+at+"("+defaultPrefix+innerVar+"."+an+")");
-
+							if (field.isTable)
+								; // nothing to do with tables since they can be directly modified.
+							else
+								innerVarCopy.get(innerVar).add(innerVar+"."+field.name+"(_"+innerVar+"."+field.name+")");
 					}
 				} // rec.members
 				for (String innerVar:type.innerVars() )
