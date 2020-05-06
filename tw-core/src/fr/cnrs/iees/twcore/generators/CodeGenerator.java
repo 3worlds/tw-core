@@ -156,7 +156,9 @@ public class CodeGenerator {
 			for (TreeGraphDataNode tgn:initables) {
 				List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_FUNCTION.label());
 				// NB there is only one func.
-				generateFunctionCode(initFuncs.get(0),ecology.id());
+				if (initFuncs!=null)
+					if (!initFuncs.isEmpty())
+						generateFunctionCode(initFuncs.get(0),ecology.id());
 			}
 //			// generate Initialiser classes
 //			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
