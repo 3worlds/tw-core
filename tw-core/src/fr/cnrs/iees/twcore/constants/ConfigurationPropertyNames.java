@@ -34,6 +34,8 @@ public enum ConfigurationPropertyNames {
 	P_MODEL_CONTACTS 			("contacts"),
 	P_MODEL_CITATIONS 			("publication"),
 	P_MODEL_VERSION 			("version"),
+	P_MODEL_BUILTBY             ("built-by"),
+	P_MODEL_PRECIS              ("precis"),
 	P_DIMENSIONER_SIZE 			("size"),
 	P_DIMENSIONER_RANK 			("rank"),
 	P_FIELD_TYPE 				("type"),

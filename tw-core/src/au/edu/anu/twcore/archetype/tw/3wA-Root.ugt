@@ -19,3 +19,12 @@ hasNode rootSpec
 		hasName = String("version")
 		type =  String("String")
 		multiplicity = IntegerRange("0..1")
+	hasProperty twModelBuiltBySpec
+		hasName = String("built-by")
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
+	hasProperty twModelPrecisSpec
+		hasName = String("precis")
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
+		
