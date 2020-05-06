@@ -38,19 +38,21 @@ import static au.edu.anu.twcore.ecosystem.structure.Category.*;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
- * Class matching the "categorySet" node label in the 3Worlds configuration tree.
- * Has no properties.
+ * Class matching the "categorySet" node label in the 3Worlds configuration
+ * tree. Has no properties.
  *
  * @author Jacques Gignoux - 29 mai 2019
  *
  */
 public class CategorySet extends InitialisableNode {
 
-	// default category sets present in ALL models
-	public final static String[] systemElements	= {arena,lifeCycle,group,component,relation,space};
-	public final static String[] lifespan 		= {permanent,ephemeral};
-	public final static String[] composition 	= {population,individual};
+	// we also need the string "*systemElements*" constants etc i.e
+	// systemElementsName = "*systemElements*";
 
+	// default category sets present in ALL models
+	public final static String[] systemElements = { arena, lifeCycle, group, component, relation, space };
+	public final static String[] lifespan = { permanent, ephemeral };
+	public final static String[] composition = { population, individual };
 
 	// default constructor
 	public CategorySet(Identity id, SimplePropertyList props, GraphFactory gfactory) {

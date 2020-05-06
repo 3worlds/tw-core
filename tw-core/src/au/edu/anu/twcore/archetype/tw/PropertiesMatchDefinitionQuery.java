@@ -172,6 +172,24 @@ public class PropertiesMatchDefinitionQuery extends Query {
 	// argument 'node' is a variableValues or constantValues node
 	@SuppressWarnings("unchecked")
 	public static Duple<Boolean,Collection<TreeGraphDataNode>> getDataDefs(TreeGraphDataNode node, String dataCategory) {
+/*-	TreeGraphDataNode parent = (TreeGraphDataNode) node.getParent();
+		if (parent == null)
+			return null;
+		TreeGraphDataNode ct = null;
+		TreeGraphDataNode struct = (TreeGraphDataNode) get(parent.getChildren(),
+				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+		if (struct == null)
+			return null;
+		TreeGraphDataNode sysEl = (TreeGraphDataNode) get(struct.getChildren(),
+				selectZeroOrOne(hasTheName("*systemElements*")));
+		TreeGraphDataNode ls = (TreeGraphDataNode) get(struct.getChildren(), selectZeroOrOne(hasTheName("*lifespan*")));
+		TreeGraphDataNode cmp = (TreeGraphDataNode) get(struct.getChildren(),
+				selectZeroOrOne(hasTheName("*composition*")));
+
+		// E_LTCONSTANTS, E_AUTOVAR, E_PARAMETERS,E_DRIVERS
+		// "*systemElements*", "*lifespan*", "*composition*".
+		// cf Category String
+		// constants.arena,lifecycle,group,component,relation,space,permanent,ephemeral,population,individual*/
 		// can't allow exceptions to arise here if used from MM
 		Boolean addAutoVars = false;
 		TreeGraphDataNode parent = (TreeGraphDataNode) node.getParent();
