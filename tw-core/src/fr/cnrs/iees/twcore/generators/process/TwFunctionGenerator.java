@@ -289,7 +289,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		innerVarInit.clear();
 		innerVarCopy.clear();
 		//t, dt
-		for (TwFunctionArguments arg:EnumSet.of(t,dt))
+		Set<TwFunctionArguments> intersection =new HashSet<>(type.readOnlyArguments());
+		intersection.retainAll(EnumSet.of(t,dt));
+		for (TwFunctionArguments arg:intersection)
 			callStatement += indent+indent+indent+ arg.name() + ",\n";
 		// arena, lifeCycle, group, space focal, other, otherGroup, otherLifeCycle
 		// including return values
@@ -316,7 +318,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 						List<String> innerVarBackCopy = new LinkedList<>();
 						innerVarCopy.put(innerVar,innerVarBackCopy);
 						// e.g.: Vars focalDrv = (Vars)focal.nextState();
-						if (rec.name.equals("currentState"))
+						if ((rec.name.equals("currentState")) & !(type==TwFunctionTypes.SetInitialState))
 							innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+".nextState()");
 						else
 							innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+"."+rec.name+"()");

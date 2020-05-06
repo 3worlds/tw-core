@@ -10,6 +10,7 @@ import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static au.edu.anu.twcore.DefaultStrings.*;
+import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +35,7 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
+import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
@@ -504,9 +506,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	@SuppressWarnings("unchecked")
 	protected SortedSet<Category> findCategories(TreeGraphDataNode function, TwFunctionArguments arg) {
 		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-		TreeNode fp = function.getParent();
+		TreeGraphDataNode fp = (TreeGraphDataNode) function.getParent();
 		SortedSet<Category> cats = new TreeSet<>();
-		// function parent is a process
+		// 1 general case: function parent is a process
 		if (fp instanceof ProcessNode) {
 			// get arena data types
 			if (arg==arena) {									//    timeModel   timeLine    dynamics    system
@@ -516,7 +518,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					edgeListEndNodes()));
 				return cats;
 			}
-			ProcessNode pn = (ProcessNode) fp;
+			TreeGraphDataNode pn = fp;
 			if ((arg==lifeCycle)||(arg==space)||(arg==group)) {
 				// TODO: get the component type matching process categories, then get the grouptype
 				// and lifecycle type to get their categories
@@ -553,6 +555,18 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						// TODO
 					}
 			}
+		}
+		// 2 parent is a functionNode, means we are dealing with a consequence
+		else if (fp instanceof FunctionNode) {
+
+		}
+		// 3 parent is not a ProcessNode nor a FunctionNode, so it must be an ElementType descendant
+		// and in this case there is no relation function
+		else if (arg==focal) {
+			cats.addAll((Collection<Category>) get(fp.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+				edgeListEndNodes()));
+			return cats;
 		}
 		return cats;
 	}
@@ -625,19 +639,24 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return false;
 	}
 
-	public String timerComment(TreeGraphDataNode function) {
-		ProcessNode proc = null;
-		if (function.getParent() instanceof ProcessNode)
-			proc = (ProcessNode) function.getParent();
-		else
-			proc = (ProcessNode) function.getParent().getParent();
-		TimeModel tm = (TimeModel) proc.getParent();
-		String subc = tm.properties().getPropertyValue(P_TIMEMODEL_SUBCLASS.key()).toString();
-		return "<p>- follows timer <em>"+tm.id()+"</em> of type {@link "
-			+ subc.split("\\.")[subc.split("\\.").length-1]
-			+ "}, with time unit = "
-			+ tm.properties().getPropertyValue(P_TIMEMODEL_NTU.key()) + " "
-			+ ((TimeUnits)tm.properties().getPropertyValue(P_TIMEMODEL_TU.key())).abbreviation()+"</p>\n";
+	public String timerComment(TreeGraphDataNode function, TwFunctionTypes ftype) {
+		if (EnumSet.of(SetInitialState,SetOtherInitialState).contains(ftype)) {
+			return "<p>- called once for every component, at creation time</p>\n";
+		}
+		else {
+			ProcessNode proc = null;
+			if (function.getParent() instanceof ProcessNode)
+				proc = (ProcessNode) function.getParent();
+			else
+				proc = (ProcessNode) function.getParent().getParent();
+			TimeModel tm = (TimeModel) proc.getParent();
+			String subc = tm.properties().getPropertyValue(P_TIMEMODEL_SUBCLASS.key()).toString();
+			return "<p>- follows timer <em>"+tm.id()+"</em> of type {@link "
+				+ subc.split("\\.")[subc.split("\\.").length-1]
+				+ "}, with time unit = "
+				+ tm.properties().getPropertyValue(P_TIMEMODEL_NTU.key()) + " "
+				+ ((TimeUnits)tm.properties().getPropertyValue(P_TIMEMODEL_TU.key())).abbreviation()+"</p>\n";
+		}
 	}
 //
 //	private void addArgumentGroup(ArgumentGroups arg, memberInfo mb,
@@ -748,7 +767,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				.append("} → {").append(simpleCatSignature(otherCats))
 				.append("}</em></p>\n\n");
 		}
-		headerComment.append(timerComment(function)).append('\n');
+		headerComment.append(timerComment(function,ftype)).append('\n');
 		// follow time model:
 		ModelMethodGenerator method = methods.get(fname);
 		// if method does not exist, create it and set its header, return type and return statement
@@ -772,7 +791,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		argSet2.addAll(ftype.writeableArguments());
 
 		// t, dt
-		for (TwFunctionArguments arg:EnumSet.of(t,dt)) {
+		Set<TwFunctionArguments> intersection =new HashSet<>(ftype.readOnlyArguments());
+		intersection.retainAll(EnumSet.of(t,dt));
+		for (TwFunctionArguments arg:intersection) {
 			method.addArgument(arg,null,arg.name(),arg.type(),arg.description());
 			headerComment.append("@param ").append(arg.name()).append(' ')
 				.append(arg.description()).append('\n');

@@ -19,6 +19,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
+import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.ConstantValues;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.VariableValues;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
@@ -29,12 +30,11 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOneOrMany;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BELONGSTO;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
  * An ancestor to nodes that produce factories that create SystemCOmponents with data in
@@ -58,7 +58,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 	protected TwData decoratorTemplate = null;
 	protected TwData lifetimeConstantTemplate = null;
 	SimplePropertyList properties = null;
-	SetInitialStateFunction setinit = null;
+	FunctionNode setinit = null;
 
 	// default constructor
 	public ElementType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -118,7 +118,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 				}
 		}
 		// TODO: Find the setInitialState function
-//		setinit = ???
+		setinit = (FunctionNode) get(getChildren(),selectZeroOrOne(hasTheLabel(N_FUNCTION.label())));
 		sealed = true; // important - next statement access this class methods
 		categoryId = buildCategorySignature();
 	}

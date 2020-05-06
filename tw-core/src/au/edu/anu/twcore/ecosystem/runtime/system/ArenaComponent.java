@@ -1,5 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -15,6 +16,12 @@ public class ArenaComponent
 
 	public ArenaComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
+	}
+
+	// not very clean, but that's where the info is
+	@Override
+	public SetInitialStateFunction initialiser() {
+		return ((ArenaFactory)membership()).setinit;
 	}
 
 }

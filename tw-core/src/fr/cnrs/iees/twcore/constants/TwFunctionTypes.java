@@ -166,6 +166,7 @@ public enum TwFunctionTypes {
 	public Set<TwFunctionArguments> readOnlyArguments() {
 		switch (this) {
 		case SetInitialState:
+			return EnumSet.of(arena,lifeCycle,group,space,focal);
 		case ChangeState:
 		case ChangeCategoryDecision:
 		case CreateOtherDecision:
@@ -242,6 +243,7 @@ public enum TwFunctionTypes {
 		case ChangeOtherState:
 			return EnumSet.of(nextFocalLoc,nextOtherLoc);
 		case ChangeState:
+		case SetInitialState:
 			return EnumSet.of(nextFocalLoc);
 		default:
 			return EnumSet.noneOf(TwFunctionArguments.class);

@@ -6,6 +6,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.Collection;
 
+import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
@@ -62,7 +63,7 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 		}
 		return new GroupFactory(categories,categoryId(),
 			autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-			setinit,id(),superContainer);
+			(SetInitialStateFunction)setinit.getInstance(id),id(),superContainer);
 	}
 
 }

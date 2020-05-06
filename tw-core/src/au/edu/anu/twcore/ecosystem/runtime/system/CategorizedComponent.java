@@ -3,6 +3,7 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
+import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import fr.cnrs.iees.graph.Node;
 
 /**
@@ -114,6 +115,10 @@ public interface CategorizedComponent
 
 	public default boolean isPermanent() {
 		return true;
+	}
+
+	public default SetInitialStateFunction initialiser() {
+		return null;
 	}
 
 //	// TODO: get rid of this method !

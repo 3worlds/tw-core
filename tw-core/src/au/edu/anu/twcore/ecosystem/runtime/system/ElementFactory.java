@@ -53,7 +53,6 @@ public abstract class ElementFactory<T extends DataElement>
 	 * @param categories
 	 * @param categoryId
 	 */
-	// MISSING: setinitialstate function
 	public ElementFactory(Set<Category> categories, String categoryId,
 			TwData auto, TwData drv, TwData dec, TwData ltc,
 			SetInitialStateFunction setinit) {

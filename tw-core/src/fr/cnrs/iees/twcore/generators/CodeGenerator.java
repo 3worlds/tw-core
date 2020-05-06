@@ -142,7 +142,7 @@ public class CodeGenerator {
 						generateProcessCode(process, ecology.id());
 					}
 				}
-			// TODO: put initialiser function code here
+			// initialiser function code here
 			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(ecology,
 				children(),
 				selectOne(hasTheLabel(N_STRUCTURE.label())),
@@ -152,6 +152,7 @@ public class CodeGenerator {
 						hasTheLabel(N_GROUP.label()),
 						hasTheLabel(N_SPACE.label()),
 						hasTheLabel(N_COMPONENTTYPE.label()))));
+			initables.add(ecology);
 			for (TreeGraphDataNode tgn:initables) {
 				List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_FUNCTION.label());
 				// NB there is only one func.

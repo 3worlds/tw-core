@@ -38,6 +38,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
  */
 public abstract class ChangeStateFunction extends TwFunctionAdapter {
 
+
 	/**
 	 * change the state, ie the values of internal variables, of a system component.
 	 * Notice that some parameters may be null when
@@ -45,40 +46,13 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 	 *
 	 * @param t	current time
 	 * @param dt current time step
-	 * @param limits boundary of the space set in the enclosing Process, if any
-	 * @param ecosystemPar ecosystem parameters, if any
-	 * @param ecosystemPop ecosystem population data
-	 * @param lifeCyclePar life cycle parameters, if any
-	 * @param lifeCyclePop life cycle population data, if any
-	 * @param groupPar focal group parameters, if any
-	 * @param groupPop focal group population data
-	 * @param focalAuto focal automatic variables (age and birthDate)
-	 * @param focalLtc focal lifetime constants, if any
-	 * @param focalDrv focal driver variables at current time, if any
-	 * @param focalDec focal decorator variables, if any
-	 * @param focalLoc focal location at current time, if any
-	 *
-	 * @param nextFocal Drv focal driver values at next time (t+dt)
-	 * @param nextFocalLoc focal new spatial coordinates at next time (t+dt)
+	 * @param arena
+	 * @param lifeCycle
+	 * @param group
+	 * @param space
+	 * @param focal
+	 * @param nextFocalLoc
 	 */
-//	public abstract void changeState(double t,
-//		double dt,
-//		SystemComponent focal);
-
-	// new new version
-//	public abstract void changeState(double t, double dt,
-//	Box limits,Point focalLoc,
-//	CategorizedComponent ecosystem, CategorizedComponent lifeCycle, CategorizedComponent group,
-//	CategorizedComponent focal);
-
-//	// new new new version
-//	public abstract void changeState(double t, double dt,
-//			ArenaComponent arena,
-////			SpaceComponent space,
-////			LifeCYcleComponent lifecycle,
-////			GroupComponent group,
-//			CategorizedComponent focal );
-
 	public abstract void changeState(double t, double dt,
 		CategorizedComponent arena,
 		CategorizedComponent lifeCycle,
@@ -86,58 +60,5 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 		CategorizedComponent space,
 		CategorizedComponent focal,
 		double[] nextFocalLoc);
-
-
-
-	// new version
-//	public abstract void changeState (
-//			double t,
-//			double dt,
-//			Box limits,
-//			TwData ecosystemPar,
-//			ComponentContainer ecosystemPop,
-//			TwData lifeCyclePar,
-//			ComponentContainer lifeCyclePop,
-//			TwData groupPar,
-//			ComponentContainer groupPop,
-//			SystemData focalAuto,
-//			TwData focalLtc,
-//			TwData focalDrv,
-//			TwData focalDec, // read write
-//			Point focalLoc,
-//			// returning data (read write parameters)
-//			TwData nextFocalDrv,
-//			double[] nextFocalLoc
-//			);
-//			// read only arguments
-//			// time, always present
-//			double t,
-//			double dt,
-//			// ecosystem data, optional
-//			TwData ecosystemPar,
-//			ComponentContainer ecosystemPopulationData,
-//			// life cycle data, optional
-//			TwData lifeCyclePar,
-//			ComponentContainer lifeCyclePopulationData,
-//			// group data, optional
-//			TwData groupPar,
-//			ComponentContainer groupPopulationData,
-//			// main/driver space limits
-//			Box limits,
-//			// autoVar, present only for ephemeral SystemComponent
-//			SystemData auto,
-//			// drivers, current values (optional)
-//			TwData drv,
-//			// lifetime constants (optional)
-//			TwData ltc,
-//			// current location if any (optional)
-//			Point loc,
-//			// read-write arguments for return values
-//			// decorators, if present
-//			TwData dec,
-//			// next values for drivers, if present
-//			TwData nextDrv,
-//			// next location, if needed
-//			double[] nextLoc);
 
 }

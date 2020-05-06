@@ -1,5 +1,6 @@
 package au.edu.anu.twcore.ecosystem.structure.newapi;
 
+import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -60,7 +61,7 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 	ArenaFactory makeTemplate(int id) {
 		return new ArenaFactory(categories,categoryId(),
 			autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-			setinit,makeContainer,id());
+			(SetInitialStateFunction)setinit.getInstance(id),makeContainer,id());
 	}
 
 }

@@ -1,8 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import fr.cnrs.iees.uit.space.Box;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 
 /**
  *
@@ -29,20 +27,27 @@ public abstract class SetInitialStateFunction extends TwFunctionAdapter {
 	 * @param focalDrv focal driver variables at creation time, if any
 	 * @param focalLoc focal location at creation time, if any
 	 */
-	public abstract void setInitialState(
-		double t,
-		double dt,
-		Box limits,
-		TwData ecosystemPar,
-		ComponentContainer ecosystemPop,
-		TwData lifeCyclePar,
-		ComponentContainer lifeCyclePop,
-		TwData groupPar,
-		ComponentContainer groupPop,
-		// read-write returned value
-		TwData focalLtc,
-		TwData focalDrv,
-		double[] focalLoc
-	);
+//	public abstract void setInitialState(
+//		double t,
+//		double dt,
+//		Box limits,
+//		TwData ecosystemPar,
+//		ComponentContainer ecosystemPop,
+//		TwData lifeCyclePar,
+//		ComponentContainer lifeCyclePop,
+//		TwData groupPar,
+//		ComponentContainer groupPop,
+//		// read-write returned value
+//		TwData focalLtc,
+//		TwData focalDrv,
+//		double[] focalLoc
+//	);
 
+	public abstract void setInitialState(
+		CategorizedComponent arena,
+		CategorizedComponent lifeCycle,
+		CategorizedComponent group,
+		CategorizedComponent space,
+		CategorizedComponent focal,
+		double[] nextFocalLoc);
 }
