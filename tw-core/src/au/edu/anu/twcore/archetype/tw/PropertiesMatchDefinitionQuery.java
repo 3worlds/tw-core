@@ -182,6 +182,7 @@ public class PropertiesMatchDefinitionQuery extends Query {
        
        constantValues:
         hasParent = StringTable(([3]"system:","group:","component:"))
+        // have to wait and see what "group" and "component" are and where they are in the graph.
 
        variableValues:
        hasParent = StringTable(([1]"system:"))
