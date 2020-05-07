@@ -79,6 +79,10 @@ hasNode tableSpec
 	mustSatisfyQuery childXorPropertyQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery")
 		edge_prop = StringTable(([2]"record","dataElementType"))
+	hasProperty tableDescriptionSpec
+		hasName = String("description")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
 	hasProperty NumberTableUnitsSpec
 		hasName = String("units")
 		type = String("String")
@@ -116,6 +120,10 @@ hasNode recordFieldSpec
 		hasName = String("type")
 		type = String("DataElementType")
 		multiplicity = IntegerRange("1..1")
+	hasProperty fieldDescriptionSpec
+		hasName = String("description")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
 	hasProperty NumberFieldUnitsSpec
 		hasName = String("units")
 		type = String("String")
