@@ -185,8 +185,7 @@ public class EcosystemGraph
 		for (RelationContainer rc: relations.values())
 			rc.preProcess();
 		// reinitialise state variables and constants
-		if (arena.initialiser()!=null)
-			arena.initialiser().setInitialState(null, null, null, null, arena, null);
+		arena.preProcess();
 	}
 
 	@Override

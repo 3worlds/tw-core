@@ -4,6 +4,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.ens.biologie.generic.Resettable;
 
 /**
  * The component matching the whole system
@@ -12,7 +13,8 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  *
  */
 public class ArenaComponent
-		extends HierarchicalComponent {
+		extends HierarchicalComponent
+		implements Resettable {
 
 	public ArenaComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -22,6 +24,18 @@ public class ArenaComponent
 	@Override
 	public SetInitialStateFunction initialiser() {
 		return ((ArenaFactory)membership()).setinit;
+	}
+
+	// Particular to arena as it is a singleton instance
+	@Override
+	public void preProcess() {
+		// re-copy initial constants and drivers
+		ArenaFactory fact = (ArenaFactory) membership();
+		currentState().setProperties(fact.driverTemplate);
+		constants().setProperties(fact.lifetimeConstantTemplate);
+		// re-run setInitialState method
+		if (initialiser()!=null)
+			initialiser().setInitialState(null, null, null, null, this, null);
 	}
 
 }

@@ -498,7 +498,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				}
 			}
 			else
-				result.put(cel,new TreeSet<>()); // empty
+				if (result.get(cel)==null) // in case a category has no fields, dont erase those of another one
+					result.put(cel,new TreeSet<>()); // empty
 		}
 		return result;
 	}

@@ -53,7 +53,6 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 	private String categoryId = null;
 	/** TwData templates to clone to create new systems */
 	protected TwData autoVarTemplate = null;
-//	private TwData parameterTemplate = null;
 	protected TwData driverTemplate = null;
 	protected TwData decoratorTemplate = null;
 	protected TwData lifetimeConstantTemplate = null;
@@ -117,7 +116,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 							((ConstantValues) tn).fill(lifetimeConstantTemplate);
 				}
 		}
-		// TODO: Find the setInitialState function
+		// Find the setInitialState function
 		setinit = (FunctionNode) get(getChildren(),selectZeroOrOne(hasTheLabel(N_FUNCTION.label())));
 		sealed = true; // important - next statement access this class methods
 		categoryId = buildCategorySignature();
