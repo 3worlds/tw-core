@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -49,7 +50,9 @@ import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.userProject.UserProjectLink;
+import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
@@ -356,6 +359,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	}
 
 	// prepare comments to explain arguments to end user
+	@SuppressWarnings("unchecked")
 	private String argComment(TreeGraphDataNode f,
 			ConfigurationPropertyNames descro,
 			ConfigurationPropertyNames units,
@@ -370,6 +374,21 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				comment.append(f.id());
 		else
 			comment.append(f.id());
+		// get the dimensions for tables
+		if (f instanceof TableNode) {
+			List<Edge> edims = (List<Edge>) get(f.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_SIZEDBY.label())));
+			Map<Integer,TreeGraphDataNode> dims = new TreeMap<>();
+			for (Edge e:edims)
+				if (e instanceof DataHolder)
+					if (((DataHolder)e).properties().hasProperty(P_DIMENSIONER_RANK.key()))
+						dims.put((Integer)((DataHolder)e).properties().getPropertyValue(P_DIMENSIONER_RANK.key()),
+							(TreeGraphDataNode)e.endNode());
+			String s = "";
+			for (TreeGraphDataNode dim:dims.values())
+				s += dim.properties().getPropertyValue(P_DIMENSIONER_SIZE.key()) + ",";
+			comment.append(" dim = [").append(s.substring(0, s.length()-1)).append("]");
+		}
 		if (f.properties().hasProperty(units.key()))
 			if (f.properties().getPropertyValue(units.key())!=null)
 				if (!f.properties().getPropertyValue(units.key()).toString().isEmpty())
@@ -382,11 +401,11 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					.append(f.properties().getPropertyValue(prec.key()));
 		if (f.properties().hasProperty(interval.key()))
 			if (f.properties().getPropertyValue(interval.key())!=null)
-				comment.append(" ")
+				comment.append(" ϵ")
 					.append(f.properties().getPropertyValue(interval.key()));
 		if (f.properties().hasProperty(range.key()))
 			if (f.properties().getPropertyValue(range.key())!=null)
-				comment.append(" [")
+				comment.append(" ϵ[")
 					.append(f.properties().getPropertyValue(range.key()))
 					.append(']');
 		return comment.toString();
