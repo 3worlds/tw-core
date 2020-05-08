@@ -333,8 +333,8 @@ public class Project implements ProjectPaths, TwPaths {
 		} catch (Exception e) {
 			return false;
 		}
-		if (!WordUtils.uncapitalize(items[1]).equals(items[1]))
-			return false;
+//		if (!WordUtils.uncapitalize(items[1]).equals(items[1]))
+//			return false;
 		return true;
 	}
 
