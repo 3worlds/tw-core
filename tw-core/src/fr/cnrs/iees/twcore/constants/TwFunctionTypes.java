@@ -206,6 +206,9 @@ public enum TwFunctionTypes {
 	    }
     }
 
+    // Question here: should we allow components to modify decorators of their context
+    // (ie arena, group, lifecycle)? This would be handy to perform statistics on them,
+    // but this may also be source of a lot of mess - wait and see
     public List<String> innerVars() {
     	List<String> result = new ArrayList<>();
     	switch (this) {

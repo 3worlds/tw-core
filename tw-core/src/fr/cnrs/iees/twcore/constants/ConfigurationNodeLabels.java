@@ -30,6 +30,7 @@ package fr.cnrs.iees.twcore.constants;
 
 import au.edu.anu.twcore.data.*;
 import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
 import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.*;
 import au.edu.anu.twcore.ecosystem.structure.*;

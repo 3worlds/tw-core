@@ -40,6 +40,7 @@ import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -86,8 +87,8 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		Duple<Boolean,Collection<TreeGraphDataNode>> defData = getDataDefs(targetNode, dataCategory);
 		Collection<TreeGraphDataNode> defs = defData.getSecond();
 		Boolean useAutoVars = defData.getFirst();
-		
-	
+
+
 		satisfied = true;
 		if (defs == null || defs.isEmpty()) {
 			msg = "No property definitions found.";
@@ -174,12 +175,12 @@ public class PropertiesMatchDefinitionQuery extends Query {
 	// argument 'node' is a variableValues or constantValues node
 	@SuppressWarnings("unchecked")
 	public static Duple<Boolean,Collection<TreeGraphDataNode>> getDataDefs(TreeGraphDataNode node, String dataCategory) {
-		
-/*-	
+
+/*-
        dataCategory either: constantValues, variableValues
-       
+
        recursive category sets/categories
-       
+
        constantValues:
         hasParent = StringTable(([3]"system:","group:","component:"))
         // have to wait and see what "group" and "component" are and where they are in the graph.
@@ -187,15 +188,15 @@ public class PropertiesMatchDefinitionQuery extends Query {
        variableValues:
        hasParent = StringTable(([1]"system:"))
 
-	    edges:  
+	    edges:
 	    E_LTCONSTANTS, E_AUTOVAR, E_PARAMETERS,E_DRIVERS
 
-		CategorySets: 
+		CategorySets:
 		"*systemElements*", "*lifespan*", "*composition*".
-	
+
 		Categories:
 		arena,lifecycle,group,component,relation,space,permanent,ephemeral,population,individual
-		
+
 		To collect all root records:
 		Do we care about these special names?
 		* 1) if system or structure does not exist return null
@@ -207,13 +208,15 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		*
 		*/
 
-		
+
 		// can't allow exceptions to arise here if used from MM
 		Boolean addAutoVars = false;
 		TreeGraphDataNode parent = (TreeGraphDataNode) node.getParent();
 		if (parent == null)
 			return null;
 		TreeGraphDataNode ct = null;
+
+
 		// drivers and decorators: find the component type through instanceOf edge
 		// NB: decorators are not supposed to be initialised anymore
 		// NB: for arena, there is no instance of edge - the parent of constantVaues or variableValues
@@ -222,9 +225,14 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
 			endNode());
+		// special case for component: parent is a ComponentType, and there may be optionnally
+		// a group with an instanceOf crosslink (actually we dont care about the crosslink
+
 		// special case for arena: parent is the ElementType
 		if (ct == null)
 			ct = parent;
+		while (!(ct instanceof ElementType<?,?>))
+			ct = (TreeGraphDataNode) ct.getParent();
 		if (dataCategory.equals(E_DRIVERS.label())) {
 			addAutoVars = false;
 			if (ct.properties().hasProperty(P_COMPONENT_LIFESPAN.key())) {
@@ -278,6 +286,8 @@ public class PropertiesMatchDefinitionQuery extends Query {
 				endNode());
 			if (rootRecord != null)
 				definitions.addAll(Record.getLeaves(rootRecord));
+			if (cat.id().contentEquals("*ephemeral*"))
+				addAutoVars |= true;
 		}
 
 		return new Duple<Boolean,Collection<TreeGraphDataNode> >(addAutoVars,definitions);

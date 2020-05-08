@@ -47,6 +47,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.userProject.UserProjectLink;
@@ -98,12 +99,13 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private Map<String,List<String>> snippets =new HashMap<>();
 	// if applies to a relation type, its name
 	private String relationType =null;
+	// the categories of the arena component
+	private Map<TreeGraphDataNode,SortedSet<Category>> elementTypeCategories = new HashMap<>();
 
 	private class generatedData {
 		private String autoVars;
 		private String drivers;
 		private String decorators;
-//		private String parameters;
 		private String lifetimeConstants;
 	}
 
@@ -218,6 +220,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				edgeListEndNodes());
 			categories.addAll(((Categorized<SystemComponent>)tn).getSuperCategories(nl));
 			dataClassNames.put(categories,cl);
+			elementTypeCategories.put(tn,categories);
 		}
 	}
 
@@ -331,15 +334,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						if (field.equals(t.id()))
 							return dataClassNames.get(set).lifetimeConstants;
 				}
-//				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
-//					selectZeroOrOne(hasTheLabel(E_PARAMETERS.label())),
-//					endNode());
-//				if (rec!=null) {
-//					for (TreeNode t:rec.getChildren())
-//						// this works for tables and fields
-//						if (field.equals(t.id()))
-//							return dataClassNames.get(set).parameters;
-//				}
 				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
 						selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
 						endNode());
@@ -738,6 +732,15 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return dataStructures.get(method);
 	}
 
+	// the arena arguments are skipped only when the focal element is the arena
+	// this only occurs when all the categories of focal are those of arena
+	public boolean skipArena(SortedSet<Category> focalCats) {
+		for (TreeGraphDataNode tgn:elementTypeCategories.keySet())
+			if (tgn instanceof ArenaType)
+				return elementTypeCategories.get(tgn).equals(focalCats);
+		return false;
+	}
+
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
 		Map<String,ConfigurationEdgeLabels> nameLabelMatches = new HashMap<>();
 		nameLabelMatches.put ("autoVar",E_AUTOVAR);
@@ -772,7 +775,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			imports.add(Box.class.getCanonicalName());
 		}
 		// applies to : rel or cat
-		// NB: now this is only used to generate the comment below
 		SortedSet<Category> focalCats = findCategories(function,focal);
 		SortedSet<Category> otherCats = findCategories(function,other);
 //		boolean hasLifeCycle = hasLifeCycle(focalCats);
@@ -822,10 +824,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 
 		// arena, lifeCycle, group, space focal, other, otherGroup, otherLifeCycle
 		// including return values
-		boolean skipArena = true; // TODO: compute proper value
 		for (TwFunctionArguments arg:dataStruk.keySet()) {
 			List<recInfo> comp = dataStruk.get(arg);
-			if (!(arg.equals(arena) & skipArena))
+			if (!(arg.equals(arena) & skipArena(focalCats)))
 				for (recInfo rec:comp)
 					if (rec!=null)
 						if (rec.members!=null) {
@@ -834,27 +835,28 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (mb.name!=null) {
 						if (mb.fullType!=null)
 							imports.add(mb.fullType);
-						method.addArgument(arg,nameLabelMatches.get(rec.name),mb.name,mb.type,arg.description()+mb.comment);
+						method.addArgument(arg,nameLabelMatches.get(rec.name),mb.name,mb.type,arg.description()+rec.name+" "+mb.comment);
 						headerComment.append("@param ").append(mb.name).append(' ')
-							.append(arg.description()).append(mb.comment).append('\n');
+							.append(arg.description()).append(rec.name).append(' ').append(mb.comment).append('\n');
 						replicateNames.add(mb.name);
 					}
 				}
-				for (String innerVar:ftype.innerVars() ) // otherDrv etc
-					if (innerVar.contains(recToInnerVar.get(rec.name))) {
-						String s = "";
-						if (innerVar.contains("Drv"))
-							s = "next drivers for ";
-						else if (innerVar.contains("Ltc"))
-							s = "new constants for ";
-						else if (innerVar.contains("Dec"))
-							s = "new decorators for ";
-						// e.g.: Chaos.FocalDrv focalDrv // next
-						method.addArgument(arg,nameLabelMatches.get(rec.name),
-							innerVar,fname+"."+initialUpperCase(innerVar),s+arg.description());
-						headerComment.append("@param ").append(innerVar).append(s)
-							.append(arg.description()).append('\n');
-						replicateNames.add(innerVar);
+				if ((arg==focal)||(arg==other))
+					for (String innerVar:ftype.innerVars() ) // otherDrv etc
+						if (innerVar.contains(recToInnerVar.get(rec.name))) {
+					String s = "";
+					if (innerVar.contains("Drv"))
+						s = "next drivers for ";
+					else if (innerVar.contains("Ltc"))
+						s = "new constants for ";
+					else if (innerVar.contains("Dec"))
+						s = "new decorators for ";
+					// e.g.: Chaos.FocalDrv focalDrv // next
+					method.addArgument(arg,nameLabelMatches.get(rec.name),
+						innerVar,fname+"."+initialUpperCase(innerVar),s+arg.description());
+					headerComment.append("@param ").append(innerVar).append(' ').append(s)
+						.append(arg.description()).append('\n');
+					replicateNames.add(innerVar);
 				}
 			}
 		}

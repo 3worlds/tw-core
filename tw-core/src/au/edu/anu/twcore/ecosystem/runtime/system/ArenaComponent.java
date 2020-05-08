@@ -31,8 +31,10 @@ public class ArenaComponent
 	public void preProcess() {
 		// re-copy initial constants and drivers
 		ArenaFactory fact = (ArenaFactory) membership();
-		currentState().setProperties(fact.driverTemplate);
-		constants().setProperties(fact.lifetimeConstantTemplate);
+		if (currentState()!=null)
+			currentState().setProperties(fact.driverTemplate);
+		if (constants()!=null)
+			constants().setProperties(fact.lifetimeConstantTemplate);
 		// re-run setInitialState method
 		if (initialiser()!=null)
 			initialiser().setInitialState(null, null, null, null, this, null);

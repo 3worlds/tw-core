@@ -43,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -50,6 +51,7 @@ import org.bouncycastle.util.Strings;
 
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
+import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -295,15 +297,17 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			callStatement += indent+indent+indent+ arg.name() + ",\n";
 		// arena, lifeCycle, group, space focal, other, otherGroup, otherLifeCycle
 		// including return values
-		boolean skipArena = true; // TODO: compute proper value
+		SortedSet<Category> focalCats = gen.findCategories(spec,focal);
 		for (TwFunctionArguments arg:gen.dataStructure(name).keySet()) {
 			List<recInfo> comp = gen.dataStructure(name).get(arg);
 			// generation of inner classes for return values
-			if (!(arg.equals(arena) & skipArena))
+			if (!(arg.equals(arena) & gen.skipArena(focalCats)))
 				for (recInfo rec:comp)
 					if (rec!=null)
-						if (rec.members!=null) {
-				for (String innerVar:type.innerVars() ) {
+						if (rec.klass!=null) // this occurs when a category has no data attached
+							if (rec.members!=null) {
+								if ((arg==focal)||(arg==other))
+									for (String innerVar:type.innerVars() ) {
 					// generation of inner classes for return values: unique statements
 					if (innerVar.contains(recToInnerVar.get(rec.name))) {
 						String innerClass = initialUpperCase(innerVar);
@@ -332,27 +336,29 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					if (callArg!=null)
 						callStatement += indent+indent+indent+ callArg + ",\n";
 					// for returned values, generate inner class and proper calls
-					for (String innerVar:type.innerVars() )
-						if (innerVar.contains(recToInnerVar.get(rec.name))) {
-							// imports needed for non primitive field classes
-							if (field.fullType!=null)
-								dataClassesToImport.add(field.fullType);
-							// e.g.: double y;
-							innerClassDecl.get(innerVar).add(indent+indent+field.type+" "+field.name+";");
-							// e.g.: _focalDrv.y = focalDrv.y();
-							innerVarInit.get(innerVar).add("_"+innerVar+"."+field.name+" = "+innerVar+"."+field.name+"()");
-							// e.g.: focalDrv.y(_focalDrv.y);
-							if (field.isTable)
-								; // nothing to do with tables since they can be directly modified.
-							else
-								innerVarCopy.get(innerVar).add(innerVar+"."+field.name+"(_"+innerVar+"."+field.name+")");
+					if ((arg==focal)||(arg==other))
+						for (String innerVar:type.innerVars() )
+							if (innerVar.contains(recToInnerVar.get(rec.name))) {
+						// imports needed for non primitive field classes
+						if (field.fullType!=null)
+							dataClassesToImport.add(field.fullType);
+						// e.g.: double y;
+						innerClassDecl.get(innerVar).add(indent+indent+field.type+" "+field.name+";");
+						// e.g.: _focalDrv.y = focalDrv.y();
+						innerVarInit.get(innerVar).add("_"+innerVar+"."+field.name+" = "+innerVar+"."+field.name+"()");
+						// e.g.: focalDrv.y(_focalDrv.y);
+						if (field.isTable)
+							; // nothing to do with tables since they can be directly modified.
+						else
+							innerVarCopy.get(innerVar).add(innerVar+"."+field.name+"(_"+innerVar+"."+field.name+")");
 					}
 				} // rec.members
-				for (String innerVar:type.innerVars() )
-					if (innerVar.contains(recToInnerVar.get(rec.name)))
+				if ((arg==focal)||(arg==other))
+					for (String innerVar:type.innerVars() )
+						if (innerVar.contains(recToInnerVar.get(rec.name)))
 //						if (innerVar.contains("Drv"))
 						// e.g.:_focalDrv // next value
-						callStatement += indent+indent+indent+"_"+innerVar+ ",\n";
+							callStatement += indent+indent+indent+"_"+innerVar+ ",\n";
 			}
 		}
 		// location arguments ?

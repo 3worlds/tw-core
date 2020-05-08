@@ -82,6 +82,29 @@ hasNode componentTypeSpec
 		type = String("StringTable")
 		multiplicity = IntegerRange("0..1")
 
+// initial state for an individual component instance of a ComponentType
+hasNode componentSpec
+	isOfClass = String("component")
+	hasParent = StringTable(([2]"componentType:","group:"))
+	multiplicity = IntegerRange("0..*")
+	hasEdge componentToSystemSpec
+		isOfClass = String("instanceOf")
+		toNode = String("componentType:")
+		multiplicity = IntegerRange("0..1") // optional - only requierd if groups are present
+	hasEdge componentToSpaceSpec
+		isOfClass = String("location")
+		toNode = String("space:")
+		multiplicity = IntegerRange("0..1")
+		hasProperty spaceComponentCoordinatesSpec
+			hasName = String("coordinates")
+			type = String("DoubleTable")
+			multiplicity = IntegerRange("1..1")
+	hasEdge instanceOfToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource:")
+		multiplicity = IntegerRange("0..*")
+
+
 hasNode relationTypeSpec
 	isOfClass = String("relationType")
 	hasParent = StringTable(([1]"structure:"))
@@ -174,4 +197,25 @@ hasNode spaceSpec
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([3]"y-nCells","type","squareGrid"))
 
+// parameter values for a group as specified in groupSpec above
+hasNode constantValuesSpec
+	isOfClass = String("constantValues")
+	hasParent = StringTable(([3]"system:","group:","component:"))
+	multiplicity = IntegerRange("0..1")
+	// then provide property (name,value) pairs - of course names must match category definitions
+	// caution: if parameter values are associated to an individual, it means it is unique in its
+	// category, its parameters are specific to it and no other individual with the same values
+	// will ever exist. Shared parameter values must be set at the group level
+	mustSatisfyQuery constantValuesPropertiesMatchDefinitionQuery
+		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
+		values = StringTable(([1]lifetimeConstants))
+
+hasNode variableValuesSpec
+	isOfClass = String("variableValues")
+	hasParent = StringTable(([2]"system:","component:"))
+	multiplicity = IntegerRange("0..1")
+	// then provide property (name,value) pairs - of course names must match category definitions
+	mustSatisfyQuery variableValuesPropertiesMatchDefinitionQuery
+		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
+		values = StringTable(([1]"drivers"))
 
