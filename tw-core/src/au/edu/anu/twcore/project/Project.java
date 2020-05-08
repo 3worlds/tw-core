@@ -160,7 +160,7 @@ public class Project implements ProjectPaths, TwPaths {
 	public static String formatName(String name) {
 		char[] delimiters = { sepch };
 		String result = WordUtils.capitalizeFully(name.replaceAll("\\W", sep), delimiters).replaceAll(sep, "");
-		result = WordUtils.uncapitalize(result);
+		//result = WordUtils.uncapitalize(result);
 		return result;
 	}
 
@@ -389,8 +389,8 @@ public class Project implements ProjectPaths, TwPaths {
 		} catch (Exception e) {
 			throw new TwcoreException(name + " is not a project name. Must contain valid Date");
 		}
-		if (!WordUtils.uncapitalize(items[1]).equals(items[1]))
-			throw new TwcoreException("First character of " + items[1] + " must be lower case");
+//		if (!WordUtils.uncapitalize(items[1]).equals(items[1]))
+//			throw new TwcoreException("First character of " + items[1] + " must be lower case");
 
 		return items;
 	}
