@@ -181,31 +181,6 @@ hasNode consequenceFunctionSpec
 	// TODO: specific to 	ChangeOtherStateFunction when consequence of DeleteDecision:
 	// must specify to which other item data should be returned...
 
-// initialisation functions
-hasNode initFunctionSpec
-	isOfClass = String("function")
-	hasParent = StringTable(([1]"system:")) //also add lifecycle, group etc. later
-	multiplicity = IntegerRange("0..1")
-	mustSatisfyQuery initFunctionNameWithUppercaseQuery
-		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
-	hasProperty initFunctionTypeSpec
-		hasName = String("type")
-		type = String("TwFunctionTypes")
-		multiplicity = IntegerRange("1..1")
-		mustSatisfyQuery validInitFunctionTypeSpec
-			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
-			values = StringTable(([1]"SetInitialState"))
-	hasProperty initUserFunctionSpec
-		hasName = String("userClassName")
-		type = String("String")
-		multiplicity = IntegerRange("0..1")
-	// a function may have a node to a RNG. if none is required, default is used
-	// if more than one is needed, then make two functions.
-	hasEdge initfunctionRngSpec
-		isOfClass = String("useRNG")
-		toNode = String("rng:")
-		multiplicity = IntegerRange("0..1")
-
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")
 	hasParent = StringTable(([1]"process:"))

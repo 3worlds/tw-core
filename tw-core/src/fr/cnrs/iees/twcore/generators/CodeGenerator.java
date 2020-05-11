@@ -154,16 +154,12 @@ public class CodeGenerator {
 						hasTheLabel(N_COMPONENTTYPE.label()))));
 			initables.add(ecology);
 			for (TreeGraphDataNode tgn:initables) {
-				List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_FUNCTION.label());
-				// NB there is only one func.
+				List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_INITFUNCTION.label());
+				// NB there is only one initfunc.
 				if (initFuncs!=null)
 					if (!initFuncs.isEmpty())
 						generateFunctionCode(initFuncs.get(0),ecology.id());
 			}
-//			// generate Initialiser classes
-//			List<TreeGraphDataNode> initialisers = getChildrenLabelled(dynamics, N_INITIALISER.label());
-//			for (TreeGraphDataNode initialiser : initialisers)
-//				generateInitialiserCode(initialiser, ecology.id());
 		}
 		// write the user code file
 		modelgen.generateCode();

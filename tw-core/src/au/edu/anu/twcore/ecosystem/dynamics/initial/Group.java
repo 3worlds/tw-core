@@ -51,7 +51,7 @@ import java.util.Map;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 /**
- * A class matching the "ecosystem/dynamics/initialState/group" node of the 3w configuration
+ * A class matching the "ecosystem/dynamics/GroupType/group" node of the 3w configuration
  *
  * @author Jacques Gignoux - 2 juil. 2019
  *
@@ -62,9 +62,7 @@ public class Group
 
 	private boolean sealed = false;
 	private ComponentContainer container = null;
-
 	private Map<Integer,ComponentContainer> groups = new HashMap<>();
-
 	private static final int baseInitRank = N_GROUP.initRank();
 
 	// default constructor
@@ -109,6 +107,10 @@ public class Group
 	}
 
 	private ComponentContainer makeContainer(int index) {
+
+
+		// WIP - refactoring in here ! check consistency with GroupComponent ??
+
 		// 1 leaf group
 		TreeGraphNode n = (TreeGraphNode) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
@@ -125,26 +127,27 @@ public class Group
 			sf.initialise();
 			container = sf.makeContainer(index,id(),parentC);
 		}
-		// 2 life cycle group
-		n = (TreeGraphNode) get(edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
-			endNode());
-		if (n!=null) {
-			// make sure parent container exists before
-			ComponentContainer parentC = null;
-			if (getParent() instanceof InitialState)
-				parentC = ((InitialState)getParent()).getInstance(index);
-			// instantiate container
-			LifeCycle lc = (LifeCycle) n;
-			lc.initialise();
-			container = lc.makeContainer(index,id(),parentC);
-		}
+//		// 2 life cycle group
+//		n = (TreeGraphNode) get(edges(Direction.OUT),
+//			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
+//			endNode());
+//		if (n!=null) {
+//			// make sure parent container exists before
+//			ComponentContainer parentC = null;
+//			if (getParent() instanceof InitialState)
+//				parentC = ((InitialState)getParent()).getInstance(index);
+//			// instantiate container
+//			LifeCycle lc = (LifeCycle) n;
+//			lc.initialise();
+//			container = lc.makeContainer(index,id(),parentC);
+//		}
 		// fill container with initial values
 		for (TreeNode tn:getChildren())
 			if (tn instanceof ConstantValues)
 				((ConstantValues) tn).fill(container.parameters());
 		// compute secondary parameters if initialiser present
 		Initialiser.computeSecondaryParameters(this, container, index);
+
 		return container;
 	}
 

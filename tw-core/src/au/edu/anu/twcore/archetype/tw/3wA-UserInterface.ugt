@@ -30,7 +30,7 @@ hasNode HLwidgetSpec
 			values = StringTable(([2]+
 			"au.edu.anu.twuifx.widgets.headless.HLSimpleTimeSeriesWidget",+
 			"au.edu.anu.twuifx.widgets.headless.HLSimpleControlWidget"))
-			
+
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleTimeSeriesWidget2
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLSimpleTimeSeriesWidget","3wSA-HLSimpleTimeSeriesWidget.ugt"))
@@ -51,7 +51,7 @@ hasNode bottomSpec
 	// must have at least one child widget
 
 // tab is, effectively, the root container
-hasNode tabSpec 
+hasNode tabSpec
 	isOfClass = String("tab")
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..*")
@@ -63,7 +63,7 @@ hasNode tabSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ChildAtLeastOneOfOneOrTwoOfTwoQuery")
 		nodeLabel1 = String("widget")
 		nodeLabel2 = String("container")
-	
+
 hasNode containerSpec
 	isOfClass = String("container")
 	hasParent = StringTable(([2]"tab:","container:"))
@@ -73,40 +73,40 @@ hasNode containerSpec
 		type = String("UIContainerOrientation")
 		multiplicity = IntegerRange("1..1")
 	hasProperty containerOrder
-		hasName = String("order")		
+		hasName = String("order")
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery ContainerChildAtLeastOneOfOneOrTwoOfTwoQuery
 		className = String("au.edu.anu.twcore.archetype.tw.ChildAtLeastOneOfOneOrTwoOfTwoQuery")
 		nodeLabel1 = String("widget")
 		nodeLabel2 = String("container")
-		
-	
+
+
 hasNode widgetSpec
 	isOfClass = String("widget")
 	hasParent = StringTable(([4]"bottom:","top:","tab:","container:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder
-		hasName = String("order")		
+		hasName = String("order")
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
 	hasProperty widgetClass
-		hasName = String("subclass")		
+		hasName = String("subclass")
 		type = String("String")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery widgetClassInValueSetQuery
-			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery") 
+			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
 			values = StringTable(([9]+
 			"au.edu.anu.twuifx.widgets.SimpleDM0Widget",+
 			"au.edu.anu.twuifx.widgets.SimpleDM2Widget",+
 			"au.edu.anu.twuifx.widgets.SimpleTimeWidget",+
-			"au.edu.anu.twuifx.widgets.SimpleControlWidget1",+		
-			"au.edu.anu.twuifx.widgets.SimpleControlWidget2",+		
+			"au.edu.anu.twuifx.widgets.SimpleControlWidget1",+
+			"au.edu.anu.twuifx.widgets.SimpleControlWidget2",+
 			"au.edu.anu.twuifx.widgets.SimpleControlWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleTimeSeriesWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleXYPlotWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleSpaceWidget1"))
-			
+
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleDM0Widget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleDM0Widget","3wSA-SimpleDM0Widget.ugt"))
@@ -131,7 +131,7 @@ hasNode widgetSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleControlWidget2","3wSA-SimpleControlWidget2.ugt"))
 
-	mustSatisfyQuery CheckSubArchetypeQuerySimpleTimeSeriesWidget
+	mustSatisfyQuery CheckSubArchetypeQuerySimpleXYPlotWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleXYPlotWidget","3wSA-SimpleXYPlotWidget.ugt"))
 
@@ -142,4 +142,3 @@ hasNode widgetSpec
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleControlWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleControlWidget","3wSA-SimpleControlWidget.ugt"))
-			

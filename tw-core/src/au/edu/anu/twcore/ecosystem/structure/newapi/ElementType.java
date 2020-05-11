@@ -19,11 +19,10 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
+import au.edu.anu.twcore.ecosystem.dynamics.InitFunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.ConstantValues;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.VariableValues;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
 import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
@@ -57,7 +56,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 	protected TwData decoratorTemplate = null;
 	protected TwData lifetimeConstantTemplate = null;
 	SimplePropertyList properties = null;
-	FunctionNode setinit = null;
+	InitFunctionNode setinit = null;
 
 	// default constructor
 	public ElementType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -117,7 +116,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 				}
 		}
 		// Find the setInitialState function
-		setinit = (FunctionNode) get(getChildren(),selectZeroOrOne(hasTheLabel(N_FUNCTION.label())));
+		setinit = (InitFunctionNode) get(getChildren(),selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 		sealed = true; // important - next statement access this class methods
 		categoryId = buildCategorySignature();
 	}

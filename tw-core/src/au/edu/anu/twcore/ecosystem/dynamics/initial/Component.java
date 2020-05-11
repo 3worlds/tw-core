@@ -42,18 +42,25 @@ import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
 import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.dynamics.Initialiser;
 import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.Location;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -77,6 +84,10 @@ public class Component
 	private Map<Integer,SystemComponent> individuals = new HashMap<>();
 
 	private Map<SpaceNode,double[]> coordinates = new HashMap<>();
+	// the container in which new components should be placeds
+	private ArenaType arena = null;
+	// the group instance this component is instance of
+	private Group group = null;
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -106,6 +117,12 @@ public class Component
 				coord[i] = tab.getWithFlatIndex(i);
 			coordinates.put(space,coord);
 		}
+		// this edge, if present, points to a Group node
+		Edge instof = (Edge) get(edges(Direction.OUT),selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
+		if (instof==null)  // means the container is the ArenaComponent
+			arena = (ArenaType) getParent().getParent();
+		else
+			group = (Group) instof.endNode();
 		sealed = true;
 	}
 
@@ -113,13 +130,6 @@ public class Component
 	public int initRank() {
 		return N_COMPONENT.initRank();
 	}
-
-//	public TwData getVariables() {
-//		if (sealed)
-//			return variables;
-//		else
-//			throw new TwcoreException("attempt to access uninitialised data");
-//	}
 
 	@Override
 	public Sealable seal() {
@@ -157,53 +167,61 @@ public class Component
 			}
 			// insert component into container
 			LimitedEdition<ComponentContainer> p = (LimitedEdition<ComponentContainer>) getParent();
+			ComponentContainer container = null;
+			if (arena!=null)
+				container = arena.getInstance(id).getInstance().content();
+			else if (group!=null)
+				container = group.getInstance(id);
+			container.addInitialItem(sc);
+			sc.setContainer((ComponentContainer)container);
+
 			// first case: no groups are specified, the component is required to be stored directly
 			// at the ecosystem level.
 			// In order not to break the logic of containers, which must only contain items of the
 			// same category signature, we must create a new group for every new category signature
 			// and put the new SC into it. The ecosystem container cannot store any SC directly because
 			// it's got no categories.
-			if (p instanceof InitialState) {
-				ComponentContainer ecoCont = p.getInstance(id);
-				ComponentContainer theCont = null;
-				for (CategorizedContainer<SystemComponent> cont:ecoCont.subContainers()) {
-					if (cont.categoryInfo().categories().equals(sc.membership().categories())) {
-						theCont = (ComponentContainer) cont;
-						break;
-					}
-				}
-				if (theCont==null) {
-					String groupName = defaultPrefix + "group" + nameSeparator + sc.membership().categoryId();
-					// if there were parameters attached to the SC, attach them to its group
-					// CAUTION: this is only possible if there is just ONE permanent component
-					ConstantValues pv = null;
-					for (TreeNode tn:getChildren())
-						if (tn instanceof ConstantValues) {
-							pv = (ConstantValues) tn;
-							break;
-					}
-
-					// CODE BROKEN HERE!
-
-//					if (pv==null)
-//						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,null,null);
-//					else {
-//						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,
-//							componentFactory.newParameterSet(),null);
-//						pv.fill(theCont.parameters());
-//						// compute secondary parameters if initialiser present
-//						Initialiser.computeSecondaryParameters(this,theCont,id);
+//			if (p instanceof InitialState) {
+//				ComponentContainer ecoCont = p.getInstance(id);
+//				ComponentContainer theCont = null;
+//				for (CategorizedContainer<SystemComponent> cont:ecoCont.subContainers()) {
+//					if (cont.categoryInfo().categories().equals(sc.membership().categories())) {
+//						theCont = (ComponentContainer) cont;
+//						break;
 //					}
-					theCont.addInitialItem(sc);
-					sc.setContainer((ComponentContainer) theCont);
-				}
-			}
-			// second case: the container has categories, then they must match those of the component
-			else if	(sc.membership().categories().equals(p.getInstance(id).categoryInfo().categories())) {
-				ComponentContainer c = p.getInstance(id);
-				c.addInitialItem(sc);
-				sc.setContainer(c);
-			}
+//				}
+//				if (theCont==null) {
+//					String groupName = defaultPrefix + "group" + nameSeparator + sc.membership().categoryId();
+//					// if there were parameters attached to the SC, attach them to its group
+//					// CAUTION: this is only possible if there is just ONE permanent component
+//					ConstantValues pv = null;
+//					for (TreeNode tn:getChildren())
+//						if (tn instanceof ConstantValues) {
+//							pv = (ConstantValues) tn;
+//							break;
+//					}
+//
+//					// CODE BROKEN HERE!
+//
+////					if (pv==null)
+////						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,null,null);
+////					else {
+////						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,
+////							componentFactory.newParameterSet(),null);
+////						pv.fill(theCont.parameters());
+////						// compute secondary parameters if initialiser present
+////						Initialiser.computeSecondaryParameters(this,theCont,id);
+////					}
+//					theCont.addInitialItem(sc);
+//					sc.setContainer((ComponentContainer) theCont);
+//				}
+//			}
+//			// second case: the container has categories, then they must match those of the component
+//			else if	(sc.membership().categories().equals(p.getInstance(id).categoryInfo().categories())) {
+//				ComponentContainer c = p.getInstance(id);
+//				c.addInitialItem(sc);
+//				sc.setContainer(c);
+//			}
 			individuals.put(id,sc);
 		}
 		return individuals.get(id);

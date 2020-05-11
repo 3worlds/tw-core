@@ -38,7 +38,6 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -65,6 +64,7 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
+@Deprecated
 public class Initialiser
 		extends InitialisableNode
 		implements LimitedEdition<SecondaryParametersInitialiser>, Sealable {
@@ -115,7 +115,8 @@ public class Initialiser
 
 	@Override
 	public int initRank() {
-		return N_INITIALISER.initRank();
+//		return N_INITIALISER.initRank();
+		return -1;
 	}
 
 	@Override
@@ -163,7 +164,8 @@ public class Initialiser
 		if (parent!=null)
 			if (parent instanceof SimulatorNode) {
 				List<Initialiser> inits = (List<Initialiser>) get(parent.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_INITIALISER.label())));
+					selectZeroOrMany(hasTheLabel("")));
+//					selectZeroOrMany(hasTheLabel(N_INITIALISER.label())));
 				for (Initialiser init:inits)
 					if (init.categories().equals(container.categoryInfo().categories())) {
 						SecondaryParametersInitialiser spi = init.getInstance(index);

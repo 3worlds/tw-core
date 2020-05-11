@@ -127,7 +127,7 @@ public class ComponentProcess
 			// set contextual information
 			if (component instanceof ArenaComponent) {
 				arena = (ArenaComponent) component;
-				// lifeCycle =null;
+				lifeCycle =null;
 				focalGroup = null;
 			}
 			// lifecycle
@@ -136,7 +136,7 @@ public class ComponentProcess
 			// execute function on contained items, if any, and of proper categories
 			if (component.content().categoryInfo().belongsTo(focalCategories))
 				for (SystemComponent sc:component.content().items())
-					executeFunctions(t, dt, component);
+					executeFunctions(t, dt, sc);
 			// in all cases, recurse on subcontainers to find more matching items
 			// and recursively add context information to context.
 			for (CategorizedContainer<SystemComponent> cc:component.content().subContainers()) {
@@ -159,20 +159,15 @@ public class ComponentProcess
 //			Point location = space.locationOf(focal).asPoint();
 //			double[] newLoc = new double[location.dim()];
 //		}
-		if (focal.currentState() != null) { // otherwise no point computing changes! yes if only location !
+		// also check for decorators etc.
+		if ((focal.currentState() != null) || (focal.decorators() != null))
+			// TODO: if there is a space, location must be set too
+		{
 			focal.currentState().writeDisable(); // we dont care anymore about that, except for tables...
 			focal.nextState().writeEnable();
 			// change state of this SystemComponent - easy
 			for (ChangeStateFunction function : CSfunctions) {
 				function.changeState(t,dt,arena,null,focalGroup,null,focal,/*newLoc*/null);
-				// NEW code for new TwFunction API
-				// end new code
-//				function.changeState(t, dt, limits,
-//					focalContext.ecosystemParameters, ecosystem(),
-//					focalContext.lifeCycleParameters, lifeCycleContainer,
-//					focalContext.groupParameters, focal.container(),
-//					focal.autoVar(), focal.constants(), focal.currentState(), focal.decorators(),
-//					location, focal.nextState(), newLoc);
 			}
 			focal.nextState().writeDisable();
 		}

@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -51,22 +51,23 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+
 /**
- * Class matching the "ecosystem/dynamics/timeLine/timeModel/process/function" node label in the 
+ * Class matching the "ecosystem/dynamics/timeLine/timeModel/process/function" node label in the
  * 3Worlds configuration tree. Has the user class name property or a way to generate this class
- * 
+ *
  * @author Jacques Gignoux - 7 juin 2019
  *
  */
-public class FunctionNode 
-		extends InitialisableNode 
+public class FunctionNode
+		extends InitialisableNode
 		implements LimitedEdition<TwFunction>, Sealable {
 
 	private boolean sealed = false;
 	private Map<Integer,TwFunction> functions = new HashMap<>();
-	private Constructor<? extends TwFunction> fConstructor = null;
-	private RngNode rngNode = null;
-	
+	protected Constructor<? extends TwFunction> fConstructor = null;
+	protected RngNode rngNode = null;
+
 	public FunctionNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
@@ -118,8 +119,8 @@ public class FunctionNode
 	public boolean isSealed() {
 		return sealed;
 	}
-	
-	private TwFunction makeFunction(int index) {
+
+	protected TwFunction makeFunction(int index) {
 		TwFunction result = null;
 		try {
 			result = fConstructor.newInstance();
@@ -129,7 +130,7 @@ public class FunctionNode
 			else
 				result.setRng(rngNode.getInstance(index));
 			// add the consequences of the function, if any
-			for (TreeNode n:getChildren()) 
+			for (TreeNode n:getChildren())
 				if (n instanceof FunctionNode){
 					FunctionNode csq = (FunctionNode) n;
 					result.addConsequence(csq.getInstance(index));

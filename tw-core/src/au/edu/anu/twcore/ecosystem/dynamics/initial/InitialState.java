@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -52,15 +52,16 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
  */
 // this is initialised after SystemFactory, Ecosystem and LifeCycle, so that all these
 // classes are up and ready with their containers and data templates
-public class InitialState 
-		extends InitialisableNode 
+@Deprecated
+public class InitialState
+		extends InitialisableNode
 		implements Sealable, LimitedEdition<ComponentContainer> {
 
 	private boolean sealed = false;
 //	private TwData parameters = null;
 //	private SystemContainer container = null;
 	private Map<Integer,ComponentContainer> containers = new HashMap<>();
-	
+
 	// default constructor
 	public InitialState(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -76,7 +77,7 @@ public class InitialState
 		super.initialise();
 		sealed = true;
 	}
-	
+
 //	@Override
 //	public TwData getParameters() {
 //		if (sealed)
@@ -107,7 +108,7 @@ public class InitialState
 //		else
 //			throw new TwcoreException("attempt to access uninitialised data");
 //	}
-	
+
 	@Override
 	public ComponentContainer getInstance(int id) {
 		if (!sealed)
