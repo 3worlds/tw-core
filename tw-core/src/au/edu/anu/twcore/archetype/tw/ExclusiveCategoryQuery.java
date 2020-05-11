@@ -33,6 +33,8 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.TreeNode;
+
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
@@ -84,6 +86,35 @@ public class ExclusiveCategoryQuery extends Query {
 			+ "node cannot belong to two categories of the same set. Two categories of set '"
 			+ failedCategorySet.id() + "' found."
 			+ "]";
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static boolean propose(TreeNode startNode, TreeNode proposedEndNode) {
+		List<Category> localCats = (List<Category>) get(startNode.edges(Direction.OUT), edgeListEndNodes(),
+				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+		if (localCats.isEmpty()) {
+			//log.info(endNode.id()+": OK - no other categories in use.");
+			return true;
+		}
+		Node proposedCatSet = proposedEndNode.getParent();
+		if (proposedCatSet == null) {// never happens - the editor must filter this out somehow?
+//			log.info(endNode.id()+": no parent category set for comparison.");
+			return true;
+		}
+		// Maybe only need to check one since they must all be the same cs
+		for (Category c : localCats) {
+			CategorySet cs = (CategorySet) c.getParent();
+			// might be null
+			if (cs != null) {
+				if (!cs.id().equals(proposedCatSet.id())) {
+					//log.info(endNode.id()+": Failed - category belongs to another category set.");
+					return false;
+				}
+			}
+		}
+		//log.info(endNode.id()+": OK for edge proposal");
+		return true;
+
 	}
 
 }

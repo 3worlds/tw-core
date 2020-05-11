@@ -34,6 +34,7 @@ import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
+import fr.ens.biologie.generic.utils.Duple;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -68,12 +69,14 @@ public class OutNodeXorQuery extends Query {
 	public Query process(Object input) { // input is a node
 		defaultProcess(input);
 		localItem = (Node) input;
-
-		List<Node> nl1 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
-				selectZeroOrMany(hasTheLabel(nodeLabel1)));
-		List<Node> nl2 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
-				selectZeroOrMany(hasTheLabel(nodeLabel2)));
-		satisfied = (nl1.size() > 0) ^ (nl2.size() > 0);
+		Duple<List<Node>,List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1,nodeLabel2);
+//
+//		List<Node> nl1 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
+//				selectZeroOrMany(hasTheLabel(nodeLabel1)));
+//		List<Node> nl2 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
+//				selectZeroOrMany(hasTheLabel(nodeLabel2)));
+//		satisfied = (nl1.size() > 0) ^ (nl2.size() > 0);
+		satisfied = (nodeLists.getFirst().size()>0)^(nodeLists.getSecond().size()>0);
 		return this;
 	}
 
@@ -81,6 +84,27 @@ public class OutNodeXorQuery extends Query {
 		return "[" + stateString() + "'" + localItem.classId() + ":" + localItem.id()
 				+ "' must have at least one edge to a node labelled either [" + nodeLabel1 + "] or [" + nodeLabel2
 				+ "].]";
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static Duple<List<Node>,List<Node>> getNodeLists(Node localItem,String nodeLabel1,String nodeLabel2){
+		List<Node> nl1 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
+				selectZeroOrMany(hasTheLabel(nodeLabel1)));
+		List<Node> nl2 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
+				selectZeroOrMany(hasTheLabel(nodeLabel2)));
+		return new Duple<List<Node>,List<Node>>(nl1,nl2);
+
+	}
+
+	public static boolean propose(Node localItem, Node proposedEndNode, String nodeLabel1, String nodeLabel2) {
+		Duple<List<Node>,List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1,nodeLabel1);
+		String choice;
+		if (!nodeLists.getFirst().isEmpty())
+			choice = nodeLists.getFirst().get(0).classId();
+		else
+			choice = nodeLists.getSecond().get(0).classId();
+
+		return choice.equals(proposedEndNode.classId());
 	}
 
 }
