@@ -65,6 +65,7 @@ import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Distance;
 import fr.cnrs.iees.uit.space.Point;
+import fr.ens.biologie.codeGeneration.Comments;
 import fr.ens.biologie.generic.JavaCode;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -144,7 +145,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			for (String line:lines) {
 				if (line.strip().startsWith("import "))
 					imports.add(line.substring(line.indexOf("import")+6,line.indexOf(';')).strip());
-				if (line.contains("END CODE INSERTION ZONE"))
+//				if (line.contains("END CODE INSERTION ZONE"))
+				if (line.contains(Comments.endCodeInsert))
 					record = null;
 				if (record!=null) {
 					if (snippets.get(record)==null)
@@ -158,7 +160,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						else
 							snippets.get(record).add("//"+line);
 				}
-				if (line.contains("INSERT YOUR CODE BELOW THIS LINE"))
+//				if (line.contains("INSERT YOUR CODE BELOW THIS LINE"))
+					if (line.contains(Comments.beginCodeInsert))
 					record = line.substring(line.indexOf("//")+2,line.indexOf('*')).strip();
 			}
 //			// debugging
