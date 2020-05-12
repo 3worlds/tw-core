@@ -47,7 +47,7 @@ import fr.ens.biologie.generic.utils.Logging;
 
 import java.util.logging.Logger;
 
-import org.apache.commons.text.WordUtils;
+//import org.apache.commons.text.WordUtils;
 
 /**
  * Author Ian Davies
@@ -85,6 +85,12 @@ import org.apache.commons.text.WordUtils;
  */
 // tested OK with version 0.1.1 on 21/5/2019
 public class Project implements ProjectPaths, TwPaths {
+	// TODO Needs cleaning up. There are two types of methods: those that operate
+	// only on an open project and those that can operate on a given 3w project
+	// directory file. So we should start with File[] getAllProjectFiles and decide
+	// what public methods can do with this: basically returning the short name(s),
+	// date(s) or display name(s). Those operating on open projects must throw and
+	// exception if the given project is not open
 	/*
 	 * DateTime format - no blanks - it is effectively a unique id. Avoid ":" as it
 	 * is a forbidden char in OSX and Windows
@@ -95,12 +101,6 @@ public class Project implements ProjectPaths, TwPaths {
 	private static final char sepch = '_';
 	private static final String klassName = Project.class.getName();
 	private static Logger log = Logging.getLogger(Project.class);
-	// private static final IdentityScope pScope = new LocalScope("Projects");
-	// important that this comes last here
-
-//	public static String proposeId(String proposedId) {
-//		return pScope.newId(false, proposedId).id();
-//	}
 
 	// prevent instantiation
 	private Project() {
@@ -155,13 +155,6 @@ public class Project implements ProjectPaths, TwPaths {
 		// pScope.newId(true, projectDirectory.getName().split(sep)[1]);
 		log.exiting(klassName, "create");
 		return name;
-	}
-
-	public static String formatName(String name) {
-		char[] delimiters = { sepch };
-		String result = WordUtils.capitalizeFully(name.replaceAll("\\W", sep), delimiters).replaceAll(sep, "");
-		//result = WordUtils.uncapitalize(result);
-		return result;
 	}
 
 	/**
@@ -356,7 +349,7 @@ public class Project implements ProjectPaths, TwPaths {
 // used for menu creation
 	public static String extractDisplayName(File directory) {
 		String[] items = parseProjectName(directory);
-		return items[1] + "(" + items[2] + ")";
+		return items[1] + " (" + items[2] + ")";
 	}
 
 	public static String extractDateTime(File directory) {
