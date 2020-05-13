@@ -46,21 +46,14 @@ import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.Location;
-import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
-import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
-import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
 import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
-import au.edu.anu.twcore.ecosystem.structure.newapi.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -104,9 +97,10 @@ public class Component
 	public void initialise() {
 		super.initialise();
 		sealed = false;
-		componentFactory = (ComponentType) get(edges(Direction.OUT),
-			selectOne(hasTheLabel(E_INSTANCEOF.label())),
-			endNode());
+//		componentFactory = (ComponentType) get(edges(Direction.OUT),
+//			selectOne(hasTheLabel(E_INSTANCEOF.label())),
+//			endNode());
+		componentFactory = (ComponentType) getParent();
 		List<LocationEdge> spaces = (List<LocationEdge>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_LOCATION.label())));
 		for (LocationEdge spe:spaces) {
@@ -118,9 +112,11 @@ public class Component
 			coordinates.put(space,coord);
 		}
 		// this edge, if present, points to a Group node
-		Edge instof = (Edge) get(edges(Direction.OUT),selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
+		Edge instof = (Edge) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
 		if (instof==null)  // means the container is the ArenaComponent
-			arena = (ArenaType) getParent().getParent();
+							//	system >	structure >	componentType > component
+			arena = (ArenaType) getParent().getParent().getParent();
 		else
 			group = (Group) instof.endNode();
 		sealed = true;
@@ -172,6 +168,7 @@ public class Component
 				container = arena.getInstance(id).getInstance().content();
 			else if (group!=null)
 				container = group.getInstance(id);
+			container.setCategorized(componentFactory.getInstance(id));
 			container.addInitialItem(sc);
 			sc.setContainer((ComponentContainer)container);
 

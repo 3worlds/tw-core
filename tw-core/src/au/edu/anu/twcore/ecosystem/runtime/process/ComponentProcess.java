@@ -134,7 +134,7 @@ public class ComponentProcess
 			else if (component instanceof GroupComponent)
 				focalGroup = (GroupComponent) component;
 			// execute function on contained items, if any, and of proper categories
-			if (component.content().categoryInfo().belongsTo(focalCategories))
+			if (component.content().itemCategorized().belongsTo(focalCategories))
 				for (SystemComponent sc:component.content().items())
 					executeFunctions(t, dt, sc);
 			// in all cases, recurse on subcontainers to find more matching items
@@ -159,18 +159,16 @@ public class ComponentProcess
 //			Point location = space.locationOf(focal).asPoint();
 //			double[] newLoc = new double[location.dim()];
 //		}
-		// also check for decorators etc.
-		if ((focal.currentState() != null) || (focal.decorators() != null))
-			// TODO: if there is a space, location must be set too
-		{
+		if (focal.currentState() != null) {
 			focal.currentState().writeDisable(); // we dont care anymore about that, except for tables...
 			focal.nextState().writeEnable();
-			// change state of this SystemComponent - easy
-			for (ChangeStateFunction function : CSfunctions) {
-				function.changeState(t,dt,arena,null,focalGroup,null,focal,/*newLoc*/null);
-			}
-			focal.nextState().writeDisable();
 		}
+		// change state of this SystemComponent - easy
+		for (ChangeStateFunction function : CSfunctions) {
+			function.changeState(t,dt,arena,null,focalGroup,null,focal,/*newLoc*/null);
+		}
+		if (focal.currentState() != null)
+			focal.nextState().writeDisable();
 
 
 	}

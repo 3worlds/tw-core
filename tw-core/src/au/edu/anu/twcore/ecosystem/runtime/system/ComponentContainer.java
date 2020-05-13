@@ -76,17 +76,17 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	public void prepareStep() {
 		HierarchicalComponent hv = hierarchicalView();
 		if (hv.decorators()!=null) {
-			hv.decorators().writeEnable();
+//			hv.decorators().writeEnable();
 			hv.decorators().clear();
-			hv.decorators().writeDisable();
+//			hv.decorators().writeDisable();
 		}
 		if (changed()) {
 			resetCounters();
 			for (SystemComponent item:items()) {
 				if (item.decorators()!=null) {
-					item.decorators().writeEnable();
+//					item.decorators().writeEnable();
 					item.decorators().clear();
-					item.decorators().writeDisable();
+//					item.decorators().writeDisable();
 				}
 				else
 					break; // since all items in a SystemContainer have the same categories

@@ -38,7 +38,6 @@ import java.util.Set;
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.Population;
 import au.edu.anu.twcore.ecosystem.runtime.containers.ContainerHierarchicalView;
 import au.edu.anu.twcore.ecosystem.runtime.containers.NestedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.containers.NestedDynamicContainer;
@@ -124,6 +123,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	protected Set<String> itemsToRemove = new HashSet<>();
 	protected Set<T> itemsToAdd = new HashSet<>();
 	private boolean changed = false;
+	private Categorized<T> itemCategories = null;
 
 	// Population data
 //	private class popData2 extends popData {
@@ -151,7 +151,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	// temporary - to keep the code running
 //	protected ContainerData populationData;
 
-	public CategorizedContainer(//Categorized<T> cats,
+	public CategorizedContainer(// Categorized<T> cats,
 			String proposedId,
 			CategorizedContainer<T> parent,
 			HierarchicalComponent data) {
@@ -167,6 +167,14 @@ public abstract class CategorizedContainer<T extends Identity>
 			superContainer = parent;
 			superContainer.subContainers.put(id(), this);
 		}
+	}
+
+	/**
+	 * CAUTION: can be set only once, ideally just after construction
+	 */
+	public final void setCategorized(Categorized<T> cats) {
+		if (itemCategories==null)
+			itemCategories = cats;
 	}
 
 	protected void setData(HierarchicalComponent data) {
@@ -208,9 +216,20 @@ public abstract class CategorizedContainer<T extends Identity>
 	 *
 	 * @return the object holding all the category information
 	 */
-	public Categorized<? extends CategorizedComponent> categoryInfo() {
+	public Categorized<? extends CategorizedComponent> containerCategorized() {
 		return avatar.membership();
 	}
+
+	/**
+	 * Returns the set of categories ({@linkplain Category}) associated to the items
+	 * stored in this container.
+	 *
+	 * @return
+	 */
+	public Categorized<T> itemCategorized() {
+		return itemCategories;
+	}
+
 
 	/**
 	 * Returns the parameter set associated to this container. It is specified by
@@ -359,7 +378,7 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	// Recursive
 	private void addItems(QuickListOfLists<T> result, CategorizedContainer<T> container, Set<Category> requestedCats) {
-		if (container.categoryInfo().belongsTo(requestedCats))
+		if (container.containerCategorized().belongsTo(requestedCats))
 			result.addList(container.items());
 		for (CategorizedContainer<T> sc : container.subContainers.values())
 			addItems(result, sc);
@@ -463,6 +482,12 @@ public abstract class CategorizedContainer<T extends Identity>
 			T c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
 			items.put(c.id(), c);
 			itemsToInitials.put(c.id(), item);
+			if (c instanceof CategorizedComponent) {
+				CategorizedComponent cp = (CategorizedComponent) c;
+				if (cp.initialiser()!=null)
+					// TODO: search hierarchicalyy for the proper group information!
+					cp.initialiser().setInitialState(null, null, null, null, cp, null);
+			}
 		}
 		for (CategorizedContainer<T> sc : subContainers.values())
 			sc.preProcess();
@@ -506,13 +531,13 @@ public abstract class CategorizedContainer<T extends Identity>
 		sb.append("container:");
 		sb.append(id().toString());
 		sb.append('[');
-		if (categoryInfo().categories() != null) {
+		if (containerCategorized().categories() != null) {
 			if (first)
 				first = false;
 			else
 				sb.append(' ');
 			sb.append("categories:");
-			sb.append(categoryInfo().categories().toString());
+			sb.append(containerCategorized().categories().toString());
 		}
 		if (avatar.constants() != null) {
 			if (first)

@@ -54,10 +54,10 @@ import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponenData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
@@ -285,8 +285,8 @@ public class Simulator implements Resettable {
 			if (ecosystem.community()!=null) // TODO improve this treatment
 				for (SystemComponent sc : ecosystem.community().allItems())
 				if (sc.autoVar()!=null)
-					if (sc.autoVar() instanceof SystemData){
-						SystemData au = (SystemData) sc.autoVar();
+					if (sc.autoVar() instanceof ComponenData){
+						ComponenData au = (ComponenData) sc.autoVar();
 						au.writeEnable();
 						au.age(nexttime - au.birthDate());
 						au.writeDisable();
@@ -305,30 +305,30 @@ public class Simulator implements Resettable {
 	 * systems recursive.
 	 */
 	private void computeInitialCoordinates(CategorizedContainer<SystemComponent> container) {
-		for (SystemComponent sc : container.items()) {
-			Iterable<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces = ((SystemFactory) sc.membership())
-					.spaces();
-			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : spaces) {
-				// get the initial item matching this
-				SystemComponent isc = container.initialForItem(sc.id());
-//				if (isc!=null) // must always be non null, normally
-				// get the location of this initial item
-				for (LocatedSystemComponent lisc : space.getInitialItems())
-					if (lisc.item() == isc) {
-						// locate the initial item clone at the location of the initial item
-						Location initLoc = space.locate(sc, lisc.location());
-						// send coordinates to data tracker if needed
-						if (space.dataTracker() != null) {
-							double x[] = new double[initLoc.asPoint().dim()];
-							for (int i = 0; i < initLoc.asPoint().dim(); i++)
-								x[i] = initLoc.asPoint().coordinate(i);
-							space.dataTracker().recordItem(SimulatorStatus.Initial, x, container.itemId(sc.id()));
-						}
-					}
-			}
-		}
-		for (CategorizedContainer<SystemComponent> cc : container.subContainers())
-			computeInitialCoordinates(cc);
+//		for (SystemComponent sc : container.items()) {
+//			Iterable<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces =
+//				((ComponentFactory) sc.membership()).spaces();
+//			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : spaces) {
+//				// get the initial item matching this
+//				SystemComponent isc = container.initialForItem(sc.id());
+////				if (isc!=null) // must always be non null, normally
+//				// get the location of this initial item
+//				for (LocatedSystemComponent lisc : space.getInitialItems())
+//					if (lisc.item() == isc) {
+//						// locate the initial item clone at the location of the initial item
+//						Location initLoc = space.locate(sc, lisc.location());
+//						// send coordinates to data tracker if needed
+//						if (space.dataTracker() != null) {
+//							double x[] = new double[initLoc.asPoint().dim()];
+//							for (int i = 0; i < initLoc.asPoint().dim(); i++)
+//								x[i] = initLoc.asPoint().coordinate(i);
+//							space.dataTracker().recordItem(SimulatorStatus.Initial, x, container.itemId(sc.id()));
+//						}
+//					}
+//			}
+//		}
+//		for (CategorizedContainer<SystemComponent> cc : container.subContainers())
+//			computeInitialCoordinates(cc);
 	}
 
 	// postProcess() + preProcess() = reset a simulation at its initial state

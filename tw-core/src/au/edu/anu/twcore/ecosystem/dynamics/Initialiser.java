@@ -167,14 +167,14 @@ public class Initialiser
 					selectZeroOrMany(hasTheLabel("")));
 //					selectZeroOrMany(hasTheLabel(N_INITIALISER.label())));
 				for (Initialiser init:inits)
-					if (init.categories().equals(container.categoryInfo().categories())) {
+					if (init.categories().equals(container.containerCategorized().categories())) {
 						SecondaryParametersInitialiser spi = init.getInstance(index);
 						TwData gpar = container.parameters();
 						TwData lcpar = null;
 						TwData ecopar = null;
 						if (container.parentContainer()!=null) {
 							if (container.parentContainer().parentContainer()==null) {
-								if (container.categoryInfo() instanceof LifeCycle) {
+								if (container.containerCategorized() instanceof LifeCycle) {
 									lcpar = container.parameters();
 									gpar = null;
 								}

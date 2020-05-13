@@ -34,6 +34,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -73,15 +74,18 @@ import au.edu.anu.twcore.data.runtime.IndexedDataLabel;
 import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DData;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
@@ -126,7 +130,7 @@ public class DataTrackerNode extends InitialisableNode
 	// target objects of tracking: groups or systemComponents
 //	private List<LimitedEdition<ComponentContainer>> trackedGroups = new ArrayList<>();
 //	private List<Component> trackedComponents = new ArrayList<>();
-	private List<ElementType<?,?>> trackedComponents = new ArrayList<>();
+	private List<TreeGraphNode> trackedComponents = new ArrayList<>();
 //	private boolean groupTracker;
 //	private InitialState ecosystemContainer = null;
 
@@ -328,8 +332,8 @@ public class DataTrackerNode extends InitialisableNode
 		// CAUTION: this is adding the INITIAL components, not the RUNTIME ones
 		List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())));
-		if (ll.size() == 1) {
-			if (ll.get(0).endNode() instanceof ArenaType) {
+		for (Edge e : ll) {
+			if (e.endNode() instanceof ArenaType) {
 				ArenaType ar = (ArenaType) ll.get(0).endNode();
 				trackedComponents.add(ar);
 			}
@@ -345,10 +349,8 @@ public class DataTrackerNode extends InitialisableNode
 //			} else
 //				trackedGroups.add((LimitedEdition<ComponentContainer>) ll.get(0).endNode());
 			// end dead code
-		} else {
-// TODO: restroe this
-//			for (Edge e : ll)
-//				trackedComponents.add((Component) e.endNode());
+			else if (e.endNode() instanceof Component)
+				trackedComponents.add((Component) e.endNode());
 //			trackedGroups.add((LimitedEdition<ComponentContainer>) trackedComponents.get(0).getParent());
 		}
 	}
@@ -463,18 +465,30 @@ public class DataTrackerNode extends InitialisableNode
 		return sealed;
 	}
 
-	// TODO: how to track high level components such as ArenaComponent etc.
+	@SuppressWarnings("unchecked")
 	private DataTracker<?, ?> makeDataTracker(int index) {
 		AbstractDataTracker<?, ?> result = null;
 		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
 			List<CategorizedComponent> ls = new ArrayList<>();
-			for (ElementType<?,?> etype:trackedComponents) {
+			CategorizedContainer<? extends CategorizedComponent> trackedContainer = null;
+			for (TreeGraphNode etype:trackedComponents) {
 				if (etype instanceof ArenaType) {
-					ls.add((CategorizedComponent) etype.getInstance(index).getInstance());
+					trackedContainer = null;
+					ls.add((CategorizedComponent)((ArenaType)etype).getInstance(index).getInstance());
+				}
+				else if (etype instanceof Component) {
+					CategorizedComponent cp = ((Component)etype).getInstance(index);
+					ls.add(cp);
+					if (cp instanceof SystemComponent)
+						trackedContainer = ((SystemComponent)cp).container();
+					else if (cp instanceof HierarchicalComponent)
+						// TODO: check this one
+						trackedContainer = ((HierarchicalComponent)cp).content().parentContainer();
 				}
 			}
-			result = new DataTracker0D(stats, tstats, selection, sampleSize, null, ls, expandedTrackList.keySet(),
-				fieldMetadata);
+			result = new DataTracker0D(stats, tstats, selection, sampleSize,
+				(CategorizedContainer<CategorizedComponent>) trackedContainer, ls,
+				expandedTrackList.keySet(),fieldMetadata);
 		} else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
 			result = new DataTracker2D();
 		}

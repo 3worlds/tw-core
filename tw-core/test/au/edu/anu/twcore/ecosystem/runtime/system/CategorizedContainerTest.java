@@ -165,8 +165,8 @@ class CategorizedContainerTest {
 
 	@Test
 	final void testCategoryInfo() {
-		show("testCategoryInfo",cc.categoryInfo().categoryId());
-		assertEquals(cc.categoryInfo(),ca);
+		show("testCategoryInfo",cc.containerCategorized().categoryId());
+		assertEquals(cc.containerCategorized(),ca);
 	}
 
 	@Test

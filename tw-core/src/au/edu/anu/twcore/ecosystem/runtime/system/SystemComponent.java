@@ -33,6 +33,7 @@ import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -81,9 +82,15 @@ public class SystemComponent
 		return categories;
 	}
 
-	public TwData parameters() {
-		return container.parameters();
+	@Override
+	public SetInitialStateFunction initialiser() {
+		return ((ComponentFactory)membership()).setinit;
 	}
+
+
+//	public TwData parameters() {
+//		return container.parameters();
+//	}
 
 	@Override
 	public SystemComponent clone() {

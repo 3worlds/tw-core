@@ -30,6 +30,8 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -55,10 +57,8 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialState;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
@@ -67,9 +67,9 @@ import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.Structure;
 import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
@@ -190,18 +190,27 @@ public class SimulatorNode
 			scanSubGroups(g,index);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void setInitialCommunity(int index) {
-		InitialState init = (InitialState) get(getChildren(), selectZeroOrOne(hasTheLabel(N_INITIALSTATE.label())));
-		if (init != null) {
-			List<Component> li = (List<Component>) get(init.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-			for (Component i : li)
-				i.getInstance(index);
-			List<Group> lg = (List<Group>) get(init.getChildren(), selectZeroOrMany(hasTheLabel(N_GROUP.label())));
-			for (Group g : lg)
-				scanSubGroups(g, index);
+		TreeGraphNode struc = (TreeGraphNode) get(getParent(),
+			children(),
+			selectOne(hasTheLabel(N_STRUCTURE.label())));
+		for (TreeNode c:struc.getChildren()) {
+			if (c instanceof ElementType<?,?>)
+				for (TreeNode cc:c.getChildren())
+					if (cc instanceof Component) {
+						// this instantiates the SYstemComponent and puts it into the right container
+						((Component)cc).getInstance(index);
+					}
 		}
+//		if (init != null) {
+//			List<Component> li = (List<Component>) get(init.getChildren(),
+//					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+//			for (Component i : li)
+//				i.getInstance(index);
+//			List<Group> lg = (List<Group>) get(init.getChildren(), selectZeroOrMany(hasTheLabel(N_GROUP.label())));
+//			for (Group g : lg)
+//				scanSubGroups(g, index);
+//		}
 	}
 
 	@Override

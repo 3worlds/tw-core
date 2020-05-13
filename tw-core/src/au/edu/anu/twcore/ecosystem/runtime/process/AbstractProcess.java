@@ -149,19 +149,19 @@ public abstract class AbstractProcess
 	 */
 	protected void setContext(HierarchicalContext context,
 			CategorizedContainer<SystemComponent> container) {
-		if (container.categoryInfo() instanceof Ecosystem) {
+		if (container.containerCategorized() instanceof Ecosystem) {
 			context.ecosystemParameters = container.parameters();
 //			context.ecosystemVariables = container.variables();
 //			context.ecosystemPopulationData = container.populationData();
 			context.ecosystemName = container.id();
 		}
-		else if (container.categoryInfo() instanceof LifeCycle) {
+		else if (container.containerCategorized() instanceof LifeCycle) {
 			context.lifeCycleParameters = container.parameters();
 //			context.lifeCycleVariables = container.variables();
 //			context.lifeCyclePopulationData = container.populationData();
 			context.lifeCycleName = container.id();
 		}
-		else if (container.categoryInfo() instanceof SystemFactory)  {
+		else if (container.containerCategorized() instanceof SystemFactory)  {
 			context.groupParameters = container.parameters();
 //			context.groupVariables = container.variables();
 //			context.groupPopulationData = container.populationData();

@@ -8,6 +8,8 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.properties.SimplePropertyList;
 
 /**
+ * A factory to instantiate {@code GroupComponent}s, ie the variables and constants attached to a group.
+ * The container is managed by the {@code Group} node.
  *
  * @author J. Gignoux - 23 avr. 2020
  *

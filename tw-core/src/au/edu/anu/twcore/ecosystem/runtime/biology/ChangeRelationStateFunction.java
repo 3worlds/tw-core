@@ -30,7 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponenData;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 
@@ -99,12 +99,12 @@ public abstract class ChangeRelationStateFunction extends TwFunctionAdapter {
 			ComponentContainer groupPop,
 			TwData otherGroupPar,
 			ComponentContainer otherGroupPop,
-			SystemData focalAuto,
+			ComponenData focalAuto,
 			TwData focalLtc,
 			TwData focalDrv,
 			TwData focalDec,  // read-write
 			Point focalLoc,
-			SystemData otherAuto,
+			ComponenData otherAuto,
 			TwData otherLtc,
 			TwData otherDrv, // read-write
 			TwData otherDec,

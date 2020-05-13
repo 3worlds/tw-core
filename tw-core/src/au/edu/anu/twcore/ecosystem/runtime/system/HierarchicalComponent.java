@@ -21,7 +21,7 @@ public abstract class HierarchicalComponent
 		extends TreeGraphDataNode
 		implements CategorizedComponent, Containing<ComponentContainer> {
 
-	private Categorized<? extends CategorizedComponent> categories = null;
+	protected Categorized<? extends CategorizedComponent> categories = null;
 	private ComponentContainer content = null;
 
 	public HierarchicalComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
