@@ -161,8 +161,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 							snippets.get(record).add("//"+line);
 				}
 //				if (line.contains("INSERT YOUR CODE BELOW THIS LINE"))
-					if (line.contains(Comments.beginCodeInsert))
-					record = line.substring(line.indexOf("//")+2,line.indexOf('*')).strip();
+				if (line.contains(Comments.beginCodeInsert))
+					record = line.substring(line.indexOf("//")+2,line.indexOf('-')).strip();
 			}
 //			// debugging
 //			for (String s:snippets.keySet()) {
