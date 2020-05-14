@@ -18,7 +18,7 @@ archetype 3wSA-EventTimer
 		isOfClass = String("eventQueue")
 		hasParent = StringTable(([1]"timeModel:"))
 		multiplicity = IntegerRange("1..1")
-//		hasEdge eventQueuePopulatorEdgeSpec
-//			isOfClass = String("populatedBy")
-//			toNode = String("function:")
-//			multiplicity = IntegerRange("1..*")
+		hasEdge eventQueuePopulatorEdgeSpec
+			isOfClass = String("fedBy")
+			toNode = String("function:")
+			multiplicity = IntegerRange("1..*")

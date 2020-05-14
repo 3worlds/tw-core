@@ -79,8 +79,8 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_INITIALSTATE 	("initialState",	"state",		InitialState.class,			ECOBASE+10), // after Ecosystem
 				N_GROUP 		("group",			"grp",			Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
 				N_COMPONENT 	("component",		"comp",			Component.class,			CATEGORYBASE+30), // after Group
-				N_CONSTANTVALUES("constantValues",	"cstVals",		ConstantValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
-				N_VARIABLEVALUES("variableValues",	"varVals",		VariableValues.class,		CATEGORYBASE+50), // after ParameterValues
+				N_CONSTANTVALUES("constantValues",	"initCsts",		ConstantValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
+				N_VARIABLEVALUES("variableValues",	"initVars",		VariableValues.class,		CATEGORYBASE+50), // after ParameterValues
 			N_STRUCTURE 		("structure",		"struc",		Structure.class,			0),//
 				N_CATEGORYSET 	("categorySet",		"catSet",		CategorySet.class,			0),//
 				N_CATEGORY 		("category",		"cat",			Category.class,				CATEGORYBASE),

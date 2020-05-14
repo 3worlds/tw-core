@@ -53,6 +53,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.ConditionEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.UseRNGEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
+import au.edu.anu.twcore.ecosystem.dynamics.FedByEdge;
 
 import au.edu.anu.twcore.ecosystem.dynamics.initial.GroupOfEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.CycleEdge;
@@ -77,43 +78,44 @@ public enum ConfigurationEdgeLabels {
 	//			| label					|def name		| 	class
 	//-------------------------------------------------------------------------
 	// data definition
-	E_SIZEDBY 		("sizedBy",			"szBy",			SizedByEdge.class),
+	E_SIZEDBY 		("sizedBy",			"szBy1",		SizedByEdge.class),
 	// experiment
-	E_BASELINE 		("baseLine",		"bsln",			BaseLineEdge.class),
-	E_MODELSETUP	("modelSetup",		"moSu",			ModelSetupEdge.class),
-	E_STOPON		("stopOn",			"stpOn",		StopOnEdge.class),
-	E_SOURCE		("source",			"srcd",			SourceEdge.class),
+	E_BASELINE 		("baseLine",		"bsln1",		BaseLineEdge.class),
+	E_MODELSETUP	("modelSetup",		"moSu1",		ModelSetupEdge.class),
+	E_STOPON		("stopOn",			"stpOn1",		StopOnEdge.class),
+	E_SOURCE		("source",			"src1",			SourceEdge.class),
 	// ecosystem / structure
-	E_AUTOVAR		("autoVar",			"auto",			AutoVarEdge.class),
-	E_DRIVERS		("drivers",			"drvs",			DriverEdge.class),
-	E_DECORATORS	("decorators",		"decs",			DecoratorEdge.class),
-	E_LTCONSTANTS	("lifetimeConstants","ltcs",		LifetimeConstantEdge.class),
-	E_PARAMETERS	("parameters",		"pars",			ParameterEdge.class), // should be deprecated
-	E_BELONGSTO		("belongsTo",		"blngsTo",		BelongsToEdge.class),
-	E_INITIALISEDBY	("initialisedBy",	"initBy",		InitialisedByEdge.class),
-	E_TOCATEGORY	("toCategory",		"to",			ToCategoryEdge.class),
-	E_FROMCATEGORY	("fromCategory",	"from",			FromCategoryEdge.class),
+	E_AUTOVAR		("autoVar",			"auto1",		AutoVarEdge.class),
+	E_DRIVERS		("drivers",			"drvs1",		DriverEdge.class),
+	E_DECORATORS	("decorators",		"decs1",		DecoratorEdge.class),
+	E_LTCONSTANTS	("lifetimeConstants","ltcs1",		LifetimeConstantEdge.class),
+	E_PARAMETERS	("parameters",		"pars1",		ParameterEdge.class), // should be deprecated
+	E_BELONGSTO		("belongsTo",		"blngsTo1",		BelongsToEdge.class),
+	E_INITIALISEDBY	("initialisedBy",	"initBy1",		InitialisedByEdge.class),
+	E_TOCATEGORY	("toCategory",		"to1",			ToCategoryEdge.class),
+	E_FROMCATEGORY	("fromCategory",	"from1",		FromCategoryEdge.class),
 	// ecosystem / dynamics
-	E_APPLIESTO		("appliesTo",		"aplyTo",		AppliesToEdge.class),
-	E_DEPENDSON		("dependsOn",		"depsOn",		DependsOnEdge.class),
-	E_EFFECTEDBY	("effectedBy",		"effdBy",		EffectedByEdge.class),
-	E_STOPSYSTEM	("stopSystem",		"stpSys",		StopSystemEdge.class),
-	E_CONDITION		("condition",		"condOf",		ConditionEdge.class),
-	E_GROUPOF		("groupOf",			"grpOf",		GroupOfEdge.class),
-	E_CYCLE			("cycle",			"cycl",			CycleEdge.class),
-	E_INSTANCEOF	("instanceOf",		"instOf",		InstanceOfEdge.class),
-	E_LOADFROM		("loadFrom",		"ldFrom",		LoadFromEdge.class),
-	E_USERNG		("useRNG",			"uses",			UseRNGEdge.class),
-	E_SPACE			("inSpace",			"in",			ProcessSpaceEdge.class),
-	E_LOCATION		("location",		"loc",			LocationEdge.class),
+	E_APPLIESTO		("appliesTo",		"aplyTo1",		AppliesToEdge.class),
+	E_DEPENDSON		("dependsOn",		"depsOn1",		DependsOnEdge.class),
+	E_EFFECTEDBY	("effectedBy",		"effdBy1",		EffectedByEdge.class),
+	E_STOPSYSTEM	("stopSystem",		"stpSys1",		StopSystemEdge.class),
+	E_CONDITION		("condition",		"condOf1",		ConditionEdge.class),
+	E_GROUPOF		("groupOf",			"grpOf1",		GroupOfEdge.class),
+	E_CYCLE			("cycle",			"cycl1",		CycleEdge.class),
+	E_INSTANCEOF	("instanceOf",		"instOf1",		InstanceOfEdge.class),
+	E_LOADFROM		("loadFrom",		"ldFrom1",		LoadFromEdge.class),
+	E_USERNG		("useRNG",			"uses1",		UseRNGEdge.class),
+	E_SPACE			("inSpace",			"in1",			ProcessSpaceEdge.class),
+	E_LOCATION		("location",		"loc1",			LocationEdge.class),
+	E_FEDBY			("fedBy",			"fedBy1",		FedByEdge.class),// edge from function to EventQueue
 	// user interface
-	E_TRACKTIME		("trackTime",		"trksTmOf",		TrackTimeEdge.class),
-	E_TRACKSERIES	("trackSeries",		"trksSrsOf",	TrackTimeSeriesEdge.class),
-	E_TRACKFIELD	("trackField",		"trksFldOf",	TrackFieldEdge.class),
-	E_TRACKTABLE	("trackTable",		"trksTblOf",	TrackTableEdge.class),
-	E_TRACKPOP		("trackPopulation",	"trksPopOf",	TrackPopulationEdge.class),
-	E_TRACKCOMPONENT("trackComponent",	"trksCmpOf",	TrackComponentEdge.class),
-	E_TRACKSPACE	("trackSpace",		"trksSpc",		TrackSpaceEdge.class)
+	E_TRACKTIME		("trackTime",		"trks1",		TrackTimeEdge.class),
+	E_TRACKSERIES	("trackSeries",		"trks1",		TrackTimeSeriesEdge.class),
+	E_TRACKFIELD	("trackField",		"trks1",		TrackFieldEdge.class),
+	E_TRACKTABLE	("trackTable",		"trks1",		TrackTableEdge.class),
+	E_TRACKPOP		("trackPopulation",	"trks1",		TrackPopulationEdge.class),
+	E_TRACKCOMPONENT("trackComponent",	"trks1",		TrackComponentEdge.class),
+	E_TRACKSPACE	("trackSpace",		"trks1",		TrackSpaceEdge.class)
 	;
 	//=========================================================================
 	private final String label;
