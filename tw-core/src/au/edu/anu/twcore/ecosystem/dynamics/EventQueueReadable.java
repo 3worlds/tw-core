@@ -28,27 +28,17 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
-import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALDataEdge;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-
 /**
  * @author Ian Davies
  *
  * @date 14 May 2020
  */
-public class FedByEdge extends ALDataEdge {
-
-	public FedByEdge(Identity id, Node start, Node end, EdgeFactory graph) {
-		super(id, start, end, new ExtendablePropertyListImpl(), graph);
-	}
+public interface EventQueueReadable<T> {
 	
-	public FedByEdge(Identity id, Node start, Node end, 
-			SimplePropertyList props, EdgeFactory graph) {
-		super(id, start, end, props, graph);
-	}
-
+	public T peek();
+	
+	public T poll();
+	
+	public void reset();
+	
 }

@@ -22,3 +22,8 @@ archetype 3wSA-EventTimer
 			isOfClass = String("fedBy")
 			toNode = String("function:")
 			multiplicity = IntegerRange("1..*")
+			//The index by which this queue is accessed by user code
+			hasProperty fedByIndexrSpec
+				hasName = String("index")
+				type = String("Integer")
+				multiplicity = IntegerRange("1..1")

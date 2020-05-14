@@ -26,29 +26,77 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.dynamics;
+package au.edu.anu.twcore.ecosystem.runtime;
 
-import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALDataEdge;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+import au.edu.anu.twcore.ecosystem.dynamics.EventQueueReadable;
+import au.edu.anu.twcore.ecosystem.dynamics.EventQueueWriteable;
+import au.edu.anu.twcore.ecosystem.runtime.timer.TimeEvent;
+import au.edu.anu.twcore.ecosystem.runtime.timer.TimeUtil;
+import fr.cnrs.iees.twcore.constants.TimeUnits;
+import fr.ens.biologie.generic.Resettable;
 
 /**
  * @author Ian Davies
  *
  * @date 14 May 2020
  */
-public class FedByEdge extends ALDataEdge {
+public class TimerEventQueue implements Resettable, EventQueueWriteable, EventQueueReadable<TimeEvent> {
+	private static final int INITIAL_QUEUE_SIZE = 100;
+	private Queue<TimeEvent> queue = new PriorityQueue<TimeEvent>(INITIAL_QUEUE_SIZE, new Comparator<TimeEvent>() {
 
-	public FedByEdge(Identity id, Node start, Node end, EdgeFactory graph) {
-		super(id, start, end, new ExtendablePropertyListImpl(), graph);
+		@Override
+		public int compare(TimeEvent e1, TimeEvent e2) {
+			if (e1.getTime() < e2.getTime())
+				return -1;
+			if (e1.getTime() > e2.getTime())
+				return +1;
+			return 0;
+		}
+	});
+	private TimeUnits to;
+	private LocalDateTime startDateTime;
+
+	public TimerEventQueue(TimeUnits tu, LocalDateTime startDateTime) {
+		this.to = tu;
+		this.startDateTime = startDateTime;
 	}
-	
-	public FedByEdge(Identity id, Node start, Node end, 
-			SimplePropertyList props, EdgeFactory graph) {
-		super(id, start, end, props, graph);
+
+	@Override
+	public int postEvent(double time, TimeUnits tu) {
+		long eventTime = Math.round(TimeUtil.convertTime(time, tu, to, startDateTime));
+		if (queue.isEmpty()) {
+			queue.add(new TimeEvent(eventTime));// ?? WRONG not necessarily an advance.
+			return 1;
+		} else {
+			long hoq = queue.peek().getTime();
+			if (hoq < eventTime) {
+				queue.add(new TimeEvent(eventTime));
+				return 1;
+			} else
+				return 0;
+		}
+	}
+
+	//  Bug in waiting - Empty queue 
+	@Override
+	public TimeEvent peek() {
+		return queue.peek();
+	}
+
+	@Override
+	public TimeEvent poll() {
+		return queue.poll();
+	}
+
+	@Override
+	public void reset() {
+		queue.clear();
+
 	}
 
 }

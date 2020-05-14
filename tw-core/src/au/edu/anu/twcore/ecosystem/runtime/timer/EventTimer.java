@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.timer;
 
-import au.edu.anu.twcore.ecosystem.dynamics.EventQueue;
+import au.edu.anu.twcore.ecosystem.dynamics.EventQueueReadable;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 
 /**
@@ -39,20 +39,22 @@ import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
  */
 public class EventTimer extends AbstractTimer {
 	
-	private EventQueue eq = null;
+	private EventQueueReadable<TimeEvent> teq;
 	private TimeEvent queueHead;
 
-	public EventTimer(EventQueue eq, TimeModel timeModel) {
+	public EventTimer(EventQueueReadable<TimeEvent> teq, TimeModel timeModel) {
 		super(timeModel);
-		// caution: eventQueue is uninitialised when getting in here
-		// TODO Auto-generated constructor stub
+		this.teq = teq;
 	}
-	
+	// TODO This is all crap!!
 	private long getEventTime() {
-		long qTime = eq.peekTime();
+		long qTime = Long.MAX_VALUE;
+		TimeEvent te = teq.peek();
+		if (te!=null)
+			qTime = te.getTime();
 		queueHead = null;
 		if (qTime != Long.MAX_VALUE) {
-			queueHead=eq.peek();
+			queueHead=teq.peek();
 			return timeModel.modelToBaseTime(qTime);
 		}
 		else
@@ -71,7 +73,7 @@ public class EventTimer extends AbstractTimer {
 	@Override
 	public void advanceTime(long newTime) {
 		lastTime = newTime;
-		eq.poll();
+		teq.poll();
 	}
 	
 //	@Override
@@ -80,11 +82,11 @@ public class EventTimer extends AbstractTimer {
 //		eq.clearQueue();
 //		queueHead = null;
 //	}
-	
+	// TODO check this!
 	@Override
 	public void postProcess() {
 		super.postProcess();
-		eq.clearQueue();
+		teq.reset();
 		queueHead = null;
 	}
 

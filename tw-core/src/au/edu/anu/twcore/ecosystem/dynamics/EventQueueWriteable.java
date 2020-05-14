@@ -28,27 +28,22 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
-import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALDataEdge;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.TimeUnits;
 
 /**
  * @author Ian Davies
  *
  * @date 14 May 2020
  */
-public class FedByEdge extends ALDataEdge {
+// The interface seen by user code. All they can do is post and event.
 
-	public FedByEdge(Identity id, Node start, Node end, EdgeFactory graph) {
-		super(id, start, end, new ExtendablePropertyListImpl(), graph);
-	}
-	
-	public FedByEdge(Identity id, Node start, Node end, 
-			SimplePropertyList props, EdgeFactory graph) {
-		super(id, start, end, props, graph);
-	}
+public interface EventQueueWriteable {
+	/* return true if posted false otherwise ( */
+	/**
+	 * @param time Time in functions time units
+	 * @param tu   Time units of the posting function
+	 * @return 1 if successful, 0 if time==head of queue, -1 if < head of queue
+	 */
+	public int postEvent(double time, TimeUnits tu);
 
 }

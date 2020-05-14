@@ -108,6 +108,7 @@ public class TimeModel
 		}
 	}
 	
+	private int eventTimeInstance = 0;
 	private Timer makeTimer() {
 		Timer timer = null;
 		// Clock timer
@@ -118,9 +119,9 @@ public class TimeModel
 		// event-driven timer
 		else if (properties().getPropertyValue(twaSubclass)
 				.equals(EventTimer.class.getName())) {
-			EventQueue eq = (EventQueue) get(this.getChildren(),
+			EventQueueNode eq = (EventQueueNode) get(this.getChildren(),
 				selectOne(hasTheLabel(N_EVENTQUEUE.label())));
-			timer = new EventTimer(eq,this);
+			timer = new EventTimer(eq.getInstance(eventTimeInstance++),this);// !!! WATCH OUT How do i know the instance number!!
 		}
 		// scenario timer
 		else if (properties().getPropertyValue(twaSubclass)
