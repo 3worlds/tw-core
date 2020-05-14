@@ -167,10 +167,6 @@ hasNode componentTypeSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:*component*")
 		multiplicity = IntegerRange("1..1")
-	hasEdge systemToLifespanCategorySpec
-		isOfClass = String("belongsTo")
-		toNode = String("category:*lifespan*")
-		multiplicity = IntegerRange("1..1")
 
 // initial state for an individual component instance of a ComponentType
 hasNode componentSpec
