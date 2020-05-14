@@ -6,8 +6,8 @@ hasNode systemSpec
 	multiplicity = IntegerRange("1..*")
 	hasProperty systemParameterSpec
 		hasName = String("parameterClass")
-		type =  String("String") 
-		multiplicity = IntegerRange("0..1") 
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
 	// TODO: check this category is not used by Systems, ie lifeCycle categories and system
 	// categories should be completely separate
 	hasEdge systemCategoryBelongsToSpec
@@ -18,4 +18,8 @@ hasNode systemSpec
 //		hasName = String("memory")
 //		type = String("Integer")
 //		multiplicity = IntegerRange("1..1")// should have an integer range constraint
-		
+	hasEdge systemToArenaCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*arena*")
+		multiplicity = IntegerRange("1..1")
+
