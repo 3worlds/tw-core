@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
+import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
@@ -54,10 +55,9 @@ import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponenData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
@@ -84,7 +84,7 @@ public class Simulator implements Resettable {
 	/** a data tracker to send time data */
 	class TimeTracker extends AbstractDataTracker<TimeData, Metadata> {
 		private TimeTracker() {
-			super(DataMessageTypes.TIME);
+			super(DataMessageTypes.TIME,id);
 		}
 
 		// returns quickly if there are no observers - no point building a TimeData
@@ -285,8 +285,8 @@ public class Simulator implements Resettable {
 			if (ecosystem.community()!=null) // TODO improve this treatment
 				for (SystemComponent sc : ecosystem.community().allItems())
 				if (sc.autoVar()!=null)
-					if (sc.autoVar() instanceof ComponenData){
-						ComponenData au = (ComponenData) sc.autoVar();
+					if (sc.autoVar() instanceof ComponentData){
+						ComponentData au = (ComponentData) sc.autoVar();
 						au.writeEnable();
 						au.age(nexttime - au.birthDate());
 						au.writeDisable();

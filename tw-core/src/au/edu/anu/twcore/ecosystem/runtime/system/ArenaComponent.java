@@ -36,8 +36,13 @@ public class ArenaComponent
 		if (constants()!=null)
 			constants().setProperties(fact.lifetimeConstantTemplate);
 		// re-run setInitialState method
-		if (initialiser()!=null)
+		if (initialiser()!=null) {
+			constants().writeEnable();
+			currentState().writeEnable();
 			initialiser().setInitialState(null, null, null, null, this, null);
+			constants().writeDisable();
+			currentState().writeDisable();
+		}
 	}
 
 }

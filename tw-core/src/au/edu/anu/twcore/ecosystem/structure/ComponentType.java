@@ -36,7 +36,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.RelocateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponenData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
@@ -184,7 +184,7 @@ public class ComponentType
 			// TODO HERE:
 			// select an AutoVar type depending on permanent/ephemeral and leaf/not leaf in the hierarchy
 			if (!permanent) // NB when non permanent, isLeaf = true
-				autoVarTemplate = new ComponenData();
+				autoVarTemplate = new ComponentData();
 //			if (!isLeaf)
 //				autoVarTemplate = new ContainerData();
 

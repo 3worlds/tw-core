@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -30,20 +30,21 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
+import au.edu.anu.twcore.data.runtime.TwData;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * A data tracker for spatial data of SystemComponents (no edges at the moment).
- * 
+ *
  * The metadata are the space properties, namely: type (SpaceType), edgeEffects (EdgeEffects),
  * precision (double), units (String), plus the descendant-specific properties:
- * 
+ *
  * for FlatSurface: x-limits 'Interval) and y-limits (Interval)
  * for SquareGrid: cellSize(double), x-nCells (int), y-nCells (int) (optional, if absent = x-nCells)
- * 
+ *
  * This DataTracker is not instantiated by a DataTrackerNode, but by the SpaceNode it points to.
- * 
+ *
  * @author Jacques Gignoux - 14 févr. 2020
  *
  */
@@ -51,11 +52,11 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 
 	private long currentTime = Long.MIN_VALUE;
 	private Metadata metadata = null;
-	
+
 	public SpaceDataTracker(int simId, ReadOnlyPropertyList meta) {
-		super(DataMessageTypes.SPACE);
+		super(DataMessageTypes.SPACE,simId);
 		metadata = new Metadata(simId,meta);
-		setSender(simId);
+//		setSender(simId);
 	}
 
 	public void recordTime(long time) {
@@ -69,17 +70,29 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 		msg.newLocation(coord);
 		sendData(msg);
 	}
-	
+
 	public void removeItem(SimulatorStatus status, String... labels) {
 		SpaceData msg = new SpaceData(status, senderId, metadata.type());
 		msg.setTime(currentTime);
 		msg.deleteLocation(labels);
 		sendData(msg);
 	}
-	
+
 	@Override
 	public Metadata getInstance() {
 		return metadata;
+	}
+
+	@Override
+	public void recordItem(String... labels) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void record(SimulatorStatus status, TwData... props) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

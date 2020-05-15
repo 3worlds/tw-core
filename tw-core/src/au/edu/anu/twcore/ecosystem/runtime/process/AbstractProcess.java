@@ -33,8 +33,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
+import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
+import au.edu.anu.twcore.ecosystem.runtime.DataRecorder;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.Spatialized;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -45,11 +47,11 @@ import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Sealable;
@@ -69,13 +71,13 @@ public abstract class AbstractProcess
     private ArenaComponent ecosystem = null;
     // dataTrackers - common to all process types
     // NB: space data trackers are contained into spaces
-	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
-	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
+//	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
+//	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
 	protected Timer timer = null;
 	protected DynamicSpace<SystemComponent,LocatedSystemComponent> space = null;
 	protected double searchRadius = 0.0;
 
-	private List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
+	protected List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
 
 	public AbstractProcess(ArenaComponent world, Timer timer,
 			DynamicSpace<SystemComponent,LocatedSystemComponent> space,
@@ -90,8 +92,8 @@ public abstract class AbstractProcess
 	@Override
 	public final Sealable seal() {
 		sealed = true;
-    	trackers.addAll(tsTrackers);
-    	trackers.addAll(mapTrackers);
+//    	trackers.addAll(tsTrackers);
+//    	trackers.addAll(mapTrackers);
  		return this;
 	}
 
@@ -110,18 +112,22 @@ public abstract class AbstractProcess
 	}
 
 	public void setSender(int id) {
-		for (DataTracker0D tracker:tsTrackers)
-			tracker.setSender(id);
-		for (DataTracker2D tracker:mapTrackers)
-			tracker.setSender(id);
+		for (DataTracker<?,Metadata> tracker:trackers)
+			if (tracker instanceof AbstractDataTracker)
+				((AbstractDataTracker<?, Metadata>)tracker).setSender(id);
+//		for (DataTracker0D tracker:tsTrackers)
+//			tracker.setSender(id);
+//		for (DataTracker2D tracker:mapTrackers)
+//			tracker.setSender(id);
 	}
 
-	public void addDataTracker(DataTracker<?,?> tracker) {
+	public void addDataTracker(DataTracker<?,Metadata> tracker) {
 		if (!isSealed()) {
-			if (tracker instanceof DataTracker0D)
-				tsTrackers.add((DataTracker0D) tracker);
-			else if (tracker instanceof DataTracker2D)
-				mapTrackers.add((DataTracker2D) tracker);
+			trackers.add(tracker);
+//			if (tracker instanceof DataTracker0D)
+//				tsTrackers.add((DataTracker0D) tracker);
+//			else if (tracker instanceof DataTracker2D)
+//				mapTrackers.add((DataTracker2D) tracker);
 		}
 	}
 
@@ -133,7 +139,8 @@ public abstract class AbstractProcess
 	@Override
 	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
-		for (DataTracker0D tracker:tsTrackers)
+//		for (DataTracker0D tracker:tsTrackers)
+		for (DataTracker<?,Metadata> tracker:trackers)
 			tracker.recordTime(t);
 		if (space!=null)
 			if (space.dataTracker()!=null)

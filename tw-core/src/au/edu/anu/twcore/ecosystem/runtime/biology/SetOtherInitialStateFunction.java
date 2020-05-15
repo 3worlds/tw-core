@@ -2,7 +2,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponenData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 
@@ -51,7 +51,7 @@ public abstract class SetOtherInitialStateFunction extends TwFunctionAdapter {
 			ComponentContainer groupPop,
 			TwData otherGroupPar,
 			ComponentContainer otherGroupPop,
-			ComponenData focalAuto,
+			ComponentData focalAuto,
 			TwData focalLtc,
 			TwData focalDrv,
 			TwData focalDec,

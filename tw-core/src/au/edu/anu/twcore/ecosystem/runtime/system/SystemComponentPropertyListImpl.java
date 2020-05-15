@@ -159,7 +159,7 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 
 	protected SystemComponentPropertyListImpl cloneStructure() {
 		SystemComponentPropertyListImpl result = new SystemComponentPropertyListImpl(
-			(ComponenData)autoState, drivers[0], decorators, constants, drivers.length, propertyMap);
+			(ComponentData)autoState, drivers[0], decorators, constants, drivers.length, propertyMap);
 		return result;
 	}
 

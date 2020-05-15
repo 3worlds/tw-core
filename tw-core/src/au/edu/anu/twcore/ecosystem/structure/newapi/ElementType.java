@@ -25,7 +25,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.VariableValues;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
 import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponenData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
@@ -80,7 +80,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		for (Category c:categories)
 			categoryNames.add(c.id()); // order is maintained
 		if (categoryNames.contains(Category.ephemeral))
-			autoVarTemplate = new ComponenData();
+			autoVarTemplate = new ComponentData();
 		// NB: maybe permanent systems should have a different scope for their identities, so that
 		// the same name can be used at every reset
 		// on the other hand, the container name can be used for unicity

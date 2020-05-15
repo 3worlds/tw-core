@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -55,23 +55,23 @@ import fr.ens.biologie.generic.Singleton;
  * <em>one</em> metadata message sent prior to <em>many</em> data messages. The
  * exact meaning of metadata and data is left to implementing classes.
  * </p>
- * 
+ *
  * @author Jacques Gignoux - 3 sept. 2019
  *
  */
-public interface DataTracker<T, M> 
-		extends Observable<DataReceiver<T, M>>, Singleton<M>, Resettable {
+public interface DataTracker<T, M>
+		extends Observable<DataReceiver<T, M>>, Singleton<M>, Resettable, DataRecorder {
 
 	/**
 	 * Removes an observer from this data tracker's list
-	 * 
+	 *
 	 * @param observer the observer to remove.
 	 */
 	public void removeObserver(DataReceiver<T, M> observer);
 
 	/**
 	 * Sends a data record of class {@code T} to all its observers
-	 * 
+	 *
 	 * @param data the data record to send
 	 */
 	public void sendData(T data);
@@ -79,7 +79,7 @@ public interface DataTracker<T, M>
 	/**
 	 * Sends a metadata record of class {@code M} to all its observers. This should
 	 * usually be done before any call to {@code sendData(...)}
-	 * 
+	 *
 	 * @param meta the metadata record to send
 	 */
 	//public void sendMetadata(M meta);
@@ -95,16 +95,16 @@ public interface DataTracker<T, M>
 	 * Returns true if this data tracker has observers. Use this to optimise data
 	 * sending (eg check there is someone observing before building up a costly data
 	 * record)
-	 * 
+	 *
 	 * @return true if this data tracker has observers, false otherwise.
 	 */
 	public boolean hasObservers();
-	
+
 //	public boolean hasObserver(DataReceiver<T,M> dr);
 
 	public void updateTrackList();
 
 	public void removeTrackedItem(SystemComponent wasTracked);
-	
-	
+
+
 }

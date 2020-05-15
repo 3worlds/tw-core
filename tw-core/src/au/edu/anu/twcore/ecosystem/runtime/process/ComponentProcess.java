@@ -41,9 +41,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
@@ -166,7 +168,7 @@ public class ComponentProcess
 			focal.nextState().writeDisable();
 
 		// call data trackers AFTER computations so that decorators are different from zero
-		for (DataTracker0D tracker:tsTrackers)
+		for (DataTracker<?,Metadata> tracker:trackers)
 			if (tracker.isTracked(focal)) {
 				tracker.recordItem(focalContext.buildItemId(focal.id()));
 				tracker.record(currentStatus,focal.currentState(),focal.decorators(),focal.autoVar());

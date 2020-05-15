@@ -34,7 +34,7 @@ import java.util.List;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponenData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 
@@ -96,7 +96,7 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
 			ComponentContainer lifeCyclePop,
 			TwData groupPar,
 			ComponentContainer groupPop,
-			ComponenData focalAuto,
+			ComponentData focalAuto,
 			TwData focalLtc,
 			TwData focalDrv,
 			TwData focalDec,

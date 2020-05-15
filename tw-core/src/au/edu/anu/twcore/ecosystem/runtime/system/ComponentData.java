@@ -43,7 +43,9 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
  * refactored 17/2/2017
  *
  */
-public class ComponenData extends TwData {
+public class ComponentData extends TwData {
+
+	// TODO: add number of offspring and dead/alive boolean
 
 	/** the name of this system  - for compatibility with graph */
 	private String name = "";
@@ -56,7 +58,7 @@ public class ComponenData extends TwData {
 	private static String[] keyArray = {"name","age","birthDate"};
 	protected static Set<String> keySet = new HashSet<String>(Arrays.asList(keyArray));
 
-	public ComponenData() {
+	public ComponentData() {
 		super();
 	}
 
@@ -93,7 +95,7 @@ public class ComponenData extends TwData {
 	// generic methods inherited from TwData
 
 	@Override
-	public ComponenData setProperty(String key, Object value) {
+	public ComponentData setProperty(String key, Object value) {
 		if (key.equals("age")) age = (Long)value;
 		if (key.equals("birthDate")) birthDate = (Long)value;
 		if (key.equals("name")) name = (String)value;
@@ -109,7 +111,7 @@ public class ComponenData extends TwData {
 	}
 
 	@Override
-	public ComponenData clear() {
+	public ComponentData clear() {
 		age = 0L;
 		birthDate = 0L;
 		name = "";
@@ -117,8 +119,8 @@ public class ComponenData extends TwData {
 	}
 
 	@Override
-	public ComponenData cloneStructure() {
-		ComponenData result = new ComponenData();
+	public ComponentData cloneStructure() {
+		ComponentData result = new ComponentData();
 		return result;
 	}
 
@@ -128,8 +130,8 @@ public class ComponenData extends TwData {
 	}
 
 	@Override
-	public ComponenData clone() {
-		ComponenData clone = cloneStructure();
+	public ComponentData clone() {
+		ComponentData clone = cloneStructure();
 		clone.age = age; // this is nonsense !
 		clone.birthDate = birthDate; // this is nonsense too !
 		clone.name = name;

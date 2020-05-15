@@ -72,6 +72,7 @@ import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.IndexedDataLabel;
 import au.edu.anu.twcore.data.runtime.Output2DData;
+import au.edu.anu.twcore.data.runtime.OutputXYData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
@@ -82,6 +83,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerXY;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
@@ -468,32 +470,37 @@ public class DataTrackerNode extends InitialisableNode
 	@SuppressWarnings("unchecked")
 	private DataTracker<?, ?> makeDataTracker(int index) {
 		AbstractDataTracker<?, ?> result = null;
-		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
-			List<CategorizedComponent> ls = new ArrayList<>();
-			CategorizedContainer<? extends CategorizedComponent> trackedContainer = null;
-			for (TreeGraphNode etype:trackedComponents) {
-				if (etype instanceof ArenaType) {
-					trackedContainer = null;
-					ls.add((CategorizedComponent)((ArenaType)etype).getInstance(index).getInstance());
-				}
-				else if (etype instanceof Component) {
-					CategorizedComponent cp = ((Component)etype).getInstance(index);
-					ls.add(cp);
-					if (cp instanceof SystemComponent)
-						trackedContainer = ((SystemComponent)cp).container();
-					else if (cp instanceof HierarchicalComponent)
-						// TODO: check this one
-						trackedContainer = ((HierarchicalComponent)cp).content().parentContainer();
-				}
+		List<CategorizedComponent> ls = new ArrayList<>();
+		CategorizedContainer<? extends CategorizedComponent> trackedContainer = null;
+		for (TreeGraphNode etype:trackedComponents) {
+			if (etype instanceof ArenaType) {
+				trackedContainer = null;
+				ls.add((CategorizedComponent)((ArenaType)etype).getInstance(index).getInstance());
 			}
-			result = new DataTracker0D(stats, tstats, selection, sampleSize,
+			else if (etype instanceof Component) {
+				CategorizedComponent cp = ((Component)etype).getInstance(index);
+				ls.add(cp);
+				if (cp instanceof SystemComponent)
+					trackedContainer = ((SystemComponent)cp).container();
+				else if (cp instanceof HierarchicalComponent)
+					// TODO: check this one
+					trackedContainer = ((HierarchicalComponent)cp).content().parentContainer();
+			}
+		}
+		if (dataTrackerClass.equals(DataTracker0D.class.getName()))
+			result = new DataTracker0D(index,stats, tstats, selection, sampleSize,
 				(CategorizedContainer<CategorizedComponent>) trackedContainer, ls,
 				expandedTrackList.keySet(),fieldMetadata);
-		} else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
-			result = new DataTracker2D();
+		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
+			result = new DataTracker2D(index);
 		}
-		if (result != null)
-			result.setSender(index);
+		else if (dataTrackerClass.equals(DataTrackerXY.class.getName()))
+			result = new DataTrackerXY(index,selection,
+				(CategorizedContainer<CategorizedComponent>) trackedContainer, ls,
+				expandedTrackList.keySet(),fieldMetadata);
+		// TODO: remove senderId and put it in constructor
+//		if (result != null)
+//			result.setSender(index);
 		return result;
 	}
 // old code
@@ -530,44 +537,41 @@ public class DataTrackerNode extends InitialisableNode
 	 *
 	 * @param widget
 	 */
-	public void attachTimeSeriesWidget(DataReceiver<Output0DData, Metadata> widget) {
-		for (DataTracker<?, Metadata> dt : dataTrackers.values())
-			if (dt instanceof DataTracker0D) {
-				((DataTracker0D) dt).addObserver(widget);
-				// BUG: dt.sendMetadata(...) sends a msg to all observed not just this newly
-				// added
-				// widget therefore, for example, the first to be initialised will get as many
-				// metadata msgs are there are
-				// timeseries widgets.
-				// we need a method dt.sendMetaDataTo(widget,(Metadata) dt.getInstance());
-				// The alternative is to remove the line below and do it after the whole graph
-				// is initialised.
-				// That may be a bit messy. It would be a static method to search the graph for
-				// dataTrackers, apply all the above instanceof tests and then sendMetaData
-
-				// Before doing anything about this cf the consequences in
-				// Simulator.resetSimulation.
-
-				// dt.sendMetadata((Metadata) dt.getInstance());
-				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
-			}
+	@SuppressWarnings("unchecked")
+	public void attachWidget(DataReceiver<?,Metadata> widget) {
+		for (DataTracker<?, Metadata> dt : dataTrackers.values()) {
+			if (dt instanceof DataTracker0D)
+				((DataTracker0D) dt).addObserver((DataReceiver<Output0DData, Metadata>) widget);
+			else if (dt instanceof DataTrackerXY)
+				((DataTrackerXY) dt).addObserver((DataReceiver<OutputXYData, Metadata>) widget);
+			else if (dt instanceof DataTracker2D)
+				((DataTracker2D) dt).addObserver((DataReceiver<Output2DData, Metadata>) widget);
+			dt.sendMetadataTo((GridNode)widget,dt.getInstance());
+		}
 	}
 
-	public void attachMapWidget(DataReceiver<Output2DData, Metadata> widget) {
-		for (DataTracker<?, Metadata> dt : dataTrackers.values())
-			if (dt instanceof DataTracker2D) {
-				((DataTracker2D) dt).addObserver(widget);
-				// dt.sendMetadata((Metadata) dt.getInstance());
-				//
-				// cf: above
-				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
-			}
-	}
-
-//	public void attachLabelValuePairWidget(DataReceiver<LabelValuePairData,Metadata> widget) {
-//		for (DataTracker<?,?> dt:dataTrackers.values())
-//			if (dt instanceof LabelValuePairTracker)
-//				((LabelValuePairTracker)dt).addObserver(widget);
+//	public void attachTimeSeriesWidget(DataReceiver<Output0DData, Metadata> widget) {
+//		for (DataTracker<?, Metadata> dt : dataTrackers.values())
+//			if (dt instanceof DataTracker0D) {
+//				((DataTracker0D) dt).addObserver(widget);
+//				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
+//			}
+//	}
+//
+//	public void attachMapWidget(DataReceiver<Output2DData, Metadata> widget) {
+//		for (DataTracker<?, Metadata> dt : dataTrackers.values())
+//			if (dt instanceof DataTracker2D) {
+//				((DataTracker2D) dt).addObserver(widget);
+//				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
+//			}
+//	}
+//
+//	public void attachXYPlotWidget(DataReceiver<OutputXYData, Metadata> widget) {
+//		for (DataTracker<?, Metadata> dt : dataTrackers.values())
+//			if (dt instanceof DataTrackerXY) {
+//				((DataTrackerXY) dt).addObserver(widget);
+//				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
+//			}
 //	}
 
 	@SuppressWarnings("unchecked")

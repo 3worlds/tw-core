@@ -191,9 +191,9 @@ hasNode dataTrackerSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery validDataTrackerSubClassSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
-			values = StringTable(([2]+
+			values = StringTable(([3]+
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D",+
-			//"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker1D",+
+			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerXY",+
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D"))
 	hasProperty SatisticsSpec
 		hasName = String("statistics")

@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.tables.*;
@@ -47,15 +46,10 @@ import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
-import au.edu.anu.twcore.rngFactory.RngFactory;
-import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.cnrs.iees.twcore.constants.RngAlgType;
-import fr.cnrs.iees.twcore.constants.RngResetType;
-import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 
@@ -67,7 +61,7 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
  */
 public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 
-	private static final String rngName = "DataTracker RNG";
+//	private static final String rngName = "DataTracker RNG";
 
 	private static String[] propertyKeys = { P_DATATRACKER_SELECT.key(), P_DATATRACKER_STATISTICS.key(),
 			P_DATATRACKER_TABLESTATS.key(), P_DATATRACKER_TRACK.key(), P_DATATRACKER_SAMPLESIZE.key(),
@@ -90,9 +84,10 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 	// true if tracking a group, false if tracking components
 	private boolean permanentComponents = false;
 
-	private Random rng;
+//	private Random rng;
 
-	public DataTracker0D(StatisticalAggregatesSet statistics,
+	public DataTracker0D(int simulatorId,
+			StatisticalAggregatesSet statistics,
 			StatisticalAggregatesSet tableStatistics,
 			SamplingMode selection,
 			int sampleSize,
@@ -100,7 +95,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
-		super(DataMessageTypes.TIME_SERIES);
+		super(DataMessageTypes.TIME_SERIES,simulatorId);
 		this.fieldMetadata = fieldMetadata;
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(), selection);
@@ -128,13 +123,13 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 		else if (trackedGroup!=null) {
 			// TODO: get the permanent value from the group characteristics.
 		}
-		// TODO: check this is ok for a RNG - do we want other settings?
-		Generator gen = RngFactory.find(rngName);
-		if (gen == null) {
-			gen = RngFactory.newInstance(rngName, 0, RngResetType.never, RngSeedSourceType.secure, RngAlgType.Pcg32);
-			rng = gen.getRandom();
-		} else
-			rng = gen.getRandom();
+//		// TODO: check this is ok for a RNG - do we want other settings?
+//		Generator gen = RngFactory.find(rngName);
+//		if (gen == null) {
+//			gen = RngFactory.newInstance(rngName, 0, RngResetType.never, RngSeedSourceType.secure, RngAlgType.Pcg32);
+//			rng = gen.getRandom();
+//		} else
+//			rng = gen.getRandom();
 	}
 
 	private void addMetadataVariable(Class<?> c, DataLabel lab) {
@@ -146,10 +141,12 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 			metadata.addIntVariable(lab);
 	}
 
+	@Override
 	public void recordTime(long time) {
 		currentTime = time;
 	}
 
+	@Override
 	public void recordItem(String... labels) {
 		currentItem = new DataLabel(labels);
 	}
@@ -211,6 +208,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 	}
 
 	// use this for SystemComponent TwData variables
+	@Override
 	public void record(SimulatorStatus status, TwData... props) {
 		if (hasObservers()) {
 			Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
@@ -229,9 +227,9 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 		}
 	}
 
-	public boolean isTracked(CategorizedContainer<CategorizedComponent> cc) {
-		return trackedGroup.equals(cc);
-	}
+//	public boolean isTracked(CategorizedContainer<CategorizedComponent> cc) {
+//		return trackedGroup.equals(cc);
+//	}
 
 	// There may be a time bottleneck here
 	public boolean isTracked(CategorizedComponent sc) {
@@ -339,22 +337,22 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 		}
 	}
 
-	// use this for simple property lists, eg Population data
-	// assumes label = property name
-	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
-		if (hasObservers()) {
-			Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
-			tsd.setTime(currentTime);
-			tsd.setItemLabel(currentItem);
-			for (DataLabel lab : metadata.intNames())
-				tsd.setValue(lab, ((Number) props.getPropertyValue(lab.getEnd())).longValue());
-			for (DataLabel lab : metadata.doubleNames())
-				tsd.setValue(lab, ((Number) props.getPropertyValue(lab.getEnd())).doubleValue());
-			for (DataLabel lab : metadata.stringNames())
-				tsd.setValue(lab, (String) props.getPropertyValue(lab.getEnd()));
-			sendData(tsd);
-		}
-	}
+//	// use this for simple property lists, eg Population data
+//	// assumes label = property name
+//	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
+//		if (hasObservers()) {
+//			Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
+//			tsd.setTime(currentTime);
+//			tsd.setItemLabel(currentItem);
+//			for (DataLabel lab : metadata.intNames())
+//				tsd.setValue(lab, ((Number) props.getPropertyValue(lab.getEnd())).longValue());
+//			for (DataLabel lab : metadata.doubleNames())
+//				tsd.setValue(lab, ((Number) props.getPropertyValue(lab.getEnd())).doubleValue());
+//			for (DataLabel lab : metadata.stringNames())
+//				tsd.setValue(lab, (String) props.getPropertyValue(lab.getEnd()));
+//			sendData(tsd);
+//		}
+//	}
 
 	@Override
 	public Metadata getInstance() {

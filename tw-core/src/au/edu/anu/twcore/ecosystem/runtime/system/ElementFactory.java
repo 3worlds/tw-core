@@ -74,7 +74,7 @@ public abstract class ElementFactory<T extends DataElement>
 			for (String key : driverTemplate.getKeysAsSet())
 				propertyMap.put(key, DRIVERS);
 		if (autoVarTemplate!=null)
-			for (String key : ComponenData.keySet)
+			for (String key : ComponentData.keySet)
 				propertyMap.put(key, AUTO);
 		if (decoratorTemplate != null)
 			for (String key : decoratorTemplate.getKeysAsSet())

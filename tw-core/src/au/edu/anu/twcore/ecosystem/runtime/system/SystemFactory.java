@@ -97,7 +97,7 @@ public class SystemFactory
 			for (String key : driverTemplate.getKeysAsSet())
 				propertyMap.put(key, DRIVERS);
 		if (autoVarTemplate!=null)
-			for (String key : ComponenData.keySet)
+			for (String key : ComponentData.keySet)
 				propertyMap.put(key, AUTO);
 		if (decoratorTemplate != null)
 			for (String key : decoratorTemplate.getKeysAsSet())
@@ -128,7 +128,7 @@ public class SystemFactory
 	@Override
 	public final SystemComponent newInstance() {
 		SimplePropertyList props = new SystemComponentPropertyListImpl(
-			(ComponenData)autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
+			(ComponentData)autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 			2,propertyMap);
 		SystemComponent result = (SystemComponent)
 			SCfactory.makeNode(SystemComponent.class,"C0",props);

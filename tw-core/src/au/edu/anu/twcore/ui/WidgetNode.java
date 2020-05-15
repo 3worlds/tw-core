@@ -52,7 +52,6 @@ import java.util.List;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
-import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.data.runtime.SpaceData;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
@@ -118,7 +117,7 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 					edgeListEndNodes());
 				for (DataTrackerNode dtn:timeSeriesTrackers)
 					if (widget instanceof DataReceiver)
-						dtn.attachTimeSeriesWidget((DataReceiver<Output0DData, Metadata>) widget);
+						dtn.attachWidget((DataReceiver<?, Metadata>) widget);
 				// space trackers sending data to this widget
 				List<SpaceNode> spaces = (List<SpaceNode>) get(edges(Direction.OUT),
 					selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())),
