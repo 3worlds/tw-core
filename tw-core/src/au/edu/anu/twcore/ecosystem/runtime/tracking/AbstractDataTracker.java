@@ -128,10 +128,10 @@ public abstract class AbstractDataTracker<T, M>
 		return !observers.isEmpty();
 	}
 
-	public void setSender(int id) {
-		senderId = id;
-	}
-
+//	public void setSender(int id) {
+//		senderId = id;
+//	}
+//
 	// As this is an abstract class, shouldn't these dummy methods be removed to force descendants to make a
 	// decision about this?
 	@Override

@@ -174,7 +174,7 @@ public class Simulator implements Resettable {
 		currentTimes = new long[timerList.size()];
 		// data tracking - record all data trackers and make their metadata
 		timetracker = new TimeTracker();
-		timetracker.setSender(id);
+//		timetracker.setSender(id);
 		metadata = new Metadata(id, refTimer.properties());
 		trackers.put(timetracker, metadata);
 		for (List<List<TwProcess>> llp : processCallingOrder.values())

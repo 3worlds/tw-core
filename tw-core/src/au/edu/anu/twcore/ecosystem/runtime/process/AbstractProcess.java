@@ -111,15 +111,15 @@ public abstract class AbstractProcess
 		return ecosystem;
 	}
 
-	public void setSender(int id) {
-		for (DataTracker<?,Metadata> tracker:trackers)
-			if (tracker instanceof AbstractDataTracker)
-				((AbstractDataTracker<?, Metadata>)tracker).setSender(id);
-//		for (DataTracker0D tracker:tsTrackers)
-//			tracker.setSender(id);
-//		for (DataTracker2D tracker:mapTrackers)
-//			tracker.setSender(id);
-	}
+//	public void setSender(int id) {
+//		for (DataTracker<?,Metadata> tracker:trackers)
+//			if (tracker instanceof AbstractDataTracker)
+//				((AbstractDataTracker<?, Metadata>)tracker).setSender(id);
+////		for (DataTracker0D tracker:tsTrackers)
+////			tracker.setSender(id);
+////		for (DataTracker2D tracker:mapTrackers)
+////			tracker.setSender(id);
+//	}
 
 	public void addDataTracker(DataTracker<?,Metadata> tracker) {
 		if (!isSealed()) {
