@@ -148,11 +148,6 @@ public class ComponentProcess
 	private void executeFunctions(double t, double dt, CategorizedComponent focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
 //		System.out.println("coucou from "+focal.toShortString()+" t = "+t);
-		for (DataTracker0D tracker:tsTrackers)
-			if (tracker.isTracked(focal)) {
-				tracker.recordItem(focalContext.buildItemId(focal.id()));
-				tracker.record(currentStatus,focal.currentState());
-		}
 
 //		if (space!=null) {
 //			Box limits = space.boundingBox();
@@ -170,7 +165,12 @@ public class ComponentProcess
 		if (focal.currentState() != null)
 			focal.nextState().writeDisable();
 
-
+		// call data trackers AFTER computations so that decorators are different from zero
+		for (DataTracker0D tracker:tsTrackers)
+			if (tracker.isTracked(focal)) {
+				tracker.recordItem(focalContext.buildItemId(focal.id()));
+				tracker.record(currentStatus,focal.currentState(),focal.decorators(),focal.autoVar());
+		}
 	}
 
 	// single loop on a container which matches the process categories

@@ -211,17 +211,20 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 	}
 
 	// use this for SystemComponent TwData variables
-	public void record(SimulatorStatus status, TwData props) {
+	public void record(SimulatorStatus status, TwData... props) {
 		if (hasObservers()) {
 			Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
 			tsd.setTime(currentTime);
 			tsd.setItemLabel(currentItem);
-			for (DataLabel lab : metadata.intNames())
-				getRecValue(0, props, lab, tsd);
-			for (DataLabel lab : metadata.doubleNames())
-				getRecValue(0, props, lab, tsd);
-			for (DataLabel lab : metadata.stringNames())
-				getRecValue(0, props, lab, tsd);
+			for (TwData data:props)
+				if (data!=null) {
+				for (DataLabel lab : metadata.intNames())
+					getRecValue(0, data, lab, tsd);
+				for (DataLabel lab : metadata.doubleNames())
+					getRecValue(0, data, lab, tsd);
+				for (DataLabel lab : metadata.stringNames())
+					getRecValue(0, data, lab, tsd);
+			}
 			sendData(tsd);
 		}
 	}
