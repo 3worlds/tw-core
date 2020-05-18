@@ -123,11 +123,6 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 	}
 
 	@Override
-	public long modelTime(double t) {
-		return (long) t;
-	}
-
-	@Override
 	public double userTime(long t) {
 		return t;
 	}

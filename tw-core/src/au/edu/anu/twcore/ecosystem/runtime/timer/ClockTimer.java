@@ -62,7 +62,7 @@ public class ClockTimer extends AbstractTimer {
 		timeUnit = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
 		nTimeUnits = (Integer) timeModel.properties().getPropertyValue(P_TIMEMODEL_NTU.key());
 		baseUnit = ((TimeLine)timeModel.getParent()).shortestTimeUnit();
-		startDateTime = ((TimeLine)timeModel.getParent()).getTimeOrigin()
+		startDateTime = ((TimeLine)timeModel.getParent()).getTimeOrigin();
 		long f = TimeUtil.timeUnitExactConversionFactor(timeUnit, baseUnit);
 		isExact = f>0L;
 		if (timeUnit.equals(TimeUnits.UNSPECIFIED))
@@ -92,26 +92,28 @@ public class ClockTimer extends AbstractTimer {
 		lastTime = newTime;
 	}
 
-	@Override
-	protected Timer clone() {
-		ClockTimer ct = new ClockTimer(timeModel);
-		ct.dt = dt;
-		ct.baseUnit = baseUnit;
-		return ct;
-	}
+	// Still used???
+//	@Override
+//	protected Timer clone() {
+//		ClockTimer ct = new ClockTimer(timeModel);
+//		ct.dt = dt;
+//		ct.baseUnit = baseUnit;
+//		return ct;
+//	}
 
-	@Override
-	public long modelTime(double t) {
-		// convert model time to simulator baseTime
-		if (isExact)
-			return Math.round(t * grainsPerBaseUnit);
-		else {
-			double result = TimeUtil.convertTime(t, timeUnit, baseUnit, startDateTime);
-			result = result * nTimeUnits;
-			return Math.round(result);
-		}
-
-	}
+//	// No longer used
+//	@Override
+//	public long modelTime(double t) {
+//		// convert model time to simulator baseTime
+//		if (isExact)
+//			return Math.round(t * grainsPerBaseUnit);
+//		else {
+//			double result = TimeUtil.convertTime(t, timeUnit, baseUnit, startDateTime);
+//			result = result * nTimeUnits;
+//			return Math.round(result);
+//		}
+//
+//	}
 
 	@Override
 	public double userTime(long t) {
