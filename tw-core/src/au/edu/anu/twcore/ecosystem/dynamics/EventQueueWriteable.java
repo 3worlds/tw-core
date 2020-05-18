@@ -38,12 +38,16 @@ import fr.cnrs.iees.twcore.constants.TimeUnits;
 // The interface seen by user code. All they can do is post and event.
 
 public interface EventQueueWriteable {
-	/* return true if posted false otherwise ( */
-	/**
-	 * @param time Time in functions time units
-	 * @param tu   Time units of the posting function
-	 * @return 1 if successful, 0 if time==head of queue, -1 if < head of queue
-	 */
-	public int postEvent(double time, TimeUnits tu);
 
+	/**
+	 * Post an TimeEvent to an class (EventTimer). The time will be converted to the
+	 * classe's time units (aka the Shortest time unit of the timeline). An
+	 * exception is thrown if, after conversion, the currentTime < time. 
+	 * We need to test the case of currentTime==time. Maybe this can be allowed
+	 * 
+	 * @param cTime Current time of the calling function
+	 * @param time Time in units of the calling function
+	 * @param tu   TimeUnits of the calling function
+	 */
+	public void postEvent(double cTime, double time, TimeUnits tu);
 }

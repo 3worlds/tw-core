@@ -61,9 +61,9 @@ public enum ConfigurationPropertyNames2 {
 	P_TIMELINE_SHORTTU/*-*/("shortestTimeUnit", /*- */ N_TIMELINE.type(), ""), //
 	P_TIMELINE_LONGTU/*-*/("longestTimeUnit", /*-   */ N_TIMELINE.type(), ""), //
 	P_TIMELINE_TIMEORIGIN/*-*/("timeOrigin", /*-    */ N_TIMELINE.type(), ""), //
-	P_TIMEMODEL_TU/*-*/("timeUnit", N_TIMEMODEL.type(), ""), //
-	P_TIMEMODEL_NTU/*-*/("nTimeUnits", N_TIMEMODEL.type(), ""), //
-	P_TIMEMODEL_SUBCLASS/*-*/("subclass", N_TIMEMODEL.type(), ""), //
+	P_TIMEMODEL_TU/*-*/("timeUnit", N_TIMER.type(), ""), //
+	P_TIMEMODEL_NTU/*-*/("nTimeUnits", N_TIMER.type(), ""), //
+	P_TIMEMODEL_SUBCLASS/*-*/("subclass", N_TIMER.type(), ""), //
 	P_COMPONENT_LIFESPAN/*-*/("lifeSpan", N_COMPONENT.type(), ""), //
 	P_COMPONENT_MOBILE/*-*/("mobile", N_COMPONENT.type(), ""), //
 	P_PARAMETERCLASS/*-*/("parameterClass", null, ""), //

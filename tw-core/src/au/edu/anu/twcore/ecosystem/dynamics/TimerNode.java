@@ -34,24 +34,17 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
-import au.edu.anu.twcore.ecosystem.runtime.timer.TimeUtil;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.Sealable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 
 /**
@@ -62,7 +55,7 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class TimeModel
+public class TimerNode
 		extends InitialisableNode
 		implements LimitedEdition<Timer>, Sealable, Resettable,TwArchetypeConstants {
 
@@ -71,22 +64,22 @@ public class TimeModel
 	/** the reference time scale, normally belonging to the TimerModelSimulator */
 	protected TimeLine timeLine;
 
-	private TimeUnits timeUnit;
-
-	private int nTimeUnits;
-
-	protected boolean isExact = false;
-
-	/** if isExact is false grainsPerBaseUnit will be zero */
-	protected long grainsPerBaseUnit = 0L;
+//	private TimeUnits timeUnit;
+//
+//	private int nTimeUnits;
+//
+//	protected boolean isExact = false;
+//
+//	/** if isExact is false grainsPerBaseUnit will be zero */
+//	protected long grainsPerBaseUnit = 0L;
 	
 	private Map<Integer,Timer> timers = new HashMap<>();
 
-	public TimeModel(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public TimerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
-	public TimeModel(Identity id, GraphFactory gfactory) {
+	public TimerNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
@@ -96,19 +89,11 @@ public class TimeModel
 			super.initialise();
 			timeLine = (TimeLine) getParent();
 			timeLine.initialise();
-			timeUnit = (TimeUnits) properties().getPropertyValue(P_TIMEMODEL_TU.key());
-			nTimeUnits = (Integer) properties().getPropertyValue(P_TIMEMODEL_NTU.key());
-			long unitConversionFactor = TimeUtil.timeUnitExactConversionFactor(timeUnit, timeLine.shortestTimeUnit());
-			isExact = unitConversionFactor > 0L;
-			if (timeUnit.equals(TimeUnits.UNSPECIFIED))
-				grainsPerBaseUnit = nTimeUnits;
-			else
-				grainsPerBaseUnit = nTimeUnits * unitConversionFactor;
 			sealed = true;
 		}
 	}
 	
-	private int eventTimeInstance = 0;
+	//private int eventTimeInstance = 0;
 	private Timer makeTimer() {
 		Timer timer = null;
 		// Clock timer
@@ -119,21 +104,19 @@ public class TimeModel
 		// event-driven timer
 		else if (properties().getPropertyValue(twaSubclass)
 				.equals(EventTimer.class.getName())) {
-			EventQueueNode eq = (EventQueueNode) get(this.getChildren(),
-				selectOne(hasTheLabel(N_EVENTQUEUE.label())));
-			timer = new EventTimer(eq.getInstance(eventTimeInstance++),this);// !!! WATCH OUT How do i know the instance number!!
+			timer = new EventTimer(this);
 		}
 		// scenario timer
 		else if (properties().getPropertyValue(twaSubclass)
 				.equals(ScenarioTimer.class.getName())) {
-			timer = new ScenarioTimer(this);
+//			timer = new ScenarioTimer(this);
 		}
 		return timer;
 	}
 
 	@Override
 	public int initRank() {
-		return N_TIMEMODEL.initRank();
+		return N_TIMER.initRank();
 	}
 
 	@Override
@@ -146,17 +129,17 @@ public class TimeModel
 	}
 
 
-	public int nTimeUnits() {
-		if (sealed)
-			return nTimeUnits;
-		throw new TwcoreException("attempt to access uninitialised data");
-	}
-
-	public TimeUnits timeUnit() {
-		if (sealed)
-			return timeUnit;
-		throw new TwcoreException("attempt to access uninitialised data");
-	}
+//	public int nTimeUnits() {
+//		if (sealed)
+//			return nTimeUnits;
+//		throw new TwcoreException("attempt to access uninitialised data");
+//	}
+//
+//	public TimeUnits timeUnit() {
+//		if (sealed)
+//			return timeUnit;
+//		throw new TwcoreException("attempt to access uninitialised data");
+//	}
 
 	public TimeLine timeLine() {
 		if (sealed)
@@ -164,11 +147,11 @@ public class TimeModel
 		throw new TwcoreException("attempt to access uninitialised data");
 	}
 
-	public boolean isExact() {
-		if (sealed)
-			return isExact;
-		throw new TwcoreException("attempt to access uninitialised data");
-	}
+//	public boolean isExact() {
+//		if (sealed)
+//			return isExact;
+//		throw new TwcoreException("attempt to access uninitialised data");
+//	}
 
 	@Override
 	public Sealable seal() {
@@ -201,25 +184,25 @@ public class TimeModel
 	 *            the user time to convert from
 	 * @return internal time (= number of timegrains)
 	 */
-	public final long modelToBaseTime(double modelTime) {
-		if (isExact)
-			return Math.round(modelTime * grainsPerBaseUnit);
-		else {
-			double result = TimeUtil.convertTime(modelTime, timeUnit, timeLine.shortestTimeUnit(),
-					timeLine.getTimeOrigin());
-			result = result * nTimeUnits;
-			return Math.round(result);
-		}
-	}
-	
+//	public final long modelToBaseTime(double modelTime) {
+//		if (isExact)
+//			return Math.round(modelTime * grainsPerBaseUnit);
+//		else {
+//			double result = TimeUtil.convertTime(modelTime, timeUnit, timeLine.shortestTimeUnit(),
+//					timeLine.getTimeOrigin());
+//			result = result * nTimeUnits;
+//			return Math.round(result);
+//		}
+//	}
+//	
     /**
      * Utility to convert internal time to this Time Model's time units
      * @return
      */
-    public final double userTime(long t) {
-    	return (1.0*t)/grainsPerBaseUnit;
-//    	return (t-timeOrigin)/timeGrain; // time origin is gone: it's either 0 or a date depending on the calendar system
-    }
+//    public final double userTime(long t) {
+//    	return (1.0*t)/grainsPerBaseUnit;
+////    	return (t-timeOrigin)/timeGrain; // time origin is gone: it's either 0 or a date depending on the calendar system
+//    }
 
 
 }

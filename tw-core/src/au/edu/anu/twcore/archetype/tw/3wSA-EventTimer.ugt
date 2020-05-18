@@ -10,20 +10,19 @@ tree
 archetype 3wSA-EventTimer
 
 	hasNode EventTimeModelSpec
-		isOfClass = String("timeModel")
+		isOfClass = String("timer")
 		hasParent = StringTable(([1]"timeLine:"))
 		multiplicity = IntegerRange("0..*")
-
-	hasNode eventQueueSpec
-		isOfClass = String("eventQueue")
-		hasParent = StringTable(([1]"timeModel:"))
-		multiplicity = IntegerRange("1..1")
-		hasEdge eventQueuePopulatorEdgeSpec
+		
+		hasEdge EventTimeerFedByEdgeSpec
 			isOfClass = String("fedBy")
 			toNode = String("function:")
 			multiplicity = IntegerRange("1..*")
+			
 			//The index by which this queue is accessed by user code
+			// So the function knows how to choose which queue to post to.
 			hasProperty fedByIndexrSpec
 				hasName = String("index")
 				type = String("Integer")
 				multiplicity = IntegerRange("1..1")
+				

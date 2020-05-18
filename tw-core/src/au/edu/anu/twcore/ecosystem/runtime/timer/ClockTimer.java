@@ -30,10 +30,12 @@ package au.edu.anu.twcore.ecosystem.runtime.timer;
 
 import java.time.LocalDateTime;
 
-import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
+import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
  * Implementation of Timer with constant time steps
@@ -44,27 +46,29 @@ import fr.cnrs.iees.twcore.constants.TimeUnits;
 public class ClockTimer extends AbstractTimer {
 
 	private long dt;
-// TODO: get rid of this - looks like a flaw
-//	private boolean runAtTimeZero;
-	// for calendar-based timers
-	private TimeUnits baseUnit  = TimeUnits.UNSPECIFIED;
+	private TimeUnits timeUnit;
+	private TimeUnits baseUnit;
+	private int nTimeUnits;	
+	private boolean isExact;
 
-	public ClockTimer(TimeModel timeModel) {
+	public ClockTimer(TimerNode timeModel) {
 		super(timeModel);
 		this.timeModel = timeModel;
-		dt = (long) timeModel.properties().getPropertyValue("dt");
-//		runAtTimeZero = (boolean) timeModel.properties().getPropertyValue("runAtTimeZero");
+		dt = (long) timeModel.properties().getPropertyValue(P_TIMEMODEL_DT.key());
+		timeUnit = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
+		nTimeUnits = (Integer) timeModel.properties().getPropertyValue(P_TIMEMODEL_NTU.key());
 		baseUnit = ((TimeLine)timeModel.getParent()).shortestTimeUnit();
+		isExact = TimeUtil.timeUnitExactConversionFactor(timeUnit, baseUnit)>0L;
 	}
 
 	@Override
 	public long dt(long time) {
-		if (!timeModel.isExact()) {
+		if (!isExact) {
 			// Create the calendar for this time
 //			LocalDateTime currentDate = TimeUtil.longToDate(time + startTime, baseUnit);
 			LocalDateTime currentDate = TimeUtil.longToDate(time, baseUnit);
 			// Create next calendar.
-			LocalDateTime nextDate = TimeUtil.getIncrementedDate(currentDate, timeModel.timeUnit(), timeModel.nTimeUnits());
+			LocalDateTime nextDate = TimeUtil.getIncrementedDate(currentDate, timeUnit, nTimeUnits);
 			// use calendar functions to calculate the difference.
 			long result = TimeUtil.timeBetween(currentDate, nextDate, baseUnit);
 			return result;
@@ -85,8 +89,15 @@ public class ClockTimer extends AbstractTimer {
 		return ct;
 	}
 
-//	public boolean runAtTimeZero() {
-//		return runAtTimeZero;
-//	}
+	@Override
+	public long modelTime(double t) {
+		throw new TwcoreException("Not implemented");
+	}
+
+	@Override
+	public double userTime(long t) {
+		throw new TwcoreException("Not implemented");
+	}
+
 
 }

@@ -152,7 +152,7 @@ public class ProcessNode
 	@SuppressWarnings("unchecked")
 	private TwProcess makeProcess(int index) {
 		AbstractProcess result = null;
-		TimeModel tm = (TimeModel) getParent();
+		TimerNode tm = (TimerNode) getParent();
 		DynamicSpace<SystemComponent,LocatedSystemComponent> sp = null;
 		if (spaceNode!=null)
 			sp = spaceNode.getInstance(index);

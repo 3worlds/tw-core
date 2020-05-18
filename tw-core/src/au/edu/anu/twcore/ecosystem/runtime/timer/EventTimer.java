@@ -28,8 +28,16 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.timer;
 
-import au.edu.anu.twcore.ecosystem.dynamics.EventQueueReadable;
-import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+import au.edu.anu.twcore.ecosystem.dynamics.EventQueueWriteable;
+import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
+import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
+import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.twcore.constants.TimeUnits;
 
 /**
  * Implementation of Timer with event-driven scheduling
@@ -37,27 +45,43 @@ import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class EventTimer extends AbstractTimer {
-	
-	private EventQueueReadable<TimeEvent> teq;
+public class EventTimer extends AbstractTimer implements EventQueueWriteable {
+
+	private static final int INITIAL_QUEUE_SIZE = 100;
+	private Queue<TimeEvent> queue;
+	private TimeUnits timeUnit;
+	private LocalDateTime startDateTime;
+
+	public EventTimer(TimerNode timeModel) {
+		super(timeModel);
+		timeUnit = ((TimeLine) timeModel.getParent()).shortestTimeUnit();
+		startDateTime = ((TimeLine) timeModel.getParent()).getTimeOrigin();
+		queue = new PriorityQueue<TimeEvent>(INITIAL_QUEUE_SIZE, new Comparator<TimeEvent>() {
+
+			@Override
+			public int compare(TimeEvent e1, TimeEvent e2) {
+				if (e1.getTime() < e2.getTime())
+					return -1;
+				if (e1.getTime() > e2.getTime())
+					return +1;
+				return 0;
+			}
+		});
+	}
+
 	private TimeEvent queueHead;
 
-	public EventTimer(EventQueueReadable<TimeEvent> teq, TimeModel timeModel) {
-		super(timeModel);
-		this.teq = teq;
-	}
-	// TODO This is all crap!!
+	// TODO CHECK!! may be crap
 	private long getEventTime() {
 		long qTime = Long.MAX_VALUE;
-		TimeEvent te = teq.peek();
-		if (te!=null)
-			qTime = te.getTime();
+		TimeEvent e = queue.peek();
+		if (e != null)
+			qTime = e.getTime();
 		queueHead = null;
 		if (qTime != Long.MAX_VALUE) {
-			queueHead=teq.peek();
-			return timeModel.modelToBaseTime(qTime);
-		}
-		else
+			queueHead = queue.peek();
+			return qTime;
+		} else
 			return Long.MAX_VALUE;
 	}
 
@@ -73,25 +97,39 @@ public class EventTimer extends AbstractTimer {
 	@Override
 	public void advanceTime(long newTime) {
 		lastTime = newTime;
-		teq.poll();
+		queue.poll();
 	}
-	
-//	@Override
-//	public void reset() {
-//		super.reset();
-//		eq.clearQueue();
-//		queueHead = null;
-//	}
+
 	// TODO check this!
 	@Override
 	public void postProcess() {
 		super.postProcess();
-		teq.reset();
+		queue.clear();
 		queueHead = null;
 	}
 
 	public TimeEvent getLastEvent() {
 		return queueHead;
+	}
+
+	@Override
+	public void postEvent(double cTime, double time, TimeUnits tu) {
+		long currentTime = Math.round(TimeUtil.convertTime(cTime, tu, timeUnit, startDateTime));
+		long eventTime = Math.round(TimeUtil.convertTime(time, tu, timeUnit, startDateTime));
+		if (eventTime <= currentTime)
+			throw new TwcoreException("Posted event must be in advance of current time. [ currentTime: " + currentTime
+					+ ", time: " + eventTime + "]");
+		queue.add(new TimeEvent(eventTime));
+	}
+
+	@Override
+	public long modelTime(double t) {
+		throw new TwcoreException("Not implemented");
+	}
+
+	@Override
+	public double userTime(long t) {
+		throw new TwcoreException("Not implemented");
 	}
 
 }

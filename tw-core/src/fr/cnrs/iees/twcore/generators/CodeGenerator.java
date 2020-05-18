@@ -134,7 +134,7 @@ public class CodeGenerator {
 			List<TreeGraphDataNode> timeModels = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
 				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())),
 				children(),
-				selectZeroOrMany(hasTheLabel(N_TIMEMODEL.label())));
+				selectZeroOrMany(hasTheLabel(N_TIMER.label())));
 			if (timeModels != null)
 				for (TreeGraphDataNode timeModel : timeModels) {
 					List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());

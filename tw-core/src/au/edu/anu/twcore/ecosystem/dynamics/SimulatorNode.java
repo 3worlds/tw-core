@@ -112,8 +112,8 @@ public class SimulatorNode
 			super.initialise();
 			timeLine = (TimeLine) get(getChildren(),
 				selectOne(hasTheLabel(N_TIMELINE.label())));
-			List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),
-				selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
+			List<TimerNode> timeModels = (List<TimerNode>)get(timeLine.getChildren(),
+				selectOneOrMany(hasTheLabel(N_TIMER.label())));
 			// processes
 			hierarchiseProcesses(timeModels);
 			sealed = true;
@@ -128,10 +128,10 @@ public class SimulatorNode
 	@SuppressWarnings("unchecked")
 	private Simulator makeSimulator(int index) {
 		// *** TimeModel --> Timer
-		List<TimeModel> timeModels = (List<TimeModel>)get(timeLine.getChildren(),
-			selectOneOrMany(hasTheLabel(N_TIMEMODEL.label())));
+		List<TimerNode> timeModels = (List<TimerNode>)get(timeLine.getChildren(),
+			selectOneOrMany(hasTheLabel(N_TIMER.label())));
 		List<Timer> timers = new ArrayList<>();
-		for (TimeModel tm:timeModels)
+		for (TimerNode tm:timeModels)
 			timers.add(tm.getInstance(index));
 		// *** StoppingConditionNode --> StoppingCondition
 		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
@@ -248,13 +248,13 @@ public class SimulatorNode
 	 * @param combinationList
 	 *            - the list of timeModel combinations
 	 */
-	private void computeTMCombinations(Set<HashSet<TimeModel>>
-		combinationList,List<TimeModel> timerList) {
+	private void computeTMCombinations(Set<HashSet<TimerNode>>
+		combinationList,List<TimerNode> timerList) {
 		int initSize = combinationList.size();
-		Set<HashSet<TimeModel>> addList = new HashSet<HashSet<TimeModel>>();
-		for (Set<TimeModel> stm : combinationList) {
-			for (TimeModel tm : timerList) {
-				HashSet<TimeModel> set = new HashSet<TimeModel>();
+		Set<HashSet<TimerNode>> addList = new HashSet<HashSet<TimerNode>>();
+		for (Set<TimerNode> stm : combinationList) {
+			for (TimerNode tm : timerList) {
+				HashSet<TimerNode> set = new HashSet<TimerNode>();
 				set.addAll(stm);
 				set.add(tm);
 				addList.add(set);
@@ -289,31 +289,31 @@ public class SimulatorNode
 	 * Code checked & tested with procesRankingTest.dsl.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	private void hierarchiseProcesses(List<TimeModel> timerList) {
+	private void hierarchiseProcesses(List<TimerNode> timerList) {
 		// compute bit pattern to identify timeModels
 		timeModelMasks = new int[timerList.size()];
 		int i = 0;
 		int mask = 0x40000000;
-		for (TimeModel tm : timerList) {
+		for (TimerNode tm : timerList) {
 			timeModelMasks[i] = mask >> i;
 			i++;
 		}
 		// builds up all the possible combinations of simultaneously occurring
 		// timeModels
-		Set<HashSet<TimeModel>> allTMCombinations = new HashSet<HashSet<TimeModel>>();
-		for (TimeModel tm : timerList) {
-			HashSet<TimeModel> set = new HashSet<TimeModel>();
+		Set<HashSet<TimerNode>> allTMCombinations = new HashSet<HashSet<TimerNode>>();
+		for (TimerNode tm : timerList) {
+			HashSet<TimerNode> set = new HashSet<TimerNode>();
 			set.add(tm);
 			allTMCombinations.add(set);
 		}
 		computeTMCombinations(allTMCombinations,timerList);
-		Map<HashSet<TimeModel>, Integer> allTMMasks = new Hashtable<HashSet<TimeModel>, Integer>();
-		for (HashSet<TimeModel> stm : allTMCombinations) {
+		Map<HashSet<TimerNode>, Integer> allTMMasks = new Hashtable<HashSet<TimerNode>, Integer>();
+		for (HashSet<TimerNode> stm : allTMCombinations) {
 			mask = 0x00000000;
 			i = 0;
 			// this assumes timeModels are always iterated in the same order in
 			// timeModels
-			for (TimeModel tm : timerList) {
+			for (TimerNode tm : timerList) {
 				if (stm.contains(tm))
 					mask = mask | timeModelMasks[i];
 				i++;
@@ -323,12 +323,12 @@ public class SimulatorNode
 		// for each time model combination, sort out the calling order of
 		// dependent processes
 		processCallingOrder = new Hashtable<Integer, List<List<ProcessNode>>>();
-		for (HashSet<TimeModel> stm : allTMCombinations) {
-			LinkedList<TimeModel> simultaneousTM = new LinkedList<TimeModel>();
+		for (HashSet<TimerNode> stm : allTMCombinations) {
+			LinkedList<TimerNode> simultaneousTM = new LinkedList<TimerNode>();
 			simultaneousTM.addAll(stm);
 			// get all processes activated by this list of time models
 			LinkedList<ProcessNode> simultaneousProcesses = new LinkedList<ProcessNode>();
-			for (TimeModel tm : simultaneousTM) {
+			for (TimerNode tm : simultaneousTM) {
 				List<ProcessNode> simP = (List<ProcessNode>) get(tm.getChildren(),
 					selectOneOrMany(hasTheLabel(N_PROCESS.label())));
 				simultaneousProcesses.addAll(simP);

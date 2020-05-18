@@ -66,8 +66,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 																						Math.max(TIMEBASE+20,	// AND TimerModels
 																							CATEGORYBASE+60))), // AND a fully initialised ECOSYSTEM
 				N_TIMELINE 		("timeLine",		"tmLn",			TimeLine.class,				TIMEBASE),//
-				N_TIMEMODEL		("timeModel",		"tmMo",			TimeModel.class,			TIMEBASE+10),// after timeLine
-				N_EVENTQUEUE	("eventQueue",		"evntq",		EventQueueNode.class,		TIMEBASE+20),// after timeModel
+				N_TIMER			("timer",			"tmr",			TimerNode.class,			TIMEBASE+10),// after timeLine
 				N_PROCESS 		("process",			"proc",			ProcessNode.class,			TIMEBASE+30),	// after TimeModel, Function & EventQueue
 				N_FUNCTION 		("function",		"Func",			FunctionNode.class,			0), // ***
 				N_DATATRACKER 	("dataTracker",		"trkr",			DataTrackerNode.class,			0),//

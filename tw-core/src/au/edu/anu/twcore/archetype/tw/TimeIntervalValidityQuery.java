@@ -90,6 +90,10 @@ public class TimeIntervalValidityQuery extends Query {
 			if (timeLineNode.hasChildren()) {
 				Iterable<ReadOnlyDataHolder> timeModels = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
 				for (ReadOnlyDataHolder timeModel : timeModels) {
+					if (!timeModel.properties().hasProperty(P_TIMEMODEL_TU.key())) {
+						satisfied = true;
+						return this;
+					}
 					TimeUnits tu = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
 					if (tu.compareTo(modelMin) < 0)
 						modelMin = tu;

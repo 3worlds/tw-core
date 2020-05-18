@@ -39,7 +39,8 @@ import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
-import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
+import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
+//import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
@@ -666,7 +667,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				proc = (ProcessNode) function.getParent();
 			else
 				proc = (ProcessNode) function.getParent().getParent();
-			TimeModel tm = (TimeModel) proc.getParent();
+			TimerNode tm = (TimerNode) proc.getParent();
 			String subc = tm.properties().getPropertyValue(P_TIMEMODEL_SUBCLASS.key()).toString();
 			return "<p>- follows timer <em>"+tm.id()+"</em> of type {@link "
 				+ subc.split("\\.")[subc.split("\\.").length-1]

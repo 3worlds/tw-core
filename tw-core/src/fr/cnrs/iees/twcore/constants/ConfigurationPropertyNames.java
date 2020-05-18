@@ -58,6 +58,7 @@ public enum ConfigurationPropertyNames {
 	P_TIMELINE_TIMEORIGIN		("timeOrigin"),
 	P_TIMEMODEL_TU				("timeUnit"),
 	P_TIMEMODEL_NTU             ("nTimeUnits"),
+	P_TIMEMODEL_DT				("dt"),
 	P_TIMEMODEL_SUBCLASS		("subclass"),
 	P_COMPONENT_LIFESPAN		("lifeSpan"),
 	P_COMPONENT_MOBILE			("mobile"),

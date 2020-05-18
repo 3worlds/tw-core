@@ -28,16 +28,16 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.timer;
 
-import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
+import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 
 public abstract class AbstractTimer implements Timer {
 
 	/** The last time at which this time model was activated */
 	protected long lastTime = 0L;
-	protected TimeModel timeModel;
+	protected TimerNode timeModel;
 
-	public AbstractTimer(TimeModel timeModel) {
+	public AbstractTimer(TimerNode timeModel) {
 		super();
 		this.timeModel = timeModel;
 	}
@@ -63,14 +63,14 @@ public abstract class AbstractTimer implements Timer {
 		lastTime = 0L;
 	}
 
-	@Override
-	public final long modelTime(double t) {
-		return timeModel.modelToBaseTime(t);
-	}
-
-	@Override
-	public final double userTime(long t) {
-		return timeModel.userTime(t);
-	}
+//	@Override
+//	public final long modelTime(double t) {
+//		return timeModel.modelToBaseTime(t);
+//	}
+//
+//	@Override
+//	public final double userTime(long t) {
+//		return timeModel.userTime(t);
+//	}
 	
 }

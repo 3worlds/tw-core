@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.timer;
 
-import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
+import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 
 /**
  * Implementation of Timer with a scenario time model
@@ -38,7 +38,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
  */
 public class ScenarioTimer extends AbstractTimer {
 
-	public ScenarioTimer(TimeModel timeModel) {
+	public ScenarioTimer(TimerNode timeModel) {
 		super(timeModel);
 	}
 
@@ -52,6 +52,18 @@ public class ScenarioTimer extends AbstractTimer {
 	public void advanceTime(long newTime) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public long modelTime(double t) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double userTime(long t) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

@@ -35,7 +35,6 @@ treegraph // saved by OmugiGraphExporter on Thu Apr 16 10:13:46 CEST 2020
 				timeModel tmMo
 					dt = java.lang.Long(1)
 					nTimeUnits = java.lang.Integer(1)
-					runAtTimeZero = java.lang.Boolean(false)
 					subclass = java.lang.String(au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer)
 					timeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(UNSPECIFIED)
 		structure community

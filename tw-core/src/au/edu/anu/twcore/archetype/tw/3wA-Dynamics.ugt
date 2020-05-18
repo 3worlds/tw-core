@@ -52,23 +52,23 @@ hasNode timeLineSpec
 		values = StringTable(([3]shortestTimeUnit,"longestTimeUnit","scale"))
 
 hasNode timeModelSpec
-	isOfClass = String("timeModel")
+	isOfClass = String("timer")
 	hasParent = StringTable(([1]"timeLine:"))
 	multiplicity = IntegerRange("1..*")
-	hasProperty timeUnitPropertySpec
-		hasName = String("timeUnit")
-		type =  String("TimeUnits")
-		multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery timeUnitTimeUnitValidityQuery
-		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
-		values = StringTable(([2]"timeUnit","scale"))
-	hasProperty
-		hasName = String("nTimeUnits")
-		type = String("Integer")
-		multiplicity = IntegerRange("1..1")
-		mustSatisfyQuery nTimeUnitsIsInRangeQuery
-			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
-			interval = IntTable(([2]1,2147483647))      // Integer.MAX_VALUE = 2^31-1 = 2147483647
+//	hasProperty timeUnitPropertySpec
+//		hasName = String("timeUnit")
+//		type =  String("TimeUnits")
+//		multiplicity = IntegerRange("1..1")
+//	mustSatisfyQuery timeUnitTimeUnitValidityQuery
+//		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
+//		values = StringTable(([2]"timeUnit","scale"))
+//	hasProperty
+//		hasName = String("nTimeUnits")
+//		type = String("Integer")
+//		multiplicity = IntegerRange("1..1")
+//		mustSatisfyQuery nTimeUnitsIsInRangeQuery
+//			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+//			interval = IntTable(([2]1,2147483647))      // Integer.MAX_VALUE = 2^31-1 = 2147483647
 	hasProperty timeModelSubclassPropertySpec
 		hasName = String("subclass")
 		type = String("String")
@@ -88,7 +88,7 @@ hasNode timeModelSpec
 
 hasNode processSpec
 	isOfClass = String("process")
-	hasParent = StringTable(([1]"timeModel:"))
+	hasParent = StringTable(([1]"timer:"))
 	multiplicity = IntegerRange("1..*")
 	mustSatisfyQuery processHasFunctionOrDataTrackerChildQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
