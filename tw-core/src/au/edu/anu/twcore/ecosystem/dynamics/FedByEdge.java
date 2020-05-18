@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
+import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -40,15 +41,11 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
  *
  * @date 14 May 2020
  */
-public class FedByEdge extends ALDataEdge {
+public class FedByEdge extends ALEdge {
 
 	public FedByEdge(Identity id, Node start, Node end, EdgeFactory graph) {
-		super(id, start, end, new ExtendablePropertyListImpl(), graph);
+		super(id, start, end, graph);
 	}
 	
-	public FedByEdge(Identity id, Node start, Node end, 
-			SimplePropertyList props, EdgeFactory graph) {
-		super(id, start, end, props, graph);
-	}
 
 }
