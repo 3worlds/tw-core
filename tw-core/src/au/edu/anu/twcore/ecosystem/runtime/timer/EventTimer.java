@@ -124,12 +124,12 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 
 	@Override
 	public long modelTime(double t) {
-		throw new TwcoreException("Not implemented");
+		return (long) t;
 	}
 
 	@Override
 	public double userTime(long t) {
-		throw new TwcoreException("Not implemented");
+		return t;
 	}
 
 }

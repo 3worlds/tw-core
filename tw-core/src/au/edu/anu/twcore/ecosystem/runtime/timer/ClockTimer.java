@@ -48,8 +48,12 @@ public class ClockTimer extends AbstractTimer {
 	private long dt;
 	private TimeUnits timeUnit;
 	private TimeUnits baseUnit;
-	private int nTimeUnits;	
+	private int nTimeUnits;
 	private boolean isExact;
+	/** if isExact is false grainsPerBaseUnit will be zero */
+	protected long grainsPerBaseUnit;
+
+	private LocalDateTime startDateTime;
 
 	public ClockTimer(TimerNode timeModel) {
 		super(timeModel);
@@ -58,7 +62,14 @@ public class ClockTimer extends AbstractTimer {
 		timeUnit = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
 		nTimeUnits = (Integer) timeModel.properties().getPropertyValue(P_TIMEMODEL_NTU.key());
 		baseUnit = ((TimeLine)timeModel.getParent()).shortestTimeUnit();
-		isExact = TimeUtil.timeUnitExactConversionFactor(timeUnit, baseUnit)>0L;
+		startDateTime = ((TimeLine)timeModel.getParent()).getTimeOrigin()
+		long f = TimeUtil.timeUnitExactConversionFactor(timeUnit, baseUnit);
+		isExact = f>0L;
+		if (timeUnit.equals(TimeUnits.UNSPECIFIED))
+			grainsPerBaseUnit = nTimeUnits;
+		else
+			grainsPerBaseUnit = nTimeUnits * f;
+
 	}
 
 	@Override
@@ -91,13 +102,23 @@ public class ClockTimer extends AbstractTimer {
 
 	@Override
 	public long modelTime(double t) {
-		throw new TwcoreException("Not implemented");
+		// convert model time to simulator baseTime
+		if (isExact)
+			return Math.round(t * grainsPerBaseUnit);
+		else {
+			double result = TimeUtil.convertTime(t, timeUnit, baseUnit, startDateTime);
+			result = result * nTimeUnits;
+			return Math.round(result);
+		}
+
 	}
 
 	@Override
 	public double userTime(long t) {
-		throw new TwcoreException("Not implemented");
+		// convert simulator baseTime to model time. Needs checking with Gregorian Timeline
+		return (1.0 * t) / grainsPerBaseUnit;
+		// if (!exact)
+		//TimeUtil.convertTime(t, baseUnit,timeUnit, startDateTime); x some bloody thing?
 	}
-
 
 }
