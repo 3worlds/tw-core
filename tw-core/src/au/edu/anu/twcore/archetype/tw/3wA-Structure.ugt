@@ -7,28 +7,11 @@ hasNode structureSpec
 hasNode categorySetRootSpec
 	isOfClass = String("categorySet")
 	hasParent = StringTable(([1]"structure:"))
-	multiplicity = IntegerRange("1..*")
+	multiplicity = IntegerRange("0..*")
 
 hasNode categorySetSpec
 	isOfClass = String("categorySet")
 	hasParent = StringTable(([1]"category:"))
-	multiplicity = IntegerRange("0..*")
-
-// predefined categorySets
-hasNode typeCategorySet
-	isOfClass = String("categorySet")
-	hasId = String("*systemElements*")
-	hasParent = StringTable(([1]"structure:"))
-	multiplicity = IntegerRange("0..*")
-hasNode popCategorySet
-	isOfClass = String("categorySet")
-	hasId = String("*composition*")
-	hasParent = StringTable(([1]"sructure:"))
-	multiplicity = IntegerRange("0..*")
-hasNode lifespanCategorySet
-	isOfClass = String("categorySet")
-	hasId = String("*lifespan*")
-	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("0..*")
 
 hasNode categorySpec
@@ -55,71 +38,6 @@ hasNode categorySpec
 		isOfClass = String("parameters")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
-
-// predefined categories
-// CategorySet *systemElements*
-hasNode arenaCategorySpec
-	isOfClass = String("category")
-	hasId = String("*arena*")
-	hasParent = StringTable(([1]"categorySet:*systemElements*"))
-	multiplicity = IntegerRange("0..1")
-hasNode componentCategorySpec
-	isOfClass = String("category")
-	hasId = String("*component*")
-	hasParent = StringTable(([1]"categorySet:*systemElements*"))
-	multiplicity = IntegerRange("0..*1")
-hasNode groupCategorySpec
-	isOfClass = String("category")
-	hasId = String("*group*")
-	hasParent = StringTable(([1]"categorySet:*systemElements*"))
-	multiplicity = IntegerRange("0..*1")
-hasNode lcCategorySpec
-	isOfClass = String("category")
-	hasId = String("*life cycle*")
-	hasParent = StringTable(([1]"categorySet:*systemElements*"))
-	multiplicity = IntegerRange("0..*1")
-hasNode spaceCategorySpec
-	isOfClass = String("category")
-	hasId = String("*space*")
-	hasParent = StringTable(([1]"categorySet:*systemElements*"))
-	multiplicity = IntegerRange("0..*1")
-hasNode relationCategorySpec
-	isOfClass = String("category")
-	hasId = String("*relation*")
-	hasParent = StringTable(([1]"categorySet:*systemElements*"))
-	multiplicity = IntegerRange("0..*1")
-// CategorySet *composition*
-hasNode populationCategorySpec
-	isOfClass = String("category")
-	hasId = String("*population*")
-	hasParent = StringTable(([1]"categorySet:*composition*"))
-	multiplicity = IntegerRange("0..*1")
-	// not sure this is really needed
-	hasEdge populationlToRecordEdgeSpec
-		isOfClass = String("autoVar")
-		toNode = String("record:AVPopulation")
-		multiplicity = IntegerRange("1..1")
-hasNode individualCategorySpec
-	isOfClass = String("category")
-	hasId = String("*individual*")
-	hasParent = StringTable(([1]"categorySet:*composition*"))
-	multiplicity = IntegerRange("0..*1")
-// CategorySet *lifespan*
-hasNode permanentCategorySpec
-	isOfClass = String("category")
-	hasId = String("*permanent*")
-	hasParent = StringTable(([1]"categorySet:*lifespan*"))
-	multiplicity = IntegerRange("0..*1")
-hasNode ephemeralCategorySpec
-	isOfClass = String("category")
-	hasId = String("*ephemeral*")
-	hasParent = StringTable(([1]"categorySet:*lifespan*"))
-	multiplicity = IntegerRange("0..*1")
-	// not sure this is really needed
-	hasEdge ephemeralToRecordEdgeSpec
-		isOfClass = String("autoVar")
-		toNode = String("record:AVEphemeral")
-		multiplicity = IntegerRange("1..1")
 
 hasNode componentTypeSpec
 	isOfClass = String("componentType")

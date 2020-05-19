@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
+//import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 
 /**
@@ -111,15 +111,15 @@ public class InitialState
 
 	@Override
 	public ComponentContainer getInstance(int id) {
-		if (!sealed)
-			initialise();
-		if (!containers.containsKey(id)) {
-			Ecosystem ecosystem = (Ecosystem) getParent().getParent();
-			containers.put(id,ecosystem.getInstance(id));
-			for (TreeNode tn:getChildren())
-				if (tn instanceof ConstantValues)
-					((ConstantValues) tn).fill(containers.get(id).parameters());
-		}
+//		if (!sealed)
+//			initialise();
+//		if (!containers.containsKey(id)) {
+//			Ecosystem ecosystem = (Ecosystem) getParent().getParent();
+//			containers.put(id,ecosystem.getInstance(id));
+//			for (TreeNode tn:getChildren())
+//				if (tn instanceof ConstantValues)
+//					((ConstantValues) tn).fill(containers.get(id).parameters());
+//		}
 		return containers.get(id);
 	}
 

@@ -58,6 +58,7 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
+import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -68,7 +69,6 @@ import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.structure.Structure;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
 import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 

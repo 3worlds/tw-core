@@ -75,6 +75,7 @@ import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.data.runtime.OutputXYData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DData;
+import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
@@ -87,7 +88,6 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerXY;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**

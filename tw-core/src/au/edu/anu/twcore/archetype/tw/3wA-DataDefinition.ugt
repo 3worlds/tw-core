@@ -153,17 +153,4 @@ hasNode recordFieldSpec
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([7]"range","type","Integer","Long","Short","Byte"))
 
-// predefined record specs (automatic variables for population and ephemeral)
-// NB: not sure this works ???
-hasNode recordAVPopulationSpec
-	isOfClass = String("record")
-	hasId = String("AVPopulation")
-	hasParent = StringTable(([1]"dataDefinition:"))
-	multiplicity = IntegerRange("0..*")
-hasNode recordAVEphemeralSpec
-	isOfClass = String("record")
-	hasId = String("record:AVEphemeral")
-	hasParent = StringTable(([1]"dataDefinition:"))
-	multiplicity = IntegerRange("0..*")
-
 

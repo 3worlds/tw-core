@@ -29,12 +29,13 @@
 package fr.cnrs.iees.twcore.constants;
 
 import au.edu.anu.twcore.data.*;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ArenaType;
 import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
 import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
+import au.edu.anu.twcore.predefined.*;
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.*;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
@@ -55,6 +56,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 	//							| label 			|def name		| 	class					| initialisation rank
 	//----------------------------------------------------------------------------------------
 	N_ROOT 						("3worlds",			"tw",			World.class,				0),//
+		N_PREDEFINED 			("predefined",		"pDef",			Predefined.class,			0),//
 		N_DATADEFINITION 		("dataDefinition",	"dDef",			DataDefinition.class,		0),//
 			N_DIMENSIONER 		("dimensioner",		"dim",			DimNode.class,				DIMBASE),//
 			N_TABLE 			("table",			"tbl",			TableNode.class,			DIMBASE+10),//

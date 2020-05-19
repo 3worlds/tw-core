@@ -31,7 +31,7 @@ package au.edu.anu.twcore.ecosystem.runtime.process;
 import java.util.LinkedList;
 import java.util.List;
 
-import au.edu.anu.twcore.ecosystem.Ecosystem;
+//import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;

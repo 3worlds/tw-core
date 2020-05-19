@@ -27,7 +27,7 @@ public class ComponentType extends ElementType<ComponentFactory, SystemComponent
 	}
 
 	@Override
-	ComponentFactory makeTemplate(int id) {
+	protected ComponentFactory makeTemplate(int id) {
 		if (setinit!=null)
 			return new ComponentFactory(categories,categoryId(),
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,

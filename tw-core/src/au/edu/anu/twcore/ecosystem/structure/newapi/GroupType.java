@@ -6,6 +6,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.Collection;
 
+import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
@@ -48,7 +49,7 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	GroupFactory makeTemplate(int id) {
+	protected GroupFactory makeTemplate(int id) {
 		ComponentContainer superContainer = null;
 		Collection<TreeNode> lcl = (Collection<TreeNode>) get(getParent().getChildren(),
 			selectZeroOrMany(hasTheLabel(N_LIFECYCLE.label())));

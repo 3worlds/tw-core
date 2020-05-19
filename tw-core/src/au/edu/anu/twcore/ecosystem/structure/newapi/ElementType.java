@@ -47,7 +47,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 
 	boolean sealed = false;
 	Map<Integer,T> templates = new HashMap<>();
-	SortedSet<Category> categories = new TreeSet<>();
+	protected SortedSet<Category> categories = new TreeSet<>();
 	private List<String> categoryNames = null;
 	private String categoryId = null;
 	/** TwData templates to clone to create new systems */
@@ -56,7 +56,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 	protected TwData decoratorTemplate = null;
 	protected TwData lifetimeConstantTemplate = null;
 	SimplePropertyList properties = null;
-	InitFunctionNode setinit = null;
+	protected InitFunctionNode setinit = null;
 
 	// default constructor
 	public ElementType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -141,7 +141,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		return templates.get(id);
 	}
 
-	abstract T makeTemplate(int id);
+	protected abstract T makeTemplate(int id);
 
 	@Override
 	public Set<Category> categories() {

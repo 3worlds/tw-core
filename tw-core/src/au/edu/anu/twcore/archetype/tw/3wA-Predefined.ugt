@@ -1,0 +1,137 @@
+tree
+// all predefined elements that must be present in any model
+// NB: this whole tree is immutable, i.e. no change should be allowed to the user (no node
+// creation, deletion, or modification)
+// users can only have edges pointing to these nodes or have these nodes pointing
+// to their edges (eg new variable definitions)
+hasNode predefinedSpec
+	isOfClass = String("predefined")
+	hasId = String("*categories*")
+	hasParent =  StringTable(([1]"3worlds:"))
+	multiplicity = IntegerRange("1..1")
+
+// predefined categorySets
+hasNode typeCategorySet
+	isOfClass = String("categorySet")
+	hasId = String("*systemElements*")
+	hasParent = StringTable(([1]"predefined:"))
+	multiplicity = IntegerRange("0..*")
+hasNode popCategorySet
+	isOfClass = String("categorySet")
+	hasId = String("*composition*")
+	hasParent = StringTable(([1]"predefined:"))
+	multiplicity = IntegerRange("0..*")
+hasNode lifespanCategorySet
+	isOfClass = String("categorySet")
+	hasId = String("*lifespan*")
+	hasParent = StringTable(([1]"predefined:"))
+	multiplicity = IntegerRange("0..*")
+
+// predefined categories
+
+// CategorySet *systemElements*
+hasNode arenaCategorySpec
+	isOfClass = String("category")
+	hasId = String("*arena*")
+	hasParent = StringTable(([1]"categorySet:*systemElements*"))
+	multiplicity = IntegerRange("0..1")
+hasNode componentCategorySpec
+	isOfClass = String("category")
+	hasId = String("*component*")
+	hasParent = StringTable(([1]"categorySet:*systemElements*"))
+	multiplicity = IntegerRange("0..*1")
+hasNode groupCategorySpec
+	isOfClass = String("category")
+	hasId = String("*group*")
+	hasParent = StringTable(([1]"categorySet:*systemElements*"))
+	multiplicity = IntegerRange("0..*1")
+hasNode lcCategorySpec
+	isOfClass = String("category")
+	hasId = String("*life cycle*")
+	hasParent = StringTable(([1]"categorySet:*systemElements*"))
+	multiplicity = IntegerRange("0..*1")
+hasNode spaceCategorySpec
+	isOfClass = String("category")
+	hasId = String("*space*")
+	hasParent = StringTable(([1]"categorySet:*systemElements*"))
+	multiplicity = IntegerRange("0..*1")
+hasNode relationCategorySpec
+	isOfClass = String("category")
+	hasId = String("*relation*")
+	hasParent = StringTable(([1]"categorySet:*systemElements*"))
+	multiplicity = IntegerRange("0..*1")
+
+// CategorySet *composition*
+hasNode populationCategorySpec
+	isOfClass = String("category")
+	hasId = String("*population*")
+	hasParent = StringTable(([1]"categorySet:*composition*"))
+	multiplicity = IntegerRange("0..*1")
+	// not sure this is really needed
+	hasEdge populationlToRecordEdgeSpec
+		isOfClass = String("autoVar")
+		toNode = String("record:AVPopulation")
+		multiplicity = IntegerRange("1..1")
+hasNode individualCategorySpec
+	isOfClass = String("category")
+	hasId = String("*individual*")
+	hasParent = StringTable(([1]"categorySet:*composition*"))
+	multiplicity = IntegerRange("0..*1")
+
+// CategorySet *lifespan*
+hasNode permanentCategorySpec
+	isOfClass = String("category")
+	hasId = String("*permanent*")
+	hasParent = StringTable(([1]"categorySet:*lifespan*"))
+	multiplicity = IntegerRange("0..*1")
+hasNode ephemeralCategorySpec
+	isOfClass = String("category")
+	hasId = String("*ephemeral*")
+	hasParent = StringTable(([1]"categorySet:*lifespan*"))
+	multiplicity = IntegerRange("0..*1")
+	// not sure this is really needed
+	hasEdge ephemeralToRecordEdgeSpec
+		isOfClass = String("autoVar")
+		toNode = String("record:AVEphemeral")
+		multiplicity = IntegerRange("1..1")
+
+// predefined record specs (automatic variables for population and ephemeral)
+// NB: not sure this works ???
+hasNode recordAVPopulationSpec
+	isOfClass = String("record")
+	hasId = String("AVPopulation")
+	hasParent = StringTable(([1]"predefined:"))
+	multiplicity = IntegerRange("1..*")
+hasNode fieldAVPopulationCountSpec
+	isOfClass = String("field")
+	hasId = String("count")
+	hasParent = StringTable(([1]"record:AVPopulation"))
+	multiplicity = IntegerRange("1..1")
+hasNode fieldAVPopulationNAddedSpec
+	isOfClass = String("field")
+	hasId = String("nAdded")
+	hasParent = StringTable(([1]"record:AVPopulation"))
+	multiplicity = IntegerRange("1..1")
+hasNode fieldAVPopulationNRemovedSpec
+	isOfClass = String("field")
+	hasId = String("nRemoved")
+	hasParent = StringTable(([1]"record:AVPopulation"))
+	multiplicity = IntegerRange("1..1")
+
+hasNode recordAVEphemeralSpec
+	isOfClass = String("record")
+	hasId = String("AVEphemeral")
+	hasParent = StringTable(([1]"predefined:"))
+	multiplicity = IntegerRange("1..*")
+hasNode fieldAVEphemeralAgeSpec
+	isOfClass = String("field")
+	hasId = String("age")
+	hasParent = StringTable(([1]"record:AVPopulation"))
+	multiplicity = IntegerRange("1..1")
+hasNode fieldAVEphemeralBirthDateSpec
+	isOfClass = String("field")
+	hasId = String("birthDate")
+	hasParent = StringTable(([1]"record:AVPopulation"))
+	multiplicity = IntegerRange("1..1")
+
+

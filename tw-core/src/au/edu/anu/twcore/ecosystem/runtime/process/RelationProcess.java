@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import au.edu.anu.twcore.ecosystem.Ecosystem;
+//import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;

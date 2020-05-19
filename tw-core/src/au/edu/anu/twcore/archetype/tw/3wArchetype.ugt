@@ -15,3 +15,4 @@ archetype 3worldsArchetype
 	importResource au.edu.anu.twcore.archetype.tw.3wA-DataDefinition.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-UserInterface.ugt
 	importResource au.edu.anu.twcore.archetype.tw.3wA-Experiment.ugt
+	importResource au.edu.anu.twcore.archetype.tw.3wA-Predefined.ugt

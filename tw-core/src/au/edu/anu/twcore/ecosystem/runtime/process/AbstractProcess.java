@@ -34,7 +34,7 @@ import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output2DData;
-import au.edu.anu.twcore.ecosystem.Ecosystem;
+//import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.DataRecorder;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
@@ -156,24 +156,24 @@ public abstract class AbstractProcess
 	 */
 	protected void setContext(HierarchicalContext context,
 			CategorizedContainer<SystemComponent> container) {
-		if (container.containerCategorized() instanceof Ecosystem) {
-			context.ecosystemParameters = container.parameters();
-//			context.ecosystemVariables = container.variables();
-//			context.ecosystemPopulationData = container.populationData();
-			context.ecosystemName = container.id();
-		}
-		else if (container.containerCategorized() instanceof LifeCycle) {
-			context.lifeCycleParameters = container.parameters();
-//			context.lifeCycleVariables = container.variables();
-//			context.lifeCyclePopulationData = container.populationData();
-			context.lifeCycleName = container.id();
-		}
-		else if (container.containerCategorized() instanceof SystemFactory)  {
-			context.groupParameters = container.parameters();
-//			context.groupVariables = container.variables();
-//			context.groupPopulationData = container.populationData();
-			context.groupName = container.id();
-		}
+//		if (container.containerCategorized() instanceof Ecosystem) {
+//			context.ecosystemParameters = container.parameters();
+////			context.ecosystemVariables = container.variables();
+////			context.ecosystemPopulationData = container.populationData();
+//			context.ecosystemName = container.id();
+//		}
+//		else if (container.containerCategorized() instanceof LifeCycle) {
+//			context.lifeCycleParameters = container.parameters();
+////			context.lifeCycleVariables = container.variables();
+////			context.lifeCyclePopulationData = container.populationData();
+//			context.lifeCycleName = container.id();
+//		}
+//		else if (container.containerCategorized() instanceof SystemFactory)  {
+//			context.groupParameters = container.parameters();
+////			context.groupVariables = container.variables();
+////			context.groupPopulationData = container.populationData();
+//			context.groupName = container.id();
+//		}
 	}
 
 	/**
