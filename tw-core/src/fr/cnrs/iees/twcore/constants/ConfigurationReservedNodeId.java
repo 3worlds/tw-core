@@ -54,6 +54,12 @@ public enum ConfigurationReservedNodeId {
 	lifespan("*lifespan*"), //
 	ephemeral(Category.ephemeral), //
 	permanent(Category.permanent),//
+	age("age"),//
+	birthDate("birthDate"),//
+	count("count"),//
+	nAdded("nAdded"),//
+	nRemoved("nRemoved"),
+	
 	;
 
 	private final String id;
