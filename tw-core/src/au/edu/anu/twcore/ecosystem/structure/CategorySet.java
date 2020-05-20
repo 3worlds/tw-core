@@ -46,8 +46,6 @@ import au.edu.anu.twcore.InitialisableNode;
  */
 public class CategorySet extends InitialisableNode {
 
-	// we also need the string "*systemElements*" constants etc i.e
-	// systemElementsName = "*systemElements*";
 
 	// default category sets present in ALL models
 	public final static String[] systemElements = { arena, lifeCycle, group, component, relation, space };

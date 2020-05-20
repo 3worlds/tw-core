@@ -26,26 +26,28 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype;
+package fr.cnrs.iees.twcore.constants;
 
-import java.util.HashSet;
-import java.util.Set;
+/**
+ * @author Ian Davies
+ *
+ * @date 20 May 2020
+ */
+public enum ConfigurationReservedEdgeLabels {
+	autoVar(ConfigurationEdgeLabels.E_AUTOVAR.label()),//
+	;
 
-import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
+	private String label;
 
-public class PrimaryTreeLabels {
-	private static Set<String> labelSet = new HashSet<>();
-	static {
-		labelSet.add(ConfigurationNodeLabels.N_SYSTEM.label());
-		labelSet.add(ConfigurationNodeLabels.N_DYNAMICS.label());
-		labelSet.add(ConfigurationNodeLabels.N_STRUCTURE.label());
-		labelSet.add(ConfigurationNodeLabels.N_DATADEFINITION.label());
-		labelSet.add(ConfigurationNodeLabels.N_EXPERIMENT.label());
-		labelSet.add(ConfigurationNodeLabels.N_UI.label());		
-		labelSet.add(ConfigurationNodeLabels.N_PREDEFINED.label());		
-	}
-	public static boolean contains(String label) {
-		return labelSet.contains(label);
+	private ConfigurationReservedEdgeLabels(String label) {
+		this.label = label;
 	}
 
+	public static boolean isPredefined(String aLabel) {
+		for (ConfigurationReservedEdgeLabels x : ConfigurationReservedEdgeLabels.values()) {
+			if (x.label.equals(aLabel))
+				return true;
+		}
+		return false;
+	}
 }

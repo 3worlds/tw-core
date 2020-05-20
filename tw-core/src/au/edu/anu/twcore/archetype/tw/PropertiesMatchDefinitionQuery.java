@@ -183,38 +183,6 @@ public class PropertiesMatchDefinitionQuery extends Query {
 	public static Duple<Boolean, Collection<TreeGraphDataNode>> getDataDefs(TreeGraphDataNode node,
 			String dataCategory) {
 
-		/*-
-		       dataCategory either: constantValues, variableValues
-		
-		       recursive category sets/categories
-		
-		       constantValues:
-		hasParent = StringTable(([3]"system:","group:","component:"))
-		// have to wait and see what "group" and "component" are and where they are in the graph.
-		
-		       variableValues:
-		       hasParent = StringTable(([1]"system:"))
-		
-		edges:
-		E_LTCONSTANTS, E_AUTOVAR, E_PARAMETERS,E_DRIVERS
-		
-				CategorySets:
-				"*systemElements*", "*lifespan*", "*composition*".
-		
-				Categories:
-				arena,lifecycle,group,component,relation,space,permanent,ephemeral,population,individual
-		
-				To collect all root records:
-				Do we care about these special names?
-				* 1) if system or structure does not exist return null
-				* 2) find all categories through recursion.
-				* 3) if not categories return empty list.
-				* 4) if "constantValues" collect all endnodes of  edges called E_LTCONSTANTS, E_PARAMETERS
-				* 5) if "variableValues" collect all endnodes of  edges called E_DRIVERS, E_AUTOVAR
-				* -is that it?
-				*
-				*/
-
 		// can't allow exceptions to arise here if used from MM
 		Boolean addAutoVars = false;
 		TreeGraphDataNode parent = (TreeGraphDataNode) node.getParent();
@@ -222,20 +190,9 @@ public class PropertiesMatchDefinitionQuery extends Query {
 			return null;
 		TreeGraphDataNode ct = null;
 
-		// drivers and decorators: find the component type through instanceOf edge
-		// NB: decorators are not supposed to be initialised anymore
-		// NB: for arena, there is no instance of edge - the parent of constantVaues or
-		// variableValues
-		// is the instance itself
-		// usual case: parent is an instance of an ElementType-derved node
 		ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
 				endNode());
-		// special case for component: parent is a ComponentType, and there may be
-		// optionnally
-		// a group with an instanceOf crosslink (actually we dont care about the
-		// crosslink
 
-		// special case for arena: parent is the ElementType
 		if (ct == null)
 			ct = parent;
 		while (!(ct != null) && !(ct instanceof ElementType<?, ?>))
@@ -249,38 +206,6 @@ public class PropertiesMatchDefinitionQuery extends Query {
 			}
 		}
 
-//		if (dataCategory.equals(E_DRIVERS.label()) || dataCategory.equals(E_DECORATORS.label())) {
-//			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-//					selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
-//			if (ct != null) {
-//				LifespanType lst = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
-//				if (lst.equals(LifespanType.ephemeral))
-//					addAutoVars = true;
-//			}
-//			// parameters: find the component type through groupOf edge
-//		} else if (dataCategory.equals(E_PARAMETERS.label())) {
-//			ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
-//					endNode());
-////			 check the case there is only one component directly declared under initialState
-////			 in which case the edge will be an instanceOf edge
-//			if (ct == null) {
-//				ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT),
-//						selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())), endNode());
-//				WIP
-		// check that node is the only child of Parent of its category type.
-//				Set<Category> ctg = ((ComponentType)ct).categories();
-//				int i=0;
-//				List<TreeGraphDataNode> children = (List<TreeGraphDataNode>) get(parent.getChildren());
-//				for (TreeGraphDataNode cn: children) {
-//					// search instanceOf or groupOf links
-//					if (cn instanceof Categorized)
-//						if (((Categorized<?>)cn).belongsTo(ctg))
-//							i++;
-//				}
-//				if (i>1)
-//					ct = null;
-//			}
-//		}
 		List<TreeGraphDataNode> cats = (List<TreeGraphDataNode>) get(ct.edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 		if (cats.isEmpty())

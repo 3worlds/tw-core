@@ -32,6 +32,8 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;

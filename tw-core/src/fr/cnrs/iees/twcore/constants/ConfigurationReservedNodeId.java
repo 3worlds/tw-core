@@ -26,26 +26,54 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype;
+package fr.cnrs.iees.twcore.constants;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import au.edu.anu.twcore.ecosystem.structure.Category;
 
-import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
+/**
+ * @author Ian Davies
+ *
+ * @date 20 May 2020
+ */
+public enum ConfigurationReservedNodeId {
+	categories("*categories*"), //
+	AVEphemeral("AVEphemeral"), //
+	AVPopulation("AVPopulation"), //
+	composition("*composition*"), //
+	population(Category.population), //
+	individual(Category.individual), //
+	systemElements("*systemElements*"), //
+	lifecycle(Category.lifeCycle), //
+	group(Category.group), //
+	relation(Category.relation), //
+	component(Category.component), //
+	space(Category.space), //
+	arena(Category.arena), //
+	lifespan("*lifespan*"), //
+	ephemeral(Category.ephemeral), //
+	permanent(Category.permanent),//
+	;
 
-public class PrimaryTreeLabels {
-	private static Set<String> labelSet = new HashSet<>();
-	static {
-		labelSet.add(ConfigurationNodeLabels.N_SYSTEM.label());
-		labelSet.add(ConfigurationNodeLabels.N_DYNAMICS.label());
-		labelSet.add(ConfigurationNodeLabels.N_STRUCTURE.label());
-		labelSet.add(ConfigurationNodeLabels.N_DATADEFINITION.label());
-		labelSet.add(ConfigurationNodeLabels.N_EXPERIMENT.label());
-		labelSet.add(ConfigurationNodeLabels.N_UI.label());		
-		labelSet.add(ConfigurationNodeLabels.N_PREDEFINED.label());		
+	private final String id;
+
+	private ConfigurationReservedNodeId(String id) {
+		this.id = id;
 	}
-	public static boolean contains(String label) {
-		return labelSet.contains(label);
+
+	private static Map<String, ConfigurationReservedNodeId> lookup = new HashMap<>();
+	static {
+		for (ConfigurationReservedNodeId x : ConfigurationReservedNodeId.values())
+			lookup.put(x.id, x);
+	}
+
+	public String id() {
+		return id;
+	}
+
+	public static boolean isPredefined(String anId) {
+		return lookup.get(anId) != null;
 	}
 
 }
