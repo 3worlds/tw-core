@@ -28,7 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
+import java.util.Random;
+
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import fr.cnrs.iees.uit.space.Box;
@@ -90,30 +93,45 @@ public abstract class ChangeOtherStateFunction extends TwFunctionAdapter {
 	 * @param nextOtherDrv other driver values at next time (t+dt)
 	 * @param nextOtherLoc other new spatial coordinates at next time (t+dt)
 	 */
+//	public abstract void changeOtherState(
+//			double t,
+//			double dt,
+//			Box limits,
+//			TwData ecosystemPar,
+//			ComponentContainer ecosystemPop,
+//			TwData lifeCyclePar,
+//			ComponentContainer lifeCyclePop,
+//			TwData groupPar,
+//			ComponentContainer groupPop,
+//			TwData otherGroupPar,
+//			ComponentContainer otherGroupPop,
+//			ComponentData focalAuto,
+//			TwData focalLtc,
+//			TwData focalDrv,
+//			TwData focalDec,
+//			Point focalLoc,
+//			ComponentData otherAuto,
+//			TwData otherLtc,
+//			TwData otherDrv,
+//			TwData otherDec, // read-write
+//			Point otherLoc,
+//			// returning data (read write parameters)
+//			TwData nextOtherDrv,
+//			double[] nextOtherLoc
+//	);
+
 	public abstract void changeOtherState(
 			double t,
 			double dt,
-			Box limits,
-			TwData ecosystemPar,
-			ComponentContainer ecosystemPop,
-			TwData lifeCyclePar,
-			ComponentContainer lifeCyclePop,
-			TwData groupPar,
-			ComponentContainer groupPop,
-			TwData otherGroupPar,
-			ComponentContainer otherGroupPop,
-			ComponentData focalAuto,
-			TwData focalLtc,
-			TwData focalDrv,
-			TwData focalDec,
-			Point focalLoc,
-			ComponentData otherAuto,
-			TwData otherLtc,
-			TwData otherDrv,
-			TwData otherDec, // read-write
-			Point otherLoc,
-			// returning data (read write parameters)
-			TwData nextOtherDrv,
+			CategorizedComponent arena,
+			CategorizedComponent lifeCycle,
+			CategorizedComponent group,
+			CategorizedComponent space,
+			CategorizedComponent focal,
+			CategorizedComponent otherLifeCycle,
+			CategorizedComponent otherGroup,
+			CategorizedComponent other,
+			double[] nextFocalLoc,
 			double[] nextOtherLoc
 	);
 
