@@ -53,12 +53,13 @@ public abstract class ElementFactory<T extends DataElement>
 	 * @param categories
 	 * @param categoryId
 	 */
-	public ElementFactory(Set<Category> categories, String categoryId,
+	public ElementFactory(Set<Category> categories, /*String categoryId,*/
 			TwData auto, TwData drv, TwData dec, TwData ltc,
 			SetInitialStateFunction setinit) {
 		super();
 		this.categories.addAll(categories);
-		this.categoryId = categoryId;
+//		this.categoryId = categoryId;
+		this.categoryId = buildCategorySignature();
 		categoryNames = new ArrayList<>(categories.size());
 		for (Category c:categories)
 			categoryNames.add(c.id()); // order is maintained

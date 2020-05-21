@@ -85,6 +85,12 @@ hasNode componentTypeSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:*component*")
 		multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery hasOneCategoryOfCompositionSpec
+		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
+		reference = String(categorySet:*composition*)
+	mustSatisfyQuery hasOneCategoryOfLifeSpanSpec
+		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
+		reference = String(categorySet:*lifespan*)
 
 // initial state for an individual component instance of a ComponentType
 hasNode componentSpec

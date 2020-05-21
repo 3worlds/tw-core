@@ -172,7 +172,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //				argClasses.add(arggrp.type());
 		for (TwFunctionArguments arggrp:type.readOnlyArguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
-				argClasses.add(arggrp.type());
+				if (!arggrp.type().equals("double[]"))
+					argClasses.add(arggrp.type());
 		// TODO: CHECk THIS: it's probably wrong
 		for (TwFunctionArguments arggrp:type.writeableArguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))

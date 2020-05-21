@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import fr.cnrs.iees.uit.space.Box;
@@ -79,40 +80,42 @@ public abstract class RelateToDecisionFunction extends AbstractDecisionFunction 
 	 * @param otherLoc other location at current time, if any
 	 * @return true to establish the relation, false otherwise
 	 */
+//	public abstract boolean relate(
+//			double t,
+//			double dt,
+//			Box limits,
+//			TwData ecosystemPar,
+//			ComponentContainer ecosystemPop,
+//			TwData lifeCyclePar,
+//			ComponentContainer lifeCyclePop,
+//			TwData groupPar,
+//			ComponentContainer groupPop,
+//			TwData otherGroupPar,
+//			ComponentContainer otherGroupPop,
+//			ComponentData focalAuto,
+//			TwData focalLtc,
+//			TwData focalDrv,
+//			TwData focalDec,
+//			Point focalLoc,
+//			ComponentData otherAuto,
+//			TwData otherLtc,
+//			TwData otherDrv,
+//			TwData otherDec,
+//			Point otherLoc
+//	);
 	public abstract boolean relate(
 			double t,
 			double dt,
-			Box limits,
-			TwData ecosystemPar,
-			ComponentContainer ecosystemPop,
-			TwData lifeCyclePar,
-			ComponentContainer lifeCyclePop,
-			TwData groupPar,
-			ComponentContainer groupPop,
-			TwData otherGroupPar,
-			ComponentContainer otherGroupPop,
-			ComponentData focalAuto,
-			TwData focalLtc,
-			TwData focalDrv,
-			TwData focalDec,
-			Point focalLoc,
-			ComponentData otherAuto,
-			TwData otherLtc,
-			TwData otherDrv,
-			TwData otherDec,
-			Point otherLoc
+			CategorizedComponent arena,
+			CategorizedComponent lifeCycle,
+			CategorizedComponent group,
+			CategorizedComponent space,
+			CategorizedComponent focal,
+			CategorizedComponent otherLifeCycle,
+			CategorizedComponent otherGroup,
+			CategorizedComponent other,
+			double[] nextFocalLoc,
+			double[] nextOtherLoc
 	);
-
-	/**
-	 * An optional function computing a maximum search distance for establishing a relation.
-	 * relateTo(...) will only be called for 'other' SystemComponents for which distance to
-	 * 'focal' is smaller than or equal to searchRadius(focal). This assumes a space is used
-	 * with the process which has this RelateToDecisionFunction as a function.
-	 *
-	 * @param focal
-	 * @return
-	 */
-	// ISSUE HERE: code generation not designed to handle more than one method per function type
-//	public abstract double searchRadius(SystemComponent focal);
 
 }

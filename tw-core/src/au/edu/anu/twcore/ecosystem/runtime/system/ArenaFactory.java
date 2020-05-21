@@ -19,9 +19,9 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 	private boolean makeContainer = true;
 	private String name = null;
 
-	public ArenaFactory(Set<Category> categories, String categoryId, TwData auto, TwData drv, TwData dec,
+	public ArenaFactory(Set<Category> categories, /*String categoryId,*/ TwData auto, TwData drv, TwData dec,
 			TwData ltc, SetInitialStateFunction setinit,boolean makeContainer,String name) {
-		super(categories, categoryId, auto, drv, dec, ltc, setinit);
+		super(categories, /*categoryId,*/ auto, drv, dec, ltc, setinit);
 		this.makeContainer = makeContainer;
 		this.name = name;
 	}

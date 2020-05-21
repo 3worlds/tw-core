@@ -61,11 +61,11 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 	@Override
 	protected ArenaFactory makeTemplate(int id) {
 		if (setinit!=null)
-			return new ArenaFactory(categories,categoryId(),
+			return new ArenaFactory(categories,/*categoryId(),*/
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 				(SetInitialStateFunction)setinit.getInstance(id),makeContainer,id());
 		else
-			return new ArenaFactory(categories,categoryId(),
+			return new ArenaFactory(categories,/*categoryId(),*/
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 				null,makeContainer,id());
 	}

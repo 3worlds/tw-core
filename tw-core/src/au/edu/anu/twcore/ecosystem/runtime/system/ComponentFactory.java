@@ -16,10 +16,10 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  */
 public class ComponentFactory extends ElementFactory<SystemComponent> {
 
-	public ComponentFactory(Set<Category> categories, String categoryId,
+	public ComponentFactory(Set<Category> categories, /*String categoryId,*/
 			TwData auto, TwData drv,
 			TwData dec, TwData ltc, SetInitialStateFunction setinit) {
-		super(categories, categoryId, auto, drv, dec, ltc, setinit);
+		super(categories, /*categoryId,*/ auto, drv, dec, ltc, setinit);
 	}
 
 	@Override

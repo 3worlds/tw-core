@@ -34,9 +34,12 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
 import au.edu.anu.twcore.DefaultStrings;
@@ -48,7 +51,10 @@ import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -81,6 +87,11 @@ public class Component
 	private ArenaType arena = null;
 	// the group instance this component is instance of
 	private Group group = null;
+	// number of component types declared
+	// if only one, then components can be stored in the arena
+	// if >1, then even if no groups are declared, components must be stored in separate group
+	// containers matching category signatures
+	private int nComponentTypes = 0;
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -97,6 +108,8 @@ public class Component
 	public void initialise() {
 		super.initialise();
 		sealed = false;
+		nComponentTypes = ((Collection<?>)get(getParent().getParent().getChildren(),
+			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())))).size();
 //		componentFactory = (ComponentType) get(edges(Direction.OUT),
 //			selectOne(hasTheLabel(E_INSTANCEOF.label())),
 //			endNode());
@@ -114,8 +127,8 @@ public class Component
 		// this edge, if present, points to a Group node
 		Edge instof = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
-		if (instof==null)  // means the container is the ArenaComponent
-							//	system >	structure >	componentType > component
+		if (instof==null)
+							   // system > structure >	componentType > component
 			arena = (ArenaType) getParent().getParent().getParent();
 		else
 			group = (Group) instof.endNode();
@@ -139,6 +152,25 @@ public class Component
 	}
 
 	@SuppressWarnings("unchecked")
+	private Set<Category> generatedGroupCats() {
+		Set<Category>result = new TreeSet<>();
+		 				// 3Worlds > 	system > 	structure >	componentType > component
+		TreeNode root3w =  getParent().getParent().getParent().getParent();
+		TreeNode predef = (TreeNode) get(root3w.getChildren(),
+			selectOne(hasTheLabel(N_PREDEFINED.label())));
+		List<TreeNode> l = (List<TreeNode>) get(predef.getChildren(),
+			selectZeroOrMany(hasTheLabel(N_CATEGORYSET.label())));
+		for (TreeNode catSet:l) {
+			for (TreeNode cat:catSet.getChildren()) {
+				if (cat.id().equals(Category.group) ||
+					cat.id().equals(Category.population) ||
+					cat.id().equals(Category.permanent))
+					result.add((Category) cat);
+			}
+		}
+		return result;
+	}
+
 	@Override
 	public SystemComponent getInstance(int id) {
 		if (!sealed)
@@ -162,11 +194,26 @@ public class Component
 				sp.addInitialItem(lsc);
 			}
 			// insert component into container
-			LimitedEdition<ComponentContainer> p = (LimitedEdition<ComponentContainer>) getParent();
+//			LimitedEdition<ComponentContainer> p = (LimitedEdition<ComponentContainer>) getParent();
 			ComponentContainer container = null;
 			if (arena!=null)
-				container = arena.getInstance(id).getInstance().content();
-			else if (group!=null)
+				if (nComponentTypes==1) // means the container is the ArenaComponent
+					container = arena.getInstance(id).getInstance().content();
+				else { // group container must be created and inserted under arena
+					ComponentContainer parentContainer = arena.getInstance(id).getInstance().content();
+					String containerId = componentFactory.categoryId(); // check this is ok
+					container = (ComponentContainer) parentContainer.subContainer(containerId);
+					// POSSIBLE FLAW HERE: there is no Group node matching this group factory
+					if (container==null) {
+						Set<Category>cats = generatedGroupCats();
+						GroupFactory gfac = new GroupFactory(cats,
+							null,null,null,null,null,
+							containerId,parentContainer);
+						GroupComponent gComp = gfac.newInstance();
+						container = gComp.content();
+					}
+				}
+			else if (group!=null) // container is an existing group
 				container = group.getInstance(id);
 			container.setCategorized(componentFactory.getInstance(id));
 			container.addInitialItem(sc);

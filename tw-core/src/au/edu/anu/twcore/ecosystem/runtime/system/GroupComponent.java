@@ -12,8 +12,6 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 public class GroupComponent
 		extends HierarchicalComponent {
 
-	private ComponentContainer content = null;
-
 	public GroupComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
