@@ -96,7 +96,7 @@ public class OutNodeXorQuery extends Query {
 	}
 
 	public static boolean propose(Node localItem, Node proposedEndNode, String nodeLabel1, String nodeLabel2) {
-		Duple<List<Node>,List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1,nodeLabel1);
+		Duple<List<Node>,List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1,nodeLabel2);
 		String choice;
 		if (!nodeLists.getFirst().isEmpty())
 			choice = nodeLists.getFirst().get(0).classId();
