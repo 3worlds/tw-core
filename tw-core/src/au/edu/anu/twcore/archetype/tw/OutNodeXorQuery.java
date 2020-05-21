@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import java.util.List;
+import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.queries.Query;
@@ -68,14 +69,8 @@ public class OutNodeXorQuery extends Query {
 	public Query process(Object input) { // input is a node
 		defaultProcess(input);
 		localItem = (Node) input;
-		Duple<List<Node>,List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1,nodeLabel2);
-//
-//		List<Node> nl1 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
-//				selectZeroOrMany(hasTheLabel(nodeLabel1)));
-//		List<Node> nl2 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
-//				selectZeroOrMany(hasTheLabel(nodeLabel2)));
-//		satisfied = (nl1.size() > 0) ^ (nl2.size() > 0);
-		satisfied = (nodeLists.getFirst().size()>0)^(nodeLists.getSecond().size()>0);
+		Duple<List<Node>, List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1, nodeLabel2);
+		satisfied = (nodeLists.getFirst().size() > 0) ^ (nodeLists.getSecond().size() > 0);
 		return this;
 	}
 
@@ -86,24 +81,30 @@ public class OutNodeXorQuery extends Query {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Duple<List<Node>,List<Node>> getNodeLists(Node localItem,String nodeLabel1,String nodeLabel2){
+	private static Duple<List<Node>, List<Node>> getNodeLists(Node localItem, String nodeLabel1, String nodeLabel2) {
 		List<Node> nl1 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
 				selectZeroOrMany(hasTheLabel(nodeLabel1)));
 		List<Node> nl2 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
 				selectZeroOrMany(hasTheLabel(nodeLabel2)));
-		return new Duple<List<Node>,List<Node>>(nl1,nl2);
+		return new Duple<List<Node>, List<Node>>(nl1, nl2);
 
 	}
 
 	public static boolean propose(Node localItem, Node proposedEndNode, String nodeLabel1, String nodeLabel2) {
-		Duple<List<Node>,List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1,nodeLabel2);
-		String choice;
-		if (!nodeLists.getFirst().isEmpty())
-			choice = nodeLists.getFirst().get(0).classId();
-		else
-			choice = nodeLists.getSecond().get(0).classId();
-
-		return choice.equals(proposedEndNode.classId());
+		/**
+		 * if the proposed node classId is not in the set {nodelabel1,nodelable2} then
+		 * this query is not relevant.
+		 */
+		if (Set.of(nodeLabel1, nodeLabel2).contains(proposedEndNode.classId())) {
+			Duple<List<Node>, List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1, nodeLabel2);
+			String choice;
+			if (!nodeLists.getFirst().isEmpty())
+				choice = nodeLists.getFirst().get(0).classId();
+			else
+				choice = nodeLists.getSecond().get(0).classId();
+			return choice.equals(proposedEndNode.classId());
+		}
+		return true;
 	}
 
 }
