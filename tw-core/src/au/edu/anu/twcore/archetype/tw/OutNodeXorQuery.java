@@ -97,11 +97,14 @@ public class OutNodeXorQuery extends Query {
 		 */
 		if (Set.of(nodeLabel1, nodeLabel2).contains(proposedEndNode.classId())) {
 			Duple<List<Node>, List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1, nodeLabel2);
-			String choice;
+			String choice=null;
 			if (!nodeLists.getFirst().isEmpty())
 				choice = nodeLists.getFirst().get(0).classId();
-			else
+			else if(!nodeLists.getSecond().isEmpty())
 				choice = nodeLists.getSecond().get(0).classId();
+
+			if (choice==null)
+				return true;
 			return choice.equals(proposedEndNode.classId());
 		}
 		return true;
