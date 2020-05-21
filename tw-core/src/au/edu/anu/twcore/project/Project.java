@@ -373,8 +373,9 @@ public class Project implements ProjectPaths, TwPaths {
 	private static String[] parseProjectName(File file) {
 		String name = file.getName();
 		String[] items = name.split(sep);
-		if (!(items.length == 3))
-			throw new TwcoreException(name + " is not a project name. Must have Project_<name>_<dateTime>");
+		if (!(items.length == 3)) {
+			throw new TwcoreException(name + " is not a project name. Must have Project_<name>_<dateTime>. Found: "+Arrays.deepToString(items));
+		}
 		if (!items[0].equals(PROJECT_DIR_PREFIX))
 			throw new TwcoreException(name + " is not a project name. Must start with key work 'Project'");
 		try {
