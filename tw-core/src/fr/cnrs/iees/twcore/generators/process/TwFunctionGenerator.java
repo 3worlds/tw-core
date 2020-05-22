@@ -51,6 +51,8 @@ import org.bouncycastle.util.Strings;
 
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -164,22 +166,19 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
 
 		// imports in the TwFunction descendant
-//		generator.setImport(SystemComponent.class.getCanonicalName());
-		generator.setImport(Table.class.getPackageName()+".*");
+//		generator.setImport(Table.class.getPackageName()+".*"); // not needed anymore, I think.
 		Set<String> argClasses = new TreeSet<>(); // constant order
-//		for (ArgumentGroups arggrp:type.readOnlyArguments())
-//			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
-//				argClasses.add(arggrp.type());
 		for (TwFunctionArguments arggrp:type.readOnlyArguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
 				if (!arggrp.type().equals("double[]"))
 					argClasses.add(arggrp.type());
-		// TODO: CHECk THIS: it's probably wrong
 		for (TwFunctionArguments arggrp:type.writeableArguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
 				if (!arggrp.type().equals("double[]"))
 					argClasses.add(arggrp.type());
 		for (String s:argClasses)
+			generator.setImport(s);
+		for (String s:dataClassesToImport)
 			generator.setImport(s);
 
 		// inner classes for returned values
@@ -329,6 +328,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 							innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+"."+rec.name+"()");
 					}
 				}
+				// special case for automatic variables
+				if (rec.klass.equals(ComponentData.class.getName()) || rec.klass.equals(ContainerData.class.getName()))
+					dataClassesToImport.add(rec.klass);
+				// generating record members arguments
 				for (memberInfo field:rec.members) {
 					// generate calls to inner methods to write as arguments to user method
 					String callArg = null;

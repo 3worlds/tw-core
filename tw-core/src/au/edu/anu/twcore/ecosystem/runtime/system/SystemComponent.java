@@ -120,12 +120,12 @@ public class SystemComponent
 		return list;
 	}
 
-	public SystemRelation relateTo(SystemComponent toComponent, String relationType) {
-		SystemRelation rel = (SystemRelation) connectTo(Direction.OUT,toComponent,
-			new SharedPropertyListImpl(SystemRelation.DEFAULT_PROPERTIES));
-		rel.properties().setProperty(P_RELATIONTYPE.key(),relationType);
-		return rel;
-	}
+//	public SystemRelation relateTo(SystemComponent toComponent, String relationType) {
+//		SystemRelation rel = (SystemRelation) connectTo(Direction.OUT,toComponent,
+//			new SharedPropertyListImpl(SystemRelation.DEFAULT_PROPERTIES));
+//		rel.properties().setProperty(P_RELATIONTYPE.key(),relationType);
+//		return rel;
+//	}
 
 	public TwData autoVar() {
 		return ((SystemComponentPropertyListImpl)properties()).auto();

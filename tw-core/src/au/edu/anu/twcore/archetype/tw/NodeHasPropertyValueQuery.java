@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -38,117 +38,117 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 
 /**
- * A query to check that a TreeNode parent has a certain property value
- * 
- * @author Jacques Gignoux - 9 août 2019
+ * A query to check that a TreeNode has a certain property value
+ *
+ * @author Jacques Gignoux - 22 mai 2020
  *
  */
-public class ParentHasPropertyValueQuery extends Query {
-	
-	private String propertyName = null;
-	private List<Object> expectedValues = new LinkedList<Object>();
+public class NodeHasPropertyValueQuery extends Query {
+
+	protected String propertyName = null;
+	protected List<Object> expectedValues = new LinkedList<Object>();
 
 	// constructors.... many cases
-	private ParentHasPropertyValueQuery(String pname) {
+	private NodeHasPropertyValueQuery(String pname) {
 		super();
 		propertyName = pname;
 	}
 	// reminder: parameters may come in any order
 	// Strings
-	public ParentHasPropertyValueQuery(String pname, StringTable values) {
+	public NodeHasPropertyValueQuery(String pname, StringTable values) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
-	public ParentHasPropertyValueQuery(StringTable values, String pname) {
+	public NodeHasPropertyValueQuery(StringTable values, String pname) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
 	// ints
-	public ParentHasPropertyValueQuery(String pname, IntTable values) {
+	public NodeHasPropertyValueQuery(String pname, IntTable values) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
-	public ParentHasPropertyValueQuery(IntTable values, String pname) {
+	public NodeHasPropertyValueQuery(IntTable values, String pname) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
 	// doubles
-	public ParentHasPropertyValueQuery(String pname, DoubleTable values) {
+	public NodeHasPropertyValueQuery(String pname, DoubleTable values) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
-	public ParentHasPropertyValueQuery(DoubleTable values, String pname) {
+	public NodeHasPropertyValueQuery(DoubleTable values, String pname) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
 	// longs
-	public ParentHasPropertyValueQuery(String pname, LongTable values) {
+	public NodeHasPropertyValueQuery(String pname, LongTable values) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
-	public ParentHasPropertyValueQuery(LongTable values, String pname) {
+	public NodeHasPropertyValueQuery(LongTable values, String pname) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
 	// shorts
-	public ParentHasPropertyValueQuery(String pname, ShortTable values) {
+	public NodeHasPropertyValueQuery(String pname, ShortTable values) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
-	public ParentHasPropertyValueQuery(ShortTable values, String pname) {
+	public NodeHasPropertyValueQuery(ShortTable values, String pname) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
 	// bytes
-	public ParentHasPropertyValueQuery(String pname, ByteTable values) {
+	public NodeHasPropertyValueQuery(String pname, ByteTable values) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
-	public ParentHasPropertyValueQuery(ByteTable values, String pname) {
+	public NodeHasPropertyValueQuery(ByteTable values, String pname) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
 	// floats
-	public ParentHasPropertyValueQuery(String pname, FloatTable values) {
+	public NodeHasPropertyValueQuery(String pname, FloatTable values) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
-	public ParentHasPropertyValueQuery(FloatTable values, String pname) {
+	public NodeHasPropertyValueQuery(FloatTable values, String pname) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
 	// booleans
-	public ParentHasPropertyValueQuery(String pname, BooleanTable values) {
+	public NodeHasPropertyValueQuery(String pname, BooleanTable values) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
-	public ParentHasPropertyValueQuery(BooleanTable values, String pname) {
+	public NodeHasPropertyValueQuery(BooleanTable values, String pname) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
 	// chars
-	public ParentHasPropertyValueQuery(String pname, CharTable values) {
+	public NodeHasPropertyValueQuery(String pname, CharTable values) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
 	}
-	public ParentHasPropertyValueQuery(CharTable values, String pname) {
+	public NodeHasPropertyValueQuery(CharTable values, String pname) {
 		this(pname);
 		for (int i=0; i<values.size(); i++)
 			expectedValues.add(values.getWithFlatIndex(i));
@@ -159,23 +159,24 @@ public class ParentHasPropertyValueQuery extends Query {
 	public Query process(Object input) { // input is a TreeNode
 		defaultProcess(input);
 		TreeNode localItem = (TreeNode) input;
-		TreeNode parent = localItem.getParent();
-		if (parent!=null)
-			if (parent instanceof ReadOnlyDataHolder) {
-				ReadOnlyPropertyList props = ((ReadOnlyDataHolder) parent).properties();
+		if (localItem!=null)
+			if (localItem instanceof ReadOnlyDataHolder) {
+				ReadOnlyPropertyList props = ((ReadOnlyDataHolder) localItem).properties();
 				if (props.hasProperty(propertyName))
 					for (Object o:expectedValues)
-						if (o.equals(props.getPropertyValue(propertyName))) {
+						if ((o.equals(props.getPropertyValue(propertyName))) ||
+							// this to handle enums
+							(o.toString().equals(props.getPropertyValue(propertyName).toString()))) {
 							satisfied = true;
 							break;
 						}
 			}
 		return this;
 	}
-	
+
 	public String toString() {
-		return "[" + stateString() + "Parent property '"
-			+ propertyName + "' must have value '" 
+		return "[" + stateString() + "Node property '"
+			+ propertyName + "' must have value '"
 			+ expectedValues.toString() + "'.]";
 	}
 

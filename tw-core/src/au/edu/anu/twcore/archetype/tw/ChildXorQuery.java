@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -39,7 +39,7 @@ import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
- * Checks that a CHILD treenode has either of two labels. 
+ * Checks that a CHILD treenode has either of two labels.
  * @author Jacques Gignoux - 5/9/2016
  * Constraint: either 1..* nodes with label1 or 1..* nodes with label2
  */
@@ -47,32 +47,33 @@ public class ChildXorQuery extends Query implements TwArchetypeConstants{
 
 	private String nodeLabel1 = null;
 	private String nodeLabel2 = null;
-	
+
 	public ChildXorQuery(String nodeLabel1, String nodeLabel2) {
+		super();
 		this.nodeLabel1 = nodeLabel1;
 		this.nodeLabel2 = nodeLabel2;
 	}
-	
+
 	public ChildXorQuery(StringTable table) {
 		super();
 		nodeLabel1 = table.getWithFlatIndex(0);
 		nodeLabel2 = table.getWithFlatIndex(1);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Query process(Object input) {  // input is a node
 		defaultProcess(input);
 		TreeNode localItem = (TreeNode) input;
-		List<TreeNode> nl1 = (List<TreeNode>) get(localItem, 
+		List<TreeNode> nl1 = (List<TreeNode>) get(localItem,
 			children(),
 			selectZeroOrMany(hasTheLabel(nodeLabel1)));
-// this is wrong - at least for the query ???		
+// this is wrong - at least for the query ???
 //			selectZeroOrMany(hasTheLabel(twaNodeLabel1)));
 		List<TreeNode> nl2 = (List<TreeNode>) get(localItem,
-			children(),			
+			children(),
 			selectZeroOrMany(hasTheLabel(nodeLabel2)));
-		// this is wrong - at least for the query ???		
+		// this is wrong - at least for the query ???
 //			selectZeroOrMany(hasTheLabel(twaNodeLabel2)));
 		satisfied = (nl1.size()>0)^(nl2.size()>0);
 		return this;

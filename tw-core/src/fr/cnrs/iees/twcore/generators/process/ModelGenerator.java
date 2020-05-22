@@ -45,6 +45,8 @@ import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
@@ -193,6 +195,22 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		cpt.add(systemNode);
 		for (TreeGraphDataNode tn:cpt) {
 			generatedData cl = new generatedData();
+			// search for autovar definitions, if any
+			List<TreeGraphDataNode> ccats = (List<TreeGraphDataNode>) get(tn.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+				edgeListEndNodes());
+			for (TreeGraphDataNode cc:ccats) {
+				TreeGraphDataNode auto = (TreeGraphDataNode) get(cc.edges(Direction.OUT),
+					selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
+					endNode());
+				if (auto!=null) {
+					if (cc.id().equals(Category.ephemeral))
+						cl.autoVars = ComponentData.class.getName();
+					if (cc.id().equals(Category.population))
+						cl.autoVars = ContainerData.class.getName();
+				}
+			}
+			// get generated life time constant definitions
 			if (tn.properties().hasProperty(P_LTCONSTANTCLASS.key()))
 				if (tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key())!=null) {
 					String s = (String) tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key());
@@ -201,6 +219,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					else
 						cl.lifetimeConstants = s;
 			}
+			// get generated driver definitions
 			if (tn.properties().hasProperty(P_DRIVERCLASS.key()))
 				if (tn.properties().getPropertyValue(P_DRIVERCLASS.key())!=null) {
 					String s = (String) tn.properties().getPropertyValue(P_DRIVERCLASS.key());
@@ -209,6 +228,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					else
 						cl.drivers = s;
 			}
+			// get generated decorator definitions
 			if (tn.properties().hasProperty(P_DECORATORCLASS.key()))
 				if (tn.properties().getPropertyValue(P_DECORATORCLASS.key())!=null) {
 					String s = (String) tn.properties().getPropertyValue(P_DECORATORCLASS.key());
@@ -540,6 +560,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			if ((arg==lifeCycle)||(arg==space)||(arg==group)) {
 				// TODO: get the component type matching process categories, then get the grouptype
 				// and lifecycle type to get their categories
+				System.out.println("TODO: missing code here! [ModelGenerator.findCategories(...)]");
 			}
 			if (arg==focal)
 				// component Process

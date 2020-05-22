@@ -1,10 +1,14 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIONTYPE;
+
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 /**
  * The base class for system components and hierarchical components.
@@ -100,6 +104,14 @@ public interface CategorizedComponent
 			((SystemComponentPropertyListImpl) properties()).rotateDriverProperties(state[CURRENT]);
 		}
 	}
+
+	public default SystemRelation relateTo(CategorizedComponent toComponent, String relationType) {
+		SystemRelation rel = (SystemRelation) connectTo(Direction.OUT,toComponent,
+			new SharedPropertyListImpl(SystemRelation.DEFAULT_PROPERTIES));
+		rel.properties().setProperty(P_RELATIONTYPE.key(),relationType);
+		return rel;
+	}
+
 
 	public default TwData decorators() {
 		return ((SystemComponentPropertyListImpl) properties()).decorators();

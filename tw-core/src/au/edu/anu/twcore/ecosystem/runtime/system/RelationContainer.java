@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -51,14 +51,14 @@ import fr.ens.biologie.generic.utils.Duple;
  *
  */
 public class RelationContainer
-		implements DynamicContainer<SystemRelation>, Resettable, Related<SystemComponent>  {
+		implements DynamicContainer<SystemRelation>, Resettable, Related<CategorizedComponent>  {
 
 	private Identity id = null;
 	//
 	private RelationType relationType = null;
 	// the list of system component pairs to later relate
-	private Set<Duple<SystemComponent,SystemComponent>> relationsToAdd = new HashSet<>();
-	private Set<Duple<SystemComponent,SystemComponent>> relationsToRemove = new HashSet<>();
+	private Set<Duple<CategorizedComponent,CategorizedComponent>> relationsToAdd = new HashSet<>();
+	private Set<Duple<CategorizedComponent,CategorizedComponent>> relationsToRemove = new HashSet<>();
 	private boolean changed = false;
 
 	public RelationContainer(RelationType rel) {
@@ -81,20 +81,20 @@ public class RelationContainer
 	}
 
 	// use this instead of the previous
-	public void addItem(SystemComponent from, SystemComponent to) {
+	public void addItem(CategorizedComponent from, CategorizedComponent to) {
 		relationsToAdd.add(new Duple<>(from,to));
 	}
 
 	@Override
 	public void removeItem(SystemRelation relation) {
-		relationsToRemove.add(new Duple<SystemComponent,SystemComponent>
-			((SystemComponent)relation.startNode(),(SystemComponent)relation.endNode()));
+		relationsToRemove.add(new Duple<CategorizedComponent,CategorizedComponent>
+			((CategorizedComponent)relation.startNode(),(CategorizedComponent)relation.endNode()));
 	}
 
 	@Override
 	public void effectChanges() {
 		// delete all old relations
-		for (Duple<SystemComponent,SystemComponent> dup : relationsToRemove)
+		for (Duple<CategorizedComponent,CategorizedComponent> dup : relationsToRemove)
 			for (Edge e:dup.getFirst().edges(Direction.OUT))
 				if (e.endNode().equals(dup.getSecond())) {
 					e.disconnect();
@@ -102,7 +102,7 @@ public class RelationContainer
 				}
 		relationsToRemove.clear();
 		// establish all new relations
-		for (Duple<SystemComponent,SystemComponent> item : relationsToAdd) {
+		for (Duple<CategorizedComponent,CategorizedComponent> item : relationsToAdd) {
 			SystemRelation sr = item.getFirst().relateTo(item.getSecond(),relationType.id());
 			sr.setContainer(this);
 			sr.setRelated(relationType);
@@ -112,12 +112,12 @@ public class RelationContainer
 	}
 
 	@Override
-	public Categorized<SystemComponent> from() {
+	public Categorized<CategorizedComponent> from() {
 		return relationType.from();
 	}
 
 	@Override
-	public Categorized<SystemComponent> to() {
+	public Categorized<CategorizedComponent> to() {
 		return relationType.to();
 	}
 

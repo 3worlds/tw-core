@@ -43,10 +43,11 @@ import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 
@@ -68,14 +69,17 @@ public class SearchProcess
 	private HierarchicalContext focalContext = new HierarchicalContext();
 	private HierarchicalContext otherContext = new HierarchicalContext();
 	private ComponentContainer ecosystemContainer = null;
-	private LifeCycle focalLifeCycle = null;
+
 	private ComponentContainer focalLifeCycleContainer = null;
-	private SystemFactory focalGroup = null;
 	private ComponentContainer focalGroupContainer = null;
-	private LifeCycle otherLifeCycle = null;
 	private ComponentContainer otherLifeCycleContainer = null;
-	private SystemFactory otherGroup = null;
 	private ComponentContainer otherGroupContainer = null;
+	// new API
+	private ArenaComponent arena = null;
+	private CategorizedComponent focalLifeCycle = null;
+	private CategorizedComponent otherLifeCycle = null;
+	private CategorizedComponent focalGroup = null;
+	private CategorizedComponent otherGroup = null;
 
 	public SearchProcess(ArenaComponent world, RelationContainer relation,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space,double searchR) {
@@ -90,8 +94,44 @@ public class SearchProcess
 		}
 	}
 
+	private void loop(double t, double dt,
+		HierarchicalComponent focal,
+		CategorizedContainer<SystemComponent> others) {
+		if ((others.itemCategorized()!=null) &&
+			(others.itemCategorized().belongsTo(otherCategories)) ) {
+				if (others.hierarchicalView() instanceof GroupComponent)
+					otherGroup = others.hierarchicalView();
+				// todo: life cycles
+				for (SystemComponent sc: others.items())
+					executeFunctions(t,dt,focal,sc);
+		}
+		else
+			for (CategorizedContainer<SystemComponent> subc: others.subContainers())
+				loop(t,dt,focal,subc);
+	}
+
+	// recursive loop on all sub containers of the community
 	@Override
-	protected void loop(double t, double dt, HierarchicalComponent container) {
+	protected void loop(double t, double dt, HierarchicalComponent component) {
+		if (component instanceof ArenaComponent)
+			arena = (ArenaComponent) component;
+
+		// UNINDEXED SEARCH
+		if (space==null) {
+			if (component.membership().belongsTo(focalCategories)) {
+				if (arena.content()!=null)
+					loop(t,dt,component,arena.content());
+			}
+			else
+				if ((component.content()!=null) && (arena.content()!=null))
+					for (CategorizedContainer<SystemComponent> subc: component.content().subContainers())
+						if (subc.itemCategorized().belongsTo(focalCategories)) {
+							if (subc.hierarchicalView() instanceof GroupComponent)
+								focalGroup = subc.hierarchicalView();
+							// TODO: life cycles
+							loop(t,dt,subc.hierarchicalView(),arena.content());
+					}
+		}
 //		if (container.categoryInfo() instanceof Ecosystem) {
 //			setContext(focalContext,container);
 //			setContext(otherContext,container);
@@ -129,6 +169,7 @@ public class SearchProcess
 //		}
 	}
 
+	@Deprecated
 	private void doRelate(double t, double dt, SystemComponent focal, SystemComponent other,
 			Location focalLocation, Location otherLocation, Box limits) {
 		for (RelateToDecisionFunction function: RTfunctions) {
@@ -149,6 +190,18 @@ public class SearchProcess
 		}
 	}
 
+	private void executeFunctions(double t, double dt,
+		CategorizedComponent focal, CategorizedComponent other) {
+		for (RelateToDecisionFunction function: RTfunctions) {
+			double[] focalLoc = null;
+			double[] otherLoc = null;
+			if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,/*space*/ null,focal,
+				otherLifeCycle,otherGroup,other,focalLoc,otherLoc))
+				relContainer.addItem(focal,other);
+		}
+	}
+
+	@Deprecated // but useful code in there, dont erase before spaces are ack !
 	private void executeFunctions(CategorizedContainer<SystemComponent> focalContainer,
 			CategorizedContainer<SystemComponent> otherContainer,
 			double t, double dt) {
