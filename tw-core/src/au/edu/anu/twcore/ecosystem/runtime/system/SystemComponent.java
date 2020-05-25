@@ -28,22 +28,13 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import java.util.Collection;
-import java.util.List;
-
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
-import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
-import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIONTYPE;
 
 /**
  * The main runtime object in 3worlds, representing "individuals" or "agents" or "system
@@ -55,7 +46,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIO
  */
 public class SystemComponent
 		extends ALDataNode
-		implements CategorizedComponent, Contained<ComponentContainer> {
+		implements CategorizedComponent<ComponentContainer> {
 
 	private Categorized<SystemComponent> categories = null;
 	/** container */
@@ -68,7 +59,7 @@ public class SystemComponent
 	// used only once at init time
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setCategorized(Categorized<? extends CategorizedComponent> cat) {
+	public void setCategorized(Categorized<? extends CategorizedComponent<ComponentContainer>> cat) {
 		if (categories==null)
 			categories = (Categorized<SystemComponent>) cat;
 	}
@@ -100,25 +91,27 @@ public class SystemComponent
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Iterable<SystemRelation> getRelations() {
-		return (Iterable<SystemRelation>) edges(Direction.OUT);
-	}
-
-	@SuppressWarnings("unchecked")
-	public Collection<SystemRelation> getRelations(String relationType) {
-		List<SystemRelation> list = (List<SystemRelation>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)));
-		return list;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Collection<SystemComponent> getRelatives(String relationType) {
-		List<SystemComponent> list = (List<SystemComponent>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)),
-			edgeListEndNodes());
-		return list;
-	}
+//	// TODO: These three methods could be optimized y storing the edges in a Map sorted by labels
+//
+//	@SuppressWarnings("unchecked")
+//	public Iterable<SystemRelation> getRelations() {
+//		return (Iterable<SystemRelation>) edges(Direction.OUT);
+//	}
+//
+//	@SuppressWarnings("unchecked")
+//	public Collection<SystemRelation> getRelations(String relationType) {
+//		List<SystemRelation> list = (List<SystemRelation>) get(edges(Direction.OUT),
+//			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)));
+//		return list;
+//	}
+//
+//	@SuppressWarnings("unchecked")
+//	public Collection<SystemComponent> getRelatives(String relationType) {
+//		List<SystemComponent> list = (List<SystemComponent>) get(edges(Direction.OUT),
+//			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)),
+//			edgeListEndNodes());
+//		return list;
+//	}
 
 //	public SystemRelation relateTo(SystemComponent toComponent, String relationType) {
 //		SystemRelation rel = (SystemRelation) connectTo(Direction.OUT,toComponent,
@@ -127,6 +120,7 @@ public class SystemComponent
 //		return rel;
 //	}
 
+	@Override
 	public TwData autoVar() {
 		return ((SystemComponentPropertyListImpl)properties()).auto();
 	}

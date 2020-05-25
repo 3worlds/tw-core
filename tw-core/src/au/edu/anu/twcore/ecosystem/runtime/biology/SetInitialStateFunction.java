@@ -1,6 +1,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 
 /**
  *
@@ -44,10 +45,10 @@ public abstract class SetInitialStateFunction extends TwFunctionAdapter {
 //	);
 
 	public abstract void setInitialState(
-		CategorizedComponent arena,
-		CategorizedComponent lifeCycle,
-		CategorizedComponent group,
-		CategorizedComponent space,
-		CategorizedComponent focal,
+		CategorizedComponent<ComponentContainer> arena,
+		CategorizedComponent<ComponentContainer> lifeCycle,
+		CategorizedComponent<ComponentContainer> group,
+		CategorizedComponent<ComponentContainer> space,
+		CategorizedComponent<ComponentContainer> focal,
 		double[] nextFocalLoc);
 }

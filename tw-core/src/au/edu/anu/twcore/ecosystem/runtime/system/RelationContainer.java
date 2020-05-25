@@ -51,14 +51,14 @@ import fr.ens.biologie.generic.utils.Duple;
  *
  */
 public class RelationContainer
-		implements DynamicContainer<SystemRelation>, Resettable, Related<CategorizedComponent>  {
+		implements DynamicContainer<SystemRelation>, Resettable, Related<CategorizedComponent<ComponentContainer>>  {
 
 	private Identity id = null;
 	//
 	private RelationType relationType = null;
 	// the list of system component pairs to later relate
-	private Set<Duple<CategorizedComponent,CategorizedComponent>> relationsToAdd = new HashSet<>();
-	private Set<Duple<CategorizedComponent,CategorizedComponent>> relationsToRemove = new HashSet<>();
+	private Set<Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>>> relationsToAdd = new HashSet<>();
+	private Set<Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>>> relationsToRemove = new HashSet<>();
 	private boolean changed = false;
 
 	public RelationContainer(RelationType rel) {
@@ -81,20 +81,21 @@ public class RelationContainer
 	}
 
 	// use this instead of the previous
-	public void addItem(CategorizedComponent from, CategorizedComponent to) {
+	public void addItem(CategorizedComponent<ComponentContainer> from, CategorizedComponent<ComponentContainer> to) {
 		relationsToAdd.add(new Duple<>(from,to));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void removeItem(SystemRelation relation) {
-		relationsToRemove.add(new Duple<CategorizedComponent,CategorizedComponent>
-			((CategorizedComponent)relation.startNode(),(CategorizedComponent)relation.endNode()));
+		relationsToRemove.add(new Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>>
+			((CategorizedComponent<ComponentContainer>)relation.startNode(),(CategorizedComponent<ComponentContainer>)relation.endNode()));
 	}
 
 	@Override
 	public void effectChanges() {
 		// delete all old relations
-		for (Duple<CategorizedComponent,CategorizedComponent> dup : relationsToRemove)
+		for (Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>> dup : relationsToRemove)
 			for (Edge e:dup.getFirst().edges(Direction.OUT))
 				if (e.endNode().equals(dup.getSecond())) {
 					e.disconnect();
@@ -102,7 +103,7 @@ public class RelationContainer
 				}
 		relationsToRemove.clear();
 		// establish all new relations
-		for (Duple<CategorizedComponent,CategorizedComponent> item : relationsToAdd) {
+		for (Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>> item : relationsToAdd) {
 			SystemRelation sr = item.getFirst().relateTo(item.getSecond(),relationType.id());
 			sr.setContainer(this);
 			sr.setRelated(relationType);
@@ -112,12 +113,12 @@ public class RelationContainer
 	}
 
 	@Override
-	public Categorized<CategorizedComponent> from() {
+	public Categorized<CategorizedComponent<ComponentContainer>> from() {
 		return relationType.from();
 	}
 
 	@Override
-	public Categorized<CategorizedComponent> to() {
+	public Categorized<CategorizedComponent<ComponentContainer>> to() {
 		return relationType.to();
 	}
 
@@ -139,5 +140,12 @@ public class RelationContainer
 	public void change() {
 		changed = true;
 	}
+
+//	@Override
+//	public boolean isPermanent() {
+//		return relationType.isPermanent();
+//	}
+//
+
 
 }

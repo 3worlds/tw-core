@@ -28,14 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import java.util.Random;
-
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
 
 /**
  * @author Jacques Gignoux - 4/8/2014
@@ -123,14 +117,14 @@ public abstract class ChangeOtherStateFunction extends TwFunctionAdapter {
 	public abstract void changeOtherState(
 			double t,
 			double dt,
-			CategorizedComponent arena,
-			CategorizedComponent lifeCycle,
-			CategorizedComponent group,
-			CategorizedComponent space,
-			CategorizedComponent focal,
-			CategorizedComponent otherLifeCycle,
-			CategorizedComponent otherGroup,
-			CategorizedComponent other,
+			CategorizedComponent<ComponentContainer> arena,
+			CategorizedComponent<ComponentContainer> lifeCycle,
+			CategorizedComponent<ComponentContainer> group,
+			CategorizedComponent<ComponentContainer> space,
+			CategorizedComponent<ComponentContainer> focal,
+			CategorizedComponent<ComponentContainer> otherLifeCycle,
+			CategorizedComponent<ComponentContainer> otherGroup,
+			CategorizedComponent<ComponentContainer> other,
 			double[] nextFocalLoc,
 			double[] nextOtherLoc
 	);

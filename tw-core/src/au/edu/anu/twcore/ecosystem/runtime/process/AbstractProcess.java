@@ -29,14 +29,9 @@
 package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
-import au.edu.anu.twcore.data.runtime.Output2DData;
-//import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
-import au.edu.anu.twcore.ecosystem.runtime.DataRecorder;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.Spatialized;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -48,11 +43,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Sealable;
 

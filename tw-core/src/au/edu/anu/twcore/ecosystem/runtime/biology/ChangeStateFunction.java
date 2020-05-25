@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 
 /**
  * @author Jacques Gignoux - 4/8/2014
@@ -54,11 +55,11 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 	 * @param nextFocalLoc
 	 */
 	public abstract void changeState(double t, double dt,
-		CategorizedComponent arena,
-		CategorizedComponent lifeCycle,
-		CategorizedComponent group,
-		CategorizedComponent space,
-		CategorizedComponent focal,
+		CategorizedComponent<ComponentContainer> arena,
+		CategorizedComponent<ComponentContainer> lifeCycle,
+		CategorizedComponent<ComponentContainer> group,
+		CategorizedComponent<ComponentContainer> space,
+		CategorizedComponent<ComponentContainer> focal,
 		double[] nextFocalLoc);
 
 }

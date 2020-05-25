@@ -148,7 +148,7 @@ public class ComponentProcess
 		}
 	}
 
-	private void executeFunctions(double t, double dt, CategorizedComponent focal) {
+	private void executeFunctions(double t, double dt, CategorizedComponent<ComponentContainer> focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
 //		System.out.println("coucou from "+focal.toShortString()+" t = "+t);
 
@@ -177,7 +177,7 @@ public class ComponentProcess
 	}
 
 	// single loop on a container which matches the process categories
-	private void executeFunctions(CategorizedContainer<SystemComponent> container,
+	private void executeFunctions(CategorizedContainer<CategorizedComponent<ComponentContainer>> container,
 		double t, double dt) {
 //		Box limits = null;
 //		if (space!=null)

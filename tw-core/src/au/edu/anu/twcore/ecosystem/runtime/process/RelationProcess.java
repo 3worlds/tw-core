@@ -32,8 +32,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
-//import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
@@ -41,18 +39,14 @@ import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.utils.Logging;
-
-import static au.edu.anu.twcore.ecosystem.structure.RelationType.predefinedRelationTypes.returnsTo;
 
 /**
  * A TwProcess that loops on established relations and executes methods on them or on their
@@ -77,10 +71,17 @@ public class RelationProcess extends AbstractRelationProcess {
 
 	// local variables for looping
     // actually all the proper looping code is in SearchProcess and could be moved up to AbstractRelationProcess
-	private HierarchicalContext focalContext = new HierarchicalContext();
-	private HierarchicalContext otherContext = new HierarchicalContext();
-	private ComponentContainer ecosystemContainer = null;
-	private ComponentContainer lifeCycleContainer = null;
+//	private HierarchicalContext focalContext = new HierarchicalContext();
+//	private HierarchicalContext otherContext = new HierarchicalContext();
+//	private ComponentContainer ecosystemContainer = null;
+//	private ComponentContainer lifeCycleContainer = null;
+	//new API
+	private ArenaComponent arena = null;
+	private CategorizedComponent<ComponentContainer> focalLifeCycle = null;
+	private CategorizedComponent<ComponentContainer> otherLifeCycle = null;
+	private CategorizedComponent<ComponentContainer> focalGroup = null;
+	private CategorizedComponent<ComponentContainer> otherGroup = null;
+
 
 	public RelationProcess(ArenaComponent world, RelationContainer relation,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
@@ -350,34 +351,82 @@ public class RelationProcess extends AbstractRelationProcess {
 		}
 	}
 
+	private void executeFunctions(double t, double dt,
+			CategorizedComponent<ComponentContainer> focal,
+			CategorizedComponent<ComponentContainer> other,
+			SystemRelation rel) {
+        for (ChangeOtherStateFunction function:COSfunctions) {
+        	// these shouldnt be needed anymore because user code cannot write in there
+        	if (focal.currentState()!=null) {
+	        	focal.currentState().writeDisable();
+	        	focal.nextState().writeDisable();
+        	}
+        	if (other.currentState()!=null) {
+	        	other.currentState().writeDisable();
+	        	other.nextState().writeEnable();
+        	}
+//        	double[] nextOtherLoc = null;
+//        	if (otherLocation!=null)
+//        		nextOtherLoc = new double[otherLocation.dim()];
+        	function.changeOtherState(t,dt,
+        		arena, focalLifeCycle, focalGroup, /*space*/null, focal,
+        		otherLifeCycle, otherGroup, other, null, null);
+        	// TODO: set new other location
+        	//
+        	//
+        	if (other.currentState()!=null)
+        		other.nextState().writeDisable();
+    }
+
+
+
+	}
+
+	// manages the looping over others
+	// NB: two possible optimisations here
+	// * process both ends of a relation in one single pass - changeOtherState enables it
+	// * replace edge list by a map indexed by edge labels -> faster access to the proper edges
+	@SuppressWarnings("unchecked")
+	private void loopOnOthers(double t, double dt, CategorizedComponent<ComponentContainer> focal) {
+		for (SystemRelation sr:focal.getRelations()) {
+			if (sr.membership().to().equals(to())) {
+				CategorizedComponent<ComponentContainer> other = (CategorizedComponent<ComponentContainer>) sr.endNode();
+				otherGroup = other.container().hierarchicalView();
+				// TODO: fix this:
+//				otherLifeCycle = otherGroup.container().hierarchicalView();
+				executeFunctions(t,dt,focal,other,sr);
+			}
+		}
+	}
+
+	// almost same as in ComponentProcess
+	// RECURSIVE
+	// manages the looping over focals
 	@Override
-	protected void loop(double t, double dt, HierarchicalComponent container) {
-//		if (container.categoryInfo() instanceof Ecosystem) {
-//			setContext(focalContext,container);
-//			ecosystemContainer = (ComponentContainer) container;
-//		}
-//		else if (container.categoryInfo() instanceof LifeCycle) {
-//			setContext(focalContext,container);
-////			lifeCycle = (LifeCycle) container.categoryInfo();
-//			lifeCycleContainer = (ComponentContainer) container;
-//		}
-//		else if (container.categoryInfo() instanceof SystemFactory)
-//			if (container.categoryInfo().belongsTo(focalCategories)) {
-//				container.change();
-//				setContext(focalContext,container);
-////				focalGroup = (SystemFactory) container.categoryInfo();
-//				executeFunctions(container,t,dt);
-//				// track group state
-//				for (DataTracker0D tracker:tsTrackers)
-//					if (tracker.isTracked(container)) {
-//						tracker.recordItem(container.fullId());
-//						tracker.record(currentStatus,container.populationData());
-//				}
-//				focalContext.clear();
-//		}
-//		for (CategorizedContainer<SystemComponent> subc:container.subContainers())
-//			loop(subc,t,dt);
-//
+	protected void loop(double t, double dt, HierarchicalComponent component) {
+		if (component.membership().belongsTo(focalCategories))
+			loopOnOthers(t,dt,component);
+		else if (component.content()!=null) {
+			if (component instanceof ArenaComponent) {
+				arena = (ArenaComponent) component;
+				focalLifeCycle = null;
+				focalGroup = null;
+			}
+			// TODO: lifecycle
+			else if (component instanceof GroupComponent) {
+				focalGroup = component;
+			}
+			// execute function on contained items, if any, and of proper categories
+			if (component.content().itemCategorized()!=null) // if null, means all content is in subcontainers
+				if (component.content().itemCategorized().belongsTo(focalCategories))
+					for (SystemComponent sc:component.content().items())
+						loopOnOthers(t, dt, sc);
+			// in all cases, recurse on subcontainers to find more matching items
+			// and recursively add context information to context.
+			for (CategorizedContainer<SystemComponent> cc:component.content().subContainers()) {
+				loop(t,dt,cc.hierarchicalView());
+			}
+		}
 	}
 
 }

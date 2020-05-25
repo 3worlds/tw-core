@@ -1,11 +1,20 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.hasProperty;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIONTYPE;
+
+import java.util.Collection;
+import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
+import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
+import au.edu.anu.twcore.ecosystem.runtime.containers.Container;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
@@ -16,17 +25,32 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
  * @author J. Gignoux - 16 avr. 2020
  *
  */
-public interface CategorizedComponent
-		extends DataElement, Node, DynamicSystem, Cloneable {
+public interface CategorizedComponent<T extends Container>
+		extends DataElement, Node, DynamicSystem, Cloneable, Contained<T> {
+//public interface CategorizedComponent
+//	extends DataElement, Node, DynamicSystem, Cloneable {
+
+	@Override
+	default void setContainer(T container) {
+	}
+
+	@Override
+	default T container() {
+		return null;
+	}
+
+	@Override
+	default void removeFromContainer() {
+	}
 
 	/** indexes to access state variable table */
 	static final int CURRENT = 1;
 	static final int NEXT = CURRENT - 1;
 	static final int PAST0 = CURRENT + 1;
 
-	public Categorized<? extends CategorizedComponent> membership();
+	public Categorized<? extends CategorizedComponent<T>> membership();
 
-	public void setCategorized(Categorized<? extends CategorizedComponent> cats);
+	public void setCategorized(Categorized<? extends CategorizedComponent<T>> cats);
 
 	@Override
 	public default TwData currentState() {
@@ -105,7 +129,7 @@ public interface CategorizedComponent
 		}
 	}
 
-	public default SystemRelation relateTo(CategorizedComponent toComponent, String relationType) {
+	public default SystemRelation relateTo(CategorizedComponent<T> toComponent, String relationType) {
 		SystemRelation rel = (SystemRelation) connectTo(Direction.OUT,toComponent,
 			new SharedPropertyListImpl(SystemRelation.DEFAULT_PROPERTIES));
 		rel.properties().setProperty(P_RELATIONTYPE.key(),relationType);
@@ -133,9 +157,26 @@ public interface CategorizedComponent
 		return null;
 	}
 
-//	// TODO: get rid of this method !
-//	public default TwData parameters() {
-//		return null;
-//	}
+	// TODO: These three methods could be optimized y storing the edges in a Map sorted by labels
+
+	@SuppressWarnings("unchecked")
+	public default Iterable<SystemRelation> getRelations() {
+		return (Iterable<SystemRelation>) edges(Direction.OUT);
+	}
+
+	@SuppressWarnings("unchecked")
+	public default Collection<SystemRelation> getRelations(String relationType) {
+		List<SystemRelation> list = (List<SystemRelation>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)));
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public default Collection<SystemComponent> getRelatives(String relationType) {
+		List<SystemComponent> list = (List<SystemComponent>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)),
+			edgeListEndNodes());
+		return list;
+	}
 
 }

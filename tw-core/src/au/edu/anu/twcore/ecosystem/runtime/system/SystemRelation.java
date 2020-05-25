@@ -49,19 +49,19 @@ public class SystemRelation extends ALDataEdge implements Contained<RelationCont
 
 	protected static PropertyKeys DEFAULT_PROPERTIES = new PropertyKeys(P_RELATIONTYPE.key());
 
-	private Related<CategorizedComponent> relation = null;
+	private Related<CategorizedComponent<ComponentContainer>> relation = null;
 	private RelationContainer container = null;
 
 	public SystemRelation(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
 		super(id, start, end, props, graph);
 	}
 
-	public void setRelated(Related<CategorizedComponent> rel) {
+	public void setRelated(Related<CategorizedComponent<ComponentContainer>> rel) {
 		if (relation==null)
 			relation = rel;
 	}
 
-	public Related<CategorizedComponent> membership() {
+	public Related<CategorizedComponent<ComponentContainer>> membership() {
 		return relation;
 	}
 

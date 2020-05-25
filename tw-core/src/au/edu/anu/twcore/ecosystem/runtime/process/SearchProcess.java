@@ -76,10 +76,10 @@ public class SearchProcess
 	private ComponentContainer otherGroupContainer = null;
 	// new API
 	private ArenaComponent arena = null;
-	private CategorizedComponent focalLifeCycle = null;
-	private CategorizedComponent otherLifeCycle = null;
-	private CategorizedComponent focalGroup = null;
-	private CategorizedComponent otherGroup = null;
+	private CategorizedComponent<ComponentContainer> focalLifeCycle = null;
+	private CategorizedComponent<ComponentContainer> otherLifeCycle = null;
+	private CategorizedComponent<ComponentContainer> focalGroup = null;
+	private CategorizedComponent<ComponentContainer> otherGroup = null;
 
 	public SearchProcess(ArenaComponent world, RelationContainer relation,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space,double searchR) {
@@ -102,8 +102,9 @@ public class SearchProcess
 				if (others.hierarchicalView() instanceof GroupComponent)
 					otherGroup = others.hierarchicalView();
 				// todo: life cycles
-				for (SystemComponent sc: others.items())
-					executeFunctions(t,dt,focal,sc);
+				for (SystemComponent fc:focal.content().items())
+					for (SystemComponent sc: others.items())
+						executeFunctions(t,dt,fc,sc);
 		}
 		else
 			for (CategorizedContainer<SystemComponent> subc: others.subContainers())
@@ -191,11 +192,21 @@ public class SearchProcess
 	}
 
 	private void executeFunctions(double t, double dt,
-		CategorizedComponent focal, CategorizedComponent other) {
+			CategorizedComponent<ComponentContainer> focal, CategorizedComponent<ComponentContainer> other) {
 		for (RelateToDecisionFunction function: RTfunctions) {
 			double[] focalLoc = null;
 			double[] otherLoc = null;
-			if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,/*space*/ null,focal,
+			// TODO: check these two are not yet related if relation is permanent
+			// if relation is permanent, it is set at birth and unset at death of
+			// SCs, so only once with permanent components.
+			// with permanent components, no need to call this process all the time!
+
+//			if (focal.isPermanent() && other.isPermanent() && relContainer.isPermanent())
+
+			if (focal.getRelatives(relContainer.id()).contains(other))
+				// already related, skip it
+				;
+			else if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,/*space*/ null,focal,
 				otherLifeCycle,otherGroup,other,focalLoc,otherLoc))
 				relContainer.addItem(focal,other);
 		}

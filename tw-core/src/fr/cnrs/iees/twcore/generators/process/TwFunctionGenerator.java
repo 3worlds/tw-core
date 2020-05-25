@@ -49,8 +49,8 @@ import java.util.logging.Logger;
 
 import org.bouncycastle.util.Strings;
 
-import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -209,7 +209,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				argTypes[i++] = ss[ss.length-1];
 			}
 			for (int j=0; j<argTypes.length; j++)
-				mg.setArgumentType(j,argTypes[j]);
+				if (argTypes[j].contains("CategorizedComponent")) {
+					mg.setArgumentType(j,argTypes[j]+"<ComponentContainer>");
+					generator.setImport(ComponentContainer.class.getName());
+				}
+				else
+					mg.setArgumentType(j,argTypes[j]);
 			// return type
 			mg.setReturnType(type.returnType());
 			// preparing call to user model function: initialising read-write data

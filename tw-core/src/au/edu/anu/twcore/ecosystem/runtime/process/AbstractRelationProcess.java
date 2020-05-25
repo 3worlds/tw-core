@@ -42,6 +42,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
@@ -53,7 +54,7 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
  */
 public abstract class AbstractRelationProcess
 		extends AbstractProcess
-		implements Related<CategorizedComponent> {
+		implements Related<CategorizedComponent<ComponentContainer>> {
 
 	protected RelationContainer relContainer;
 	protected String focalCategoryId = null;
@@ -72,12 +73,12 @@ public abstract class AbstractRelationProcess
 	}
 
 	@Override
-	public final Categorized<CategorizedComponent> from() {
+	public final Categorized<CategorizedComponent<ComponentContainer>> from() {
 		return relContainer.from();
 	}
 
 	@Override
-	public final Categorized<CategorizedComponent> to() {
+	public final Categorized<CategorizedComponent<ComponentContainer>> to() {
 		return relContainer.to();
 	}
 

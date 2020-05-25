@@ -19,9 +19,9 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 
 public abstract class HierarchicalComponent
 		extends TreeGraphDataNode
-		implements CategorizedComponent, Containing<ComponentContainer> {
+		implements CategorizedComponent<ComponentContainer>, Containing<ComponentContainer> {
 
-	protected Categorized<? extends CategorizedComponent> categories = null;
+	protected Categorized<? extends CategorizedComponent<ComponentContainer>> categories = null;
 	private ComponentContainer content = null;
 
 	public HierarchicalComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -29,7 +29,7 @@ public abstract class HierarchicalComponent
 	}
 
 	@Override
-	public Categorized<? extends CategorizedComponent> membership() {
+	public Categorized<? extends CategorizedComponent<ComponentContainer>> membership() {
 		return categories;
 	}
 
@@ -37,7 +37,7 @@ public abstract class HierarchicalComponent
 	 * CAUTION: can be set only once, ideally just after construction
 	 */
 	@Override
-	public void setCategorized(Categorized<? extends CategorizedComponent> cats) {
+	public void setCategorized(Categorized<? extends CategorizedComponent<ComponentContainer>> cats) {
 		if (categories==null)
 			categories = cats;
 	}
