@@ -44,7 +44,7 @@ import java.util.List;
 
 
 /**
- * A Query to check that a system component only belongs to one category of a given
+ * A Query to check that a ComponentType only belongs to one category of a given
  * category set (categories within a set are assumed exclusive) 
  * 
  * @author Jacques Gignoux - 4 juin 2019
@@ -88,10 +88,13 @@ public class ExclusiveCategoryQuery extends Query {
 			+ "]";
 	}
 	
+	// belongs to only one category of a given category set since these partition categories.
 	@SuppressWarnings("unchecked")
 	public static boolean propose(TreeNode startNode, TreeNode proposedEndNode) {
+
 		List<Category> localCats = (List<Category>) get(startNode.edges(Direction.OUT), edgeListEndNodes(),
 				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+
 		if (localCats.isEmpty()) {
 			//log.info(endNode.id()+": OK - no other categories in use.");
 			return true;
@@ -106,7 +109,7 @@ public class ExclusiveCategoryQuery extends Query {
 			CategorySet cs = (CategorySet) c.getParent();
 			// might be null
 			if (cs != null) {
-				if (!cs.id().equals(proposedCatSet.id())) {
+				if (cs.id().equals(proposedCatSet.id())) {
 					//log.info(endNode.id()+": Failed - category belongs to another category set.");
 					return false;
 				}
