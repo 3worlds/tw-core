@@ -100,17 +100,17 @@ public class ExclusiveCategoryQuery extends Query {
 			return true;
 		}
 		Node proposedCatSet = proposedEndNode.getParent();
-		if (proposedCatSet == null) {// never happens - the editor must filter this out somehow?
+		if (proposedCatSet == null) {// Tested: never happens - the editor filters this out.
 //			log.info(endNode.id()+": no parent category set for comparison.");
 			return true;
 		}
-		// Maybe only need to check one since they must all be the same cs
+		
 		for (Category c : localCats) {
 			CategorySet cs = (CategorySet) c.getParent();
 			// might be null
 			if (cs != null) {
 				if (cs.id().equals(proposedCatSet.id())) {
-					//log.info(endNode.id()+": Failed - category belongs to another category set.");
+					//log.info(endNode.id()+": Failed - category has the same parent.");
 					return false;
 				}
 			}
