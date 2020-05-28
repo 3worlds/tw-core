@@ -29,4 +29,6 @@ hasNode systemSpec
 	mustSatisfyQuery arenaHasOneCategoryOfCompositionSpec
 		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
 		reference = String(categorySet:*composition*)
+	mustSatisfyQuery exclusiveCategoryCheckForSystemSpec
+		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
 
