@@ -36,7 +36,6 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
-import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
@@ -697,17 +696,67 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				+ ((TimeUnits)tm.properties().getPropertyValue(P_TIMEMODEL_TU.key())).abbreviation()+"</p>\n";
 		}
 	}
-//
-//	private void addArgumentGroup(ArgumentGroups arg, memberInfo mb,
-//			ModelMethodGenerator method, StringBuilder headerComment) {
-//		// TODO: convert age properly using Timer.userTime(long)
-//		if (mb.fullType!=null)
-//			imports.add(mb.fullType);
-//		method.addArgument(arg,mb.name,mb.type,arg.description()+mb.comment);
-//		headerComment.append("@param ").append(mb.name).append(' ')
-//			.append(arg.description()).append(mb.comment).append('\n');
-//		replicateNames.add(mb.name);
-//	}
+
+	@SuppressWarnings("unchecked")
+	private String dependComment(TreeGraphDataNode function, TwFunctionTypes ftype) {
+		if (EnumSet.of(SetInitialState,SetOtherInitialState).contains(ftype)) {
+			return null; // dependsOn only applies to processes
+		}
+		else {
+			StringBuilder sb = new StringBuilder();
+			// process function
+			if (function.getParent() instanceof ProcessNode) {
+				ProcessNode proc = (ProcessNode) function.getParent();
+				List<TreeGraphDataNode> deps = (List<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_DEPENDSON.label())),
+					edgeListEndNodes());
+				Set<TreeGraphDataNode> depf = new HashSet<>();
+				if (!deps.isEmpty())
+					for (TreeGraphDataNode dp:deps)
+						depf.addAll((Collection<? extends TreeGraphDataNode>)
+							get(dp.getChildren(),selectZeroOrMany(hasTheLabel(N_FUNCTION.label()))));
+				if (!depf.isEmpty()) {
+					sb.append("<p>- called after function");
+					if (depf.size()>1)
+						sb.append("s");
+					sb.append(" <em>");
+					for (TreeGraphDataNode fnk: depf)
+						sb.append(Strings.toLowerCase(fnk.id().substring(0,1)) + fnk.id().substring(1)).append("(...), ");
+					sb.delete(sb.length()-2, sb.length());
+					sb.append("</em>.</p>\n");
+				}
+				deps = (List<TreeGraphDataNode>) get(proc.edges(Direction.IN),
+					selectZeroOrMany(hasTheLabel(E_DEPENDSON.label())),
+					edgeListStartNodes());
+				depf.clear();
+				if (!deps.isEmpty())
+					for (TreeGraphDataNode dp:deps)
+						depf.addAll((Collection<? extends TreeGraphDataNode>)
+							get(dp.getChildren(),selectZeroOrMany(hasTheLabel(N_FUNCTION.label()))));
+				if (!depf.isEmpty()) {
+					sb.append("<p>- called before function");
+					if (depf.size()>1)
+						sb.append("s");
+					sb.append(" <em>");
+					for (TreeGraphDataNode fnk: depf)
+						sb.append(Strings.toLowerCase(fnk.id().substring(0,1)) + fnk.id().substring(1)).append("(...), ");					sb.delete(sb.length()-2, sb.length());
+					sb.append("</em>.</p>\n");
+				}
+			}
+			// consequence function
+			else {
+				FunctionNode func = (FunctionNode) function.getParent();
+				TwFunctionTypes functype = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+				if (EnumSet.of(CreateOtherDecision).contains(functype))
+					sb.append("<p>- called just after <em>").append(func.id())
+						.append("</em> when it results in new component creation.</p>\n");
+				if (EnumSet.of(DeleteDecision,DeleteOtherDecision,ChangeCategoryDecision,ChangeOtherCategoryDecision).contains(functype))
+					sb.append("<p>- called just after <em>").append(func.id())
+						.append("</em> when it returns <strong>true</strong>.</p>\n");
+			}
+			return sb.toString();
+		}
+	}
 
 	// match between function names and spec nodes
 	private Map<String,TreeGraphDataNode> functions = new HashMap<>();
@@ -811,13 +860,17 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				.append(simpleCatSignature(focalCats))
 				.append("</em>}</p>\n\n");
 		else {
-			headerComment.append("<	p>- applies to relation <em>")
+			headerComment.append("<p>- applies to relation <em>")
 				.append(relationType)
 				.append(": {").append(simpleCatSignature(focalCats))
 				.append("} → {").append(simpleCatSignature(otherCats))
 				.append("}</em></p>\n\n");
 		}
 		headerComment.append(timerComment(function,ftype)).append('\n');
+		String sdc = dependComment(function,ftype);
+		if (sdc!=null)
+			if (!sdc.isBlank())
+				headerComment.append(sdc).append('\n');
 		// follow time model:
 		ModelMethodGenerator method = methods.get(fname);
 		// if method does not exist, create it and set its header, return type and return statement
