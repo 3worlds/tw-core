@@ -758,11 +758,14 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	}
 
 	// the arena arguments are skipped only when the focal element is the arena
-	// this only occurs when all the categories of focal are those of arena
+	// this only occurs when focal belongs to *arena*
 	public boolean skipArena(SortedSet<Category> focalCats) {
-		for (TreeGraphDataNode tgn:elementTypeCategories.keySet())
-			if (tgn instanceof ArenaType)
-				return elementTypeCategories.get(tgn).equals(focalCats);
+//		for (TreeGraphDataNode tgn:elementTypeCategories.keySet())
+//			if (tgn instanceof ArenaType)
+//				return elementTypeCategories.get(tgn).equals(focalCats);
+		for (Category cat: focalCats)
+			if (cat.id().contentEquals(Category.arena))
+				return true;
 		return false;
 	}
 
@@ -838,7 +841,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		argSet2.addAll(ftype.writeableArguments());
 
 		// t, dt
-		Set<TwFunctionArguments> intersection =new HashSet<>(ftype.readOnlyArguments());
+		Set<TwFunctionArguments> intersection =new TreeSet<>(ftype.readOnlyArguments());
 		intersection.retainAll(EnumSet.of(t,dt));
 		for (TwFunctionArguments arg:intersection) {
 			method.addArgument(arg,null,arg.name(),arg.type(),arg.description());
@@ -851,7 +854,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// including return values
 		for (TwFunctionArguments arg:dataStruk.keySet()) {
 			List<recInfo> comp = dataStruk.get(arg);
-			if (!(arg.equals(arena) & skipArena(focalCats)))
+			if (!(arg.equals(arena) && skipArena(focalCats)))
 				for (recInfo rec:comp)
 					if (rec!=null)
 						if (rec.members!=null) {
