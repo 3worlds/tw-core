@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
@@ -63,7 +64,6 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
-import fr.cnrs.iees.twcore.generators.process.TwInitialiserGenerator;
 import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.cnrs.iees.properties.ResizeablePropertyList;
 
@@ -77,6 +77,7 @@ import fr.cnrs.iees.properties.ResizeablePropertyList;
 public class CodeGenerator {
 
 	private static Logger log = Logger.getLogger(CodeGenerator.class.getName());
+//	static { log.setLevel(Level.SEVERE); }
 
 	private TreeGraph<TreeGraphDataNode, ALEdge> graph = null;
 	// the generator for the single user model file
@@ -164,11 +165,13 @@ public class CodeGenerator {
 		// write the user code file
 		modelgen.generateCode();
 		UserProjectLink.addModelFile(modelgen.getFile());
-		// compile whole code directory here
+		// compile whole code directory here ONLY IF IN DEBUGGING LOG LEVEL
 		JavaCompiler compiler = new JavaCompiler();
-		String result = compiler.compileCode(ecologyFiles);
-		if (result != null)
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, ecologyFiles, result));
+//		if (log.getLevel().equals(Level.INFO)) {
+			String result = compiler.compileCode(ecologyFiles);
+			if (result != null)
+				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, ecologyFiles, result));
+//		}
 		if (!ErrorList.haveErrors())
 			UserProjectLink.pushFiles(); // LOOK HERE
 		return !ErrorList.haveErrors();
@@ -397,22 +400,22 @@ public class CodeGenerator {
 		}
 	}
 
-	private void generateInitialiserCode(TreeGraphDataNode initialiser, String modelName) {
-		TwInitialiserGenerator generator = new TwInitialiserGenerator(initialiser.id(), initialiser, modelName);
-		generator.generateCode();
-		UserProjectLink.addInitialiserFile(generator.getFile());
-		String genClassName = generator.generatedClassName();
-		if (initialiser.properties().hasProperty(P_FUNCTIONCLASS.key())) {
-			String lastValue = (String) initialiser.properties().getPropertyValue(P_FUNCTIONCLASS.key());
-			if (!lastValue.equals(genClassName)) {
-				initialiser.properties().setProperty(P_FUNCTIONCLASS.key(), genClassName);
-				GraphState.setChanged();
-			}
-		} else {
-			((ResizeablePropertyList) initialiser.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
-		}
-
-	}
+//	private void generateInitialiserCode(TreeGraphDataNode initialiser, String modelName) {
+//		TwInitialiserGenerator generator = new TwInitialiserGenerator(initialiser.id(), initialiser, modelName);
+//		generator.generateCode();
+//		UserProjectLink.addInitialiserFile(generator.getFile());
+//		String genClassName = generator.generatedClassName();
+//		if (initialiser.properties().hasProperty(P_FUNCTIONCLASS.key())) {
+//			String lastValue = (String) initialiser.properties().getPropertyValue(P_FUNCTIONCLASS.key());
+//			if (!lastValue.equals(genClassName)) {
+//				initialiser.properties().setProperty(P_FUNCTIONCLASS.key(), genClassName);
+//				GraphState.setChanged();
+//			}
+//		} else {
+//			((ResizeablePropertyList) initialiser.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
+//		}
+//
+//	}
 
 	@SuppressWarnings("unchecked")
 	private static List<TreeGraphDataNode> getChildrenLabelled(TreeGraphDataNode root, String label) {

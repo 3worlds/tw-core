@@ -49,6 +49,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,6 +68,7 @@ public class FunctionNode
 	private Map<Integer,TwFunction> functions = new HashMap<>();
 	protected Constructor<? extends TwFunction> fConstructor = null;
 	protected RngNode rngNode = null;
+	private Collection<TimerNode> queues = null;
 
 	public FunctionNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -84,6 +86,9 @@ public class FunctionNode
 			rngNode = (RngNode) get(edges(Direction.OUT),
 				selectZeroOrOne(hasTheLabel(E_USERNG.label())),
 				endNode());
+			queues = (Collection<TimerNode>) get(edges(Direction.IN),
+				selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
+				edgeListStartNodes());
 			// this is once code has been generated and edited by the user
 			String className = (String) properties().getPropertyValue(P_FUNCTIONCLASS.key());
 			if (className!=null) {
@@ -129,6 +134,9 @@ public class FunctionNode
 				result.defaultRng(index);
 			else
 				result.setRng(rngNode.getInstance(index));
+			// attach event queues if feeding some of them
+			for (TimerNode tn: queues)
+				result.setEventQueue((EventQueueWriteable)tn.getInstance(index),tn.id());
 			// add the consequences of the function, if any
 			for (TreeNode n:getChildren())
 				if (n instanceof FunctionNode){

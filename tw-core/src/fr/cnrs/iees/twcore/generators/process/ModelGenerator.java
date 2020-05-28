@@ -688,12 +688,21 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			else
 				proc = (ProcessNode) function.getParent().getParent();
 			TimerNode tm = (TimerNode) proc.getParent();
+			StringBuilder sb = new StringBuilder();
 			String subc = tm.properties().getPropertyValue(P_TIMEMODEL_SUBCLASS.key()).toString();
-			return "<p>- follows timer <em>"+tm.id()+"</em> of type {@link "
-				+ subc.split("\\.")[subc.split("\\.").length-1]
-				+ "}, with time unit = "
-				+ tm.properties().getPropertyValue(P_TIMEMODEL_NTU.key()) + " "
-				+ ((TimeUnits)tm.properties().getPropertyValue(P_TIMEMODEL_TU.key())).abbreviation()+"</p>\n";
+			sb.append("<p>- follows timer <em>")
+				.append(tm.id())
+				.append("</em> of type {@link ")
+				.append(subc.split("\\.")[subc.split("\\.").length-1])
+				.append("}");
+			if (tm.properties().hasProperty(P_TIMEMODEL_NTU.key())) {
+				sb.append(", with time unit = ")
+				.append(tm.properties().getPropertyValue(P_TIMEMODEL_NTU.key()))
+				.append(" ")
+				.append(((TimeUnits)tm.properties().getPropertyValue(P_TIMEMODEL_TU.key())).abbreviation());
+			}
+			sb.append("</p>\n");
+			return sb.toString();
 		}
 	}
 

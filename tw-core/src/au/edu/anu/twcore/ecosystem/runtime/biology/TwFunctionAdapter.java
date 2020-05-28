@@ -29,9 +29,12 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 
+import au.edu.anu.twcore.ecosystem.dynamics.EventQueueWriteable;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
@@ -57,6 +60,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	Random rng = null;
 	TwFunctionTypes fType;
 	Set<TwFunctionTypes> csqTypes = new HashSet<>();
+	Map<String,EventQueueWriteable> eventQueues = new TreeMap<>();
 
 	/**
 	 * constructor defining its own random number stream. It's a default stream with
@@ -107,6 +111,14 @@ public abstract class TwFunctionAdapter implements TwFunction {
 			throw new TwcoreException("valid random number generator expected");
 		if (rng==null)
 			rng = arng;
+	}
+
+	// CAUTION: can be set only once after construction
+	@Override
+	public final void setEventQueue(EventQueueWriteable queue, String queueName) {
+		if (eventQueues.containsValue(queue))
+			throw new TwcoreException("attempt to set event queue more than once");
+		eventQueues.put(queueName, queue);
 	}
 
 	/*-
