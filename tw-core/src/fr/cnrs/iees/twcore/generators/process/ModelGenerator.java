@@ -47,6 +47,7 @@ import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
@@ -677,11 +678,14 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	public String timerComment(TreeGraphDataNode function, TwFunctionTypes ftype) {
+		// functions independent from timers
 		if (EnumSet.of(SetInitialState,SetOtherInitialState).contains(ftype)) {
 			return "<p>- called once for every component, at creation time</p>\n";
 		}
 		else {
+			// timer followed by the function
 			ProcessNode proc = null;
 			if (function.getParent() instanceof ProcessNode)
 				proc = (ProcessNode) function.getParent();
@@ -701,7 +705,26 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				.append(" ")
 				.append(((TimeUnits)tm.properties().getPropertyValue(P_TIMEMODEL_TU.key())).abbreviation());
 			}
+			else { // use time line shortest time unit
+				sb.append(", with time unit = 1 ")
+					.append(((TimeUnits)((TreeGraphDataNode)tm.getParent()).properties()
+						.getPropertyValue(P_TIMELINE_SHORTTU.key())).abbreviation());
+			}
 			sb.append("</p>\n");
+			// if applicable, event timers fed by the function
+			Collection<TimerNode> queues = (Collection<TimerNode>) get(function.edges(Direction.IN),
+				selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
+				edgeListStartNodes());
+			if (!queues.isEmpty()) {
+				if (queues.size()==1)
+					sb.append("<p>- can post new time events to event timer <em>");
+				else
+					sb.append("<p>- can post new time events to event timers <em>");
+				for (TimerNode q:queues)
+					sb.append(q.id()).append(", ");
+				sb.delete(sb.length()-2, sb.length());
+				sb.append("</em></p>\n");
+			}
 			return sb.toString();
 		}
 	}
@@ -827,6 +850,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return false;
 	}
 
+	@SuppressWarnings({ "unchecked" })
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
 		Map<String,ConfigurationEdgeLabels> nameLabelMatches = new HashMap<>();
 		nameLabelMatches.put ("autoVar",E_AUTOVAR);
@@ -906,7 +930,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		Set<TwFunctionArguments> intersection =new TreeSet<>(ftype.readOnlyArguments());
 		intersection.retainAll(EnumSet.of(t,dt));
 		for (TwFunctionArguments arg:intersection) {
-			method.addArgument(arg,null,arg.name(),arg.type(),arg.description());
+			method.addArgument(/*arg,null,*/arg.name(),arg.type(),arg.description());
 			headerComment.append("@param ").append(arg.name()).append(' ')
 				.append(arg.description()).append('\n');
 			replicateNames.add(arg.name());
@@ -925,7 +949,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (mb.name!=null) {
 						if (mb.fullType!=null)
 							imports.add(mb.fullType);
-						method.addArgument(arg,nameLabelMatches.get(rec.name),mb.name,mb.type,arg.description()+rec.name+" "+mb.comment);
+						method.addArgument(/*arg,nameLabelMatches.get(rec.name),*/mb.name,mb.type,arg.description()+rec.name+" "+mb.comment);
 						headerComment.append("@param ").append(mb.name).append(' ')
 							.append(arg.description()).append(rec.name).append(' ').append(mb.comment).append('\n');
 						replicateNames.add(mb.name);
@@ -942,7 +966,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					else if (innerVar.contains("Dec"))
 						s = "new decorators for ";
 					// e.g.: Chaos.FocalDrv focalDrv // next
-					method.addArgument(arg,nameLabelMatches.get(rec.name),
+					method.addArgument(/*arg,nameLabelMatches.get(rec.name),*/
 						innerVar,fname+"."+initialUpperCase(innerVar),s+arg.description());
 					headerComment.append("@param ").append(innerVar).append(' ').append(s)
 						.append(arg.description()).append('\n');
@@ -955,10 +979,28 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// random, decide
 		for (TwFunctionArguments arg:ftype.localArguments()) {
 			imports.add(arg.type());
-			method.addArgument(arg,null,arg.name(),simpleType(arg.type()),arg.description());
+			method.addArgument(/*arg,null,*/arg.name(),simpleType(arg.type()),arg.description());
 			headerComment.append("@param ").append(arg.name()).append(' ')
 				.append(arg.description()).append('\n');
 			replicateNames.add(arg.name());
+		}
+
+		// event timers, if any
+		Collection<TimerNode> queues = (Collection<TimerNode>) get(function.edges(Direction.IN),
+			selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
+			edgeListStartNodes());
+		if (!queues.isEmpty() ) {
+			SortedSet<String> queueNames = new TreeSet<>();
+			for (TimerNode q:queues)
+				queueNames.add(q.id());
+			imports.add(EventQueue.class.getName());
+			TwFunctionArguments arg = timer;
+			for (String qn: queueNames) {
+				method.addArgument(/*arg,null,*/qn,simpleType(arg.type()),arg.description());
+				headerComment.append("@param ").append(qn).append(' ')
+					.append(arg.description()).append('\n');
+				replicateNames.add(qn);
+			}
 		}
 
 		// old code

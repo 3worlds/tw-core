@@ -33,7 +33,6 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import au.edu.anu.twcore.ecosystem.dynamics.EventQueueWriteable;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.exceptions.TwcoreException;
@@ -126,6 +125,11 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 	@Override
 	public double userTime(long t) {
 		return t;
+	}
+
+	@Override
+	public TimeUnits timeUnit() {
+		return timeUnit;
 	}
 
 }

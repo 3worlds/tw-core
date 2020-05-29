@@ -32,6 +32,7 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.RngNode;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
+import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueWriteable;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;

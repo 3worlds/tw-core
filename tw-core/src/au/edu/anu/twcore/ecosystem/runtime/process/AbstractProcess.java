@@ -45,6 +45,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.ens.biologie.generic.Sealable;
 
 /**
@@ -67,6 +68,7 @@ public abstract class AbstractProcess
 	protected Timer timer = null;
 	protected DynamicSpace<SystemComponent,LocatedSystemComponent> space = null;
 	protected double searchRadius = 0.0;
+	protected double currentTime = 0.0;
 
 	protected List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
 
@@ -98,6 +100,10 @@ public abstract class AbstractProcess
 		return space;
 	}
 
+	public final TimeUnits timeUnit() {
+		return timer.timeUnit();
+	}
+
 	public final ArenaComponent ecosystem() {
 		return ecosystem;
 	}
@@ -122,6 +128,10 @@ public abstract class AbstractProcess
 		}
 	}
 
+	public final double time() {
+		return currentTime;
+	}
+
 	@Override
 	public Iterable<DataTracker<?,Metadata>> dataTrackers() {
 		return trackers;
@@ -130,13 +140,14 @@ public abstract class AbstractProcess
 	@Override
 	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
+		currentTime = timer.userTime(t);
 //		for (DataTracker0D tracker:tsTrackers)
 		for (DataTracker<?,Metadata> tracker:trackers)
 			tracker.recordTime(t);
 		if (space!=null)
 			if (space.dataTracker()!=null)
 				space.dataTracker().recordTime(t);
-		loop(timer.userTime(t),timer.userTime(dt),ecosystem());
+		loop(currentTime,timer.userTime(dt),ecosystem());
 	}
 
 	/**

@@ -31,6 +31,11 @@ package fr.cnrs.iees.twcore.generators.process;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListStartNodes;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_FEDBY;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 import java.io.File;
@@ -49,13 +54,16 @@ import java.util.logging.Logger;
 
 import org.bouncycastle.util.Strings;
 
+import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
+import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
@@ -87,8 +95,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private String packageName=null;
 	private String packagePath;
 	private List<String> inBodyCode = null;
+	private SortedSet<String> eventTimerNames = new TreeSet<>();
 //	private List<String> inClassCode = null;
 
+	@SuppressWarnings("unchecked")
 	public TwFunctionGenerator(String className, TreeGraphDataNode spec, String modelName) {
 		super(spec);
 		name = className;
@@ -132,7 +142,13 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			String defLine = "System.out.println(getClass().getSimpleName()+\"\tTime\t\"+t)";
 			inBodyCode.add(defLine);
 		}
-
+		// name of event timer queues fed by this function
+		Collection<TimerNode> queues = (Collection<TimerNode>) get(spec.edges(Direction.IN),
+			selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
+			edgeListStartNodes());
+		if (!queues.isEmpty() )
+			for (TimerNode q:queues)
+				eventTimerNames.add(q.id());
 	}
 
 // OLD CODE - dealing with snippet files.
@@ -176,6 +192,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
 				if (!arggrp.type().equals("double[]"))
 					argClasses.add(arggrp.type());
+		if (!eventTimerNames.isEmpty())
+			argClasses.add(EventQueue.class.getName());
 		for (String s:argClasses)
 			generator.setImport(s);
 		for (String s:dataClassesToImport)
@@ -188,24 +206,33 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		generator.setRawMethodCode(innerClasses);
 		// main method settings
 		Collection<MethodGenerator> lmg = generator.getMethods();
+
+		// TODO HERE for Event timers: use a ModelMethodGenerator (where argument list can be
+		// modified) - implies to put a new cvonstructor into MethodGenerator taking a
+		// Methodenerator as an argument, then make a descendant constructor.
+
 		for (MethodGenerator mg : lmg) { // only 1 assumed
 			//argument list
 			Set<TwFunctionArguments> argSet = new TreeSet<>();
 			argSet.addAll(type.readOnlyArguments());
 			// argument names
-			String[] argNames = new String[argSet.size()];
+			String[] argNames = new String[argSet.size()+eventTimerNames.size()];
 			int i=0;
-//			for (ArgumentGroups ag:argSet)
 			for (TwFunctionArguments ag:argSet)
 				argNames[i++] = ag.name();
+			for (String s:eventTimerNames)
+				argNames[i++] = s;
 			mg.setArgumentNames(argNames);
 			// argument types (not from ancestor, for consistency here)
 			// BUT the ancestor TwFunction MUST have its arguments in the proper order!
-			String[] argTypes = new String[argSet.size()];
+			String[] argTypes = new String[argNames.length];
 			i=0;
-//			for (ArgumentGroups ag:argSet)
 			for (TwFunctionArguments ag:argSet) {
 				String[] ss = ag.type().split("\\.");
+				argTypes[i++] = ss[ss.length-1];
+			}
+			for (String s:eventTimerNames) {
+				String[] ss = timer.type().split("\\.");
 				argTypes[i++] = ss[ss.length-1];
 			}
 			for (int j=0; j<argTypes.length; j++)
@@ -279,6 +306,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setArgumentCalls(ModelGenerator gen) {
 		// mapping between inerVar names and rec.name
 		Map<String,String> recToInnerVar = new HashMap<>();
@@ -382,6 +410,22 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			if (callArg!=null)
 				callStatement += indent+indent+indent+ callArg + ",\n";
 		}
+
+		// event timer queues, if any
+		Collection<TimerNode> queues = (Collection<TimerNode>) get(spec.edges(Direction.IN),
+			selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
+			edgeListStartNodes());
+		if (!queues.isEmpty() ) {
+			SortedSet<String> queueNames = new TreeSet<>();
+			for (TimerNode q:queues)
+				queueNames.add(q.id());
+			String callArg = null;
+			for (String qn: queueNames) {
+				callArg = "getEventQueue("+qn+")";
+				callStatement += indent+indent+indent+ callArg + ",\n";
+			}
+		}
+
 		for (String innerVar:type.innerVars())
 			if (innerClassDecl.get(innerVar)!=null)
 				innerClassDecl.get(innerVar).add(indent+"}\n");

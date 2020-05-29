@@ -25,7 +25,8 @@ public enum TwFunctionArguments {
 	nextOtherLoc	("double[]", "other component new location"),
 	// utilities
 	random			("java.util.Random", "random number generator"),
-	decider		("au.edu.anu.twcore.ecosystem.runtime.biology.DecisionFunction", "decision function")
+	decider			("au.edu.anu.twcore.ecosystem.runtime.biology.DecisionFunction", "decision function"),
+	timer			("au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue", "event timers fed by this method")
 	;
 	private final String type;
 	private final String description;

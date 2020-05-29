@@ -34,10 +34,12 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
-import au.edu.anu.twcore.ecosystem.dynamics.EventQueueWriteable;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
+import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue;
+import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueAdapter;
+import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueWriteable;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
@@ -60,7 +62,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	Random rng = null;
 	TwFunctionTypes fType;
 	Set<TwFunctionTypes> csqTypes = new HashSet<>();
-	Map<String,EventQueueWriteable> eventQueues = new TreeMap<>();
+	Map<String,EventQueue> eventQueues = new TreeMap<>();
 
 	/**
 	 * constructor defining its own random number stream. It's a default stream with
@@ -116,9 +118,15 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	// CAUTION: can be set only once after construction
 	@Override
 	public final void setEventQueue(EventQueueWriteable queue, String queueName) {
-		if (eventQueues.containsValue(queue))
+		if (eventQueues.containsKey(queueName))
 			throw new TwcoreException("attempt to set event queue more than once");
-		eventQueues.put(queueName, queue);
+		eventQueues.put(queueName, new EventQueueAdapter(queue,this));
+	}
+
+
+	@Override
+	public final EventQueue getEventQueue(String queueName) {
+		return eventQueues.get(queueName);
 	}
 
 	/*-

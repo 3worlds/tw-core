@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -31,8 +31,6 @@ package au.edu.anu.twcore.ecosystem.runtime.timer;
 import java.time.LocalDateTime;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
-import au.edu.anu.twcore.ecosystem.runtime.Timer;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
@@ -53,7 +51,7 @@ public class ClockTimer extends AbstractTimer {
 	/** if isExact is false grainsPerBaseUnit will be zero */
 	protected long grainsPerBaseUnit;
 
-	private LocalDateTime startDateTime;
+//	private LocalDateTime startDateTime;
 
 	public ClockTimer(TimerNode timeModel) {
 		super(timeModel);
@@ -62,7 +60,7 @@ public class ClockTimer extends AbstractTimer {
 		timeUnit = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
 		nTimeUnits = (Integer) timeModel.properties().getPropertyValue(P_TIMEMODEL_NTU.key());
 		baseUnit = ((TimeLine)timeModel.getParent()).shortestTimeUnit();
-		startDateTime = ((TimeLine)timeModel.getParent()).getTimeOrigin();
+//		startDateTime = ((TimeLine)timeModel.getParent()).getTimeOrigin();
 		long f = TimeUtil.timeUnitExactConversionFactor(timeUnit, baseUnit);
 		isExact = f>0L;
 		if (timeUnit.equals(TimeUnits.UNSPECIFIED))
@@ -121,6 +119,11 @@ public class ClockTimer extends AbstractTimer {
 		return (1.0 * t) / grainsPerBaseUnit;
 		// if (!exact)
 		//TimeUtil.convertTime(t, baseUnit,timeUnit, startDateTime); x some bloody thing?
+	}
+
+	@Override
+	public TimeUnits timeUnit() {
+		return timeUnit;
 	}
 
 }
