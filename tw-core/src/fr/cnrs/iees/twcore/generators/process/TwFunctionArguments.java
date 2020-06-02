@@ -23,7 +23,7 @@ public enum TwFunctionArguments {
 	// writeable arguments
 	nextFocalLoc	("double[]", "focal component new location"),
 	nextOtherLoc	("double[]", "other component new location"),
-	// utilities
+	// utilities (local to TwFunction)
 	random			("java.util.Random", "random number generator"),
 	decider			("au.edu.anu.twcore.ecosystem.runtime.biology.DecisionFunction", "decision function"),
 	timer			("au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue", "event timers fed by this method")

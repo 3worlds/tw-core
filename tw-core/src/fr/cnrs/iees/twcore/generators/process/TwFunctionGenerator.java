@@ -59,7 +59,6 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
-import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -186,14 +185,17 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		Set<String> argClasses = new TreeSet<>(); // constant order
 		for (TwFunctionArguments arggrp:type.readOnlyArguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
-				if (!arggrp.type().equals("double[]"))
+				if (!arggrp.type().equals("double[]")) {
 					argClasses.add(arggrp.type());
+					if (arggrp.type().contains("CategorizedComponent"))
+						argClasses.add(ComponentContainer.class.getName());
+				}
 		for (TwFunctionArguments arggrp:type.writeableArguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
 				if (!arggrp.type().equals("double[]"))
 					argClasses.add(arggrp.type());
-		if (!eventTimerNames.isEmpty())
-			argClasses.add(EventQueue.class.getName());
+//		if (!eventTimerNames.isEmpty())
+//			argClasses.add(EventQueue.class.getName()); // not needed!
 		for (String s:argClasses)
 			generator.setImport(s);
 		for (String s:dataClassesToImport)
@@ -206,23 +208,18 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		generator.setRawMethodCode(innerClasses);
 		// main method settings
 		Collection<MethodGenerator> lmg = generator.getMethods();
-
-		// TODO HERE for Event timers: use a ModelMethodGenerator (where argument list can be
-		// modified) - implies to put a new cvonstructor into MethodGenerator taking a
-		// Methodenerator as an argument, then make a descendant constructor.
-
 		for (MethodGenerator mg : lmg) { // only 1 assumed
+			// use a ModelMethodGenerator in order to be able to add arguments
+//			ModelMethodGenerator mmg = new ModelMethodGenerator(mg);
 			//argument list
 			Set<TwFunctionArguments> argSet = new TreeSet<>();
 			argSet.addAll(type.readOnlyArguments());
+			argSet.addAll(type.writeableArguments());
 			// argument names
-			String[] argNames = new String[argSet.size()+eventTimerNames.size()];
+			String[] argNames = new String[argSet.size()];
 			int i=0;
 			for (TwFunctionArguments ag:argSet)
 				argNames[i++] = ag.name();
-			for (String s:eventTimerNames)
-				argNames[i++] = s;
-			mg.setArgumentNames(argNames);
 			// argument types (not from ancestor, for consistency here)
 			// BUT the ancestor TwFunction MUST have its arguments in the proper order!
 			String[] argTypes = new String[argNames.length];
@@ -231,17 +228,19 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				String[] ss = ag.type().split("\\.");
 				argTypes[i++] = ss[ss.length-1];
 			}
-			for (String s:eventTimerNames) {
-				String[] ss = timer.type().split("\\.");
-				argTypes[i++] = ss[ss.length-1];
+			// fix generic types and fill mmg with arguments names and types
+			for (int j=0; j<argTypes.length; j++) {
+				if (argTypes[j].contains("CategorizedComponent"))
+					argTypes[j] += "<ComponentContainer>";
+//				mmg.setArgument(argNames[j], argTypes[j], "");
+				mg.setArgumentName(j,argNames[j]);
+				mg.setArgumentType(j, argTypes[j]);
 			}
-			for (int j=0; j<argTypes.length; j++)
-				if (argTypes[j].contains("CategorizedComponent")) {
-					mg.setArgumentType(j,argTypes[j]+"<ComponentContainer>");
-					generator.setImport(ComponentContainer.class.getName());
-				}
-				else
-					mg.setArgumentType(j,argTypes[j]);
+//			// extra arguments are added for event timers // NO ARGUMENT NEEDED! 'local'
+//			for (String s:eventTimerNames) {
+//				String[] ss = timer.type().split("\\.");
+//				mmg.setArgument(s, ss[ss.length-1], "");
+//			}
 			// return type
 			mg.setReturnType(type.returnType());
 			// preparing call to user model function: initialising read-write data
@@ -259,6 +258,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			for (String k:innerVarCopy.keySet())
 				for (String s: innerVarCopy.get(k))
 					mg.setStatement(s);
+			// replace method in class generator
+//			generator.setMethod(mg.name(), mg);
 //			if (inBodyCode != null)
 //				for (String s : inBodyCode)
 //					mg.setStatement(s);
@@ -324,7 +325,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		innerVarInit.clear();
 		innerVarCopy.clear();
 		//t, dt
-		Set<TwFunctionArguments> intersection =new HashSet<>(type.readOnlyArguments());
+		Set<TwFunctionArguments> intersection =new TreeSet<>(type.readOnlyArguments());
 		intersection.retainAll(EnumSet.of(t,dt));
 		for (TwFunctionArguments arg:intersection)
 			callStatement += indent+indent+indent+ arg.name() + ",\n";
@@ -421,7 +422,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				queueNames.add(q.id());
 			String callArg = null;
 			for (String qn: queueNames) {
-				callArg = "getEventQueue("+qn+")";
+				callArg = "getEventQueue(\""+qn+"\")";
 				callStatement += indent+indent+indent+ callArg + ",\n";
 			}
 		}

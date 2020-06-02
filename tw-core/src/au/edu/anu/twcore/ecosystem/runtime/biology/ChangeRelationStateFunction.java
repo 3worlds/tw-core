@@ -28,11 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
 
 /**
  * @author Jacques Gignoux - 10/3/2017
@@ -87,32 +84,62 @@ public abstract class ChangeRelationStateFunction extends TwFunctionAdapter {
 	 * @param nextOtherDrv other driver values at next time (t+dt)
 	 * @param nextOtherLoc other new spatial coordinates at next time (t+dt)
 	 */
+//	public abstract void changeRelationState(
+//			double t,
+//			double dt,
+//			Box limits,
+//			TwData ecosystemPar,
+//			ComponentContainer ecosystemPop,
+//			TwData lifeCyclePar,
+//			ComponentContainer lifeCyclePop,
+//			TwData groupPar,
+//			ComponentContainer groupPop,
+//			TwData otherGroupPar,
+//			ComponentContainer otherGroupPop,
+//			ComponentData focalAuto,
+//			TwData focalLtc,
+//			TwData focalDrv,
+//			TwData focalDec,  // read-write
+//			Point focalLoc,
+//			ComponentData otherAuto,
+//			TwData otherLtc,
+//			TwData otherDrv, // read-write
+//			TwData otherDec,
+//			Point otherLoc,
+//			// returning data (read write parameters)
+//			TwData nextFocalDrv,
+//			double[] nextFocalLoc,
+//			TwData nextOtherDrv,
+//			double[] nextOtherLoc
+//	);
+
+	/**
+	 *
+	 * @param t
+	 * @param dt
+	 * @param arena
+	 * @param lifeCycle
+	 * @param group
+	 * @param space
+	 * @param focal
+	 * @param otherLifeCycle
+	 * @param otherGroup
+	 * @param other
+	 * @param nextFocalLoc
+	 * @param nextOtherLoc
+	 */
 	public abstract void changeRelationState(
 			double t,
 			double dt,
-			Box limits,
-			TwData ecosystemPar,
-			ComponentContainer ecosystemPop,
-			TwData lifeCyclePar,
-			ComponentContainer lifeCyclePop,
-			TwData groupPar,
-			ComponentContainer groupPop,
-			TwData otherGroupPar,
-			ComponentContainer otherGroupPop,
-			ComponentData focalAuto,
-			TwData focalLtc,
-			TwData focalDrv,
-			TwData focalDec,  // read-write
-			Point focalLoc,
-			ComponentData otherAuto,
-			TwData otherLtc,
-			TwData otherDrv, // read-write
-			TwData otherDec,
-			Point otherLoc,
-			// returning data (read write parameters)
-			TwData nextFocalDrv,
+			CategorizedComponent<ComponentContainer> arena,
+			CategorizedComponent<ComponentContainer> lifeCycle,
+			CategorizedComponent<ComponentContainer> group,
+			CategorizedComponent<ComponentContainer> space,
+			CategorizedComponent<ComponentContainer> focal,
+			CategorizedComponent<ComponentContainer> otherLifeCycle,
+			CategorizedComponent<ComponentContainer> otherGroup,
+			CategorizedComponent<ComponentContainer> other,
 			double[] nextFocalLoc,
-			TwData nextOtherDrv,
 			double[] nextOtherLoc
 	);
 

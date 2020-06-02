@@ -179,7 +179,7 @@ public enum TwFunctionTypes {
 		case MaintainRelationDecision:
 		case RelateToDecision:
 		case ChangeRelationState:
-			return EnumSet.complementOf(EnumSet.of(random,decider));
+			return EnumSet.complementOf(EnumSet.of(random,decider,timer));
 		default:
 			return EnumSet.noneOf(TwFunctionArguments.class);
 		}

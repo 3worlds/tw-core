@@ -28,11 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
 
 /**
  * @author Jacques Gignoux - 4/8/2014
@@ -85,29 +82,59 @@ public abstract class MaintainRelationDecisionFunction extends AbstractDecisionF
 	 * @param otherLoc other location at current time, if any
 	 * @return {@code true} if the relation is maintained, {@code false} otherwise
 	 */
+//	public abstract boolean maintainRelation(
+//			double t,
+//			double dt,
+//			Box limits,
+//			TwData ecosystemPar,
+//			ComponentContainer ecosystemPop,
+//			TwData lifeCyclePar,
+//			ComponentContainer lifeCyclePop,
+//			TwData groupPar,
+//			ComponentContainer groupPop,
+//			TwData otherGroupPar,
+//			ComponentContainer otherGroupPop,
+//			ComponentData focalAuto,
+//			TwData focalLtc,
+//			TwData focalDrv,
+//			TwData focalDec,
+//			Point focalLoc,
+//			ComponentData otherAuto,
+//			TwData otherLtc,
+//			TwData otherDrv,
+//			TwData otherDec,
+//			Point otherLoc
+//	);
+
+	/**
+	 *
+	 * @param t
+	 * @param dt
+	 * @param arena
+	 * @param lifeCycle
+	 * @param group
+	 * @param space
+	 * @param focal
+	 * @param otherLifeCycle
+	 * @param otherGroup
+	 * @param other
+	 * @param nextFocalLoc
+	 * @param nextOtherLoc
+	 * @return
+	 */
 	public abstract boolean maintainRelation(
 			double t,
 			double dt,
-			Box limits,
-			TwData ecosystemPar,
-			ComponentContainer ecosystemPop,
-			TwData lifeCyclePar,
-			ComponentContainer lifeCyclePop,
-			TwData groupPar,
-			ComponentContainer groupPop,
-			TwData otherGroupPar,
-			ComponentContainer otherGroupPop,
-			ComponentData focalAuto,
-			TwData focalLtc,
-			TwData focalDrv,
-			TwData focalDec,
-			Point focalLoc,
-			ComponentData otherAuto,
-			TwData otherLtc,
-			TwData otherDrv,
-			TwData otherDec,
-			Point otherLoc
+			CategorizedComponent<ComponentContainer> arena,
+			CategorizedComponent<ComponentContainer> lifeCycle,
+			CategorizedComponent<ComponentContainer> group,
+			CategorizedComponent<ComponentContainer> space,
+			CategorizedComponent<ComponentContainer> focal,
+			CategorizedComponent<ComponentContainer> otherLifeCycle,
+			CategorizedComponent<ComponentContainer> otherGroup,
+			CategorizedComponent<ComponentContainer> other,
+			double[] nextFocalLoc,
+			double[] nextOtherLoc
 	);
-
 
 }

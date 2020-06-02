@@ -3,13 +3,9 @@ package fr.cnrs.iees.twcore.generators.process;
 import static fr.ens.biologie.codeGeneration.Comments.*;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
-import fr.ens.biologie.generic.utils.Tuple;
 
 /**
  * A descendant of MethodGenerator with a different formatting of methods
@@ -29,10 +25,19 @@ public class ModelMethodGenerator extends MethodGenerator {
 		insertCodeInsertionComment = false;
 	}
 
+	public ModelMethodGenerator(MethodGenerator mgen) {
+		super(mgen);
+		insertCodeInsertionComment = false;
+		argComments = new String[argNames.length];
+		Arrays.fill(argComments, "");
+	}
 
 	public ModelMethodGenerator(String scope, String returnType, String name, String... argTypes) {
 		super(scope, returnType, name, argTypes);
 		insertCodeInsertionComment = true;
+		argComments = new String[argTypes.length];
+		for (int i=0; i<argComments.length; i++)
+			argComments[i] = "";
 	}
 
 	public void setRawCode(List<String> code) {
@@ -44,12 +49,13 @@ public class ModelMethodGenerator extends MethodGenerator {
 			rawCode.add(s);
 	}
 
-//	/**
-//	 * Use this only to add arguments to the existing ones - with caution.
-//	 * @param name
-//	 * @param type
-//	 * @return
-//	 */
+	/**
+	 * Use this only to add arguments to the existing ones - with caution.
+	 * @param name
+	 * @param type
+	 * @param comment
+	 * @return
+	 */
 	public MethodGenerator addArgument(//TwFunctionArguments arg,
 //			ConfigurationEdgeLabels dataGroup,
 			String name,
@@ -72,6 +78,48 @@ public class ModelMethodGenerator extends MethodGenerator {
 		return this;
 	}
 
+//	/**
+//	 * Use this to set / add arguments. If the argument exists in the argument list, nothing happens.
+//	 * If the argument does not exist, it is added at the end of the list.
+//	 * CAUTION: when replacing default argument names (v1,v2,v3...) the new names must be
+//	 * passed in the proper order (no check) for replacment to take place.
+//	 *
+//	 * @param name
+//	 * @param type
+//	 * @param comment
+//	 * @return
+//	 */
+//	public MethodGenerator setArgument(String name,
+//			String type,
+//			String comment) {
+//		int i=0;
+//		while ((i<argNames.length) && (!isDefaultName(argNames[i])))
+//			i++;
+//		if (i<argNames.length) {
+//			argNames[i] = name;
+//			argTypes[i] = type;
+//			argComments[i] = comment;
+//		}
+//		Set<String> argset = new HashSet<>();
+//		argset.addAll(Arrays.asList(argNames));
+//		if (!argset.contains(name))
+//			addArgument(name,type,comment);
+//		return this;
+//	}
+//
+//	private boolean isDefaultName(String name) {
+//		try {
+//			Integer.parseInt(name.substring(1).trim());
+//		}
+//		catch (NumberFormatException e) {
+//			return false;
+//		}
+//		return (name.substring(0,1).equals("v"));
+//	}
+//
+//	public String getArgumentName(int i) {
+//		return argNames[i];
+//	}
 
 	public void setMethodComment(String comment) {
 		methodComment = comment;

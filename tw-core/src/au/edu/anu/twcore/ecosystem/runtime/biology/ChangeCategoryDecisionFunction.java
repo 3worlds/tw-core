@@ -28,13 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,22 +79,42 @@ public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFun
 	 * @param focalLoc focal location at current time, if any
 	 * @return the name of the new category <em>focal</em> will move to
 	 */
-	public abstract String changeCategory(
-			double t,
-			double dt,
-			Box limits,
-			TwData ecosystemPar,
-			ComponentContainer ecosystemPop,
-			TwData lifeCyclePar,
-			ComponentContainer lifeCyclePop,
-			TwData groupPar,
-			ComponentContainer groupPop,
-			ComponentData focalAuto,
-			TwData focalLtc,
-			TwData focalDrv,
-			TwData focalDec,
-			Point focalLoc
-	);
+//	public abstract String changeCategory(
+//			double t,
+//			double dt,
+//			Box limits,
+//			TwData ecosystemPar,
+//			ComponentContainer ecosystemPop,
+//			TwData lifeCyclePar,
+//			ComponentContainer lifeCyclePop,
+//			TwData groupPar,
+//			ComponentContainer groupPop,
+//			ComponentData focalAuto,
+//			TwData focalLtc,
+//			TwData focalDrv,
+//			TwData focalDec,
+//			Point focalLoc
+//	);
+
+	/**
+	 *
+	 * @param t
+	 * @param dt
+	 * @param arena
+	 * @param lifeCycle
+	 * @param group
+	 * @param space
+	 * @param focal
+	 * @param nextFocalLoc
+	 * @return
+	 */
+	public abstract String changeCategory(double t, double dt,
+			CategorizedComponent<ComponentContainer> arena,
+			CategorizedComponent<ComponentContainer> lifeCycle,
+			CategorizedComponent<ComponentContainer> group,
+			CategorizedComponent<ComponentContainer> space,
+			CategorizedComponent<ComponentContainer> focal,
+			double[] nextFocalLoc);
 
 	@Override
 	public void addConsequence(TwFunction function) {

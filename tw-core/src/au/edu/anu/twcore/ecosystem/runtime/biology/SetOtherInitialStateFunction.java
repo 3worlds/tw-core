@@ -1,10 +1,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
 
 /**
  *
@@ -39,27 +36,58 @@ public abstract class SetOtherInitialStateFunction extends TwFunctionAdapter {
 	 * @param otherDrv other driver variables at current time, if any
 	 * @param otherLoc other location at current time, if any
 	 */
+//	public abstract void setOtherInitialState(
+//			double t,
+//			double dt,
+//			Box limits,
+//			TwData ecosystemPar,
+//			ComponentContainer ecosystemPop,
+//			TwData lifeCyclePar,
+//			ComponentContainer lifeCyclePop,
+//			TwData groupPar,
+//			ComponentContainer groupPop,
+//			TwData otherGroupPar,
+//			ComponentContainer otherGroupPop,
+//			ComponentData focalAuto,
+//			TwData focalLtc,
+//			TwData focalDrv,
+//			TwData focalDec,
+//			Point focalLoc,
+//			// read-write parameters
+//			TwData otherLtc,
+//			TwData otherDrv,
+//			double[] otherLoc
+//	);
+
+	/**
+	 *
+	 * @param t
+	 * @param dt
+	 * @param arena
+	 * @param lifeCycle
+	 * @param group
+	 * @param space
+	 * @param focal
+	 * @param otherLifeCycle
+	 * @param otherGroup
+	 * @param other
+	 * @param nextFocalLoc
+	 * @param nextOtherLoc
+	 */
 	public abstract void setOtherInitialState(
 			double t,
 			double dt,
-			Box limits,
-			TwData ecosystemPar,
-			ComponentContainer ecosystemPop,
-			TwData lifeCyclePar,
-			ComponentContainer lifeCyclePop,
-			TwData groupPar,
-			ComponentContainer groupPop,
-			TwData otherGroupPar,
-			ComponentContainer otherGroupPop,
-			ComponentData focalAuto,
-			TwData focalLtc,
-			TwData focalDrv,
-			TwData focalDec,
-			Point focalLoc,
-			// read-write parameters
-			TwData otherLtc,
-			TwData otherDrv,
-			double[] otherLoc
+			CategorizedComponent<ComponentContainer> arena,
+			CategorizedComponent<ComponentContainer> lifeCycle,
+			CategorizedComponent<ComponentContainer> group,
+			CategorizedComponent<ComponentContainer> space,
+			CategorizedComponent<ComponentContainer> focal,
+			CategorizedComponent<ComponentContainer> otherLifeCycle,
+			CategorizedComponent<ComponentContainer> otherGroup,
+			CategorizedComponent<ComponentContainer> other,
+			double[] nextFocalLoc,
+			double[] nextOtherLoc
 	);
+
 
 }

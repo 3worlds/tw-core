@@ -114,6 +114,21 @@ public abstract class ChangeOtherStateFunction extends TwFunctionAdapter {
 //			double[] nextOtherLoc
 //	);
 
+	/**
+	 *
+	 * @param t
+	 * @param dt
+	 * @param arena
+	 * @param lifeCycle
+	 * @param group
+	 * @param space
+	 * @param focal
+	 * @param otherLifeCycle
+	 * @param otherGroup
+	 * @param other
+	 * @param nextFocalLoc
+	 * @param nextOtherLoc
+	 */
 	public abstract void changeOtherState(
 			double t,
 			double dt,
