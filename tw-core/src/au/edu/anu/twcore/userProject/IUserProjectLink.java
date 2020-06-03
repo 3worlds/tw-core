@@ -30,6 +30,7 @@
 package au.edu.anu.twcore.userProject;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -63,5 +64,7 @@ public interface IUserProjectLink {
 	public void addInitialiserFile(File f);
 
 	public void pushFiles();
+	
+	public void clearUnusedRemoteFiles();
 
 }

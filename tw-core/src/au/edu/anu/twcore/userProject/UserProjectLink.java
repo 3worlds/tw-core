@@ -30,6 +30,8 @@
 package au.edu.anu.twcore.userProject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 // static singleton class for java IDE-independent info
@@ -116,4 +118,10 @@ public class UserProjectLink {
 		if (impl != null)
 			impl.pushFiles();
 	}
+	
+	public void clearUnusedRemoteFiles() {
+		if (impl!=null)
+			impl.clearUnusedRemoteFiles();
+	};
+
 }

@@ -58,38 +58,38 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 	N_ROOT 						("3worlds",			"tw",			World.class,				0),//
 		N_PREDEFINED 			("predefined",		"pDef",			Predefined.class,			0),//
 		N_DATADEFINITION 		("dataDefinition",	"dDef",			DataDefinition.class,		0),//
-			N_DIMENSIONER 		("dimensioner",		"dim",			DimNode.class,				DIMBASE),//
-			N_TABLE 			("table",			"tbl",			TableNode.class,			DIMBASE+10),//
-			N_RECORD 			("record",			"rec",			Record.class,				0),//
-			N_FIELD 			("field",			"fld",			FieldNode.class,				0),//
-			N_RNG               ("rng",				"gen",			RngNode.class,              DIMBASE),//
-		N_SYSTEM 				("system",			"sys",			ArenaType.class,			ECOBASE),//
-			N_DYNAMICS 			("dynamics",		"sim",			SimulatorNode.class,Math.max(SIMBASE+10,// after stopping conditions
+			N_DIMENSIONER 		("dimensioner",		"dim1",			DimNode.class,				DIMBASE),//
+			N_TABLE 			("table",			"tbl1",			TableNode.class,			DIMBASE+10),//
+			N_RECORD 			("record",			"rec1",			Record.class,				0),//
+			N_FIELD 			("field",			"fld1",			FieldNode.class,				0),//
+			N_RNG               ("rng",				"gen1",			RngNode.class,              DIMBASE),//
+		N_SYSTEM 				("system",			"sys1",			ArenaType.class,			ECOBASE),//
+			N_DYNAMICS 			("dynamics",		"sim1",			SimulatorNode.class,Math.max(SIMBASE+10,// after stopping conditions
 																						Math.max(TIMEBASE+20,	// AND TimerModels
 																							CATEGORYBASE+60))), // AND a fully initialised ECOSYSTEM
-				N_TIMELINE 		("timeLine",		"tmLn",			TimeLine.class,				TIMEBASE),//
-				N_TIMER			("timer",			"tmr",			TimerNode.class,			TIMEBASE+10),// after timeLine
-				N_PROCESS 		("process",			"proc",			ProcessNode.class,			TIMEBASE+30),	// after TimeModel, Function & EventQueue
-				N_FUNCTION 		("function",		"Func",			FunctionNode.class,			0), // ***
-				N_DATATRACKER 	("dataTracker",		"trkr",			DataTrackerNode.class,			0),//
-				N_LIFECYCLE 	("lifeCycle",		"lfcy",			LifeCycle.class,			ECOBASE+10),	// after Ecosystem
-				N_RECRUIT 		("recruit",			"rct",			Recruit.class,				0),//
-				N_PRODUCE 		("produce",			"prd",			Produce.class,				0),//
-				N_STOPPINGCONDITION("stoppingCondition","stCnd",	StoppingConditionNode.class,SIMBASE), // before Simulator
-				N_INITFUNCTION 	("initFunction",	"init",			InitFunctionNode.class,		CATEGORYBASE+20), // after relation
+				N_TIMELINE 		("timeLine",		"tmLn1",		TimeLine.class,				TIMEBASE),//
+				N_TIMER			("timer",			"tmr1",			TimerNode.class,			TIMEBASE+10),// after timeLine
+				N_PROCESS 		("process",			"p1",			ProcessNode.class,			TIMEBASE+30),	// after TimeModel, Function & EventQueue
+				N_FUNCTION 		("function",		"F1",			FunctionNode.class,			0), // ***
+				N_DATATRACKER 	("dataTracker",		"trk1",			DataTrackerNode.class,			0),//
+				N_LIFECYCLE 	("lifeCycle",		"lfcy1",		LifeCycle.class,			ECOBASE+10),	// after Ecosystem
+				N_RECRUIT 		("recruit",			"rct1",			Recruit.class,				0),//
+				N_PRODUCE 		("produce",			"prd1",			Produce.class,				0),//
+				N_STOPPINGCONDITION("stoppingCondition","stCd1",	StoppingConditionNode.class,SIMBASE), // before Simulator
+				N_INITFUNCTION 	("initFunction",	"init1",		InitFunctionNode.class,		CATEGORYBASE+20), // after relation
 				N_INITIALSTATE 	("initialState",	"state",		InitialState.class,			ECOBASE+10), // after Ecosystem
-				N_GROUP 		("group",			"grp",			Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
-				N_COMPONENT 	("component",		"comp",			Component.class,			CATEGORYBASE+30), // after Group
-				N_CONSTANTVALUES("constantValues",	"initCsts",		ConstantValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
-				N_VARIABLEVALUES("variableValues",	"initVars",		VariableValues.class,		CATEGORYBASE+50), // after ParameterValues
-			N_STRUCTURE 		("structure",		"struc",		Structure.class,			0),//
-				N_CATEGORYSET 	("categorySet",		"catSet",		CategorySet.class,			0),//
-				N_CATEGORY 		("category",		"cat",			Category.class,				CATEGORYBASE),
-				N_TEMPLATE 		("template",		"tpl",			ElementFactory.class,				CATEGORYBASE+10),
-				N_COMPONENTTYPE ("componentType",	"compTyp",		ComponentType.class,		CATEGORYBASE+10), // after category and categorySet
-				N_RELATIONTYPE 	("relationType",	"relTyp",		RelationType.class,			CATEGORYBASE+10), // after category
+				N_GROUP 		("group",			"grp1",			Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
+				N_COMPONENT 	("component",		"cmp1",			Component.class,			CATEGORYBASE+30), // after Group
+				N_CONSTANTVALUES("constantValues",	"initCsts1",	ConstantValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
+				N_VARIABLEVALUES("variableValues",	"initVars1",	VariableValues.class,		CATEGORYBASE+50), // after ParameterValues
+			N_STRUCTURE 		("structure",		"struc1",		Structure.class,			0),//
+				N_CATEGORYSET 	("categorySet",		"set1",			CategorySet.class,			0),//
+				N_CATEGORY 		("category",		"cat1",			Category.class,				CATEGORYBASE),
+				N_TEMPLATE 		("template",		"tpl1",			ElementFactory.class,		CATEGORYBASE+10),
+				N_COMPONENTTYPE ("componentType",	"compTyp1",		ComponentType.class,		CATEGORYBASE+10), // after category and categorySet
+				N_RELATIONTYPE 	("relationType",	"relTyp1",		RelationType.class,			CATEGORYBASE+10), // after category
 				N_ARENA 		("arena",			"arena",		ArenaNode.class,			CATEGORYBASE),
-				N_SPACE 		("space",			"space",		SpaceNode.class,			CATEGORYBASE),
+				N_SPACE 		("space",			"space1",		SpaceNode.class,			CATEGORYBASE),
 		N_EXPERIMENT 			("experiment",		"expt",			Experiment.class,			SIMBASE+20),	// after fully iinitialised simulator
 			N_DESIGN 			("design",			"dsgn",			Design.class,				0),//
 			N_TREATMENT 		("treatment",		"trt",			Treatment.class,			0),//
@@ -101,9 +101,9 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 		    N_UIHEADLESS        ("headless",        "hl",           UIHeadless.class,           UIBASE),//
 			N_UITOP 			("top",				"top",			UITop.class,				UIBASE),//
 			N_UIBOTTOM 			("bottom",			"btm",			UIBottom.class,				UIBASE),//
-			N_UITAB 			("tab",				"tab",			UITab.class,				UIBASE),//
-			N_UICONTAINER		("container",		"cont",			UIContainer.class,			UIBASE),//
-			N_UIWIDGET 			("widget",			"wgt",			WidgetNode.class,			UIBASE), //
+			N_UITAB 			("tab",				"tab1",			UITab.class,				UIBASE),//
+			N_UICONTAINER		("container",		"cont1",		UIContainer.class,			UIBASE),//
+			N_UIWIDGET 			("widget",			"wgt1",			WidgetNode.class,			UIBASE), //
 	;
 	//========================================================================================
 	private final String label;

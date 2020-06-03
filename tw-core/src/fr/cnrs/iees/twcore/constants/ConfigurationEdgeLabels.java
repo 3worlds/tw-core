@@ -90,8 +90,8 @@ public enum ConfigurationEdgeLabels {
 	E_DECORATORS	("decorators",		"decs1",		DecoratorEdge.class),
 	E_LTCONSTANTS	("lifetimeConstants","ltcs1",		LifetimeConstantEdge.class),
 	E_PARAMETERS	("parameters",		"pars1",		ParameterEdge.class), // should be deprecated
-	E_BELONGSTO		("belongsTo",		"blngsTo1",		BelongsToEdge.class),
-	E_INITIALISEDBY	("initialisedBy",	"initBy1",		InitialisedByEdge.class),
+	E_BELONGSTO		("belongsTo",		"bt1",			BelongsToEdge.class),
+	E_INITIALISEDBY	("initialisedBy",	"ib1",		InitialisedByEdge.class),
 	E_TOCATEGORY	("toCategory",		"to1",			ToCategoryEdge.class),
 	E_FROMCATEGORY	("fromCategory",	"from1",		FromCategoryEdge.class),
 	// ecosystem / dynamics

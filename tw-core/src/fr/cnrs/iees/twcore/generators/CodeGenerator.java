@@ -37,12 +37,22 @@ import static fr.ens.biologie.generic.utils.NameUtils.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+
+import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
@@ -92,74 +102,96 @@ public class CodeGenerator {
 	// (au.edu.anu.twapps.mm.configGraph)
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
+		/**
+		 * Note: Just clears File classes in lists. Does not clear files on disk. We
+		 * should wait to do this because it provide the means to remove crap
+		 * accumulated from config editing. If we keep copies of the File items, we can
+		 * compare with new ones. Those not present in the old list but not the new list
+		 * can be deleted. Ok thats a good idea! Maybe contain this within the UPL class
+		 * since these are local file names not remote ones - are they??.
+		 */
 		UserProjectLink.clearFiles();
-		File codeDir = Project.makeFile(ProjectPaths.JAVAPROJECT);
+
+		File localCodeRoot = Project.makeFile(ProjectPaths.JAVAPROJECT);
 		try {
-			if (codeDir.exists())
-				FileUtilities.deleteFileTree(codeDir);
+			if (localCodeRoot.exists())
+				FileUtilities.deleteFileTree(localCodeRoot);
 		} catch (IOException e1) {
-			throw new TwcoreException("Unable to delete [" + codeDir + "]", e1);
+			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
 		}
-		List<TreeGraphDataNode> ecologies = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),N_SYSTEM.label());
-		File ecologyFiles = null;
-		for (TreeGraphDataNode ecology : ecologies) {
-			ecologyFiles = Project.makeFile(ProjectPaths.LOCALCODE, wordUpperCaseName(ecology.id()));
-			ecologyFiles.mkdirs();
-			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(ecology.getChildren(),
+		/**
+		 * These are all the systems ([1..*]). If all generated data files go here there
+		 * is duplication between these dirs. Do we need a "shr" dir? For a start, I
+		 * suggest the main project file (modelgen) goes in "code" package since it is
+		 * 1..1 with the project. (i.e LOCAL: local/java/code and REMOTE: src/code so
+		 * package name is "code" not "code.sys")
+		 * 
+		 * But does this file handle multiple systemNodes?.
+		 */
+		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
+				N_SYSTEM.label());
+
+		File systemDir = null;
+		for (TreeGraphDataNode systemNode : systemNodes) {
+
+			/**
+			 * TODO :This is crap - there can be many systems but we have one dir - see ref
+			 * to 'systemDir' outside this loop below
+			 */
+			// wordUpperCaseName is "camelBack" format used for java package names
+			systemDir = Project.makeFile(ProjectPaths.LOCALCODE, wordUpperCaseName(systemNode.id()));
+			systemDir.mkdirs();
+
+			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(systemNode.getChildren(),
 					selectOne(hasTheLabel(N_DYNAMICS.label())));
-			TreeGraphDataNode structure = (TreeGraphDataNode) get(ecology.getChildren(),
+
+			TreeGraphDataNode structure = (TreeGraphDataNode) get(systemNode.getChildren(),
 					selectOne(hasTheLabel(N_STRUCTURE.label())));
 			// generate data classes for SystemComponents
-			List<TreeGraphDataNode> systems = getChildrenLabelled(structure, N_COMPONENTTYPE.label());
-			for (TreeGraphDataNode system : systems) {
-				generateDataCode(system, ecology.id());
+			List<TreeGraphDataNode> componentTypes = getChildrenLabelled(structure, N_COMPONENTTYPE.label());
+			for (TreeGraphDataNode componentType : componentTypes) {
+				generateDataCode(componentType, systemNode.id());
 				// out of here system has the names of the generated data classes
 
 			}
 			// generate data classes for LifeCycles, if any
 			List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(dynamics, N_LIFECYCLE.label());
-			for (TreeGraphDataNode lc : lifeCycles) {
-				generateDataCode(lc, ecology.id());
+			for (TreeGraphDataNode lifeCycle : lifeCycles) {
+				generateDataCode(lifeCycle, systemNode.id());
 			}
 			// generate data classes for Ecosystem, if any
 			// caution here: Ecosystem may have no category at all
-			Collection<Category> cats = (Collection<Category>) get(ecology.edges(Direction.OUT),
+			Collection<Category> cats = (Collection<Category>) get(systemNode.edges(Direction.OUT),
 					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			if (!cats.isEmpty())
-				generateDataCode(ecology, ecology.id());
+				generateDataCode(systemNode, systemNode.id());
 			// prepare user modifiable model file
-			modelgen = new ModelGenerator(graph.root(),ecology.id());
+			modelgen = new ModelGenerator(graph.root(), systemNode.id());
 			// generate TwFunction classes
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
-			List<TreeGraphDataNode> timeModels = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
-				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())),
-				children(),
-				selectZeroOrMany(hasTheLabel(N_TIMER.label())));
-			if (timeModels != null)
-				for (TreeGraphDataNode timeModel : timeModels) {
-					List<TreeGraphDataNode> processes = getChildrenLabelled(timeModel, N_PROCESS.label());
+			List<TreeGraphDataNode> timerNodes = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
+					selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
+					selectZeroOrMany(hasTheLabel(N_TIMER.label())));
+			if (timerNodes != null)
+				for (TreeGraphDataNode timerNode : timerNodes) {
+					List<TreeGraphDataNode> processes = getChildrenLabelled(timerNode, N_PROCESS.label());
 					for (TreeGraphDataNode process : processes) {
-						generateProcessCode(process, ecology.id());
+						generateProcessCode(process, systemNode.id());
 					}
 				}
 			// initialiser function code here
-			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(ecology,
-				children(),
-				selectOne(hasTheLabel(N_STRUCTURE.label())),
-				children(),
-				selectZeroOrMany(
-					orQuery(hasTheLabel(N_LIFECYCLE.label()),
-						hasTheLabel(N_GROUP.label()),
-						hasTheLabel(N_SPACE.label()),
-						hasTheLabel(N_COMPONENTTYPE.label()))));
-			initables.add(ecology);
-			for (TreeGraphDataNode tgn:initables) {
+			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(systemNode, children(),
+					selectOne(hasTheLabel(N_STRUCTURE.label())), children(),
+					selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()), hasTheLabel(N_GROUP.label()),
+							hasTheLabel(N_SPACE.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
+			initables.add(systemNode);
+			for (TreeGraphDataNode tgn : initables) {
 				List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_INITFUNCTION.label());
 				// NB there is only one initfunc.
-				if (initFuncs!=null)
+				if (initFuncs != null)
 					if (!initFuncs.isEmpty())
-						generateFunctionCode(initFuncs.get(0),ecology.id());
+						generateFunctionCode(initFuncs.get(0), systemNode.id());
 			}
 		}
 		// write the user code file
@@ -168,13 +200,63 @@ public class CodeGenerator {
 		// compile whole code directory here ONLY IF IN DEBUGGING LOG LEVEL
 		JavaCompiler compiler = new JavaCompiler();
 //		if (log.getLevel().equals(Level.INFO)) {
-			String result = compiler.compileCode(ecologyFiles);
-			if (result != null)
-				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, ecologyFiles, result));
+		// cant depend on "systemDir" - its outside the loop
+		// and child dirs
+		//String result = compiler.compileCode(systemDir);
+
+		// Q&D test. Compile whole tree from the code root. If you don't like this comment it out and uncomment the line above --Ian
+		// Seems to work.
+		//Next steps:
+		// -change the sub dir structure and check it still works.
+		// -push and pull correctly and handle user edits.
+		// Simplify ULP stuff. No need to add file during java file generation.
+		File compileRootDir = Project.makeFile(ProjectPaths.LOCALCODE);
+		String result = compileLocalTree(getJavaFiles(compileRootDir),compileRootDir);
+		
+		if (result != null)
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, systemDir, result));
 //		}
+
 		if (!ErrorList.haveErrors())
 			UserProjectLink.pushFiles(); // LOOK HERE
 		return !ErrorList.haveErrors();
+	}
+
+	// Q&D testing
+	private String compileLocalTree(List<File> files, File sourceDir) {
+
+		javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		StandardJavaFileManager stdFileManager = compiler.getStandardFileManager(null, Locale.getDefault(), null);
+		Iterable<? extends JavaFileObject> compilationUnits = stdFileManager.getJavaFileObjectsFromFiles(files);
+		LinkedList<String> options = new LinkedList<String>();
+		options.add("-sourcepath");
+		options.add(sourceDir + File.separator);
+		options.add("-classpath");
+		options.add(System.getProperty("java.class.path"));
+		options.add("-Xlint"); // due to a strange error with DataContainer (usually a warning, actually ??)
+		StringWriter errors = new StringWriter();
+		javax.tools.JavaCompiler.CompilationTask task = compiler.getTask(errors, null, null, options, null,
+				compilationUnits);
+		task.call();
+		String result = errors.toString();
+		try {
+			stdFileManager.close();
+		} catch (IOException e1) {
+
+			e1.printStackTrace();
+		}
+		if (result.isBlank())
+			return null;		
+		return result;
+	}
+
+	private static List<File> getJavaFiles(File root){
+		List<File> result = new ArrayList<File>();
+		String [] ext = {"java"};
+		for (File f:FileUtils.listFiles(root, ext, true)){
+			result.add(f);
+		}
+		return result;
 	}
 
 	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
@@ -247,16 +329,16 @@ public class CodeGenerator {
 		// 0. Automatic variables
 		// NO CODE GENERATION for automatic variables!
 		// 1. drivers
-		TreeGraphDataNode spec = Categorized.buildUniqueDataList(system, E_DRIVERS.label(),log);
+		TreeGraphDataNode spec = Categorized.buildUniqueDataList(system, E_DRIVERS.label(), log);
 		generateDataCode(spec, system, modelName, P_DRIVERCLASS.key());
 		// 2. parameters
-		spec = Categorized.buildUniqueDataList(system, E_PARAMETERS.label(),log);
+		spec = Categorized.buildUniqueDataList(system, E_PARAMETERS.label(), log);
 		generateDataCode(spec, system, modelName, P_PARAMETERCLASS.key());
 		// 3. decorators
-		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label(),log);
+		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label(), log);
 		generateDataCode(spec, system, modelName, P_DECORATORCLASS.key());
 		// 4. lifetime constants
-		spec = Categorized.buildUniqueDataList(system, E_LTCONSTANTS.label(),log);
+		spec = Categorized.buildUniqueDataList(system, E_LTCONSTANTS.label(), log);
 		generateDataCode(spec, system, modelName, P_LTCONSTANTCLASS.key());
 		// add space coordinates for every space in which this component type will go
 		// (immobile components)
@@ -347,16 +429,16 @@ public class CodeGenerator {
 						selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
 				for (TreeGraphDataNode cat : fromcats) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 				List<TreeGraphDataNode> tocats = (List<TreeGraphDataNode>) get(ltgn.get(0).edges(Direction.OUT),
 						selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
 				for (TreeGraphDataNode cat : tocats) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 				// generate functions
@@ -370,8 +452,8 @@ public class CodeGenerator {
 				Set<TreeGraphDataNode> cptypes = new HashSet<>();
 				for (TreeGraphDataNode cat : ltgn) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 				// generate functions
