@@ -2,6 +2,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  *
@@ -58,6 +59,11 @@ public abstract class SetOtherInitialStateFunction extends TwFunctionAdapter {
 //			TwData otherDrv,
 //			double[] otherLoc
 //	);
+
+	public SetOtherInitialStateFunction() {
+		super();
+		fType = TwFunctionTypes.SetOtherInitialState;
+	}
 
 	/**
 	 *

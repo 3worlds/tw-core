@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * @author Jacques Gignoux - 4/8/2014
@@ -39,6 +40,11 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
  */
 public abstract class ChangeStateFunction extends TwFunctionAdapter {
 
+
+	public ChangeStateFunction() {
+		super();
+		fType = TwFunctionTypes.ChangeState;
+	}
 
 	/**
 	 * change the state, ie the values of internal variables, of a system component.

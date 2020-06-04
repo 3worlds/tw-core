@@ -34,6 +34,7 @@ import java.util.List;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * @author Jacques Gignoux - 4/8/2014
@@ -100,7 +101,13 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
 //			Point focalLoc
 //	);
 
-    /**
+    public CreateOtherDecisionFunction() {
+		super();
+		fType = TwFunctionTypes.CreateOtherDecision;
+	}
+
+
+	/**
      *
      * @param t
      * @param dt

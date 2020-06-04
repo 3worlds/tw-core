@@ -37,6 +37,7 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_FEDBY;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.SetInitialState;
 import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -416,15 +417,16 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		Collection<TimerNode> queues = (Collection<TimerNode>) get(spec.edges(Direction.IN),
 			selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
 			edgeListStartNodes());
-		if (!queues.isEmpty() ) {
-			SortedSet<String> queueNames = new TreeSet<>();
-			for (TimerNode q:queues)
-				queueNames.add(q.id());
-			String callArg = null;
-			for (String qn: queueNames) {
-				callArg = "getEventQueue(\""+qn+"\")";
-				callStatement += indent+indent+indent+ callArg + ",\n";
-			}
+		if (type!=SetInitialState)
+			if (!queues.isEmpty() ) {
+				SortedSet<String> queueNames = new TreeSet<>();
+				for (TimerNode q:queues)
+					queueNames.add(q.id());
+				String callArg = null;
+				for (String qn: queueNames) {
+					callArg = "getEventQueue(\""+qn+"\")";
+					callStatement += indent+indent+indent+ callArg + ",\n";
+				}
 		}
 
 		for (String innerVar:type.innerVars())

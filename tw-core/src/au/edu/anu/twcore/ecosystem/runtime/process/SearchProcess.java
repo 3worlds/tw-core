@@ -66,8 +66,8 @@ public class SearchProcess
 		extends AbstractRelationProcess  {
 
 	private List<RelateToDecisionFunction> RTfunctions = new LinkedList<>();
-	private HierarchicalContext focalContext = new HierarchicalContext();
-	private HierarchicalContext otherContext = new HierarchicalContext();
+//	private HierarchicalContext focalContext = new HierarchicalContext();
+//	private HierarchicalContext otherContext = new HierarchicalContext();
 	private ComponentContainer ecosystemContainer = null;
 
 	private ComponentContainer focalLifeCycleContainer = null;
@@ -174,8 +174,8 @@ public class SearchProcess
 	private void doRelate(double t, double dt, SystemComponent focal, SystemComponent other,
 			Location focalLocation, Location otherLocation, Box limits) {
 		for (RelateToDecisionFunction function: RTfunctions) {
-			function.setFocalContext(focalContext);
-			function.setOtherContext(otherContext);
+//			function.setFocalContext(focalContext);
+//			function.setOtherContext(otherContext);
 //			if (function.relate(t,dt,focal,other,focalLocation,otherLocation)) {
 //			if (function.relate(t, dt, limits,
 //				focalContext.ecosystemParameters, ecosystemContainer,

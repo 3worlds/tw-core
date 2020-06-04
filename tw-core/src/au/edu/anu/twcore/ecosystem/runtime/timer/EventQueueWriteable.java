@@ -35,8 +35,6 @@ import fr.cnrs.iees.twcore.constants.TimeUnits;
  *
  * @date 14 May 2020
  */
-// The interface seen by user code. All they can do is post and event.
-// actually not exactly - more interfacting to user code is needed. cf EventQueue interface
 
 public interface EventQueueWriteable {
 
@@ -51,4 +49,7 @@ public interface EventQueueWriteable {
 	 * @param tu   TimeUnits of the calling function
 	 */
 	public void postEvent(double cTime, double time, TimeUnits tu);
+
+	public void setInitialEvent();
+
 }

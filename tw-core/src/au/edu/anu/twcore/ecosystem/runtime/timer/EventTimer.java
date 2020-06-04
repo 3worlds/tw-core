@@ -123,6 +123,13 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 	}
 
 	@Override
+	public void setInitialEvent() {
+		if (queue.isEmpty())
+			queue.add(new TimeEvent(1));
+//			queue.add(new TimeEvent(0));
+	}
+
+	@Override
 	public double userTime(long t) {
 		return t;
 	}

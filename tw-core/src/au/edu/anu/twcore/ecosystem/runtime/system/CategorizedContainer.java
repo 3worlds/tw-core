@@ -482,16 +482,15 @@ public abstract class CategorizedContainer<T extends Identity>
 			T c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
 			items.put(c.id(), c);
 			itemsToInitials.put(c.id(), item);
-			if (c instanceof CategorizedComponent) {
-				CategorizedComponent cp = (CategorizedComponent) c;
-				if (cp.initialiser()!=null)
-					// TODO: search hierarchicalyy for the proper group information!
-					cp.initialiser().setInitialState(null, null, null, null, cp, null);
-			}
 		}
 		for (CategorizedContainer<T> sc : subContainers.values())
 			sc.preProcess();
 		resetCounters();
+		setInitialState();
+	}
+
+	protected void setInitialState() {
+		// nothing to do here
 	}
 
 	// NB: Recursive on sub-containers

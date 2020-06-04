@@ -13,16 +13,20 @@ archetype 3wSA-EventTimer
 		isOfClass = String("timer")
 		hasParent = StringTable(([1]"timeLine:"))
 		multiplicity = IntegerRange("0..*")
-		
+
 		hasEdge EventTimeerFedByEdgeSpec
 			isOfClass = String("fedBy")
 			toNode = String("function:")
 			multiplicity = IntegerRange("1..*")
-			
+		// this to start an event timer with an event at t=0
+		hasEdge EventTimeerFedByInitFunctionEdgeSpec
+			isOfClass = String("fedBy")
+			toNode = String("initFunction:")
+			multiplicity = IntegerRange("0..1")
+
 			//The index by which this queue is accessed by user code
 			// So the function knows how to choose which queue to post to.
-			hasProperty fedByIndexrSpec
-				hasName = String("index")
-				type = String("Integer")
-				multiplicity = IntegerRange("1..1")
-				
+//			hasProperty fedByIndexrSpec
+//				hasName = String("index")
+//				type = String("Integer")
+//				multiplicity = IntegerRange("1..1")

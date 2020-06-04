@@ -34,6 +34,7 @@ import java.util.List;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * @author Jacques Gignoux - 4/8/2014
@@ -51,6 +52,11 @@ public abstract class ChangeOtherCategoryDecisionFunction extends AbstractDecisi
 //		double dt,
 //		SystemComponent focal,
 //		SystemComponent other);
+
+	public ChangeOtherCategoryDecisionFunction() {
+		super();
+		fType = TwFunctionTypes.ChangeOtherCategoryDecision;
+	}
 
 	/**
 	 * <em>focal</em> system component changes the category of <em>other</em> system component

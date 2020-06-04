@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * @author Jacques Gignoux - 10/3/2017
@@ -112,6 +113,11 @@ public abstract class ChangeRelationStateFunction extends TwFunctionAdapter {
 //			TwData nextOtherDrv,
 //			double[] nextOtherLoc
 //	);
+
+	public ChangeRelationStateFunction() {
+		super();
+		fType = TwFunctionTypes.ChangeRelationState;
+	}
 
 	/**
 	 *

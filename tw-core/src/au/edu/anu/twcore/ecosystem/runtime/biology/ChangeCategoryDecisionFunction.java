@@ -31,6 +31,8 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,8 +46,9 @@ import java.util.List;
  */
 public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFunction {
 
-
 	private List<SetOtherInitialStateFunction> consequences = new LinkedList<SetOtherInitialStateFunction>();
+
+
 
 //	/**
 //	 * Must return the name of a valid category name.
@@ -96,7 +99,15 @@ public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFun
 //			Point focalLoc
 //	);
 
+	public ChangeCategoryDecisionFunction() {
+		super();
+		fType = TwFunctionTypes.ChangeCategoryDecision;
+	}
+
 	/**
+	 * change category of a system component according to life cycle
+	 * (has no effect if no life cycle is specified). Notice that some parameters may be null when
+	 * calling the method (as denoted by 'if any').
 	 *
 	 * @param t
 	 * @param dt

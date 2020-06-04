@@ -185,4 +185,28 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 		itemsToAdd.clear();
 	}
 
+	@Override
+	protected void setInitialState() {
+		boolean yet = false;
+		for (SystemComponent item:items.values())
+			if (item.initialiser()!=null) {
+				// TODO: search hierarchicalyy for the proper group information!
+				if (item.constants()!=null)
+					item.constants().writeEnable();
+				if (item.currentState()!=null)
+					item.currentState().writeEnable();
+				item.initialiser().setInitialState(null, null, null, null, item, null);
+				if (item.constants()!=null)
+					item.constants().writeDisable();
+				if (item.currentState()!=null)
+					item.currentState().writeDisable();
+				if (!yet) {
+					item.initialiser().startEventQueues();
+					yet=true;
+				}
+			}
+		for (CategorizedContainer<SystemComponent> sc : subContainers())
+			sc.setInitialState();
+	}
+
 }
