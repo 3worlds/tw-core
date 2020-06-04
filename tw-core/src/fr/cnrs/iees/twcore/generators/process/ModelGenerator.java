@@ -122,7 +122,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		super(null);
 		className = validJavaName(wordUpperCaseName(initialUpperCase(root3w.id())));
 		modelName = modelDir;
-		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+modelDir;
+		packageName = ProjectPaths.CODE.replace(File.separator,".")+"."+modelDir;
 		// package comment - standard
 		packageComment = comment(general, license, separatingLine);
 		// class comment - with authorship etc.
@@ -133,7 +133,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		/*- NOTE: Need to remove ref any previous user code here. It does not need to be managed like this- IAN*/
 		//check if a file was already generated for this model in user project
 		// if yes, extract all user code as snippets.
-		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelDir))).getAbsolutePath();
+		packagePath = Project.makeFile(LOCALJAVACODE,validJavaName(wordUpperCaseName(modelDir))).getAbsolutePath();
 //		String previousModel = UserProjectLink.srcRoot()+File.separator+
 //			ProjectPaths.REMOTECODE+File.separator+
 //			validJavaName(wordUpperCaseName(modelDir))+File.separator+
@@ -1036,7 +1036,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		log.info("    generating file " + className + ".java ...");
 		File ctGeneratedCodeDir = getModelCodeDir(modelName);
 		ctGeneratedCodeDir.mkdirs();
-		File file = Project.makeFile(LOCALCODE,modelName, className + ".java");
+		File file = Project.makeFile(LOCALJAVACODE,modelName, className + ".java");
 		writeFile(this, file, className);
 		generatedClassName = packageName + "." + className;
 		log.info("  done.");

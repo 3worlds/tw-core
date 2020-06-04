@@ -104,7 +104,7 @@ public class CodeGenerator {
 	public boolean generate() {
 		//UserProjectLink.clearFiles();
 
-		File localCodeRoot = Project.makeFile(ProjectPaths.JAVAPROJECT);
+		File localCodeRoot = Project.makeFile(ProjectPaths.LOCALJAVA);
 		try {
 			if (localCodeRoot.exists())
 				FileUtilities.deleteFileTree(localCodeRoot);
@@ -123,7 +123,7 @@ public class CodeGenerator {
 			 * to 'systemDir' outside this loop below
 			 */
 			// wordUpperCaseName is "camelBack" format used for java package names
-			File systemDir = Project.makeFile(ProjectPaths.LOCALCODE, wordUpperCaseName(systemNode.id()));
+			File systemDir = Project.makeFile(ProjectPaths.LOCALJAVACODE, wordUpperCaseName(systemNode.id()));
 			systemDir.mkdirs();
 
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(systemNode.getChildren(),

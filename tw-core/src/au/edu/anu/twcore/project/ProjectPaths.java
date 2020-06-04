@@ -40,32 +40,33 @@ import java.io.File;
 // Don't add anything here on speculation. Wait until it's needed.
 public interface ProjectPaths {
 	public static String PROJECT_DIR_PREFIX /*  */ = "project";
-	public static String PROJECT_LOCAL /*       */ = "local";
-	public static String JAVAPROJECT /*         */ = PROJECT_LOCAL + File.separator + "java";
-	/*
+	public static String LOCAL /*       */ = "local";
+	public static String LOCALJAVA /*         */ = LOCAL + File.separator + "java";
+
+	/* dir root for generated code */
+	public static String CODE/*               */ = "code";
+/*
 	 * generated code for a project regardless of the existence of a linked user
 	 * project. The sub dir is organised as system.id() which themselves don't need
 	 * further subdirs (i.e /code
 	 */
-	public static String LOCALCODE /*                */ = JAVAPROJECT + File.separator + "code";
+	public static String LOCALJAVACODE /*                */ = LOCALJAVA + File.separator + CODE;
 
-	/* dir root for generated code in the user's linked project */
-	public static String REMOTECODE/*               */ = "code";
 	/*
 	 * User linked project jar files. It will be empty if there is no linked project
 	 */
-	public static String LIB /*                 */ = JAVAPROJECT + File.separator + "lib";
+	public static String LOCALJAVALIB /*                 */ = LOCALJAVA + File.separator + "lib";
 	/*
 	 * data files for a project regardless of the existence of a linked user
 	 * project. I don't think it has any subDirs
 	 */
-	public static String RES /*                 */ = JAVAPROJECT + File.separator + "res";
+	public static String LOCALJAVARES /*                 */ = LOCALJAVA + File.separator + "res";
 
 	/*
 	 * root of runtime model. Has runtime preferences and any data files, startup
 	 * files and generated filrs
 	 */
-	public static String RUNTIME /*             */ = PROJECT_LOCAL + File.separator + "runTime";
+	public static String RUNTIME /*             */ = LOCAL + File.separator + "runTime";
 
-	public static String LOGS /*                  */=PROJECT_LOCAL + File.separator + "Logs";
+	public static String LOGS /*                  */=LOCAL + File.separator + "Logs";
 }

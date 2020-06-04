@@ -89,9 +89,9 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		List<File> srcFiles = getFileTree(root, "java");
 		List<File> clsFiles = getFileTree(root, "class");
 
-		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + ProjectPaths.REMOTECODE;
-		String remoteClsPath = this.classRoot().getAbsolutePath() + File.separator + ProjectPaths.REMOTECODE;
-		String localPath = root.getAbsolutePath()+ File.separator + ProjectPaths.REMOTECODE;
+		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + ProjectPaths.CODE;
+		String remoteClsPath = this.classRoot().getAbsolutePath() + File.separator + ProjectPaths.CODE;
+		String localPath = root.getAbsolutePath()+ File.separator + ProjectPaths.CODE;
 
 		for (File f : srcPrev)
 			if (!srcFiles.contains(f))

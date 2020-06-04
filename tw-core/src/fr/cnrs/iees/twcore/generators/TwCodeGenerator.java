@@ -84,11 +84,11 @@ public abstract class TwCodeGenerator
 	}
 	
 	protected File getModelCodeDir(String modelRoot) {
-		File result = Project.makeFile(ProjectPaths.LOCALCODE,makeModelJavaName(modelRoot));
+		File result = Project.makeFile(ProjectPaths.LOCALJAVACODE,makeModelJavaName(modelRoot));
 		return result;
 	}
 
 	protected File getModelDataDir(String modelRoot) {
-		return Project.makeFile(ProjectPaths.RES,makeModelJavaName(modelRoot));
+		return Project.makeFile(ProjectPaths.LOCALJAVARES,makeModelJavaName(modelRoot));
 	}
 }

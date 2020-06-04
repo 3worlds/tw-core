@@ -104,7 +104,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		// type = (String)spec.getPropertyValue("type");
 		type = (TwFunctionTypes) spec.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		model = modelName;
-		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+		packagePath = Project.makeFile(LOCALJAVACODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 // OLD CODE - dealing with snippet files.
 		// maybe useful in model generator though
 //		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), edgeListEndNodes(),
@@ -175,7 +175,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		File ctGeneratedCodeDir = getModelCodeDir(model);
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
-		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+ctmodel;
+		packageName = ProjectPaths.CODE.replace(File.separator,".")+"."+ctmodel;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(false, model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
@@ -265,7 +265,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //					mg.setStatement(s);
 		}
 //		generator.setRawMethodCode(inClassCode);
-		File file = Project.makeFile(LOCALCODE,ctmodel, name + ".java");
+		File file = Project.makeFile(LOCALJAVACODE,ctmodel, name + ".java");
 		writeFile(generator, file, name);
 		generatedClassName = packageName + "." + name;
 		log.info("  done.");

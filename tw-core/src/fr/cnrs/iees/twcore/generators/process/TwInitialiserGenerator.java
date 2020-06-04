@@ -87,7 +87,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		super(spec);
 		name = className;
 		model = modelName;
-		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+		packagePath = Project.makeFile(LOCALJAVACODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 
 		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT),
 			edgeListEndNodes(),
@@ -129,7 +129,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		File ctGeneratedCodeDir =  getModelCodeDir(model);
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
-		packageName = ProjectPaths.REMOTECODE.replace(File.separator,".")+"."+ctmodel;
+		packageName = ProjectPaths.CODE.replace(File.separator,".")+"."+ctmodel;
 		String ancestorClassName = INITIALISER_ROOT_PACKAGE+".SecondaryParametersInitialiser";
 		String comment = comment(general,classComment(name),generatedCode(true,model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName,comment,name,ancestorClassName);
@@ -152,7 +152,7 @@ public class TwInitialiserGenerator extends TwCodeGenerator {
 		}
 		generator.setRawMethodCode(inClassCode);
 //		File file = Project.makeFile(ctmodel,TW_CODE,name+".java");
-		File file = Project.makeFile(LOCALCODE,ctmodel,name+".java");
+		File file = Project.makeFile(LOCALJAVACODE,ctmodel,name+".java");
 		writeFile(generator,file,name);
 		generatedClassName = packageName+"."+name;
 		log.info("  done.");
