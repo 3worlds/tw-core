@@ -149,6 +149,7 @@ hasNode functionSpec
 	mustSatisfyQuery FunctionTypePropertySpecQuery
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([3]"relateToProduct","type","CreateOtherDecision"))
+	//------- specific to relateToDecision
 	// for relateToDecision function: must be the only one type of function in its process
 	mustSatisfyQuery FunctionTypeExclusiveChildPropertyValueQueryQuery
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveChildPropertyValueQuery")

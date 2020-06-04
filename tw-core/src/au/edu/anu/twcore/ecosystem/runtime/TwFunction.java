@@ -33,7 +33,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
-import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueWriteable;
 import au.edu.anu.twcore.rngFactory.RngHolder;
@@ -57,19 +56,21 @@ public interface TwFunction extends RngHolder {
 	 *
 	 * @param process the process
 	 */
-	public void initProcess(AbstractProcess process);
+	public void setProcess(AbstractProcess process);
 
 	public void setEventQueue(EventQueueWriteable queue, String queueName);
 
 	public EventQueue getEventQueue(String queueName);
 
+	public void startEventQueues();
+
 	public AbstractProcess process();
 
 	public void addConsequence(TwFunction function);
 
-	public void setFocalContext(HierarchicalContext context);
+//	public void setFocalContext(HierarchicalContext context);
 
-	public void setOtherContext(HierarchicalContext context);
+//	public void setOtherContext(HierarchicalContext context);
 
 	public default Iterable<? extends TwFunction> getConsequences() {
 		return null;

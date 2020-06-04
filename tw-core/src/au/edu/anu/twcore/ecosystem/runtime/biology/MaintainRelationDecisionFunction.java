@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * @author Jacques Gignoux - 4/8/2014
@@ -105,6 +106,11 @@ public abstract class MaintainRelationDecisionFunction extends AbstractDecisionF
 //			TwData otherDec,
 //			Point otherLoc
 //	);
+
+	public MaintainRelationDecisionFunction() {
+		super();
+		fType = TwFunctionTypes.MaintainRelationDecision;
+	}
 
 	/**
 	 *

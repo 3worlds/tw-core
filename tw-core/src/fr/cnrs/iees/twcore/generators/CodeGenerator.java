@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -74,7 +73,6 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
-import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.cnrs.iees.properties.ResizeablePropertyList;
 
 /**
@@ -111,7 +109,7 @@ public class CodeGenerator {
 		} catch (IOException e1) {
 			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
 		}
-		
+
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
 
@@ -181,14 +179,14 @@ public class CodeGenerator {
 		// write the user code file
 		modelgen.generateCode();
 		//UserProjectLink.setModelFile(modelgen.getFile());
-		
+
 		String result = compileLocalTree(localCodeRoot);
-		
+
 		if (!result.isBlank())
 			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, localCodeRoot, result));
-		
+
 		if (!ErrorList.haveErrors()) {
-			//UserProjectLink.pushFiles(); 
+			//UserProjectLink.pushFiles();
 			UserProjectLink.pushCompiledTree(localCodeRoot,modelgen.getFile());
 		}
 		return !ErrorList.haveErrors();

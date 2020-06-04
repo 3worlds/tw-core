@@ -28,7 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -36,7 +38,6 @@ import java.util.TreeMap;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
-import au.edu.anu.twcore.ecosystem.runtime.process.HierarchicalContext;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueAdapter;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueWriteable;
@@ -57,12 +58,13 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 public abstract class TwFunctionAdapter implements TwFunction {
 
 	private AbstractProcess myProcess = null;
-	protected HierarchicalContext focalContext = null;
-	protected HierarchicalContext otherContext = null;
+//	protected HierarchicalContext focalContext = null;
+//	protected HierarchicalContext otherContext = null;
 	Random rng = null;
 	TwFunctionTypes fType;
 	Set<TwFunctionTypes> csqTypes = new HashSet<>();
 	Map<String,EventQueue> eventQueues = new TreeMap<>();
+	private List<EventQueueWriteable> eventQueuesToInit = new ArrayList<>();
 
 	/**
 	 * constructor defining its own random number stream. It's a default stream with
@@ -75,7 +77,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	@Override
 	// CAUTION: can be set only once
 	// this to prevent end-users to mess up with the internal code
-	public final void initProcess(AbstractProcess process) {
+	public final void setProcess(AbstractProcess process) {
 		if (myProcess == null)
 			myProcess = process;
 	}
@@ -90,15 +92,15 @@ public abstract class TwFunctionAdapter implements TwFunction {
 		// do nothing - some descendants have no consequences
 	}
 
-	@Override
-	public void setFocalContext(HierarchicalContext context) {
-		focalContext = context;
-	}
-
-	@Override
-	public void setOtherContext(HierarchicalContext context) {
-		otherContext = context;
-	}
+//	@Override
+//	public void setFocalContext(HierarchicalContext context) {
+//		focalContext = context;
+//	}
+//
+//	@Override
+//	public void setOtherContext(HierarchicalContext context) {
+//		otherContext = context;
+//	}
 
 	@Override
 	public final Random rng() {
@@ -118,15 +120,29 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	// CAUTION: can be set only once after construction
 	@Override
 	public final void setEventQueue(EventQueueWriteable queue, String queueName) {
-		if (eventQueues.containsKey(queueName))
-			throw new TwcoreException("attempt to set event queue more than once");
-		eventQueues.put(queueName, new EventQueueAdapter(queue,this));
+		if (fType==TwFunctionTypes.SetInitialState) {
+			if (eventQueuesToInit.contains(queue))
+				throw new TwcoreException("attempt to set event queue more than once");
+			eventQueuesToInit.add(queue);
+		}
+		else
+			if (eventQueues.containsKey(queueName))
+				throw new TwcoreException("attempt to set event queue more than once");
+			eventQueues.put(queueName, new EventQueueAdapter(queue,this));
 	}
 
 
 	@Override
 	public final EventQueue getEventQueue(String queueName) {
 		return eventQueues.get(queueName);
+	}
+
+
+
+	@Override
+	public final void startEventQueues() {
+		for (EventQueueWriteable q:eventQueuesToInit)
+			q.setInitialEvent();
 	}
 
 	/*-

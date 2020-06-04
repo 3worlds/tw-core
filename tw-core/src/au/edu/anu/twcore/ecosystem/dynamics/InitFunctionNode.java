@@ -29,20 +29,20 @@ public class InitFunctionNode extends FunctionNode implements LimitedEdition<TwF
 		super.initialise();
 	}
 
-	protected TwFunction makeFunction(int index) {
-		TwFunction result = null;
-		try {
-			result = fConstructor.newInstance();
-			// attach a random number generator
-			if (rngNode==null)
-				result.defaultRng(index);
-			else
-				result.setRng(rngNode.getInstance(index));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return result;
-	}
+//	protected TwFunction makeFunction(int index) {
+//		TwFunction result = null;
+//		try {
+//			result = fConstructor.newInstance();
+//			// attach a random number generator
+//			if (rngNode==null)
+//				result.defaultRng(index);
+//			else
+//				result.setRng(rngNode.getInstance(index));
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return result;
+//	}
 
 }

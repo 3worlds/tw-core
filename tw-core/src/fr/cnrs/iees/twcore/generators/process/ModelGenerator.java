@@ -12,9 +12,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static au.edu.anu.twcore.DefaultStrings.*;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumMap;
@@ -40,7 +37,6 @@ import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
-//import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
@@ -53,7 +49,6 @@ import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -68,7 +63,6 @@ import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Distance;
 import fr.cnrs.iees.uit.space.Point;
-import fr.ens.biologie.codeGeneration.Comments;
 import fr.ens.biologie.generic.JavaCode;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -129,7 +123,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		generateClassComment(root3w);
 			// method comments:
 			// working explanations
-		
+
 		/*- NOTE: Need to remove ref any previous user code here. It does not need to be managed like this- IAN*/
 		//check if a file was already generated for this model in user project
 		// if yes, extract all user code as snippets.
@@ -988,21 +982,23 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 
 		// event timers, if any
+
 		Collection<TimerNode> queues = (Collection<TimerNode>) get(function.edges(Direction.IN),
 			selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
 			edgeListStartNodes());
-		if (!queues.isEmpty() ) {
-			SortedSet<String> queueNames = new TreeSet<>();
-			for (TimerNode q:queues)
-				queueNames.add(q.id());
-			imports.add(EventQueue.class.getName());
-			TwFunctionArguments arg = timer;
-			for (String qn: queueNames) {
-				method.addArgument(/*arg,null,*/qn,simpleType(arg.type()),arg.description());
-				headerComment.append("@param ").append(qn).append(' ')
-					.append(arg.description()).append('\n');
-				replicateNames.add(qn);
-			}
+		if (ftype!=SetInitialState)
+			if (!queues.isEmpty() ) {
+				SortedSet<String> queueNames = new TreeSet<>();
+				for (TimerNode q:queues)
+					queueNames.add(q.id());
+				imports.add(EventQueue.class.getName());
+				TwFunctionArguments arg = timer;
+				for (String qn: queueNames) {
+					method.addArgument(/*arg,null,*/qn,simpleType(arg.type()),arg.description());
+					headerComment.append("@param ").append(qn).append(' ')
+						.append(arg.description()).append('\n');
+					replicateNames.add(qn);
+				}
 		}
 
 		// old code

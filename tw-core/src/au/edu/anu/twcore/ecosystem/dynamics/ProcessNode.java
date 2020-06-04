@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 import au.edu.anu.rscs.aot.collections.DynamicList;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.ArenaType;
+import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
@@ -169,8 +170,11 @@ public class ProcessNode
 				result = new RelationProcess(ecosystem.getInstance(index).getInstance(),
 					relation.getInstance(index),tm.getInstance(index),sp,searchRadius);
 		}
-		for (FunctionNode func:functions)
-			result.addFunction(func.getInstance(index));
+		for (FunctionNode func:functions) {
+			TwFunction funk = func.getInstance(index);
+			result.addFunction(funk);
+			funk.setProcess(result);
+		}
 		List<DataTrackerNode> ldt = (List<DataTrackerNode>) get(getChildren(),
 			selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
 		for (DataTrackerNode dt:ldt) {

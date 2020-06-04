@@ -2,6 +2,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  *
@@ -9,6 +10,11 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
  *
  */
 public abstract class SetInitialStateFunction extends TwFunctionAdapter {
+
+	public SetInitialStateFunction() {
+		super();
+		fType = TwFunctionTypes.SetInitialState;
+	}
 
 	/**
 	 * sets the initial state of a newly created SystemComponent.
