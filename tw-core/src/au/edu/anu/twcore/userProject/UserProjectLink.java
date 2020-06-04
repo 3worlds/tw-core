@@ -30,8 +30,6 @@
 package au.edu.anu.twcore.userProject;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 // static singleton class for java IDE-independent info
@@ -89,39 +87,40 @@ public class UserProjectLink {
 	};
 
 
-	public static void clearFiles() {
-		if (impl != null)
-			impl.clearFiles();
-	}
-
-	public static void addModelFile(File f) {
-		if (impl != null)
-			impl.addModelFile(f);
-	}
-
-	public static void addDataFile(File f) {
-		if (impl != null)
-			impl.addDataFile(f);
-	}
-
-	public static void addFunctionFile(File f) {
-		if (impl != null)
-			impl.addFunctionFile(f);
-	}
-
-	public static void addInitialiserFile(File f) {
-		if (impl != null)
-			impl.addInitialiserFile(f);
-	}
-
-	public static void pushFiles() {
-		if (impl != null)
-			impl.pushFiles();
-	}
+//	public static void clearFiles() {
+//		if (impl != null)
+//			impl.clearFiles();
+//	}
+//
+//	public static void setModelFile(File f) {
+//		if (impl != null)
+//			impl.setModelFile(f);
+//	}
+//
+//	public static void addDataFile(File f) {
+//		if (impl != null)
+//			impl.addDataFile(f);
+//	}
+//
+//	public static void addFunctionFile(File f) {
+//		if (impl != null)
+//			impl.addFunctionFile(f);
+//	}
+//
+//	public static void addInitialiserFile(File f) {
+//		if (impl != null)
+//			impl.addInitialiserFile(f);
+//	}
+//
+//	public static void pushFiles() {
+//		if (impl != null)
+//			impl.pushFiles();
+//	}
 	
-	public void clearUnusedRemoteFiles() {
+	public static void pushCompiledTree(File root, File modelFile) {
 		if (impl!=null)
-			impl.clearUnusedRemoteFiles();
+			impl.pushCompiledTree(root,modelFile);
+		
 	};
 
 }

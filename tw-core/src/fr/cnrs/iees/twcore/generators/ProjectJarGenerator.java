@@ -130,7 +130,8 @@ public class ProjectJarGenerator {
 	}
 
 	private void pullAllCodeFiles() {
-		// if we search on .class files we can ignore unpaired ones as they will be inner classes
+		// if we search on .class files we can ignore unpaired ones as they will be
+		// inner classes
 		// File localDir = Project.makeFile(ProjectPaths.LOCALCODE);
 		File localDir = Project.makeFile(ProjectPaths.JAVAPROJECT);
 		String[] srcExtensions = new String[] { "java" };
@@ -141,8 +142,8 @@ public class ProjectJarGenerator {
 				File localSrcFile = replaceParentPath(remoteSrcFile, UserProjectLink.srcRoot(), localDir);
 				File localClsFile = replaceParentPath(remoteClsFile, UserProjectLink.classRoot(), localDir);
 				if (!remoteClsFile.exists())
-					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_CLASS_MISSING,
-							remoteClsFile, remoteSrcFile));
+					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_CLASS_MISSING, remoteClsFile,
+							remoteSrcFile));
 				else {
 					try {
 						FileTime ftSrc = Files.getLastModifiedTime(remoteSrcFile.toPath());
@@ -150,9 +151,8 @@ public class ProjectJarGenerator {
 						Long ageJava = ftSrc.toMillis();
 						Long ageClass = ftCls.toMillis();
 						if (ageJava > ageClass)
-							ErrorList.add(new ModelBuildErrorMsg(
-									ModelBuildErrors.DEPLOY_CLASS_OUTOFDATE, remoteSrcFile, remoteClsFile,
-									ftSrc, ftCls));
+							ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_CLASS_OUTOFDATE, remoteSrcFile,
+									remoteClsFile, ftSrc, ftCls));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -164,15 +164,16 @@ public class ProjectJarGenerator {
 		// any class files not already copied must be inner classes
 		String[] clsExtensions = new String[] { "class" };
 		List<File> remoteClsFiles = (List<File>) FileUtils.listFiles(UserProjectLink.classRoot(), clsExtensions, true);
-		for (File remoteClsFile: remoteClsFiles) {
-			File localClsFile = replaceParentPath(remoteClsFile, UserProjectLink.classRoot(), localDir);
-			if (!localClsFile.exists()) {
-				String name = remoteClsFile.getName();
-				if (name.contains("$"))// just to be sure and also excludes the codeRunner
-				  FileUtilities.copyFileReplace(remoteClsFile,localClsFile);
+		for (File remoteClsFile : remoteClsFiles) {
+			if (!remoteClsFile.getName().equals(userCodeRunnerCls)) {
+				File localClsFile = replaceParentPath(remoteClsFile, UserProjectLink.classRoot(), localDir);
+				if (!localClsFile.exists()) {
+					String name = remoteClsFile.getName();
+					if (name.contains("$"))// just to be sure and also excludes the codeRunner
+						FileUtilities.copyFileReplace(remoteClsFile, localClsFile);
+				}
 			}
 		}
-
 
 	}
 

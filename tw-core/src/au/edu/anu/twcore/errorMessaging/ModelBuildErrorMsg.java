@@ -69,29 +69,22 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 	private void buildMessages() {
 		switch (msgType) {
-		case PROCESS_CLASS_CHANGE: {
-			String localAncestorClass = (String) args[0];
-			String remoteAncestorClass = (String) args[1];
-			File localSrcFile = (File) args[2];
-			verbose1 = category() + "Refresh and check linked Java project. Process '" + localSrcFile.getName()
-					+ "' has changed class from '" + remoteAncestorClass + "' to '" + localAncestorClass + "'.";
-			verbose2 = category() + errorName() + "Refresh and check linked Java project. Process '"
-					+ localSrcFile.getName() + "' has changed class from '" + remoteAncestorClass + "' to '"
-					+ localAncestorClass + "'.\n" + //
-					"Old java file has been backed up and renamed with ext *.orig";
-
-			/*
-			 * msg1 =
-			 * "Refresh and check Java project: Process class has changed ("+name+")"; msg2
-			 * = msg1 + "\nOld class: "+oldAncestorClass+"\nNew class: "+newAncestorClass;
-			 * msg3 = msg2;
-			 */
+		case MODEL_FILE_BACKUP: {
+			File localSrcFile = (File) args[0];
+			verbose1 = category() + "Check and refresh linked Java project. Model file '" + localSrcFile.getName()
+					+ "' has changed structure due to configuration edits.";
+			verbose2 = category() + errorName() +  "Check and refresh linked Java project. Model file '" + localSrcFile.getName()
+			+ "' has changed structure due to configuration edits.\n" + //
+					"Old Model file has been backed up and renamed with ext *.orig<n>";
+			
 			break;
+
 		}
 		case COMPILER_ERROR: {
-
 			File file = (File) args[0];
-			String compileResult = (String) args[1];
+			String compileResult = "unknown";
+			if (args.length>0)
+			compileResult = (String) args[1];
 			verbose1 = category() + "There were compiling warnings/errors in " + file.getName() + ".";
 			verbose2 = category() + errorName() + "There were compiling warnings/errors in " + file.getName()
 					+ ". Errors: " + compileResult;

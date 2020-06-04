@@ -30,16 +30,16 @@
 
 package au.edu.anu.twcore.userProject;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
@@ -47,7 +47,10 @@ import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import fr.cnrs.iees.identity.IdentityScope;
+import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
+import fr.ens.biologie.codeGeneration.Comments;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -56,10 +59,8 @@ import fr.ens.biologie.generic.utils.Logging;
  * @date 29 Sep 2019
  */
 public abstract class AbstractUPL implements IUserProjectLink {
-	private File modelFile;
-	private List<File> dataFiles;
-	private List<File> functionFiles;
-	private List<File> initialiserFiles;
+	private List<File> srcPrev;
+	private List<File> clsPrev;
 	public static String extOrig = ".orig";
 	private static Logger log = Logging.getLogger(AbstractUPL.class);
 	private String userCodeRunnerStr = "public class UserCodeRunner {\n" + //
@@ -76,42 +77,158 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	private String ppph = "<projectPath>";
 
 	public AbstractUPL() {
-		modelFile = null;
-		dataFiles = new ArrayList<>();
-		functionFiles = new ArrayList<>();
-		initialiserFiles = new ArrayList<>();
+		srcPrev = new ArrayList<>();
+		clsPrev = new ArrayList<>();
 	}
 
 	@Override
-	public void clearFiles() {
-		modelFile = null;
-		dataFiles.clear();
-		functionFiles.clear();
-		initialiserFiles.clear();
+	public void pushCompiledTree(File root, File srcModel) {
+
+		writeUserCodeRunner();
+
+		List<File> srcFiles = getFileTree(root, "java");
+		List<File> clsFiles = getFileTree(root, "class");
+
+		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + ProjectPaths.REMOTECODE;
+		String remoteClsPath = this.classRoot().getAbsolutePath() + File.separator + ProjectPaths.REMOTECODE;
+		String localPath = root.getAbsolutePath()+ File.separator + ProjectPaths.REMOTECODE;
+
+		for (File f : srcPrev)
+			if (!srcFiles.contains(f))
+				deleteRemoteFile(f, localPath, remoteSrcPath);
+		for (File f : clsPrev)
+			if (!clsPrev.contains(f))
+				deleteRemoteFile(f, localPath, remoteSrcPath);
+
+		// handle modelFile
+
+		File clsModel = null;
+		for (File f : srcFiles)
+			if (!f.equals(srcModel))
+				pushFile(f, localPath, remoteSrcPath);
+			else
+				clsModel = new File(f.getAbsolutePath().replace(".java", ".class"));
+		for (File f : clsFiles)
+			if (!f.equals(clsModel))
+				pushFile(f, localPath, remoteClsPath);
+
+		updateModelFile(srcModel, clsModel, localPath, remoteSrcPath, remoteClsPath);
+
+		srcPrev.clear();
+		clsPrev.clear();
+
+		srcPrev.addAll(srcFiles);
+		clsPrev.addAll(clsFiles);
 	}
 
-	@Override
-	public void addModelFile(File f) {
-		modelFile = f;
-		log.info(f.getAbsolutePath());
+	private void updateModelFile(File localSrc, File localCls, String localPath, String remoteSrcPath,
+			String remoteClsPath) {
+		File remoteSrc = new File(localSrc.getAbsolutePath().replace(localPath, remoteSrcPath));
+		File remoteCls = new File(localSrc.getAbsolutePath().replace(localPath, remoteClsPath));
+		// first time
+		if (!remoteSrc.exists()) {
+			FileUtilities.copyFileReplace(localSrc, remoteSrc);
+			FileUtilities.copyFileReplace(localCls, remoteCls);
+		} else if (fileHasChanged(localSrc, remoteSrc)) {
+			backupFile(remoteSrc);
+			FileUtilities.copyFileReplace(localSrc, remoteSrc);
+			FileUtilities.copyFileReplace(localCls, remoteCls);
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.MODEL_FILE_BACKUP,localSrc));
+
+		}
 	}
 
-	@Override
-	public void addDataFile(File f) {
-		dataFiles.add(f);
-		log.info(f.getAbsolutePath());
+	private boolean fileHasChanged(File localSrc, File remoteSrc) {
+		// strips all but inline comments
+		String stripCommentRegex = "(?s)/\\*.*?\\*/";
+		List<String> localLines = null;
+		List<String> remoteLines = null;
+		try {
+			localLines = Files.readAllLines(localSrc.toPath());
+			remoteLines = Files.readAllLines(remoteSrc.toPath());
+			String strLocal = stripLines(localLines);
+			String strRemote = stripLines(remoteLines);
+			strLocal = strLocal.replaceAll(stripCommentRegex, "");
+			strRemote = strRemote.replaceAll(stripCommentRegex, "");
+			// TODO return the index of first difference for an info msg? or could put line numbers 
+			return !strLocal.equals(strRemote);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
 	}
 
-	@Override
-	public void addFunctionFile(File f) {
-		functionFiles.add(f);
-		log.info(f.getAbsolutePath());
+	/*-
+	 * Strip:
+	 * inline comments
+	 * blank lines,
+	 * import statements
+	 * user code inserts
+	 */
+
+	private String stripLines(List<String> lines) {
+		StringBuilder sb = new StringBuilder();
+		boolean skip = false;
+		for (String line : lines) {
+			line = line.trim();
+			if (line.contains(Comments.beginCodeInsert)) {
+				sb.append(line);// keep this bit at least
+				skip = true;
+			} else if (line.contains(Comments.endCodeInsert)) {
+				skip = false;
+				sb.append(line);// keep this bit at least
+			} else if (!skip) {// skip user code
+				if (!line.contains("import ")) { // skip imports
+					String[] parts = line.split("//"); // look for inline comments and take the first part.
+					line = parts[0].trim();
+					if (!line.isBlank())
+					  sb.append(line);
+				}
+			}
+		}
+
+		return sb.toString();
 	}
 
-	@Override
-	public void addInitialiserFile(File f) {
-		initialiserFiles.add(f);
-		log.info(f.getAbsolutePath());
+	private void backupFile(File remoteSrc) {
+		// we could just save the snippets but user may like to see what has changed.
+		String backupRoot = "_"+remoteSrc.getName().replace(".java","")+"_";
+		File[] files = remoteSrc.getParentFile().listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.startsWith(backupRoot);
+			}
+			
+		});
+		IdentityScope scope = new LocalScope("BACKUP");
+		for (File f: files) {
+			String name = f.getName().replace(".txt","");
+			scope.newId(true,name);
+		}
+		String nextName = scope.newId(true,backupRoot+"1").id();
+		nextName = nextName+".txt";
+		File backup = new File(remoteSrc.getAbsolutePath().replace(remoteSrc.getName(),nextName));
+		FileUtilities.copyFileReplace(remoteSrc,backup);
+	}
+
+	private void deleteRemoteFile(File localFile, String localPath, String remotePath) {
+		File remoteFile = new File(localFile.getAbsolutePath().replace(localPath, remotePath));
+		if (remoteFile.exists())
+			remoteFile.delete();
+	}
+
+	private void pushFile(File localFile, String localPath, String remotePath) {
+		File remoteFile = new File(localFile.getAbsolutePath().replace(localPath, remotePath));
+		FileUtilities.copyFileReplace(localFile, remoteFile);
+	}
+
+	private List<File> getFileTree(File root, String... ext) {
+		List<File> files = new ArrayList<File>();
+		for (File f : FileUtils.listFiles(root, ext, true))
+			files.add(f);
+		return files;
 	}
 
 	private void writeUserCodeRunner() {
@@ -132,209 +249,6 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		}
 	}
 
-	/**
-	 * Pushes files from the ThreeWorlds code generator (LOCAL) to an associated
-	 * user java project (REMOTE) (if one exists).
-	 *
-	 * There are three types of java files generated: Data, Function and
-	 * Initialiser. The rules for pushing and overwriting are as follows:
-	 *
-	 * Data: LOCAL ALWAYS overwrites REMOTE. It is not intended that remote projects
-	 * modify this code.
-	 *
-	 * Function: LOCAL NEVER overwrites REMOTE. This is the rule UNLESS the Function
-	 * class has changed. As Function templates all differ, a change in function
-	 * class requires that a new java template file be created. To avoid losing
-	 * work, old files are backed up as *.orig<n> so the developers can move their
-	 * code into the new class as they see fit.
-	 *
-	 * Initialiser: LOCAL NEVER overwrites REMOTE.
-	 *
-	 * This method also creates a main class (UserCodeRunner.java) in the default
-	 * package to launch their model from the IDE. This allows break-points to be
-	 * inserted in the developed code for debugging purposes.
-	 */
-	// NEW (8/4/2020 JG: there is now a 4th file type, ModelFile
-	// new organisaion: only class files are pushed for function and data files
-	// the only java file pushed is the model file
-	@Override
-	public void pushFiles() {
-		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + ProjectPaths.REMOTECODE;
-		String remoteClsPath = this.classRoot().getAbsolutePath() + File.separator + ProjectPaths.REMOTECODE;
-		String localPath = Project.makeFile(ProjectPaths.LOCALCODE).getAbsolutePath();
-		writeUserCodeRunner();
-		log.info(localPath + "-> [" + remoteSrcPath + "," + remoteClsPath + "]");
-		pushModelFile(localPath,remoteSrcPath, remoteClsPath);
-		pushDataFiles(localPath, remoteSrcPath, remoteClsPath);
-		pushFunctionFiles(localPath, remoteSrcPath, remoteClsPath);
-		pushInitialiserFiles(localPath, remoteSrcPath, remoteClsPath);
-		// pushInnerClasses(localPath,remoteSrcPath, remoteClsPath);
-	}
-
-	// experimental - always overwrites
-	private void pushModelFile(String localPath, String remoteSrcPath, String remoteClsPath) {
-		File localClsFile = new File(modelFile.getAbsolutePath().replace(".java", ".class"));
-		File remoteSrcFile = new File(modelFile.getAbsolutePath().replace(localPath, remoteSrcPath));
-		File remoteClsFile = new File(
-				modelFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
-		FileUtilities.copyFileReplace(modelFile, remoteSrcFile);
-		FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
-	}
-
-	// Always overwrite
-	private void pushDataFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
-		for (File localSrcFile : dataFiles) {
-			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
-			File remoteSrcFile = new File(localSrcFile.getAbsolutePath().replace(localPath, remoteSrcPath));
-			File remoteClsFile = new File(
-					localSrcFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
-			FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
-			FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
-		}
-	}
-
-	// NEW version which always overwrites and only copies class files
-	public void pushFunctionFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
-		for (File localSrcFile : functionFiles) {
-			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
-			File remoteSrcFile = new File(localSrcFile.getAbsolutePath().replace(localPath, remoteSrcPath));
-			File remoteClsFile = new File(
-					localSrcFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
-			FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
-			FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
-		}
-	}
-
-
-// NEW JG: code kept for recycling
-	// Never overwrite unless a class change is detected. In this case backup old
-	// file as a text file first.
-//	public void pushFunctionFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
-//		for (File localSrcFile : functionFiles) {
-//			File localClsFile = new File(localSrcFile.getAbsolutePath().replace(".java", ".class"));
-//			File remoteSrcFile = new File(localSrcFile.getAbsolutePath().replace(localPath, remoteSrcPath));
-//			File remoteClsFile = new File(
-//					localSrcFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
-//			// Don't overwrite. This is a user editable file
-//			if (!remoteSrcFile.exists()) {
-//				FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
-//				FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
-//			} else {
-//				/*
-//				 * ... unless the function class has changed. If it has changed, backup the old
-//				 * user file with a unique name before overwriting.
-//				 */
-//				String localAncestorClass = getAncestorName(localSrcFile);
-//				String remoteAncestorClass = getAncestorName(remoteSrcFile);
-//				if (!localAncestorClass.equals(remoteAncestorClass)) {
-//					// Prepare a backup file
-//					File backup = createUniqueBackUp(
-//							new File(remoteSrcFile.getAbsolutePath().replace(".java", extOrig + "0")));
-//					remoteSrcFile.renameTo(backup);
-//					FileUtilities.copyFileReplace(localSrcFile, remoteSrcFile);
-//					FileUtilities.copyFileReplace(localClsFile, remoteClsFile);
-//					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.PROCESS_CLASS_CHANGE, localAncestorClass,
-//							remoteAncestorClass, localSrcFile));
-//				}
-//			}
-//		}
-//	}
-
-//	public void pushInnerClasses(String localPath, String remoteSrcPath, String remoteClsPath) {
-//		// find any .class files that have no matching .java file
-//		File jDir = new File(remoteSrcPath);
-//		File[] jFiles = jDir.listFiles(new FilenameFilter() {
-//
-//			@Override
-//			public boolean accept(File dir, String name) {
-//				return name.endsWith(".java");
-//			}
-//
-//		});
-//		File cDir = new File(remoteClsPath);
-//		File[] cFiles = cDir.listFiles(new FilenameFilter() {
-//
-//			@Override
-//			public boolean accept(File dir, String name) {
-//				return name.endsWith(".class");
-//			}
-//
-//		});
-//		List<File> srcFiles = new ArrayList<>();
-//		List<File> clsFiles = new ArrayList<>();
-//		List<File> innFiles = new ArrayList<>();
-//		for (File f:jFiles)
-//			srcFiles.add(f);
-//		for (File f:cFiles)
-//			clsFiles.add(f);
-//
-//
-//
-//	}
-	// Never overwrite.
-	public void pushInitialiserFiles(String localPath, String remoteSrcPath, String remoteClsPath) {
-		for (File inSrcFile : initialiserFiles) {
-			File inClsFile = new File(inSrcFile.getAbsolutePath().replace(".java", ".class"));
-			File remoteClsFile = new File(
-					inSrcFile.getAbsolutePath().replace(localPath, remoteClsPath).replace(".java", ".class"));
-			File remoteSrcFile = new File(inSrcFile.getAbsolutePath().replace(localPath, remoteSrcPath));
-			// Don't overwrite. This is a user editable file.
-			if (!remoteSrcFile.exists()) {
-				FileUtilities.copyFileReplace(inSrcFile, remoteSrcFile);
-				FileUtilities.copyFileReplace(inClsFile, remoteClsFile);
-			}
-		}
-	}
-
-	private static String getAncestorName(File f) {
-		String result = "";
-		try {
-			BufferedReader infile = new BufferedReader(new FileReader(f));
-			String line = infile.readLine();
-			while (line != null) {
-				if (line.contains("extends")) {
-					String[] tokens = line.split(" ");
-					result = getAncestorToken(tokens);
-					result = result.trim();
-					infile.close();
-					return result;
-				}
-				line = infile.readLine();
-			}
-			infile.close();
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	private static String getAncestorToken(String[] tokens) {
-		for (int i = 0; i < tokens.length - 2; i++) {
-			String token = tokens[i];
-			if (token.equals("extends"))
-				return tokens[i + 1];
-		}
-		return null;
-	}
-
-	private static File createUniqueBackUp(File file) {
-		if (!file.exists()) {
-			return file;
-		} else {
-			String name = file.getName();
-			String ext = name.substring(name.indexOf("."), name.length());
-			String sCount = ext.replace(extOrig, "");
-			int count = Integer.parseInt(sCount) + 1;
-			String newExt = extOrig + count;
-			String newName = name.replace(ext, newExt);
-			File newFile = new File(file.getParent() + File.separator + newName);
-			return createUniqueBackUp(newFile);
-		}
-	}
-
 	@Override
 	public File classForSource(File srcFile) {
 		return new File(srcFile.getAbsolutePath().replace(srcRoot().getAbsolutePath(), classRoot().getAbsolutePath())
@@ -346,8 +260,4 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		return new File(clsFile.getAbsolutePath().replace(srcRoot().getAbsolutePath(), classRoot().getAbsolutePath())
 				.replace(".class", ".java"));
 	}
-	public void clearUnusedRemoteFiles() {
-		// TODO not implemneted 
-	};
-
 }

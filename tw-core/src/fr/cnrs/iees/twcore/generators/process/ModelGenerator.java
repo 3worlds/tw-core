@@ -129,54 +129,56 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		generateClassComment(root3w);
 			// method comments:
 			// working explanations
+		
+		/*- NOTE: Need to remove ref any previous user code here. It does not need to be managed like this- IAN*/
 		//check if a file was already generated for this model in user project
 		// if yes, extract all user code as snippets.
 		packagePath = Project.makeFile(LOCALCODE,validJavaName(wordUpperCaseName(modelDir))).getAbsolutePath();
-		String previousModel = UserProjectLink.srcRoot()+File.separator+
-			ProjectPaths.REMOTECODE+File.separator+
-			validJavaName(wordUpperCaseName(modelDir))+File.separator+
-			className+".java";
-		if (Files.exists(Path.of(previousModel))) {
-			File previousFile = new File(previousModel);
-			List<String> lines = new LinkedList<>();
-			try {
-				lines = Files.readAllLines(previousFile.toPath());
-			} catch (IOException e) {
-				log.severe(()->"File "+previousFile+" could not be read - file regenerated instead");
-			}
-			String record = null;
-			for (String line:lines) {
-				if (line.strip().startsWith("import "))
-					imports.add(line.substring(line.indexOf("import")+6,line.indexOf(';')).strip());
-//				if (line.contains("END CODE INSERTION ZONE"))
-				if (line.contains(Comments.endCodeInsert))
-					record = null;
-				if (record!=null) {
-					if (snippets.get(record)==null)
-						snippets.put(record,new LinkedList<>());
-					// TODO: this will fail if there are more than one return statement per method
-					if (line.strip().startsWith("return "))
-						snippets.get(record).add(line);
-					else
-						if (line.startsWith("//"))
-							snippets.get(record).add(line);
-						else
-							snippets.get(record).add("//"+line);
-				}
-//				if (line.contains("INSERT YOUR CODE BELOW THIS LINE"))
-				if (line.contains(Comments.beginCodeInsert))
-					record = line.substring(line.indexOf("//")+2,line.indexOf('-')).strip();
-			}
-//			// debugging
-//			for (String s:snippets.keySet()) {
-//				System.out.println("Snippet for method'"+s+"': ");
-//				for (String ss: snippets.get(s))
-//					System.out.println("\t"+ss);
+//		String previousModel = UserProjectLink.srcRoot()+File.separator+
+//			ProjectPaths.REMOTECODE+File.separator+
+//			validJavaName(wordUpperCaseName(modelDir))+File.separator+
+//			className+".java";
+//		if (Files.exists(Path.of(previousModel))) {
+//			File previousFile = new File(previousModel);
+//			List<String> lines = new LinkedList<>();
+//			try {
+//				lines = Files.readAllLines(previousFile.toPath());
+//			} catch (IOException e) {
+//				log.severe(()->"File "+previousFile+" could not be read - file regenerated instead");
 //			}
-		}
-		else {
+//			String record = null;
+//			for (String line:lines) {
+//				if (line.strip().startsWith("import "))
+//					imports.add(line.substring(line.indexOf("import")+6,line.indexOf(';')).strip());
+////				if (line.contains("END CODE INSERTION ZONE"))
+//				if (line.contains(Comments.endCodeInsert))
+//					record = null;
+//				if (record!=null) {
+//					if (snippets.get(record)==null)
+//						snippets.put(record,new LinkedList<>());
+//					// TODO: this will fail if there are more than one return statement per method
+//					if (line.strip().startsWith("return "))
+//						snippets.get(record).add(line);
+//					else
+//						if (line.startsWith("//"))
+//							snippets.get(record).add(line);
+//						else
+//							snippets.get(record).add("//"+line);
+//				}
+////				if (line.contains("INSERT YOUR CODE BELOW THIS LINE"))
+//				if (line.contains(Comments.beginCodeInsert))
+//					record = line.substring(line.indexOf("//")+2,line.indexOf('-')).strip();
+//			}
+////			// debugging
+////			for (String s:snippets.keySet()) {
+////				System.out.println("Snippet for method'"+s+"': ");
+////				for (String ss: snippets.get(s))
+////					System.out.println("\t"+ss);
+////			}
+//		}
+//		else {
 			imports.add("static java.lang.Math.*");
-		}
+//		}
 		// get all nodes susceptible to require generated data:
 		// system/arena, lifecycle, group, component, space
 		// NB these nodes may also have setInitialState functions

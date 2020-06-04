@@ -34,7 +34,7 @@ package au.edu.anu.twcore.errorMessaging;
  * @date 23 Nov 2019
  */
 public enum ModelBuildErrors {
-	PROCESS_CLASS_CHANGE/*   */("Compile"), //
+	MODEL_FILE_BACKUP/*      */("Compile"), //
 	COMPILER_ERROR/*         */("Compile"), //
 	COMPILER_MISSING/*       */("Compile"), //
 	SPECIFICATION/*          */("Specification"), //

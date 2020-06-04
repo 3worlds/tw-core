@@ -30,7 +30,6 @@
 package au.edu.anu.twcore.userProject;
 
 import java.io.File;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -49,22 +48,22 @@ public interface IUserProjectLink {
 
 	public File[] getUserLibraries(Set<String> exclusions);
 
-	public void clearFiles();
+//	public void clearFiles();
 
 	public File classForSource(File srcFile);
 
 	public File sourceForClass(File clsFile);
 
-	public void addModelFile(File f);
+//	public void setModelFile(File f);
 
-	public void addDataFile(File f);
+//	public void addDataFile(File f);
 
-	public void addFunctionFile(File f);
+//	public void addFunctionFile(File f);
 
-	public void addInitialiserFile(File f);
+//	public void addInitialiserFile(File f);
 
-	public void pushFiles();
+//	public void pushFiles();
 	
-	public void clearUnusedRemoteFiles();
+	public void pushCompiledTree(File root, File modelFile);
 
 }

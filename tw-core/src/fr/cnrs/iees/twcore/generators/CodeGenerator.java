@@ -102,15 +102,7 @@ public class CodeGenerator {
 	// (au.edu.anu.twapps.mm.configGraph)
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
-		/**
-		 * Note: Just clears File classes in lists. Does not clear files on disk. We
-		 * should wait to do this because it provide the means to remove crap
-		 * accumulated from config editing. If we keep copies of the File items, we can
-		 * compare with new ones. Those not present in the old list but not the new list
-		 * can be deleted. Ok thats a good idea! Maybe contain this within the UPL class
-		 * since these are local file names not remote ones - are they??.
-		 */
-		UserProjectLink.clearFiles();
+		//UserProjectLink.clearFiles();
 
 		File localCodeRoot = Project.makeFile(ProjectPaths.JAVAPROJECT);
 		try {
@@ -119,19 +111,11 @@ public class CodeGenerator {
 		} catch (IOException e1) {
 			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
 		}
-		/**
-		 * These are all the systems ([1..*]). If all generated data files go here there
-		 * is duplication between these dirs. Do we need a "shr" dir? For a start, I
-		 * suggest the main project file (modelgen) goes in "code" package since it is
-		 * 1..1 with the project. (i.e LOCAL: local/java/code and REMOTE: src/code so
-		 * package name is "code" not "code.sys")
-		 * 
-		 * But does this file handle multiple systemNodes?.
-		 */
+		
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
 
-		File systemDir = null;
+		//File systemDir = null;
 		for (TreeGraphDataNode systemNode : systemNodes) {
 
 			/**
@@ -139,7 +123,7 @@ public class CodeGenerator {
 			 * to 'systemDir' outside this loop below
 			 */
 			// wordUpperCaseName is "camelBack" format used for java package names
-			systemDir = Project.makeFile(ProjectPaths.LOCALCODE, wordUpperCaseName(systemNode.id()));
+			File systemDir = Project.makeFile(ProjectPaths.LOCALCODE, wordUpperCaseName(systemNode.id()));
 			systemDir.mkdirs();
 
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(systemNode.getChildren(),
@@ -196,41 +180,32 @@ public class CodeGenerator {
 		}
 		// write the user code file
 		modelgen.generateCode();
-		UserProjectLink.addModelFile(modelgen.getFile());
-		// compile whole code directory here ONLY IF IN DEBUGGING LOG LEVEL
-		JavaCompiler compiler = new JavaCompiler();
-//		if (log.getLevel().equals(Level.INFO)) {
-		// cant depend on "systemDir" - its outside the loop
-		// and child dirs
-		//String result = compiler.compileCode(systemDir);
-
-		// Q&D test. Compile whole tree from the code root. If you don't like this comment it out and uncomment the line above --Ian
-		// Seems to work.
-		//Next steps:
-		// -change the sub dir structure and check it still works.
-		// -push and pull correctly and handle user edits.
-		// Simplify ULP stuff. No need to add file during java file generation.
-		File compileRootDir = Project.makeFile(ProjectPaths.LOCALCODE);
-		String result = compileLocalTree(getJavaFiles(compileRootDir),compileRootDir);
+		//UserProjectLink.setModelFile(modelgen.getFile());
 		
-		if (result != null)
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, systemDir, result));
-//		}
-
-		if (!ErrorList.haveErrors())
-			UserProjectLink.pushFiles(); // LOOK HERE
+		String result = compileLocalTree(localCodeRoot);
+		
+		if (!result.isBlank())
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, localCodeRoot, result));
+		
+		if (!ErrorList.haveErrors()) {
+			//UserProjectLink.pushFiles(); 
+			UserProjectLink.pushCompiledTree(localCodeRoot,modelgen.getFile());
+		}
 		return !ErrorList.haveErrors();
 	}
 
 	// Q&D testing
-	private String compileLocalTree(List<File> files, File sourceDir) {
-
+	private String compileLocalTree(File rootDir) {
+		List<File> files = new ArrayList<File>();
+		String [] ext = {"java"};
+		for (File f:FileUtils.listFiles(rootDir, ext, true))
+			files.add(f);
 		javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		StandardJavaFileManager stdFileManager = compiler.getStandardFileManager(null, Locale.getDefault(), null);
 		Iterable<? extends JavaFileObject> compilationUnits = stdFileManager.getJavaFileObjectsFromFiles(files);
 		LinkedList<String> options = new LinkedList<String>();
 		options.add("-sourcepath");
-		options.add(sourceDir + File.separator);
+		options.add(rootDir + File.separator);
 		options.add("-classpath");
 		options.add(System.getProperty("java.class.path"));
 		options.add("-Xlint"); // due to a strange error with DataContainer (usually a warning, actually ??)
@@ -245,19 +220,9 @@ public class CodeGenerator {
 
 			e1.printStackTrace();
 		}
-		if (result.isBlank())
-			return null;		
 		return result;
 	}
 
-	private static List<File> getJavaFiles(File root){
-		List<File> result = new ArrayList<File>();
-		String [] ext = {"java"};
-		for (File f:FileUtils.listFiles(root, ext, true)){
-			result.add(f);
-		}
-		return result;
-	}
 
 	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
 			String dataGroup) {
@@ -468,7 +433,7 @@ public class CodeGenerator {
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.setArgumentCalls(modelgen);
 		generator.generateCode();
-		UserProjectLink.addFunctionFile(generator.getFile());
+		//UserProjectLink.addFunctionFile(generator.getFile());
 		String genClassName = generator.generatedClassName();
 		if (function.properties().hasProperty(P_FUNCTIONCLASS.key())) {
 			String lastValue = (String) function.properties().getPropertyValue(P_FUNCTIONCLASS.key());
