@@ -58,7 +58,7 @@ public class EdgeToOneChildOfQuery extends Query {
 	}
 
 	public String toString() {
-		return "[" + stateString() + "out node must be chosen in the children of: " + nodeRef + ".]";
+		return stateString() + "out node must be one of the children of '" + nodeRef + "'.";
 	}
 
 }
