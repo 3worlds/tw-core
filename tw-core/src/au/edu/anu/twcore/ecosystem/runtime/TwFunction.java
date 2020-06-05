@@ -62,8 +62,6 @@ public interface TwFunction extends RngHolder {
 
 	public EventQueue getEventQueue(String queueName);
 
-	public void startEventQueues();
-
 	public AbstractProcess process();
 
 	public void addConsequence(TwFunction function);

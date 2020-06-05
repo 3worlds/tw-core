@@ -17,12 +17,16 @@ archetype 3wSA-EventTimer
 		hasEdge EventTimeerFedByEdgeSpec
 			isOfClass = String("fedBy")
 			toNode = String("function:")
-			multiplicity = IntegerRange("1..*")
+			multiplicity = IntegerRange("0..*")
 		// this to start an event timer with an event at t=0
-		hasEdge EventTimeerFedByInitFunctionEdgeSpec
+		hasEdge EventTimerFedByInitFunctionEdgeSpec
 			isOfClass = String("fedBy")
 			toNode = String("initFunction:")
 			multiplicity = IntegerRange("0..1")
+		mustSatisfyQuery AtLeastOneFedByEdgeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
+			nodeLabel1 = String("initFunction")
+			nodeLabel2 = String("function")
 
 			//The index by which this queue is accessed by user code
 			// So the function knows how to choose which queue to post to.

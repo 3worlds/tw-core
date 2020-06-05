@@ -2,6 +2,7 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
@@ -11,9 +12,20 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
  */
 public abstract class SetInitialStateFunction extends TwFunctionAdapter {
 
+	private TimeUnits baseTimeUnit = null;
+
 	public SetInitialStateFunction() {
 		super();
 		fType = TwFunctionTypes.SetInitialState;
+	}
+
+	public void setTimeUnit(TimeUnits btu) {
+		if (baseTimeUnit==null)
+			baseTimeUnit = btu;
+	}
+
+	public TimeUnits baseTimeUnit() {
+		return baseTimeUnit;
 	}
 
 	/**

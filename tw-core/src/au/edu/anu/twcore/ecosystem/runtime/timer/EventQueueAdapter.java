@@ -1,6 +1,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.timer;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
+import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 
 /**
  * Implementation of EventQueue for use with 3worlds user code
@@ -21,7 +22,13 @@ public class EventQueueAdapter implements EventQueue {
 
 	@Override
 	public final void postTimeEvent(double nextTime) {
-		queue.postEvent(function.process().time(), nextTime, function.process().timeUnit());
+		// this is for normal functions
+		if (function.process()!=null)
+			queue.postEvent(function.process().time(), nextTime, function.process().timeUnit());
+		// this is only for SetInitialState function, which are called only at t=0
+		else
+			if (function instanceof SetInitialStateFunction)
+				queue.postEvent(0, nextTime, ((SetInitialStateFunction)function).baseTimeUnit());
 	}
 
 }

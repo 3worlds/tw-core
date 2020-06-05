@@ -46,7 +46,7 @@ public class ArenaComponent
 				constants().writeDisable();
 			if (currentState()!=null)
 				currentState().writeDisable();
-			initialiser().startEventQueues();
+//			initialiser().startEventQueues();
 		}
 	}
 

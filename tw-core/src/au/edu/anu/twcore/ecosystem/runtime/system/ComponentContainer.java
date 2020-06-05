@@ -187,7 +187,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 
 	@Override
 	protected void setInitialState() {
-		boolean yet = false;
+//		boolean yet = false;
 		for (SystemComponent item:items.values())
 			if (item.initialiser()!=null) {
 				// TODO: search hierarchicalyy for the proper group information!
@@ -200,10 +200,10 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 					item.constants().writeDisable();
 				if (item.currentState()!=null)
 					item.currentState().writeDisable();
-				if (!yet) {
-					item.initialiser().startEventQueues();
-					yet=true;
-				}
+//				if (!yet) {
+//					item.initialiser().startEventQueues();
+//					yet=true;
+//				}
 			}
 		for (CategorizedContainer<SystemComponent> sc : subContainers())
 			sc.setInitialState();

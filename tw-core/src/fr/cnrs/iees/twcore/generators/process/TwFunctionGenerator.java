@@ -417,7 +417,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		Collection<TimerNode> queues = (Collection<TimerNode>) get(spec.edges(Direction.IN),
 			selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
 			edgeListStartNodes());
-		if (type!=SetInitialState)
+//		if (type!=SetInitialState)
 			if (!queues.isEmpty() ) {
 				SortedSet<String> queueNames = new TreeSet<>();
 				for (TimerNode q:queues)

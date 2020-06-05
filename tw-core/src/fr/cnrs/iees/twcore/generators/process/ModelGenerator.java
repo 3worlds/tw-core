@@ -986,7 +986,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		Collection<TimerNode> queues = (Collection<TimerNode>) get(function.edges(Direction.IN),
 			selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
 			edgeListStartNodes());
-		if (ftype!=SetInitialState)
+//		if (ftype!=SetInitialState)
 			if (!queues.isEmpty() ) {
 				SortedSet<String> queueNames = new TreeSet<>();
 				for (TimerNode q:queues)

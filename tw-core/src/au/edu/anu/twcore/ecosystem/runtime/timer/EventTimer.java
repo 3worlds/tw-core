@@ -35,7 +35,6 @@ import java.util.Queue;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 
 /**
@@ -98,6 +97,10 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 	public void advanceTime(long newTime) {
 		lastTime = newTime;
 		queue.poll();
+		// warning here because this may be a sign of serious trouble
+		if (queue.isEmpty()) {
+			log.warning(()->"Event queue is now empty");
+		}
 	}
 
 	// TODO check this!
@@ -116,18 +119,28 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 	public void postEvent(double cTime, double time, TimeUnits tu) {
 		long currentTime = Math.round(TimeUtil.convertTime(cTime, tu, timeUnit, startDateTime));
 		long eventTime = Math.round(TimeUtil.convertTime(time, tu, timeUnit, startDateTime));
-		if (eventTime <= currentTime)
-			throw new TwcoreException("Posted event must be in advance of current time. [ currentTime: " + currentTime
-					+ ", time: " + eventTime + "]");
+		// a softer way to warn the user about that:
+		if (eventTime <= currentTime) {
+			// issue an error message to end user saying his code is crap.
+			log.severe("Next time event (t="+eventTime+") occuring earlier than current time (t="+currentTime+")");
+			// fix the problem by settingeventTime to the minimal acceptable difference of 1 time grain
+			eventTime = currentTime+1;
+		}
+		// this is too brutal for poor end users
+//		if (eventTime <= currentTime)
+//			throw new TwcoreException("Posted event must be in advance of current time. [ currentTime: " + currentTime
+//					+ ", time: " + eventTime + "]");
 		queue.add(new TimeEvent(eventTime));
 	}
 
-	@Override
-	public void setInitialEvent() {
-		if (queue.isEmpty())
-			queue.add(new TimeEvent(1));
-//			queue.add(new TimeEvent(0));
-	}
+//	@Override
+//	public void setInitialEvent() {
+//		if (queue.isEmpty())
+//			queue.add(new TimeEvent(1));
+//		// this doesnt work: it generates a dt=0 in the simulator, which then infinitely
+//		// loops on t=0. This because conceptually, dt cannot be equal to zero.
+////			queue.add(new TimeEvent(0));
+//	}
 
 	@Override
 	public double userTime(long t) {
@@ -137,6 +150,25 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 	@Override
 	public TimeUnits timeUnit() {
 		return timeUnit;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(super.toString());
+		if (!queue.isEmpty()) {
+			sb.append(" {t =");
+			for (TimeEvent te:queue) {
+				sb.append(" ");
+				sb.append(te.getTime());
+				if (te.getObject()!=null)
+					sb.append('*');
+			}
+			sb.append('}');
+		}
+		else
+			sb.append(" Ø");
+		return sb.toString();
 	}
 
 }

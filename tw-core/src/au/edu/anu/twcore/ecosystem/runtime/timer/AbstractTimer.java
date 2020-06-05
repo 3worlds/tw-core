@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -27,6 +27,8 @@
  *                                                                        *
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.timer;
+
+import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -36,6 +38,7 @@ public abstract class AbstractTimer implements Timer {
 	/** The last time at which this time model was activated */
 	protected long lastTime = 0L;
 	protected TimerNode timeModel;
+	protected Logger log = Logger.getLogger(getClass().getName());
 
 	public AbstractTimer(TimerNode timeModel) {
 		super();
@@ -63,6 +66,13 @@ public abstract class AbstractTimer implements Timer {
 		lastTime = 0L;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName()+":"+super.hashCode();
+	}
+
+
+
 //	@Override
 //	public final long modelTime(double t) {
 //		return timeModel.modelToBaseTime(t);
@@ -72,5 +82,5 @@ public abstract class AbstractTimer implements Timer {
 //	public final double userTime(long t) {
 //		return timeModel.userTime(t);
 //	}
-	
+
 }

@@ -28,9 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -64,7 +62,6 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	TwFunctionTypes fType;
 	Set<TwFunctionTypes> csqTypes = new HashSet<>();
 	Map<String,EventQueue> eventQueues = new TreeMap<>();
-	private List<EventQueueWriteable> eventQueuesToInit = new ArrayList<>();
 
 	/**
 	 * constructor defining its own random number stream. It's a default stream with
@@ -121,9 +118,9 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	@Override
 	public final void setEventQueue(EventQueueWriteable queue, String queueName) {
 		if (fType==TwFunctionTypes.SetInitialState) {
-			if (eventQueuesToInit.contains(queue))
-				throw new TwcoreException("attempt to set event queue more than once");
-			eventQueuesToInit.add(queue);
+//			if (eventQueuesToInit.contains(queue))
+//				throw new TwcoreException("attempt to set event queue more than once");
+//			eventQueuesToInit.add(queue);
 		}
 		else
 			if (eventQueues.containsKey(queueName))
@@ -139,11 +136,11 @@ public abstract class TwFunctionAdapter implements TwFunction {
 
 
 
-	@Override
-	public final void startEventQueues() {
-		for (EventQueueWriteable q:eventQueuesToInit)
-			q.setInitialEvent();
-	}
+//	@Override
+//	public final void startEventQueues() {
+//		for (EventQueueWriteable q:eventQueuesToInit)
+//			q.setInitialEvent();
+//	}
 
 	/*-
 	 * IDD: Nobody knows about this default rng so it can't be reset or stored in
