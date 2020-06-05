@@ -28,11 +28,11 @@ public class EdgeToOneChildOfQuery extends Query {
 		super();
 		nodeRef = reference;
 		if (nodeRef.contains(ConfigurationReservedNodeId.composition.id())) {
-			options = CategorySet.composition;
+			options = CategorySet.compositionSet;
 		} else if (nodeRef.contains(ConfigurationReservedNodeId.systemElements.id())) {
-			options = CategorySet.systemElements;
+			options = CategorySet.systemElementsSet;
 		} else if (nodeRef.contains(ConfigurationReservedNodeId.lifespan.id())) {
-			options = CategorySet.lifespan;
+			options = CategorySet.lifespanSet;
 		}
 	}
 

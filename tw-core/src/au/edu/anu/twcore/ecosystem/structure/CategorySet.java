@@ -32,6 +32,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static au.edu.anu.twcore.ecosystem.structure.Category.*;
 
@@ -48,9 +49,9 @@ public class CategorySet extends InitialisableNode {
 
 
 	// default category sets present in ALL models
-	public final static String[] systemElements = { arena, lifeCycle, group, component, relation, space };
-	public final static String[] lifespan = { permanent, ephemeral };
-	public final static String[] composition = { population, individual };
+	public final static String[] systemElementsSet = { arena, lifeCycle, group, component, relation, space };
+	public final static String[] lifespanSet = { permanent, ephemeral };
+	public final static String[] compositionSet = { population, individual };
 
 	// default constructor
 	public CategorySet(Identity id, SimplePropertyList props, GraphFactory gfactory) {
