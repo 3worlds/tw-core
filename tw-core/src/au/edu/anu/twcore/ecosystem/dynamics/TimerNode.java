@@ -62,7 +62,7 @@ public class TimerNode
 	private boolean sealed = false;
 
 	/** the reference time scale, normally belonging to the TimerModelSimulator */
-	protected TimeLine timeLine;
+	protected Timeline timeLine;
 
 //	private TimeUnits timeUnit;
 //
@@ -87,7 +87,7 @@ public class TimerNode
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
-			timeLine = (TimeLine) getParent();
+			timeLine = (Timeline) getParent();
 			timeLine.initialise();
 			sealed = true;
 		}
@@ -141,7 +141,7 @@ public class TimerNode
 //		throw new TwcoreException("attempt to access uninitialised data");
 //	}
 
-	public TimeLine timeLine() {
+	public Timeline timeLine() {
 		if (sealed)
 			return timeLine;
 		throw new TwcoreException("attempt to access uninitialised data");

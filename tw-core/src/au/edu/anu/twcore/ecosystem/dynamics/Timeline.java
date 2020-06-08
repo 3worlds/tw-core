@@ -57,7 +57,7 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class TimeLine extends InitialisableNode implements Sealable {
+public class Timeline extends InitialisableNode implements Sealable {
 
 	private boolean sealed = false;
 
@@ -70,11 +70,11 @@ public class TimeLine extends InitialisableNode implements Sealable {
 	/** Calendar value at originTime (0L = 1970/1/1 midnight) */
 	private LocalDateTime startDateTime;
 
-	public TimeLine(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public Timeline(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
-	public TimeLine(Identity id, GraphFactory gfactory) {
+	public Timeline(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 

@@ -27,7 +27,7 @@ treegraph // saved by OmugiGraphExporter on Thu Apr 16 10:13:46 CEST 2020
 	system system
 		parameterClass = java.lang.String()
 		dynamics simulator
-			timeLine timeLine
+			timeline timeline
 				longestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(UNSPECIFIED)
 				scale = fr.cnrs.iees.twcore.constants.TimeScaleType(ARBITRARY)
 				shortestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(UNSPECIFIED)

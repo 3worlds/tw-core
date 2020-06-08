@@ -67,7 +67,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			N_DYNAMICS 			("dynamics",		"sim1",			SimulatorNode.class,Math.max(SIMBASE+10,// after stopping conditions
 																						Math.max(TIMEBASE+20,	// AND TimerModels
 																							CATEGORYBASE+60))), // AND a fully initialised ECOSYSTEM
-				N_TIMELINE 		("timeLine",		"tmLn1",		TimeLine.class,				TIMEBASE),//
+				N_TIMELINE 		("timeline",		"tmLn1",		Timeline.class,				TIMEBASE),//
 				N_TIMER			("timer",			"tmr1",			TimerNode.class,			TIMEBASE+10),// after timeLine
 				N_PROCESS 		("process",			"p1",			ProcessNode.class,			TIMEBASE+30),	// after TimeModel, Function & EventQueue
 				N_FUNCTION 		("function",		"F1",			FunctionNode.class,			0), // ***

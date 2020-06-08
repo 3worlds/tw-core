@@ -74,7 +74,7 @@ treegraph
 			componentType oldstripey
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(ephemeral)
 		dynamics my_simulator
-			timeLine my_time_line
+			timeline my_time_line
 				scale = fr.cnrs.iees.twcore.constants.TimeScaleType(MONO_UNIT)
 				shortestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)
 				longestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(WEEK)

@@ -33,7 +33,7 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
+import au.edu.anu.twcore.ecosystem.dynamics.Timeline;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
@@ -53,8 +53,8 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 
 	public EventTimer(TimerNode timeModel) {
 		super(timeModel);
-		timeUnit = ((TimeLine) timeModel.getParent()).shortestTimeUnit();
-		startDateTime = ((TimeLine) timeModel.getParent()).getTimeOrigin();
+		timeUnit = ((Timeline) timeModel.getParent()).shortestTimeUnit();
+		startDateTime = ((Timeline) timeModel.getParent()).getTimeOrigin();
 		queue = new PriorityQueue<TimeEvent>(INITIAL_QUEUE_SIZE,
 			new Comparator<TimeEvent>() {
 				@Override
