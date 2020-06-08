@@ -42,10 +42,9 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import java.util.LinkedList;
 import java.util.List;
 
-
 /**
  * A Query to check that a ComponentType only belongs to one category of a given
- * category set (categories within a set are assumed exclusive) 
+ * category set (categories within a set are assumed exclusive)
  * 
  * @author Jacques Gignoux - 4 juin 2019
  *
@@ -53,21 +52,24 @@ import java.util.List;
 public class ExclusiveCategoryQuery extends Query {
 
 	private CategorySet failedCategorySet = null;
-	
+
 	public ExclusiveCategoryQuery() {
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) {  // input is a node with out edges to categories
+	public Query process(Object input) { // input is a node with outEdges to categories
 		defaultProcess(input);
 		Node localItem = (Node) input;
-		Iterable<Category> cats = (Iterable<Category>) get(localItem.edges(Direction.OUT),
-			edgeListEndNodes(),
-			selectOneOrMany(hasTheLabel(N_CATEGORY.label())));
+		Iterable<Category> cats = getLocalCategories(localItem);
+
+		if (!cats.iterator().hasNext()) {
+			satisfied = true;
+			return this;
+		}
+
 		satisfied = true;
 		List<CategorySet> csl = new LinkedList<>();
-		for (Category c:cats) {
+		for (Category c : cats) {
 			CategorySet cs = (CategorySet) c.getParent();
 			if (!csl.contains(cs))
 				csl.add(cs);
@@ -79,24 +81,19 @@ public class ExclusiveCategoryQuery extends Query {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "[" + stateString()
-			+ "node cannot belong to two categories of the same set. Two categories of set '"
-			+ failedCategorySet.id() + "' found."
-			+ "]";
+		return "[" + stateString() + "node cannot belong to two categories of the same set. Two categories of set '"
+				+ failedCategorySet.id() + "' found." + "]";
 	}
-	
-	// belongs to only one category of a given category set since these partition categories.
-	@SuppressWarnings("unchecked")
+
 	public static boolean propose(TreeNode startNode, TreeNode proposedEndNode) {
 
-		List<Category> localCats = (List<Category>) get(startNode.edges(Direction.OUT), edgeListEndNodes(),
-				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+		Iterable<Category> cats = getLocalCategories(startNode);
 
-		if (localCats.isEmpty()) {
-			//log.info(endNode.id()+": OK - no other categories in use.");
+		if (!cats.iterator().hasNext()) {
+			// log.info(endNode.id()+": OK - no other categories in use.");
 			return true;
 		}
 		Node proposedCatSet = proposedEndNode.getParent();
@@ -104,20 +101,32 @@ public class ExclusiveCategoryQuery extends Query {
 //			log.info(endNode.id()+": no parent category set for comparison.");
 			return true;
 		}
-		
-		for (Category c : localCats) {
+
+		for (Category c : cats) {
 			CategorySet cs = (CategorySet) c.getParent();
 			// might be null
 			if (cs != null) {
 				if (cs.id().equals(proposedCatSet.id())) {
-					//log.info(endNode.id()+": Failed - category has the same parent.");
+					// log.info(endNode.id()+": Failed - category has the same parent.");
 					return false;
 				}
 			}
 		}
-		//log.info(endNode.id()+": OK for edge proposal");
+		// log.info(endNode.id()+": OK for edge proposal");
 		return true;
 
+	}
+
+	/**
+	 * use selectZeroOrMany rather than selectOneOrMany to avoid throwing a
+	 * selection error. If there are no categories, this query can't make a decision
+	 * and so should remain silent allowing some other query to raise a query.
+	 */
+
+	@SuppressWarnings("unchecked")
+	private static Iterable<Category> getLocalCategories(Node localItem) {
+		return (Iterable<Category>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
+				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
 	}
 
 }

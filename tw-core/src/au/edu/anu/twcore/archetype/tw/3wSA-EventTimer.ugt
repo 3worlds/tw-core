@@ -11,7 +11,7 @@ archetype 3wSA-EventTimer
 
 	hasNode EventTimeModelSpec
 		isOfClass = String("timer")
-		hasParent = StringTable(([1]"timeLine:"))
+		hasParent = StringTable(([1]"timeline:"))
 		multiplicity = IntegerRange("0..*")
 
 		hasEdge EventTimeerFedByEdgeSpec

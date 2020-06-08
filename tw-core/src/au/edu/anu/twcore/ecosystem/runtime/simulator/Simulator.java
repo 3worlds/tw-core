@@ -42,7 +42,7 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 //import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
-import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
+import au.edu.anu.twcore.ecosystem.dynamics.Timeline;
 //import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
@@ -159,7 +159,7 @@ public class Simulator implements Resettable {
 	 * @param ecosystem
 	 */
 	@SuppressWarnings("unchecked")
-	public Simulator(int id, StoppingCondition stoppingCondition, TimeLine refTimer, List<TimerNode> timeModels,
+	public Simulator(int id, StoppingCondition stoppingCondition, Timeline refTimer, List<TimerNode> timeModels,
 			List<Timer> timers, int[] timeModelMasks, Map<Integer, List<List<TwProcess>>> processCallingOrder,
 			EcosystemGraph ecosystem) {
 		super();

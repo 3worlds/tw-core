@@ -31,7 +31,7 @@ package au.edu.anu.twcore.ecosystem.runtime.timer;
 import java.time.LocalDateTime;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
-import au.edu.anu.twcore.ecosystem.dynamics.TimeLine;
+import au.edu.anu.twcore.ecosystem.dynamics.Timeline;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -59,7 +59,7 @@ public class ClockTimer extends AbstractTimer {
 		dt = (long) timeModel.properties().getPropertyValue(P_TIMEMODEL_DT.key());
 		timeUnit = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
 		nTimeUnits = (Integer) timeModel.properties().getPropertyValue(P_TIMEMODEL_NTU.key());
-		baseUnit = ((TimeLine)timeModel.getParent()).shortestTimeUnit();
+		baseUnit = ((Timeline)timeModel.getParent()).shortestTimeUnit();
 //		startDateTime = ((TimeLine)timeModel.getParent()).getTimeOrigin();
 		long f = TimeUtil.timeUnitExactConversionFactor(timeUnit, baseUnit);
 		isExact = f>0L;

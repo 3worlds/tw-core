@@ -87,7 +87,7 @@ public class SimulatorNode
 		implements LimitedEdition<Simulator>, Sealable {
 
 	private boolean sealed = false;
-	private TimeLine timeLine = null;
+	private Timeline timeLine = null;
 	private Map<Integer,Simulator> simulators = new HashMap<>();
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
@@ -110,7 +110,7 @@ public class SimulatorNode
 	public void initialise() {
 		if(!sealed) {
 			super.initialise();
-			timeLine = (TimeLine) get(getChildren(),
+			timeLine = (Timeline) get(getChildren(),
 				selectOne(hasTheLabel(N_TIMELINE.label())));
 			List<TimerNode> timeModels = (List<TimerNode>)get(timeLine.getChildren(),
 				selectOneOrMany(hasTheLabel(N_TIMER.label())));
