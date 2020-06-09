@@ -6,7 +6,7 @@ hasNode experimentSpec
 	hasEdge baseLineSpec
 		isOfClass = String("baseLine")               
 		toNode = String("system:")
-		multiplicity = IntegerRange("0..1") // Ian- changed - to we need this for a SingleRun type
+		multiplicity = IntegerRange("0..1") // Used to find the associated simulatorNode. Not required if only one system:
 	
 hasNode designSpec
 	isOfClass = String("design")

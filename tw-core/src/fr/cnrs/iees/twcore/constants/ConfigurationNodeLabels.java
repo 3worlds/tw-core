@@ -93,7 +93,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 		N_EXPERIMENT 			("experiment",		"expt",			Experiment.class,			SIMBASE+20),	// after fully iinitialised simulator
 			N_DESIGN 			("design",			"dsgn",			Design.class,				0),//
 			N_TREATMENT 		("treatment",		"trt",			Treatment.class,			0),//
-			N_TIMEPERIOD 		("timePeriod",		"tp",			TimePeriod.class,			0),//
+			N_TIMEPERIOD 		("timePeriod",		"tp",			TimePeriod.class,			0),// Unused. not required for SingleRun types?
 			N_MODELCHANGE 		("modelChange",		"moChg",		ModelChange.class,			0),//
 			N_DATASOURCE 		("dataSource",		"dSrc",			DataSource.class,			0),//
 			N_DATASINK 			("dataSink",		"dSnk",			DataSink.class,				0),//
