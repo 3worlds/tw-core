@@ -4,6 +4,7 @@ tree
 // creation, deletion, or modification)
 // users can only have edges pointing to these nodes or have these nodes pointing
 // to their edges (eg new variable definitions)
+// Except: users can create edges out to nodes not in this tree!
 hasNode predefinedSpec
 	isOfClass = String("predefined")
 	hasId = String("*categories*")
@@ -35,6 +36,11 @@ hasNode arenaCategorySpec
 	hasId = String("*arena*")
 	hasParent = StringTable(([1]"categorySet:*systemElements*"))
 	multiplicity = IntegerRange("0..1")
+	hasEdge edgeToDriversSpec // how else can you know that this spec with the given parent can have this out edge??
+		isOfClass = String("drivers")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+	
 hasNode componentCategorySpec
 	isOfClass = String("category")
 	hasId = String("*component*")

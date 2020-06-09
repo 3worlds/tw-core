@@ -6,7 +6,7 @@ hasNode experimentSpec
 	hasEdge baseLineSpec
 		isOfClass = String("baseLine")               
 		toNode = String("system:")
-		multiplicity = IntegerRange("1..1")
+		multiplicity = IntegerRange("0..1") // Ian- changed - to we need this for a SingleRun type
 	
 hasNode designSpec
 	isOfClass = String("design")
@@ -56,7 +56,7 @@ hasNode modelChangeSpec
 hasNode timePeriodSpec
 	isOfClass = String("timePeriod")
 	hasParent =  StringTable(([1]"experiment:"))
-	multiplicity = IntegerRange("1..*")
+	multiplicity = IntegerRange("0..*") // Ian- changed. Do we need this for a SingleRun type
 	hasProperty timePeriodStartSpec
 		hasName = String("start")
 		type = String("DateTimeType")
