@@ -188,6 +188,17 @@ hasNode consequenceFunctionSpec
 	// TODO: specific to 	ChangeOtherStateFunction when consequence of DeleteDecision:
 	// must specify to which other item data should be returned...
 
+hasNode snippet
+	isOfClass = String("snippet")
+	hasParent = StringTable(([1]"function:"))
+	multiplicity = IntegerRange("0..*")
+	hasProperty snippetProp
+		hasName = String("javaCode")
+		type = String("StringTable")
+		multiplicity = IntegerRange("1..1")
+		
+	
+	
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")
 	hasParent = StringTable(([1]"process:"))
