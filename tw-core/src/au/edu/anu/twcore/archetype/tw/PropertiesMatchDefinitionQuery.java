@@ -92,6 +92,10 @@ public class PropertiesMatchDefinitionQuery extends Query {
 			satisfied = true;
 			return this;
 		}
+
+		// TODO: Remove all this autovar stuff and check with the predefined tree?
+		// I would prefer to remove this query and the whole concept of property based
+		// initialisers - Ian
 		Collection<TreeGraphDataNode> defs = defData.getSecond();
 		Boolean useAutoVars = defData.getFirst();
 
