@@ -128,13 +128,15 @@ public class CodeGenerator {
 					selectOne(hasTheLabel(N_DYNAMICS.label())));
 
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(systemNode.getChildren(),
-					selectOne(hasTheLabel(N_STRUCTURE.label())));
+					selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 			// generate data classes for SystemComponents
-			List<TreeGraphDataNode> componentTypes = getChildrenLabelled(structure, N_COMPONENTTYPE.label());
-			for (TreeGraphDataNode componentType : componentTypes) {
-				generateDataCode(componentType, systemNode.id());
-				// out of here system has the names of the generated data classes
+			if (structure != null) {
+				List<TreeGraphDataNode> componentTypes = getChildrenLabelled(structure, N_COMPONENTTYPE.label());
+				for (TreeGraphDataNode componentType : componentTypes) {
+					generateDataCode(componentType, systemNode.id());
+					// out of here system has the names of the generated data classes
 
+				}
 			}
 			// generate data classes for LifeCycles, if any
 			List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(dynamics, N_LIFECYCLE.label());
