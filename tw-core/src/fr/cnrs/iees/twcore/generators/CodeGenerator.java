@@ -100,7 +100,7 @@ public class CodeGenerator {
 	// (au.edu.anu.twapps.mm.configGraph)
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
-		//UserProjectLink.clearFiles();
+		// UserProjectLink.clearFiles();
 
 		File localCodeRoot = Project.makeFile(ProjectPaths.LOCALJAVA);
 		try {
@@ -113,7 +113,7 @@ public class CodeGenerator {
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
 
-		//File systemDir = null;
+		// File systemDir = null;
 		for (TreeGraphDataNode systemNode : systemNodes) {
 
 			/**
@@ -166,21 +166,24 @@ public class CodeGenerator {
 				}
 			// initialiser function code here
 			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(systemNode, children(),
-					selectOne(hasTheLabel(N_STRUCTURE.label())), children(),
+					selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())), children(),
 					selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()), hasTheLabel(N_GROUP.label()),
 							hasTheLabel(N_SPACE.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
-			initables.add(systemNode);
-			for (TreeGraphDataNode tgn : initables) {
-				List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_INITFUNCTION.label());
-				// NB there is only one initfunc.
-				if (initFuncs != null)
-					if (!initFuncs.isEmpty())
-						generateFunctionCode(initFuncs.get(0), systemNode.id());
+			// NB structure is now [0..1]
+			if (initables != null) {
+				initables.add(systemNode);
+				for (TreeGraphDataNode tgn : initables) {
+					List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_INITFUNCTION.label());
+					// NB there is only one initfunc.
+					if (initFuncs != null)
+						if (!initFuncs.isEmpty())
+							generateFunctionCode(initFuncs.get(0), systemNode.id());
+				}
 			}
 		}
 		// write the user code file
 		modelgen.generateCode();
-		//UserProjectLink.setModelFile(modelgen.getFile());
+		// UserProjectLink.setModelFile(modelgen.getFile());
 
 		String result = compileLocalTree(localCodeRoot);
 
@@ -188,8 +191,8 @@ public class CodeGenerator {
 			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, localCodeRoot, result));
 
 		if (!ErrorList.haveErrors()) {
-			//UserProjectLink.pushFiles();
-			UserProjectLink.pushCompiledTree(localCodeRoot,modelgen.getFile());
+			// UserProjectLink.pushFiles();
+			UserProjectLink.pushCompiledTree(localCodeRoot, modelgen.getFile());
 		}
 		return !ErrorList.haveErrors();
 	}
@@ -197,8 +200,8 @@ public class CodeGenerator {
 	// Q&D testing
 	private String compileLocalTree(File rootDir) {
 		List<File> files = new ArrayList<File>();
-		String [] ext = {"java"};
-		for (File f:FileUtils.listFiles(rootDir, ext, true))
+		String[] ext = { "java" };
+		for (File f : FileUtils.listFiles(rootDir, ext, true))
 			files.add(f);
 		javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		StandardJavaFileManager stdFileManager = compiler.getStandardFileManager(null, Locale.getDefault(), null);
@@ -222,7 +225,6 @@ public class CodeGenerator {
 		}
 		return result;
 	}
-
 
 	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
 			String dataGroup) {
@@ -433,7 +435,7 @@ public class CodeGenerator {
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.setArgumentCalls(modelgen);
 		generator.generateCode();
-		//UserProjectLink.addFunctionFile(generator.getFile());
+		// UserProjectLink.addFunctionFile(generator.getFile());
 		String genClassName = generator.generatedClassName();
 		if (function.properties().hasProperty(P_FUNCTIONCLASS.key())) {
 			String lastValue = (String) function.properties().getPropertyValue(P_FUNCTIONCLASS.key());
