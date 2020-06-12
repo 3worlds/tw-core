@@ -2,9 +2,8 @@ tree
 // all predefined elements that must be present in any model
 // NB: this whole tree is immutable, i.e. no change should be allowed to the user (no node
 // creation, deletion, or modification)
-// users can only have edges pointing to these nodes or have these nodes pointing
-// to their edges (eg new variable definitions)
-// Except: users can create edges out to nodes not in this tree!
+// Except: Users can have edges into and out of this sub-tree from other sub-trees (eg new variable definitions)
+
 hasNode predefinedSpec
 	isOfClass = String("predefined")
 	hasId = String("*categories*")
@@ -36,8 +35,20 @@ hasNode arenaCategorySpec
 	hasId = String("*arena*")
 	hasParent = StringTable(([1]"categorySet:*systemElements*"))
 	multiplicity = IntegerRange("0..1")
-	hasEdge edgeToDriversSpec // how else can you know that this spec with the given parent can have this out edge??
+	hasEdge edgeToDriversSpec
 		isOfClass = String("drivers")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToDecoratorsSpec
+		isOfClass = String("decorators")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToLifetimeConstantsSpec
+		isOfClass = String("lifetimeConstants")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToParametersSpec
+		isOfClass = String("parameters")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
 	
