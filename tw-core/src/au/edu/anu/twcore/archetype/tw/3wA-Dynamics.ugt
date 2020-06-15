@@ -190,7 +190,7 @@ hasNode consequenceFunctionSpec
 
 hasNode snippet
 	isOfClass = String("snippet")
-	hasParent = StringTable(([1]"function:"))
+	hasParent = StringTable(([3]"function:","initFunction:","process:/function:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty snippetProp
 		hasName = String("javaCode")

@@ -239,9 +239,9 @@ public class TwSetup implements ProjectPaths, TwPaths {
 //		deleteFileTree(f); // ???
 		// 4) make jar of 3worlds
 //		System.out.println("Skipping ModelMaker,jar");
-		//packModelMaker();
+		packModelMaker();
 //		System.out.println("Skipping ModelMaker,jar");
-		//packModelRunner();
+		packModelRunner();
 		FileUtilities.deleteFileTree( new File(DependencySolver.destPath));
 		System.out.println("FINISHED");
 		// 5) zip ModelMaker = .3w dir for distribution to end users
