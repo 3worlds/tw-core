@@ -7,6 +7,8 @@ hasNode experimentSpec
 		isOfClass = String("baseLine")               
 		toNode = String("system:")
 		multiplicity = IntegerRange("0..1") // Used to find the associated simulatorNode. Not required if only one system:
+	mustSatisfyQuery baselineQuery
+		className = String("au.edu.anu.twcore.archetype.tw.BaselineQuery")
 	
 hasNode designSpec
 	isOfClass = String("design")

@@ -30,7 +30,6 @@ package au.edu.anu.twcore.experiment;
 
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -82,16 +81,19 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 		if (!sealed) {
 			super.initialise();
 			Design d = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
-			if (d.properties().hasProperty(P_DESIGN_TYPE.key())) {
-				SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_BASELINE.label())), endNode(), children(),
-						selectOne(hasTheLabel(N_DYNAMICS.label())));
 
-				// single system -NB baseline is now [0..1]
-				if (sim == null) {
-					TreeNode system= (TreeNode) get(getParent().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())));
-					sim = (SimulatorNode)get(system.getChildren(),selectOne(hasTheLabel(N_DYNAMICS.label())));
+			SimulatorNode sim = null;
+			if (d.properties().hasProperty(P_DESIGN_TYPE.key())) {
+				if (get(edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_BASELINE.label()))) != null) {
+					// multiple systems
+					sim = (SimulatorNode) get(edges(Direction.OUT), selectOne(hasTheLabel(E_BASELINE.label())),
+							endNode(), children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
+				} else {
+					// single system -NB baseline is now [0..1]
+					sim = (SimulatorNode) get(getParent().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())),
+							children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
 				}
+
 				// single run experiment
 				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
 					deployer = new SimpleDeployer();
