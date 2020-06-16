@@ -30,6 +30,7 @@ package au.edu.anu.twcore.experiment;
 
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -53,22 +54,19 @@ import static fr.cnrs.iees.twcore.constants.ExperimentDesignType.*;
 
 /**
  * Class matching the "experiment" node label in the 3Worlds configuration tree.
- * Has no properties.
- * Returns a controller to communicate with simulators
+ * Has no properties. Returns a controller to communicate with simulators
  * 
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class Experiment 
-		extends InitialisableNode 
-		implements Singleton<StateMachineController>, Sealable {
+public class Experiment extends InitialisableNode implements Singleton<StateMachineController>, Sealable {
 
 	private boolean sealed = false;
 	private StateMachineController controller = null;
 	private Deployer deployer = null;
 	/** class constant = number of simulators in this running session */
 	private static int N_SIMULATORS = 0;
-	
+
 	// default constructor
 	public Experiment(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -83,13 +81,17 @@ public class Experiment
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
-			Design d = (Design) get(getChildren(),selectOne(hasTheLabel(N_DESIGN.label())));
+			Design d = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
 			if (d.properties().hasProperty(P_DESIGN_TYPE.key())) {
 				SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
-					selectOne(hasTheLabel(E_BASELINE.label())),
-					endNode(),
-					children(),
-					selectOne(hasTheLabel(N_DYNAMICS.label())));
+						selectZeroOrOne(hasTheLabel(E_BASELINE.label())), endNode(), children(),
+						selectOne(hasTheLabel(N_DYNAMICS.label())));
+
+				// single system -NB baseline is now [0..1]
+				if (sim == null) {
+					TreeNode system= (TreeNode) get(getParent().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())));
+					sim = (SimulatorNode)get(system.getChildren(),selectOne(hasTheLabel(N_DYNAMICS.label())));
+				}
 				// single run experiment
 				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
 					deployer = new SimpleDeployer();
@@ -99,14 +101,14 @@ public class Experiment
 				else { // TODO: there should be a condition here
 					deployer = new ParallelDeployer();
 					// TODO: fix this - it's only fake code
-					for (int i=0; i<10; i++)
+					for (int i = 0; i < 10; i++)
 						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
 				}
 				// multiple simulators, remote
 				// TODO
 				controller = new StateMachineController(deployer);
 				// this puts the deployer in "waiting" state
-				//controller.sendEvent(initialise.event());
+				// controller.sendEvent(initialise.event());
 			}
 			sealed = true;
 		}
@@ -123,7 +125,7 @@ public class Experiment
 			initialise();
 		return controller;
 	}
-	
+
 	@Override
 	public Sealable seal() {
 		sealed = true;
