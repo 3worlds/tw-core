@@ -12,6 +12,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static au.edu.anu.twcore.DefaultStrings.*;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumMap;
@@ -176,70 +177,73 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// get all nodes susceptible to require generated data:
 		// system/arena, lifecycle, group, component, space
 		// NB these nodes may also have setInitialState functions
+		/** must eventually deal with the fact that System is [1..*]? -IDD*/
 		TreeGraphDataNode systemNode = (TreeGraphDataNode) get(root3w,
 			children(),
 			selectOne(hasTheLabel(N_SYSTEM.label())));
+		
 		List<TreeGraphDataNode> cpt = (List<TreeGraphDataNode>) get(systemNode,
 			children(),
-			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())),
+			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())),//NB -structure is now [0..1] -IDD
 			children(),
 			selectZeroOrMany(
 				orQuery(hasTheLabel(N_LIFECYCLE.label()),
 					hasTheLabel(N_GROUP.label()),
 					hasTheLabel(N_SPACE.label()),
 					hasTheLabel(N_COMPONENTTYPE.label()))));
-		if (cpt != null) {
-			cpt.add(systemNode);
-			for (TreeGraphDataNode tn : cpt) {
-				generatedData cl = new generatedData();
-				// search for autovar definitions, if any
-				List<TreeGraphDataNode> ccats = (List<TreeGraphDataNode>) get(tn.edges(Direction.OUT),
-						selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
-				for (TreeGraphDataNode cc : ccats) {
-					TreeGraphDataNode auto = (TreeGraphDataNode) get(cc.edges(Direction.OUT),
-							selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())), endNode());
-					if (auto != null) {
-						if (cc.id().equals(Category.ephemeral))
-							cl.autoVars = ComponentData.class.getName();
-						if (cc.id().equals(Category.population))
-							cl.autoVars = ContainerData.class.getName();
-					}
+		// The above query returns null if there is no structureNode - left tidy up for now -IDD
+		if (cpt==null)
+			cpt = new ArrayList<TreeGraphDataNode>();
+		cpt.add(systemNode);
+		for (TreeGraphDataNode tn : cpt) {
+			generatedData cl = new generatedData();
+			// search for autovar definitions, if any
+			List<TreeGraphDataNode> ccats = (List<TreeGraphDataNode>) get(tn.edges(Direction.OUT),
+					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+			for (TreeGraphDataNode cc : ccats) {
+				TreeGraphDataNode auto = (TreeGraphDataNode) get(cc.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())), endNode());
+				if (auto != null) {
+					if (cc.id().equals(Category.ephemeral))
+						cl.autoVars = ComponentData.class.getName();
+					if (cc.id().equals(Category.population))
+						cl.autoVars = ContainerData.class.getName();
 				}
-				// get generated life time constant definitions
-				if (tn.properties().hasProperty(P_LTCONSTANTCLASS.key()))
-					if (tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key()) != null) {
-						String s = (String) tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key());
-						if (s.isEmpty())
-							cl.lifetimeConstants = null;
-						else
-							cl.lifetimeConstants = s;
-					}
-				// get generated driver definitions
-				if (tn.properties().hasProperty(P_DRIVERCLASS.key()))
-					if (tn.properties().getPropertyValue(P_DRIVERCLASS.key()) != null) {
-						String s = (String) tn.properties().getPropertyValue(P_DRIVERCLASS.key());
-						if (s.isEmpty())
-							cl.drivers = null;
-						else
-							cl.drivers = s;
-					}
-				// get generated decorator definitions
-				if (tn.properties().hasProperty(P_DECORATORCLASS.key()))
-					if (tn.properties().getPropertyValue(P_DECORATORCLASS.key()) != null) {
-						String s = (String) tn.properties().getPropertyValue(P_DECORATORCLASS.key());
-						if (s.isEmpty())
-							cl.decorators = null;
-						else
-							cl.decorators = s;
-					}
-				// this because ComponentType is unsealed at that time
-				SortedSet<Category> categories = new TreeSet<>(); // caution: sorted set !
-				Collection<Category> nl = (Collection<Category>) get(tn.edges(Direction.OUT),
-						selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
-				categories.addAll(((Categorized<SystemComponent>) tn).getSuperCategories(nl));
-				dataClassNames.put(categories, cl);
-				elementTypeCategories.put(tn, categories);
 			}
+			// get generated life time constant definitions
+			if (tn.properties().hasProperty(P_LTCONSTANTCLASS.key()))
+				if (tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key()) != null) {
+					String s = (String) tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key());
+					if (s.isEmpty())
+						cl.lifetimeConstants = null;
+					else
+						cl.lifetimeConstants = s;
+				}
+			// get generated driver definitions
+			if (tn.properties().hasProperty(P_DRIVERCLASS.key()))
+				if (tn.properties().getPropertyValue(P_DRIVERCLASS.key()) != null) {
+					String s = (String) tn.properties().getPropertyValue(P_DRIVERCLASS.key());
+					if (s.isEmpty())
+						cl.drivers = null;
+					else
+						cl.drivers = s;
+				}
+			// get generated decorator definitions
+			if (tn.properties().hasProperty(P_DECORATORCLASS.key()))
+				if (tn.properties().getPropertyValue(P_DECORATORCLASS.key()) != null) {
+					String s = (String) tn.properties().getPropertyValue(P_DECORATORCLASS.key());
+					if (s.isEmpty())
+						cl.decorators = null;
+					else
+						cl.decorators = s;
+				}
+			// this because ComponentType is unsealed at that time
+			SortedSet<Category> categories = new TreeSet<>(); // caution: sorted set !
+			Collection<Category> nl = (Collection<Category>) get(tn.edges(Direction.OUT),
+					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+			categories.addAll(((Categorized<SystemComponent>) tn).getSuperCategories(nl));
+			dataClassNames.put(categories, cl);
+			elementTypeCategories.put(tn, categories);
 		}
 	}
 
