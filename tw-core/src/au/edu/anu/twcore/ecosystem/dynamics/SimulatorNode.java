@@ -169,8 +169,12 @@ public class SimulatorNode
 		// *** ecosystem graph
 		Structure str = (Structure) get(getParent(),
 			children(),
-			selectOne(hasTheLabel(N_STRUCTURE.label())));
-		EcosystemGraph ecosystem = new EcosystemGraph(arena,str.getInstance(index));
+			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+		EcosystemGraph ecosystem = null;
+		if (str != null)
+			ecosystem = new EcosystemGraph(arena, str.getInstance(index));
+		else
+			ecosystem = new EcosystemGraph(arena);
 		// *** finally, instantiate simulator
 		Simulator sim = new Simulator(index,rootStop,timeLine,timeModels,timers,timeModelMasks.clone(),pco,ecosystem);
 		rootStop.attachSimulator(sim);
@@ -193,15 +197,16 @@ public class SimulatorNode
 	private void setInitialCommunity(int index) {
 		TreeGraphNode struc = (TreeGraphNode) get(getParent(),
 			children(),
-			selectOne(hasTheLabel(N_STRUCTURE.label())));
-		for (TreeNode c:struc.getChildren()) {
-			if (c instanceof ElementType<?,?>)
-				for (TreeNode cc:c.getChildren())
-					if (cc instanceof Component) {
-						// this instantiates the SYstemComponent and puts it into the right container
-						((Component)cc).getInstance(index);
-					}
-		}
+			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+		if (struc != null)
+			for (TreeNode c : struc.getChildren()) {
+				if (c instanceof ElementType<?, ?>)
+					for (TreeNode cc : c.getChildren())
+						if (cc instanceof Component) {
+							// this instantiates the SYstemComponent and puts it into the right container
+							((Component) cc).getInstance(index);
+						}
+			}
 //		if (init != null) {
 //			List<Component> li = (List<Component>) get(init.getChildren(),
 //					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));

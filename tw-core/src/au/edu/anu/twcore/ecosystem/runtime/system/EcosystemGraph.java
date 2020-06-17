@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
@@ -63,6 +64,13 @@ public class EcosystemGraph
 	}
 
 	// GRAPH interface
+
+	public EcosystemGraph(ArenaComponent arena) {
+		super();
+		this.relations = new HashMap<String,RelationContainer>();
+		this.arena = arena;
+		this.components = arena.content(); // may be null
+	}
 
 	@Override
 	public Iterable<SystemComponent> nodes() {
