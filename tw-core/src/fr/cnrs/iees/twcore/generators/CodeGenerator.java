@@ -170,16 +170,17 @@ public class CodeGenerator {
 					selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()), hasTheLabel(N_GROUP.label()),
 							hasTheLabel(N_SPACE.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
 			// NB structure is now [0..1]
-			if (initables != null) {
-				initables.add(systemNode);
-				for (TreeGraphDataNode tgn : initables) {
-					List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_INITFUNCTION.label());
-					// NB there is only one initfunc.
-					if (initFuncs != null)
-						if (!initFuncs.isEmpty())
-							generateFunctionCode(initFuncs.get(0), systemNode.id());
-				}
+			if (initables == null)
+				initables = new ArrayList<TreeGraphDataNode>();
+			initables.add(systemNode);
+			for (TreeGraphDataNode tgn : initables) {
+				List<TreeGraphDataNode> initFuncs = getChildrenLabelled(tgn, N_INITFUNCTION.label());
+				// NB there is only one initfunc.
+				if (initFuncs != null)
+					if (!initFuncs.isEmpty())
+						generateFunctionCode(initFuncs.get(0), systemNode.id());
 			}
+			
 		}
 		// write the user code file
 		modelgen.generateCode();

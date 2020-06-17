@@ -319,7 +319,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		sb.append("<ol><li>Non 3worlds-generated extra methods should be placed in other files linked\n to the present file through imports.</li>\n");
 		sb.append("<li><strong>Do not</strong> remove any generated comment - they are used to retrieve\n your code when regenerating this file.</li>\n");
 		sb.append("<li><strong>Do not</strong> modify code outside of the insertion zones (except for\n point (1) above)- this will cause malfunction of the ModelRunner software.</li>\n");
-		sb.append("<li>For your programming confort, all the static methods of the {@link Math} and\n {@link Distance} classes are directly accessible here</li>\n");
+		sb.append("<li>For convenience, all the static methods of the {@link Math} and\n {@link Distance} classes are directly accessible here</li>\n");
 		sb.append("<li>The particular random number stream attached to each {@link TwFunction} is \npassed as the <em>random</em> argument.</li>\n");
 		sb.append("<li>For all <em>Decision-</em> functions, a <em>decider</em> argument is provided \nto help make decisions out of probabilities</li></ol>\n");
 

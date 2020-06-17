@@ -124,7 +124,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	private void updateModelFile(File localSrc, File localCls, String localPath, String remoteSrcPath,
 			String remoteClsPath) {
 		File remoteSrc = new File(localSrc.getAbsolutePath().replace(localPath, remoteSrcPath));
-		File remoteCls = new File(localSrc.getAbsolutePath().replace(localPath, remoteClsPath));
+		File remoteCls = new File(localCls.getAbsolutePath().replace(localPath, remoteClsPath));
 		// first time
 		if (!remoteSrc.exists()) {
 			FileUtilities.copyFileReplace(localSrc, remoteSrc);
