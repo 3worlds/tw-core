@@ -44,7 +44,7 @@ public class TrackerType extends StringTable {
 	public TrackerType(Dimensioner[] readDimensioners) {
 		super(readDimensioners);
 	}
-	private static char QUOTE = '"';
+	//private static char QUOTE = '"';
 	// TODO IDD something needs to be done about this duplication
 	public static TrackerType valueOf(String value) {
 		if ((value==null)||value.isBlank()||value.isEmpty())
@@ -61,7 +61,7 @@ public class TrackerType extends StringTable {
 		boolean inquote = false;
 		for (int i=0; i<ss.length(); i++) {
 			char c = ss.charAt(i);
-			if (c==QUOTE)
+			if (c==DOUBLEQUOTE)
 				inquote = !inquote;
 			else if (inquote)
 				sb.append(c);

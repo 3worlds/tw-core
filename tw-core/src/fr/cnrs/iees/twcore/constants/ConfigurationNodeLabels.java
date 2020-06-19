@@ -82,7 +82,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_COMPONENT 	("component",		"cmp1",			Component.class,			CATEGORYBASE+30), // after Group
 				N_CONSTANTVALUES("constantValues",	"initCsts1",	ConstantValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
 				N_VARIABLEVALUES("variableValues",	"initVars1",	VariableValues.class,		CATEGORYBASE+50), // after ParameterValues
-				N_SNIPPET       ("snippet",          "snpt",        Snippet.class,              0),//
+				N_SNIPPET       ("snippet",          "snpt1",		Snippet.class,              0),//
 				
 			N_STRUCTURE 		("structure",		"struc1",		Structure.class,			0),//
 				N_CATEGORYSET 	("categorySet",		"set1",			CategorySet.class,			0),//

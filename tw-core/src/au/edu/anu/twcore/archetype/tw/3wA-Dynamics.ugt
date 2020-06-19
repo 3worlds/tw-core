@@ -6,20 +6,20 @@ hasNode dynamicsSpec
 	multiplicity = IntegerRange("1..1")
 
 // this to be removed soon - cf function specs below
-hasNode initialisationSpec
-	isOfClass = String("initialiser")
-	hasParent = StringTable(([1]"dynamics:"))
-	multiplicity = IntegerRange("0..1")
-	mustSatisfyQuery initialiserNameWithUppercaseQuery
-		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
-	hasEdge initAppliesToCategorySpec
-		isOfClass = String("appliesTo")
-		toNode = String("category:")
-		multiplicity = IntegerRange("1..*")
-	hasProperty userInitialiserSpec
-		hasName = String("userClassName")
-		type = String("String")
-		multiplicity = IntegerRange("0..1")
+//hasNode initialisationSpec
+//	isOfClass = String("initialiser")
+//	hasParent = StringTable(([1]"dynamics:"))
+//	multiplicity = IntegerRange("0..1")
+//	mustSatisfyQuery initialiserNameWithUppercaseQuery
+//		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
+//	hasEdge initAppliesToCategorySpec
+//		isOfClass = String("appliesTo")
+//		toNode = String("category:")
+//		multiplicity = IntegerRange("1..*")
+//	hasProperty userInitialiserSpec
+//		hasName = String("userClassName")
+//		type = String("String")
+//		multiplicity = IntegerRange("0..1")
 
 hasNode timeLineSpec
 	isOfClass = String("timeline")

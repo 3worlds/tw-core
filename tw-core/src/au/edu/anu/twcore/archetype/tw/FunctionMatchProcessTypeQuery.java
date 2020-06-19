@@ -66,13 +66,23 @@ public class FunctionMatchProcessTypeQuery extends Query {
 	public Query process(Object input) { // object is a FunctionNode
 		defaultProcess(input);
 		FunctionNode fn = (FunctionNode) input;
+		//  can't decide without a parent - yes that circumstance is possible with ModelMaker
+		if (fn.getParent()==null) {
+			satisfied = true;
+			return this;
+		}
 		if (fn.getParent() instanceof ProcessNode) {
 			TwFunctionTypes ftype = (TwFunctionTypes) fn.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 			functionType = ftype.name();
 			ProcessNode pn = (ProcessNode) fn.getParent();
+			// avoid throwing a f)(&^ing select query error because its incomprehensible at this level
 			List<Node> targets = (List<Node>) get(pn.edges(Direction.OUT),
-				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
+				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
 				edgeListEndNodes());
+			if (targets.isEmpty()) {
+				satisfied = true;
+				return this;
+			}
 			TwFunctionTypes[] validFunctions = null;
 			if (targets.get(0) instanceof RelationType) {
 				validFunctions = AbstractRelationProcess.compatibleFunctionTypes;

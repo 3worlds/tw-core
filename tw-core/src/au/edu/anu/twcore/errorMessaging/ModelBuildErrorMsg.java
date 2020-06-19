@@ -143,7 +143,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 				IntegerRange range = (IntegerRange) sem.args()[2];
 				Integer nChildren = (Integer) sem.args()[3];
 				if (nChildren < range.getLast())
-					verbose1 = sem.category() + "Add node [" + childClassName + ":] to '" + labelId(parent) + "'.";
+					verbose1 = sem.category() + "Add node '" + childClassName + ":' to '" + labelId(parent) + "'.";
 			}
 				break;
 			case EDGE_RANGE_INCORRECT: {
@@ -156,8 +156,8 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 //					ignore = true;
 //				else { // can't do this! will fall through to generateCode and crash!
 				if (nEdges < range.getLast())
-					verbose1 = sem.category() + "Add edge [" + label + ":] from '" + labelId(fromNode) + "' to ["
-							+ reference + "].";
+					verbose1 = sem.category() + "Add edge '" + label + ":' from '" + labelId(fromNode) + "' to '"
+							+ reference + "'.";
 //				}
 				break;
 			}
