@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.util.FileUtilities;
@@ -149,9 +150,16 @@ public abstract class AbstractUPL implements IUserProjectLink {
 			String strLocal = stripLines(localLines);
 			String strRemote = stripLines(remoteLines);
 			strLocal = strLocal.replaceAll(stripCommentRegex, "");
-			strRemote = strRemote.replaceAll(stripCommentRegex, "");
-			// TODO return the index of first difference for an info msg? or could put line numbers 
-			return !strLocal.equals(strRemote);
+			strLocal = StringUtils.deleteWhitespace(strLocal);
+			strRemote = strRemote.replaceAll(stripCommentRegex, "");	
+			strRemote = StringUtils.deleteWhitespace(strRemote);
+			boolean same = strLocal.equalsIgnoreCase(strRemote);
+			if (!same) {
+				System.out.println(strLocal);
+				System.out.println(strRemote);
+			}
+			
+			return !same;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
