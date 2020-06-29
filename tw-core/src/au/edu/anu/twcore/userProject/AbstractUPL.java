@@ -92,7 +92,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 
 		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + ProjectPaths.CODE;
 		String remoteClsPath = this.classRoot().getAbsolutePath() + File.separator + ProjectPaths.CODE;
-		String localPath = root.getAbsolutePath()+ File.separator + ProjectPaths.CODE;
+		String localPath = root.getAbsolutePath() + File.separator + ProjectPaths.CODE;
 
 		for (File f : srcPrev)
 			if (!srcFiles.contains(f))
@@ -134,10 +134,12 @@ public abstract class AbstractUPL implements IUserProjectLink {
 			backupFile(remoteSrc);
 			FileUtilities.copyFileReplace(localSrc, remoteSrc);
 			FileUtilities.copyFileReplace(localCls, remoteCls);
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.MODEL_FILE_BACKUP,localSrc));
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.MODEL_FILE_BACKUP, localSrc));
 
 		}
 	}
+
+	private static boolean dump = false;
 
 	private boolean fileHasChanged(File localSrc, File remoteSrc) {
 		// strips all but inline comments
@@ -151,14 +153,29 @@ public abstract class AbstractUPL implements IUserProjectLink {
 			String strRemote = stripLines(remoteLines);
 			strLocal = strLocal.replaceAll(stripCommentRegex, "");
 			strLocal = StringUtils.deleteWhitespace(strLocal);
-			strRemote = strRemote.replaceAll(stripCommentRegex, "");	
+			strRemote = strRemote.replaceAll(stripCommentRegex, "");
 			strRemote = StringUtils.deleteWhitespace(strRemote);
-			boolean same = strLocal.equalsIgnoreCase(strRemote);
-			if (!same) {
-				System.out.println(strLocal);
+			boolean same = strLocal.equals(strRemote);
+			if (!same && dump) {// for debugging. TODO: Could be used as a msg for this circumstance
+				if (strLocal.length() != strRemote.length()) {
+					System.out.println("Local:\t" + strLocal.length());
+					System.out.println("Remote:\t" + strRemote.length());
+				}
+				int loc = Integer.MAX_VALUE;
+				for (int i = 0; i < Math.min(strRemote.length(), strLocal.length()); i++) {
+					if (strRemote.charAt(i) != strLocal.charAt(i))
+						loc = Math.min(loc, i);
+				}
 				System.out.println(strRemote);
+				System.out.println(strLocal);
+				StringBuilder caret = new StringBuilder();
+				if (loc < Integer.MAX_VALUE)
+					for (int i = 0; i < loc; i++)
+						caret.append(" ");
+				caret.append("^");
+				System.out.println(caret.toString());
 			}
-			
+
 			return !same;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -191,7 +208,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 					String[] parts = line.split("//"); // look for inline comments and take the first part.
 					line = parts[0].trim();
 					if (!line.isBlank())
-					  sb.append(line);
+						sb.append(line);
 				}
 			}
 		}
@@ -201,24 +218,24 @@ public abstract class AbstractUPL implements IUserProjectLink {
 
 	private void backupFile(File remoteSrc) {
 		// we could just save the snippets but user may like to see what has changed.
-		String backupRoot = "_"+remoteSrc.getName().replace(".java","")+"_";
+		String backupRoot = "_" + remoteSrc.getName().replace(".java", "") + "_";
 		File[] files = remoteSrc.getParentFile().listFiles(new FilenameFilter() {
 
 			@Override
 			public boolean accept(File dir, String name) {
 				return name.startsWith(backupRoot);
 			}
-			
+
 		});
 		IdentityScope scope = new LocalScope("BACKUP");
-		for (File f: files) {
-			String name = f.getName().replace(".txt","");
-			scope.newId(true,name);
+		for (File f : files) {
+			String name = f.getName().replace(".txt", "");
+			scope.newId(true, name);
 		}
-		String nextName = scope.newId(true,backupRoot+"1").id();
-		nextName = nextName+".txt";
-		File backup = new File(remoteSrc.getAbsolutePath().replace(remoteSrc.getName(),nextName));
-		FileUtilities.copyFileReplace(remoteSrc,backup);
+		String nextName = scope.newId(true, backupRoot + "1").id();
+		nextName = nextName + ".txt";
+		File backup = new File(remoteSrc.getAbsolutePath().replace(remoteSrc.getName(), nextName));
+		FileUtilities.copyFileReplace(remoteSrc, backup);
 	}
 
 	private void deleteRemoteFile(File localFile, String localPath, String remotePath) {
