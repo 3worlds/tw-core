@@ -36,7 +36,7 @@
 		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="[0.1.8,)"/>
 		<dependency org="fr.cnrs.iees.rvgrid" name="rvgrid" rev="[0.0.3,)"/>
 		<dependency org="fr.cnrs.iees.uit" name="uit" rev="[0.2.0,)"/>
-		<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>
+		<dependency org="org.apache.commons" name="commons-text" rev="[1,)"/>
 		<dependency org="org.apache.ivy" name="ivy" rev="2.2.0"/>
 		<dependency org="org.apache.odftoolkit" name="simple-odf" rev="0.8.2-incubating"/>
 		<dependency org="com.hp.hpl.jena" name="jena" rev="2.6.4"/>
