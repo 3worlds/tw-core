@@ -241,7 +241,7 @@ public class TwSetup implements ProjectPaths, TwPaths {
 //		System.out.println("Skipping ModelMaker,jar");
 		packModelMaker();
 //		System.out.println("Skipping ModelMaker,jar");
-		packModelRunner();
+		//packModelRunner(); NO! Instead run the jar of the project <MyProject>.jar - tested 30/6/2020
 		FileUtilities.deleteFileTree( new File(DependencySolver.destPath));
 		System.out.println("FINISHED");
 		// 5) zip ModelMaker = .3w dir for distribution to end users
