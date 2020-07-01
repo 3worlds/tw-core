@@ -169,9 +169,9 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 		}
 		case DEPLOY_PROJECT_UNSAVED: {
 			// no args
-			verbose1 = category() + "Configuration is unsaved [press Ctrl+S].";
+			verbose1 = category() + "Configuration is unsaved [press Ctrl+s].";
 			verbose2 = category() + errorName()
-					+ "Configuration is unsaved [press Ctrl+S]. Project must be saved before model can be deployed from ModelMaker.";
+					+ "Configuration is unsaved [press Ctrl+s]. Project must be saved before model can be deployed from ModelMaker.";
 			break;
 		}
 		case DEPLOY_RESOURCE_MISSING: {
