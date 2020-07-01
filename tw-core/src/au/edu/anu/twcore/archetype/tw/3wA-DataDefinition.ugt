@@ -14,7 +14,7 @@ hasNode  dimSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery dimIsInRangeQuerySpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
-			interval = IntTable(("[2]1,2147483647"))
+			interval = IntTable(([2]1,2147483647))
 hasNode  rngSpec
 	isOfClass = String("rng")
 	hasParent = StringTable(([1]"dataDefinition:"))
@@ -37,7 +37,7 @@ hasNode  rngSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery tableIndexIsInRangeQuerySpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
-			interval = IntTable(("[2]0,999"))
+			interval = IntTable(([2]0,999))
 
 hasNode recordRootSpec
 	isOfClass = String("record")
