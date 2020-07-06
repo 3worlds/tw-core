@@ -346,23 +346,25 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 								if ((arg==focal)||(arg==other))
 									for (String innerVar:type.innerVars() ) {
 					// generation of inner classes for return values: unique statements
-					if (innerVar.contains(recToInnerVar.get(rec.name))) {
-						String innerClass = initialUpperCase(innerVar);
-						List<String> innerClassDeclaration = new LinkedList<>();
-						// e.g.: public class FocalDrv {
-						innerClassDeclaration.add(indent+"public class "+innerClass+" {");
-						innerClassDecl.put(innerVar,innerClassDeclaration);
-						List<String> innerVarInitialisation = new LinkedList<>();
-						// e.g.: FocalDrv _focalDrv = new FocalDrv();
-						innerVarInitialisation.add(innerClass+" _"+innerVar+" = new "+innerClass+"()");
-						innerVarInit.put(innerVar,innerVarInitialisation);
-						List<String> innerVarBackCopy = new LinkedList<>();
-						innerVarCopy.put(innerVar,innerVarBackCopy);
-						// e.g.: Vars focalDrv = (Vars)focal.nextState();
-						if ((rec.name.equals("currentState")) & !(type==TwFunctionTypes.SetInitialState))
-							innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+".nextState()");
-						else
-							innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+"."+rec.name+"()");
+					if (recToInnerVar.get(rec.name)!=null)
+						if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
+							(innerVar.contains(arg.name())))  {
+								String innerClass = initialUpperCase(innerVar);
+								List<String> innerClassDeclaration = new LinkedList<>();
+								// e.g.: public class FocalDrv {
+								innerClassDeclaration.add(indent+"public class "+innerClass+" {");
+								innerClassDecl.put(innerVar,innerClassDeclaration);
+								List<String> innerVarInitialisation = new LinkedList<>();
+								// e.g.: FocalDrv _focalDrv = new FocalDrv();
+								innerVarInitialisation.add(innerClass+" _"+innerVar+" = new "+innerClass+"()");
+								innerVarInit.put(innerVar,innerVarInitialisation);
+								List<String> innerVarBackCopy = new LinkedList<>();
+								innerVarCopy.put(innerVar,innerVarBackCopy);
+								// e.g.: Vars focalDrv = (Vars)focal.nextState();
+								if ((rec.name.equals("currentState")) & !(type==TwFunctionTypes.SetInitialState))
+									innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+".nextState()");
+								else
+									innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+"."+rec.name+"()");
 					}
 				}
 				// special case for automatic variables
@@ -379,7 +381,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					// for returned values, generate inner class and proper calls
 					if ((arg==focal)||(arg==other))
 						for (String innerVar:type.innerVars() )
-							if (innerVar.contains(recToInnerVar.get(rec.name))) {
+							if (recToInnerVar.get(rec.name)!=null)
+								if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
+									(innerVar.contains(arg.name()))) {
 						// imports needed for non primitive field classes
 						if (field.fullType!=null)
 							dataClassesToImport.add(field.fullType);
@@ -396,10 +400,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				} // rec.members
 				if ((arg==focal)||(arg==other))
 					for (String innerVar:type.innerVars() )
-						if (innerVar.contains(recToInnerVar.get(rec.name)))
+						if (recToInnerVar.get(rec.name)!=null)
+							if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
+								(innerVar.contains(arg.name())))
 //						if (innerVar.contains("Drv"))
 						// e.g.:_focalDrv // next value
-							callStatement += indent+indent+indent+"_"+innerVar+ ",\n";
+								callStatement += indent+indent+indent+"_"+innerVar+ ",\n";
 			}
 		}
 		// location arguments ?

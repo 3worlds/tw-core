@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -939,37 +939,44 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				for (recInfo rec : comp)
 					if (rec != null)
 						if (rec.members != null) {
+							// read-only arguments
 							for (memberInfo mb : rec.members) {
-//					System.out.println(nameLabelMatches.get(rec.name)+": "+mb);
 								if (mb.name != null) {
 									if (mb.fullType != null)
 										imports.add(mb.fullType);
-									method.addArgument(/* arg,nameLabelMatches.get(rec.name), */mb.name, mb.type,
-											arg.description() + rec.name + " " + mb.comment);
+									String prefix = "";
+									if (arg.name().contains("other"))
+										prefix = "other_";
+									method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
+										prefix+mb.name, mb.type,
+										arg.description() + rec.name + " " + mb.comment);
 									headerComment.append("@param ").append(mb.name).append(' ')
-											.append(arg.description()).append(rec.name).append(' ').append(mb.comment)
-											.append('\n');
+										.append(arg.description()).append(rec.name).append(' ').append(mb.comment)
+										.append('\n');
 									replicateNames.add(mb.name);
 								}
 							}
+							// writeable arguments (inner variables)
 							if ((arg == focal) || (arg == other))
 								for (String innerVar : ftype.innerVars()) // otherDrv etc
-									if (innerVar.contains(recToInnerVar.get(rec.name))) {
-										String s = "";
-										if (innerVar.contains("Drv"))
-											s = "next drivers for ";
-										else if (innerVar.contains("Ltc"))
-											s = "new constants for ";
-										else if (innerVar.contains("Dec"))
-											s = "new decorators for ";
-										// e.g.: Chaos.FocalDrv focalDrv // next
-										method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
-												innerVar, fname + "." + initialUpperCase(innerVar),
-												s + arg.description());
-										headerComment.append("@param ").append(innerVar).append(' ').append(s)
-												.append(arg.description()).append('\n');
-										replicateNames.add(innerVar);
-									}
+									if (recToInnerVar.get(rec.name)!=null)
+										if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
+											(innerVar.contains(arg.name()))) {
+												String s = "";
+												if (innerVar.contains("Drv"))
+													s = "next drivers for ";
+												else if (innerVar.contains("Ltc"))
+													s = "new constants for ";
+												else if (innerVar.contains("Dec"))
+													s = "new decorators for ";
+												// e.g.: Chaos.FocalDrv focalDrv // next
+												method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
+													innerVar, fname + "." + initialUpperCase(innerVar),
+													s + arg.description());
+												headerComment.append("@param ").append(innerVar).append(' ').append(s)
+													.append(arg.description()).append('\n');
+												replicateNames.add(innerVar);
+										}
 						}
 		}
 		// location arguments ?
