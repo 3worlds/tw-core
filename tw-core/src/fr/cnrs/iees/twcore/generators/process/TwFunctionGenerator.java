@@ -37,7 +37,6 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_FEDBY;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.SetInitialState;
 import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import org.bouncycastle.util.Strings;
+//import org.bouncycastle.util.Strings; something goes wrong with this library when running from jar (security??)
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
@@ -319,9 +318,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //		Map<TwFunctionArguments,List<Tuple<ConfigurationEdgeLabels,String,String>>> reqArgs = gen.method(name).callerArguments2();
 		String classToCall = gen.className();
 		String indent = "\t";
+//		callStatement = classToCall+"."+
+//				Strings.toLowerCase(name.substring(0,1))+
+//				name.substring(1)+"(\n";
 		callStatement = classToCall+"."+
-			Strings.toLowerCase(name.substring(0,1))+
-			name.substring(1)+"(\n";
+				name.substring(0,1).toLowerCase()+
+				name.substring(1)+"(\n";
 		innerClassDecl.clear();
 		innerVarInit.clear();
 		innerVarCopy.clear();
