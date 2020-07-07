@@ -227,8 +227,10 @@ public class DataTrackerNode extends InitialisableNode
 	private TrackMeta findTrackMetadata(Category cat, String trackVar) {
 		TrackMeta result = null;
 		List<Record> lr = (List<Record>) get(cat.edges(Direction.OUT),
-				selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()), hasTheLabel(E_DECORATORS.label()))),
-				edgeListEndNodes());
+			selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()),
+				hasTheLabel(E_DECORATORS.label()),
+				hasTheLabel(E_AUTOVAR.label()))),
+			edgeListEndNodes());
 		if (lr != null)
 			for (Record r : lr) { // this list may contain at most 2 items
 				result = findTrackMetadata((Record) r, trackVar);
@@ -277,25 +279,30 @@ public class DataTrackerNode extends InitialisableNode
 			selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
 			edgeListEndNodes());
 		// get all the variables to track
-		for (Node n : ln) {
-			if (n instanceof RelationType) {
+		if (!ln.isEmpty())
+			// relation variables
+			if (ln.get(0) instanceof RelationType) {
 				// TODO: implement code for relation data trackers
 				// NO: we dont trak anything from a relation process
-				// unless maybe one day there are relation data tro track
-			} else if (n instanceof Category) {
-				// 1 - get all the info where indexing and full label is not needed (tables)
-				SortedMap<String, TrackMeta> fm = new TreeMap<>();
+				// unless maybe one day there are relation data to track
+			}
+			// category variables
+			else {
 				List<Edge> le = (List<Edge>) get(edges(Direction.OUT),
 					selectOneOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),hasTheLabel(E_TRACKTABLE.label()))));
-//					selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),hasTheLabel(E_TRACKTABLE.label()))));
-				for (Edge e : le) {
-					String trackName = e.endNode().id();
-					if (!fm.containsKey(trackName)) {
-						TrackMeta tt = findTrackMetadata((Category) n, trackName);
-						if (tt != null)
-							fm.put(trackName, tt);
-						else
-							; // throw Exception ? this should never happen normally...
+				SortedMap<String, TrackMeta> fm = new TreeMap<>();
+				for (Node n : ln) {
+//					if (n instanceof Category) {
+					// 1 - get all the info where indexing and full label is not needed (tables)
+					for (Edge e : le) {
+						String trackName = e.endNode().id();
+						if (!fm.containsKey(trackName)) {
+							TrackMeta tt = findTrackMetadata((Category) n, trackName);
+							if (tt != null)
+								fm.put(trackName, tt);
+							else
+								; // throw Exception ? this should never happen normally...
+						}
 					}
 				}
 				// 2 - expand indexes and develop full labels and store above information
@@ -327,7 +334,13 @@ public class DataTrackerNode extends InitialisableNode
 					setFieldMetadata(tm, trackName);
 				}
 			}
-		}
+//		for (Node n : ln) {
+//			if (n instanceof RelationType) {
+//				// TODO: implement code for relation data trackers
+//				// NO: we dont trak anything from a relation process
+//				// unless maybe one day there are relation data tro track
+//			} else ;
+//		}
 		// get the initial components to track
 		// NB: this list either contains initial components OR points to a single group
 		// to be tracked

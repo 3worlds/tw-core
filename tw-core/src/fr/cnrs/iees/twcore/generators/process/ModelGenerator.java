@@ -209,8 +209,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 
 		List<TreeGraphDataNode> cpt = (List<TreeGraphDataNode>) get(systemNode, children(),
 				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())), // NB -structure is now [0..1] -IDD
-				children(), selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()), hasTheLabel(N_GROUP.label()),
-						hasTheLabel(N_SPACE.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
+				children(),
+				selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()), hasTheLabel(N_GROUP.label()),
+					hasTheLabel(N_SPACE.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
 		// The above query returns null if there is no structureNode - left tidy up for
 		// now -IDD
 		if (cpt == null)
@@ -220,10 +221,10 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			generatedData cl = new generatedData();
 			// search for autovar definitions, if any
 			List<TreeGraphDataNode> ccats = (List<TreeGraphDataNode>) get(tn.edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			for (TreeGraphDataNode cc : ccats) {
 				TreeGraphDataNode auto = (TreeGraphDataNode) get(cc.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())), endNode());
+					selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())), endNode());
 				if (auto != null) {
 					if (cc.id().equals(Category.ephemeral))
 						cl.autoVars = ComponentData.class.getName();
@@ -553,16 +554,17 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		TreeGraphDataNode fp = (TreeGraphDataNode) function.getParent();
 		SortedSet<Category> cats = new TreeSet<>();
+		TreeGraphDataNode arenaNode = null;
+		TreeGraphDataNode groupNode = null;
 		// 1 general case: function parent is a process
 		if (fp instanceof ProcessNode) {
-			// get arena data types
-			if (arg == arena) { // timeModel timeLine dynamics system
-				TreeGraphDataNode systemNode = (TreeGraphDataNode) fp.getParent().getParent().getParent().getParent();
-				cats.addAll((Collection<Category>) get(systemNode.edges(Direction.OUT),
-						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes()));
-				return cats;
-			}
 			TreeGraphDataNode pn = fp;
+			// get arena data types
+			if (arg == arena)  					// timeModel   timeLine    dynamics    system
+				arenaNode = (TreeGraphDataNode) pn.getParent().getParent().getParent().getParent();
+			if (arg==group)
+//				groupNode=  // get the node from the components of the samecategories as the process...
+				;
 			if ((arg == lifeCycle) || (arg == space) || (arg == group)) {
 				// TODO: get the component type matching process categories, then get the
 				// grouptype
@@ -574,22 +576,25 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				for (TwFunctionTypes tft : ComponentProcess.compatibleFunctionTypes)
 					if (tft.equals(ftype)) {
 						cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
-								selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes()));
+							selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+							edgeListEndNodes()));
 						return cats;
 					}
 			// relation process
 			for (TwFunctionTypes tft : AbstractRelationProcess.compatibleFunctionTypes)
 				if (tft.equals(ftype)) {
 					RelationType relnode = (RelationType) get(pn.edges(Direction.OUT),
-							selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())), endNode());
+						selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())), endNode());
 					relationType = relnode.id();
 					if ((arg == focal)) {
 						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
-								selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes()));
+							selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+							edgeListEndNodes()));
 						return cats;
 					} else if (arg == other) {
 						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
-								selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes()));
+							selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+							edgeListEndNodes()));
 						return cats;
 					} else if ((arg == otherLifeCycle) || (arg == otherGroup)) {
 						// TODO
@@ -598,6 +603,31 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 		// 2 parent is a functionNode, means we are dealing with a consequence
 		else if (fp instanceof FunctionNode) {
+			TwFunctionTypes pftype = (TwFunctionTypes) fp.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+			if (pftype==CreateOtherDecision) { // NB the only possible consequence is SetOtherInitialState
+				// search for a life cycle
+				ProcessNode pn = (ProcessNode) fp.getParent();
+				if (arg == arena)  				// timeModel   timeLine    dynamics    system
+					arenaNode = (TreeGraphDataNode) pn.getParent().getParent().getParent().getParent();
+				List<TreeGraphDataNode> lcs = (List<TreeGraphDataNode>) get(pn.edges(Direction.IN),
+					edgeListStartNodes(),
+					selectZeroOrMany(hasTheLabel(N_LIFECYCLE.label())));
+				if (!lcs.isEmpty()) {
+					// TODO: get categories from life cycle information
+				}
+				// if not, then offspring categories = parent categories
+				else {
+					if ((arg==focal) || (arg==other)) {
+						cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
+							selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+							edgeListEndNodes()));
+						return cats;
+					}
+					else {
+						// TODO: cats for arena, group, lifecycle etc.
+					}
+				}
+			}
 
 		}
 		// 3 parent is not a ProcessNode nor a FunctionNode, so it must be an
@@ -605,9 +635,18 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// and in this case there is no relation function
 		else if (arg == focal) {
 			cats.addAll((Collection<Category>) get(fp.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes()));
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes()));
 			return cats;
 		}
+
+		if (arenaNode!=null) {
+			cats.addAll((Collection<Category>) get(arenaNode.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+				edgeListEndNodes()));
+			return cats;
+		}
+
+
 		return cats;
 	}
 
