@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -45,7 +45,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 /**
  * A Query to check that both nodes of an edge have a common parent of a
  * specified type
- * 
+ *
  * @author Jacques Gignoux - 6 nov. 2019
  *
  */
@@ -83,22 +83,32 @@ public class FindCommonCategoryQuery extends Query {
 			return this;
 		}
 		List<Node> ln = (List<Node>) get(process.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
+			selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+			edgeListEndNodes());
 		if (ln.isEmpty()) {
 			satisfied = true;
 			return this;
 		}
 		if (ln.get(0) instanceof Category) {
 			for (Node cat : ln) {
-				Record topRec = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
-						endNode());
+				Record topRec = (Record) get(cat.edges(Direction.OUT),
+					selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
+					endNode());
 				if (topRec != null)
 					satisfied = matchTopRec(topRec, end);
 				if (!satisfied) {
-					topRec = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
-							endNode());
+					topRec = (Record) get(cat.edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
+						endNode());
 					if (topRec != null)
 						satisfied = matchTopRec(topRec, end);
+					if (!satisfied) {
+						topRec = (Record) get(cat.edges(Direction.OUT),
+							selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
+							endNode());
+						if (topRec != null)
+							satisfied = matchTopRec(topRec, end);
+					}
 				}
 			}
 		}
