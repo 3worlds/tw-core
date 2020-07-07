@@ -42,7 +42,7 @@ public enum ConfigurationReservedNodeId {
 	AVEphemeral("AVEphemeral"), //
 	AVPopulation("AVPopulation"), //
 	composition("*composition*"), //
-	population(Category.population), //
+	assemblage(Category.assemblage), //
 	individual(Category.individual), //
 	systemElements("*systemElements*"), //
 	lifecycle(Category.lifeCycle), //

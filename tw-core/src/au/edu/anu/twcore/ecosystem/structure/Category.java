@@ -61,8 +61,8 @@ public class Category extends InitialisableNode implements Comparable<Category> 
 	// lifespan
 	public final static String permanent 	= "*permanent*";
 	public final static String ephemeral 	= "*ephemeral*";
-	// Composition: Population vs individual
-	public final static String population 	= "*population*";
+	// Composition: assemblage vs individual
+	public final static String assemblage 	= "*assemblage*";
 	public final static String individual 	= "*individual*";
 
 	// default constructor

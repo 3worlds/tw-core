@@ -227,7 +227,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				if (auto != null) {
 					if (cc.id().equals(Category.ephemeral))
 						cl.autoVars = ComponentData.class.getName();
-					if (cc.id().equals(Category.population))
+					if (cc.id().equals(Category.assemblage))
 						cl.autoVars = ContainerData.class.getName();
 				}
 			}

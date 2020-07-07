@@ -112,7 +112,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		// NB: maybe permanent systems should have a different scope for their identities, so that
 		// the same name can be used at every reset
 		// on the other hand, the container name can be used for unicity
-		if (categoryNames.contains(Category.population))
+		if (categoryNames.contains(Category.assemblage))
 			autoVarTemplate = null; // this must be done in descendants
 		// user-defined data structures
 		// These ARE optional - inserted by codeGenerator!

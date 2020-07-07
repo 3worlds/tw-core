@@ -163,7 +163,7 @@ public class Component
 		for (TreeNode catSet:l) {
 			for (TreeNode cat:catSet.getChildren()) {
 				if (cat.id().equals(Category.group) ||
-					cat.id().equals(Category.population) ||
+					cat.id().equals(Category.assemblage) ||
 					cat.id().equals(Category.permanent))
 					result.add((Category) cat);
 			}
