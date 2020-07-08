@@ -74,8 +74,14 @@ public class SystemComponent
 	}
 
 	@Override
+	public ComponentFactory elementFactory() {
+		return (ComponentFactory) categories;
+	}
+
+
+	@Override
 	public SetInitialStateFunction initialiser() {
-		return ((ComponentFactory)membership()).setinit;
+		return elementFactory().setinit;
 	}
 
 
@@ -85,11 +91,18 @@ public class SystemComponent
 
 	@Override
 	public SystemComponent clone() {
-		SystemComponent result = (SystemComponent) ((ComponentFactory)categories).newInstance();
+		SystemComponent result = elementFactory().newInstance();
 		result.properties().setProperties(properties());
 		result.setContainer(container());
 		return result;
 	}
+
+	public SystemComponent cloneStructure() {
+		SystemComponent result = elementFactory().newInstance();
+		result.setContainer(container());
+		return result;
+	}
+
 
 //	// TODO: These three methods could be optimized y storing the edges in a Map sorted by labels
 //

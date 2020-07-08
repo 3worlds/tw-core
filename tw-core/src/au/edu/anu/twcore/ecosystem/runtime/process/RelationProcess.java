@@ -370,7 +370,7 @@ public class RelationProcess extends AbstractRelationProcess {
 //        		nextOtherLoc = new double[otherLocation.dim()];
         	function.changeOtherState(t,dt,
         		arena, focalLifeCycle, focalGroup, /*space*/null, focal,
-        		otherLifeCycle, otherGroup, other, null, null);
+        		otherLifeCycle, otherGroup, other, null,null);
         	// TODO: set new other location
         	//
         	//

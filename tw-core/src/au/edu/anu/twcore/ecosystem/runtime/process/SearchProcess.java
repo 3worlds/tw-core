@@ -124,7 +124,9 @@ public class SearchProcess
 					loop(t,dt,component,arena.content());
 			}
 			else
-				if ((component.content()!=null) && (arena.content()!=null))
+				if ((component.content()!=null) && (arena.content()!=null)) {
+					if (component.content().itemCategorized().belongsTo(focalCategories))
+						loop(t,dt,component,arena.content());
 					for (CategorizedContainer<SystemComponent> subc: component.content().subContainers())
 						if (subc.itemCategorized().belongsTo(focalCategories)) {
 							if (subc.hierarchicalView() instanceof GroupComponent)
@@ -132,6 +134,7 @@ public class SearchProcess
 							// TODO: life cycles
 							loop(t,dt,subc.hierarchicalView(),arena.content());
 					}
+				}
 		}
 //		if (container.categoryInfo() instanceof Ecosystem) {
 //			setContext(focalContext,container);

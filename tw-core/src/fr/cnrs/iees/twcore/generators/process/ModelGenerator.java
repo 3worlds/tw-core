@@ -334,16 +334,11 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 		sb.append("\n\n");
 		sb.append("<h3>Instructions to model developers:</h3>\n");
-		sb.append(
-				"<ol><li>Non 3worlds-generated extra methods should be placed in other files linked\n to the present file through imports.</li>\n");
-		sb.append(
-				"<li><strong>Do not</strong> alter the code insertion markers. They are used to avoid \n losing your code when managing this file.</li>\n");
-		sb.append(
-				"<li>For convenience, all the static methods of the {@link Math} and\n {@link Distance} classes are directly accessible here</li>\n");
-		sb.append(
-				"<li>The particular random number stream attached to each {@link TwFunction} is \npassed as the <em>random</em> argument.</li>\n");
-		sb.append(
-				"<li>For all <em>Decision-</em> functions, a <em>decider</em> argument is provided \nto help make decisions out of probabilities</li></ol>\n");
+		sb.append("<ol><li>Non 3worlds-generated extra methods should be placed in other files linked\n to the present file through imports.</li>\n");
+		sb.append("<li><strong>Do not</strong> alter the code insertion markers. They are used to avoid \n losing your code when managing this file.</li>\n");
+		sb.append("<li>For convenience, all the static methods of the {@link Math} and\n {@link Distance} classes are directly accessible here</li>\n");
+		sb.append("<li>The particular random number stream attached to each {@link TwFunction} is \npassed as the <em>random</em> argument.</li>\n");
+		sb.append("<li>For all <em>Decision-</em> functions, a <em>decider</em> argument is provided \nto help make decisions out of probabilities</li></ol>\n");
 
 		// String cs = WordUtils.wrap(sb.toString(), 80,"\n",false);
 		classComment = javaDocComment("", sb.toString().split("\\n"));
@@ -376,8 +371,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						if (field.equals(t.id()))
 							return dataClassNames.get(set).lifetimeConstants;
 				}
-				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
-						endNode());
+				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+					selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
+					endNode());
 				if (rec != null) {
 					for (TreeNode t : rec.getChildren())
 						if (field.equals(t.id()))
@@ -555,7 +551,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		TreeGraphDataNode fp = (TreeGraphDataNode) function.getParent();
 		SortedSet<Category> cats = new TreeSet<>();
 		TreeGraphDataNode arenaNode = null;
-		TreeGraphDataNode groupNode = null;
+//		TreeGraphDataNode groupNode = null;
 		// 1 general case: function parent is a process
 		if (fp instanceof ProcessNode) {
 			TreeGraphDataNode pn = fp;
@@ -831,29 +827,29 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	public EnumMap<TwFunctionArguments, List<recInfo>> dataStructure(String method) {
 		if (dataStructures.get(method) == null) {
 			TwFunctionTypes ftype = (TwFunctionTypes) functions.get(method).properties()
-					.getPropertyValue(P_FUNCTIONTYPE.key());
+				.getPropertyValue(P_FUNCTIONTYPE.key());
 			EnumMap<TwFunctionArguments, List<recInfo>> newDS = new EnumMap<>(TwFunctionArguments.class);
 			dataStructures.put(method, newDS);
 			for (TwFunctionArguments a : ftype.readOnlyArguments())
 				if ((a != t) & (a != dt)) {
-					newDS.put(a, new LinkedList<recInfo>());
-					// TODO: make sure all categories are searched for all the context classes
-					// ie goup, life cycle, arena etc.
-					SortedSet<Category> cats = findCategories(functions.get(method), a);
-					Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> fields = getAllMembers(cats);
-					for (ConfigurationEdgeLabels el : EnumSet.of(E_AUTOVAR, E_LTCONSTANTS, E_DECORATORS, E_DRIVERS)) {
-						recInfo ri = new recInfo();
-						ri.name = dataAccessors.get(el);
-						ri.klass = null;
-						newDS.get(a).add(ri);
-						if (fields.get(el) != null)
-							for (memberInfo mi : fields.get(el)) {
-								if (ri.klass == null) {
-									ri.klass = containingClass(mi.name);
-									ri.members = fields.get(el);
-									break;
-								}
+				newDS.put(a, new LinkedList<recInfo>());
+				// TODO: make sure all categories are searched for all the context classes
+				// ie goup, life cycle, arena etc.
+				SortedSet<Category> cats = findCategories(functions.get(method), a);
+				Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> fields = getAllMembers(cats);
+				for (ConfigurationEdgeLabels el : EnumSet.of(E_AUTOVAR, E_LTCONSTANTS, E_DECORATORS, E_DRIVERS)) {
+					recInfo ri = new recInfo();
+					ri.name = dataAccessors.get(el);
+					ri.klass = null;
+					newDS.get(a).add(ri);
+					if (fields.get(el) != null)
+						for (memberInfo mi : fields.get(el)) {
+							if (ri.klass == null) {
+								ri.klass = containingClass(mi.name);
+								ri.members = fields.get(el);
+								break;
 							}
+						}
 					}
 				}
 //			// debug
@@ -978,45 +974,45 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				for (recInfo rec : comp)
 					if (rec != null)
 						if (rec.members != null) {
-							// read-only arguments
-							for (memberInfo mb : rec.members) {
-								if (mb.name != null) {
-									if (mb.fullType != null)
-										imports.add(mb.fullType);
-									String prefix = "";
-									if (arg.name().contains("other"))
-										prefix = "other_";
-									method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
-										prefix+mb.name, mb.type,
-										arg.description() + rec.name + " " + mb.comment);
-									headerComment.append("@param ").append(mb.name).append(' ')
-										.append(arg.description()).append(rec.name).append(' ').append(mb.comment)
-										.append('\n');
-									replicateNames.add(mb.name);
-								}
-							}
-							// writeable arguments (inner variables)
-							if ((arg == focal) || (arg == other))
-								for (String innerVar : ftype.innerVars()) // otherDrv etc
-									if (recToInnerVar.get(rec.name)!=null)
-										if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
-											(innerVar.contains(arg.name()))) {
-												String s = "";
-												if (innerVar.contains("Drv"))
-													s = "next drivers for ";
-												else if (innerVar.contains("Ltc"))
-													s = "new constants for ";
-												else if (innerVar.contains("Dec"))
-													s = "new decorators for ";
-												// e.g.: Chaos.FocalDrv focalDrv // next
-												method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
-													innerVar, fname + "." + initialUpperCase(innerVar),
-													s + arg.description());
-												headerComment.append("@param ").append(innerVar).append(' ').append(s)
-													.append(arg.description()).append('\n');
-												replicateNames.add(innerVar);
-										}
-						}
+				// read-only arguments
+				for (memberInfo mb : rec.members) {
+					if (mb.name != null) {
+						if (mb.fullType != null)
+							imports.add(mb.fullType);
+						String prefix = "";
+						if (arg.name().contains("other"))
+							prefix = "other_";
+						method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
+							prefix+mb.name, mb.type,
+							arg.description() + rec.name + " " + mb.comment);
+						headerComment.append("@param ").append(mb.name).append(' ')
+							.append(arg.description()).append(rec.name).append(' ').append(mb.comment)
+							.append('\n');
+						replicateNames.add(mb.name);
+					}
+				}
+				// writeable arguments (inner variables)
+				if ((arg == focal) || (arg == other))
+					for (String innerVar : ftype.innerVars()) // otherDrv etc
+						if (recToInnerVar.get(rec.name)!=null)
+							if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
+								(innerVar.contains(arg.name()))) {
+						String s = "";
+						if (innerVar.contains("Drv"))
+							s = "next drivers for ";
+						else if (innerVar.contains("Ltc"))
+							s = "new constants for ";
+						else if (innerVar.contains("Dec"))
+							s = "new decorators for ";
+						// e.g.: Chaos.FocalDrv focalDrv // next
+						method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
+							innerVar, fname + "." + initialUpperCase(innerVar),
+							s + arg.description());
+						headerComment.append("@param ").append(innerVar).append(' ').append(s)
+							.append(arg.description()).append('\n');
+						replicateNames.add(innerVar);
+				}
+			}
 		}
 		// location arguments ?
 

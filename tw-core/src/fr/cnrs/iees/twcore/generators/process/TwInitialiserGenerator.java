@@ -69,6 +69,7 @@ import fr.ens.biologie.generic.utils.Logging;
  * @author gignoux - 19 juin 2017
  *
  */
+@Deprecated
 public class TwInitialiserGenerator extends TwCodeGenerator {
 
 	private static String INITIALISER_ROOT_PACKAGE = SecondaryParametersInitialiser.class.getPackageName();

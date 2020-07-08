@@ -40,6 +40,7 @@ import au.edu.anu.twcore.data.runtime.TwData;
  * @author Jacques Gignoux - 10 juil. 2019
  *
  */
+@Deprecated
 public abstract class SecondaryParametersInitialiser {
 
 	/**

@@ -32,7 +32,6 @@ import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 import static au.edu.anu.twcore.ecosystem.structure.RelationType.predefinedRelationTypes.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,15 +55,12 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -79,7 +75,7 @@ public class ComponentProcess
 		implements Categorized<SystemComponent> {
 
 	private class newBornSettings {
-		SystemFactory factory = null;
+		ComponentFactory factory = null;
 		ComponentContainer container = null;
 		String name = null;
 	}
@@ -99,17 +95,18 @@ public class ComponentProcess
 	private HierarchicalContext focalContext = new HierarchicalContext();
 	private LifeCycle lifeCycle = null;
 //	private Ecosystem ecosystem = null;
-	private SystemFactory group = null;
+//	private SystemFactory group = null;
 
-	private ComponentContainer lifeCycleContainer = null;
+//	private ComponentContainer lifeCycleContainer = null;
 //	private SystemContainer ecosystemContainer = null;
 //	private SystemContainer groupContainer = null;
 
 	// new API
-	// the whole system component - always valie, always here, always unique
+	// the whole system component - always valid, always here, always unique
 	private ArenaComponent arena = null;
 	// lifecycle
 	private GroupComponent focalGroup = null;
+	private GroupComponent otherGroup = null;
 
 	public ComponentProcess(ArenaComponent world, Collection<Category> categories,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
@@ -161,12 +158,113 @@ public class ComponentProcess
 			focal.currentState().writeDisable(); // we dont care anymore about that, except for tables...
 			focal.nextState().writeEnable();
 		}
+
 		// change state of this SystemComponent - easy
 		for (ChangeStateFunction function : CSfunctions) {
 			function.changeState(t,dt,arena,null,focalGroup,null,focal,/*newLoc*/null);
 		}
 		if (focal.currentState() != null)
 			focal.nextState().writeDisable();
+
+		// delete decision function
+		// NB: only applicable to SystemComponents
+		if (focal instanceof SystemComponent)
+			for (DeleteDecisionFunction function : Dfunctions) {
+				if (function.delete(t, dt, arena, null,focalGroup, null, focal, null)) {
+					focal.container().removeItem((SystemComponent) focal); // safe - delayed removal
+			// also remove from space !!!
+//			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
+//					((SystemFactory)focal.membership()).spaces()) {
+//				space.unlocate(focal);
+//				if (space.dataTracker()!=null)
+//					space.dataTracker().removeItem(currentStatus,container.itemId(focal.id()));
+//			}
+			// remove from tracklist if dead - safe, data sending has already been made
+				for (DataTracker<?,Metadata> tracker:trackers)
+					if (tracker.isTracked(focal))
+						tracker.removeTrackedItem((SystemComponent) focal);
+				// if present, spreads some values to other components
+				// (e.g. "decomposition", or "erosion")
+				for (ChangeOtherStateFunction consequence:function.getConsequences()) {
+					for (SystemRelation to:focal.getRelations(returnsTo.key())) {
+						SystemComponent other = (SystemComponent) to.endNode();
+						otherGroup = null; // TODO: find it!
+						// FLAW? here how does code generation know about the categories ?
+						// TODO: this is unfinished!
+						consequence.changeOtherState(t, dt,
+							arena, null, focalGroup, null, focal,
+							null, otherGroup, other, null, null);
+					}
+				}
+			}
+		}
+
+		// creation of other SystemComponents
+		for (CreateOtherDecisionFunction function : COfunctions) {
+			// if there is a life cycle, then it will return the next stage(s)
+			List<newBornSettings> newBornSpecs = new ArrayList<>();
+			if (lifeCycle!=null ) {
+				// TODO: search for category signatures of produce targets from life cycle
+//				for (String catSignature:lifeCycle.produceTo(focal.membership()))
+//					for (CategorizedContainer<SystemComponent> subc:
+//						lifeCycleContainer.subContainers())
+//					// since lifeCycle stages only have one category this test should do
+//					if (subc.categoryInfo().categoryId().contains(catSignature)) {
+//						newBornSettings nbs = new newBornSettings();
+//						nbs.name = subc.categoryInfo().categoryId();
+//						nbs.factory = (SystemFactory) subc.categoryInfo();
+//						nbs.container = (ComponentContainer) subc;
+//						newBornSpecs.add(nbs);
+//				}
+			}
+			// without a life cycle, only objects of the same type can be created
+			else {
+				newBornSettings nbs = new newBornSettings();
+				nbs.factory = (ComponentFactory) focal.elementFactory();
+				nbs.name = focal.membership().categoryId();
+				nbs.container = focal.container();
+				newBornSpecs.add(nbs);
+			}
+			for (newBornSettings nbs:newBornSpecs) {
+				double result = function.nNew(t, dt, arena, null, focalGroup, null, focal, null);
+				// compute effective number of newBorns (taking the decimal part as a probability)
+				double proba = function.rng().nextDouble();
+				long n = (long) Math.floor(result);
+				if (proba < (result - n))
+					n += 1;
+				for (int i = 0; i < n; i++) {
+					SystemComponent newBorn = nbs.factory.newInstance();
+					for (SetOtherInitialStateFunction func : function.getConsequences()) {
+						// TODO workout multiple category sets for descendants
+						double[] newLoc = null;
+						// TODO: finish this call (missing space, lifecycle, etc)
+						func.setOtherInitialState(t, dt,
+							arena, null, focalGroup, null, focal,
+							null, otherGroup, newBorn, newLoc, null);
+						if (space!=null) {
+							if (newLoc==null) {
+								log.warning("No location returned by relocate(...): default location generated");
+								newLoc = space.defaultLocation();
+							}
+							if (newLoc.length!=space.ndim()) {
+								log.warning("Wrong number of dimensions: default location generated");
+								newLoc = space.defaultLocation();
+							}
+							space.locate(newBorn,newLoc);
+							if (space.dataTracker()!=null)
+								space.dataTracker().recordItem(currentStatus,newLoc,
+									// caution - item not yet in container.
+									nbs.container.itemId(newBorn.id()));
+						}
+					}
+					if (function.relateToOther())
+						focal.relateTo(newBorn,parentTo.key()); // delayed addition
+					// welcome newBorn in container!
+					nbs.container.addItem(newBorn); // safe - delayed addition
+				}
+			}
+		}
+
 
 		// call data trackers AFTER computations so that decorators are different from zero
 		for (DataTracker<?,Metadata> tracker:trackers)
