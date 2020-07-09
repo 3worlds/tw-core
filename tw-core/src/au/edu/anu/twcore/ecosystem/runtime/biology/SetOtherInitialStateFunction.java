@@ -56,12 +56,12 @@ public abstract class SetOtherInitialStateFunction extends TwFunctionAdapter {
 	 * @param otherGroupPar other group parameters,if any
 	 * @param otherGroupPop other group population data
 	 * @param focalAuto focal automatic variables (age and birthDate)
-	 * @param focalLtc focal lifetime constants, if any
+	 * @param focalCnt focal constants, if any
 	 * @param focalDrv focal driver variables at current time, if any
 	 * @param focalDec focal decorator variables, if any
 	 * @param focalLoc focal location at current time, if any
 	 *
-	 * @param otherLtc other lifetime constants, if any
+	 * @param otherCnt other constants, if any
 	 * @param otherDrv other driver variables at current time, if any
 	 * @param otherLoc other location at current time, if any
 	 */
@@ -78,12 +78,12 @@ public abstract class SetOtherInitialStateFunction extends TwFunctionAdapter {
 //			TwData otherGroupPar,
 //			ComponentContainer otherGroupPop,
 //			ComponentData focalAuto,
-//			TwData focalLtc,
+//			TwData focalCnt,
 //			TwData focalDrv,
 //			TwData focalDec,
 //			Point focalLoc,
 //			// read-write parameters
-//			TwData otherLtc,
+//			TwData otherCnt,
 //			TwData otherDrv,
 //			double[] otherLoc
 //	);

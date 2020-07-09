@@ -70,7 +70,7 @@ public abstract class SetInitialStateFunction extends TwFunctionAdapter {
 	 * @param groupPar focal group parameters, if any
 	 * @param groupPop focal group population data
 	 *
-	 * @param focalLtc focal lifetime constants at creation time, if any
+	 * @param focalCnt focal constants at creation time, if any
 	 * @param focalDrv focal driver variables at creation time, if any
 	 * @param focalLoc focal location at creation time, if any
 	 */
@@ -85,7 +85,7 @@ public abstract class SetInitialStateFunction extends TwFunctionAdapter {
 //		TwData groupPar,
 //		ComponentContainer groupPop,
 //		// read-write returned value
-//		TwData focalLtc,
+//		TwData focalCnt,
 //		TwData focalDrv,
 //		double[] focalLoc
 //	);

@@ -78,7 +78,7 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
 	 * @param groupPar focal group parameters, if any
 	 * @param groupPop focal group population data
 	 * @param focalAuto focal automatic variables (age and birthDate)
-	 * @param focalLtc focal lifetime constants, if any
+	 * @param focalCnt focal constants, if any
 	 * @param focalDrv focal driver variables at current time, if any
 	 * @param focalDec focal decorator variables, if any
 	 * @param focalLoc focal location at current time, if any
@@ -95,7 +95,7 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
 //			TwData groupPar,
 //			ComponentContainer groupPop,
 //			ComponentData focalAuto,
-//			TwData focalLtc,
+//			TwData focalCnt,
 //			TwData focalDrv,
 //			TwData focalDec,
 //			Point focalLoc
