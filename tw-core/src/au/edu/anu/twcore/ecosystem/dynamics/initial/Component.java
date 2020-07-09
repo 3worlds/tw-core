@@ -34,6 +34,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -73,14 +74,14 @@ import fr.ens.biologie.generic.Sealable;
  */
 public class Component
 		extends InitialisableNode
-		implements Sealable, LimitedEdition<SystemComponent>, DefaultStrings {
+		implements Sealable, LimitedEdition<List<SystemComponent>>, DefaultStrings {
 
 	private boolean sealed = false;
 //	private TwData variables = null;
 	private ComponentType componentFactory = null;
 	// This is FLAWED: assumes only ONE component per simulator ???, no, its fine, different components
 	// have different Component nodes
-	private Map<Integer,SystemComponent> individuals = new HashMap<>();
+	private Map<Integer,List<SystemComponent>> individuals = new HashMap<>();
 
 	private Map<SpaceNode,double[]> coordinates = new HashMap<>();
 	// the container in which new components should be placeds
@@ -92,6 +93,7 @@ public class Component
 	// if >1, then even if no groups are declared, components must be stored in separate group
 	// containers matching category signatures
 	private int nComponentTypes = 0;
+	private int nInstances = 1;
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -108,11 +110,10 @@ public class Component
 	public void initialise() {
 		super.initialise();
 		sealed = false;
+		if (properties().hasProperty(P_COMPONENT_NINST.key()))
+			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
 		nComponentTypes = ((Collection<?>)get(getParent().getParent().getChildren(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())))).size();
-//		componentFactory = (ComponentType) get(edges(Direction.OUT),
-//			selectOne(hasTheLabel(E_INSTANCEOF.label())),
-//			endNode());
 		componentFactory = (ComponentType) getParent();
 		List<LocationEdge> spaces = (List<LocationEdge>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_LOCATION.label())));
@@ -127,8 +128,7 @@ public class Component
 		// this edge, if present, points to a Group node
 		Edge instof = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
-		if (instof==null)
-							   // system > structure >	componentType > component
+		if (instof==null)	   // system > structure >	componentType > component
 			arena = (ArenaType) getParent().getParent().getParent();
 		else
 			group = (Group) instof.endNode();
@@ -172,101 +172,57 @@ public class Component
 	}
 
 	@Override
-	public SystemComponent getInstance(int id) {
+	public List<SystemComponent> getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!individuals.containsKey(id)) {
-			// instantiate component
-			SystemComponent sc = componentFactory.getInstance(id).newInstance();
-			// fill component with initial values
-			for (TreeNode tn:getChildren())
-				if (tn instanceof VariableValues) {
-					// this copies all variables contained in Drivers but ignores automatc variables
-					((VariableValues)tn).fill(sc.currentState());
-					// this copies automatic variables, if any
-					((VariableValues)tn).fill(sc.autoVar());
-				}
-			// including spatial coordinates
-			for (SpaceNode spn:coordinates.keySet()) {
-				DynamicSpace<SystemComponent,LocatedSystemComponent> sp = spn.getInstance(id);
-				Location loc = sp.makeLocation(coordinates.get(spn));
-				LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
-				sp.addInitialItem(lsc);
-			}
-			// insert component into container
-//			LimitedEdition<ComponentContainer> p = (LimitedEdition<ComponentContainer>) getParent();
-			ComponentContainer container = null;
-			if (arena!=null)
-				if (nComponentTypes==1) // means the container is the ArenaComponent
-					container = arena.getInstance(id).getInstance().content();
-				else { // group container must be created and inserted under arena
-					ComponentContainer parentContainer = arena.getInstance(id).getInstance().content();
-					String containerId = componentFactory.categoryId(); // check this is ok
-					container = (ComponentContainer) parentContainer.subContainer(containerId);
-					// POSSIBLE FLAW HERE: there is no Group node matching this group factory
-					if (container==null) {
-						Set<Category>cats = generatedGroupCats();
-						GroupFactory gfac = new GroupFactory(cats,
-							null,null,null,null,null,
-							containerId,parentContainer);
-						GroupComponent gComp = gfac.newInstance();
-						container = gComp.content();
+			List<SystemComponent> result = new ArrayList<>(nInstances);
+			for (int i=0; i<nInstances; i++) {
+				// instantiate component
+				SystemComponent sc = componentFactory.getInstance(id).newInstance();
+				// fill component with initial values
+				for (TreeNode tn:getChildren())
+					if (tn instanceof VariableValues) {
+						// this copies all variables contained in Drivers but ignores automatc variables
+						((VariableValues)tn).fill(sc.currentState());
+						// this copies automatic variables, if any
+						((VariableValues)tn).fill(sc.autoVar());
 					}
+				// including spatial coordinates
+				for (SpaceNode spn:coordinates.keySet()) {
+					DynamicSpace<SystemComponent,LocatedSystemComponent> sp = spn.getInstance(id);
+					Location loc = sp.makeLocation(coordinates.get(spn));
+					LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
+					sp.addInitialItem(lsc);
 				}
-			else if (group!=null) // container is an existing group
-				container = group.getInstance(id);
-			container.setCategorized(componentFactory.getInstance(id));
-			container.addInitialItem(sc);
-			sc.setContainer((ComponentContainer)container);
-
-			// first case: no groups are specified, the component is required to be stored directly
-			// at the ecosystem level.
-			// In order not to break the logic of containers, which must only contain items of the
-			// same category signature, we must create a new group for every new category signature
-			// and put the new SC into it. The ecosystem container cannot store any SC directly because
-			// it's got no categories.
-//			if (p instanceof InitialState) {
-//				ComponentContainer ecoCont = p.getInstance(id);
-//				ComponentContainer theCont = null;
-//				for (CategorizedContainer<SystemComponent> cont:ecoCont.subContainers()) {
-//					if (cont.categoryInfo().categories().equals(sc.membership().categories())) {
-//						theCont = (ComponentContainer) cont;
-//						break;
-//					}
-//				}
-//				if (theCont==null) {
-//					String groupName = defaultPrefix + "group" + nameSeparator + sc.membership().categoryId();
-//					// if there were parameters attached to the SC, attach them to its group
-//					// CAUTION: this is only possible if there is just ONE permanent component
-//					ConstantValues pv = null;
-//					for (TreeNode tn:getChildren())
-//						if (tn instanceof ConstantValues) {
-//							pv = (ConstantValues) tn;
-//							break;
-//					}
-//
-//					// CODE BROKEN HERE!
-//
-////					if (pv==null)
-////						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,null,null);
-////					else {
-////						theCont = new ComponentContainer(sc.membership(),groupName,ecoCont,
-////							componentFactory.newParameterSet(),null);
-////						pv.fill(theCont.parameters());
-////						// compute secondary parameters if initialiser present
-////						Initialiser.computeSecondaryParameters(this,theCont,id);
-////					}
-//					theCont.addInitialItem(sc);
-//					sc.setContainer((ComponentContainer) theCont);
-//				}
-//			}
-//			// second case: the container has categories, then they must match those of the component
-//			else if	(sc.membership().categories().equals(p.getInstance(id).categoryInfo().categories())) {
-//				ComponentContainer c = p.getInstance(id);
-//				c.addInitialItem(sc);
-//				sc.setContainer(c);
-//			}
-			individuals.put(id,sc);
+				// insert component into container
+				ComponentContainer container = null;
+				if (arena!=null)
+					if (nComponentTypes==1) // means the container is the ArenaComponent
+						container = arena.getInstance(id).getInstance().content();
+					else { // group container must be created and inserted under arena
+						ComponentContainer parentContainer = arena.getInstance(id).getInstance().content();
+						String containerId = componentFactory.categoryId(); // check this is ok
+						container = (ComponentContainer) parentContainer.subContainer(containerId);
+						// POSSIBLE FLAW HERE: there is no Group node matching this group factory
+						if (container==null) {
+							Set<Category>cats = generatedGroupCats();
+							GroupFactory gfac = new GroupFactory(cats,
+								null,null,null,null,null,
+								containerId,parentContainer);
+							GroupComponent gComp = gfac.newInstance();
+							container = gComp.content();
+						}
+					}
+				else if (group!=null) // container is an existing group
+					container = group.getInstance(id);
+				container.setCategorized(componentFactory.getInstance(id));
+				container.addInitialItem(sc);
+				sc.setContainer((ComponentContainer)container);
+				// add component instance into list of new instances
+				result.add(sc);
+			}
+			individuals.put(id,result);
 		}
 		return individuals.get(id);
 	}

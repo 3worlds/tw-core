@@ -97,6 +97,10 @@ hasNode componentSpec
 	isOfClass = String("component")
 	hasParent = StringTable(([2]"componentType:","group:"))
 	multiplicity = IntegerRange("0..*")
+	hasProperty numberOfInstancesSpec
+		hasName = String("nInstances")
+		type = String("Integer")
+		multiplicity = IntegerRange("0..1")
 	hasEdge componentToSystemSpec
 		isOfClass = String("instanceOf")
 		toNode = String("componentType:")

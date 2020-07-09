@@ -53,6 +53,7 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -491,13 +492,15 @@ public class DataTrackerNode extends InitialisableNode
 				ls.add((CategorizedComponent)((ArenaType)etype).getInstance(index).getInstance());
 			}
 			else if (etype instanceof Component) {
-				CategorizedComponent cp = ((Component)etype).getInstance(index);
-				ls.add(cp);
-				if (cp instanceof SystemComponent)
-					trackedContainer = ((SystemComponent)cp).container();
-				else if (cp instanceof HierarchicalComponent)
-					// TODO: check this one
-					trackedContainer = ((HierarchicalComponent)cp).content().parentContainer();
+				List<? extends CategorizedComponent<?>> cp = ((Component)etype).getInstance(index);
+				if (!cp.isEmpty()) {
+					ls.addAll(cp);
+					if (cp.get(0) instanceof SystemComponent)
+						trackedContainer = ((SystemComponent)cp).container();
+					else if (cp.get(0) instanceof HierarchicalComponent)
+						// TODO: check this one
+						trackedContainer = ((HierarchicalComponent)cp).content().parentContainer();
+				}
 			}
 		}
 		if (dataTrackerClass.equals(DataTracker0D.class.getName()))
