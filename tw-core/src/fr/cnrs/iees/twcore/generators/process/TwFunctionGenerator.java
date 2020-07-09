@@ -312,7 +312,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		// mapping between inerVar names and rec.name
 		Map<String,String> recToInnerVar = new HashMap<>();
 		recToInnerVar.put("autoVar",null);
-		recToInnerVar.put("constants","Cst");
+		recToInnerVar.put("constants","Cnt");
 		recToInnerVar.put("decorators","Dec");
 		recToInnerVar.put("currentState","Drv");
 //		Map<TwFunctionArguments,List<Tuple<ConfigurationEdgeLabels,String,String>>> reqArgs = gen.method(name).callerArguments2();

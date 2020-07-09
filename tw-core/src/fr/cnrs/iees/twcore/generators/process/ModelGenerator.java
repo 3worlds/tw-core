@@ -892,7 +892,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// mapping between inerVar names and rec.name
 		Map<String, String> recToInnerVar = new HashMap<>();
 		recToInnerVar.put("autoVar", null);
-		recToInnerVar.put("constants", "Cst");
+		recToInnerVar.put("constants", "Cnt");
 		recToInnerVar.put("decorators", "Dec");
 		recToInnerVar.put("currentState", "Drv");
 
@@ -1000,7 +1000,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						String s = "";
 						if (innerVar.contains("Drv"))
 							s = "next drivers for ";
-						else if (innerVar.contains("Cst"))
+						else if (innerVar.contains("Cnt"))
 							s = "new constants for ";
 						else if (innerVar.contains("Dec"))
 							s = "new decorators for ";
