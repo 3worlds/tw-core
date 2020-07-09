@@ -30,8 +30,8 @@ hasNode categorySpec
 		isOfClass = String("decorators")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
-	hasEdge edgeToLifetimeConstantsSpec
-		isOfClass = String("lifetimeConstants")
+	hasEdge edgeToConstantsSpec
+		isOfClass = String("constants")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
 	hasEdge edgeToParametersSpec
@@ -73,7 +73,7 @@ hasNode componentTypeSpec
 		hasName = String("driverClass")
 		type =  String("String")
 		multiplicity = IntegerRange("0..1")
-	hasProperty componentLifeTimeConstantSpec
+	hasProperty componentConstantSpec
 		hasName = String("constantClass")
 		type =  String("String")
 		multiplicity = IntegerRange("0..1")
@@ -243,7 +243,7 @@ hasNode constantValuesSpec
 	// will ever exist. Shared parameter values must be set at the group level
 	mustSatisfyQuery constantValuesPropertiesMatchDefinitionQuery
 		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
-		values = StringTable(([1]lifetimeConstants))
+		values = StringTable(([1]constants))
 
 hasNode variableValuesSpec
 	isOfClass = String("variableValues")

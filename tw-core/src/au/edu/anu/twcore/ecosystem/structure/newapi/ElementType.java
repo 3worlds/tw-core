@@ -133,8 +133,8 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 				if (!s.trim().isEmpty())
 					decoratorTemplate = loadDataClass(s);
 		}
-		if (properties().hasProperty(P_LTCONSTANTCLASS.key())) {
-			s = (String) properties().getPropertyValue(P_LTCONSTANTCLASS.key());
+		if (properties().hasProperty(P_CONSTANTCLASS.key())) {
+			s = (String) properties().getPropertyValue(P_CONSTANTCLASS.key());
 			if (s!=null)
 				if (!s.trim().isEmpty()) {
 					lifetimeConstantTemplate = loadDataClass(s);

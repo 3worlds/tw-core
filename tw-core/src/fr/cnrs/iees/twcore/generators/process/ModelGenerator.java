@@ -131,7 +131,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		private String autoVars;
 		private String drivers;
 		private String decorators;
-		private String lifetimeConstants;
+		private String constants;
 	}
 
 	/**
@@ -233,13 +233,13 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				}
 			}
 			// get generated life time constant definitions
-			if (tn.properties().hasProperty(P_LTCONSTANTCLASS.key()))
-				if (tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key()) != null) {
-					String s = (String) tn.properties().getPropertyValue(P_LTCONSTANTCLASS.key());
+			if (tn.properties().hasProperty(P_CONSTANTCLASS.key()))
+				if (tn.properties().getPropertyValue(P_CONSTANTCLASS.key()) != null) {
+					String s = (String) tn.properties().getPropertyValue(P_CONSTANTCLASS.key());
 					if (s.isEmpty())
-						cl.lifetimeConstants = null;
+						cl.constants = null;
 					else
-						cl.lifetimeConstants = s;
+						cl.constants = s;
 				}
 			// get generated driver definitions
 			if (tn.properties().hasProperty(P_DRIVERCLASS.key()))
@@ -365,11 +365,11 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 							return dataClassNames.get(set).decorators;
 				}
 				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_LTCONSTANTS.label())), endNode());
+						selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())), endNode());
 				if (rec != null) {
 					for (TreeNode t : rec.getChildren())
 						if (field.equals(t.id()))
-							return dataClassNames.get(set).lifetimeConstants;
+							return dataClassNames.get(set).constants;
 				}
 				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
 					selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
@@ -475,7 +475,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	static EnumMap<ConfigurationEdgeLabels, String> dataAccessors = new EnumMap<>(ConfigurationEdgeLabels.class);
 	static {
 		dataAccessors.put(E_AUTOVAR, "autoVar");
-		dataAccessors.put(E_LTCONSTANTS, "constants");
+		dataAccessors.put(E_CONSTANTS, "constants");
 		dataAccessors.put(E_DECORATORS, "decorators");
 		dataAccessors.put(E_DRIVERS, "currentState");// nextState ?
 	}
@@ -487,7 +487,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	protected Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> getAllMembers(Collection<Category> cats) {
 		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> result = new HashMap<>();
 		for (Category cat : cats)
-			for (ConfigurationEdgeLabels cel : EnumSet.of(E_AUTOVAR, E_LTCONSTANTS, E_DECORATORS, E_DRIVERS)) {
+			for (ConfigurationEdgeLabels cel : EnumSet.of(E_AUTOVAR, E_CONSTANTS, E_DECORATORS, E_DRIVERS)) {
 				Record rec = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(cel.label())),
 						endNode());
 				if (rec != null) {
@@ -837,7 +837,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				// ie goup, life cycle, arena etc.
 				SortedSet<Category> cats = findCategories(functions.get(method), a);
 				Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> fields = getAllMembers(cats);
-				for (ConfigurationEdgeLabels el : EnumSet.of(E_AUTOVAR, E_LTCONSTANTS, E_DECORATORS, E_DRIVERS)) {
+				for (ConfigurationEdgeLabels el : EnumSet.of(E_AUTOVAR, E_CONSTANTS, E_DECORATORS, E_DRIVERS)) {
 					recInfo ri = new recInfo();
 					ri.name = dataAccessors.get(el);
 					ri.klass = null;
@@ -886,13 +886,13 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
 		Map<String, ConfigurationEdgeLabels> nameLabelMatches = new HashMap<>();
 		nameLabelMatches.put("autoVar", E_AUTOVAR);
-		nameLabelMatches.put("constants", E_LTCONSTANTS);
+		nameLabelMatches.put("constants", E_CONSTANTS);
 		nameLabelMatches.put("decorators", E_DECORATORS);
 		nameLabelMatches.put("currentState", E_DRIVERS);
 		// mapping between inerVar names and rec.name
 		Map<String, String> recToInnerVar = new HashMap<>();
 		recToInnerVar.put("autoVar", null);
-		recToInnerVar.put("constants", "Ltc");
+		recToInnerVar.put("constants", "Cst");
 		recToInnerVar.put("decorators", "Dec");
 		recToInnerVar.put("currentState", "Drv");
 
@@ -1000,7 +1000,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						String s = "";
 						if (innerVar.contains("Drv"))
 							s = "next drivers for ";
-						else if (innerVar.contains("Ltc"))
+						else if (innerVar.contains("Cst"))
 							s = "new constants for ";
 						else if (innerVar.contains("Dec"))
 							s = "new decorators for ";

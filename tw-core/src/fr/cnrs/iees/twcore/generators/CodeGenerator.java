@@ -306,8 +306,8 @@ public class CodeGenerator {
 		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label(), log);
 		generateDataCode(spec, system, modelName, P_DECORATORCLASS.key());
 		// 4. lifetime constants
-		spec = Categorized.buildUniqueDataList(system, E_LTCONSTANTS.label(), log);
-		generateDataCode(spec, system, modelName, P_LTCONSTANTCLASS.key());
+		spec = Categorized.buildUniqueDataList(system, E_CONSTANTS.label(), log);
+		generateDataCode(spec, system, modelName, P_CONSTANTCLASS.key());
 		// add space coordinates for every space in which this component type will go
 		// (immobile components)
 	}

@@ -101,7 +101,7 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	protected SystemComponentPropertyListImpl(TwData autoVariables,
 			TwData driverVariables,
 			TwData decoratorVariables,
-			TwData lifetimeConstants,
+			TwData constantVariables,
 			int depth,
 			Map<String, Integer> propertyMap) {
 		super();
@@ -118,8 +118,8 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 				drivers[i] = driverVariables.clone();
 		if (decoratorVariables != null)
 			decorators = decoratorVariables.clone();
-		if (lifetimeConstants!=null)
-			constants = lifetimeConstants.clone();
+		if (constantVariables!=null)
+			constants = constantVariables.clone();
 		// graph side - a flat propertyList
 		this.propertyMap = propertyMap; // shared (save memory space)
 		properties = new TwData[4];

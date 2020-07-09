@@ -40,7 +40,7 @@ import au.edu.anu.twcore.ecosystem.structure.AutoVarEdge;
 import au.edu.anu.twcore.ecosystem.structure.DriverEdge;
 import au.edu.anu.twcore.ecosystem.structure.DecoratorEdge;
 import au.edu.anu.twcore.ecosystem.structure.ParameterEdge;
-import au.edu.anu.twcore.ecosystem.structure.LifetimeConstantEdge;
+import au.edu.anu.twcore.ecosystem.structure.ConstantsEdge;
 import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 import au.edu.anu.twcore.ecosystem.structure.InitialisedByEdge;
 import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
@@ -88,7 +88,7 @@ public enum ConfigurationEdgeLabels {
 	E_AUTOVAR		("autoVar",			"auto1",		AutoVarEdge.class),
 	E_DRIVERS		("drivers",			"drvs1",		DriverEdge.class),
 	E_DECORATORS	("decorators",		"decs1",		DecoratorEdge.class),
-	E_LTCONSTANTS	("lifetimeConstants","ltcs1",		LifetimeConstantEdge.class),
+	E_CONSTANTS		("constants",		"cst1",			ConstantsEdge.class),
 	E_PARAMETERS	("parameters",		"pars1",		ParameterEdge.class), // should be deprecated
 	E_BELONGSTO		("belongsTo",		"bt1",			BelongsToEdge.class),
 	E_INITIALISEDBY	("initialisedBy",	"ib1",		InitialisedByEdge.class),

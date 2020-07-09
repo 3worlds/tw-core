@@ -228,11 +228,11 @@ public enum TwFunctionTypes {
 			break;
 		case SetInitialState:
 			result.add("focalDrv");
-			result.add("focalLtc");
+			result.add("focalCst");
 			break;
 		case SetOtherInitialState:
 			result.add("otherDrv");
-			result.add("otherLtc");
+			result.add("otherCst");
 			break;
 		default:
 			break;

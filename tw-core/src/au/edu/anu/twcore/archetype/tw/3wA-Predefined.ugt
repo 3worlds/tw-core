@@ -43,8 +43,8 @@ hasNode arenaCategorySpec
 		isOfClass = String("decorators")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
-	hasEdge edgeToLifetimeConstantsSpec
-		isOfClass = String("lifetimeConstants")
+	hasEdge edgeToConstantsSpec
+		isOfClass = String("constants")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
 	hasEdge edgeToParametersSpec

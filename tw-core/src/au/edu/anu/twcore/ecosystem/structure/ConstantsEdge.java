@@ -39,9 +39,9 @@ import fr.cnrs.iees.identity.Identity;
  * @author Jacques Gignoux - 2 avril 2020
  *
  */
-public class LifetimeConstantEdge extends ALEdge {
+public class ConstantsEdge extends ALEdge {
 
-	public LifetimeConstantEdge(Identity id, Node start, Node end, EdgeFactory graph) {
+	public ConstantsEdge(Identity id, Node start, Node end, EdgeFactory graph) {
 		super(id, start, end, graph);
 	}
 
