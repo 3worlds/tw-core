@@ -51,7 +51,7 @@ public class CategorySet extends InitialisableNode {
 	// default category sets present in ALL models
 	public final static String[] systemElementsSet = { arena, lifeCycle, group, component, relation, space };
 	public final static String[] lifespanSet = { permanent, ephemeral };
-	public final static String[] compositionSet = { assemblage, individual };
+	public final static String[] organisationSet = { assemblage, atomic };
 
 	// default constructor
 	public CategorySet(Identity id, SimplePropertyList props, GraphFactory gfactory) {

@@ -63,7 +63,7 @@ public class Category extends InitialisableNode implements Comparable<Category> 
 	public final static String ephemeral 	= "*ephemeral*";
 	// Composition: assemblage vs individual
 	public final static String assemblage 	= "*assemblage*";
-	public final static String individual 	= "*individual*";
+	public final static String atomic 	= "*atomic*";
 
 	// default constructor
 	public Category(Identity id, SimplePropertyList props, GraphFactory gfactory) {

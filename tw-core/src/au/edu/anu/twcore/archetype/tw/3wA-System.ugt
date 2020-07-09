@@ -26,9 +26,9 @@ hasNode systemSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:*permanent*")
 		multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery arenaHasOneCategoryOfCompositionSpec
+	mustSatisfyQuery arenaHasOneCategoryOforganisationSpec
 		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
-		reference = String(categorySet:*composition*)
+		reference = String(categorySet:*organisation*)
 	mustSatisfyQuery exclusiveCategoryCheckForSystemSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
 

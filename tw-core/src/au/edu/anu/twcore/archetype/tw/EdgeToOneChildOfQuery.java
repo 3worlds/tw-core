@@ -55,8 +55,8 @@ public class EdgeToOneChildOfQuery extends Query {
 	public EdgeToOneChildOfQuery(String reference) {
 		super();
 		nodeRef = reference;
-		if (nodeRef.contains(ConfigurationReservedNodeId.composition.id())) {
-			options = CategorySet.compositionSet;
+		if (nodeRef.contains(ConfigurationReservedNodeId.organisation.id())) {
+			options = CategorySet.organisationSet;
 		} else if (nodeRef.contains(ConfigurationReservedNodeId.systemElements.id())) {
 			options = CategorySet.systemElementsSet;
 		} else if (nodeRef.contains(ConfigurationReservedNodeId.lifespan.id())) {

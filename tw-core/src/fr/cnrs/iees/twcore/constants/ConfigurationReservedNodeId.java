@@ -41,9 +41,9 @@ public enum ConfigurationReservedNodeId {
 	categories("*categories*"), //
 	AVEphemeral("AVEphemeral"), //
 	AVPopulation("AVPopulation"), //
-	composition("*composition*"), //
+	organisation("*organisation*"), //
 	assemblage(Category.assemblage), //
-	individual(Category.individual), //
+	atomic(Category.atomic), //
 	systemElements("*systemElements*"), //
 	lifecycle(Category.lifeCycle), //
 	group(Category.group), //

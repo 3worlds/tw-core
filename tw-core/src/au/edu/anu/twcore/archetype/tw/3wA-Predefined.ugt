@@ -16,9 +16,9 @@ hasNode typeCategorySet
 	hasId = String("*systemElements*")
 	hasParent = StringTable(([1]"predefined:"))
 	multiplicity = IntegerRange("0..*")
-hasNode popCategorySet
+hasNode orgCategorySet
 	isOfClass = String("categorySet")
-	hasId = String("*composition*")
+	hasId = String("*organisation*")
 	hasParent = StringTable(([1]"predefined:"))
 	multiplicity = IntegerRange("0..*")
 hasNode lifespanCategorySet
@@ -78,21 +78,21 @@ hasNode relationCategorySpec
 	hasParent = StringTable(([1]"categorySet:*systemElements*"))
 	multiplicity = IntegerRange("0..*1")
 
-// CategorySet *composition*
-hasNode populationCategorySpec
+// CategorySet *organisation*
+hasNode organisationCategorySpec
 	isOfClass = String("category")
-	hasId = String("*population*")
-	hasParent = StringTable(([1]"categorySet:*composition*"))
+	hasId = String("*assemblage*")
+	hasParent = StringTable(([1]"categorySet:*organisation*"))
 	multiplicity = IntegerRange("0..*1")
 	// not sure this is really needed
 	hasEdge populationlToRecordEdgeSpec
 		isOfClass = String("autoVar")
 		toNode = String("record:AVPopulation")
 		multiplicity = IntegerRange("1..1")
-hasNode individualCategorySpec
+hasNode atomicCategorySpec
 	isOfClass = String("category")
-	hasId = String("*individual*")
-	hasParent = StringTable(([1]"categorySet:*composition*"))
+	hasId = String("*atomic*")
+	hasParent = StringTable(([1]"categorySet:*organisation*"))
 	multiplicity = IntegerRange("0..*1")
 
 // CategorySet *lifespan*

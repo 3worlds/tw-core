@@ -85,14 +85,14 @@ hasNode componentTypeSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:*component*")
 		multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery hasOneCategoryOfCompositionSpec
+	mustSatisfyQuery hasOneCategoryOforganisationSpec
 		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
-		reference = String(categorySet:*composition*)
+		reference = String(categorySet:*organisation*)
 	mustSatisfyQuery hasOneCategoryOfLifeSpanSpec
 		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
 		reference = String(categorySet:*lifespan*)
 
-// initial state for an individual component instance of a ComponentType
+// initial state for an atomic component instance of a ComponentType
 hasNode componentSpec
 	isOfClass = String("component")
 	hasParent = StringTable(([2]"componentType:","group:"))
@@ -238,8 +238,8 @@ hasNode constantValuesSpec
 	hasParent = StringTable(([3]"system:","group:","component:"))
 	multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
-	// caution: if parameter values are associated to an individual, it means it is unique in its
-	// category, its parameters are specific to it and no other individual with the same values
+	// caution: if parameter values are associated to an atomic, it means it is unique in its
+	// category, its parameters are specific to it and no other atomic with the same values
 	// will ever exist. Shared parameter values must be set at the group level
 	mustSatisfyQuery constantValuesPropertiesMatchDefinitionQuery
 		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
