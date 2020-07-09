@@ -37,7 +37,7 @@ package au.edu.anu.twcore.archetype;
 /*
  * See about naming conventions as this develops. Refactoring is easy. For the
  * moment I just prefix these with twa (tw archetype) to distinguish from aa (archetype
- * archetype contants cf:
+ * archetype constants cf:
  */
 public interface TwArchetypeConstants {
 	public final static String twaName = "name";
