@@ -112,13 +112,11 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	 * Recursively clears all container items and variables (if any). Used in
 	 * loading new model states with ModelRunner.
 	 */
-	// TO IAN: note that the clearAllVariables() and clearAllItems() methods do the same job now
 	public void clearState() {
 		clearState(this);
 	}
 
 	// best if static to avoid errors
-	// TO IAN: note that the clearAllVariables() and clearAllItems() methods do the same job now
 	private static void clearState(CategorizedContainer<SystemComponent> parentContainer) {
 		for (CategorizedContainer<SystemComponent> childContainer : parentContainer.subContainers())
 			clearState(childContainer);
@@ -127,39 +125,6 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 		// effectAllChanges() is recursive so don't use here.
 		parentContainer.effectChanges();// counters are handled here
 		parentContainer.clearVariables();
-// replaced by method below
-//		if (parentContainer.variables() != null) {
-//			/**
-//			 * TODO not tested yet. I assume it's readOnly until executing Twfunctions. If
-//			 * so replace with writeEnable()/writeDisable() without testing.
-//			 */
-//			boolean readOnly = parentContainer.variables().isReadOnly();
-//			if (readOnly)
-//				parentContainer.variables().writeEnable();
-//			parentContainer.variables().clear();
-//			if (readOnly)
-//				parentContainer.variables().writeDisable();
-//		}
-//
-	}
-
-	@Override
-	public void clearVariables() {
-//		if (variables() != null) {
-//			boolean readOnly = variables().isReadOnly();
-//			if (readOnly)
-//				variables().writeEnable();
-//			variables().clear();
-//			if (readOnly)
-//				variables().writeDisable();
-//		}
-	}
-
-	@Override
-	public void clearAllVariables() {
-		clearVariables();
-		for (CategorizedContainer<SystemComponent> childContainer: subContainers())
-			childContainer.clearAllVariables();
 	}
 
 	@Override

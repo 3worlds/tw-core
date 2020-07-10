@@ -87,11 +87,6 @@ public interface NestedContainer<T extends Identity> extends Container {
 
 	public void clearAllItems();
 
-	// This is here in case descendant classes also implement StateContainer
-	public default void clearAllVariables() {
-		// do nothing
-	}
-
 	/**
 	 * Returns the distance of this container to the root of the nested container hierarchy. Hence
 	 * 0 for the root container, etc.

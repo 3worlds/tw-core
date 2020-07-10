@@ -55,8 +55,6 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
  */
 public interface CategorizedComponent<T extends Container>
 		extends DataElement, Node, DynamicSystem, Cloneable, Contained<T> {
-//public interface CategorizedComponent
-//	extends DataElement, Node, DynamicSystem, Cloneable {
 
 	@Override
 	default void setContainer(T container) {

@@ -603,8 +603,6 @@ public abstract class CategorizedContainer<T extends Identity>
 			sc.clearAllItems();
 	}
 
-	// NB two methods must be overridden in descendants: clone(item) and
-	// newInstance();
 	protected abstract T cloneItem(T item);
 
 	@Override
