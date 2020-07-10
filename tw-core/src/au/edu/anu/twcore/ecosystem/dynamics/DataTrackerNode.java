@@ -494,12 +494,17 @@ public class DataTrackerNode extends InitialisableNode
 			else if (etype instanceof Component) {
 				List<? extends CategorizedComponent<?>> cp = ((Component)etype).getInstance(index);
 				if (!cp.isEmpty()) {
+//					System.out.println(cp instanceof SystemComponent);
+//					System.out.println(cp.get(0) instanceof SystemComponent);
 					ls.addAll(cp);
+//					if (cp.get(0) instanceof SystemComponent)
+//						trackedContainer = ((SystemComponent) cp).container();
 					if (cp.get(0) instanceof SystemComponent)
-						trackedContainer = ((SystemComponent)cp).container();
+						trackedContainer = ((SystemComponent) cp.get(0)).container();
 					else if (cp.get(0) instanceof HierarchicalComponent)
 						// TODO: check this one
-						trackedContainer = ((HierarchicalComponent)cp).content().parentContainer();
+						trackedContainer = ((HierarchicalComponent) cp.get(0)).content().parentContainer();
+//					trackedContainer = ((HierarchicalComponent) cp).content().parentContainer();
 				}
 			}
 		}
