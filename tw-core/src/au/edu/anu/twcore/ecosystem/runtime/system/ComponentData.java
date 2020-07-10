@@ -150,9 +150,7 @@ public class ComponentData extends TwData {
 
 	@Override
 	public boolean hasProperty(String key) {
-		if (key.equals("age")|key.equals("birthDate")|key.equals("name"))
-			return true;
-		return false;
+		return keySet.contains(key);
 	}
 
 	@Override
@@ -175,7 +173,7 @@ public class ComponentData extends TwData {
 
 	@Override
 	public int size() {
-		return 5;
+		return keyArray.length;
 	}
 
 	@Override

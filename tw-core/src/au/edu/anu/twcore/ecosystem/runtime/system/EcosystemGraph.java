@@ -55,6 +55,7 @@ public class EcosystemGraph
 	private Map<String,RelationContainer> relations = null;
 
 	private ArenaComponent arena = null;
+	// TODO: add space in here!
 
 	public EcosystemGraph(ArenaComponent arena, Map<String,RelationContainer> relations) {
 		super();
