@@ -34,11 +34,14 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.odftoolkit.simple.TextDocument;
-import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
+import org.odftoolkit.simple.text.Paragraph;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.project.Project;
@@ -104,49 +107,78 @@ public class DocoGenerator {
 		}
 
 		try {
+			SimplePropertyList p = cfg.root().properties();
+			LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);
+			String datetime = currentDate.format( DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+			StringBuilder  authors = new StringBuilder();
+		
 			{
 				// ODD
+				// cf: https://odftoolkit.org/simple/document/cookbook/Text%20Document.html
 				TextDocument odd = TextDocument.newTextDocument();
-				SimplePropertyList p = cfg.root().properties();
-				odd.addParagraph("Overview, Design concepts and Details");
-				odd.addParagraph(
-						Project.getDisplayName() + " (Version: " + p.getPropertyValue(P_MODEL_VERSION.key()) + ")");
+				StringBuilder title = new StringBuilder();
+			title.append(Project.getDisplayName())//
+						.append(" (Version: ")//
+						.append(p.getPropertyValue(P_MODEL_VERSION.key()))//
+						.append("): ")//
+						.append("Overview, Design concepts and Details");
+				odd.addParagraph(title.toString()).applyHeading(true, 1);
+						
 				org.odftoolkit.simple.text.list.List lst = odd.addList();
 				// authors
 				StringTable tblAuthors = (StringTable) p.getPropertyValue(P_MODEL_AUTHORS.key());
-				String authors = "";
+				
 				for (int i = 0; i < tblAuthors.size(); i++)
-					authors += tblAuthors.getWithFlatIndex(i) + "; ";
-				odd.addParagraph(authors);
+					authors.append(tblAuthors.getWithFlatIndex(i)).append("\n");
+					
+				authors.append("Date: ").append(datetime).append("\n");
+				odd.addParagraph(authors.toString());
 
-				odd.addParagraph("1. Purpose");
+				odd.addParagraph("1. Purpose").applyHeading(true, 2);
 				odd.addParagraph((String) p.getPropertyValue(P_MODEL_PRECIS.key()));
 
-				odd.addParagraph("2. Entities, state variables, and scales");
-				odd.addParagraph("Agents/individuals");
-				odd.addParagraph("Spatial units");
-				odd.addParagraph("Environment");
-				odd.addParagraph("Collectives");
-				odd.addParagraph("3. Process overview and scheduling");
-				odd.addParagraph("4. Design concepts");
-				odd.addParagraph("5. Initialization");
-				odd.addParagraph("6. Input data");
-				odd.addParagraph("7. Submodels");
-				odd.addParagraph("References");
+				odd.addParagraph("2. Entities, state variables, and scales").applyHeading(true, 2);
+				getSection2Para(odd); //etc
+				odd.addParagraph("Agents/individuals").applyHeading(true, 3);
+				odd.addParagraph("Spatial units").applyHeading(true, 3);
+				odd.addParagraph("Environment").applyHeading(true, 3);
+				odd.addParagraph("Collectives").applyHeading(true, 3);
+				
+				// flow chart, process snippets if simple
+				odd.addParagraph("3. Process overview and scheduling").applyHeading(true, 2);
+				
+				odd.addParagraph("4. Design concepts").applyHeading(true, 2);
+				
+				// initialise function code if simple
+				odd.addParagraph("5. Initialization").applyHeading(true, 2);
+				
+				// data files
+				odd.addParagraph("6. Input data").applyHeading(true, 2);
+				
+				odd.addParagraph("7. Submodels").applyHeading(true, 2);
+
+				odd.addParagraph("References").applyHeading(true, 2);
 
 				StringTable tblRefs = (StringTable) p.getPropertyValue(P_MODEL_CITATIONS.key());
-				String refs = "";
+				StringBuilder refs = new StringBuilder();
 				for (int i = 0; i < tblRefs.size(); i++)
-					refs = (i + 1) +". "+ tblRefs.getWithFlatIndex(i) + "\n";
-
-				odd.addParagraph(refs);
+					refs.append(i+1).append(". ").append(tblRefs.getWithFlatIndex(i)).append("\n");
+				odd.addParagraph(refs.toString());
 
 				odd.save(Project.makeFile(cfg.root().id() + ".odt"));
 			}
 			{
+				// a second appendix could be a summary of 3worlds either an ODD or a general statement.
 				TextDocument appendix = TextDocument.newTextDocument();
-				appendix.addParagraph("Appendix");
-				appendix.addParagraph(Project.getDisplayName());
+				StringBuilder title = new StringBuilder();
+				title.append(Project.getDisplayName())//
+						.append(" (Version: ")//
+						.append(p.getPropertyValue(P_MODEL_VERSION.key()))//
+						.append("): ")//
+						.append("Appendix: Model specification metrics");
+				appendix.addParagraph(title.toString()).applyHeading(true, 1);
+				
+				appendix.addParagraph(authors.toString());
 				// rows, cols
 				Table table = appendix.addTable(5, 2);
 				// cols, rows!
@@ -160,6 +192,7 @@ public class DocoGenerator {
 				table.getCellByPosition(1, 3).setStringValue(Integer.toString(nDrvs - baseDrvs));
 				table.getCellByPosition(0, 4).setStringValue("#Properties");
 				table.getCellByPosition(1, 4).setStringValue(Integer.toString(nProps - baseProps));
+
 				appendix.save(Project.makeFile(cfg.root().id() + "_Appendix.odt"));
 			}
 
@@ -169,6 +202,12 @@ public class DocoGenerator {
 		}
 
 	}
+
+	private void getSection2Para(TextDocument odd) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	// this must have been done somewhere already!
 	private static int getDimensions(TreeNode rec) {
