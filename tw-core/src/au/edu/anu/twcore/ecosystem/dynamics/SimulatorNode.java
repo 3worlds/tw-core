@@ -57,13 +57,13 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
+import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
@@ -92,7 +92,7 @@ public class SimulatorNode
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
 
-	// IDD temp code
+	// IDD temp code [JG: for how long?]
 	public Collection<Simulator> getSimulators(){
 		return simulators.values();
 	}
@@ -172,27 +172,30 @@ public class SimulatorNode
 			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		EcosystemGraph ecosystem = null;
 		if (str != null)
-			ecosystem = new EcosystemGraph(arena, str.getInstance(index));
+			ecosystem = new EcosystemGraph(arena, str.relationContainers.getInstance(index));
 		else
 			ecosystem = new EcosystemGraph(arena);
+		// *** spaceOrganiser
+		SpaceOrganiser spo = str.spaceOrganiser.getInstance(index);
 		// *** finally, instantiate simulator
-		Simulator sim = new Simulator(index,rootStop,timeLine,timeModels,timers,timeModelMasks.clone(),pco,ecosystem);
+		Simulator sim = new Simulator(index,rootStop,timeLine,timeModels,timers,timeModelMasks.clone(),
+			pco,spo,ecosystem);
 		rootStop.attachSimulator(sim);
 		return sim;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void scanSubGroups(Group group,int index) {
-		group.getInstance(index);
-		List<Component> li = (List<Component>) get(group.getChildren(),
-			selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-		for (Component i:li)
-			i.getInstance(index);
-		List<Group> lg = (List<Group>) get(group.getChildren(),
-			selectZeroOrMany(hasTheLabel(N_GROUP.label())));
-		for (Group g:lg)
-			scanSubGroups(g,index);
-	}
+//	@SuppressWarnings("unchecked")
+//	private void scanSubGroups(Group group,int index) {
+//		group.getInstance(index);
+//		List<Component> li = (List<Component>) get(group.getChildren(),
+//			selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+//		for (Component i:li)
+//			i.getInstance(index);
+//		List<Group> lg = (List<Group>) get(group.getChildren(),
+//			selectZeroOrMany(hasTheLabel(N_GROUP.label())));
+//		for (Group g:lg)
+//			scanSubGroups(g,index);
+//	}
 
 	private void setInitialCommunity(int index) {
 		TreeGraphNode struc = (TreeGraphNode) get(getParent(),

@@ -217,16 +217,16 @@ public class ComponentType
 			// add automatically generated relocate functions
 			if (properties().hasProperty(P_RELOCATEFUNCTION.key())) {
 				// get all spaces
-				TreeGraphNode arena = (TreeGraphNode) get(getParent(),
-					children(),
-					selectZeroOrOne(hasTheLabel(N_ARENA.label())));
-				List<SpaceNode> sp = null;
-				if (arena!=null) {
-					sp = (List<SpaceNode>) get(arena.getChildren(),
-						selectZeroOrMany(hasTheLabel(N_SPACE.label())));
-					for (SpaceNode sn:sp)
-						spaces.put(initialUpperCase(sn.id()),sn);
-				}
+//				TreeGraphNode arena = (TreeGraphNode) get(getParent(),
+//					children(),
+//					selectZeroOrOne(hasTheLabel(N_ARENA.label())));
+//				List<SpaceNode> sp = null;
+//				if (arena!=null) {
+//					sp = (List<SpaceNode>) get(arena.getChildren(),
+//						selectZeroOrMany(hasTheLabel(N_SPACE.label())));
+//					for (SpaceNode sn:sp)
+//						spaces.put(initialUpperCase(sn.id()),sn);
+//				}
 				StringTable st = (StringTable) properties().getPropertyValue(P_RELOCATEFUNCTION.key());
 				ClassLoader classLoader = OmugiClassLoader.getJarClassLoader();
 				for (int i=0; i<st.size(); i++) {

@@ -1,9 +1,12 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
+import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import fr.cnrs.iees.uit.space.Dimensioned;
+import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.Sealable;
 
 /**
@@ -13,16 +16,59 @@ import fr.ens.biologie.generic.Sealable;
  * @author J. Gignoux - 10 juil. 2020
  *
  */
-public class SpaceOrganiser implements Sealable {
+public class SpaceOrganiser implements Sealable, Dimensioned {
 
-	private Map<String,Space<SystemComponent>> spaces = new HashMap<>();
+	/** all spaces in a simulation, sorted by name (id) */
+	private Map<String,DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces = new HashMap<>();
 	private boolean sealed = false;
+	/** The fixed points used to position spaces relative to each other */
+	/** All spaces must also keep the coordinates of these points in their own coordinate system */
+	private Point[] fixedPoints = null;
 
 	// TODO: overlaps between spaces, intersections, projections, topolgical assemblage...
 	// store geometric transformations from one space to the next
 
-	public SpaceOrganiser() {
+	/**
+	 * Use this constructor to initialise a SpaceOrganiser with a list of fixed points. Spaces must have
+	 * matching values in their own coordinate systems. This is only for models with multiple spaces
+	 *
+	 * @param points
+	 */
+	public SpaceOrganiser(DoubleTable points) {
 		super();
+		fixedPoints = new Point[points.ndim()];
+		for (int dim=0; dim<points.ndim(); dim++) { // ndim must ==2
+			double[] d = new double[points.size(dim)];
+			for (int i=0; i<d.length;i++)
+				d[i] = points.getByInt(dim,i);
+			fixedPoints[dim] = Point.newPoint(d);
+		}
+	}
+
+	/**
+	 * Use this constructor to initialise a SpaceOrganiser with a single Space. In this case, no need
+	 * for fixed points - the space bounding box points are used as fixed points.
+	 * @param space
+	 */
+	public SpaceOrganiser(DynamicSpace<SystemComponent, LocatedSystemComponent> space) {
+		super();
+		this.spaces.put(space.id(),space);
+		// only one space present: fxed points = bounding box
+		fixedPoints = new Point[2];
+		fixedPoints[0] = space.boundingBox().lowerBounds();
+		fixedPoints[1] = space.boundingBox().upperBounds();
+		seal();
+	}
+
+	/**
+	 * Use this in conjunction with first constructor to add spaces once the fixed points have been set.
+	 * @param sp
+	 */
+	public void addSpace(DynamicSpace<SystemComponent, LocatedSystemComponent> sp) {
+		if (!sealed) {
+			spaces.put(sp.id(),sp);
+			//build geometric transformation from fixedPoints
+		}
 	}
 
 	@Override
@@ -44,14 +90,31 @@ public class SpaceOrganiser implements Sealable {
 	 * @return
 	 */
 	public Location whereIs(SystemComponent item, String inSpace) {
-		Space<SystemComponent> sp = spaces.get(inSpace);
+		DynamicSpace<SystemComponent, LocatedSystemComponent> sp = spaces.get(inSpace);
 		if (sp!=null)
 			return sp.locationOf(item);
 		return null;
 	}
 
-	public Space<SystemComponent> space(String name) {
+	public DynamicSpace<SystemComponent, LocatedSystemComponent> space(String name) {
 		return spaces.get(name);
+	}
+
+	@Override
+	public int dim() {
+		return fixedPoints[0].dim();
+	}
+
+	public Point fixedPoint(int i) {
+		return fixedPoints[i];
+	}
+
+	public int nPoints() {
+		return fixedPoints.length;
+	}
+
+	public Collection<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces() {
+		return spaces.values();
 	}
 
 }

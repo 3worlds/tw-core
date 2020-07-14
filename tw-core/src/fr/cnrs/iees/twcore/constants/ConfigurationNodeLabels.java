@@ -77,20 +77,18 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_PRODUCE 		("produce",			"prd1",			Produce.class,				0),//
 				N_STOPPINGCONDITION("stoppingCondition","stCd1",	StoppingConditionNode.class,SIMBASE), // before Simulator
 				N_INITFUNCTION 	("initFunction",	"init1",		InitFunctionNode.class,		CATEGORYBASE+20), // after relation
-				N_INITIALSTATE 	("initialState",	"state",		InitialState.class,			ECOBASE+10), // after Ecosystem
 				N_GROUP 		("group",			"grp1",			Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
 				N_COMPONENT 	("component",		"cmp1",			Component.class,			CATEGORYBASE+30), // after Group
 				N_CONSTANTVALUES("constantValues",	"initCnts1",	ConstantValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
 				N_VARIABLEVALUES("variableValues",	"initVars1",	VariableValues.class,		CATEGORYBASE+50), // after ParameterValues
 				N_SNIPPET       ("snippet",          "snpt1",		Snippet.class,              0),//
-				
+
 			N_STRUCTURE 		("structure",		"struc1",		Structure.class,			0),//
 				N_CATEGORYSET 	("categorySet",		"set1",			CategorySet.class,			0),//
 				N_CATEGORY 		("category",		"cat1",			Category.class,				CATEGORYBASE),
 				N_TEMPLATE 		("template",		"tpl1",			ElementFactory.class,		CATEGORYBASE+10),
 				N_COMPONENTTYPE ("componentType",	"compTyp1",		ComponentType.class,		CATEGORYBASE+10), // after category and categorySet
 				N_RELATIONTYPE 	("relationType",	"relTyp1",		RelationType.class,			CATEGORYBASE+10), // after category
-				N_ARENA 		("arena",			"arena",		ArenaNode.class,			CATEGORYBASE),
 				N_SPACE 		("space",			"space1",		SpaceNode.class,			CATEGORYBASE),
 		N_EXPERIMENT 			("experiment",		"expt",			Experiment.class,			SIMBASE+20),	// after fully iinitialised simulator
 			N_DESIGN 			("design",			"dsgn",			Design.class,				0),//

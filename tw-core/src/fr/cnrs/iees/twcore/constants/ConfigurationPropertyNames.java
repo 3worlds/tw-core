@@ -104,6 +104,7 @@ public enum ConfigurationPropertyNames {
 	P_RNGTABLEINDEX             ("tableIndex"),
 	P_RELATIONTYPE				("type"),
 	P_RELATEPRODUCT				("relateToProduct"),
+	P_SPACES_FIXED_POINTS		("fixedPoints"),
 	P_SPACETYPE					("type"),
 	P_SPACE_XLIM				("x-limits"),
 	P_SPACE_YLIM				("y-limits"),

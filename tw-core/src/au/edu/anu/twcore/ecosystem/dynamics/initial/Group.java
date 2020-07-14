@@ -120,8 +120,8 @@ public class Group
 			ComponentContainer parentC = null;
 			if (getParent() instanceof Group)
 				parentC = ((Group)getParent()).getInstance(index);
-			else if (getParent() instanceof InitialState)
-				parentC = ((InitialState)getParent()).getInstance(index);
+//			else if (getParent() instanceof InitialState)
+//				parentC = ((InitialState)getParent()).getInstance(index);
 			// instantiate container
 			ComponentType sf = (ComponentType) n;
 			sf.initialise();

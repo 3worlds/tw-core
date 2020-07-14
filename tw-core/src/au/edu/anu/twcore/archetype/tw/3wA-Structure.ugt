@@ -3,6 +3,15 @@ hasNode structureSpec
 	isOfClass = String("structure")
 	hasParent = StringTable(([1]"system:"))
 	multiplicity = IntegerRange("0..1") // tmp change: can we modify the code to allow this. Not needed for the logistic1 tut
+	hasProperty spaceFixedPointsSpec
+		hasName = String("fixedPoints")
+		// NB: this table must be of dimension 2
+		type = String("DoubleTable")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery spaceFixedPointsPresentQuery
+		className = String("au.edu.anu.twcore.archetype.tw.ConditionalMultiplicityQuery")
+		args = StringTable(([2]"fixedPoints","space"))
+		nMin = Integer(2)
 
 hasNode categorySetRootSpec
 	isOfClass = String("categorySet")
@@ -161,14 +170,9 @@ hasNode relationTypeSpec
 		type = String("LifespanType")
 		multiplicity = IntegerRange("1..1")
 
-hasNode arenaSpec
-	isOfClass = String("arena")
-	hasParent = StringTable(([1]"structure:"))
-	multiplicity = IntegerRange("0..1")
-
 hasNode spaceSpec
 	isOfClass = String("space")
-	hasParent = StringTable(([1]"arena:"))
+	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("1..*")
 	// common properties
 	hasProperty spaceTypeSpec
