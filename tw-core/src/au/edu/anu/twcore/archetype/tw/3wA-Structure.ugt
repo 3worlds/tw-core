@@ -179,6 +179,18 @@ hasNode spaceSpec
 		hasName = String("type")
 		type = String("SpaceType")
 		multiplicity = IntegerRange("1..1")
+	hasEdge spaceToComponentCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*space*")
+		multiplicity = IntegerRange("1..1")
+	hasEdge spaceToLifeSpanCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*permanent*")
+		multiplicity = IntegerRange("1..1")
+	hasEdge spaceToOrganisationCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*atomic*")
+		multiplicity = IntegerRange("1..1")
 	hasProperty edgeEffectsSpec
 		hasName = String("edgeEffects")
 		type = String("EdgeEffects")

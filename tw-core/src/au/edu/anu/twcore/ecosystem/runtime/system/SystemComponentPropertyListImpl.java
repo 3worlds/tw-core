@@ -98,7 +98,7 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 	 *            the depth in past (could be zero) [maybe useful for diff equation computation]
 	 * @param propertyMap
 	 */
-	protected SystemComponentPropertyListImpl(TwData autoVariables,
+	public SystemComponentPropertyListImpl(TwData autoVariables,
 			TwData driverVariables,
 			TwData decoratorVariables,
 			TwData constantVariables,

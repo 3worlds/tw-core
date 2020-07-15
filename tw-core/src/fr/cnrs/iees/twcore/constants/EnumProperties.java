@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -27,6 +27,11 @@
  *                                                                        *
  **************************************************************************/
 package fr.cnrs.iees.twcore.constants;
+
+import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
+import fr.cnrs.iees.uit.space.Sphere;
 
 /**
  * A class to initialise user-defined properties - must be called before any use of ValidProperties
@@ -37,7 +42,7 @@ package fr.cnrs.iees.twcore.constants;
 public class EnumProperties {
 
 	private EnumProperties() {}
-	
+
 	// these references trigger the static block intialisation of all these classes,
 	// which record them in ValidPropertyTypes
 	// this method must be called early in application setup
@@ -69,4 +74,16 @@ public class EnumProperties {
 		RngAlgType.defaultValue();
 	}
 
+	// register geometric classes so they can be used as properties
+	static {
+		ValidPropertyTypes.recordPropertyType(Point.class.getSimpleName(),
+			Point.class.getName(),
+			Point.newPoint(0.0));
+		ValidPropertyTypes.recordPropertyType(Box.class.getSimpleName(),
+			Box.class.getName(),
+			Box.boundingBox(Point.newPoint(0.0),Point.newPoint(0.0)));
+		ValidPropertyTypes.recordPropertyType(Sphere.class.getSimpleName(),
+			Sphere.class.getName(),
+			Sphere.newSphere(Point.newPoint(0.0),0.0));
+	}
 }

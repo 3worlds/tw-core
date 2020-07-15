@@ -4,9 +4,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
 import au.edu.anu.twcore.data.runtime.TwData;
-import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
 
 /**
  * Automatic variables for spaces
@@ -14,49 +15,72 @@ import fr.cnrs.iees.uit.space.Box;
  * @author J. Gignoux - 10 juil. 2020
  *
  */
-public class SpaceData extends TwData {
+public class SpacePredefinedConstants extends TwData {
 
 	// constants
 	/** space dimension (>=1)*/
-	private int dimension;
+	private int dimension = 0;
 	/** Space bounding box (rectangle)*/
 	private Box limits;
+	// FLAW HERE: replace with DoubleTable !!!
+	private double[] lowerLimit = null;
+	private double[] upperLimit = null;
 	/** absolute precision */
 	private double precision;
 	/** Space measurement units */
 	private String units;
-	/** type of edge-effect correction */
-	private EdgeEffects correction;
 	/** absolute location of this space in the SpaceOrganiser -
 	 * must be a box with dim = the greatest number of dims of any space */
 	private Box absoluteLimits;
 
-	private static String[] keyArray = {"dimension","limits","precision","units","correction","absoluteLimits"};
+	private static String[] keyArray = {"dimension","lowerLimit","upperLimit","precision","units"};
 	private static Set<String> keySet = new HashSet<String>(Arrays.asList(keyArray));
 
-	public SpaceData() {
+	public SpacePredefinedConstants() {
 		super();
 	}
 
 	@Override
 	public TwData setProperty(String key, Object value) {
-		if (key.equals("dimension")) dimension = (int) value;
-		if (key.equals("limits")) limits = (Box) value;
+		if (key.equals("dimension")) {
+			dimension = (int) value;
+			if (dimension!=lowerLimit.length)
+				lowerLimit = null;
+			if (dimension!=upperLimit.length)
+				upperLimit = null;
+			if ((dimension!=0)&&(lowerLimit!=null)&&(upperLimit!=null))
+				limits = Box.boundingBox(Point.newPoint(lowerLimit), Point.newPoint(upperLimit));
+		}
+		if (key.equals("lowerLimit")) {
+			lowerLimit = (double[]) value;
+			if (dimension!=lowerLimit.length)
+				dimension = lowerLimit.length;
+			if (upperLimit.length!=lowerLimit.length)
+				upperLimit = null;
+			if ((dimension!=0)&&(lowerLimit!=null)&&(upperLimit!=null))
+				limits = Box.boundingBox(Point.newPoint(lowerLimit), Point.newPoint(upperLimit));
+		}
+		if (key.equals("upperLimit")) {
+			upperLimit = (double[]) value;
+			if (dimension!=upperLimit.length)
+				dimension = upperLimit.length;
+			if (upperLimit.length!=lowerLimit.length)
+				lowerLimit = null;
+			if ((dimension!=0)&&(lowerLimit!=null)&&(upperLimit!=null))
+				limits = Box.boundingBox(Point.newPoint(lowerLimit), Point.newPoint(upperLimit));
+		}
 		if (key.equals("precision")) precision = (double) value;
 		if (key.equals("units")) units = (String) value;
-		if (key.equals("correction")) correction = (EdgeEffects) value;
-		if (key.equals("absoluteLimits")) absoluteLimits = (Box) value;
 		return this;
 	}
 
 	@Override
 	public Object getPropertyValue(String key) {
 		if (key.equals("dimension")) return dimension;
-		if (key.equals("limits")) return limits;
+		if (key.equals("lowerLimit")) return lowerLimit;
+		if (key.equals("upperLimit")) return upperLimit;
 		if (key.equals("precision")) return precision;
 		if (key.equals("units")) return units;
-		if (key.equals("correction")) return correction;
-		if (key.equals("absoluteLimits")) return absoluteLimits;
 		return null;
 	}
 
@@ -68,22 +92,20 @@ public class SpaceData extends TwData {
 	@Override
 	public String propertyToString(String key) {
 		if (key.equals("dimension")) return String.valueOf(dimension);
-		if (key.equals("limits")) return limits.toString();
+		if (key.equals("lowerLimit")) return lowerLimit.toString();
+		if (key.equals("upperLimit")) return upperLimit.toString();
 		if (key.equals("precision")) return String.valueOf(precision);
 		if (key.equals("units")) return units;
-		if (key.equals("correction")) return correction.toString();
-		if (key.equals("absoluteLimits")) return absoluteLimits.toString();
 		return null;
 	}
 
 	@Override
 	public Class<?> getPropertyClass(String key) {
 		if (key.equals("dimension")) return Integer.class;
-		if (key.equals("limits")) return Box.class;
+		if (key.equals("lowerLimit")) return DoubleTable.class;
+		if (key.equals("upperLimit")) return DoubleTable.class;
 		if (key.equals("precision")) return Double.class;
 		if (key.equals("units")) return String.class;
-		if (key.equals("correction")) return EdgeEffects.class;
-		if (key.equals("absoluteLimits")) return Box.class;
 		return null;
 	}
 
@@ -99,7 +121,7 @@ public class SpaceData extends TwData {
 
 	@Override
 	protected TwData cloneStructure() {
-		return new SpaceData();
+		return new SpacePredefinedConstants();
 	}
 
 	@Override
@@ -127,10 +149,6 @@ public class SpaceData extends TwData {
 
 	public String units() {
 		return units;
-	}
-
-	public EdgeEffects correction() {
-		return correction;
 	}
 
 	public Box getAbsoluteLimits() {

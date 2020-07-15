@@ -27,6 +27,7 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 
 	// TODO: overlaps between spaces, intersections, projections, topolgical assemblage...
 	// store geometric transformations from one space to the next
+	// NB: if DynamicSpace is a Node, then a graph of spaces can be build and used here.
 
 	/**
 	 * Use this constructor to initialise a SpaceOrganiser with a list of fixed points. Spaces must have
