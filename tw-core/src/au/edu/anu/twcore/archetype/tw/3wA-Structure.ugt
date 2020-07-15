@@ -173,7 +173,7 @@ hasNode relationTypeSpec
 hasNode spaceSpec
 	isOfClass = String("space")
 	hasParent = StringTable(([1]"structure:"))
-	multiplicity = IntegerRange("1..*")
+	multiplicity = IntegerRange("0..*")
 	// common properties
 	hasProperty spaceTypeSpec
 		hasName = String("type")
