@@ -171,12 +171,14 @@ public class SimulatorNode
 			children(),
 			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		EcosystemGraph ecosystem = null;
-		if (str != null)
+		SpaceOrganiser spo = null;//presume can be null for non-spatial models?
+		if (str != null) {
 			ecosystem = new EcosystemGraph(arena, str.relationContainers.getInstance(index));
-		else
+			// *** spaceOrganiser
+			spo = str.spaceOrganiser.getInstance(index);
+		} else {
 			ecosystem = new EcosystemGraph(arena);
-		// *** spaceOrganiser
-		SpaceOrganiser spo = str.spaceOrganiser.getInstance(index);
+		}
 		// *** finally, instantiate simulator
 		Simulator sim = new Simulator(index,rootStop,timeLine,timeModels,timers,timeModelMasks.clone(),
 			pco,spo,ecosystem);
