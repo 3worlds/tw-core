@@ -938,8 +938,17 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// if method does not exist, create it and set its header, return type and
 		// return statement
 		if (method == null) {
-//			String mname = Strings.toLowerCase(fname.substring(0, 1)) + fname.substring(1);
 			String mname = fname.substring(0, 1).toLowerCase() + fname.substring(1);
+			TreeGraphDataNode snippetNode = (TreeGraphDataNode) get(function.getChildren(),
+					selectZeroOrOne(hasTheLabel(N_SNIPPET.label())));
+			if (snippetNode != null) {
+				StringTable tblSnippet = (StringTable) snippetNode.properties()
+						.getPropertyValue(P_SNIPPET_JAVACODE.key());
+				List<String> snptLines = new ArrayList<>();
+				for (int i = 0; i < tblSnippet.size(); i++)
+					snptLines.add(tblSnippet.getWithFlatIndex(i));
+				snippets.put(mname, snptLines);
+			}
 			method = new ModelMethodGenerator(methodScope, ftype.returnType(), mname);
 			methods.put(fname, method);
 			if (!ftype.returnType().equals("void")) {
