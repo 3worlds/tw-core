@@ -39,28 +39,18 @@ import java.util.Set;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
-import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
-import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
-import au.edu.anu.twcore.ecosystem.runtime.system.SpaceComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SpacePredefinedConstants;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentPropertyListImpl;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
-import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
-import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
-import fr.cnrs.iees.uit.space.Sphere;
 
 /**
  * The base class for all space implementations in 3Worlds.
@@ -82,24 +72,17 @@ public abstract class SpaceAdapter
 	private Random rng = null;
 	/** data tracker attached to this space, if any */
 	private SpaceDataTracker dataTracker = null;
-
-	/** space data */
-	protected SpaceComponent data = null;
-
 	/** Space bounding box (rectangle)*/
 	private Box limits;
 	/** absolute precision */
 	private double precision;
 	/** Space measurement units */
 	private String units;
-
 	/** type of edge-effect correction */
 	private EdgeEffects correction;
 	/** absolute location of this space in the SpaceOrganiser -
 	 * must be a box with dim = the greatest number of dims of any space */
-	private Box absoluteLimits;
-
-
+//	private Box absoluteLimits;
 	 /** A RNG available to descendants to create jitter around locations if needed */
 	protected Random jitterRNG = RngFactory.newInstance("SpaceJitterRNG", 0, RngResetType.never,
 			RngSeedSourceType.secure,RngAlgType.Pcg32).getRandom();
@@ -111,29 +94,11 @@ public abstract class SpaceAdapter
 	private Set<LocatedSystemComponent> initialComponents = new HashSet<>();
 	/** mapping of cloned item to their initial components */
 	private Map<String, LocatedSystemComponent> itemsToInitials = new HashMap<>();
-
 	private boolean changed = false;
-
-	// the ElementFacotry / Component pattern requires these classes internally
-	private class SpaceFactory extends ElementFactory<SpaceComponent> {
-
-		public SpaceFactory(Set<Category> categories) {
-			super(categories, null, null, null, new SpacePredefinedConstants(), null);
-		}
-		public SpaceComponent getInstance() {
-			SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
-					driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);
-			return (SpaceComponent) SCfactory.makeNode(SpaceComponent.class,id.id(),props);
-		}
-	}
-	private SpaceFactory spfac = null;
 
 
 	public SpaceAdapter(Box box, double prec, String units, EdgeEffects ee, SpaceDataTracker dt, String proposedId) {
 		super();
-
-
-
 		limits = box;
 		//	precision based on shortest side of plot - NB I think that's a mistake - cf below
 //		precision = Math.max(prec,minimalPrecision)*Math.min(limits.sideLength(0),limits.sideLength(1));

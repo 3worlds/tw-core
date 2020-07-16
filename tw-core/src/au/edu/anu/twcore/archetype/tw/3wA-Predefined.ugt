@@ -66,15 +66,6 @@ hasNode lcCategorySpec
 	hasId = String("*life cycle*")
 	hasParent = StringTable(([1]"categorySet:*systemElements*"))
 	multiplicity = IntegerRange("0..*1")
-hasNode spaceCategorySpec
-	isOfClass = String("category")
-	hasId = String("*space*")
-	hasParent = StringTable(([1]"categorySet:*systemElements*"))
-	multiplicity = IntegerRange("0..*1")
-	hasEdge spaceToRecordEdgeSpec
-		isOfClass = String("constants")
-		toNode = String("record:CSpace")
-		multiplicity = IntegerRange("1..1")
 hasNode relationCategorySpec
 	isOfClass = String("category")
 	hasId = String("*relation*")

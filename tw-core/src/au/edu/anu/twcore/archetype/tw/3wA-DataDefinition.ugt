@@ -6,7 +6,7 @@ hasNode dataDefinitionSpec
 
 hasNode  dimSpec
 	isOfClass = String("dimensioner")
-	hasParent = StringTable(([2]"dataDefinition:","predefined:"))
+	hasParent = StringTable(([1]"dataDefinition:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty dimNameSpec
 		hasName = String("size")
