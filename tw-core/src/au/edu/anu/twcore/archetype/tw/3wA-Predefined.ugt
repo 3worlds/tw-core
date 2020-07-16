@@ -51,7 +51,6 @@ hasNode arenaCategorySpec
 		isOfClass = String("parameters")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
-	
 hasNode componentCategorySpec
 	isOfClass = String("category")
 	hasId = String("*component*")
@@ -72,6 +71,10 @@ hasNode spaceCategorySpec
 	hasId = String("*space*")
 	hasParent = StringTable(([1]"categorySet:*systemElements*"))
 	multiplicity = IntegerRange("0..*1")
+	hasEdge spaceToRecordEdgeSpec
+		isOfClass = String("constants")
+		toNode = String("record:CSpace")
+		multiplicity = IntegerRange("1..1")
 hasNode relationCategorySpec
 	isOfClass = String("category")
 	hasId = String("*relation*")
@@ -100,7 +103,7 @@ hasNode permanentCategorySpec
 	isOfClass = String("category")
 	hasId = String("*permanent*")
 	hasParent = StringTable(([1]"categorySet:*lifespan*"))
-	multiplicity = IntegerRange("0..*1")
+	multiplicity = IntegerRange("0..*")
 hasNode ephemeralCategorySpec
 	isOfClass = String("category")
 	hasId = String("*ephemeral*")
@@ -143,12 +146,12 @@ hasNode recordAVEphemeralSpec
 hasNode fieldAVEphemeralAgeSpec
 	isOfClass = String("field")
 	hasId = String("age")
-	hasParent = StringTable(([1]"record:AVPopulation"))
+	hasParent = StringTable(([1]"record:AVEphemeral"))
 	multiplicity = IntegerRange("1..1")
 hasNode fieldAVEphemeralBirthDateSpec
 	isOfClass = String("field")
 	hasId = String("birthDate")
-	hasParent = StringTable(([1]"record:AVPopulation"))
+	hasParent = StringTable(([1]"record:AVEphemeral"))
 	multiplicity = IntegerRange("1..1")
 
 

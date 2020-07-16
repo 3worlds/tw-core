@@ -173,11 +173,23 @@ hasNode relationTypeSpec
 hasNode spaceSpec
 	isOfClass = String("space")
 	hasParent = StringTable(([1]"structure:"))
-	multiplicity = IntegerRange("1..*")
+	multiplicity = IntegerRange("0..*")
 	// common properties
 	hasProperty spaceTypeSpec
 		hasName = String("type")
 		type = String("SpaceType")
+		multiplicity = IntegerRange("1..1")
+	hasEdge spaceToComponentCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*space*")
+		multiplicity = IntegerRange("1..1")
+	hasEdge spaceToLifeSpanCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*permanent*")
+		multiplicity = IntegerRange("1..1")
+	hasEdge spaceToOrganisationCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*atomic*")
 		multiplicity = IntegerRange("1..1")
 	hasProperty edgeEffectsSpec
 		hasName = String("edgeEffects")
