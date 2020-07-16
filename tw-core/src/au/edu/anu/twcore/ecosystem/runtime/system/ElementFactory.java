@@ -68,11 +68,11 @@ public abstract class ElementFactory<T extends DataElement>
 	private List<String> categoryNames = null;
 
 	/** TwData templates to clone to create new systems */
-	protected TwData autoVarTemplate = null;
-	protected TwData driverTemplate = null;
-	protected TwData decoratorTemplate = null;
-	protected TwData lifetimeConstantTemplate = null;
-	protected Map<String, Integer> propertyMap = new HashMap<String, Integer>();
+	TwData autoVarTemplate = null;
+	TwData driverTemplate = null;
+	TwData decoratorTemplate = null;
+	TwData lifetimeConstantTemplate = null;
+	Map<String, Integer> propertyMap = new HashMap<String, Integer>();
 
 	SetInitialStateFunction setinit;
 
