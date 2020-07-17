@@ -262,7 +262,7 @@ public class DocoGenerator {
 				indent += "\t";
 				for (TreeGraphDataNode proc : procs) {
 					List<TreeGraphDataNode> funcs = (List<TreeGraphDataNode>) get(proc.getChildren(),
-							selectOneOrMany(hasTheLabel(N_FUNCTION.label())));
+							selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
 					// TODO consequences
 					for (TreeGraphDataNode func : funcs) {
 						flowChart.append(indent)//
@@ -271,7 +271,7 @@ public class DocoGenerator {
 								.append(func.id())//
 								.append(".")//
 								.append(func.properties().getPropertyValue(P_FUNCTIONTYPE.key()))//
-								.append("(...)");
+								.append("(...)\n");
 					}
 				}
 			}
