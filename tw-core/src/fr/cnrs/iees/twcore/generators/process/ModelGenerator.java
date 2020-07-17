@@ -126,6 +126,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private String relationType = null;
 	// the categories of the arena component
 	private Map<TreeGraphDataNode, SortedSet<Category>> elementTypeCategories = new HashMap<>();
+	protected boolean hasSpace = false;
 
 	private class generatedData {
 		private String autoVars;
@@ -210,8 +211,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		List<TreeGraphDataNode> cpt = (List<TreeGraphDataNode>) get(systemNode, children(),
 				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())), // NB -structure is now [0..1] -IDD
 				children(),
-				selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()), hasTheLabel(N_GROUP.label()),
-					hasTheLabel(N_SPACE.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
+				selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()),
+					hasTheLabel(N_GROUP.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
 		// The above query returns null if there is no structureNode - left tidy up for
 		// now -IDD
 		if (cpt == null)
@@ -262,7 +263,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			// this because ComponentType is unsealed at that time
 			SortedSet<Category> categories = new TreeSet<>(); // caution: sorted set !
 			Collection<Category> nl = (Collection<Category>) get(tn.edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			categories.addAll(((Categorized<SystemComponent>) tn).getSuperCategories(nl));
 			dataClassNames.put(categories, cl);
 			elementTypeCategories.put(tn, categories);
@@ -471,7 +472,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 	}
 
-	// access stings to dataGroups of CategorizedComponents (excl. nextState)
+	// access strings to dataGroups of CategorizedComponents (excl. nextState)
 	static EnumMap<ConfigurationEdgeLabels, String> dataAccessors = new EnumMap<>(ConfigurationEdgeLabels.class);
 	static {
 		dataAccessors.put(E_AUTOVAR, "autoVar");
@@ -561,7 +562,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			if (arg==group)
 //				groupNode=  // get the node from the components of the samecategories as the process...
 				;
-			if ((arg == lifeCycle) || (arg == space) || (arg == group)) {
+			if ((arg == lifeCycle) || (arg == group)) {
 				// TODO: get the component type matching process categories, then get the
 				// grouptype
 				// and lifecycle type to get their categories
@@ -645,54 +646,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 
 		return cats;
 	}
-
-//	@SuppressWarnings("unchecked")
-//	@Deprecated
-//	protected SortedSet<Category> findCategories(TreeGraphDataNode function, boolean focal) {
-//		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-//		TreeNode fp = function.getParent();
-//		SortedSet<Category> cats = new TreeSet<>();
-//		// function parent is a process
-//		if (fp instanceof ProcessNode) {
-//			ProcessNode pn = (ProcessNode) fp;
-//			if (focal)
-//				for (TwFunctionTypes tft:ComponentProcess.compatibleFunctionTypes)
-//					if (tft.equals(ftype)) {
-//					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
-//						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
-//						edgeListEndNodes()));
-//					return cats;
-//			}
-//			for (TwFunctionTypes tft:AbstractRelationProcess.compatibleFunctionTypes)
-//				if (tft.equals(ftype)) {
-//					RelationType relnode = (RelationType) get(pn.edges(Direction.OUT),
-//						selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
-//						endNode());
-//					relationType = relnode.id();
-//					if (focal) {
-//						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
-//							selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())),
-//							edgeListEndNodes()));
-//						return cats;
-//					}
-//					else {
-//						cats.addAll((Collection<Category>) get(relnode.edges(Direction.OUT),
-//							selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
-//							edgeListEndNodes()));
-//						return cats;
-//					}
-//			}
-//		}
-//		// function parent is a function
-//		else {
-//			// TODO: categories of consequence functions ??? good luck!
-//			// if createOther --> lifeCycle
-//			// if deleteOther --> returnTo relation
-//			// if changeCategory --> life cycle
-//			// there may be more than one set in each case --> multiple method generation
-//		}
-//		return cats;
-//	}
 
 	public String simpleCatSignature(Set<Category> set) {
 		String result = " ";
@@ -903,9 +856,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		functions.put(fname, function);
 		EnumMap<TwFunctionArguments, List<recInfo>> dataStruk = dataStructure(fname);
 
-		headerComment.append("<p><strong>").append(fname).append("</strong> method of type <em>").append(ftype)
-				.append("</em>: ").append(ftype.description()).append("</p>\n");
-		boolean hasSpace = false;
+		headerComment.append("<p><strong>").append(fname).append("</strong> method of type <em>")
+			.append(ftype).append("</em>: ").append(ftype.description()).append("</p>\n");
+		hasSpace = false;
 		if (function.getParent() instanceof ProcessNode)
 			hasSpace = ((ProcessNode) function.getParent()).hasSpace();
 		else if (function.getParent().getParent() instanceof ProcessNode)
@@ -921,13 +874,13 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		SortedSet<Category> otherCats = findCategories(function, other);
 //		boolean hasLifeCycle = hasLifeCycle(focalCats);
 		if (otherCats.isEmpty())
-			headerComment.append("<p>- applies to categories {<em>").append(simpleCatSignature(focalCats))
-					.append("</em>}</p>\n\n");
-		else {
-			headerComment.append("<p>- applies to relation <em>").append(relationType).append(": {")
-					.append(simpleCatSignature(focalCats)).append("} → {").append(simpleCatSignature(otherCats))
-					.append("}</em></p>\n\n");
-		}
+			headerComment.append("<p>- applies to categories {<em>")
+				.append(simpleCatSignature(focalCats)).append("</em>}</p>\n\n");
+		else
+			headerComment.append("<p>- applies to relation <em>")
+				.append(relationType).append(": {")
+				.append(simpleCatSignature(focalCats)).append("} → {")
+				.append(simpleCatSignature(otherCats)).append("}</em></p>\n\n");
 		headerComment.append(timerComment(function, ftype)).append('\n');
 		String sdc = dependComment(function, ftype);
 		if (sdc != null)
@@ -975,7 +928,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			replicateNames.add(arg.name());
 		}
 
-		// arena, lifeCycle, group, space focal, other, otherGroup, otherLifeCycle
+		// arena, lifeCycle, group, focal, other, otherGroup, otherLifeCycle
 		// including return values
 		for (TwFunctionArguments arg : dataStruk.keySet()) {
 			List<recInfo> comp = dataStruk.get(arg);
@@ -1023,20 +976,45 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				}
 			}
 		}
-		// location arguments ?
 
-		// random, decide
-		for (TwFunctionArguments arg : ftype.localArguments()) {
-			imports.add(arg.type());
-			method.addArgument(/* arg,null, */arg.name(), simpleType(arg.type()), arg.description());
-			headerComment.append("@param ").append(arg.name()).append(' ').append(arg.description()).append('\n');
-			replicateNames.add(arg.name());
+		// space, including return values
+		if (hasSpace) {
+			// read-only argument read from space
+			if (ftype.innerVars().contains("limits"))
+				method.addArgument(limits.name(), simpleType(limits.type()), limits.description());
+				headerComment.append("@param ").append(limits.name()).append(' ').append(limits.description()).append('\n');
+				replicateNames.add(limits.name());
+			if (ftype.innerVars().contains("focalLoc"))
+				method.addArgument(focalLoc.name(), simpleType(focalLoc.type()), focalLoc.description());
+				headerComment.append("@param ").append(focalLoc.name()).append(' ').append(focalLoc.description()).append('\n');
+				replicateNames.add(focalLoc.name());
+			if (ftype.innerVars().contains("otherLoc"))
+				method.addArgument(otherLoc.name(), simpleType(otherLoc.type()), otherLoc.description());
+				headerComment.append("@param ").append(otherLoc.name()).append(' ').append(otherLoc.description()).append('\n');
+				replicateNames.add(otherLoc.name());
+			// writeable arguments
+			if (ftype.writeableArguments().contains(nextFocalLoc))
+				method.addArgument(nextFocalLoc.name(), simpleType(nextFocalLoc.type()), nextFocalLoc.description());
+				headerComment.append("@param ").append(nextFocalLoc.name()).append(' ').append(nextFocalLoc.description()).append('\n');
+				replicateNames.add(nextFocalLoc.name());
+			if (ftype.writeableArguments().contains(nextOtherLoc))
+				method.addArgument(nextOtherLoc.name(), simpleType(nextOtherLoc.type()), nextOtherLoc.description());
+				headerComment.append("@param ").append(nextOtherLoc.name()).append(' ').append(nextOtherLoc.description()).append('\n');
+				replicateNames.add(nextOtherLoc.name());
+		}
+
+		// random, decide,
+		for (TwFunctionArguments arg : ftype.localArguments())
+			if ((arg==random) || (arg==decider)) {
+				imports.add(arg.type());
+				method.addArgument(arg.name(), simpleType(arg.type()), arg.description());
+				headerComment.append("@param ").append(arg.name()).append(' ').append(arg.description()).append('\n');
+				replicateNames.add(arg.name());
 		}
 
 		// event timers, if any
-
 		Collection<TimerNode> queues = (Collection<TimerNode>) get(function.edges(Direction.IN),
-				selectZeroOrMany(hasTheLabel(E_FEDBY.label())), edgeListStartNodes());
+			selectZeroOrMany(hasTheLabel(E_FEDBY.label())), edgeListStartNodes());
 //		if (ftype!=SetInitialState)
 		if (!queues.isEmpty()) {
 			SortedSet<String> queueNames = new TreeSet<>();

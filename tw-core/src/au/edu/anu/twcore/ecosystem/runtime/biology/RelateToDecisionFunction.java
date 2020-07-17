@@ -28,8 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
@@ -51,33 +54,26 @@ public abstract class RelateToDecisionFunction extends AbstractDecisionFunction 
 	 * <em>focal</em> system component establishes a new relation to <em>other</em> system component.
 	 * Notice that some parameters may be null when calling the method (as denoted by 'if any').
 	 *
-	 * @param t current time
+	 * @param t	current time
 	 * @param dt current time step
-	 * @param arena
-	 * @param lifeCycle
-	 * @param group
-	 * @param space
-	 * @param focal
-	 * @param otherLifeCycle
-	 * @param otherGroup
-	 * @param other
-	 * @param nextFocalLoc
-	 * @param nextOtherLoc
+	 * @param arena the arena component, i.e. the top of the component hierarchy
+	 * @param lifeCycle the life cycle component of this focal component, if any
+	 * @param group the group component of this focal component, if any
+	 * @param focal the focal component (may be the arena, a group or lifecycle component)
+	 * @param otherLifeCycle the life cycle component of the other component, if any
+	 * @param otherGroup the group component of the other component, if any
+	 * @param other the other component (may be the arena, a group or lifecycle component)
+	 * @param space the space attached to the parent process, if any
 	 * @return
 	 */
-	public abstract boolean relate(
-			double t,
-			double dt,
-			CategorizedComponent<ComponentContainer> arena,
-			CategorizedComponent<ComponentContainer> lifeCycle,
-			CategorizedComponent<ComponentContainer> group,
-			CategorizedComponent<ComponentContainer> space,
-			CategorizedComponent<ComponentContainer> focal,
-			CategorizedComponent<ComponentContainer> otherLifeCycle,
-			CategorizedComponent<ComponentContainer> otherGroup,
-			CategorizedComponent<ComponentContainer> other,
-			double[] nextFocalLoc,
-			double[] nextOtherLoc
-	);
+	public abstract boolean relate(double t, double dt,
+		CategorizedComponent<ComponentContainer> arena,
+		CategorizedComponent<ComponentContainer> lifeCycle,
+		CategorizedComponent<ComponentContainer> group,
+		CategorizedComponent<ComponentContainer> focal,
+		CategorizedComponent<ComponentContainer> otherLifeCycle,
+		CategorizedComponent<ComponentContainer> otherGroup,
+		CategorizedComponent<ComponentContainer> other,
+		DynamicSpace<SystemComponent,LocatedSystemComponent> space);
 
 }

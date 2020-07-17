@@ -49,7 +49,7 @@ public class CategorySet extends InitialisableNode {
 
 
 	// default category sets present in ALL models
-	public final static String[] systemElementsSet = { arena, lifeCycle, group, component, relation, space };
+	public final static String[] systemElementsSet = { arena, lifeCycle, group, component, relation};
 	public final static String[] lifespanSet = { permanent, ephemeral };
 	public final static String[] organisationSet = { assemblage, atomic };
 

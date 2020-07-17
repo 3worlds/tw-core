@@ -161,7 +161,7 @@ public class ComponentProcess
 
 		// change state of this SystemComponent - easy
 		for (ChangeStateFunction function : CSfunctions) {
-			function.changeState(t,dt,arena,null,focalGroup,null,focal,/*newLoc*/null);
+			function.changeState(t,dt,arena,null,focalGroup,focal,space,/*newLoc*/null);
 		}
 		if (focal.currentState() != null)
 			focal.nextState().writeDisable();
@@ -170,7 +170,7 @@ public class ComponentProcess
 		// NB: only applicable to SystemComponents
 		if (focal instanceof SystemComponent)
 			for (DeleteDecisionFunction function : Dfunctions) {
-				if (function.delete(t, dt, arena, null,focalGroup, null, focal, null)) {
+				if (function.delete(t, dt, arena, null,focalGroup, focal, space)) {
 					focal.container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
 //			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
@@ -192,8 +192,8 @@ public class ComponentProcess
 						// FLAW? here how does code generation know about the categories ?
 						// TODO: this is unfinished!
 						consequence.changeOtherState(t, dt,
-							arena, null, focalGroup, null, focal,
-							null, otherGroup, other, null, null);
+							arena, null, focalGroup, focal,
+							null, otherGroup, other, space, null);
 					}
 				}
 			}
@@ -226,7 +226,7 @@ public class ComponentProcess
 				newBornSpecs.add(nbs);
 			}
 			for (newBornSettings nbs:newBornSpecs) {
-				double result = function.nNew(t, dt, arena, null, focalGroup, null, focal, null);
+				double result = function.nNew(t, dt, arena, null, focalGroup, focal, space);
 				// compute effective number of newBorns (taking the decimal part as a probability)
 				double proba = function.rng().nextDouble();
 				long n = (long) Math.floor(result);
@@ -239,8 +239,8 @@ public class ComponentProcess
 						double[] newLoc = null;
 						// TODO: finish this call (missing space, lifecycle, etc)
 						func.setOtherInitialState(t, dt,
-							arena, null, focalGroup, null, focal,
-							null, otherGroup, newBorn, newLoc, null);
+							arena, null, focalGroup, focal,
+							null, otherGroup, newBorn, space, newLoc);
 						if (space!=null) {
 							if (newLoc==null) {
 								log.warning("No location returned by relocate(...): default location generated");

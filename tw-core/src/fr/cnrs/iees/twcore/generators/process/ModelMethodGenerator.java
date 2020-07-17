@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -84,11 +84,7 @@ public class ModelMethodGenerator extends MethodGenerator {
 	 * @param comment
 	 * @return
 	 */
-	public MethodGenerator addArgument(//TwFunctionArguments arg,
-//			ConfigurationEdgeLabels dataGroup,
-			String name,
-			String type,
-			String comment) {
+	public MethodGenerator addArgument(String name, String type, String comment) {
 		if (argNames==null) {
 			argNames = new String[1];
 			argTypes = new String[1];
@@ -102,52 +98,8 @@ public class ModelMethodGenerator extends MethodGenerator {
 		argNames[argNames.length-1] = name;
 		argTypes[argTypes.length-1] = type;
 		argComments[argComments.length-1] = comment;
-//		argumentGroups.get(arg).add(new Tuple<>(dataGroup,name,type));
 		return this;
 	}
-
-//	/**
-//	 * Use this to set / add arguments. If the argument exists in the argument list, nothing happens.
-//	 * If the argument does not exist, it is added at the end of the list.
-//	 * CAUTION: when replacing default argument names (v1,v2,v3...) the new names must be
-//	 * passed in the proper order (no check) for replacment to take place.
-//	 *
-//	 * @param name
-//	 * @param type
-//	 * @param comment
-//	 * @return
-//	 */
-//	public MethodGenerator setArgument(String name,
-//			String type,
-//			String comment) {
-//		int i=0;
-//		while ((i<argNames.length) && (!isDefaultName(argNames[i])))
-//			i++;
-//		if (i<argNames.length) {
-//			argNames[i] = name;
-//			argTypes[i] = type;
-//			argComments[i] = comment;
-//		}
-//		Set<String> argset = new HashSet<>();
-//		argset.addAll(Arrays.asList(argNames));
-//		if (!argset.contains(name))
-//			addArgument(name,type,comment);
-//		return this;
-//	}
-//
-//	private boolean isDefaultName(String name) {
-//		try {
-//			Integer.parseInt(name.substring(1).trim());
-//		}
-//		catch (NumberFormatException e) {
-//			return false;
-//		}
-//		return (name.substring(0,1).equals("v"));
-//	}
-//
-//	public String getArgumentName(int i) {
-//		return argNames[i];
-//	}
 
 	public void setMethodComment(String comment) {
 		methodComment = comment;

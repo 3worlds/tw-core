@@ -32,8 +32,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
@@ -47,53 +50,6 @@ public abstract class DeleteDecisionFunction extends AbstractDecisionFunction {
 
 	private List<ChangeOtherStateFunction> consequences = new LinkedList<ChangeOtherStateFunction>();
 
-	/**
-	 * @param t			current time
-	 * @param dt		current time interval
-	 * @param focal		system to delete
-	 * @param environment read-only systems to help for computations
-	 * @return	true to delete focal, false to keep it
-	 */
-//	public abstract boolean delete(double t,
-//		double dt,
-//		SystemComponent focal);
-
-	/**
-	 * delete self
-	 *
-	 * @param t	current time
-	 * @param dt current time step
-	 * @param limits boundary of the space set in the enclosing Process, if any
-	 * @param ecosystemPar ecosystem parameters, if any
-	 * @param ecosystemPop ecosystem population data
-	 * @param lifeCyclePar life cycle parameters, if any
-	 * @param lifeCyclePop life cycle population data, if any
-	 * @param groupPar focal group parameters, if any
-	 * @param groupPop focal group population data
-	 * @param focalAuto focal automatic variables (age and birthDate)
-	 * @param focalCnt focal constants, if any
-	 * @param focalDrv focal driver variables at current time, if any
-	 * @param focalDec focal decorator variables, if any
-	 * @param focalLoc focal location at current time, if any
-	 * @return true to delete focal, false to keep it
-	 */
-//	public abstract boolean delete(
-//			double t,
-//			double dt,
-//			Box limits,
-//			TwData ecosystemPar,
-//			ComponentContainer ecosystemPop,
-//			TwData lifeCyclePar,
-//			ComponentContainer lifeCyclePop,
-//			TwData groupPar,
-//			ComponentContainer groupPop,
-//			ComponentData focalAuto,
-//			TwData focalCnt,
-//			TwData focalDrv,
-//			TwData focalDec,
-//			Point focalLoc
-//	);
-
 	public DeleteDecisionFunction() {
 		super();
 		fType = TwFunctionTypes.DeleteDecision;
@@ -101,23 +57,21 @@ public abstract class DeleteDecisionFunction extends AbstractDecisionFunction {
 
 	/**
 	 *
-	 * @param t
-	 * @param dt
-	 * @param arena
-	 * @param lifeCycle
-	 * @param group
-	 * @param space
-	 * @param focal
-	 * @param nextFocalLoc
+	 * @param t	current time
+	 * @param dt current time step
+	 * @param arena the arena component, i.e. the top of the component hierarchy
+	 * @param lifeCycle the life cycle component of this focal component, if any
+	 * @param group the group component of this focal component, if any
+	 * @param focal the focal component (may be the arena, a group or lifecycle component)
+	 * @param space the space attached to the parent process, if any
 	 * @return
 	 */
 	public abstract boolean delete(double t, double dt,
 		CategorizedComponent<ComponentContainer> arena,
 		CategorizedComponent<ComponentContainer> lifeCycle,
 		CategorizedComponent<ComponentContainer> group,
-		CategorizedComponent<ComponentContainer> space,
 		CategorizedComponent<ComponentContainer> focal,
-		double[] nextFocalLoc);
+		DynamicSpace<SystemComponent,LocatedSystemComponent> space);
 
 	@Override
 	public void addConsequence(TwFunction function) {

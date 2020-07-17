@@ -32,7 +32,8 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.Initialiser;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
+//import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
@@ -56,6 +57,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
+// TODO: REFACTOR! this is currently a mess!
 public class Group
 		extends InitialisableNode
 		implements Sealable, LimitedEdition<ComponentContainer> {
@@ -125,7 +127,7 @@ public class Group
 			// instantiate container
 			ComponentType sf = (ComponentType) n;
 			sf.initialise();
-			container = sf.makeContainer(index,id(),parentC);
+//			container = sf.makeContainer(index,id(),parentC);
 		}
 //		// 2 life cycle group
 //		n = (TreeGraphNode) get(edges(Direction.OUT),

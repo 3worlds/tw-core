@@ -56,9 +56,11 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -189,6 +191,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					argClasses.add(arggrp.type());
 					if (arggrp.type().contains("CategorizedComponent"))
 						argClasses.add(ComponentContainer.class.getName());
+					if (arggrp.type().contains("DynamicSpace")) {
+						argClasses.add(SystemComponent.class.getName());
+						argClasses.add(LocatedSystemComponent.class.getName());
+					}
 				}
 		for (TwFunctionArguments arggrp:type.writeableArguments())
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
@@ -232,15 +238,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			for (int j=0; j<argTypes.length; j++) {
 				if (argTypes[j].contains("CategorizedComponent"))
 					argTypes[j] += "<ComponentContainer>";
+				if (argTypes[j].contains("DynamicSpace"))
+					argTypes[j] += "<SystemComponent,LocatedSystemComponent>";
 //				mmg.setArgument(argNames[j], argTypes[j], "");
 				mg.setArgumentName(j,argNames[j]);
 				mg.setArgumentType(j, argTypes[j]);
 			}
-//			// extra arguments are added for event timers // NO ARGUMENT NEEDED! 'local'
-//			for (String s:eventTimerNames) {
-//				String[] ss = timer.type().split("\\.");
-//				mmg.setArgument(s, ss[ss.length-1], "");
-//			}
 			// return type
 			mg.setReturnType(type.returnType());
 			// preparing call to user model function: initialising read-write data
@@ -408,7 +411,23 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 								callStatement += indent+indent+indent+"_"+innerVar+ ",\n";
 			}
 		}
-		// location arguments ?
+		// space calls
+		if (gen.hasSpace) {
+			// read-only argument read from space
+			if (type.innerVars().contains("limits"))
+				callStatement += indent+indent+indent+ "space.boundingBox(),\n";
+			if (type.innerVars().contains("focalLoc"))
+				callStatement += indent+indent+indent+ "space.locationOf((SystemComponent)focal).asPoint(),\n";
+			if (type.innerVars().contains("otherLoc"))
+				callStatement += indent+indent+indent+ "space.locationOf((SystemComponent)other).asPoint(),\n";
+			// writeable arguments
+			if (type.writeableArguments().contains(nextFocalLoc))
+				callStatement += indent+indent+indent+ "nextFocalLoc,\n";
+			if (type.writeableArguments().contains(nextOtherLoc))
+				callStatement += indent+indent+indent+ "nextOtherLoc,\n";
+		}
+//		else
+//			callStatement += indent+indent+indent+ "null,\n";
 
 		// random, decide
 		for (TwFunctionArguments arg:type.localArguments()) {

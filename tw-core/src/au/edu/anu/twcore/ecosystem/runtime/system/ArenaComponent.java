@@ -69,7 +69,7 @@ public class ArenaComponent
 				constants().writeEnable();
 			if (currentState()!=null)
 				currentState().writeEnable();
-			initialiser().setInitialState(null, null, null, null, this, null);
+			initialiser().setInitialState(null, null, null, this, null, null);
 			if (constants()!=null)
 				constants().writeDisable();
 			if (currentState()!=null)

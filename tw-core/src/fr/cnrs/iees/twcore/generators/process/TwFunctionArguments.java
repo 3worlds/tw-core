@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -27,6 +27,9 @@
  *                                                                        *
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators.process;
+
+import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
 
 /**
  * Arguments used in TwFunction descendants
@@ -42,12 +45,16 @@ public enum TwFunctionArguments {
 	arena			("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "whole system "),
 	lifeCycle		("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "focal life cycle "),
 	group			("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "focal group "),
-	space			("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "space "),
 	focal			("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "focal component "),
 	// relation Processes
 	otherLifeCycle	("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "other life cycle "),
 	otherGroup		("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "other group "),
 	other			("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "other component "),
+	// space
+	space			("au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace", "space "),
+	limits			(Box.class.getCanonicalName(), "limits "),
+	focalLoc		(Point.class.getCanonicalName(), "focal component location "),
+	otherLoc		(Point.class.getCanonicalName(), "other component location "),
 	// writeable arguments
 	nextFocalLoc	("double[]", "focal component new location"),
 	nextOtherLoc	("double[]", "other component new location"),

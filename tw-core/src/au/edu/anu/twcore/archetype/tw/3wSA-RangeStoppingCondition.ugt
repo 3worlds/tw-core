@@ -20,9 +20,17 @@ archetype 3wSA-RangeStoppingCondition
 		// TODO: check that variable exists in component
 		hasProperty StoppingConditionStopRangePropertySpec
 			hasName = String("range")
-			type = String("Interval") 
+			type = String("Interval")
 			multiplicity = IntegerRange("1..1")
-		hasEdge RangeStoppingConditionSystemSpec
+		hasEdge RangeStoppingConditionComponentSpec
 			isOfClass = String("stopSystem")
 			toNode = String("component:")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
+		hasEdge RangeStoppingConditionArenaSpec
+			isOfClass = String("stopSystem")
+			toNode = String("system:")
+			multiplicity = IntegerRange("0..1")
+		mustSatisfyQuery "Stopping condition has an edge either to a component or to the arena"
+			className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
+			nodeLabel1 = String("component")
+			nodeLabel2 = String("system")
