@@ -38,7 +38,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.table.Table;
@@ -53,6 +56,7 @@ import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.twcore.constants.TimeUnits;
 
 /**
  * @author Ian Davies
@@ -84,6 +88,9 @@ public class DocoGenerator {
 	private int nCT;
 	private int nGroups;
 	private List<TreeGraphDataNode> spaces;
+	// private Map<TreeGraphDataNode, List<TreeGraphDataNode>> tmProcs;
+	List<TreeGraphDataNode> timers;
+	TreeGraphDataNode timeline;
 
 	private TreeGraph<TreeGraphDataNode, ALEdge> cfg;
 
@@ -91,6 +98,7 @@ public class DocoGenerator {
 		this.cfg = cfg;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void generate() {
 		// basic metrics
 		nNodes = cfg.nNodes();
@@ -123,6 +131,23 @@ public class DocoGenerator {
 				spaces.add(space);
 		}
 
+		// prep for flowchart
+		// deal with only one system
+		timeline = (TreeGraphDataNode) get(systems.get(0).getChildren(), //
+				selectOne(hasTheLabel(N_DYNAMICS.label())), //
+				children(), //
+				selectOne(hasTheLabel(N_TIMELINE.label())));
+		timers = (List<TreeGraphDataNode>) get(timeline.getChildren(), selectOneOrMany(hasTheLabel(N_TIMER.label())));
+		timers.sort(new Comparator<TreeGraphDataNode>() {
+
+			@Override
+			public int compare(TreeGraphDataNode t1, TreeGraphDataNode t2) {
+				TimeUnits tu1 = (TimeUnits) t1.properties().getPropertyValue(P_TIMEMODEL_TU.key());
+				TimeUnits tu2 = (TimeUnits) t2.properties().getPropertyValue(P_TIMEMODEL_TU.key());
+				return tu1.compareTo(tu2);
+			}
+		});
+
 		// collect all componentTypes, relationTypes groups and whatever else - arena,
 
 		try {
@@ -133,7 +158,7 @@ public class DocoGenerator {
 			// ODD
 			// cf: https://odftoolkit.org/simple/document/cookbook/Text%20Document.html
 			TextDocument odd = TextDocument.newTextDocument();
-			//TODO: Add model name and version to footer. odd.getFooter();
+			// TODO: Add model name and version to footer. odd.getFooter();
 			// TOC?
 			StringBuilder title1 = new StringBuilder();
 			title1.append("Overview, Design concepts and Details");
@@ -203,7 +228,55 @@ public class DocoGenerator {
 			 * flow chart, - insert drawing
 			 * 
 			 */
+			StringBuilder sb = new StringBuilder();
+			sb.append("Timeline\n")//
+					.append("\tScale: ").append(timeline.properties().getPropertyValue(P_TIMELINE_SCALE.key()))
+					.append("\n")//
+					.append("\torigin: ").append(timeline.properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key()))
+					.append("\n");
 
+			sb.append("timers\n");
+			for (TreeGraphDataNode timer:timers) {
+				sb.append(timer.id()).append("\n");
+				sb.append("\tUnits: ").append(timer.properties().getPropertyValue(P_TIMEMODEL_TU.key())).append("\n");
+				sb.append("\tnumber of units: ").append(timer.properties().getPropertyValue(P_TIMEMODEL_NTU.key())).append("\n");
+			}
+			odd.addParagraph(sb.toString());
+
+			String indent = "";
+			StringBuilder flowChart = new StringBuilder();
+
+			for (int i = 0; i < timers.size(); i++) {
+				TreeGraphDataNode timer = timers.get(i);
+				SimplePropertyList tp = timer.properties();
+				int nTU = (Integer) tp.getPropertyValue(P_TIMEMODEL_NTU.key());
+				TimeUnits tu = (TimeUnits) tp.getPropertyValue(P_TIMEMODEL_TU.key());
+
+				flowChart.append(indent).append("for each ").append(tu.name().toLowerCase());
+				if (nTU > 1)
+					flowChart.append("(x").append(nTU).append(")");
+				flowChart.append("\n");
+				List<TreeGraphDataNode> procs = (List<TreeGraphDataNode>) get(timer.getChildren(), //
+						selectOneOrMany(hasTheLabel(N_PROCESS.label())));
+				// arrange by dependsOn
+				indent += "\t";
+				for (TreeGraphDataNode proc : procs) {
+					List<TreeGraphDataNode> funcs = (List<TreeGraphDataNode>) get(proc.getChildren(),
+							selectOneOrMany(hasTheLabel(N_FUNCTION.label())));
+					// TODO consequences
+					for (TreeGraphDataNode func : funcs) {
+						flowChart.append(indent)//
+								.append(proc.id())//
+								.append(".")//
+								.append(func.id())//
+								.append(".")//
+								.append(func.properties().getPropertyValue(P_FUNCTIONTYPE.key()))//
+								.append("(...)");
+					}
+				}
+			}
+
+			odd.addParagraph(flowChart.toString());
 			odd.addParagraph("4. Design concepts").applyHeading(true, 2);
 
 			// initialise function code if simple
