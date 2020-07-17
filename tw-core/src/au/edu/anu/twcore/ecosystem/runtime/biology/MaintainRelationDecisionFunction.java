@@ -28,8 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
@@ -42,19 +45,10 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
  */
 public abstract class MaintainRelationDecisionFunction extends AbstractDecisionFunction {
 
-//	/**
-//	 * @param t			current time
-//	 * @param dt		current time interval
-//	 * @param focal		system making the decision
-//	 * @param other		system involved in relation
-//	 * @param environment read-only systems to help for computations
-//	 * @return	true to maintain the relation, false to end it
-//	 */
-//	public abstract boolean maintainRelation(double t,
-//		double dt,
-//		Edge relation,
-//		SystemComponent start,
-//		SystemComponent end);
+	public MaintainRelationDecisionFunction() {
+		super();
+		fType = TwFunctionTypes.MaintainRelationDecision;
+	}
 
 	/**
 	 * decision to maintain or remove an existing relation.
@@ -62,85 +56,24 @@ public abstract class MaintainRelationDecisionFunction extends AbstractDecisionF
 	 *
 	 * @param t	current time
 	 * @param dt current time step
-	 * @param limits boundary of the space set in the enclosing Process, if any
-	 * @param ecosystemPar ecosystem parameters, if any
-	 * @param ecosystemPop ecosystem population data
-	 * @param lifeCyclePar life cycle parameters, if any
-	 * @param lifeCyclePop life cycle population data, if any
-	 * @param groupPar focal group parameters, if any
-	 * @param groupPop focal group population data
-	 * @param otherGroupPar other group parameters,if any
-	 * @param otherGroupPop other group population data
-	 * @param focalAuto focal automatic variables (age and birthDate)
-	 * @param focalCnt focal constants, if any
-	 * @param focalDrv focal driver variables at current time, if any
-	 * @param focalDec focal decorator variables, if any
-	 * @param focalLoc focal location at current time, if any
-	 * @param otherAuto other automatic variables (age and birthDate)
-	 * @param otherCnt other constants, if any
-	 * @param otherDrv other driver variables at current time, if any
-	 * @param otherDec other decorator variables, if any
-	 * @param otherLoc other location at current time, if any
-	 * @return {@code true} if the relation is maintained, {@code false} otherwise
-	 */
-//	public abstract boolean maintainRelation(
-//			double t,
-//			double dt,
-//			Box limits,
-//			TwData ecosystemPar,
-//			ComponentContainer ecosystemPop,
-//			TwData lifeCyclePar,
-//			ComponentContainer lifeCyclePop,
-//			TwData groupPar,
-//			ComponentContainer groupPop,
-//			TwData otherGroupPar,
-//			ComponentContainer otherGroupPop,
-//			ComponentData focalAuto,
-//			TwData focalCnt,
-//			TwData focalDrv,
-//			TwData focalDec,
-//			Point focalLoc,
-//			ComponentData otherAuto,
-//			TwData otherCnt,
-//			TwData otherDrv,
-//			TwData otherDec,
-//			Point otherLoc
-//	);
-
-	public MaintainRelationDecisionFunction() {
-		super();
-		fType = TwFunctionTypes.MaintainRelationDecision;
-	}
-
-	/**
-	 *
-	 * @param t
-	 * @param dt
-	 * @param arena
-	 * @param lifeCycle
-	 * @param group
-	 * @param space
-	 * @param focal
-	 * @param otherLifeCycle
-	 * @param otherGroup
-	 * @param other
-	 * @param nextFocalLoc
-	 * @param nextOtherLoc
+	 * @param arena the arena component, i.e. the top of the component hierarchy
+	 * @param lifeCycle the life cycle component of this focal component, if any
+	 * @param group the group component of this focal component, if any
+	 * @param focal the focal component (may be the arena, a group or lifecycle component)
+	 * @param otherLifeCycle the life cycle component of the other component, if any
+	 * @param otherGroup the group component of the other component, if any
+	 * @param other the other component (may be the arena, a group or lifecycle component)
+	 * @param space the space attached to the parent process, if any
 	 * @return
 	 */
-	public abstract boolean maintainRelation(
-			double t,
-			double dt,
-			CategorizedComponent<ComponentContainer> arena,
-			CategorizedComponent<ComponentContainer> lifeCycle,
-			CategorizedComponent<ComponentContainer> group,
-			CategorizedComponent<ComponentContainer> space,
-			CategorizedComponent<ComponentContainer> focal,
-			CategorizedComponent<ComponentContainer> otherLifeCycle,
-			CategorizedComponent<ComponentContainer> otherGroup,
-			CategorizedComponent<ComponentContainer> other,
-			double[] nextFocalLoc,
-			double[] nextOtherLoc
-	);
+	public abstract boolean maintainRelation(double t, double dt,
+		CategorizedComponent<ComponentContainer> arena,
+		CategorizedComponent<ComponentContainer> lifeCycle,
+		CategorizedComponent<ComponentContainer> group,
+		CategorizedComponent<ComponentContainer> focal,
+		CategorizedComponent<ComponentContainer> otherLifeCycle,
+		CategorizedComponent<ComponentContainer> otherGroup,
+		CategorizedComponent<ComponentContainer> other,
+		DynamicSpace<SystemComponent,LocatedSystemComponent> space);
 
 }

@@ -29,8 +29,11 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 import java.util.LinkedList;
@@ -48,57 +51,6 @@ public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFun
 
 	private List<SetOtherInitialStateFunction> consequences = new LinkedList<SetOtherInitialStateFunction>();
 
-
-
-//	/**
-//	 * Must return the name of a valid category name.
-//	 *
-//	 * @param t
-//	 * @param dt
-//	 * @param focal
-//	 * @return
-//	 * t,dt,limits,
-// 	 */
-////	public abstract String changeCategory(double t, double dt,	SystemComponent focal);
-
-	/**
-	 * change category of a system component according to life cycle
-	 * (has no effect if no life cycle is specified). Notice that some parameters may be null when
-	 * calling the method (as denoted by 'if any').
-	 *
-	 * @param t	current time
-	 * @param dt current time step
-	 * @param limits boundary of the space set in the enclosing Process, if any
-	 * @param ecosystemPar ecosystem parameters, if any
-	 * @param ecosystemPop ecosystem population data
-	 * @param lifeCyclePar life cycle parameters, if any
-	 * @param lifeCyclePop life cycle population data, if any
-	 * @param groupPar focal group parameters, if any
-	 * @param groupPop focal group population data
-	 * @param focalAuto focal automatic variables (age and birthDate)
-	 * @param focalCnt focal constants, if any
-	 * @param focalDrv focal driver variables at current time, if any
-	 * @param focalDec focal decorator variables, if any
-	 * @param focalLoc focal location at current time, if any
-	 * @return the name of the new category <em>focal</em> will move to
-	 */
-//	public abstract String changeCategory(
-//			double t,
-//			double dt,
-//			Box limits,
-//			TwData ecosystemPar,
-//			ComponentContainer ecosystemPop,
-//			TwData lifeCyclePar,
-//			ComponentContainer lifeCyclePop,
-//			TwData groupPar,
-//			ComponentContainer groupPop,
-//			ComponentData focalAuto,
-//			TwData focalCnt,
-//			TwData focalDrv,
-//			TwData focalDec,
-//			Point focalLoc
-//	);
-
 	public ChangeCategoryDecisionFunction() {
 		super();
 		fType = TwFunctionTypes.ChangeCategoryDecision;
@@ -109,23 +61,21 @@ public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFun
 	 * (has no effect if no life cycle is specified). Notice that some parameters may be null when
 	 * calling the method (as denoted by 'if any').
 	 *
-	 * @param t
-	 * @param dt
-	 * @param arena
-	 * @param lifeCycle
-	 * @param group
-	 * @param space
-	 * @param focal
-	 * @param nextFocalLoc
+	 * @param t	current time
+	 * @param dt current time step
+	 * @param arena the arena component, i.e. the top of the component hierarchy
+	 * @param lifeCycle the life cycle component of this focal component, if any
+	 * @param group the group component of this focal component, if any
+	 * @param focal the focal component (may be the arena, a group or lifecycle component)
+	 * @param space the space attached to the parent process, if any
 	 * @return
 	 */
 	public abstract String changeCategory(double t, double dt,
 			CategorizedComponent<ComponentContainer> arena,
 			CategorizedComponent<ComponentContainer> lifeCycle,
 			CategorizedComponent<ComponentContainer> group,
-			CategorizedComponent<ComponentContainer> space,
 			CategorizedComponent<ComponentContainer> focal,
-			double[] nextFocalLoc);
+			DynamicSpace<SystemComponent,LocatedSystemComponent> space);
 
 	@Override
 	public void addConsequence(TwFunction function) {

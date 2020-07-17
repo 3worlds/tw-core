@@ -160,7 +160,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 					item.constants().writeEnable();
 				if (item.currentState()!=null)
 					item.currentState().writeEnable();
-				item.initialiser().setInitialState(null, null, null, null, item, null);
+				item.initialiser().setInitialState(null, null, null, item, null, null);
 				if (item.constants()!=null)
 					item.constants().writeDisable();
 				if (item.currentState()!=null)

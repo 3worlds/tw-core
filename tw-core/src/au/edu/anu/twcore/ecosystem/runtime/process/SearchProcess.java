@@ -209,8 +209,8 @@ public class SearchProcess
 			if (focal.getRelatives(relContainer.id()).contains(other))
 				// already related, skip it
 				;
-			else if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,/*space*/ null,focal,
-				otherLifeCycle,otherGroup,other,focalLoc,otherLoc))
+			else if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
+				otherLifeCycle,otherGroup,other,space))
 				relContainer.addItem(focal,other);
 		}
 	}

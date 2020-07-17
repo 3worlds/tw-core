@@ -32,8 +32,6 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;
@@ -57,7 +55,6 @@ public class Category extends InitialisableNode implements Comparable<Category> 
 	public final static String group 		= "*group*";
 	public final static String component 	= "*component*";
 	public final static String relation 	= "*relation*";
-	public final static String space 		= "*space*";
 	// lifespan
 	public final static String permanent 	= "*permanent*";
 	public final static String ephemeral 	= "*ephemeral*";

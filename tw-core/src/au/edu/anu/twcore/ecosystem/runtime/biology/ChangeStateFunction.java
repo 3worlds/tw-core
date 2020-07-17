@@ -28,8 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
+import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
@@ -53,19 +56,19 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 	 *
 	 * @param t	current time
 	 * @param dt current time step
-	 * @param arena
-	 * @param lifeCycle
-	 * @param group
-	 * @param space
-	 * @param focal
-	 * @param nextFocalLoc
+	 * @param arena the arena component, i.e. the top of the component hierarchy
+	 * @param lifeCycle the life cycle component of this focal component, if any
+	 * @param group the group component of this focal component, if any
+	 * @param focal the focal component (may be the arena, a group or lifecycle component)
+	 * @param space the space attached to the parent process, if any
+	 * @param nextFocalLoc the new location of the focal component, if the parent process is using a space
 	 */
 	public abstract void changeState(double t, double dt,
 		CategorizedComponent<ComponentContainer> arena,
 		CategorizedComponent<ComponentContainer> lifeCycle,
 		CategorizedComponent<ComponentContainer> group,
-		CategorizedComponent<ComponentContainer> space,
 		CategorizedComponent<ComponentContainer> focal,
+		DynamicSpace<SystemComponent,LocatedSystemComponent> space,
 		double[] nextFocalLoc);
 
 }

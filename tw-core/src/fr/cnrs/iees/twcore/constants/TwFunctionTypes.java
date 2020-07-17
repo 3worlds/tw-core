@@ -163,15 +163,21 @@ public enum TwFunctionTypes {
 		TwFunctionTypes.class.getName(),defaultValue());
 	}
 
+	/**
+	 * read-only Function arguments to call the TwFunction descendant from Process
+	 * eg in Process.executeFunction(): userFunction.changeState(...)
+	 *
+	 * @return
+	 */
 	public Set<TwFunctionArguments> readOnlyArguments() {
 		switch (this) {
 		case SetInitialState:
-			return EnumSet.of(arena,lifeCycle,group,space,focal);
+			return EnumSet.of(arena,lifeCycle,group,focal,space);
 		case ChangeState:
 		case ChangeCategoryDecision:
 		case CreateOtherDecision:
 		case DeleteDecision:
-			return EnumSet.of(t,dt,arena,lifeCycle,group,space,focal);
+			return EnumSet.of(t,dt,arena,lifeCycle,group,focal,space);
 		case SetOtherInitialState:
 		case ChangeOtherState:
 		case ChangeOtherCategoryDecision:
@@ -179,26 +185,31 @@ public enum TwFunctionTypes {
 		case MaintainRelationDecision:
 		case RelateToDecision:
 		case ChangeRelationState:
-			return EnumSet.complementOf(EnumSet.of(random,decider,timer));
+			return EnumSet.of(t,dt,arena,lifeCycle,group,focal,otherLifeCycle,otherGroup,other,space);
 		default:
 			return EnumSet.noneOf(TwFunctionArguments.class);
 		}
 	}
 
+	/**
+	 * Arguments to call the &lt;UserModel&gt; interface from the TwFunction descendant.
+	 * eg in MyFunction.changeState(...): UserModel.userfunk(...)
+	 * @return
+	 */
     public Set<TwFunctionArguments> localArguments() {
 	    switch (this) {
 		case ChangeCategoryDecision:
-		case ChangeOtherCategoryDecision:
-		case CreateOtherDecision:
 		case DeleteDecision:
+		case CreateOtherDecision:
+		case ChangeOtherCategoryDecision:
 		case DeleteOtherDecision:
 		case MaintainRelationDecision:
 		case RelateToDecision:
 			return EnumSet.of(random,decider);
-		case ChangeOtherState:
-		case ChangeRelationState:
 		case ChangeState:
 		case SetInitialState:
+		case ChangeOtherState:
+		case ChangeRelationState:
 		case SetOtherInitialState:
 			return EnumSet.of(random);
 		default:
@@ -206,6 +217,7 @@ public enum TwFunctionTypes {
 	    }
     }
 
+    /** writeable arguments ?*/
     // Question here: should we allow components to modify decorators of their context
     // (ie arena, group, lifecycle)? This would be handy to perform statistics on them,
     // but this may also be source of a lot of mess - wait and see
@@ -215,16 +227,24 @@ public enum TwFunctionTypes {
 		case ChangeOtherState:
 			result.add("otherDrv");
 			result.add("otherDec");
+			result.add("limits");
+			result.add("focalLoc");
+			result.add("otherLoc");
 			break;
 		case ChangeRelationState:
 			result.add("focalDrv");
 			result.add("focalDec");
 			result.add("otherDrv");
 			result.add("otherDec");
+			result.add("limits");
+			result.add("focalLoc");
+			result.add("otherLoc");
 			break;
 		case ChangeState:
 			result.add("focalDrv");
 			result.add("focalDec");
+			result.add("limits");
+			result.add("focalLoc");
 			break;
 		case SetInitialState:
 			result.add("focalDrv");
@@ -233,8 +253,19 @@ public enum TwFunctionTypes {
 		case SetOtherInitialState:
 			result.add("otherDrv");
 			result.add("otherCnt");
+			result.add("limits");
+			result.add("focalLoc");
 			break;
+		case ChangeOtherCategoryDecision:
+		case DeleteOtherDecision:
+		case MaintainRelationDecision:
+		case RelateToDecision:
+			result.add("limits");
+			result.add("focalLoc");
+			result.add("otherLoc");
 		default:
+			result.add("limits");
+			result.add("focalLoc");
 			break;
     	 }
     	 return result;
@@ -243,8 +274,10 @@ public enum TwFunctionTypes {
     public Set<TwFunctionArguments> writeableArguments() {
 	    switch (this) {
 		case ChangeRelationState:
-		case ChangeOtherState:
 			return EnumSet.of(nextFocalLoc,nextOtherLoc);
+		case ChangeOtherState:
+		case SetOtherInitialState:
+			return EnumSet.of(nextOtherLoc);
 		case ChangeState:
 		case SetInitialState:
 			return EnumSet.of(nextFocalLoc);
