@@ -65,8 +65,8 @@ class StoppingConditionNodeTest {
 		for (TreeGraphNode nn:specs.nodes()) {
 			InitialisableNode n = (InitialisableNode) nn;
 			if (n instanceof StoppingConditionNode) {
-				assertNotNull(((StoppingConditionNode)n).getInstance());
-				System.out.println(((StoppingConditionNode)n).getInstance().toString());
+				assertNotNull(((StoppingConditionNode)n).getInstance(0));
+				System.out.println(((StoppingConditionNode)n).getInstance(0).toString());
 			}
 		}
 	}

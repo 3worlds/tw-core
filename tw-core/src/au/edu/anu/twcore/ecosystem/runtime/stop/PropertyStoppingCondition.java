@@ -56,7 +56,21 @@ public abstract class PropertyStoppingCondition extends AbstractStoppingConditio
 			// TODO! find the property list in which to search !
 			throw new TwcoreException("This stopping condition requires a non-null system to track");
 		}
-		return (double) plist.getPropertyValue(pname);
+		if (plist.getPropertyClass(pname).equals(Double.class))
+			return (double) plist.getPropertyValue(pname);
+		else if (plist.getPropertyClass(pname).equals(Integer.class))
+			return 1.0*(int) plist.getPropertyValue(pname);
+		else if (plist.getPropertyClass(pname).equals(Boolean.class))
+			return ((boolean) plist.getPropertyValue(pname))?1.0:0.0;
+		else if (plist.getPropertyClass(pname).equals(Long.class))
+			return 1.0*(long) plist.getPropertyValue(pname);
+		else if (plist.getPropertyClass(pname).equals(Float.class))
+			return (float) plist.getPropertyValue(pname);
+		else if (plist.getPropertyClass(pname).equals(Short.class))
+			return 1.0*(short) plist.getPropertyValue(pname);
+		else if (plist.getPropertyClass(pname).equals(Byte.class))
+			return 1.0*(byte) plist.getPropertyValue(pname);
+		throw new TwcoreException("The stopping property type is not compatible with doubles");
 	}
 	
 }

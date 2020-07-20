@@ -61,6 +61,9 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 			if (makeContainer) {
 				community = new ComponentContainer(name,null,null);
 				autoVarTemplate = new ContainerData(community);
+				// this is bad design... but it has to work.
+				for (String autoName: autoVarTemplate.getKeysAsSet())
+					propertyMap.put(autoName, SystemComponentPropertyListImpl.AUTO);
 			}
 			SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
 				driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);

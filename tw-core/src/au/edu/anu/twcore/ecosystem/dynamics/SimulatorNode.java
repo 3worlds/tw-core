@@ -144,12 +144,12 @@ public class SimulatorNode
 		else if (scnodes.size()>1) {
 			List<StoppingCondition> lsc = new ArrayList<>();
 			for (StoppingConditionNode scn:scnodes)
-				lsc.add(scn.getInstance());
+				lsc.add(scn.getInstance(index));
 			rootStop = new MultipleOrStoppingCondition(lsc);
 		}
 		// when there is only one stopping condition, then it is used
 		else
-			rootStop = scnodes.get(0).getInstance();
+			rootStop = scnodes.get(0).getInstance(index);
 		// *** ProcessNode --> Process
 		Map<Integer, List<List<TwProcess>>> pco = new HashMap<>();
 		for (Map.Entry<Integer,List<List<ProcessNode>>> e:processCallingOrder.entrySet()) {

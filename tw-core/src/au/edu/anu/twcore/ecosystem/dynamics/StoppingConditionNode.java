@@ -35,10 +35,9 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.cnrs.iees.properties.impl.ReadOnlyPropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
+import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-import fr.ens.biologie.generic.Singleton;
 import fr.ens.biologie.generic.utils.Interval;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_STOPSYSTEM;
@@ -47,11 +46,14 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.ArenaType;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition;
@@ -59,6 +61,9 @@ import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.OutRangeStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
 
 /**
  * Class matching the "ecosystem/dynamics/stoppingCondition" node label in the 3Worlds configuration tree.
@@ -69,10 +74,10 @@ import au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition;
  */
 public class StoppingConditionNode 
 		extends InitialisableNode 
-		implements Singleton<StoppingCondition>, Sealable {
+		implements LimitedEdition<StoppingCondition>, Sealable {
 	
 	private boolean sealed = false;
-	private StoppingCondition stopcd = null;
+	private Map<Integer,StoppingCondition> stopcd = new HashMap<>();
 	private static final int baseInitRank = N_STOPPINGCONDITION.initRank();
 
 	public StoppingConditionNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -86,55 +91,64 @@ public class StoppingConditionNode
 	// gets the list of conditions this one depends on (if it's a multiple condition)
 	// assuming that the dependencies have been initialised before (this is made
 	// possible by the specific initRank() method of this class)
-	private List<StoppingCondition> getComponentConditions() {
+	private List<StoppingCondition> getComponentConditions(int id) {
 		List<StoppingCondition> lsc = new LinkedList<>();
 		for (TreeNode tn:getChildren())
 			if (tn instanceof StoppingConditionNode)
-				lsc.add(((StoppingConditionNode)tn).getInstance());
+				lsc.add(((StoppingConditionNode)tn).getInstance(id));
 		return lsc;
 	}
 	
 	// gets the system which properties will be searched for the stopping criterion
 	// (for all descendants of PropertyStoppingCondition)
-	private ReadOnlyPropertyList getStoppingSystem() {
-		// TODO: implement this properly
-		get(edges(Direction.OUT),
+	@SuppressWarnings("unchecked")
+	private ReadOnlyPropertyList getStoppingSystem(int id) {
+		TreeNode stopSystemNode = (TreeNode) get(edges(Direction.OUT),
 			selectOne(hasTheLabel(E_STOPSYSTEM.label())),
-			endNode()); // what do we do with this ? this is a SystemFactory.
-		// dummy - THIS IS ONLY FOR TESTING !
-		ReadOnlyPropertyList system = new ReadOnlyPropertyListImpl(new Property("x",2),new Property("y",12),new Property("z","AA")); 
+			endNode()); 		
+		ReadOnlyPropertyList system = null;
+		if (stopSystemNode instanceof ArenaType)
+			system = ((ElementType<ArenaFactory, ArenaComponent>) stopSystemNode)
+				.getInstance(id).getInstance().readOnlyProperties();
+		else if (stopSystemNode instanceof Component) {
+			// TODO !
+		}
 		return system;
 	}
 	
 	@Override
 	public void initialise() {
-		if (!sealed) {
-			super.initialise();
-			String subClass = (String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key());
-			if (SimpleStoppingCondition.class.getName().equals(subClass)) {
-				DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_STOPCD_ENDTIME.key());
-				stopcd = new SimpleStoppingCondition(dtt.getDateTime());
-			}else if (ValueStoppingCondition.class.getName().equals(subClass))
-				stopcd = new ValueStoppingCondition(
-					(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
-					getStoppingSystem(),
-					(double) properties().getPropertyValue(P_STOPCD_STOPVAL.key()));
-			else if (InRangeStoppingCondition.class.getName().equals(subClass))
-				stopcd = new InRangeStoppingCondition(
-					(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
-					getStoppingSystem(),
-					(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
-			else if (OutRangeStoppingCondition.class.getName().equals(subClass))
-				stopcd = new OutRangeStoppingCondition(
-					(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
-					getStoppingSystem(),
-					(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
-			else if (MultipleOrStoppingCondition.class.getName().equals(subClass))
-				stopcd = new MultipleOrStoppingCondition(getComponentConditions());
-			else if (MultipleAndStoppingCondition.class.getName().equals(subClass))
-				stopcd = new MultipleAndStoppingCondition(getComponentConditions());
-			sealed = true;
+		super.initialise();
+		sealed = true;
+	}
+	
+	private StoppingCondition makeStoppingCondition(int id)  {
+		String subClass = (String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key());
+		StoppingCondition result = null;
+		if (SimpleStoppingCondition.class.getName().equals(subClass)) {
+			DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_STOPCD_ENDTIME.key());
+			result = new SimpleStoppingCondition(dtt.getDateTime());
 		}
+		else if (ValueStoppingCondition.class.getName().equals(subClass))
+			result = new ValueStoppingCondition(
+				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
+				getStoppingSystem(id),
+				(double) properties().getPropertyValue(P_STOPCD_STOPVAL.key()));
+		else if (InRangeStoppingCondition.class.getName().equals(subClass))
+			result = new InRangeStoppingCondition(
+				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
+				getStoppingSystem(id),
+				(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
+		else if (OutRangeStoppingCondition.class.getName().equals(subClass))
+			result = new OutRangeStoppingCondition(
+				(String) properties().getPropertyValue(P_STOPCD_STOPVAR.key()),
+				getStoppingSystem(id),
+				(Interval) properties().getPropertyValue(P_STOPCD_RANGE.key()));
+		else if (MultipleOrStoppingCondition.class.getName().equals(subClass))
+			result = new MultipleOrStoppingCondition(getComponentConditions(id));
+		else if (MultipleAndStoppingCondition.class.getName().equals(subClass))
+			result = new MultipleAndStoppingCondition(getComponentConditions(id));
+		return result;
 	}
 
 	@Override
@@ -152,13 +166,6 @@ public class StoppingConditionNode
 	}
 
 	@Override
-	public StoppingCondition getInstance() {
-		if (!sealed)
-			initialise();
-		return stopcd;
-	}
-
-	@Override
 	public Sealable seal() {
 		sealed = true;
 		return this;
@@ -167,6 +174,15 @@ public class StoppingConditionNode
 	@Override
 	public boolean isSealed() {
 		return sealed;
+	}
+
+	@Override
+	public StoppingCondition getInstance(int id) {
+		if (!sealed)
+			initialise();
+		if (!stopcd.containsKey(id))
+			stopcd.put(id, makeStoppingCondition(id));
+		return stopcd.get(id);
 	}
 
 }
