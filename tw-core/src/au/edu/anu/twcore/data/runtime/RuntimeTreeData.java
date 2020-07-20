@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.data.runtime;
 
+import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
@@ -41,14 +42,14 @@ public class RuntimeTreeData extends LabelledItemData {
 		super(status, senderId, metaDataType);
 	}
 
-	private Object somethingToLookAt;
+	private EcosystemGraph ecosystem;
 
-	public void setTree(Object somethingToLookAt) {
-		this.somethingToLookAt = somethingToLookAt;
+	public void setTree(EcosystemGraph ecosystem) {
+		this.ecosystem = ecosystem;
 	}
 
-	public Object getTree() {
-		return somethingToLookAt;
+	public EcosystemGraph getEcosystem() {
+		return ecosystem;
 	}
 
 }

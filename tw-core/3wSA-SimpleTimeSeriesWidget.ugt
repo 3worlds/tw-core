@@ -1,0 +1,28 @@
+tree
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-SimpleTimeSeriesWidget
+
+	hasNode SimpleTimeSeriesWidgetSpec
+		isOfClass = String("widget")
+		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
+		multiplicity = IntegerRange("0..*")
+		hasProperty SimpleTimeSeriesWidgetSenderProperty
+			hasName = String("sender")
+			type = String("Integer")
+			multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
+			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
+			parentLabels = StringTable(([2]"tab","container"))
+		hasEdge SimpleTimeSeriesWidgetDataTrackerEdgeSpec
+			isOfClass = String("trackSeries")
+			toNode = String("dataTracker:")
+			multiplicity = IntegerRange("1..1")
+		// TODO: must check that the edge end node has property subclass==
+		// au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker
+

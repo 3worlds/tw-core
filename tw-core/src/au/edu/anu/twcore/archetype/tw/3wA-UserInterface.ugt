@@ -96,7 +96,7 @@ hasNode widgetSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery widgetClassInValueSetQuery
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
-			values = StringTable(([9]+
+			values = StringTable(([10]+
 			"au.edu.anu.twuifx.widgets.SimpleDM0Widget",+
 			"au.edu.anu.twuifx.widgets.SimpleDM2Widget",+
 			"au.edu.anu.twuifx.widgets.SimpleTimeWidget",+
@@ -105,7 +105,8 @@ hasNode widgetSpec
 			"au.edu.anu.twuifx.widgets.SimpleControlWidget3",+
 			"au.edu.anu.twuifx.widgets.SimpleTimeSeriesWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleXYPlotWidget",+
-			"au.edu.anu.twuifx.widgets.SimpleSpaceWidget1"))
+			"au.edu.anu.twuifx.widgets.SimpleSpaceWidget1",+
+			"au.edu.anu.twuifx.widgets.SimpleGraphWidget1"))
 
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleDM0Widget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
@@ -134,6 +135,7 @@ hasNode widgetSpec
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleControlWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleControlWidget3","3wSA-SimpleControlWidget3.ugt"))
+
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleXYPlotWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleXYPlotWidget","3wSA-SimpleXYPlotWidget.ugt"))
@@ -141,4 +143,8 @@ hasNode widgetSpec
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleTimeSeriesWidget
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleTimeSeriesWidget","3wSA-SimpleTimeSeriesWidget.ugt"))
+
+	mustSatisfyQuery CheckSubArchetypeQuerySimpleGraphWidget
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleGraphWidget1","3wSA-SimpleGraphWidget1.ugt"))
 
