@@ -114,6 +114,7 @@ hasNode componentSpec
 		isOfClass = String("instanceOf")
 		toNode = String("componentType:")
 		multiplicity = IntegerRange("0..1") // optional - only requierd if groups are present
+	// TODO HERE: a location MUST be present if this component is affected by a Process using a Space
 	hasEdge componentToSpaceSpec
 		isOfClass = String("location")
 		toNode = String("space:")

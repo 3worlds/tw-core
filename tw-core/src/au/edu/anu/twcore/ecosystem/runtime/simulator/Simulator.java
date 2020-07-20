@@ -49,11 +49,13 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
@@ -316,30 +318,30 @@ public class Simulator implements Resettable {
 	 * systems recursive.
 	 */
 	private void computeInitialCoordinates(CategorizedContainer<SystemComponent> container) {
-//		for (SystemComponent sc : container.items()) {
-//			Iterable<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces =
-//				((ComponentFactory) sc.membership()).spaces();
-//			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : spaces) {
-//				// get the initial item matching this
-//				SystemComponent isc = container.initialForItem(sc.id());
-////				if (isc!=null) // must always be non null, normally
-//				// get the location of this initial item
-//				for (LocatedSystemComponent lisc : space.getInitialItems())
-//					if (lisc.item() == isc) {
-//						// locate the initial item clone at the location of the initial item
-//						Location initLoc = space.locate(sc, lisc.location());
-//						// send coordinates to data tracker if needed
-//						if (space.dataTracker() != null) {
-//							double x[] = new double[initLoc.asPoint().dim()];
-//							for (int i = 0; i < initLoc.asPoint().dim(); i++)
-//								x[i] = initLoc.asPoint().coordinate(i);
-//							space.dataTracker().recordItem(SimulatorStatus.Initial, x, container.itemId(sc.id()));
-//						}
-//					}
-//			}
-//		}
-//		for (CategorizedContainer<SystemComponent> cc : container.subContainers())
-//			computeInitialCoordinates(cc);
+		for (SystemComponent sc : container.items()) {
+			Iterable<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces =
+				((ComponentFactory) sc.membership()).spaces();
+			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : spaces) {
+				// get the initial item matching this
+				SystemComponent isc = container.initialForItem(sc.id());
+//				if (isc!=null) // must always be non null, normally
+				// get the location of this initial item
+				for (LocatedSystemComponent lisc : space.getInitialItems())
+					if (lisc.item() == isc) {
+						// locate the initial item clone at the location of the initial item
+						Location initLoc = space.locate(sc, lisc.location());
+						// send coordinates to data tracker if needed
+						if (space.dataTracker() != null) {
+							double x[] = new double[initLoc.asPoint().dim()];
+							for (int i = 0; i < initLoc.asPoint().dim(); i++)
+								x[i] = initLoc.asPoint().coordinate(i);
+							space.dataTracker().recordItem(SimulatorStatus.Initial, x, container.itemId(sc.id()));
+						}
+					}
+			}
+		}
+		for (CategorizedContainer<SystemComponent> cc : container.subContainers())
+			computeInitialCoordinates(cc);
 	}
 
 	// postProcess() + preProcess() = reset a simulation at its initial state

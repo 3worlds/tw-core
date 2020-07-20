@@ -81,7 +81,7 @@ public abstract class ElementFactory<T extends DataElement>
 	 * @param categories
 	 * @param categoryId
 	 */
-	public ElementFactory(Set<Category> categories, /*String categoryId,*/
+	public ElementFactory(Set<Category> categories,
 			TwData auto, TwData drv, TwData dec, TwData ltc,
 			SetInitialStateFunction setinit) {
 		super();

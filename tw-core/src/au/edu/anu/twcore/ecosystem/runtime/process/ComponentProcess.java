@@ -147,13 +147,6 @@ public class ComponentProcess
 
 	private void executeFunctions(double t, double dt, CategorizedComponent<ComponentContainer> focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
-//		System.out.println("coucou from "+focal.toShortString()+" t = "+t);
-
-//		if (space!=null) {
-//			Box limits = space.boundingBox();
-//			Point location = space.locationOf(focal).asPoint();
-//			double[] newLoc = new double[location.dim()];
-//		}
 		if (focal.currentState() != null) {
 			focal.currentState().writeDisable(); // we dont care anymore about that, except for tables...
 			focal.nextState().writeEnable();
@@ -173,12 +166,12 @@ public class ComponentProcess
 				if (function.delete(t, dt, arena, null,focalGroup, focal, space)) {
 					focal.container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
-//			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
-//					((SystemFactory)focal.membership()).spaces()) {
-//				space.unlocate(focal);
+			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
+					((ComponentFactory)focal.membership()).spaces()) {
+				space.unlocate((SystemComponent) focal);
 //				if (space.dataTracker()!=null)
 //					space.dataTracker().removeItem(currentStatus,container.itemId(focal.id()));
-//			}
+			}
 			// remove from tracklist if dead - safe, data sending has already been made
 				for (DataTracker<?,Metadata> tracker:trackers)
 					if (tracker.isTracked(focal))
@@ -236,16 +229,16 @@ public class ComponentProcess
 					SystemComponent newBorn = nbs.factory.newInstance();
 					for (SetOtherInitialStateFunction func : function.getConsequences()) {
 						// TODO workout multiple category sets for descendants
-						double[] newLoc = null;
-						// TODO: finish this call (missing space, lifecycle, etc)
+						double[] newLoc = new double[space.ndim()];
+						// TODO: finish this call (missing lifecycle, etc)
 						func.setOtherInitialState(t, dt,
 							arena, null, focalGroup, focal,
 							null, otherGroup, newBorn, space, newLoc);
 						if (space!=null) {
-							if (newLoc==null) {
-								log.warning("No location returned by relocate(...): default location generated");
-								newLoc = space.defaultLocation();
-							}
+//							if (newLoc==null) {
+//								log.warning("No location returned by relocate(...): default location generated");
+//								newLoc = space.defaultLocation();
+//							}
 							if (newLoc.length!=space.ndim()) {
 								log.warning("Wrong number of dimensions: default location generated");
 								newLoc = space.defaultLocation();

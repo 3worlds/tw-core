@@ -156,7 +156,6 @@ hasNode functionSpec
 		propertyName = String("type")
 		propertyValues = StringTable(([1]"RelateToDecision"))
 
-
 hasNode consequenceFunctionSpec
 	isOfClass = String("function")
 	hasParent = StringTable(([1]"process:/function:"))
@@ -196,8 +195,6 @@ hasNode snippet
 		hasName = String("javaCode")
 		type = String("StringTable")
 		multiplicity = IntegerRange("1..1")
-		
-	
 	
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")
