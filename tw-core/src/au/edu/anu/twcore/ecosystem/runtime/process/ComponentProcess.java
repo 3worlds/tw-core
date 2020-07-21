@@ -229,7 +229,9 @@ public class ComponentProcess
 					SystemComponent newBorn = nbs.factory.newInstance();
 					for (SetOtherInitialStateFunction func : function.getConsequences()) {
 						// TODO workout multiple category sets for descendants
-						double[] newLoc = new double[space.ndim()];
+						double[] newLoc = null;
+						if (space!=null)
+							newLoc = new double[space.ndim()];
 						// TODO: finish this call (missing lifecycle, etc)
 						func.setOtherInitialState(t, dt,
 							arena, null, focalGroup, focal,

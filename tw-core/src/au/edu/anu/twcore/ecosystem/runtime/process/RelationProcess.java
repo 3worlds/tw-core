@@ -356,11 +356,11 @@ public class RelationProcess extends AbstractRelationProcess {
 			CategorizedComponent<ComponentContainer> other,
 			SystemRelation rel) {
         for (ChangeOtherStateFunction function:COSfunctions) {
-        	// these shouldnt be needed anymore because user code cannot write in there
-        	if (focal.currentState()!=null) {
-	        	focal.currentState().writeDisable();
-	        	focal.nextState().writeDisable();
-        	}
+//        	// these shouldnt be needed anymore because user code cannot write in there
+//        	if (focal.currentState()!=null) {
+//	        	focal.currentState().writeDisable();
+//	        	focal.nextState().writeDisable();
+//        	}
         	if (other.currentState()!=null) {
 	        	other.currentState().writeDisable();
 	        	other.nextState().writeEnable();
@@ -376,10 +376,11 @@ public class RelationProcess extends AbstractRelationProcess {
         	//
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
-    }
-
-
-
+        }
+        // if the relation was ephemeral, stop it
+        if (!rel.container().isPermanent()) {
+        	rel.container().removeItem(rel);
+        }
 	}
 
 	// manages the looping over others

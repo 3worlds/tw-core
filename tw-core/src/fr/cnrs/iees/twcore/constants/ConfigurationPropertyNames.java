@@ -61,6 +61,7 @@ public enum ConfigurationPropertyNames {
 	P_TIMEMODEL_DT				("dt"),
 	P_TIMEMODEL_SUBCLASS		("subclass"),
 	P_COMPONENT_LIFESPAN		("lifeSpan"),
+	P_RELATION_LIFESPAN			("lifeSpan"),
 	P_COMPONENT_MOBILE			("mobile"),
 	P_COMPONENT_NINST			("nInstances"),
 	P_PARAMETERCLASS			("parameterClass"),

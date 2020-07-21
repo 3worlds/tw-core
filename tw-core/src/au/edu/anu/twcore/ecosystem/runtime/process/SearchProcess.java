@@ -125,8 +125,9 @@ public class SearchProcess
 			}
 			else
 				if ((component.content()!=null) && (arena.content()!=null)) {
-					if (component.content().itemCategorized().belongsTo(focalCategories))
-						loop(t,dt,component,arena.content());
+					if (component.content().itemCategorized()!=null)
+						if (component.content().itemCategorized().belongsTo(focalCategories))
+							loop(t,dt,component,arena.content());
 					for (CategorizedContainer<SystemComponent> subc: component.content().subContainers())
 						if (subc.itemCategorized().belongsTo(focalCategories)) {
 							if (subc.hierarchicalView() instanceof GroupComponent)

@@ -40,8 +40,10 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
+import fr.cnrs.iees.twcore.constants.LifespanType;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Duple;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATION_LIFESPAN;
 
 /**
  * Management of relations (ie delayed addition and removal). this is NOT a container, i.e. relations
@@ -60,11 +62,14 @@ public class RelationContainer
 	private Set<Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>>> relationsToAdd = new HashSet<>();
 	private Set<Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>>> relationsToRemove = new HashSet<>();
 	private boolean changed = false;
+	private boolean permanent = false;
 
 	public RelationContainer(RelationType rel) {
 		super(); // since they are different local scopes it may work...
 		relationType = rel;
 		id = scope().newId(true,rel.id()); // not the same scope, should work ?
+		if (rel.properties().hasProperty(P_RELATION_LIFESPAN.key()))
+			permanent =  rel.properties().getPropertyValue(P_RELATION_LIFESPAN.key()).equals(LifespanType.permanent);
 	}
 
 	@Override
@@ -141,11 +146,10 @@ public class RelationContainer
 		changed = true;
 	}
 
-//	@Override
-//	public boolean isPermanent() {
-//		return relationType.isPermanent();
-//	}
-//
+	public boolean isPermanent() {
+		return permanent;
+	}
+
 
 
 }
