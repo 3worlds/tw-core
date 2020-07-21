@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
@@ -100,12 +101,21 @@ public class RelationContainer
 	@Override
 	public void effectChanges() {
 		// delete all old relations
-		for (Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>> dup : relationsToRemove)
-			for (Edge e:dup.getFirst().edges(Direction.OUT))
+		for (Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>> dup : relationsToRemove) {
+			Iterator<? extends Edge> ite = dup.getFirst().edges(Direction.OUT).iterator();
+			while (ite.hasNext()) {
+				Edge e = ite.next();
 				if (e.endNode().equals(dup.getSecond())) {
 					e.disconnect();
 					((SystemRelation)e).removeFromContainer();
 				}
+			}
+//			for (Edge e:dup.getFirst().edges(Direction.OUT))
+//				if (e.endNode().equals(dup.getSecond())) {
+//					e.disconnect();
+//					((SystemRelation)e).removeFromContainer();
+//				}
+		}
 		relationsToRemove.clear();
 		// establish all new relations
 		for (Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>> item : relationsToAdd) {
