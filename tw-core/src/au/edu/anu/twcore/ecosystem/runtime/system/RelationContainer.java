@@ -29,7 +29,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
@@ -37,8 +36,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.containers.DynamicContainer;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.exceptions.TwcoreException;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.twcore.constants.LifespanType;
@@ -61,7 +58,8 @@ public class RelationContainer
 	private RelationType relationType = null;
 	// the list of system component pairs to later relate
 	private Set<Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>>> relationsToAdd = new HashSet<>();
-	private Set<Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>>> relationsToRemove = new HashSet<>();
+	// the list of system relations to remove
+	private Set<SystemRelation> relationsToRemove = new HashSet<>();
 	private boolean changed = false;
 	private boolean permanent = false;
 
@@ -91,23 +89,17 @@ public class RelationContainer
 		relationsToAdd.add(new Duple<>(from,to));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void removeItem(SystemRelation relation) {
-		relationsToRemove.add(new Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>>
-			((CategorizedComponent<ComponentContainer>)relation.startNode(),(CategorizedComponent<ComponentContainer>)relation.endNode()));
+		relationsToRemove.add(relation);
 	}
 
 	@Override
 	public void effectChanges() {
 		// delete all old relations
-		for (Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>> dup : relationsToRemove) {
-			// this is annoying: is this removeFromContainer really needed ?
-			for (Edge e:dup.getFirst().edges(Direction.OUT))
-				if (e.endNode().equals(dup.getSecond())) {
-					((SystemRelation)e).removeFromContainer();
-			}			
-			dup.getFirst().disconnectFrom(dup.getSecond());
+		for (SystemRelation sr:relationsToRemove) {
+			sr.startNode().disconnectFrom(sr.endNode()); // Do NOT use sr.disconnect() --> ConcurrentModificationException
+			sr.removeFromContainer();
 		}
 		relationsToRemove.clear();
 		// establish all new relations
