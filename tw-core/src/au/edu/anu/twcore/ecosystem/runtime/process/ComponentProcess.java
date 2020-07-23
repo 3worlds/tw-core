@@ -145,6 +145,16 @@ public class ComponentProcess
 		}
 	}
 
+	private void relocate(SystemComponent sc, double[] newLoc, String...labels) {
+		if (newLoc.length!=space.ndim()) {
+			log.warning("Wrong number of dimensions: default location generated");
+			newLoc = space.defaultLocation();
+		}
+		space.locate(sc,newLoc);
+		if (space.dataTracker()!=null)
+			space.dataTracker().recordItem(currentStatus,newLoc,labels);
+	}
+	
 	private void executeFunctions(double t, double dt, CategorizedComponent<ComponentContainer> focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
 		if (focal.currentState() != null) {
@@ -154,7 +164,12 @@ public class ComponentProcess
 
 		// change state of this SystemComponent - easy
 		for (ChangeStateFunction function : CSfunctions) {
-			function.changeState(t,dt,arena,null,focalGroup,focal,space,/*newLoc*/null);
+			double[] newLoc = null;
+			if (space!=null)
+				newLoc = new double[space.ndim()];
+			function.changeState(t,dt,arena,null,focalGroup,focal,space,newLoc);
+			if (space!=null)
+				relocate((SystemComponent) focal,newLoc,focal.container().itemId(focal.id()));
 		}
 		if (focal.currentState() != null)
 			focal.nextState().writeDisable();
@@ -236,21 +251,9 @@ public class ComponentProcess
 						func.setOtherInitialState(t, dt,
 							arena, null, focalGroup, focal,
 							null, otherGroup, newBorn, space, newLoc);
-						if (space!=null) {
-//							if (newLoc==null) {
-//								log.warning("No location returned by relocate(...): default location generated");
-//								newLoc = space.defaultLocation();
-//							}
-							if (newLoc.length!=space.ndim()) {
-								log.warning("Wrong number of dimensions: default location generated");
-								newLoc = space.defaultLocation();
-							}
-							space.locate(newBorn,newLoc);
-							if (space.dataTracker()!=null)
-								space.dataTracker().recordItem(currentStatus,newLoc,
-									// caution - item not yet in container.
-									nbs.container.itemId(newBorn.id()));
-						}
+						if (space!=null)
+							// caution - item not yet in container.
+							relocate(newBorn,newLoc,nbs.container.itemId(newBorn.id()));
 					}
 					if (function.relateToOther())
 						focal.relateTo(newBorn,parentTo.key()); // delayed addition
