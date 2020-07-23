@@ -102,19 +102,12 @@ public class RelationContainer
 	public void effectChanges() {
 		// delete all old relations
 		for (Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>> dup : relationsToRemove) {
-			Iterator<? extends Edge> ite = dup.getFirst().edges(Direction.OUT).iterator();
-			while (ite.hasNext()) {
-				Edge e = ite.next();
+			// this is annoying: is this removeFromContainer really needed ?
+			for (Edge e:dup.getFirst().edges(Direction.OUT))
 				if (e.endNode().equals(dup.getSecond())) {
-					e.disconnect();
 					((SystemRelation)e).removeFromContainer();
-				}
-			}
-//			for (Edge e:dup.getFirst().edges(Direction.OUT))
-//				if (e.endNode().equals(dup.getSecond())) {
-//					e.disconnect();
-//					((SystemRelation)e).removeFromContainer();
-//				}
+			}			
+			dup.getFirst().disconnectFrom(dup.getSecond());
 		}
 		relationsToRemove.clear();
 		// establish all new relations
