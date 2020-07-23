@@ -30,6 +30,8 @@ package au.edu.anu.twcore.errorMessaging;
 
 import java.io.File;
 import java.nio.file.attribute.FileTime;
+import java.util.Arrays;
+import java.util.List;
 
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
@@ -73,18 +75,18 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			File localSrcFile = (File) args[0];
 			verbose1 = category() + "Check and refresh linked Java project. Model file '" + localSrcFile.getName()
 					+ "' has changed structure due to configuration edits.";
-			verbose2 = category() + errorName() +  "Check and refresh linked Java project. Model file '" + localSrcFile.getName()
-			+ "' has changed structure due to configuration edits.\n" + //
+			verbose2 = category() + errorName() + "Check and refresh linked Java project. Model file '"
+					+ localSrcFile.getName() + "' has changed structure due to configuration edits.\n" + //
 					"Old Model file has been backed up and renamed with ext *.orig<n>";
-			
+
 			break;
 
 		}
 		case COMPILER_ERROR: {
 			File file = (File) args[0];
 			String compileResult = "unknown";
-			if (args.length>0)
-			compileResult = (String) args[1];
+			if (args.length > 0)
+				compileResult = (String) args[1];
 			verbose1 = category() + "There were compiling warnings/errors in " + file.getName() + ".";
 			verbose2 = category() + errorName() + "There were compiling warnings/errors in " + file.getName()
 					+ ". Errors: " + compileResult;
@@ -182,27 +184,27 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			verbose2 = category() + errorName() + "Resource missing [" + file.getAbsolutePath() + "]. " + hint;
 			break;
 		}
-		case DEPLOY_EXCEPTION:{
+		case DEPLOY_EXCEPTION: {
 			Exception e = (Exception) args[0];
-			File errorFile = (File)args[1];
-			File prjFile = (File)args[2];
-			verbose1 = category()+"Failed to launch ModelRunner.";
-			verbose2 = category()+errorName()+"Failed to launch ModelRunner.\n"+//
-					"Project="+prjFile.getAbsolutePath()+"\n"+//
-					"ErrorLog="+errorFile.getAbsolutePath()+"\n"+//
-					"Exception="+e.toString();
-			
-			break;	
+			@SuppressWarnings("unchecked")
+			List<String> cmds = (List<String>) args[1];
+			verbose1 = category() + "Failed to launch ModelRunner.";
+			verbose2 = category() + errorName() + "Failed to launch ModelRunner.\n" + //
+					"Cmds=" + Arrays.deepToString(cmds.toArray()) + "\n" + //
+					"Exception=" + e.toString();
+			break;
 		}
-		case DEPLOY_FAIL:{
-			Exception e = (Exception) args[0];
-			File errorLog = (File)args[1];
-			File project = (File)args[2];
-			verbose1 = category()+"ModelRunner crashed on startup.";
-			verbose2 = category()+errorName()+"ModelRunner crashed on startup.\n"+//
-					"Log="+errorLog.getAbsoluteFile()+"\n"+//
-					"Project="+project.getAbsoluteFile()+"\n"+//
-					"Exception="+e.toString();
+		case DEPLOY_FAIL: {
+			// Exception e = (Exception) args[0];
+			List<String> lines = (List<String>) args[0];
+			File project = (File) args[1];
+			verbose1 = category() + "ModelRunner has errors.";
+			StringBuilder sb = new StringBuilder();
+			for (String line : lines)
+				sb.append(line).append("\n");
+			verbose2 = category() + errorName() + "ModelRunner has errors.\n" + //
+					"Log=" + sb.toString() + //
+					"Project=" + project.getAbsoluteFile();
 			break;
 		}
 		default: {
