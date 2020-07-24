@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.logging.Logger;
-
 import au.edu.anu.twcore.data.runtime.Metadata;
 //import au.edu.anu.twcore.ecosystem.Ecosystem;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
@@ -61,7 +59,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
-import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * A TwProcess that loops on a list of SystemComponents and executes methods on
@@ -80,7 +77,7 @@ public class ComponentProcess
 		String name = null;
 	}
 
-	private static Logger log = Logging.getLogger(ComponentProcess.class);
+	
 
 	private SortedSet<Category> focalCategories = new TreeSet<>();
 	private String categoryId = null;
@@ -145,15 +142,6 @@ public class ComponentProcess
 		}
 	}
 
-	private void relocate(SystemComponent sc, double[] newLoc, String...labels) {
-		if (newLoc.length!=space.ndim()) {
-			log.warning("Wrong number of dimensions: default location generated");
-			newLoc = space.defaultLocation();
-		}
-		space.locate(sc,newLoc);
-		if (space.dataTracker()!=null)
-			space.dataTracker().recordItem(currentStatus,newLoc,labels);
-	}
 	
 	private void executeFunctions(double t, double dt, CategorizedComponent<ComponentContainer> focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
@@ -174,38 +162,41 @@ public class ComponentProcess
 		if (focal.currentState() != null)
 			focal.nextState().writeDisable();
 
-		// delete decision function
-		// NB: only applicable to SystemComponents
+		// delete decision function (NB: only applicable to SystemComponents)
 		if (focal instanceof SystemComponent)
-			for (DeleteDecisionFunction function : Dfunctions) {
+			for (DeleteDecisionFunction function : Dfunctions)
 				if (function.delete(t, dt, arena, null,focalGroup, focal, space)) {
-					focal.container().removeItem((SystemComponent) focal); // safe - delayed removal
+		//-----------------------------------------------------------------------------------	
+			focal.container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
 			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
 					((ComponentFactory)focal.membership()).spaces()) {
 				space.unlocate((SystemComponent) focal);
-//				if (space.dataTracker()!=null)
-//					space.dataTracker().removeItem(currentStatus,container.itemId(focal.id()));
+				if (space.dataTracker()!=null)
+					space.dataTracker().removeItem(currentStatus,focal.container().itemId(focal.id()));
 			}
 			// remove from tracklist if dead - safe, data sending has already been made
-				for (DataTracker<?,Metadata> tracker:trackers)
-					if (tracker.isTracked(focal))
-						tracker.removeTrackedItem((SystemComponent) focal);
-				// if present, spreads some values to other components
-				// (e.g. "decomposition", or "erosion")
-				for (ChangeOtherStateFunction consequence:function.getConsequences()) {
-					for (SystemRelation to:focal.getRelations(returnsTo.key())) {
-						SystemComponent other = (SystemComponent) to.endNode();
-						otherGroup = null; // TODO: find it!
-						// FLAW? here how does code generation know about the categories ?
-						// TODO: this is unfinished!
-						consequence.changeOtherState(t, dt,
-							arena, null, focalGroup, focal,
-							null, otherGroup, other, space, null);
-					}
+			for (DataTracker<?,Metadata> tracker:trackers)
+				if (tracker.isTracked(focal))
+					tracker.removeTrackedItem((SystemComponent) focal);
+			// if present, spreads some values to other components
+			// (e.g. "decomposition", or "erosion")
+			for (ChangeOtherStateFunction consequence:function.getConsequences()) {
+				for (SystemRelation to:focal.getRelations(returnsTo.key())) {
+					SystemComponent other = (SystemComponent) to.endNode();
+					otherGroup = null; // TODO: find it!
+					// FLAW? here how does code generation know about the categories ?
+					double[] newLoc = null;
+					if (space!=null)
+						newLoc = new double[space.ndim()];
+					consequence.changeOtherState(t, dt,
+						arena, null, focalGroup, focal,
+						null, otherGroup, other, space, newLoc);
+					if (space!=null)
+						relocate((SystemComponent)other,newLoc,other.container().itemId(other.id()));
 				}
 			}
-		}
+		} //-------------------------------------------------------------------------
 
 		// creation of other SystemComponents
 		for (CreateOtherDecisionFunction function : COfunctions) {
@@ -257,12 +248,10 @@ public class ComponentProcess
 					}
 					if (function.relateToOther())
 						focal.relateTo(newBorn,parentTo.key()); // delayed addition
-					// welcome newBorn in container!
 					nbs.container.addItem(newBorn); // safe - delayed addition
 				}
 			}
 		}
-
 
 		// call data trackers AFTER computations so that decorators are different from zero
 		for (DataTracker<?,Metadata> tracker:trackers)
