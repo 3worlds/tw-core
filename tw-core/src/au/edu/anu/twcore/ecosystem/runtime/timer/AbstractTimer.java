@@ -32,13 +32,14 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
+import fr.ens.biologie.generic.utils.Logging;
 
 public abstract class AbstractTimer implements Timer {
 
 	/** The last time at which this time model was activated */
 	protected long lastTime = 0L;
 	protected TimerNode timeModel;
-	protected Logger log = Logger.getLogger(getClass().getName());
+	protected static Logger log = Logging.getLogger(AbstractTimer.class);
 
 	public AbstractTimer(TimerNode timeModel) {
 		super();

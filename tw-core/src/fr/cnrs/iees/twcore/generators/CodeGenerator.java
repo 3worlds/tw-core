@@ -73,6 +73,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
+import fr.ens.biologie.generic.utils.Logging;
 import fr.cnrs.iees.properties.ResizeablePropertyList;
 
 /**
@@ -84,7 +85,7 @@ import fr.cnrs.iees.properties.ResizeablePropertyList;
  */
 public class CodeGenerator {
 
-	private static Logger log = Logger.getLogger(CodeGenerator.class.getName());
+	private static Logger log = Logging.getLogger(CodeGenerator.class);
 //	static { log.setLevel(Level.SEVERE); }
 	private TreeGraph<TreeGraphDataNode, ALEdge> graph = null;
 	// the generator for the single user model file
