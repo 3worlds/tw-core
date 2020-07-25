@@ -30,8 +30,6 @@ package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
-
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
@@ -46,7 +44,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
-import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * A TwProcess that loops on established relations and executes methods on them or on their
@@ -55,8 +52,6 @@ import fr.ens.biologie.generic.utils.Logging;
  *
  */
 public class RelationProcess extends AbstractRelationProcess {
-
-	private static Logger log = Logging.getLogger(RelationProcess.class);
 
     private List<ChangeOtherCategoryDecisionFunction> COCfunctions =
     	new LinkedList<ChangeOtherCategoryDecisionFunction>();
@@ -355,32 +350,37 @@ public class RelationProcess extends AbstractRelationProcess {
 			CategorizedComponent<ComponentContainer> focal,
 			CategorizedComponent<ComponentContainer> other,
 			SystemRelation rel) {
+		// ChangeOtherStateFunction
         for (ChangeOtherStateFunction function:COSfunctions) {
-//        	// these shouldnt be needed anymore because user code cannot write in there
-//        	if (focal.currentState()!=null) {
-//	        	focal.currentState().writeDisable();
-//	        	focal.nextState().writeDisable();
-//        	}
         	if (other.currentState()!=null) {
 	        	other.currentState().writeDisable();
 	        	other.nextState().writeEnable();
         	}
-//        	double[] nextOtherLoc = null;
-//        	if (otherLocation!=null)
-//        		nextOtherLoc = new double[otherLocation.dim()];
+			double[] newLoc = null;
+			if (space!=null)
+				newLoc = new double[space.ndim()];
         	function.changeOtherState(t,dt,
         		arena, focalLifeCycle, focalGroup, focal,
-        		otherLifeCycle, otherGroup, other, space,null);
-        	// TODO: set new other location
-        	//
-        	//
+        		otherLifeCycle, otherGroup, other, space,newLoc);
+			if (space!=null)
+				relocate((SystemComponent)other,newLoc,other.container().itemId(other.id()));
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
         }
-        // if the relation was ephemeral, stop it
+        
+        // ephemeral relations
         if (!rel.container().isPermanent()) {
-        	rel.container().removeItem(rel);
-        }
+	        // MaintainRelationDecision
+	        for (MaintainRelationDecisionFunction function:MRfunctions) {
+	        	if (!function.maintainRelation(t, dt, arena, 
+	        		/*lifeCycle*/null, focalGroup, focal, 
+	        		/*otherLifeCycle*/null, otherGroup, other, space))
+	        		rel.container().removeItem(rel);
+	        }
+	        // if there is no maintainrelation function, the relation only lasts for 1 time step
+	        if (MRfunctions.isEmpty())
+	        	rel.container().removeItem(rel);
+        }        
 	}
 
 	// manages the looping over others

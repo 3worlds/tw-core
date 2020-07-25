@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
@@ -47,6 +48,7 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.ens.biologie.generic.Sealable;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * An ancestor class for 3Worlds "Processes". The descendant Processes implement different
@@ -58,6 +60,8 @@ public abstract class AbstractProcess
 		implements TwProcess, Sealable, MultipleDataTrackerHolder<Metadata>,
 			Spatialized<DynamicSpace<SystemComponent,LocatedSystemComponent>> {
 
+	private static Logger log = Logging.getLogger(AbstractProcess.class);
+	
 	private boolean sealed = false;
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
     private ArenaComponent ecosystem = null;
@@ -150,6 +154,44 @@ public abstract class AbstractProcess
 		loop(currentTime,timer.userTime(dt),ecosystem());
 	}
 
+	// for descendants
+	protected void relocate(SystemComponent sc, double[] newLoc, String...labels) {
+		if (newLoc.length!=space.ndim()) {
+			log.warning("Wrong number of dimensions: default location generated");
+			newLoc = space.defaultLocation();
+		}
+		// TODO HERE: manage the edge effect correction!
+		switch (space.edgeEffectCorrection()) {
+		case bufferAndWrap:
+			break;
+		case bufferZone:
+			break;
+		case noCorrection:
+			break;
+		case wrapAround1D:			
+			break;
+		case wrapAround2D:
+			break;
+		case wrapAroundAllD:
+			// TODO: very crude for the moment - to prevent crashes
+			if (newLoc[0]<space.boundingBox().lowerBound(0))
+				newLoc[0] += space.boundingBox().sideLength(0);
+			if (newLoc[1]<space.boundingBox().lowerBound(1))
+				newLoc[1] += space.boundingBox().sideLength(1);
+			if (newLoc[0]>space.boundingBox().upperBound(0))
+				newLoc[0] -= space.boundingBox().sideLength(0);
+			if (newLoc[1]>space.boundingBox().upperBound(1))
+				newLoc[1] -= space.boundingBox().sideLength(1);
+			break;
+		default:
+			break;
+		}
+		space.locate(sc,newLoc);
+		if (space.dataTracker()!=null)
+			space.dataTracker().recordItem(currentStatus,newLoc,labels);
+	}
+
+	
 	/**
 	 * Utility for descendants. Fills a hierarchical context from container information
 	 *
