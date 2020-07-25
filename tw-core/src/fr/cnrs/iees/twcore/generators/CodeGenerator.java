@@ -86,7 +86,6 @@ public class CodeGenerator {
 
 	private static Logger log = Logger.getLogger(CodeGenerator.class.getName());
 //	static { log.setLevel(Level.SEVERE); }
-
 	private TreeGraph<TreeGraphDataNode, ALEdge> graph = null;
 	// the generator for the single user model file
 	private ModelGenerator modelgen = null;
