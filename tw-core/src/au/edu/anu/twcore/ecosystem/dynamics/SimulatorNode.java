@@ -73,27 +73,26 @@ import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
- * Class matching the "ecosystem/dynamics" node label in the 3Worlds configuration tree.
- * Has no properties. This <em>is</em> the simulator.
+ * Class matching the "ecosystem/dynamics" node label in the 3Worlds
+ * configuration tree. Has no properties. This <em>is</em> the simulator.
  *
- * NB: possible flaw here - Simulator is a factory while processNode is a singleton - does it mean
- * the same process instance will be used in many simulators ? if yes, that's wrong...
+ * NB: possible flaw here - Simulator is a factory while processNode is a
+ * singleton - does it mean the same process instance will be used in many
+ * simulators ? if yes, that's wrong...
  *
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class SimulatorNode
-		extends InitialisableNode
-		implements LimitedEdition<Simulator>, Sealable {
+public class SimulatorNode extends InitialisableNode implements LimitedEdition<Simulator>, Sealable {
 
 	private boolean sealed = false;
 	private Timeline timeLine = null;
-	private Map<Integer,Simulator> simulators = new HashMap<>();
+	private Map<Integer, Simulator> simulators = new HashMap<>();
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
 
 	// IDD temp code [JG: for how long?]
-	public Collection<Simulator> getSimulators(){
+	public Collection<Simulator> getSimulators() {
 		return simulators.values();
 	}
 
@@ -105,15 +104,20 @@ public class SimulatorNode
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+	// used by doc generator
+	public Map<Integer, List<List<ProcessNode>>> getProcessCallingOrder() {
+		initialise();
+		return processCallingOrder;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
-		if(!sealed) {
+		if (!sealed) {
 			super.initialise();
-			timeLine = (Timeline) get(getChildren(),
-				selectOne(hasTheLabel(N_TIMELINE.label())));
-			List<TimerNode> timeModels = (List<TimerNode>)get(timeLine.getChildren(),
-				selectOneOrMany(hasTheLabel(N_TIMER.label())));
+			timeLine = (Timeline) get(getChildren(), selectOne(hasTheLabel(N_TIMELINE.label())));
+			List<TimerNode> timeModels = (List<TimerNode>) get(timeLine.getChildren(),
+					selectOneOrMany(hasTheLabel(N_TIMER.label())));
 			// processes
 			hierarchiseProcesses(timeModels);
 			sealed = true;
@@ -128,22 +132,23 @@ public class SimulatorNode
 	@SuppressWarnings("unchecked")
 	private Simulator makeSimulator(int index) {
 		// *** TimeModel --> Timer
-		List<TimerNode> timeModels = (List<TimerNode>)get(timeLine.getChildren(),
-			selectOneOrMany(hasTheLabel(N_TIMER.label())));
+		List<TimerNode> timeModels = (List<TimerNode>) get(timeLine.getChildren(),
+				selectOneOrMany(hasTheLabel(N_TIMER.label())));
 		List<Timer> timers = new ArrayList<>();
-		for (TimerNode tm:timeModels)
+		for (TimerNode tm : timeModels)
 			timers.add(tm.getInstance(index));
 		// *** StoppingConditionNode --> StoppingCondition
 		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
-			selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
+				selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
 		StoppingCondition rootStop = null;
-		// when there is no stopping condition, the default one is used (runs to infinite time)
+		// when there is no stopping condition, the default one is used (runs to
+		// infinite time)
 		if (scnodes.isEmpty())
 			rootStop = SimpleStoppingCondition.defaultStoppingCondition();
 		// when there are many stopping conditions, any of them can stop the simulation
-		else if (scnodes.size()>1) {
+		else if (scnodes.size() > 1) {
 			List<StoppingCondition> lsc = new ArrayList<>();
-			for (StoppingConditionNode scn:scnodes)
+			for (StoppingConditionNode scn : scnodes)
 				lsc.add(scn.getInstance(index));
 			rootStop = new MultipleOrStoppingCondition(lsc);
 		}
@@ -152,26 +157,24 @@ public class SimulatorNode
 			rootStop = scnodes.get(0).getInstance(index);
 		// *** ProcessNode --> Process
 		Map<Integer, List<List<TwProcess>>> pco = new HashMap<>();
-		for (Map.Entry<Integer,List<List<ProcessNode>>> e:processCallingOrder.entrySet()) {
+		for (Map.Entry<Integer, List<List<ProcessNode>>> e : processCallingOrder.entrySet()) {
 			List<List<TwProcess>> nllp = new ArrayList<>();
-			for (List<ProcessNode> lp:e.getValue()) {
+			for (List<ProcessNode> lp : e.getValue()) {
 				List<TwProcess> nlp = new ArrayList<>();
-				for (ProcessNode pn:lp)
+				for (ProcessNode pn : lp)
 					nlp.add(pn.getInstance(index));
 				nllp.add(nlp);
 			}
-			pco.put(e.getKey(),nllp);
+			pco.put(e.getKey(), nllp);
 		}
 		// *** Initial community
 //		ComponentContainer comm = (ComponentContainer)((Ecosystem) getParent()).getInstance(index);
 		ArenaComponent arena = ((ArenaType) getParent()).getInstance(index).getInstance();
 		setInitialCommunity(index);
 		// *** ecosystem graph
-		Structure str = (Structure) get(getParent(),
-			children(),
-			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+		Structure str = (Structure) get(getParent(), children(), selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		EcosystemGraph ecosystem = null;
-		SpaceOrganiser spo = null;//presume can be null for non-spatial models?
+		SpaceOrganiser spo = null;// presume can be null for non-spatial models?
 		if (str != null) {
 			ecosystem = new EcosystemGraph(arena, str.relationContainers.getInstance(index));
 			// *** spaceOrganiser
@@ -180,8 +183,8 @@ public class SimulatorNode
 			ecosystem = new EcosystemGraph(arena);
 		}
 		// *** finally, instantiate simulator
-		Simulator sim = new Simulator(index,rootStop,timeLine,timeModels,timers,timeModelMasks.clone(),
-			pco,spo,ecosystem);
+		Simulator sim = new Simulator(index, rootStop, timeLine, timeModels, timers, timeModelMasks.clone(), pco, spo,
+				ecosystem);
 		rootStop.attachSimulator(sim);
 		return sim;
 	}
@@ -200,9 +203,8 @@ public class SimulatorNode
 //	}
 
 	private void setInitialCommunity(int index) {
-		TreeGraphNode struc = (TreeGraphNode) get(getParent(),
-			children(),
-			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+		TreeGraphNode struc = (TreeGraphNode) get(getParent(), children(),
+				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		if (struc != null)
 			for (TreeNode c : struc.getChildren()) {
 				if (c instanceof ElementType<?, ?>)
@@ -228,14 +230,14 @@ public class SimulatorNode
 		if (!sealed)
 			initialise();
 		if (!simulators.containsKey(index))
-			simulators.put(index,makeSimulator(index));
+			simulators.put(index, makeSimulator(index));
 		return simulators.get(index);
 	}
 
-	public void addObserver(DataReceiver<TimeData,Metadata> observer) {
-		for (Simulator sim:simulators.values())
+	public void addObserver(DataReceiver<TimeData, Metadata> observer) {
+		for (Simulator sim : simulators.values())
 			sim.addObserver(observer);
-		//simulators.clear(); IDD: what's going on here -no longer needed?
+		// simulators.clear(); IDD: what's going on here -no longer needed?
 	}
 
 	@Override
@@ -250,16 +252,14 @@ public class SimulatorNode
 	}
 
 	/**
-	 * recursive method to build up the list of all possible simultaneous
-	 * timeModel combinations. NOTE that this must be called with a non-empty
-	 * list, otherwise the recursion will never start. works fine (3 timeModels
-	 * generate 7 sets as expected)
+	 * recursive method to build up the list of all possible simultaneous timeModel
+	 * combinations. NOTE that this must be called with a non-empty list, otherwise
+	 * the recursion will never start. works fine (3 timeModels generate 7 sets as
+	 * expected)
 	 *
-	 * @param combinationList
-	 *            - the list of timeModel combinations
+	 * @param combinationList - the list of timeModel combinations
 	 */
-	private void computeTMCombinations(Set<HashSet<TimerNode>>
-		combinationList,List<TimerNode> timerList) {
+	private void computeTMCombinations(Set<HashSet<TimerNode>> combinationList, List<TimerNode> timerList) {
 		int initSize = combinationList.size();
 		Set<HashSet<TimerNode>> addList = new HashSet<HashSet<TimerNode>>();
 		for (Set<TimerNode> stm : combinationList) {
@@ -272,7 +272,7 @@ public class SimulatorNode
 		}
 		combinationList.addAll(addList);
 		if (combinationList.size() != initSize)
-			computeTMCombinations(combinationList,timerList);
+			computeTMCombinations(combinationList, timerList);
 	}
 
 	/**
@@ -280,8 +280,7 @@ public class SimulatorNode
 	 *
 	 * @return
 	 */
-	private int dependencyRank(int rank, ProcessNode p,
-			Map<ProcessNode, List<ProcessNode>> deps) {
+	private int dependencyRank(int rank, ProcessNode p, Map<ProcessNode, List<ProcessNode>> deps) {
 		int result = rank;
 		for (ProcessNode dp : deps.get(p))
 			result = Math.max(result, dependencyRank(rank + 1, dp, deps));
@@ -290,11 +289,11 @@ public class SimulatorNode
 
 	/**
 	 * computes the order of process calls for any combination of time models
-	 * possibly occurring simultaneously. Results are stored in
-	 * processCallingOrder, which contains a map of lists of (simultaneous)
-	 * processes index by execution rank. Process lists are executed by order of
-	 * execution rank. Within a list, order doesnt matter (and process execution
-	 * could in theory be parallelized here).
+	 * possibly occurring simultaneously. Results are stored in processCallingOrder,
+	 * which contains a map of lists of (simultaneous) processes index by execution
+	 * rank. Process lists are executed by order of execution rank. Within a list,
+	 * order doesnt matter (and process execution could in theory be parallelized
+	 * here).
 	 *
 	 * Code checked & tested with procesRankingTest.dsl.
 	 */
@@ -316,7 +315,7 @@ public class SimulatorNode
 			set.add(tm);
 			allTMCombinations.add(set);
 		}
-		computeTMCombinations(allTMCombinations,timerList);
+		computeTMCombinations(allTMCombinations, timerList);
 		Map<HashSet<TimerNode>, Integer> allTMMasks = new Hashtable<HashSet<TimerNode>, Integer>();
 		for (HashSet<TimerNode> stm : allTMCombinations) {
 			mask = 0x00000000;
@@ -340,20 +339,18 @@ public class SimulatorNode
 			LinkedList<ProcessNode> simultaneousProcesses = new LinkedList<ProcessNode>();
 			for (TimerNode tm : simultaneousTM) {
 				List<ProcessNode> simP = (List<ProcessNode>) get(tm.getChildren(),
-					selectOneOrMany(hasTheLabel(N_PROCESS.label())));
+						selectOneOrMany(hasTheLabel(N_PROCESS.label())));
 				simultaneousProcesses.addAll(simP);
 			}
 			// find their dependencies
-			List<ProcessNode> spl = new ArrayList<ProcessNode>(
-				simultaneousProcesses.size());
+			List<ProcessNode> spl = new ArrayList<ProcessNode>(simultaneousProcesses.size());
 			Map<ProcessNode, List<ProcessNode>> dependencies = new Hashtable<ProcessNode, List<ProcessNode>>(
-				simultaneousProcesses.size());
+					simultaneousProcesses.size());
 			for (ProcessNode p : simultaneousProcesses)
 				spl.add(p);
 			for (ProcessNode p : simultaneousProcesses) {
 				List<ProcessNode> deps = (List<ProcessNode>) get(p.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_DEPENDSON.label())),
-					edgeListEndNodes());
+						selectZeroOrMany(hasTheLabel(E_DEPENDSON.label())), edgeListEndNodes());
 				List<ProcessNode> dep = new LinkedList<ProcessNode>();
 				// only store those dependencies that are in the current list of
 				// activated processes
@@ -372,8 +369,7 @@ public class SimulatorNode
 				ranks.put(p, rank);
 			}
 			// build an array of process lists, indexed by execution rank
-			List<List<ProcessNode>> processesByRank = new ArrayList<List<ProcessNode>>(
-				maxRank + 1);
+			List<List<ProcessNode>> processesByRank = new ArrayList<List<ProcessNode>>(maxRank + 1);
 			for (int ii = 0; ii < maxRank + 1; ii++)
 				processesByRank.add(new LinkedList<ProcessNode>());
 			for (ProcessNode p : simultaneousProcesses)
