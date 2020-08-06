@@ -290,16 +290,10 @@ public class Project implements ProjectPaths, TwPaths {
 
 			@Override
 			public int compare(File o1, File o2) {
-				Long m1 = o1.lastModified();
-				Long m2 = o2.lastModified();
-				return m1.compareTo(m2);
-//			
-//				if (m1 < m2)
-//					return 1;
-//				else if (m1 > m2)
-//					return -1;
-//				else
-//					return 0;
+				return o1.getName().compareTo(o2.getName());
+//				Long m1 = o1.lastModified();
+//				Long m2 = o2.lastModified();
+//				return m2.compareTo(m1);
 			}
 
 		});
