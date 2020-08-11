@@ -51,8 +51,10 @@ import java.util.List;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
+import au.edu.anu.twcore.data.runtime.RuntimeGraphData;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.data.runtime.SpaceData;
+import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
@@ -90,7 +92,8 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 			Class<? extends Widget> widgetClass;
 			try {
 				widgetClass = (Class<? extends Widget>) Class.forName(subclass, true, classLoader);
-				// Pb here: controller widget must be initialised LAST because it calls simulator.preProcess()
+				// Pb here: controller widget must be initialised LAST because it calls
+				// simulator.preProcess()
 				// Status & StateMachineController widgets
 				if ((StatusWidget.class.isAssignableFrom(widgetClass))
 						| (StateMachineController.class.isAssignableFrom(widgetClass))) {
@@ -100,8 +103,7 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 					// this could be a function of any TreeNode
 					while (root.getParent() != null)
 						root = root.getParent();
-					Experiment exp = (Experiment) get(root.getChildren(),
-						selectOne(hasTheLabel(N_EXPERIMENT.label())));
+					Experiment exp = (Experiment) get(root.getChildren(), selectOne(hasTheLabel(N_EXPERIMENT.label())));
 					StateMachineController obs = exp.getInstance();
 					widget = widgetConstructor.newInstance(obs.stateMachine());
 				}
@@ -113,24 +115,28 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 				widget.setProperties(id(), properties());
 				// time series tracker sending data to this widget
 				List<DataTrackerNode> timeSeriesTrackers = (List<DataTrackerNode>) get(edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_TRACKSERIES.label())),
-					edgeListEndNodes());
-				for (DataTrackerNode dtn:timeSeriesTrackers)
+						selectZeroOrMany(hasTheLabel(E_TRACKSERIES.label())), edgeListEndNodes());
+				for (DataTrackerNode dtn : timeSeriesTrackers)
 					if (widget instanceof DataReceiver)
 						dtn.attachWidget((DataReceiver<?, Metadata>) widget);
 				// space trackers sending data to this widget
 				List<SpaceNode> spaces = (List<SpaceNode>) get(edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())),
-					edgeListEndNodes());
-				for (SpaceNode spn:spaces)
+						selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())), edgeListEndNodes());
+				for (SpaceNode spn : spaces)
 					if (widget instanceof DataReceiver)
-						spn.attachSpaceWidget((DataReceiver<SpaceData, Metadata>)widget);
+						spn.attachSpaceWidget((DataReceiver<SpaceData, Metadata>) widget);
+
+				ArenaType arenaType = (ArenaType) get(edges(Direction.OUT),
+						selectZeroOrOne(hasTheLabel(E_TRACKSYSTEM.label())), endNode());
+				
+				if (arenaType!=null)
+					arenaType.attachGraphWidget((DataReceiver<RuntimeGraphData, Metadata>) widget);
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			SimulatorNode sim = (SimulatorNode) get(edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())), endNode());
+					selectZeroOrOne(hasTheLabel(E_TRACKTIME.label())), endNode());
 			if (sim != null)
 				sim.addObserver((DataReceiver<TimeData, Metadata>) widget);
 			sealed = true;
@@ -141,7 +147,7 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 	public int initRank() {
 		String subclass = (String) properties().getPropertyValue(P_WIDGET_SUBCLASS.key());
 		if (subclass.contains("Control"))
-			return N_UIWIDGET.initRank()+10;
+			return N_UIWIDGET.initRank() + 10;
 		else
 			return N_UIWIDGET.initRank();
 	}

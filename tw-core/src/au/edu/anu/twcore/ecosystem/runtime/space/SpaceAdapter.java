@@ -176,7 +176,7 @@ public abstract class SpaceAdapter
 	 * 	attach space display widget to this data tracker
 	 * @param widget
 	 */
-	public final void attachSimpleSpaceWidget(DataReceiver<SpaceData,Metadata> widget)  {
+	public final void addObserver(DataReceiver<SpaceData,Metadata> widget)  {
 		dataTracker.addObserver(widget);
 	}
 

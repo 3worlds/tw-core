@@ -44,6 +44,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
@@ -151,6 +152,11 @@ public abstract class AbstractProcess
 		if (space!=null)
 			if (space.dataTracker()!=null)
 				space.dataTracker().recordTime(t);
+		
+		GraphDataTracker gdt = ecosystem.getDataTracker();
+		if (gdt!=null)
+			gdt.recordTime(t);
+		
 		loop(currentTime,timer.userTime(dt),ecosystem());
 	}
 

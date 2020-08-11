@@ -39,6 +39,7 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Resettable;
 /**
  * Read-only graph view of the 3worlds ecosystem
@@ -183,7 +184,13 @@ public class EcosystemGraph
 			// Second, graph state changes
 			components.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
 		}
+		// here???
+		if (arena.getDataTracker()!=null) {
+			arena.getDataTracker().recordItem(SimulatorStatus.Active,this , arena.id());
+		}
+
 		arena.stepForward();
+	
 	}
 
 	@Override
@@ -194,6 +201,10 @@ public class EcosystemGraph
 			rc.preProcess();
 		// reinitialise state variables and constants
 		arena.preProcess();
+		if (arena.getDataTracker()!=null) {
+			arena.getDataTracker().recordItem(SimulatorStatus.Initial,this , arena.id());
+		}
+
 	}
 
 	@Override

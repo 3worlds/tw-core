@@ -26,30 +26,52 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.data.runtime;
+package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
+import au.edu.anu.twcore.data.runtime.Metadata;
+import au.edu.anu.twcore.data.runtime.RuntimeGraphData;
+import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
-/**
- * @author Ian Davies
- *
- * @date 29 Jun 2020
- */
-public class RuntimeTreeData extends LabelledItemData {
+public class GraphDataTracker extends AbstractDataTracker<RuntimeGraphData, Metadata> {
+	private Metadata metadata;
+	private long currentTime;
 
-	public RuntimeTreeData(SimulatorStatus status, int senderId, int metaDataType) {
-		super(status, senderId, metaDataType);
+	public GraphDataTracker(int simId, ReadOnlyPropertyList meta) {
+		super(DataMessageTypes.RTTree, simId);
+		metadata = new Metadata(simId, meta);
+		currentTime = Long.MIN_VALUE;
 	}
 
-	private EcosystemGraph ecosystem;
-
-	public void setTree(EcosystemGraph ecosystem) {
-		this.ecosystem = ecosystem;
+	public void recordTime(long time) {
+		currentTime = time;
 	}
 
-	public EcosystemGraph getEcosystem() {
-		return ecosystem;
+	public void recordItem(SimulatorStatus status, EcosystemGraph ecosystem, String... labels) {
+		RuntimeGraphData msg = new RuntimeGraphData(status, senderId, metadata.type());
+		msg.setTime(currentTime);
+		msg.setItemLabel(labels);
+		msg.setTree(ecosystem);
+		sendData(msg);
+	}
+
+	@Override
+	public Metadata getInstance() {
+		return metadata;
+	}
+
+	@Override
+	public void recordItem(String... labels) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void record(SimulatorStatus status, TwData... props) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

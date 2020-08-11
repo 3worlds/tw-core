@@ -29,9 +29,11 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Resettable;
 
 /**
@@ -40,9 +42,9 @@ import fr.ens.biologie.generic.Resettable;
  * @author J. Gignoux - 23 avr. 2020
  *
  */
-public class ArenaComponent
-		extends HierarchicalComponent
-		implements Resettable {
+public class ArenaComponent extends HierarchicalComponent implements Resettable {
+
+	private GraphDataTracker dataTracker;
 
 	public ArenaComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -51,7 +53,7 @@ public class ArenaComponent
 	// not very clean, but that's where the info is
 	@Override
 	public SetInitialStateFunction initialiser() {
-		return ((ArenaFactory)membership()).setinit;
+		return ((ArenaFactory) membership()).setinit;
 	}
 
 	// Particular to arena as it is a singleton instance
@@ -59,28 +61,37 @@ public class ArenaComponent
 	public void preProcess() {
 		// re-copy initial constants and drivers
 		ArenaFactory fact = (ArenaFactory) membership();
-		if (currentState()!=null)
+		if (currentState() != null)
 			currentState().setProperties(fact.driverTemplate);
-		if (constants()!=null)
+		if (constants() != null)
 			constants().setProperties(fact.lifetimeConstantTemplate);
 		// re-run setInitialState method
-		if (initialiser()!=null) {
-			if (constants()!=null)
+		if (initialiser() != null) {
+			if (constants() != null)
 				constants().writeEnable();
-			if (currentState()!=null)
+			if (currentState() != null)
 				currentState().writeEnable();
 			initialiser().setInitialState(null, null, null, this, null, null);
-			if (constants()!=null)
+			if (constants() != null)
 				constants().writeDisable();
-			if (currentState()!=null)
+			if (currentState() != null)
 				currentState().writeDisable();
 //			initialiser().startEventQueues();
 		}
+		
 	}
 
 	@Override
 	public ArenaFactory elementFactory() {
 		return (ArenaFactory) membership();
+	}
+
+	public void setDataTracker(GraphDataTracker dt) {
+		dataTracker = dt;
+	}
+
+	public GraphDataTracker getDataTracker() {
+		return dataTracker;
 	}
 
 }
