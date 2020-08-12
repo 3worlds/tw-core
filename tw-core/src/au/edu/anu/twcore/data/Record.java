@@ -40,6 +40,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
@@ -94,6 +95,28 @@ public class Record extends InitialisableNode {
 		
 	}
 
-	
+	public static int[][] collectDims(TreeNode parent) {
+		List<int[]> dimList = new ArrayList<>();
+		while (parent != null) {
+			if (parent instanceof TableNode) {
+				// presumably, these are now sorted
+				Dimensioner[] dims = ((TableNode) parent).dimensioners();
+				int[] dd = new int[dims.length];
+				dimList.add(dd);
+				for (int j = 0; j < dd.length; j++)
+					dd[j] = dims[j].getLength();
+			}
+			parent = parent.getParent();
+		}
+
+		int[][] result = new int[dimList.size()][];
+		// reverse the order
+		for (int i = dimList.size() - 1; i >= 0; i--) {
+			int[] dd = dimList.get(i);
+			result[result.length - i - 1] = dd;
+		}
+		return result;
+	}
+
 
 }
