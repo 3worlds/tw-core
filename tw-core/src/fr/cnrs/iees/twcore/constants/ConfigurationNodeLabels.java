@@ -40,6 +40,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.*;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
 import au.edu.anu.twcore.root.World;
+import au.edu.anu.twcore.data.Record;
 
 /**
  * Mapping of 3w tree node labels to class types (for use in a factory)
