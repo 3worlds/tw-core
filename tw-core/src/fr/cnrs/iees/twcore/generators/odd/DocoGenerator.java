@@ -46,9 +46,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.odftoolkit.simple.TextDocument;
-import org.odftoolkit.simple.draw.FrameRectangle;
-import org.odftoolkit.simple.draw.Textbox;
-import org.odftoolkit.simple.form.TextBox;
 import org.odftoolkit.simple.style.Font;
 import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
@@ -70,7 +67,6 @@ import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
@@ -80,7 +76,6 @@ import fr.ens.biologie.generic.utils.Interval;
 
 import static au.edu.anu.twcore.archetype.TwArchetypeConstants.*;
 import org.odftoolkit.simple.style.StyleTypeDefinitions;
-import org.odftoolkit.simple.style.StyleTypeDefinitions.SupportedLinearMeasure;
 
 /**
  * @author Ian Davies
@@ -308,6 +303,15 @@ public class DocoGenerator {
 	// cf: https://odftoolkit.org/simple/document/cookbook/Text%20Document.html
 	public void generate() {
 		try {
+			/** Crash here when MM runs from jar:
+			 * 
+			 * Caused by: java.lang.NoClassDefFoundError: org/odftoolkit/simple/TextDocument
+			 * 
+			 * cf: https://stackoverflow.com/questions/44176076/what-dependencies-to-use-for-apache-odf-toolkit-incubating
+			 * 
+			 * 
+			 * to search: jar -tvf tw-dep.jar | grep "IRIFactory"
+			 * */
 			TextDocument document = TextDocument.newTextDocument();
 			writeTitle(document, "Overview, Design concepts and Details", level1);
 			// setHeading(document, level1);
