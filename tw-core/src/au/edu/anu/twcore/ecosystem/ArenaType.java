@@ -97,6 +97,7 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 		return N_SYSTEM.initRank();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected ArenaFactory makeTemplate(int id) {
 

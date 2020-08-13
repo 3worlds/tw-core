@@ -593,7 +593,6 @@ public class DocoGenerator {
 	 * time is modeled, if it is not clear from the ‘Entities, State Variables, and
 	 * Scales’ element.
 	 */
-	@SuppressWarnings("unchecked")
 	private void writeProcessScheduling(TextDocument doc, int level) {
 
 		doc.addParagraph("Process overview and scheduling").applyHeading(true, level);
@@ -1151,7 +1150,6 @@ public class DocoGenerator {
 		return entries;
 	}
 
-	@SuppressWarnings("unchecked")
 	private String getFlowChart() {
 		SimulatorNode sim = (SimulatorNode) get(cfg.root().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())),
 				children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
@@ -1164,7 +1162,7 @@ public class DocoGenerator {
 		 *  	etc...
 		 * if (scSc1.stop)
 		 * */
-		String indent = "";
+//		String indent = "";
 		StringBuilder flowChart = new StringBuilder();
 		// initialisation
 		for (TreeGraphDataNode init : initTypes)

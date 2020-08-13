@@ -134,6 +134,10 @@ public enum ConfigurationPropertyNames2 {
 	public String key() {
 		return pname;
 	}
+	
+	public String description() {
+		return description;
+	}
 
 	private static Map<String, Map<String, String>> lookup = new HashMap<>();
 	static {
@@ -145,7 +149,7 @@ public enum ConfigurationPropertyNames2 {
 	}
 
 	private static void addEntry(String simpleName, String key) {
-		// TODO Auto-generated method stub
+//		lookup - forgotten what i was up to here.
 
 	}
 

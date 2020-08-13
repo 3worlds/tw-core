@@ -35,12 +35,13 @@ import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
+// TODO Rename to ArenaDataTracker??
 public class GraphDataTracker extends AbstractDataTracker<RuntimeGraphData, Metadata> {
 	private Metadata metadata;
 	private long currentTime;
 
 	public GraphDataTracker(int simId, ReadOnlyPropertyList meta) {
-		super(DataMessageTypes.RTTree, simId);
+		super(DataMessageTypes.RUNTIMEGRAPH, simId);
 		metadata = new Metadata(simId, meta);
 		currentTime = Long.MIN_VALUE;
 	}

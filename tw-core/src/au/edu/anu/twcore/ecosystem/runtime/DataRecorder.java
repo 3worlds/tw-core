@@ -46,6 +46,7 @@ public interface DataRecorder {
 
 	public void record(SimulatorStatus status, TwData... props);
 
+	@SuppressWarnings("rawtypes")
 	public boolean isTracked(CategorizedComponent sc);
 
 }

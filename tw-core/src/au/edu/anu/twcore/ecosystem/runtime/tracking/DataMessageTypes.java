@@ -40,15 +40,17 @@ public interface DataMessageTypes {
 
 	public static final int METADATA = MSGBASE;
 
-	public static final int VALUE_PAIR = MSGBASE + 1;
-	public static final int TIME_SERIES = VALUE_PAIR + 1;
-	public static final int TIME = TIME_SERIES + 1;// shouldn't this be DIM0?
-	public static final int DIM0 = TIME+1;
-	public static final int DIM1 = DIM0+1;
+//	public static final int VALUE_PAIR = MSGBASE + 1;
+//	public static final int TIME_SERIES = VALUE_PAIR + 1;
+//	public static final int TIME = TIME_SERIES + 1;// shouldn't this be DIM0?
+	public static final int TIME = MSGBASE + 1;
+	public static final int DIM0 = TIME + 1;
+	public static final int DIM1 = DIM0 + 1;
 	public static final int DIM2 = DIM1 + 1;// This can't go on to infinity - we need another way
-	public static final int SPACE = DIM2 + 1;
+	public static final int DIM3 = DIM2 + 1;
+	public static final int SPACE = DIM3 + 1;
 	public static final int XY = SPACE + 1;
-	public static final int RTTree = XY + 1;
+	public static final int RUNTIMEGRAPH = XY + 1;
 	// etc...
 
 }

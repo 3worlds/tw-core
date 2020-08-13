@@ -83,7 +83,7 @@ public class RelationProcess extends AbstractRelationProcess {
 		super(world,relation,timer,space,searchR);
 	}
 
-	private void executeFunctions(CategorizedContainer<SystemComponent> container, double t, double dt) {
+//	private void executeFunctions(CategorizedContainer<SystemComponent> container, double t, double dt) {
 //		Box limits = null;
 //		if (space!=null)
 //			limits = space.boundingBox();
@@ -328,7 +328,7 @@ public class RelationProcess extends AbstractRelationProcess {
 //				}
 //			}
 //		}
-	}
+//	}
 
 	@Override
 	public void addFunction(TwFunction function) {

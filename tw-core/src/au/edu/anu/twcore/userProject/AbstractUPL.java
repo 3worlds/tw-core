@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,7 +51,6 @@ import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import fr.ens.biologie.codeGeneration.Comments;
-import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * @author Ian Davies
@@ -63,7 +61,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	private List<File> srcPrev;
 	private List<File> clsPrev;
 	public static String extOrig = ".orig";
-	private static Logger log = Logging.getLogger(AbstractUPL.class);
+	//private static Logger log = Logging.getLogger(AbstractUPL.class);
 	private String userCodeRunnerStr = "public class UserCodeRunner {\n" + //
 			"\n" + //
 			"// example: String[] args1 = {\"0\", \"<projectPath>\", \"OFF\",\"au.edu.anu.twuifx.widgets.SimpleControlWidget:INFO\"};\n"

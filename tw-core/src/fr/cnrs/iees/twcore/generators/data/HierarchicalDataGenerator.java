@@ -49,7 +49,6 @@ import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.TreeNode;

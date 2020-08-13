@@ -95,7 +95,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
-		super(DataMessageTypes.TIME_SERIES,simulatorId);
+		super(DataMessageTypes.DIM0,simulatorId);
 		this.fieldMetadata = fieldMetadata;
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(), selection);

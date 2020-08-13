@@ -53,7 +53,6 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -481,7 +480,7 @@ public class DataTrackerNode extends InitialisableNode
 		return sealed;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private DataTracker<?, ?> makeDataTracker(int index) {
 		AbstractDataTracker<?, ?> result = null;
 		List<CategorizedComponent> ls = new ArrayList<>();

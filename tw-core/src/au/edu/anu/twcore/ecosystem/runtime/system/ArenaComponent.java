@@ -33,7 +33,6 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Resettable;
 
 /**

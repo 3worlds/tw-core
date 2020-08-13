@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.logging.Level;
 
 import au.edu.anu.omhtk.jars.Jars;
@@ -73,7 +72,7 @@ public class TwSetup implements ProjectPaths, TwPaths {
 				"	</publications>\n" + 
 				"\n" + 
 				"	<dependencies>\n" + 
-				"		<dependency org=\"au.edu.anu.tw-uifx\" name=\"tw-uifx\" rev=\"[0.2.5,)\"/>\n" + 
+				"		<dependency org=\"au.edu.anu.tw-uifx\" name=\"tw-uifx\" rev=\"[0.3.10,)\"/>\n" + 
 				"	</dependencies>\n" + 
 				"\n" + 
 				"</ivy-module>\n" + 
@@ -148,17 +147,17 @@ public class TwSetup implements ProjectPaths, TwPaths {
 		System.out.println("done");
 	}
 	
-	@SuppressWarnings("unused")
-	private static Collection<String> getProjectDependencies(String projectName) {
-		System.out.println("getting dependencies for library "+projectName);
-		String ivyFile = CODEROOT+File.separator
-				+projectName+File.separator
-				+projectName+File.separator  // yes, twice. eg user.dir = /home/gignoux/git/tw-core/tw-core
-				+"scripts"+File.separator+"ivy.xml";
-		DependencySolver solver = new DependencySolver(ivyFile);
-		Collection<String> result = solver.getJars();
-		return result;
-	}
+//	@SuppressWarnings("unused")
+//	private static Collection<String> getProjectDependencies(String projectName) {
+//		System.out.println("getting dependencies for library "+projectName);
+//		String ivyFile = CODEROOT+File.separator
+//				+projectName+File.separator
+//				+projectName+File.separator  // yes, twice. eg user.dir = /home/gignoux/git/tw-core/tw-core
+//				+"scripts"+File.separator+"ivy.xml";
+//		DependencySolver solver = new DependencySolver(ivyFile);
+//		Collection<String> result = solver.getJars();
+//		return result;
+//	}
 	
 	/**
 	 * gets all the dependencies of 3worlds and pack them in a single jar.

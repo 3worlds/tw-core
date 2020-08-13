@@ -196,6 +196,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 		}
 		case DEPLOY_FAIL: {
 			// Exception e = (Exception) args[0];
+			@SuppressWarnings("unchecked")
 			List<String> lines = (List<String>) args[0];
 			File project = (File) args[1];
 			verbose1 = category() + "ModelRunner has errors.";
