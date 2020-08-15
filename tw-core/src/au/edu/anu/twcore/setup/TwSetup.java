@@ -36,7 +36,8 @@ public class TwSetup implements ProjectPaths, TwPaths {
 	// please only increment these numbers (with caution). Never decrement.
 	public static final String VERSION_MAJOR = "0";
 	public static final String VERSION_MINOR = "0";
-	public static final String VERSION_MICRO = "1";
+//	public static final String VERSION_MICRO = "1";// IDD: Thurs 10/08/2020. sent to Sam Banks 
+	public static final String VERSION_MICRO = "2";
 	
 	public static final String MODELRUNNER_JAR = "modelRunner.jar";
 	public static final String MODELMAKER_JAR = "modelMaker.jar";
