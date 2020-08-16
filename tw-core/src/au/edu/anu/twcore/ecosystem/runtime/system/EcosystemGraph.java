@@ -202,6 +202,7 @@ public class EcosystemGraph
 		// reinitialise state variables and constants
 		arena.preProcess();
 		if (arena.getDataTracker()!=null) {
+			arena.getDataTracker().setInitialTime();
 			arena.getDataTracker().recordItem(SimulatorStatus.Initial,this , arena.id());
 		}
 

@@ -33,7 +33,9 @@ import au.edu.anu.twcore.data.runtime.RuntimeGraphData;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 // TODO Rename to ArenaDataTracker??
 public class GraphDataTracker extends AbstractDataTracker<RuntimeGraphData, Metadata> {
@@ -43,7 +45,7 @@ public class GraphDataTracker extends AbstractDataTracker<RuntimeGraphData, Meta
 	public GraphDataTracker(int simId, ReadOnlyPropertyList meta) {
 		super(DataMessageTypes.RUNTIMEGRAPH, simId);
 		metadata = new Metadata(simId, meta);
-		currentTime = Long.MIN_VALUE;
+		setInitialTime();
 	}
 
 	public void recordTime(long time) {
@@ -73,6 +75,11 @@ public class GraphDataTracker extends AbstractDataTracker<RuntimeGraphData, Meta
 	public void record(SimulatorStatus status, TwData... props) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void setInitialTime() {
+		DateTimeType dtt = (DateTimeType) metadata.properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
+		currentTime = dtt.getDateTime();
 	}
 
 }

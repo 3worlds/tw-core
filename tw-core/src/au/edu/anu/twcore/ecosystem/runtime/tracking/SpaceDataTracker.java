@@ -28,10 +28,13 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMELINE_TIMEORIGIN;
+
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
 import au.edu.anu.twcore.data.runtime.TwData;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
@@ -50,13 +53,19 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  */
 public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 
-	private long currentTime = Long.MIN_VALUE;
+	private long currentTime;
 	private Metadata metadata = null;
 
 	public SpaceDataTracker(int simId, ReadOnlyPropertyList meta) {
 		super(DataMessageTypes.SPACE,simId);
 		metadata = new Metadata(simId,meta);
+		setInitialTime();
+
 //		setSender(simId);
+	}
+	public void setInitialTime() {
+		DateTimeType dtt = (DateTimeType) metadata.properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
+		currentTime = dtt.getDateTime();
 	}
 
 	public void recordTime(long time) {

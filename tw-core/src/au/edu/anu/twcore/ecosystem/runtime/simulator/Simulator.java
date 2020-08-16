@@ -341,6 +341,7 @@ public class Simulator implements Resettable {
 							double x[] = new double[initLoc.asPoint().dim()];
 							for (int i = 0; i < initLoc.asPoint().dim(); i++)
 								x[i] = initLoc.asPoint().coordinate(i);
+							space.dataTracker().setInitialTime();
 							space.dataTracker().recordItem(SimulatorStatus.Initial, x, container.itemId(sc.id()));
 						}
 					}
