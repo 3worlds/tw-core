@@ -27,7 +27,8 @@
  *                                                                        *
  **************************************************************************/
 package au.edu.anu.twcore.jars;
-
+//now in tw-setup library
+@Deprecated
 public class IvyDependency {
 	
 	private String org;

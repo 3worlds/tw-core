@@ -31,6 +31,8 @@ import fr.ens.biologie.generic.utils.Logging;
  * @author Ian Davies
  * @date 10 Dec. 2017
  */
+//now in tw-setup library
+@Deprecated
 public class TwSetup implements ProjectPaths, TwPaths {
 	
 	// please only increment these numbers (with caution). Never decrement.

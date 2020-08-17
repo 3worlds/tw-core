@@ -32,7 +32,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+//now in tw-setup library
 
+@Deprecated
 public class IvyFile {
 
 	private PrintStream output; 

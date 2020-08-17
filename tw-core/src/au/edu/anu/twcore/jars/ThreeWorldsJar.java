@@ -39,6 +39,8 @@ import au.edu.anu.omhtk.jars.Jars;
  * NB: this is completely different from the previous version of this class.
  *
  */
+// now in tw-setup library
+@Deprecated
 public class ThreeWorldsJar extends Jars{
 
 	public ThreeWorldsJar(String major, String minor, String micro) {

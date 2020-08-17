@@ -1,5 +1,5 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-core> version 0.3.21 (Tue Aug 18 09:46:07 AEST 2020)
+ ant and ivy scripts for project <tw-core> version 0.3.20 (Mon Jul 20 16:46:31 CEST 2020)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -47,7 +47,7 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="CNRS/ANU"/>
 				<attribute name="Implementation-Title" value="fr.cnrs.iees.tw-core"/>
-				<attribute name="Implementation-Version" value="0.3.21"/>
+				<attribute name="Implementation-Version" value="0.3.20"/>
 				<attribute name="Built-By" value="${user.name}"/>
  			</manifest>
 		</jar>

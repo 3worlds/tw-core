@@ -36,12 +36,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.apache.ivy.Ivy;
-import org.apache.ivy.core.LogOptions;
-import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
-import org.apache.ivy.core.module.id.ModuleRevisionId;
-import org.apache.ivy.core.report.ResolveReport;
-import org.apache.ivy.core.retrieve.RetrieveOptions;
+//import org.apache.ivy.Ivy;
+//import org.apache.ivy.core.LogOptions;
+//import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
+//import org.apache.ivy.core.module.id.ModuleRevisionId;
+//import org.apache.ivy.core.report.ResolveReport;
+//import org.apache.ivy.core.retrieve.RetrieveOptions;
 
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -58,6 +58,8 @@ import fr.ens.biologie.generic.utils.Logging;
  * @author Jacques Gignoux - 6 déc. 2017
  *
  */
+//now in tw-setup library
+@Deprecated
 public class DependencySolver implements ProjectPaths, TwPaths {
 	public static final String destPath= TW_ROOT + File.separator + "tmp"; 
 
@@ -151,39 +153,39 @@ public class DependencySolver implements ProjectPaths, TwPaths {
 	 */
 	@SuppressWarnings("unchecked")
 	private void resolveDependencies() {
-		Ivy ivy = Ivy.newInstance();
-		try {
-			ivy.configure(ivySettingsXmlFile);
-			ResolveReport resolveReport = ivy.resolve(dependencyFile);
-			if (resolveReport.hasError()) {
-				List<String> problems = resolveReport.getAllProblemMessages();
-				if (problems != null && !problems.isEmpty()) {
-					StringBuffer errorMsgs = new StringBuffer();
-					for (String problem : problems) {
-						errorMsgs.append(problem);
-						errorMsgs.append("\n");
-					}
-					log.warning("Errors encountered during dependency resolution for package [" + "] :");
-					log.warning(errorMsgs.toString());
-				}
-			} else {
-				log.fine("Dependencies in file " + dependencyFile + " were successfully resolved");
-			}
-			ModuleDescriptor md = resolveReport.getModuleDescriptor();
-			ModuleRevisionId mRID = md.getModuleRevisionId();
-			RetrieveOptions retrieveOptions = new RetrieveOptions();
-			// This should be a tmp dir
-			File destFolder = new File(destPath);
-			String pattern = destFolder + "/[organization]/[module]/[type]/[artifact]-[revision].[ext]";
-			retrieveOptions.setDestIvyPattern(pattern);
-			retrieveOptions.setLog(LogOptions.LOG_QUIET); // use LOG_DEFAULT to see messages
-			int packagesRetrieved;
-			packagesRetrieved = ivy.retrieve(mRID, pattern, retrieveOptions);
-			log.fine("Retrieved " + packagesRetrieved + " dependencies");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		Ivy ivy = Ivy.newInstance();
+//		try {
+//			ivy.configure(ivySettingsXmlFile);
+//			ResolveReport resolveReport = ivy.resolve(dependencyFile);
+//			if (resolveReport.hasError()) {
+//				List<String> problems = resolveReport.getAllProblemMessages();
+//				if (problems != null && !problems.isEmpty()) {
+//					StringBuffer errorMsgs = new StringBuffer();
+//					for (String problem : problems) {
+//						errorMsgs.append(problem);
+//						errorMsgs.append("\n");
+//					}
+//					log.warning("Errors encountered during dependency resolution for package [" + "] :");
+//					log.warning(errorMsgs.toString());
+//				}
+//			} else {
+//				log.fine("Dependencies in file " + dependencyFile + " were successfully resolved");
+//			}
+//			ModuleDescriptor md = resolveReport.getModuleDescriptor();
+//			ModuleRevisionId mRID = md.getModuleRevisionId();
+//			RetrieveOptions retrieveOptions = new RetrieveOptions();
+//			// This should be a tmp dir
+//			File destFolder = new File(destPath);
+//			String pattern = destFolder + "/[organization]/[module]/[type]/[artifact]-[revision].[ext]";
+//			retrieveOptions.setDestIvyPattern(pattern);
+//			retrieveOptions.setLog(LogOptions.LOG_QUIET); // use LOG_DEFAULT to see messages
+//			int packagesRetrieved;
+//			packagesRetrieved = ivy.retrieve(mRID, pattern, retrieveOptions);
+//			log.fine("Retrieved " + packagesRetrieved + " dependencies");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	/**

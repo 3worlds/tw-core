@@ -1,5 +1,5 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-core> version 0.3.21 (Tue Aug 18 09:46:07 AEST 2020)
+ ant and ivy scripts for project <tw-core> version 0.3.20 (Mon Jul 20 16:46:31 CEST 2020)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -13,7 +13,7 @@
 
 	<info	organisation="fr.cnrs.iees.tw-core"
 			module="tw-core"
-			revision="0.3.21"
+			revision="0.3.20"
 			status="integration">
 		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
 		<description>This module brings together all components required for 3Worlds including archetype</description>
@@ -37,6 +37,9 @@
 		<dependency org="fr.cnrs.iees.rvgrid" name="rvgrid" rev="[0.0.3,)"/>
 		<dependency org="fr.cnrs.iees.uit" name="uit" rev="[0.2.1,)"/>
 		<dependency org="org.apache.commons" name="commons-text" rev="[1,)"/>
+        <!--===================================================================================
+		<dependency org="org.apache.ivy" name="ivy" rev="2.2.0"/>
+        ===================================================================================-->
 		<dependency org="org.apache.odftoolkit" name="simple-odf" rev="0.8.2-incubating"/>
 		<dependency org="com.hp.hpl.jena" name="jena" rev="2.6.4"/>
 		<dependency org="org.apache.commons" name="commons-math3" rev="[3.6.1,)"/>
