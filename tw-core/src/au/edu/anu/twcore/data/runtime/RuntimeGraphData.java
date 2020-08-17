@@ -52,4 +52,13 @@ public class RuntimeGraphData extends LabelledItemData {
 		return ecosystem;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder().append("RuntimeGraphData: ");
+		sb.append("Sender ").append(sender()).append("; ");
+		sb.append("Arena: ").append(ecosystem.arena().membership().categoryId()).append("; ");
+		sb.append("Community: ").append(ecosystem.community());
+		return sb.toString();
+	}
+
 }
