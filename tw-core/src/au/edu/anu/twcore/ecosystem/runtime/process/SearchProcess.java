@@ -116,10 +116,7 @@ public class SearchProcess
 	// this looping method only works on SystemComponents
 	// TODO: find group and life cycle!
 	private void indexedLoop(double t, double dt,
-			SystemComponent focal,
-			Iterable<SystemComponent> others
-//			CategorizedContainer<SystemComponent> others
-			) {
+			SystemComponent focal) {
 		// search radius positive, means we only search until this distance
 		if (searchRadius>space.precision()) {
 			// dont search if item already related !
@@ -130,9 +127,12 @@ public class SearchProcess
 					// focal cannot relate to itself
 					if (other!=focal)
 						// do no check already related components [should be done before]
+						// this could be optimised according to relation lifespan
+						// by having two lists of items in space, one for just added items,
+						// one for items added for at least 1 time step
 						if (!focal.getRelatives(relContainer.type().id()).contains(other))
-//							if (other.membership().belongsTo(otherCategories))
-								if (!other.container().containsInitialItem(other))
+							if (!other.container().containsInitialItem(other))
+								if (other.membership().belongsTo(otherCategories)) // slow? check this.
 									executeFunctions(t,dt,focal,other);
 				}
 			}
@@ -145,8 +145,8 @@ public class SearchProcess
 					Location focalLoc = space.locationOf(focal);
 					if (other!=focal)
 						if (!focal.getRelatives(relContainer.type().id()).contains(other))
-//							if (other.membership().belongsTo(otherCategories))
-								if (!other.container().containsInitialItem(other))
+							if (!other.container().containsInitialItem(other))
+								if (other.membership().belongsTo(otherCategories))
 									executeFunctions(t,dt,focal,other);
 			}
 		}		
@@ -180,15 +180,11 @@ public class SearchProcess
 		}
 		
 		// optimised approach using space indexers
-		else {
-			if (component.membership().belongsTo(focalCategories)) {
-				if (arena.content()!=null)
-					for (SystemComponent focal:arena.content().allItems(focalCategories)) {
-						// TODO: find group and life cycle !!!
-						indexedLoop(t,dt,focal,arena.content().allItems(otherCategories));
-					}
-			}
-		}
+		// NB: is an arena ever going to be contained in a space? normally no.
+		else if (component==arena)
+			if (arena.content()!=null)
+				for (SystemComponent focal:arena.content().allItems(focalCategories)) 
+					indexedLoop(t,dt,focal);
 //		if (container.categoryInfo() instanceof Ecosystem) {
 //			setContext(focalContext,container);
 //			setContext(otherContext,container);
@@ -247,8 +243,17 @@ public class SearchProcess
 		}
 	}
 
-	private void executeFunctions(double t, double dt,
-			CategorizedComponent<ComponentContainer> focal, CategorizedComponent<ComponentContainer> other) {
+	private void executeFunctions(double t, double dt, SystemComponent focal, SystemComponent other) {
+		// group container
+		HierarchicalComponent hc = focal.container().hierarchicalView();
+		if (hc!=null)
+			if (hc instanceof GroupComponent)
+				focalGroup = hc;
+		hc = other.container().hierarchicalView();
+		if (hc!=null)
+			if (hc instanceof GroupComponent)
+				otherGroup = hc;
+		// TODO: lifeCycle
 		for (RelateToDecisionFunction function: RTfunctions) {
 			double[] focalLoc = null;
 			double[] otherLoc = null;

@@ -368,7 +368,7 @@ public class RelationProcess extends AbstractRelationProcess {
         		other.nextState().writeDisable();
         }
         
-        // ephemeral relations
+        // MaintainRelationDecisionFunction for ephemeral relations
         if (!rel.container().isPermanent()) {
 	        // MaintainRelationDecision
 	        for (MaintainRelationDecisionFunction function:MRfunctions) {
@@ -380,7 +380,38 @@ public class RelationProcess extends AbstractRelationProcess {
 	        // if there is no maintainrelation function, the relation only lasts for 1 time step
 	        if (MRfunctions.isEmpty())
 	        	rel.container().removeItem(rel);
-        }        
+        }   
+        
+        // ChangeRelationStateFunction
+        for (ChangeRelationStateFunction function:CRfunctions) {
+        	if (other.currentState()!=null) {
+	        	other.currentState().writeDisable();
+	        	other.nextState().writeEnable();
+        	}
+        	if (focal.currentState()!=null) {
+        		focal.currentState().writeDisable();
+        		focal.nextState().writeEnable();
+        	}
+			double[] newFocalLoc = null;
+			double[] newOtherLoc = null;
+			if (space!=null) {
+				// TODO HERE: newLocs must be initialised with old Locs.
+				// otherwise problems when changed.
+				// ALSO: do not change location here, use remove/insert instead.
+				newFocalLoc = new double[space.ndim()];
+				newOtherLoc = new double[space.ndim()];
+			}
+        	function.changeRelationState(t, dt, arena, /*lifeCycle*/null, focalGroup, focal, 
+        			/*otherLifeCycle*/null, otherGroup, other, space, newFocalLoc, newOtherLoc);
+			if (space!=null) {
+				relocate((SystemComponent)focal,newFocalLoc,focal.container().itemId(focal.id()));
+				relocate((SystemComponent)other,newOtherLoc,other.container().itemId(other.id()));
+			}
+        	if (other.currentState()!=null)
+        		other.nextState().writeDisable();
+        	if (focal.currentState()!=null)
+        		focal.nextState().writeDisable();
+        }
 	}
 
 	// manages the looping over others

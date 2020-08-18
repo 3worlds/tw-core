@@ -216,7 +216,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 *
 	 * @return the object holding all the category information
 	 */
-	public Categorized<? extends CategorizedComponent> containerCategorized() {
+	public Categorized<?> containerCategorized() {
 		return avatar.membership();
 	}
 
@@ -378,7 +378,7 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	// Recursive
 	private void addItems(QuickListOfLists<T> result, CategorizedContainer<T> container, Set<Category> requestedCats) {
-		if (container.containerCategorized().belongsTo(requestedCats))
+		if (container.itemCategorized().belongsTo(requestedCats))
 			result.addList(container.items());
 		for (CategorizedContainer<T> sc : container.subContainers.values())
 			addItems(result, sc);
