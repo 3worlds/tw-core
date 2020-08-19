@@ -37,7 +37,10 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -61,7 +64,9 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	private List<File> srcPrev;
 	private List<File> clsPrev;
 	public static String extOrig = ".orig";
-	//private static Logger log = Logging.getLogger(AbstractUPL.class);
+	private File remoteModelFile;
+
+	// private static Logger log = Logging.getLogger(AbstractUPL.class);
 	private String userCodeRunnerStr = "public class UserCodeRunner {\n" + //
 			"\n" + //
 			"// example: String[] args1 = {\"0\", \"<projectPath>\", \"OFF\",\"au.edu.anu.twuifx.widgets.SimpleControlWidget:INFO\"};\n"
@@ -133,11 +138,56 @@ public abstract class AbstractUPL implements IUserProjectLink {
 			FileUtilities.copyFileReplace(localSrc, remoteSrc);
 			FileUtilities.copyFileReplace(localCls, remoteCls);
 			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.MODEL_FILE_BACKUP, localSrc));
-
 		}
+		remoteModelFile = remoteSrc;
 	}
 
 	private static boolean dump = false;
+
+	@Override
+	public Map<String, List<String>> getSnippets() {
+		boolean startMethod = false;
+		boolean startRead = false;
+		String key = null;
+		Map<String, List<String>> result = new HashMap<>();
+		try {
+			List<String> lines = Files.readAllLines(remoteModelFile.toPath());
+			for (String line : lines) {
+				// stop
+				if (line.contains(Comments.endCodeInsert)) {
+					startMethod = false;
+					startRead = false;
+					key = null;
+				}
+				// read
+				if (key != null && startRead) {
+					List<String> codeLines = result.get(key);
+					if (codeLines == null)
+						codeLines = new ArrayList<>();
+					codeLines.add(line);
+					result.put(key, codeLines);
+				}
+
+				// method found?
+				String tmp = line.trim();
+				String[] parts = tmp.split("\\W+");
+				if (parts.length > 2) {
+					if (parts[0].equals("public") && parts[1].equals("static") && !startMethod) {
+						startMethod = true;
+						key = parts[parts.length-1];
+					}
+				}
+				// start read
+				if (line.contains(Comments.beginCodeInsert) && startMethod) {
+					startRead = true;
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 	private boolean fileHasChanged(File localSrc, File remoteSrc) {
 		// strips all but inline comments

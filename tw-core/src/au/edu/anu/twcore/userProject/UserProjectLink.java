@@ -30,6 +30,8 @@
 package au.edu.anu.twcore.userProject;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 // static singleton class for java IDE-independent info
@@ -46,6 +48,12 @@ public class UserProjectLink {
 
 	public static void initialise(IUserProjectLink impl) {
 		UserProjectLink.impl = impl;
+	}
+
+	public static Map<String,List<String>> getSnippets() {
+		if (impl == null)
+			return null;
+		return impl.getSnippets();
 	}
 
 	public static File srcRoot() {
@@ -86,7 +94,6 @@ public class UserProjectLink {
 		return impl.getUserLibraries(exclusions);
 	};
 
-
 //	public static void clearFiles() {
 //		if (impl != null)
 //			impl.clearFiles();
@@ -116,11 +123,11 @@ public class UserProjectLink {
 //		if (impl != null)
 //			impl.pushFiles();
 //	}
-	
+
 	public static void pushCompiledTree(File root, File modelFile) {
-		if (impl!=null)
-			impl.pushCompiledTree(root,modelFile);
-		
+		if (impl != null)
+			impl.pushCompiledTree(root, modelFile);
+
 	};
 
 }
