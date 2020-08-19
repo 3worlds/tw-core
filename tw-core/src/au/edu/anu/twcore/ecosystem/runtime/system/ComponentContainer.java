@@ -148,6 +148,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 				((SystemComponent)item).setContainer(this);
 			}
 		itemsToAdd.clear();
+		super.effectChanges();
 	}
 
 	@Override

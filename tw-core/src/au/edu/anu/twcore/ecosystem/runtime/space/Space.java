@@ -187,5 +187,12 @@ public interface Space<T> {
 	 */
 	public Location makeLocation(Point point);
 	
+	/**
+	 * A method to check that a series of numbers matches an (usually already existing) location
+	 * @param reference the reference location to compare to
+	 * @param candidate the candidate coordinates to compare to the reference
+	 * @return true if candidate coordinates are not different from reference location coordinates
+	 */
+	public boolean equalLocation(Location reference, double[] candidate);
 	
 }

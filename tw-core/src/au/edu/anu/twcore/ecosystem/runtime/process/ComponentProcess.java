@@ -131,9 +131,11 @@ public class ComponentProcess
 				focalGroup = (GroupComponent) component;
 			// execute function on contained items, if any, and of proper categories
 			if (component.content().itemCategorized()!=null) // if null, means all content is in subcontainers
-				if (component.content().itemCategorized().belongsTo(focalCategories))
+				if (component.content().itemCategorized().belongsTo(focalCategories)) {
+					component.content().change();
 					for (SystemComponent sc:component.content().items())
 						executeFunctions(t, dt, sc);
+				}
 			// in all cases, recurse on subcontainers to find more matching items
 			// and recursively add context information to context.
 			for (CategorizedContainer<SystemComponent> cc:component.content().subContainers()) {

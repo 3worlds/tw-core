@@ -159,6 +159,14 @@ public abstract class AbstractProcess
 		
 		loop(currentTime,timer.userTime(dt),ecosystem());
 	}
+	
+	private double fixCoordinate(double coord, double lower, double upper, double side) {
+		while (coord<lower)
+			coord += side;
+		while (coord>upper)
+			coord -= side;
+		return coord;
+	}
 
 	// for descendants
 	protected void relocate(SystemComponent sc, double[] newLoc, String...labels) {
@@ -166,28 +174,38 @@ public abstract class AbstractProcess
 			log.warning("Wrong number of dimensions: default location generated");
 			newLoc = space.defaultLocation();
 		}
-		// TODO HERE: manage the edge effect correction!
 		switch (space.edgeEffectCorrection()) {
 		case bufferAndWrap:
+			// TODO
 			break;
 		case bufferZone:
+			// TODO
 			break;
 		case noCorrection:
+			// TODO
+			// and so what ???
 			break;
-		case wrapAround1D:			
+		case wrapAround1D:	
+			// crude: assumes the wrapped dimension is first one
+			newLoc[0] = fixCoordinate(newLoc[0],
+				space.boundingBox().lowerBound(0),
+				space.boundingBox().upperBound(0),
+				space.boundingBox().sideLength(0));
 			break;
 		case wrapAround2D:
+			// crude: assumes the wrapped dimension are the two first ones
+			for (int i=0; i<2; i++)
+				newLoc[i] = fixCoordinate(newLoc[i],
+					space.boundingBox().lowerBound(i),
+					space.boundingBox().upperBound(i),
+					space.boundingBox().sideLength(i));
 			break;
 		case wrapAroundAllD:
-			// TODO: very crude for the moment - to prevent crashes
-			if (newLoc[0]<space.boundingBox().lowerBound(0))
-				newLoc[0] += space.boundingBox().sideLength(0);
-			if (newLoc[1]<space.boundingBox().lowerBound(1))
-				newLoc[1] += space.boundingBox().sideLength(1);
-			if (newLoc[0]>space.boundingBox().upperBound(0))
-				newLoc[0] -= space.boundingBox().sideLength(0);
-			if (newLoc[1]>space.boundingBox().upperBound(1))
-				newLoc[1] -= space.boundingBox().sideLength(1);
+			for (int i=0; i<newLoc.length; i++)
+				newLoc[i] = fixCoordinate(newLoc[i],
+					space.boundingBox().lowerBound(i),
+					space.boundingBox().upperBound(i),
+					space.boundingBox().sideLength(i));
 			break;
 		default:
 			break;

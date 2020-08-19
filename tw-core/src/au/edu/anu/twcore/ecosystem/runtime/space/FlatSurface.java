@@ -229,4 +229,17 @@ public class FlatSurface extends SpaceAdapter {
 			d[i] = point.coordinate(i);
 		return new flatSurfaceLocation(d);
 	}
+
+	@Override
+	public boolean equalLocation(Location reference, double[] candidate) {
+		if (reference.asPoint().dim()==candidate.length)
+			if (reference instanceof flatSurfaceLocation) {
+				flatSurfaceLocation refloc = (flatSurfaceLocation) reference;
+				for (int i=0; i<refloc.loc.dim(); i++)
+					if (Math.abs(refloc.loc.coordinate(i)-candidate[i])>precision())
+						return false;
+				return true;
+		}
+		return false;
+	}
 }

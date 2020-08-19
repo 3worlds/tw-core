@@ -244,4 +244,19 @@ public class SquareGrid extends SpaceAdapter {
 		return new squareGridLocation(d);
 	}
 
+	@Override
+	public boolean equalLocation(Location reference, double[] candidate) {
+		if (reference.asPoint().dim()==candidate.length)
+			if (reference instanceof squareGridLocation) {
+				squareGridLocation refloc = (squareGridLocation) reference;
+				for (int i=0; i<refloc.loc.length; i++) {
+					double dif = candidate[i]-refloc.ploc.coordinate(i);
+					if ((dif<0.0)||(dif>=cellSize))
+						return false;
+				}
+				return true;
+		}
+		return false;
+	}
+
 }

@@ -246,10 +246,12 @@ public class SearchProcess
 	private void executeFunctions(double t, double dt, SystemComponent focal, SystemComponent other) {
 		// group container
 		HierarchicalComponent hc = focal.container().hierarchicalView();
+		focal.container().change();
 		if (hc!=null)
 			if (hc instanceof GroupComponent)
 				focalGroup = hc;
 		hc = other.container().hierarchicalView();
+		other.container().change();
 		if (hc!=null)
 			if (hc instanceof GroupComponent)
 				otherGroup = hc;

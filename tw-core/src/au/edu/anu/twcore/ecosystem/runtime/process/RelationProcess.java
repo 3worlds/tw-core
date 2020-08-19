@@ -395,17 +395,16 @@ public class RelationProcess extends AbstractRelationProcess {
 			double[] newFocalLoc = null;
 			double[] newOtherLoc = null;
 			if (space!=null) {
-				// TODO HERE: newLocs must be initialised with old Locs.
-				// otherwise problems when changed.
-				// ALSO: do not change location here, use remove/insert instead.
 				newFocalLoc = new double[space.ndim()];
 				newOtherLoc = new double[space.ndim()];
 			}
         	function.changeRelationState(t, dt, arena, /*lifeCycle*/null, focalGroup, focal, 
         			/*otherLifeCycle*/null, otherGroup, other, space, newFocalLoc, newOtherLoc);
 			if (space!=null) {
-				relocate((SystemComponent)focal,newFocalLoc,focal.container().itemId(focal.id()));
-				relocate((SystemComponent)other,newOtherLoc,other.container().itemId(other.id()));
+				if (!space.equalLocation(space.locationOf((SystemComponent)focal), newFocalLoc))
+					relocate((SystemComponent)focal,newFocalLoc,focal.container().itemId(focal.id()));
+				if (!space.equalLocation(space.locationOf((SystemComponent)other), newOtherLoc))
+					relocate((SystemComponent)other,newOtherLoc,other.container().itemId(other.id()));
 			}
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
@@ -423,6 +422,7 @@ public class RelationProcess extends AbstractRelationProcess {
 		for (SystemRelation sr:focal.getRelations()) {
 			if (sr.membership().to().equals(to())) {
 				CategorizedComponent<ComponentContainer> other = (CategorizedComponent<ComponentContainer>) sr.endNode();
+				other.container().change();
 				otherGroup = other.container().hierarchicalView();
 				// TODO: fix this:
 //				otherLifeCycle = otherGroup.container().hierarchicalView();
@@ -436,8 +436,10 @@ public class RelationProcess extends AbstractRelationProcess {
 	// manages the looping over focals
 	@Override
 	protected void loop(double t, double dt, HierarchicalComponent component) {
-		if (component.membership().belongsTo(focalCategories))
+		if (component.membership().belongsTo(focalCategories)) {
 			loopOnOthers(t,dt,component);
+			component.content().change();
+		}
 		else if (component.content()!=null) {
 			if (component instanceof ArenaComponent) {
 				arena = (ArenaComponent) component;
@@ -450,9 +452,11 @@ public class RelationProcess extends AbstractRelationProcess {
 			}
 			// execute function on contained items, if any, and of proper categories
 			if (component.content().itemCategorized()!=null) // if null, means all content is in subcontainers
-				if (component.content().itemCategorized().belongsTo(focalCategories))
+				if (component.content().itemCategorized().belongsTo(focalCategories)) {
+					component.content().change();
 					for (SystemComponent sc:component.content().items())
 						loopOnOthers(t, dt, sc);
+				}
 			// in all cases, recurse on subcontainers to find more matching items
 			// and recursively add context information to context.
 			for (CategorizedContainer<SystemComponent> cc:component.content().subContainers()) {
