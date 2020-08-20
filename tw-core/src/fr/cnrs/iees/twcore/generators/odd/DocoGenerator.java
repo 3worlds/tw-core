@@ -1169,7 +1169,16 @@ public class DocoGenerator {
 			flowChart.append(init.id()).append("\n");
 
 		// loop for all possible timer combinations.
+		
+		// JG: that's when there is no stopping condition. otherwise
+		// you may get the stopping condition tree and work out the condition for
+		// stopping, eg "while time<265" or "while (biomass<400) and (populationSize<1000)"
+		// you get the condition as a string simply by calling StoppingCondition.toString(). 
 		flowChart.append("while have next time\n");
+		
+		// JG: You could add just after this line:
+		// "set all decorators to zero" because that's always going to happen here and it's
+		// helpful to know it when you are a poor end-user
 
 		Map<Integer, List<TreeNode>> timerCombos = new HashMap<>();
 
@@ -1207,8 +1216,23 @@ public class DocoGenerator {
 			for (List<ProcessNode> procs : pSeq) {
 				for (ProcessNode proc : procs) {
 					flowChart.append(procIndent).append(proc.id()).append("\n");
+					// JG: I suggest to add after the proc id a string such as
+					// "for each relation of type [*atomic* -> plant]" for SearchProcess or RelationProcess
+					// "for each component of type [*atomic* animal ephemeral]" for ComponentProcesses
+					// This way the looping structure is apparent.
+					// For searchProcess if there is a space attached to the process you may add
+					// "using optimal search on space <spaceName>"
+					
 					List<TreeNode> funcs = new ArrayList<>();
 					List<TreeNode> trackers = new ArrayList<>();
+					
+					// JG: caution here: in a Process the function types are always called in the same 
+					// order, cf in ComponentProcess and RelationProcess.
+					// For example in componentProcess.executeFunctions(...) you
+					// find a loop on ChangeStateFunctions, then one on DeleteDecisionF., then
+					// one on CreateOtherDecisionF., and I dont know yet where ChangeCategoryDecisionF.
+					// will be put.
+					// Consequences are called just after their parent function.
 					for (TreeNode c : proc.getChildren()) {
 						if (c.classId().equals(N_FUNCTION.label()))
 							funcs.add(c);
@@ -1225,7 +1249,15 @@ public class DocoGenerator {
 					for (TreeNode tracker : trackers) {
 						flowChart.append(funcIndent).append(tracker.id()).append("\n");
 					}
-
+					
+					// JG: you could add at the end of the time loop:
+					// "advance time:"
+					// "	remove old relations"
+					// "	create new relations"
+					// "	remove old components"
+					// "	create new components"
+					// "	set next drivers values as current values"
+					// this way the end user would know where important things happen...
 				}
 			}
 		}
