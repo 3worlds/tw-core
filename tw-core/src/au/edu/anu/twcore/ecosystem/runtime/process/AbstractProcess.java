@@ -210,7 +210,14 @@ public abstract class AbstractProcess
 		default:
 			break;
 		}
-		space.locate(sc,newLoc);
+//		space.locate(sc,newLoc); // this was wrong: immediate relocation
+		// All these are delayed operations (postponed to a call to space.effectChanges())
+		// create a new located system component
+		LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
+		// remove the old location (only the component is used)
+		space.removeItem(new LocatedSystemComponent(sc));
+		// insert the new location
+		space.addItem(newLocSc);		
 		if (space.dataTracker()!=null)
 			space.dataTracker().recordItem(currentStatus,newLoc,labels);
 	}

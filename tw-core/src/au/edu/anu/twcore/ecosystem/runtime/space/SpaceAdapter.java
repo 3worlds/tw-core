@@ -89,7 +89,7 @@ public abstract class SpaceAdapter
 	/** list of SystemComponents to insert later */
 	private List<LocatedSystemComponent> toInsert = new LinkedList<>();
 	/** list of SystemComponents to delete later */
-	private List<LocatedSystemComponent> toDelete = new LinkedList<>();
+	private List<SystemComponent> toDelete = new LinkedList<>();
 	/** list of initial SystemComponents */
 	private Set<LocatedSystemComponent> initialComponents = new HashSet<>();
 	/** mapping of cloned item to their initial components */
@@ -135,7 +135,7 @@ public abstract class SpaceAdapter
 
 	@Override
 	public Location locate(SystemComponent focal, Point location) {
-		return locate(focal,location.x(),location.y());
+		return locate(focal,location.x(),location.y()); // FLAW here! what about 3D spaces ?
 	}
 
 	@Override
@@ -197,19 +197,21 @@ public abstract class SpaceAdapter
 
 	@Override
 	public final void addItem(LocatedSystemComponent item) {
+		// CAUTION: what happens if the system is to be deleted in containers after relocation?
 		toInsert.add(item);
 	}
 
 	@Override
 	public final void removeItem(LocatedSystemComponent item) {
-		toDelete.add(item);
+		toDelete.add(item.item());
 	}
 
 	@Override
 	public final void effectChanges() {
-		for (LocatedSystemComponent lsc:toDelete)
-			unlocate(lsc.item());
+		for (SystemComponent sc:toDelete)
+			unlocate(sc);
 		toDelete.clear();
+		// CAUTION: what happens if the system is to be deleted in containers after relocation?
 		for (LocatedSystemComponent lsc:toInsert)
 			locate(lsc.item(),lsc.location());
 		toInsert.clear();

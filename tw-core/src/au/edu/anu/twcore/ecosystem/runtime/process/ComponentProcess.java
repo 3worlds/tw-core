@@ -173,7 +173,8 @@ public class ComponentProcess
 			// also remove from space !!!
 			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
 					((ComponentFactory)focal.membership()).spaces()) {
-				space.unlocate((SystemComponent) focal);
+//				space.unlocate((SystemComponent) focal); // wrong: this is immediate
+				space.removeItem(new LocatedSystemComponent((SystemComponent)focal));
 				if (space.dataTracker()!=null)
 					space.dataTracker().removeItem(currentStatus,focal.container().itemId(focal.id()));
 			}
@@ -560,8 +561,6 @@ public class ComponentProcess
 				Dfunctions.add((DeleteDecisionFunction) function);
 			else if (function instanceof CreateOtherDecisionFunction)
 				COfunctions.add((CreateOtherDecisionFunction) function);
-//			else if (function instanceof RelocateFunction)
-//				Rfunctions.add((RelocateFunction) function);
 		}
 	}
 
@@ -581,7 +580,6 @@ public class ComponentProcess
 		DeleteDecision,
 		CreateOtherDecision,
 		SetInitialState
-//		Relocate
 	};
 
 }

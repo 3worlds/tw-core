@@ -86,7 +86,11 @@ public class SpaceData extends LabelledItemData {
 	public boolean isPoint() {
 		return (coordinates!=null);
 	}
-	
+
+	public boolean isLine() {
+		return (line!=null);
+	}
+
 	// for both SystemComponents and SystemRelations
 	
 	public void delete(DataLabel labels) {
