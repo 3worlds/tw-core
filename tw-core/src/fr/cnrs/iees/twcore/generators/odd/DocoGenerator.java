@@ -1451,8 +1451,6 @@ public class DocoGenerator {
 			}
 			String desc = (String) n.properties().getPropertyValue(kDesc);
 			desc = desc.trim();
-			if (desc.isBlank())
-				desc = "n.a.";
 
 			int[][] sizes = Record.collectDims(item);
 			String dims = "scalar";
@@ -1466,15 +1464,13 @@ public class DocoGenerator {
 			DataElementType det = (DataElementType) n.properties().getPropertyValue(kType);
 			String type = det.name();
 
-			String units = "n.a";
+			String units = "";
 			if (n.properties().hasProperty(kUnits)) {
 				units = (String) n.properties().getPropertyValue(kUnits);
 				units = units.trim();
-				if (units.isBlank())
-					units = "n.a.";
 			}
 
-			String range = "n.a";
+			String range = "";
 			if (n.properties().hasProperty(kRange)) {
 				IntegerRange ir = (IntegerRange) n.properties().getPropertyValue(kRange);
 				range = ir.toString();
