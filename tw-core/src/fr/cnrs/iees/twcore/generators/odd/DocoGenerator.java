@@ -31,6 +31,7 @@ package fr.cnrs.iees.twcore.generators.odd;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
@@ -56,11 +57,12 @@ import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
+import au.edu.anu.twcore.ecosystem.dynamics.StoppingConditionNode;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
 import au.edu.anu.twcore.project.Project;
-
+import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
@@ -125,6 +127,7 @@ public class DocoGenerator {
 	// private TreeGraphDataNode struct;
 	private TreeGraphDataNode dDef;
 	private List<TreeGraphDataNode> driverTypes;
+	private List<TreeGraphDataNode> decTypes;
 	private List<TreeGraphDataNode> compTypes; // including the system
 	private List<TreeGraphDataNode> relTypes;
 	private List<TreeGraphDataNode> groupTypes;
@@ -132,7 +135,9 @@ public class DocoGenerator {
 	private List<TreeGraphDataNode> scTypes;
 	private List<TreeGraphDataNode> initTypes;
 	private List<TreeGraphDataNode> trackerTypes;
+	private List<TreeGraphDataNode> ephemeralComponents;
 	private Map<TreeGraphDataNode, Map<TreeGraphDataNode, List<TreeGraphDataNode>>> ctFuncLookup;
+	private Map<String, List<String>> snippetMap;
 
 	private TreeGraph<TreeGraphDataNode, ALEdge> cfg;
 
@@ -191,9 +196,12 @@ public class DocoGenerator {
 		scTypes = new ArrayList<>();
 		initTypes = new ArrayList<>();
 		driverTypes = new ArrayList<>();
+		decTypes = new ArrayList<>();
+		ephemeralComponents = new ArrayList<>();
 		trackerTypes = new ArrayList<>();
 		tableNumber = 0;
 		figureNumber = 0;
+		List<TreeGraphDataNode> snippetNodes = new ArrayList<>();
 		// basic metrics
 		for (TreeGraphDataNode n : cfg.nodes()) {
 			if (allowedNodes.contains(n.classId())) {
@@ -221,8 +229,19 @@ public class DocoGenerator {
 				}
 			} else if (n.classId().equals(N_COMPONENTTYPE.label())) {
 				compTypes.add(n);
+				// property lifespan ephemeral ? this seems redundant if it belongsTo and
+				// ephemeral category??
+				// TODO not sure about all this
+				if (get(n.edges(Direction.OUT), selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes(),
+						selectZeroOrOne(hasTheName(ephemeral.id()))) != null) {
+					List<TreeGraphDataNode> cmps = (List<TreeGraphDataNode>) get(n.getChildren(),
+							selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+					ephemeralComponents.addAll(cmps);
+				}
 			} else if (n.classId().equals(N_RELATIONTYPE.label())) {
 				relTypes.add(n);
+				// TODO if either of the the related components have ephemeral lifespans then
+				// this indicates an emphemeral relation - yes?
 			} else if (n.classId().equals(N_SPACE.label())) {
 				spaceTypes.add(n);
 				SpaceType st = (SpaceType) n.properties().getPropertyValue(P_SPACETYPE.key());
@@ -239,6 +258,23 @@ public class DocoGenerator {
 				trackerTypes.add(n);
 				String sn = getSimpleName((String) n.properties().getPropertyValue(twaSubclass));
 				dtDesc.put(n, n.id() + formatClassifier(sn));
+			} else if (n.classId().equals(N_SNIPPET.label())) {
+				snippetNodes.add(n);
+			}
+		}
+		if (UserProjectLink.haveUserProject()) {
+			Map<String, List<String>> snippetMap = UserProjectLink.getSnippets();
+		} else {
+			snippetMap = new HashMap<>();
+			for (TreeGraphDataNode snippetNode : snippetNodes) {
+				StringTable tbl = (StringTable) snippetNode.properties().getPropertyValue(P_SNIPPET_JAVACODE.key());
+				String key = snippetNode.getParent().id().toLowerCase();
+				List<String> value = new ArrayList<>();
+				// TODO haven't distinguished between inits and functions
+				snippetMap.put(key, value);
+				for (int i = 0; i < tbl.size(); i++)
+					value.add(tbl.getWithFlatIndex(i));
+
 			}
 		}
 
@@ -251,8 +287,11 @@ public class DocoGenerator {
 				driverTypes.add(n);
 			} else if (get(n.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_CONSTANTS.label()))) != null)
 				nCnts += getDimensions(n);
-			else if (get(n.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_DECORATORS.label()))) != null)
+			else if (get(n.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_DECORATORS.label()))) != null) {
 				nDecs += getDimensions(n);
+				decTypes.add(n);
+			}
+
 		}
 
 		timersClock = new ArrayList<>();
@@ -303,15 +342,17 @@ public class DocoGenerator {
 	// cf: https://odftoolkit.org/simple/document/cookbook/Text%20Document.html
 	public void generate() {
 		try {
-			/** Crash here when MM runs from jar:
+			/**
+			 * Crash here when MM runs from jar:
 			 * 
 			 * Caused by: java.lang.NoClassDefFoundError: org/odftoolkit/simple/TextDocument
 			 * 
-			 * cf: https://stackoverflow.com/questions/44176076/what-dependencies-to-use-for-apache-odf-toolkit-incubating
+			 * cf:
+			 * https://stackoverflow.com/questions/44176076/what-dependencies-to-use-for-apache-odf-toolkit-incubating
 			 * 
 			 * 
 			 * to search: jar -tvf tw-dep.jar | grep "IRIFactory"
-			 * */
+			 */
 			TextDocument document = TextDocument.newTextDocument();
 			writeTitle(document, "Overview, Design concepts and Details", level1);
 			// setHeading(document, level1);
@@ -597,7 +638,7 @@ public class DocoGenerator {
 
 		doc.addParagraph("Process overview and scheduling").applyHeading(true, level);
 
-		//useless
+		// useless
 //		Paragraph paragraph = doc.addParagraph("");
 //		Textbox box = paragraph.addTextbox(new FrameRectangle(1, 1, 1, 2, SupportedLinearMeasure.CM));
 //		box.setTextContent("this is a text box");
@@ -814,62 +855,6 @@ public class DocoGenerator {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<String> getTrackerDetails() {
-		List<String> entries = new ArrayList<>();
-		for (TreeGraphDataNode t : trackerTypes) {
-			String c1 = dtDesc.get(t);
-			StringBuilder sb = new StringBuilder();
-			String[] keys = t.properties().getKeysAsArray();
-			for (int i = 0; i < keys.length; i++) {
-				if (!keys[i].equals(twaSubclass))
-					sb.append(keys[i]).append("=").append(t.properties().getPropertyValue(keys[i])).append("\n");
-			}
-			String c2 = sb.toString();
-
-			List<ALEdge> tableEdges = (List<ALEdge>) get(t.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_TRACKTABLE.label())));
-
-			List<TreeGraphDataNode> fields = (List<TreeGraphDataNode>) get(t.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_TRACKFIELD.label())), edgeListEndNodes());
-
-			sb = new StringBuilder();
-			for (ALEdge edge : tableEdges) {
-				if (edge instanceof ALDataEdge) {
-					TrackerType tp = (TrackerType) ((ALDataEdge) edge).properties()
-							.getPropertyValue(P_TRACKEDGE_INDEX.key());
-					sb.append(edge.endNode().id() + formatClassifier(tp.toString())).append("\n");
-				}
-			}
-			for (TreeGraphDataNode f : fields) {
-				sb.append(f.id()).append("\n");
-			}
-			String c3 = sb.toString();
-
-			TreeNode timer = t.getParent();
-			while (!timer.classId().equals(N_TIMER.label()))
-				timer = timer.getParent();
-
-			String c4 = timerDesc.get(timer);
-
-			String c5 = t.getParent().id();
-
-			List<TreeGraphDataNode> comps = (List<TreeGraphDataNode>) get(t.edges(Direction.OUT),
-					selectZeroOrMany(orQuery(hasTheLabel(E_TRACKCOMPONENT.label()), hasTheLabel(E_TRACKPOP.label()))),
-					edgeListEndNodes());
-
-			sb = new StringBuilder();
-			for (TreeGraphDataNode comp : comps)
-				sb.append(comp.id()).append("\n");
-
-			String c6 = sb.toString();
-			entries.add(new StringBuilder().append(c1).append(sep).append(c2).append(sep).append(c3).append(sep)
-					.append(c4).append(sep).append(c5).append(sep).append(c6).toString());
-
-		}
-		return entries;
-	}
-
 	/**
 	 * Questions: What is the initial state of the model world, i.e., at time t = 0
 	 * of a simulation run? In detail, how many entities of what type are there
@@ -887,6 +872,15 @@ public class DocoGenerator {
 	 */
 	private void writeInitialisation(TextDocument doc, int level) {
 		doc.addParagraph("Initialisation").applyHeading(true, level);
+		doc.addParagraph(
+				"Add the initialisation functions, snippets if any, and look for nInstances property in the Component");
+		// TODO This property will be a problem since there is no
+		// option to make properties optional in MM.
+		// Therefore the user could set "fire", for example, to have >1 instances and we
+		// have a mess. On the othe hand, if we have an option in MM: make optional
+		// properties then its
+		// still possible for the user to make a mess. I suggest we have some other way
+		// of initialising the number of components.
 	}
 
 	/**
@@ -951,8 +945,79 @@ public class DocoGenerator {
 		doc.addParagraph("Table " + (++tableNumber) + ". Configuration graph metrics");
 		writeTable(doc, entries, "Metric", "Value*");
 		doc.addParagraph("*obtained after subtracting the values of a minimal configuration.");
+
+		doc.addParagraph("\nCode snippets:");
+
+		for (Map.Entry<String, List<String>> snp : snippetMap.entrySet()) {
+			Paragraph para = doc.addParagraph("--- " + snp.getKey() + " --------------------\n");
+			Font font = para.getFont();
+			font.setFamilyName("Liberation Mono");
+			font.setSize(10);
+			para.setFont(font);
+			for (String line : snp.getValue()) {
+				if (line.startsWith("\t\t")) 
+					line = line.substring(2, line.length() - 1);			
+				para.appendTextContent(line + "\n", true);
+			}
+		}
 	}
+
 // ------------- end appendix 1 -----------------
+	@SuppressWarnings("unchecked")
+	private List<String> getTrackerDetails() {
+		List<String> entries = new ArrayList<>();
+		for (TreeGraphDataNode t : trackerTypes) {
+			String c1 = dtDesc.get(t);
+			StringBuilder sb = new StringBuilder();
+			String[] keys = t.properties().getKeysAsArray();
+			for (int i = 0; i < keys.length; i++) {
+				if (!keys[i].equals(twaSubclass))
+					sb.append(keys[i]).append("=").append(t.properties().getPropertyValue(keys[i])).append("\n");
+			}
+			String c2 = sb.toString();
+
+			List<ALEdge> tableEdges = (List<ALEdge>) get(t.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_TRACKTABLE.label())));
+
+			List<TreeGraphDataNode> fields = (List<TreeGraphDataNode>) get(t.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_TRACKFIELD.label())), edgeListEndNodes());
+
+			sb = new StringBuilder();
+			for (ALEdge edge : tableEdges) {
+				if (edge instanceof ALDataEdge) {
+					TrackerType tp = (TrackerType) ((ALDataEdge) edge).properties()
+							.getPropertyValue(P_TRACKEDGE_INDEX.key());
+					sb.append(edge.endNode().id() + formatClassifier(tp.toString())).append("\n");
+				}
+			}
+			for (TreeGraphDataNode f : fields) {
+				sb.append(f.id()).append("\n");
+			}
+			String c3 = sb.toString();
+
+			TreeNode timer = t.getParent();
+			while (!timer.classId().equals(N_TIMER.label()))
+				timer = timer.getParent();
+
+			String c4 = timerDesc.get(timer);
+
+			String c5 = t.getParent().id();
+
+			List<TreeGraphDataNode> comps = (List<TreeGraphDataNode>) get(t.edges(Direction.OUT),
+					selectZeroOrMany(orQuery(hasTheLabel(E_TRACKCOMPONENT.label()), hasTheLabel(E_TRACKPOP.label()))),
+					edgeListEndNodes());
+
+			sb = new StringBuilder();
+			for (TreeGraphDataNode comp : comps)
+				sb.append(comp.id()).append("\n");
+
+			String c6 = sb.toString();
+			entries.add(new StringBuilder().append(c1).append(sep).append(c2).append(sep).append(c3).append(sep)
+					.append(c4).append(sep).append(c5).append(sep).append(c6).toString());
+
+		}
+		return entries;
+	}
 
 	@SuppressWarnings("unchecked")
 	private List<String> getEntityFunctionsEntries() {
@@ -1110,10 +1175,9 @@ public class DocoGenerator {
 			sb.append(timer.toShortString());
 			sb.append(sep).append("Type=").append(ScenarioTimer.class.getSimpleName());
 			;
-			entries.add(sb.toString());
-			/**
-			 * TODO: Properties yet to be defined. Probably just a file name and time unit.
-			 */
+			entries.add(sb.toString());/**
+										 * TODO: Properties yet to be defined. Probably just a file name and time unit.
+										 */
 
 		}
 		return entries;
@@ -1169,17 +1233,20 @@ public class DocoGenerator {
 			flowChart.append(init.id()).append("\n");
 
 		// loop for all possible timer combinations.
-		
+
 		// JG: that's when there is no stopping condition. otherwise
 		// you may get the stopping condition tree and work out the condition for
-		// stopping, eg "while time<265" or "while (biomass<400) and (populationSize<1000)"
-		// you get the condition as a string simply by calling StoppingCondition.toString(). 
-		flowChart.append("while have next time\n");
-		
-		// JG: You could add just after this line:
-		// "set all decorators to zero" because that's always going to happen here and it's
-		// helpful to know it when you are a poor end-user
+		// stopping, eg "while time<265" or "while (biomass<400) and
+		// (populationSize<1000)"
+		// you get the condition as a string simply by calling
+		// StoppingCondition.toString().
+		flowChart.append("if have next time\n");
 
+		for (TreeGraphDataNode dec : decTypes) {
+			Map<String, List<String>> details = getDataTreeDetails(dec);
+			for (Map.Entry<String, List<String>> entry : details.entrySet())
+				flowChart.append(sep).append("set ").append(entry.getKey()).append(" to zero\n");
+		}
 		Map<Integer, List<TreeNode>> timerCombos = new HashMap<>();
 
 		for (Map.Entry<Integer, List<List<ProcessNode>>> combo : pco.entrySet()) {
@@ -1191,8 +1258,7 @@ public class DocoGenerator {
 					timerList.add(timer);
 			}
 		}
-		// TODO Trackers should be sorted to display last after each function set
-		// TODO less indent if one timer
+
 		boolean first = true;
 		String procIndent = "\t";
 		for (Map.Entry<Integer, List<TreeNode>> timerCombo : timerCombos.entrySet()) {
@@ -1217,20 +1283,24 @@ public class DocoGenerator {
 				for (ProcessNode proc : procs) {
 					flowChart.append(procIndent).append(proc.id()).append("\n");
 					// JG: I suggest to add after the proc id a string such as
-					// "for each relation of type [*atomic* -> plant]" for SearchProcess or RelationProcess
-					// "for each component of type [*atomic* animal ephemeral]" for ComponentProcesses
+					// "for each relation of type [*atomic* -> plant]" for SearchProcess or
+					// RelationProcess
+					// "for each component of type [*atomic* animal ephemeral]" for
+					// ComponentProcesses
 					// This way the looping structure is apparent.
 					// For searchProcess if there is a space attached to the process you may add
 					// "using optimal search on space <spaceName>"
-					
+
 					List<TreeNode> funcs = new ArrayList<>();
 					List<TreeNode> trackers = new ArrayList<>();
-					
-					// JG: caution here: in a Process the function types are always called in the same 
+
+					// JG: caution here: in a Process the function types are always called in the
+					// same
 					// order, cf in ComponentProcess and RelationProcess.
 					// For example in componentProcess.executeFunctions(...) you
 					// find a loop on ChangeStateFunctions, then one on DeleteDecisionF., then
-					// one on CreateOtherDecisionF., and I dont know yet where ChangeCategoryDecisionF.
+					// one on CreateOtherDecisionF., and I dont know yet where
+					// ChangeCategoryDecisionF.
 					// will be put.
 					// Consequences are called just after their parent function.
 					for (TreeNode c : proc.getChildren()) {
@@ -1246,33 +1316,42 @@ public class DocoGenerator {
 						} else
 							flowChart.append(funcIndent).append(func.id()).append("\n");
 					}
+					// Do trackers last
 					for (TreeNode tracker : trackers) {
 						flowChart.append(funcIndent).append(tracker.id()).append("\n");
 					}
-					
-					// JG: you could add at the end of the time loop:
-					// "advance time:"
-					// "	remove old relations"
-					// "	create new relations"
-					// "	remove old components"
-					// "	create new components"
-					// "	set next drivers values as current values"
-					// this way the end user would know where important things happen...
+
 				}
 			}
 		}
+		boolean haveEphemeralRelations = false;// TODO Don't know what to do here?
+		flowChart.append("advance time:\n");
+		if (haveEphemeralRelations) {
+			flowChart.append("\tremove old relations\n");
+			flowChart.append("\tcreate new relations\n");
+		}
+
+		for (TreeGraphDataNode cmp : ephemeralComponents) {
+			flowChart.append("\tremove old ").append(cmp.id()).append("\n");
+			flowChart.append("\tcreate new ").append(cmp.id()).append("\n");
+		}
+
+		if (!driverTypes.isEmpty())
+			flowChart.append("\tset next drivers to current values\n");
 
 		if (!scTypes.isEmpty()) {
-			StringBuilder sb = new StringBuilder().append("if (");
-			for (TreeGraphDataNode sc : scTypes)
-				sb.append(sc.id()).append(", ");
-			sb.replace(sb.length() - 2, sb.length(), ") == stop then\n");
+			StringBuilder sb = new StringBuilder().append("if ");
+			// TODO: build a better string when we have examples of complex stopping
+			// conditions.
+			for (TreeGraphDataNode sc : scTypes) {
+				StoppingConditionNode stpCond = (StoppingConditionNode) sc;
+				sb.append(stpCond.getInstance(0).toString()).append(", ");
+			}
+			sb.replace(sb.length() - 2, sb.length(), " then\n");
 			sb.append(procIndent).append("\t").append("end simulation");
 
 			flowChart.append(procIndent).append(sb.toString());
 		}
-
-		// System.out.println(flowChart.toString());
 
 		return flowChart.toString();
 	}
