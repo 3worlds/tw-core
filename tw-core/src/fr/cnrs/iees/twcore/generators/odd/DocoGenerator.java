@@ -136,8 +136,10 @@ public class DocoGenerator {
 	private List<TreeGraphDataNode> initTypes;
 	private List<TreeGraphDataNode> trackerTypes;
 	private List<TreeGraphDataNode> ephemeralComponents;
+	private List<TreeGraphDataNode> instanceComponents;
 	private Map<TreeGraphDataNode, Map<TreeGraphDataNode, List<TreeGraphDataNode>>> ctFuncLookup;
 	private Map<String, List<String>> snippetMap;
+	// private List<TreeGraphDataNode>
 
 	private TreeGraph<TreeGraphDataNode, ALEdge> cfg;
 
@@ -198,6 +200,7 @@ public class DocoGenerator {
 		driverTypes = new ArrayList<>();
 		decTypes = new ArrayList<>();
 		ephemeralComponents = new ArrayList<>();
+		instanceComponents = new ArrayList<>();
 		trackerTypes = new ArrayList<>();
 		tableNumber = 0;
 		figureNumber = 0;
@@ -229,9 +232,13 @@ public class DocoGenerator {
 				}
 			} else if (n.classId().equals(N_COMPONENTTYPE.label())) {
 				compTypes.add(n);
-				// property lifespan ephemeral ? this seems redundant if it belongsTo and
-				// ephemeral category??
-				// TODO not sure about all this
+				List<TreeGraphDataNode> components = (List<TreeGraphDataNode>) get(n.getChildren(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+				for (TreeGraphDataNode cmp : components)
+					if (cmp.properties().hasProperty(P_COMPONENT_NINST.key()))
+						if (((Integer) cmp.properties().getPropertyValue(P_COMPONENT_NINST.key())) > 0)
+							instanceComponents.add(cmp);
+
 				if (get(n.edges(Direction.OUT), selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes(),
 						selectZeroOrOne(hasTheName(ephemeral.id()))) != null) {
 					List<TreeGraphDataNode> cmps = (List<TreeGraphDataNode>) get(n.getChildren(),
@@ -241,7 +248,7 @@ public class DocoGenerator {
 			} else if (n.classId().equals(N_RELATIONTYPE.label())) {
 				relTypes.add(n);
 				// TODO if either of the the related components have ephemeral lifespans then
-				// this indicates an emphemeral relation - yes?
+				// this indicates an ephemeral relation - yes?
 			} else if (n.classId().equals(N_SPACE.label())) {
 				spaceTypes.add(n);
 				SpaceType st = (SpaceType) n.properties().getPropertyValue(P_SPACETYPE.key());
@@ -399,15 +406,15 @@ public class DocoGenerator {
 			// ----- end Appendix 1
 
 			// try and format all tables
-			for (Table t : document.getTableList()) {
-				/**
-				 * Doesn't work . Also it's really a table property because when set for one col
-				 * it's set for all.
-				 */
-				Iterator<Column> ci = t.getColumnIterator();
-				while (ci.hasNext())
-					ci.next().setUseOptimalWidth(true);
-			}
+//			for (Table t : document.getTableList()) {
+//				/**
+//				 * Doesn't work . Also it's really a table property because when set for one col
+//				 * it's set for all.
+//				 */
+//				Iterator<Column> ci = t.getColumnIterator();
+//				while (ci.hasNext())
+//					ci.next().setUseOptimalWidth(true);
+//			}
 
 			document.save(Project.makeFile(cfg.root().id() + ".odt"));
 
@@ -415,7 +422,7 @@ public class DocoGenerator {
 			document.close();
 
 			long endTime = System.currentTimeMillis();
-			System.out.println("DOC GENERATION TIME: " + (endTime - startTime));
+//			System.out.println("DOC GENERATION TIME: " + (endTime - startTime));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -496,7 +503,7 @@ public class DocoGenerator {
 
 		// ComponentTypes,
 		entries = getEntityDetails();
-		doc.addParagraph("Table " + (++tableNumber) + ". Entity description");
+		doc.addParagraph("Table " + (++tableNumber) + ". Component (Entity) description");
 		writeTable(doc, entries, "Component type", "Role", "Component", "Drivers", "Time", "Space");
 
 		// RelationType
@@ -507,10 +514,15 @@ public class DocoGenerator {
 		}
 
 		// Drivers,
-		entries = getDriverDetails();
+		entries = getDataDetails(driverTypes);
 		if (!entries.isEmpty()) {
-			doc.addParagraph("Table " + (++tableNumber) + ". Driver description");
+			doc.addParagraph("Table " + (++tableNumber) + ". Driver (state variable) details");
 			writeTable(doc, entries, "Driver", "name", "Description", "Dimensions", "Type", "Units", "Range");
+		}
+		entries = getDataDetails(decTypes);
+		if (!entries.isEmpty()) {
+			doc.addParagraph("Table " + (++tableNumber) + ". Decorator (dependent state variable) details");
+			writeTable(doc, entries, "Decorator", "name", "Description", "Dimensions", "Type", "Units", "Range");
 		}
 	}
 
@@ -594,7 +606,7 @@ public class DocoGenerator {
 	 */
 	private void writeCollectives(TextDocument doc, int level) {
 		doc.addParagraph("Collectives").applyHeading(true, level);
-		doc.addParagraph("What goes here: groups, of ephemerals? - what else?");
+		// doc.addParagraph("What goes here: groups, ephemerals? - what else?");
 	}
 
 	/**
@@ -656,13 +668,6 @@ public class DocoGenerator {
 		entries = getEntityFunctionsEntries();
 		doc.addParagraph("Table " + (++tableNumber) + ". Entity functions");
 		writeTable(doc, entries, "Entity", "Timer", "Functions");
-
-		entries = getEntityInitialiserDetails();
-		if (!entries.isEmpty()) {
-			doc.addParagraph("Table " + (++tableNumber) + ". Initialisation description");
-			writeTable(doc, entries, "Entity", "Initialiser");
-		} else
-			doc.addParagraph("No initialising functions.");
 
 		entries = getStoppingConditionDetails();
 		if (!entries.isEmpty()) {
@@ -847,11 +852,12 @@ public class DocoGenerator {
 	 * al., 2010)?
 	 */
 	private void writeObservationConcepts(TextDocument doc, int level) {
-		doc.addParagraph("Observation").applyHeading(true, level);
+
 		List<String> entries = getTrackerDetails();
 		if (!entries.isEmpty()) {
-			doc.addParagraph("Table " + (++tableNumber) + ". Datatrackers details.");
-			writeTable(doc, entries, "Name", "Details", "Data", "Time", "Process", "Component");
+			doc.addParagraph("Observation").applyHeading(true, level);
+			doc.addParagraph("Table " + (++tableNumber) + ". Data tracker details.");
+			writeTable(doc, entries, "Data tracker", "Details", "Tracked data", "Time", "Process", "Component");
 		}
 	}
 
@@ -872,15 +878,20 @@ public class DocoGenerator {
 	 */
 	private void writeInitialisation(TextDocument doc, int level) {
 		doc.addParagraph("Initialisation").applyHeading(true, level);
-		doc.addParagraph(
-				"Add the initialisation functions, snippets if any, and look for nInstances property in the Component");
-		// TODO This property will be a problem since there is no
-		// option to make properties optional in MM.
-		// Therefore the user could set "fire", for example, to have >1 instances and we
-		// have a mess. On the othe hand, if we have an option in MM: make optional
-		// properties then its
-		// still possible for the user to make a mess. I suggest we have some other way
-		// of initialising the number of components.
+		List<String> entries;
+		entries = getEntityInitialiserDetails();
+		if (!entries.isEmpty()) {
+			doc.addParagraph("Table " + (++tableNumber) + ". Component type initialisation methods");
+			writeTable(doc, entries, "Component type", "Initialiser");
+		} else
+			doc.addParagraph("No initialising functions.");
+
+		entries = getInstanceComponentDetails();
+		if (!entries.isEmpty()) {
+			doc.addParagraph("Table " + (++tableNumber) + ". Initial component instances.");
+			writeTable(doc, entries, "ComponentType", "Component", "Number");
+
+		}
 	}
 
 	/**
@@ -955,8 +966,8 @@ public class DocoGenerator {
 			font.setSize(10);
 			para.setFont(font);
 			for (String line : snp.getValue()) {
-				if (line.startsWith("\t\t")) 
-					line = line.substring(2, line.length() - 1);			
+				if (line.startsWith("\t\t"))
+					line = line.substring(2, line.length() - 1);
 				para.appendTextContent(line + "\n", true);
 			}
 		}
@@ -1015,6 +1026,17 @@ public class DocoGenerator {
 			entries.add(new StringBuilder().append(c1).append(sep).append(c2).append(sep).append(c3).append(sep)
 					.append(c4).append(sep).append(c5).append(sep).append(c6).toString());
 
+		}
+		return entries;
+	}
+
+	private List<String> getInstanceComponentDetails() {
+		List<String> entries = new ArrayList<>();
+		for (TreeGraphDataNode cmp : instanceComponents) {
+			StringBuilder sb = new StringBuilder().append(cmp.getParent().id()).append(sep).append(cmp.id())
+					.append(sep);
+			sb.append(cmp.properties().getPropertyValue(P_COMPONENT_NINST.key()));
+			entries.add(sb.toString());
 		}
 		return entries;
 	}
@@ -1460,9 +1482,9 @@ public class DocoGenerator {
 		return entries;
 	}
 
-	private List<String> getDriverDetails() {
+	private List<String> getDataDetails(List<TreeGraphDataNode> dataTypes) {
 		List<String> entries = new ArrayList<>();
-		for (TreeGraphDataNode drv : driverTypes) {
+		for (TreeGraphDataNode drv : dataTypes) {
 			String c1 = drv.id();
 			Map<String, List<String>> details = getDataTreeDetails(drv);
 			for (Map.Entry<String, List<String>> entry : details.entrySet()) {
