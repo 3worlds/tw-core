@@ -374,8 +374,12 @@ public class RelationProcess extends AbstractRelationProcess {
 	        for (MaintainRelationDecisionFunction function:MRfunctions) {
 	        	if (!function.maintainRelation(t, dt, arena, 
 	        		/*lifeCycle*/null, focalGroup, focal, 
-	        		/*otherLifeCycle*/null, otherGroup, other, space))
+	        		/*otherLifeCycle*/null, otherGroup, other, space)) {
 	        		rel.container().removeItem(rel);
+		        	if (space!=null)
+		        		if (space.dataTracker()!=null)
+		        			space.dataTracker().removeItem(currentStatus,focal.id(),other.id());
+	        	}
 	        }
 	        // if there is no maintainrelation function, the relation only lasts for 1 time step
 	        if (MRfunctions.isEmpty())

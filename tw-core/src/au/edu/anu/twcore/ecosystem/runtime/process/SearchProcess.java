@@ -270,8 +270,15 @@ public class SearchProcess
 				// already related, skip it
 				;
 			else if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
-				otherLifeCycle,otherGroup,other,space))
+				otherLifeCycle,otherGroup,other,space)) {
 				relContainer.addItem(focal,other);
+				if (space!=null)
+					if (space.dataTracker()!=null)
+						space.dataTracker().recordItem(currentStatus,
+							space.locationOf(focal).asPoint(),
+							space.locationOf(other).asPoint(),
+							focal.id(),other.id());
+			}
 		}
 	}
 

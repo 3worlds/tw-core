@@ -32,10 +32,10 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMELIN
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
-import au.edu.anu.twcore.data.runtime.TwData;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+import fr.cnrs.iees.uit.space.Point;
 
 /**
  * A data tracker for spatial data of SystemComponents (no edges at the moment).
@@ -91,17 +91,14 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 	public Metadata getInstance() {
 		return metadata;
 	}
-
-	@Override
-	public void recordItem(String... labels) {
-		// TODO Auto-generated method stub
-
+	
+	public void recordItem(SimulatorStatus status, Point start, Point end, String... labels) {
+		SpaceData msg = new SpaceData(status, senderId, metadata.type());
+		msg.setTime(currentTime);
+		msg.setItemLabel(labels);
+		msg.newLine(start,end);
+		sendData(msg);
 	}
 
-	@Override
-	public void record(SimulatorStatus status, TwData... props) {
-		// TODO Auto-generated method stub
-
-	}
 
 }

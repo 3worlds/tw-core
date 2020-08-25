@@ -44,6 +44,8 @@ import fr.ens.biologie.generic.utils.Duple;
  * @author Jacques Gignoux - 14 févr. 2020
  *
  */
+// TODO: make a buffered message sending a bunch of locations and lines to draw/remove corresponding to
+// one time step.
 public class SpaceData extends LabelledItemData {
 	
 	private static final boolean delete = false;
@@ -55,6 +57,7 @@ public class SpaceData extends LabelledItemData {
 	private boolean action;
 	
 	private Duple<double[],double[]> line = null;
+	private boolean isPoint = true;
 
 	public SpaceData(SimulatorStatus status, int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
@@ -67,11 +70,13 @@ public class SpaceData extends LabelledItemData {
 		coordinates = new double[loc.dim()];
 		for (int i=0; i<loc.dim(); i++)
 			coordinates[i] = loc.coordinate(i);
+		isPoint = true;
 	}
 	
 	public void newLocation(double...coord) {
 		action = create;
 		coordinates = coord.clone();
+		isPoint = true;
 	}
 
 	public void deleteLocation(String... labels) {
@@ -84,11 +89,11 @@ public class SpaceData extends LabelledItemData {
 	}
 	
 	public boolean isPoint() {
-		return (coordinates!=null);
+		return isPoint;
 	}
 
 	public boolean isLine() {
-		return (line!=null);
+		return !isPoint;
 	}
 
 	// for both SystemComponents and SystemRelations
@@ -109,11 +114,13 @@ public class SpaceData extends LabelledItemData {
 			e[i] = end.coordinate(i);
 		}
 		line = new Duple<double[],double[]>(s,e);
+		isPoint = false;
 	}
 
 	public void newLine(double[] start, double[] end) {
 		action = create;
 		line = new Duple<double[],double[]>(start.clone(),end.clone());
+		isPoint = false;
 	}
 	
 	public Duple<double[],double[]> line() {
