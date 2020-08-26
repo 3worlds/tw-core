@@ -1347,7 +1347,7 @@ public class DocoGenerator {
 			}
 		}
 		boolean haveEphemeralRelations = false;// TODO Don't know what to do here?
-		flowChart.append("advance time:\n");
+		flowChart.append("\tadvance time\n");
 		if (haveEphemeralRelations) {
 			flowChart.append("\tremove old relations\n");
 			flowChart.append("\tcreate new relations\n");
