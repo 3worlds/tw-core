@@ -181,16 +181,15 @@ public class EcosystemGraph
 		if (components!=null) {
 			// this may possibly remove relations set just before
 			components.effectAllChanges();
-			// Second, graph state changes
+			// Second, graph state changes (recursive)
 			components.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
 		}
 		// here???
 		if (arena.getDataTracker()!=null) {
 			arena.getDataTracker().recordItem(SimulatorStatus.Active,this , arena.id());
 		}
-
+		// special treatment of arena only
 		arena.stepForward();
-	
 	}
 
 	@Override

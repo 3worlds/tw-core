@@ -28,14 +28,20 @@
  **************************************************************************/
 package au.edu.anu.twcore.data.runtime;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.utils.Duple;
 
 /**
  * This class is used to send spatial information to widgets. It contains the coordinates of
  * a single item (usually a SystemComponent) and its DataLabel.
  * NB may also contain a line.
+ * NB now replaced by a series of changes (all changes occurring during one time step)
  * 
  * It is meant to be used as a message to sent everytime a new item is located / unlocated by the space
  * (for economy: only changes are sent)
@@ -44,111 +50,77 @@ import fr.ens.biologie.generic.utils.Duple;
  * @author Jacques Gignoux - 14 févr. 2020
  *
  */
-// TODO: make a buffered message sending a bunch of locations and lines to draw/remove corresponding to
-// one time step.
-public class SpaceData extends LabelledItemData {
+public class SpaceData extends TimeData {
 	
-	private static final boolean delete = false;
-	private static final boolean create = true;
-	
-	// the coordinates of the labelled item
-	private double[] coordinates = null;
-	// a boolean telling if the item should be removed or added from/to the widget
-	private boolean action;
-	
-	private Duple<double[],double[]> line = null;
-	private boolean isPoint = true;
+	/** List of points to definitely remove because their Component is gone */
+	private Set<DataLabel> pointsToDelete = new HashSet<>();
+	/** List of lines to definitely remove because their Edge is gone */
+	private Set<Duple<DataLabel,DataLabel>> linesToDelete = new HashSet<>();
+	/** List of new points to  draw from scratch */
+	private Map<DataLabel,double[]> pointsToCreate = new HashMap<>();
+	/** List of new lines to  draw from scratch */
+	private Set<Duple<DataLabel,DataLabel>> linesToCreate = new HashSet<>();
+	/** List of points to move, i.e. they are first erased, then redrawn*/
+	private Map<DataLabel,double[]> pointsToMove = new HashMap<>();
 
 	public SpaceData(SimulatorStatus status, int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
 	}
 	
-	// points (ie, SystemComponents)
-
-	public void newLocation(Point loc) {
-		action = create;
-		coordinates = new double[loc.dim()];
-		for (int i=0; i<loc.dim(); i++)
-			coordinates[i] = loc.coordinate(i);
-		isPoint = true;
-	}
-	
-	public void newLocation(double...coord) {
-		action = create;
-		coordinates = coord.clone();
-		isPoint = true;
+	public void createPoint(DataLabel label, double...coord) {
+		pointsToCreate.put(label,coord.clone());
 	}
 
-	public void deleteLocation(String... labels) {
-		action = delete;
-		setItemLabel(labels);
+	public void deletePoint(DataLabel label) {
+		pointsToDelete.add(label);
 	}
 	
-	public double[] coordinates() {
-		return coordinates;
+	public void movePoint(DataLabel label, double[] newCoord) {
+		pointsToMove.put(label,newCoord);
 	}
 	
-	public boolean isPoint() {
-		return isPoint;
-	}
-
-	public boolean isLine() {
-		return !isPoint;
+	public void createLine(DataLabel startLabel, DataLabel endLabel) {
+		linesToCreate.add(new Duple<>(startLabel,endLabel));
 	}
 
-	// for both SystemComponents and SystemRelations
-	
-	public void delete(DataLabel labels) {
-		action = delete;
-		setItemLabel(labels);
+	public void deleteLine(DataLabel startLabel, DataLabel endLabel) {
+		linesToDelete.add(new Duple<>(startLabel,endLabel));
 	}
 	
-	// lines (ie, SystemRelations) - actually just a pair of points
-	
-	public void newLine(Point start, Point end) {
-		action = create;
-		double[] s = new double[start.dim()];
-		double[] e = new double[end.dim()];
-		for (int i=0; i<start.dim(); i++) {
-			s[i] = start.coordinate(i);
-			e[i] = end.coordinate(i);
-		}
-		line = new Duple<double[],double[]>(s,e);
-		isPoint = false;
-	}
-
-	public void newLine(double[] start, double[] end) {
-		action = create;
-		line = new Duple<double[],double[]>(start.clone(),end.clone());
-		isPoint = false;
+	public Collection<DataLabel> pointsToDelete() {
+		return pointsToDelete;
 	}
 	
-	public Duple<double[],double[]> line() {
-		return line;
+	public Map<DataLabel,double[]> pointsToCreate() {
+		return pointsToCreate;
 	}
 	
-	// what to do with the data
-	
-	public boolean create() {
-		return action;
+	public Map<DataLabel,double[]> pointsToMove() {
+		return pointsToMove;
 	}
 	
-	public boolean delete() {
-		return !action;
+	public Collection<Duple<DataLabel,DataLabel>> linesToCreate() {
+		return linesToCreate;
+	}
+	
+	public Collection<Duple<DataLabel,DataLabel>> linesToDelete() {
+		return linesToDelete;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("SpaceData: ");
 		sb.append("Sender ").append(sender()).append("; ");
-		if (action==create)
-			sb.append("new item ")
-				.append(itemLabel())
-				.append(" @ ")
-				.append(Point.newPoint(coordinates));
-		else if (action==delete)
-			sb.append("delete item ")
-			.append(itemLabel());
+		if (!pointsToCreate.isEmpty())
+			sb.append("new points ").append(pointsToCreate.keySet().toString()).append("; ");
+		if (!pointsToDelete.isEmpty())
+			sb.append("deleted points ").append(pointsToDelete.toString()).append("; ");
+		if (!pointsToMove.isEmpty())
+			sb.append("moved points ").append(pointsToMove.keySet().toString()).append("; ");
+		if (!linesToCreate.isEmpty())
+			sb.append("new lines ").append(linesToCreate.toString()).append("; ");
+		if (!linesToDelete.isEmpty())
+			sb.append("deleted lines ").append(linesToDelete.toString()).append("; ");
 		return sb.toString();
 	}
 	

@@ -332,6 +332,10 @@ public class Simulator implements Resettable {
 				SystemComponent isc = container.initialForItem(sc.id());
 //				if (isc!=null) // must always be non null, normally
 				// get the location of this initial item
+				if (space.dataTracker() != null) {
+					space.dataTracker().setInitialTime();
+					space.dataTracker().recordTime(status,startTime);
+				}
 				for (LocatedSystemComponent lisc : space.getInitialItems())
 					if (lisc.item() == isc) {
 						// locate the initial item clone at the location of the initial item
@@ -341,10 +345,11 @@ public class Simulator implements Resettable {
 							double x[] = new double[initLoc.asPoint().dim()];
 							for (int i = 0; i < initLoc.asPoint().dim(); i++)
 								x[i] = initLoc.asPoint().coordinate(i);
-							space.dataTracker().setInitialTime();
-							space.dataTracker().recordItem(SimulatorStatus.Initial, x, container.itemId(sc.id()));
+							space.dataTracker().createPoint(x, container.itemId(sc.id()));
 						}
-					}
+				}
+				if (space.dataTracker() != null)
+					space.dataTracker().closeTimeStep();
 			}
 		}
 		for (CategorizedContainer<SystemComponent> cc : container.subContainers())

@@ -363,7 +363,7 @@ public class RelationProcess extends AbstractRelationProcess {
         		arena, focalLifeCycle, focalGroup, focal,
         		otherLifeCycle, otherGroup, other, space,newLoc);
 			if (space!=null)
-				relocate((SystemComponent)other,newLoc,other.container().itemId(other.id()));
+				relocate((SystemComponent)other,newLoc);
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
         }
@@ -378,7 +378,8 @@ public class RelationProcess extends AbstractRelationProcess {
 	        		rel.container().removeItem(rel);
 		        	if (space!=null)
 		        		if (space.dataTracker()!=null)
-		        			space.dataTracker().removeItem(currentStatus,focal.id(),other.id());
+		        			space.dataTracker().deleteLine(focal.container().itemId(focal.id()),
+		        				other.container().itemId(other.id()));
 	        	}
 	        }
 	        // if there is no maintainrelation function, the relation only lasts for 1 time step
@@ -406,9 +407,9 @@ public class RelationProcess extends AbstractRelationProcess {
         			/*otherLifeCycle*/null, otherGroup, other, space, newFocalLoc, newOtherLoc);
 			if (space!=null) {
 				if (!space.equalLocation(space.locationOf((SystemComponent)focal), newFocalLoc))
-					relocate((SystemComponent)focal,newFocalLoc,focal.container().itemId(focal.id()));
+					relocate((SystemComponent)focal,newFocalLoc);
 				if (!space.equalLocation(space.locationOf((SystemComponent)other), newOtherLoc))
-					relocate((SystemComponent)other,newOtherLoc,other.container().itemId(other.id()));
+					relocate((SystemComponent)other,newOtherLoc);
 			}
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();

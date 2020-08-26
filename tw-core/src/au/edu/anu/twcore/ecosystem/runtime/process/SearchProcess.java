@@ -274,10 +274,8 @@ public class SearchProcess
 				relContainer.addItem(focal,other);
 				if (space!=null)
 					if (space.dataTracker()!=null)
-						space.dataTracker().recordItem(currentStatus,
-							space.locationOf(focal).asPoint(),
-							space.locationOf(other).asPoint(),
-							focal.id(),other.id());
+						space.dataTracker().createLine(focal.container().itemId(focal.id()), 
+							other.container().itemId(other.id()));
 			}
 		}
 	}

@@ -77,8 +77,6 @@ public class ComponentProcess
 		String name = null;
 	}
 
-	
-
 	private SortedSet<Category> focalCategories = new TreeSet<>();
 	private String categoryId = null;
 
@@ -158,8 +156,8 @@ public class ComponentProcess
 			if (space!=null)
 				newLoc = new double[space.ndim()];
 			function.changeState(t,dt,arena,null,focalGroup,focal,space,newLoc);
-			if (space!=null)
-				relocate((SystemComponent) focal,newLoc,focal.container().itemId(focal.id()));
+			if (space!=null) 
+				relocate((SystemComponent)focal,newLoc);
 		}
 		if (focal.currentState() != null)
 			focal.nextState().writeDisable();
@@ -171,13 +169,7 @@ public class ComponentProcess
 		//-----------------------------------------------------------------------------------	
 			focal.container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
-			for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
-					((ComponentFactory)focal.membership()).spaces()) {
-//				space.unlocate((SystemComponent) focal); // wrong: this is immediate
-				space.removeItem(new LocatedSystemComponent((SystemComponent)focal));
-				if (space.dataTracker()!=null)
-					space.dataTracker().removeItem(currentStatus,focal.container().itemId(focal.id()));
-			}
+			unlocate((SystemComponent)focal);
 			// remove from tracklist if dead - safe, data sending has already been made
 			for (DataTracker<?,Metadata> tracker:trackers)
 				if (tracker.isTracked(focal))
@@ -195,8 +187,8 @@ public class ComponentProcess
 					consequence.changeOtherState(t, dt,
 						arena, null, focalGroup, focal,
 						null, otherGroup, other, space, newLoc);
-					if (space!=null)
-						relocate((SystemComponent)other,newLoc,other.container().itemId(other.id()));
+					if (space!=null) 
+						relocate((SystemComponent)other,newLoc);
 				}
 			}
 		} //-------------------------------------------------------------------------
@@ -245,12 +237,12 @@ public class ComponentProcess
 						func.setOtherInitialState(t, dt,
 							arena, null, focalGroup, focal,
 							null, otherGroup, newBorn, space, newLoc);
-						if (space!=null)
-							// caution - item not yet in container.
-							relocate(newBorn,newLoc,nbs.container.itemId(newBorn.id()));
+						if (space!=null) 
+							locate(newBorn,nbs.container,newLoc);
 					}
 					if (function.relateToOther())
 						focal.relateTo(newBorn,parentTo.key()); // delayed addition
+					// TODO: display relation in space widget??
 					nbs.container.addItem(newBorn); // safe - delayed addition
 				}
 			}

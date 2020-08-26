@@ -206,6 +206,7 @@ public abstract class SpaceAdapter
 		toDelete.add(item.item());
 	}
 
+	// This is called after all graph changes (structure and state)
 	@Override
 	public final void effectChanges() {
 		for (SystemComponent sc:toDelete)

@@ -30,12 +30,12 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMELINE_TIMEORIGIN;
 
+import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.cnrs.iees.uit.space.Point;
 
 /**
  * A data tracker for spatial data of SystemComponents (no edges at the moment).
@@ -55,6 +55,7 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 
 	private long currentTime;
 	private Metadata metadata = null;
+	private SpaceData ctMessage = null;
 
 	public SpaceDataTracker(int simId, ReadOnlyPropertyList meta) {
 		super(DataMessageTypes.SPACE,simId);
@@ -68,37 +69,66 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 		currentTime = dtt.getDateTime();
 	}
 
-	public void recordTime(long time) {
+	public void recordTime(SimulatorStatus status, long time) {
 		currentTime = time;
+		ctMessage = new SpaceData(status, senderId, metadata.type());
+		ctMessage.setTime(currentTime);
+	}
+	
+	public void createPoint(double[] coord, String... labels) {
+		ctMessage.createPoint(new DataLabel(labels),coord);
+	}
+	
+	public void movePoint(double[] newCoord, String... labels) {
+		ctMessage.movePoint(new DataLabel(labels),newCoord);
+	}
+	
+	public void deletePoint(String...labels) {
+		ctMessage.deletePoint(new DataLabel(labels));
+	}
+	
+	public void createLine(String[] startLabels, String[] endLabels) {
+		ctMessage.createLine(new DataLabel(startLabels), new DataLabel(endLabels));
+	}
+	
+	public void deleteLine(String[] startLabels, String[] endLabels) {
+		ctMessage.deleteLine(new DataLabel(startLabels), new DataLabel(endLabels));
 	}
 
-	public void recordItem(SimulatorStatus status, double[] coord, String... labels) {
-		SpaceData msg = new SpaceData(status, senderId, metadata.type());
-		msg.setTime(currentTime);
-		msg.setItemLabel(labels);
-		msg.newLocation(coord);
-		sendData(msg);
+	public void closeTimeStep() {
+		sendData(ctMessage);
 	}
 
-	public void removeItem(SimulatorStatus status, String... labels) {
-		SpaceData msg = new SpaceData(status, senderId, metadata.type());
-		msg.setTime(currentTime);
-		msg.deleteLocation(labels);
-		sendData(msg);
-	}
+//	@Deprecated
+//	public void recordItem(SimulatorStatus status, double[] coord, String... labels) {
+//		SpaceData msg = new SpaceData(status, senderId, metadata.type());
+//		msg.setTime(currentTime);
+//		msg.setItemLabel(labels);
+//		msg.newLocation(coord);
+//		sendData(msg);
+//	}
+//
+//	@Deprecated
+//	public void removeItem(SimulatorStatus status, String... labels) {
+//		SpaceData msg = new SpaceData(status, senderId, metadata.type());
+//		msg.setTime(currentTime);
+//		msg.deleteLocation(labels);
+//		sendData(msg);
+//	}
 
 	@Override
 	public Metadata getInstance() {
 		return metadata;
 	}
 	
-	public void recordItem(SimulatorStatus status, Point start, Point end, String... labels) {
-		SpaceData msg = new SpaceData(status, senderId, metadata.type());
-		msg.setTime(currentTime);
-		msg.setItemLabel(labels);
-		msg.newLine(start,end);
-		sendData(msg);
-	}
+//	@Deprecated
+//	public void recordItem(SimulatorStatus status, Point start, Point end, String... labels) {
+//		SpaceData msg = new SpaceData(status, senderId, metadata.type());
+//		msg.setTime(currentTime);
+//		msg.setItemLabel(labels);
+//		msg.newLine(start,end);
+//		sendData(msg);
+//	}
 
 
 }

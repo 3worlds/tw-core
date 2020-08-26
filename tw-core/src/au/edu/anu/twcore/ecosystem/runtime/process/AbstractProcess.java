@@ -43,11 +43,14 @@ import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
+import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -151,13 +154,16 @@ public abstract class AbstractProcess
 			tracker.recordTime(t);
 		if (space!=null)
 			if (space.dataTracker()!=null)
-				space.dataTracker().recordTime(t);
+				space.dataTracker().recordTime(status,t);
 		
 		GraphDataTracker gdt = ecosystem.getDataTracker();
 		if (gdt!=null)
 			gdt.recordTime(t);
 		
 		loop(currentTime,timer.userTime(dt),ecosystem());
+		if (space!=null)
+			if (space.dataTracker()!=null)
+				space.dataTracker().closeTimeStep(); // this sends the message to the widget
 	}
 	
 	private double fixCoordinate(double coord, double lower, double upper, double side) {
@@ -168,22 +174,25 @@ public abstract class AbstractProcess
 		return coord;
 	}
 
-	// for descendants
-	protected void relocate(SystemComponent sc, double[] newLoc, String...labels) {
+	private double[] applyEdgeEffectCorrection(double[] newLoc) {
 		if (newLoc.length!=space.ndim()) {
 			log.warning("Wrong number of dimensions: default location generated");
 			newLoc = space.defaultLocation();
 		}
 		switch (space.edgeEffectCorrection()) {
 		case bufferAndWrap:
-			// TODO
+			if (!space.boundingBox().contains(Point.newPoint(newLoc)))
+				return null;
 			break;
 		case bufferZone:
 			// TODO
+			if (!space.boundingBox().contains(Point.newPoint(newLoc)))
+				return null;
 			break;
 		case noCorrection:
 			// TODO
-			// and so what ???
+			if (!space.boundingBox().contains(Point.newPoint(newLoc)))
+				return null;
 			break;
 		case wrapAround1D:	
 			// crude: assumes the wrapped dimension is first one
@@ -210,18 +219,48 @@ public abstract class AbstractProcess
 		default:
 			break;
 		}
-//		space.locate(sc,newLoc); // this was wrong: immediate relocation
-		// All these are delayed operations (postponed to a call to space.effectChanges())
-		// create a new located system component
-		LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
-		// remove the old location (only the component is used)
-		space.removeItem(new LocatedSystemComponent(sc));
-		// insert the new location
-		space.addItem(newLocSc);		
-		if (space.dataTracker()!=null)
-			space.dataTracker().recordItem(currentStatus,newLoc,labels);
+		return newLoc;
 	}
-
+	
+	// for descendants
+	protected void relocate(SystemComponent sc, double[] newLoc) {
+		newLoc = applyEdgeEffectCorrection(newLoc);
+		if (newLoc==null) {
+			// new location is outside the space - other should be deleted:
+			sc.container().removeItem(sc);
+		}
+		else {
+			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
+			space.removeItem(new LocatedSystemComponent(sc,space.locationOf(sc)));
+			space.addItem(newLocSc);
+			if (space.dataTracker()!=null)
+				space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
+		}
+	}
+	
+	// for descendants
+	protected void locate(SystemComponent sc, ComponentContainer cont, double[] newLoc) {
+		newLoc = applyEdgeEffectCorrection(newLoc);
+		if (newLoc==null)
+			cont.removeItem(sc);
+		else {
+			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
+			space.addItem(newLocSc);
+			if (space.dataTracker()!=null)
+				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
+		}	
+	}
+	
+	// for descendants
+	// NB: removes a SC from ALL spaces, not only from this one
+	protected void unlocate(SystemComponent sc) {
+		for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
+			((ComponentFactory)sc.membership()).spaces()) {
+			space.removeItem(new LocatedSystemComponent((SystemComponent)sc));
+			if (space.dataTracker()!=null)
+				space.dataTracker().deletePoint(sc.container().itemId(sc.id()));
+		}
+	}
 	
 	/**
 	 * Utility for descendants. Fills a hierarchical context from container information
