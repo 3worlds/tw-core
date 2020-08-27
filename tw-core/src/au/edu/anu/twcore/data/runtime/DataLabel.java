@@ -123,5 +123,40 @@ public class DataLabel implements Comparable<DataLabel>, Cloneable {
 	public DataLabel clone() {
 		return new DataLabel(label);
 	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj==null)
+			return false;
+		if (obj instanceof DataLabel) {
+			DataLabel dl = (DataLabel) obj;
+			if (label.size()!=dl.label.size())
+				return false;
+			boolean result = true;
+			for (int i=0; i<label.size(); i++) {
+				if (label.get(i)==null) {
+					if (dl.label.get(i)==null)
+						result &= true;
+					else
+						return false;
+				}
+				else {
+					if (label.get(i).equals(dl.label.get(i)))
+						result &=true;
+					else
+						return false;
+				}
+			}
+			return result;
+		}
+		return false;
+	}
+	
+	
 	
 }
