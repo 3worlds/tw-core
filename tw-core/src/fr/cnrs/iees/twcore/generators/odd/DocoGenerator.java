@@ -58,6 +58,7 @@ import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.dynamics.StoppingConditionNode;
+import au.edu.anu.twcore.ecosystem.runtime.biology.MaintainRelationDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
@@ -74,6 +75,7 @@ import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.twcore.constants.TrackerType;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Interval;
 
 import static au.edu.anu.twcore.archetype.TwArchetypeConstants.*;
@@ -349,17 +351,6 @@ public class DocoGenerator {
 	// cf: https://odftoolkit.org/simple/document/cookbook/Text%20Document.html
 	public void generate() {
 		try {
-			/**
-			 * Crash here when MM runs from jar:
-			 * 
-			 * Caused by: java.lang.NoClassDefFoundError: org/odftoolkit/simple/TextDocument
-			 * 
-			 * cf:
-			 * https://stackoverflow.com/questions/44176076/what-dependencies-to-use-for-apache-odf-toolkit-incubating
-			 * 
-			 * 
-			 * to search: jar -tvf tw-dep.jar | grep "IRIFactory"
-			 */
 			TextDocument document = TextDocument.newTextDocument();
 			writeTitle(document, "Overview, Design concepts and Details", level1);
 			// setHeading(document, level1);
@@ -987,24 +978,24 @@ public class DocoGenerator {
 			}
 			String c2 = sb.toString();
 
-			List<ALEdge> tableEdges = (List<ALEdge>) get(t.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_TRACKTABLE.label())));
-
-			List<TreeGraphDataNode> fields = (List<TreeGraphDataNode>) get(t.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_TRACKFIELD.label())), edgeListEndNodes());
-
-			sb = new StringBuilder();
-			for (ALEdge edge : tableEdges) {
-				if (edge instanceof ALDataEdge) {
-					TrackerType tp = (TrackerType) ((ALDataEdge) edge).properties()
-							.getPropertyValue(P_TRACKEDGE_INDEX.key());
-					sb.append(edge.endNode().id() + formatClassifier(tp.toString())).append("\n");
-				}
-			}
-			for (TreeGraphDataNode f : fields) {
-				sb.append(f.id()).append("\n");
-			}
-			String c3 = sb.toString();
+//			List<ALEdge> tableEdges = (List<ALEdge>) get(t.edges(Direction.OUT),
+//					selectZeroOrMany(hasTheLabel(E_TRACKTABLE.label())));
+//
+//			List<TreeGraphDataNode> fields = (List<TreeGraphDataNode>) get(t.edges(Direction.OUT),
+//					selectZeroOrMany(hasTheLabel(E_TRACKFIELD.label())), edgeListEndNodes());
+//
+//			sb = new StringBuilder();
+//			for (ALEdge edge : tableEdges) {
+//				if (edge instanceof ALDataEdge) {
+//					TrackerType tp = (TrackerType) ((ALDataEdge) edge).properties()
+//							.getPropertyValue(P_TRACKEDGE_INDEX.key());
+//					sb.append(edge.endNode().id() + formatClassifier(tp.toString())).append("\n");
+//				}
+//			}
+//			for (TreeGraphDataNode f : fields) {
+//				sb.append(f.id()).append("\n");
+//			}
+			String c3 = getTrackedDesc(t);
 
 			TreeNode timer = t.getParent();
 			while (!timer.classId().equals(N_TIMER.label()))
@@ -1028,6 +1019,33 @@ public class DocoGenerator {
 
 		}
 		return entries;
+	}
+
+	@SuppressWarnings("unchecked")
+	private String getTrackedDesc(TreeGraphDataNode tracker) {
+		List<ALEdge> tableEdges = (List<ALEdge>) get(tracker.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_TRACKTABLE.label())));
+
+		List<TreeGraphDataNode> fields = (List<TreeGraphDataNode>) get(tracker.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_TRACKFIELD.label())), edgeListEndNodes());
+
+		StringBuilder sb = new StringBuilder();
+		for (ALEdge edge : tableEdges) {
+			if (edge instanceof ALDataEdge) {
+				TrackerType tp = (TrackerType) ((ALDataEdge) edge).properties()
+						.getPropertyValue(P_TRACKEDGE_INDEX.key());
+				String s = "";
+				for (int i = 0; i < tp.size(); i++) {
+					s += "," + tp.getWithFlatIndex(i);
+				}
+				s = s.replaceFirst(",", "");
+				sb.append(edge.endNode().id()).append(" (").append(s).append(")\n");
+			}
+		}
+		for (TreeGraphDataNode f : fields) {
+			sb.append(f.id()).append("\n");
+		}
+		return sb.toString();
 	}
 
 	private List<String> getInstanceComponentDetails() {
@@ -1243,32 +1261,34 @@ public class DocoGenerator {
 
 		/*-
 		 * initialise
-		 * While have next time
+		 * if have next time
+		 * 		set decs to zero
 		 * 		if time for time1
+		 * 			with (entities)
+		 * 				if (decision)
+		 * 					functions
+		 * 						consequence function
 		 *  	etc...
-		 * if (scSc1.stop)
+		 *  	advance time
+		 *  	create/destroy ephemeral relations and components
+		 * 		set next drivers to current values 	
+		 * if (stopping condition)
 		 * */
-//		String indent = "";
 		StringBuilder flowChart = new StringBuilder();
 		// initialisation
 		for (TreeGraphDataNode init : initTypes)
-			flowChart.append(init.id()).append("\n");
+			flowChart.append(funcDesc.get(init)).append("\n");
 
-		// loop for all possible timer combinations.
-
-		// JG: that's when there is no stopping condition. otherwise
-		// you may get the stopping condition tree and work out the condition for
-		// stopping, eg "while time<265" or "while (biomass<400) and
-		// (populationSize<1000)"
-		// you get the condition as a string simply by calling
-		// StoppingCondition.toString().
 		flowChart.append("if have next time\n");
 
+		// init decorators
 		for (TreeGraphDataNode dec : decTypes) {
 			Map<String, List<String>> details = getDataTreeDetails(dec);
 			for (Map.Entry<String, List<String>> entry : details.entrySet())
-				flowChart.append(sep).append("set ").append(entry.getKey()).append(" to zero\n");
+				flowChart.append(sep).append("assign ").append(entry.getKey()).append(" <- zero\n");
 		}
+
+		// get dependsOn orders
 		Map<Integer, List<TreeNode>> timerCombos = new HashMap<>();
 
 		for (Map.Entry<Integer, List<List<ProcessNode>>> combo : pco.entrySet()) {
@@ -1303,15 +1323,8 @@ public class DocoGenerator {
 			List<List<ProcessNode>> pSeq = pco.get(timerCombo.getKey());
 			for (List<ProcessNode> procs : pSeq) {
 				for (ProcessNode proc : procs) {
-					flowChart.append(procIndent).append(proc.id()).append("\n");
-					// JG: I suggest to add after the proc id a string such as
-					// "for each relation of type [*atomic* -> plant]" for SearchProcess or
-					// RelationProcess
-					// "for each component of type [*atomic* animal ephemeral]" for
-					// ComponentProcesses
-					// This way the looping structure is apparent.
-					// For searchProcess if there is a space attached to the process you may add
-					// "using optimal search on space <spaceName>"
+					flowChart.append(procIndent).append("with each (").append(getProcApplicationDesc(proc))
+							.append(")\n");
 
 					List<TreeNode> funcs = new ArrayList<>();
 					List<TreeNode> trackers = new ArrayList<>();
@@ -1325,22 +1338,31 @@ public class DocoGenerator {
 					// ChangeCategoryDecisionF.
 					// will be put.
 					// Consequences are called just after their parent function.
+
+					// TODO order these according to componentProcess.executeFunctions
+					// and RelationProcess.executeFunctions
+
 					for (TreeNode c : proc.getChildren()) {
 						if (c.classId().equals(N_FUNCTION.label()))
 							funcs.add(c);
 						else if (c.classId().equals(N_DATATRACKER.label()))
 							trackers.add(c);
 					}
+
+					// cf: comments for this method
+					funcs = orderFunc(funcs);
+
 					for (TreeNode func : funcs) {
 						if (hasConsequence(func)) {
-							flowChart.append(funcIndent).append("if ").append(func.id()).append("\n");
+							flowChart.append(funcIndent).append("if ").append(funcDesc.get(func)).append("\n");
 							appendConsequences(funcIndent + "\t", flowChart, func);
 						} else
-							flowChart.append(funcIndent).append(func.id()).append("\n");
+							flowChart.append(funcIndent).append(funcDesc.get(func)).append("\n");
 					}
 					// Do trackers last
 					for (TreeNode tracker : trackers) {
-						flowChart.append(funcIndent).append(tracker.id()).append("\n");
+						flowChart.append(funcIndent).append("record ")
+								.append(getTrackedDesc((TreeGraphDataNode) tracker));
 					}
 
 				}
@@ -1378,13 +1400,85 @@ public class DocoGenerator {
 		return flowChart.toString();
 	}
 
+	/**
+	 * ComponentProcess.execute
+	 * 
+	 * 1. ChangeStateFunction
+	 * 
+	 * 2. DeleteDecisionFunction something about consequent function here
+	 * 
+	 * 3. CreateOtherDecisionFunction if space locate
+	 * 
+	 * 4. others to come....
+	 * 
+	 * RelationProcess.executeFunctions
+	 * 
+	 * 1. ChangeOtherStateFunction
+	 * 
+	 * 2. if !permanent MaintainRelationDecisionFunction if space delete line
+	 * 
+	 * 3. ChangeRelationStateFunction if space relocate
+	 * 
+	 * 4. Others to come...
+	 */
+	private List<TreeNode> orderFunc(List<TreeNode> funcs) {
+		// TODO: for now we just trust to the order of the enums?
+		funcs.sort(new Comparator<TreeNode>() {
+
+			@Override
+			public int compare(TreeNode o1, TreeNode o2) {
+				TreeGraphDataNode n1 = (TreeGraphDataNode) o1;
+				TreeGraphDataNode n2 = (TreeGraphDataNode) o2;
+				TwFunctionTypes ft1 = (TwFunctionTypes) n1.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+				TwFunctionTypes ft2 = (TwFunctionTypes) n2.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+				return ft1.compareTo(ft2);
+			}
+
+		});
+		return funcs;
+	}
+
+	@SuppressWarnings("unchecked")
+	private String getProcApplicationDesc(ProcessNode proc) {
+		List<TreeGraphDataNode> categories = (List<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes(),
+				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+		TreeGraphDataNode relationType = (TreeGraphDataNode) get(proc.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes(),
+				selectZeroOrOne(hasTheLabel(N_RELATIONTYPE.label())));
+
+		// is this selectOne? must a category that has proc applying to it belong to
+		// just
+		// one componentType?
+		StringBuilder sb = new StringBuilder();
+		// TODO: well this is only a start
+		for (TreeGraphDataNode category : categories) {
+			List<TreeGraphDataNode> ct_sys = (List<TreeGraphDataNode>) get(category.edges(Direction.IN),
+					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes());
+			for (TreeGraphDataNode ct : ct_sys)
+				// many categories can belong to the same componentType of course.
+				// Probably should collect all component types and list their categories - but
+				// its a long string
+				if (!sb.toString().contains(ct.id()))
+					sb.append(",").append(ct.id());
+		}
+		// need a better string here. from/to but this depends on the function type
+		if (relationType != null) {
+			List<Duple<TreeGraphDataNode, TreeGraphDataNode>> fromToCats = getFromToCategories(relationType);
+			sb.append(",").append(relationType.id()).append(" (").append(fromToCats.get(0).getFirst().id()).append("->")
+					.append(fromToCats.get(0).getSecond().id()).append(")");
+		}
+
+		return sb.toString().replaceFirst(",", "");
+	}
+
 	private void appendConsequences(String indent, StringBuilder flowChart, TreeNode parent) {
 		for (TreeNode c : parent.getChildren()) {
 			if (hasConsequence(c)) {
-				flowChart.append(indent).append("if ").append(c.id()).append("\n");
+				flowChart.append(indent).append("if ").append(funcDesc.get(c)).append("\n");
 				appendConsequences(indent + "\t", flowChart, c);
 			} else if (c.classId().equals(N_FUNCTION.label()))
-				flowChart.append(indent).append(c.id()).append("\n");
+				flowChart.append(indent).append(funcDesc.get(c)).append("\n");
 		}
 	}
 
@@ -1505,27 +1599,36 @@ public class DocoGenerator {
 		List<String> entries = new ArrayList<>();
 		for (TreeGraphDataNode rt : relTypes) {
 			String c1 = rt.id();
-			List<TreeGraphDataNode> toCats = (List<TreeGraphDataNode>) get(rt.edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
-			List<TreeGraphDataNode> fromCats = (List<TreeGraphDataNode>) get(rt.edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
-			for (int i = 0; i < toCats.size(); i++) {
-				TreeGraphDataNode toCat = toCats.get(i);
-				TreeGraphDataNode fromCat = fromCats.get(i);// ???
-				TreeGraphDataNode ctTo = (TreeGraphDataNode) get(toCat.edges(Direction.IN),
-						selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-						selectOne(hasTheLabel(N_COMPONENTTYPE.label())));
-				TreeGraphDataNode ctFrom = (TreeGraphDataNode) get(fromCat.edges(Direction.IN),
-						selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-						selectOne(hasTheLabel(N_COMPONENTTYPE.label())));
-				String c2a = ctFrom.id();
-				String c2b = ctTo.id();
-				entries.add(new StringBuilder().append(c1).append(sep).append(c2a).append(" effects ").append(c2b)
-						.toString());
+			List<Duple<TreeGraphDataNode, TreeGraphDataNode>> fromToList = getFromToCategories(rt);
+			for (Duple<TreeGraphDataNode, TreeGraphDataNode> pair : fromToList) {
+				String c2a = pair.getFirst().id();
+				String c2b = pair.getSecond().id();
+				entries.add(
+						new StringBuilder().append(c1).append(sep).append(c2a).append(" -> ").append(c2b).toString());
 			}
 		}
-
 		return entries;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Duple<TreeGraphDataNode, TreeGraphDataNode>> getFromToCategories(TreeGraphDataNode rt) {
+		List<Duple<TreeGraphDataNode, TreeGraphDataNode>> result = new ArrayList<>();
+		List<TreeGraphDataNode> toCats = (List<TreeGraphDataNode>) get(rt.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
+		List<TreeGraphDataNode> fromCats = (List<TreeGraphDataNode>) get(rt.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
+		for (int i = 0; i < toCats.size(); i++) {
+			TreeGraphDataNode toCat = toCats.get(i);
+			TreeGraphDataNode fromCat = fromCats.get(i);// ???
+			TreeGraphDataNode ctTo = (TreeGraphDataNode) get(toCat.edges(Direction.IN),
+					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+					selectOne(hasTheLabel(N_COMPONENTTYPE.label())));
+			TreeGraphDataNode ctFrom = (TreeGraphDataNode) get(fromCat.edges(Direction.IN),
+					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+					selectOne(hasTheLabel(N_COMPONENTTYPE.label())));
+			result.add(new Duple<TreeGraphDataNode, TreeGraphDataNode>(ctFrom, ctTo));
+		}
+		return result;
 	}
 
 	private List<String> getSpatialUnitsDetails() {
