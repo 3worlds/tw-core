@@ -42,9 +42,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
@@ -978,23 +980,6 @@ public class DocoGenerator {
 			}
 			String c2 = sb.toString();
 
-//			List<ALEdge> tableEdges = (List<ALEdge>) get(t.edges(Direction.OUT),
-//					selectZeroOrMany(hasTheLabel(E_TRACKTABLE.label())));
-//
-//			List<TreeGraphDataNode> fields = (List<TreeGraphDataNode>) get(t.edges(Direction.OUT),
-//					selectZeroOrMany(hasTheLabel(E_TRACKFIELD.label())), edgeListEndNodes());
-//
-//			sb = new StringBuilder();
-//			for (ALEdge edge : tableEdges) {
-//				if (edge instanceof ALDataEdge) {
-//					TrackerType tp = (TrackerType) ((ALDataEdge) edge).properties()
-//							.getPropertyValue(P_TRACKEDGE_INDEX.key());
-//					sb.append(edge.endNode().id() + formatClassifier(tp.toString())).append("\n");
-//				}
-//			}
-//			for (TreeGraphDataNode f : fields) {
-//				sb.append(f.id()).append("\n");
-//			}
 			String c3 = getTrackedDesc(t);
 
 			TreeNode timer = t.getParent();
@@ -1023,6 +1008,7 @@ public class DocoGenerator {
 
 	@SuppressWarnings("unchecked")
 	private String getTrackedDesc(TreeGraphDataNode tracker) {
+		// This should return a list of strings otherwise it will get too long
 		List<ALEdge> tableEdges = (List<ALEdge>) get(tracker.edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_TRACKTABLE.label())));
 
@@ -1031,6 +1017,7 @@ public class DocoGenerator {
 
 		StringBuilder sb = new StringBuilder();
 		for (ALEdge edge : tableEdges) {
+
 			if (edge instanceof ALDataEdge) {
 				TrackerType tp = (TrackerType) ((ALDataEdge) edge).properties()
 						.getPropertyValue(P_TRACKEDGE_INDEX.key());
@@ -1039,13 +1026,18 @@ public class DocoGenerator {
 					s += "," + tp.getWithFlatIndex(i);
 				}
 				s = s.replaceFirst(",", "");
-				sb.append(edge.endNode().id()).append(" (").append(s).append(")\n");
+				sb.append(", ").append(edge.endNode().id()).append(" (").append(s).append(")");
 			}
 		}
-		for (TreeGraphDataNode f : fields) {
-			sb.append(f.id()).append("\n");
+		sb = new StringBuilder(sb.toString().replaceFirst(", ", ""));
+		if (!fields.isEmpty()) {
+			String ss = "";
+			for (TreeGraphDataNode f : fields)
+				ss += ", " + f.id();
+			ss = ss.replaceFirst(", ", "");
+			sb.append(ss);
 		}
-		return sb.toString();
+		return sb.append("\n").toString();
 	}
 
 	private List<String> getInstanceComponentDetails() {
@@ -1261,30 +1253,46 @@ public class DocoGenerator {
 
 		/*-
 		 * initialise
-		 * if have next time
-		 * 		set decs to zero
+		 * if (have next time)
+		 * 	if (stopping condition)
+		 * 		assign decs <- zero
 		 * 		if time for time1
-		 * 			with (entities)
+		 * 			with (entities) cf JG: for entities string desc see getProcessAppliesToDesc()
 		 * 				if (decision)
 		 * 					functions
 		 * 						consequence function
 		 *  	etc...
 		 *  	advance time
 		 *  	create/destroy ephemeral relations and components
-		 * 		set next drivers to current values 	
-		 * if (stopping condition)
+		 * 		assign next drivers <- current values 	
+		 * 
 		 * */
 		StringBuilder flowChart = new StringBuilder();
+		// Stopping conditions
+
 		// initialisation
 		for (TreeGraphDataNode init : initTypes)
 			flowChart.append(funcDesc.get(init)).append("\n");
 
-		flowChart.append("if have next time\n");
+		flowChart.append("if have time event\n");
+		if (!scTypes.isEmpty()) {
+			StringBuilder sb = new StringBuilder().append("\tif ");
+			// TODO: build a better string when we have examples of complex stopping
+			// conditions. All sc that are children of Dynamics are implicitly "OR"
+			for (TreeGraphDataNode sc : scTypes) {
+				StoppingConditionNode stpCond = (StoppingConditionNode) sc;
+				sb.append(stpCond.getInstance(0).toString()).append(" or ");
+			}
+			sb.replace(sb.length() - 4, sb.length(), " then\n");
+			sb.append("\t\tend simulation\n");
 
+			flowChart.append(sb.toString());
+		}
 		// init decorators
 		for (TreeGraphDataNode dec : decTypes) {
 			Map<String, List<String>> details = getDataTreeDetails(dec);
 			for (Map.Entry<String, List<String>> entry : details.entrySet())
+				// we need the element class here assign boolean <- false etc...
 				flowChart.append(sep).append("assign ").append(entry.getKey()).append(" <- zero\n");
 		}
 
@@ -1323,25 +1331,11 @@ public class DocoGenerator {
 			List<List<ProcessNode>> pSeq = pco.get(timerCombo.getKey());
 			for (List<ProcessNode> procs : pSeq) {
 				for (ProcessNode proc : procs) {
-					flowChart.append(procIndent).append("with each (").append(getProcApplicationDesc(proc))
+					flowChart.append(procIndent).append("with each (").append(getProcessAppliesToDesc(proc))
 							.append(")\n");
 
 					List<TreeNode> funcs = new ArrayList<>();
 					List<TreeNode> trackers = new ArrayList<>();
-
-					// JG: caution here: in a Process the function types are always called in the
-					// same
-					// order, cf in ComponentProcess and RelationProcess.
-					// For example in componentProcess.executeFunctions(...) you
-					// find a loop on ChangeStateFunctions, then one on DeleteDecisionF., then
-					// one on CreateOtherDecisionF., and I dont know yet where
-					// ChangeCategoryDecisionF.
-					// will be put.
-					// Consequences are called just after their parent function.
-
-					// TODO order these according to componentProcess.executeFunctions
-					// and RelationProcess.executeFunctions
-
 					for (TreeNode c : proc.getChildren()) {
 						if (c.classId().equals(N_FUNCTION.label()))
 							funcs.add(c);
@@ -1381,21 +1375,7 @@ public class DocoGenerator {
 		}
 
 		if (!driverTypes.isEmpty())
-			flowChart.append("\tset next drivers to current values\n");
-
-		if (!scTypes.isEmpty()) {
-			StringBuilder sb = new StringBuilder().append("if ");
-			// TODO: build a better string when we have examples of complex stopping
-			// conditions.
-			for (TreeGraphDataNode sc : scTypes) {
-				StoppingConditionNode stpCond = (StoppingConditionNode) sc;
-				sb.append(stpCond.getInstance(0).toString()).append(", ");
-			}
-			sb.replace(sb.length() - 2, sb.length(), " then\n");
-			sb.append(procIndent).append("\t").append("end simulation");
-
-			flowChart.append(procIndent).append(sb.toString());
-		}
+			flowChart.append("\tassign next drivers <- current values\n");
 
 		return flowChart.toString();
 	}
@@ -1439,7 +1419,9 @@ public class DocoGenerator {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getProcApplicationDesc(ProcessNode proc) {
+	private String getProcessAppliesToDesc(ProcessNode proc) {
+
+		// JG: This is where I need your help.
 		List<TreeGraphDataNode> categories = (List<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes(),
 				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
@@ -1452,24 +1434,36 @@ public class DocoGenerator {
 		// one componentType?
 		StringBuilder sb = new StringBuilder();
 		// TODO: well this is only a start
+		Set<TreeGraphDataNode> cmpTypes = new HashSet<>();
 		for (TreeGraphDataNode category : categories) {
 			List<TreeGraphDataNode> ct_sys = (List<TreeGraphDataNode>) get(category.edges(Direction.IN),
 					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes());
+			// many categories can belong to the same componentType of course so collect in
+			// a set
 			for (TreeGraphDataNode ct : ct_sys)
-				// many categories can belong to the same componentType of course.
-				// Probably should collect all component types and list their categories - but
-				// its a long string
-				if (!sb.toString().contains(ct.id()))
-					sb.append(",").append(ct.id());
+				cmpTypes.add(ct);
+		}
+		// One could list all the categories this component belongs to but it will be a
+		// long string and make the flow chart messy.
+		for (TreeGraphDataNode ct : cmpTypes) {
+			List<TreeNode> cmps = (List<TreeNode>) get(ct.getChildren(),
+					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+			// if have components then mention them in preference to the componentType
+			if (!cmps.isEmpty()) {
+				for (TreeNode cmp : cmps) {
+					sb.append(", ").append(cmp.id());
+				}
+			} else
+				sb.append(", ").append(ct.id());
 		}
 		// need a better string here. from/to but this depends on the function type
 		if (relationType != null) {
 			List<Duple<TreeGraphDataNode, TreeGraphDataNode>> fromToCats = getFromToCategories(relationType);
-			sb.append(",").append(relationType.id()).append(" (").append(fromToCats.get(0).getFirst().id()).append("->")
-					.append(fromToCats.get(0).getSecond().id()).append(")");
+			sb.append(", ").append(relationType.id()).append(" (").append(fromToCats.get(0).getFirst().id())
+					.append("->").append(fromToCats.get(0).getSecond().id()).append(")");
 		}
 
-		return sb.toString().replaceFirst(",", "");
+		return sb.toString().replaceFirst(", ", "");
 	}
 
 	private void appendConsequences(String indent, StringBuilder flowChart, TreeNode parent) {
