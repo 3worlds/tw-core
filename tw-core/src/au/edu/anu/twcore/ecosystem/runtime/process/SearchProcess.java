@@ -268,6 +268,7 @@ public class SearchProcess
 
 			if (focal.getRelatives(relContainer.id()).contains(other))
 				// already related, skip it
+				System.out.println("Already related "+focal.id()+"->"+other.id())
 				;
 			else if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
 				otherLifeCycle,otherGroup,other,space)) {

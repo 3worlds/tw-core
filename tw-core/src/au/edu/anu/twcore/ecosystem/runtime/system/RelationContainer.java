@@ -36,6 +36,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.containers.DynamicContainer;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.twcore.constants.LifespanType;
@@ -98,7 +99,7 @@ public class RelationContainer
 	public void effectChanges() {
 		// delete all old relations
 		for (SystemRelation sr:relationsToRemove) {
-			sr.startNode().disconnectFrom(sr.endNode()); // Do NOT use sr.disconnect() --> ConcurrentModificationException
+			sr.startNode().disconnectFrom(Direction.OUT,sr.endNode()); // Do NOT use sr.disconnect() --> ConcurrentModificationException
 			sr.removeFromContainer();
 		}
 		relationsToRemove.clear();
