@@ -599,7 +599,7 @@ public class DocoGenerator {
 	 */
 	private void writeCollectives(TextDocument doc, int level) {
 		doc.addParagraph("Collectives").applyHeading(true, level);
-		// doc.addParagraph("What goes here: groups, ephemerals? - what else?");
+		doc.addParagraph("Write Group details here");
 	}
 
 	/**
@@ -851,6 +851,8 @@ public class DocoGenerator {
 			doc.addParagraph("Observation").applyHeading(true, level);
 			doc.addParagraph("Table " + (++tableNumber) + ". Data tracker details.");
 			writeTable(doc, entries, "Data tracker", "Details", "Tracked data", "Time", "Process", "Component");
+			
+			doc.addParagraph("\nAdd space and graph widget outputs if present");
 		}
 	}
 
@@ -913,6 +915,8 @@ public class DocoGenerator {
 	 */
 	private void writeInputData(TextDocument doc, int level) {
 		doc.addParagraph("Input data").applyHeading(true, level);
+		
+		doc.addParagraph("Add refs to all input files here");
 	}
 
 	/**
@@ -923,6 +927,8 @@ public class DocoGenerator {
 	 */
 	private void writeSubmodels(TextDocument doc, int level) {
 		doc.addParagraph("Submodels").applyHeading(true, level);
+		
+		doc.addParagraph("Ha interesting! What should be put here - display a heirarchy if present?");
 	}
 
 	private void writeReferences(TextDocument doc, int level) {
