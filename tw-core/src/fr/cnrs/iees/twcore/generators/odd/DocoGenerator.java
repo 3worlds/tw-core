@@ -43,14 +43,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
-import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.text.Paragraph;
 
@@ -60,7 +58,6 @@ import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.dynamics.StoppingConditionNode;
-import au.edu.anu.twcore.ecosystem.runtime.biology.MaintainRelationDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
@@ -183,11 +180,11 @@ public class DocoGenerator {
 		allowedNodes.add(N_PREDEFINED.label());
 	}
 
-	private long startTime;
+//	private long startTime;
 
 	@SuppressWarnings("unchecked")
 	public DocoGenerator(TreeGraph<TreeGraphDataNode, ALEdge> cfg) {
-		startTime = System.currentTimeMillis();
+//		startTime = System.currentTimeMillis();
 		this.cfg = cfg;
 		timerDesc = new HashMap<>();
 		spaceDesc = new HashMap<>();
@@ -414,7 +411,7 @@ public class DocoGenerator {
 			// free resources
 			document.close();
 
-			long endTime = System.currentTimeMillis();
+//			long endTime = System.currentTimeMillis();
 //			System.out.println("DOC GENERATION TIME: " + (endTime - startTime));
 
 		} catch (Exception e) {
@@ -1594,7 +1591,6 @@ public class DocoGenerator {
 		return entries;
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<String> getRelationsDetails() {
 		List<String> entries = new ArrayList<>();
 		for (TreeGraphDataNode rt : relTypes) {
