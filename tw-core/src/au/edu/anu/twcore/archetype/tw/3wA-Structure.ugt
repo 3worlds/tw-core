@@ -64,16 +64,16 @@ hasNode componentTypeSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:")
 		multiplicity = IntegerRange("1..*")
-	hasEdge componentInitialiserEdgeSpec
-		isOfClass = String("initialisedBy")
-		toNode = String("initialiser:")
-		multiplicity = IntegerRange("0..1")
+//	hasEdge componentInitialiserEdgeSpec
+//		isOfClass = String("initialisedBy")
+//		toNode = String("initialiser:")
+//		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery exclusiveCategoryCheckSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
-	hasProperty componentParameterSpec
-		hasName = String("parameterClass")
-		type =  String("String")
-		multiplicity = IntegerRange("0..1")
+//	hasProperty componentParameterSpec
+//		hasName = String("parameterClass")
+//		type =  String("String")
+//		multiplicity = IntegerRange("0..1")
 	hasProperty componentDecoratorSpec
 		hasName = String("decoratorClass")
 		type =  String("String")
@@ -86,10 +86,10 @@ hasNode componentTypeSpec
 		hasName = String("constantClass")
 		type =  String("String")
 		multiplicity = IntegerRange("0..1")
-	hasProperty autoRelocateFunctionSpec
-		hasName = String("relocateFunctionName")
-		type = String("StringTable")
-		multiplicity = IntegerRange("0..1")
+//	hasProperty autoRelocateFunctionSpec
+//		hasName = String("relocateFunctionName")
+//		type = String("StringTable")
+//		multiplicity = IntegerRange("0..1")
 	hasEdge systemToComponentCategorySpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:*component*")
@@ -127,6 +127,67 @@ hasNode componentSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
+		
+// Group specifications
+hasNode groupTypeSpec
+	isOfClass = String("groupType")
+	hasParent = StringTable(([1]"structure:"))
+	multiplicity = IntegerRange("0..*")
+	hasEdge groupToSystemElementsCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*group*")
+		multiplicity = IntegerRange("1..1")
+	hasEdge groupToLifeSpanCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*permanent*")
+		multiplicity = IntegerRange("1..1")
+	hasEdge groupToOrganisationCategorySpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:*assemblage*")
+		multiplicity = IntegerRange("1..1")
+	hasEdge groupCategoryBelongsToSpec
+		isOfClass = String("belongsTo")
+		toNode = String("category:")
+		multiplicity = IntegerRange("1..*")
+	mustSatisfyQuery groupExclusiveCategoryCheckSpec
+		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
+	hasProperty groupDecoratorSpec
+		hasName = String("decoratorClass")
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
+	hasProperty groupDriverSpec
+		hasName = String("driverClass")
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
+	hasProperty groupConstantSpec
+		hasName = String("constantClass")
+		type =  String("String")
+		multiplicity = IntegerRange("0..1")
+
+hasNode groupSpec
+	isOfClass = String("group")
+	hasParent = StringTable(([1]"groupType:"))
+	multiplicity = IntegerRange("0..*")
+	hasEdge groupToSystemSpec
+		isOfClass = String("groupOf")
+		toNode = String("componentType:")
+		multiplicity = IntegerRange("0..1")
+	hasEdge groupToLifeCycleSpec
+		isOfClass = String("cycle")
+		toNode = String("lifeCycle:")
+		multiplicity = IntegerRange("0..1")
+	hasEdge groupToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource:")
+		multiplicity = IntegerRange("0..*")
+	mustSatisfyQuery groupObjectSpec
+		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
+		nodeLabel1 = String("componentType")
+		nodeLabel2 = String("lifeCycle")
+	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
+		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
+	mustSatisfyQuery lifeCycleMustHaveNoComponents
+		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleNoComponentsQuery")
 
 // initialisation functions
 hasNode initFunctionSpec

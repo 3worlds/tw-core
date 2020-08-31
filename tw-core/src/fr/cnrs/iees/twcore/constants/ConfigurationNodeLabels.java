@@ -29,7 +29,7 @@
 package fr.cnrs.iees.twcore.constants;
 
 import au.edu.anu.twcore.data.*;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.*;
 import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
@@ -89,6 +89,7 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_CATEGORY 		("category",		"cat1",			Category.class,				CATEGORYBASE),
 				N_TEMPLATE 		("template",		"tpl1",			ElementFactory.class,		CATEGORYBASE+10),
 				N_COMPONENTTYPE ("componentType",	"compTyp1",		ComponentType.class,		CATEGORYBASE+10), // after category and categorySet
+				N_GROUPTYPE 	("groupType",		"grpTyp1",		GroupType.class,			CATEGORYBASE+10), // after category and categorySet				
 				N_RELATIONTYPE 	("relationType",	"relTyp1",		RelationType.class,			CATEGORYBASE+10), // after category
 				N_SPACE 		("space",			"space1",		SpaceNode.class,			CATEGORYBASE),
 		N_EXPERIMENT 			("experiment",		"expt",			Experiment.class,			SIMBASE+20),	// after fully iinitialised simulator

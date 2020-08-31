@@ -409,40 +409,15 @@ hasNode stoppingConditionSpec
 
 // how to specify initial community:
 
-hasNode initialStateSpec
-	isOfClass = String("initialState")
-	hasParent = StringTable(([1]"dynamics:"))
-	multiplicity = IntegerRange("0..1")
-	hasEdge ecosystemToSourceLoadFromSpec
-		isOfClass = String("loadFrom")
-		toNode = String("dataSource:")
-		multiplicity = IntegerRange("0..*")
+//hasNode initialStateSpec
+//	isOfClass = String("initialState")
+//	hasParent = StringTable(([1]"dynamics:"))
+//	multiplicity = IntegerRange("0..1")
+//	hasEdge ecosystemToSourceLoadFromSpec
+//		isOfClass = String("loadFrom")
+//		toNode = String("dataSource:")
+//		multiplicity = IntegerRange("0..*")
 
-// set of values for a parameter set linked to a group of components or a life cycle
-hasNode groupSpec
-	isOfClass = String("group")
-	hasParent = StringTable(([2]"initialState:","group:"))
-	multiplicity = IntegerRange("0..*")
-	hasEdge groupToSystemSpec
-		isOfClass = String("groupOf")
-		toNode = String("componentType:")
-		multiplicity = IntegerRange("0..1")
-	hasEdge groupToLifeCycleSpec
-		isOfClass = String("cycle")
-		toNode = String("lifeCycle:")
-		multiplicity = IntegerRange("0..1")
-	hasEdge groupToSourceLoadFromSpec
-		isOfClass = String("loadFrom")
-		toNode = String("dataSource:")
-		multiplicity = IntegerRange("0..*")
-	mustSatisfyQuery groupObjectSpec
-		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
-		nodeLabel1 = String("componentType")
-		nodeLabel2 = String("lifeCycle")
-	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
-		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
-	mustSatisfyQuery lifeCycleMustHaveNoComponents
-		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleNoComponentsQuery")
 
 //	// initial state for an individual component// now moved to child of ComponentType in Structure
 
