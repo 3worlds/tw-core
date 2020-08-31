@@ -274,7 +274,7 @@ public class DocoGenerator {
 			}
 		}
 		if (UserProjectLink.haveUserProject()) {
-			Map<String, List<String>> snippetMap = UserProjectLink.getSnippets();
+			snippetMap = UserProjectLink.getSnippets();
 		} else {
 			snippetMap = new HashMap<>();
 			for (TreeGraphDataNode snippetNode : snippetNodes) {
