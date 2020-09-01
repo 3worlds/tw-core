@@ -925,7 +925,7 @@ public class DocoGenerator {
 	private void writeSubmodels(TextDocument doc, int level) {
 		doc.addParagraph("Submodels").applyHeading(true, level);
 		
-		doc.addParagraph("Ha interesting! What should be put here - display a heirarchy if present?");
+		doc.addParagraph("Ha interesting! What should be put here - display a hierarchy if present?");
 	}
 
 	private void writeReferences(TextDocument doc, int level) {

@@ -47,25 +47,49 @@ hasNode arenaCategorySpec
 		isOfClass = String("constants")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
-	hasEdge edgeToParametersSpec
-		isOfClass = String("parameters")
-		toNode = String("record:")
-		multiplicity = IntegerRange("0..1")
+
 hasNode componentCategorySpec
 	isOfClass = String("category")
 	hasId = String("*component*")
 	hasParent = StringTable(([1]"categorySet:*systemElements*"))
 	multiplicity = IntegerRange("0..*1")
+	hasEdge edgeToDriversSpec
+		isOfClass = String("drivers")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToDecoratorsSpec
+		isOfClass = String("decorators")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToConstantsSpec
+		isOfClass = String("constants")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+
 hasNode groupCategorySpec
 	isOfClass = String("category")
 	hasId = String("*group*")
 	hasParent = StringTable(([1]"categorySet:*systemElements*"))
 	multiplicity = IntegerRange("0..*1")
+	hasEdge edgeToDriversSpec
+		isOfClass = String("drivers")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToDecoratorsSpec
+		isOfClass = String("decorators")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+	hasEdge edgeToConstantsSpec
+		isOfClass = String("constants")
+		toNode = String("record:")
+		multiplicity = IntegerRange("0..1")
+
 hasNode lcCategorySpec
 	isOfClass = String("category")
 	hasId = String("*life cycle*")
 	hasParent = StringTable(([1]"categorySet:*systemElements*"))
 	multiplicity = IntegerRange("0..*1")
+
 hasNode relationCategorySpec
 	isOfClass = String("category")
 	hasId = String("*relation*")

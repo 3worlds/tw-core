@@ -43,10 +43,6 @@ hasNode categorySpec
 		isOfClass = String("constants")
 		toNode = String("record:")
 		multiplicity = IntegerRange("0..1")
-	hasEdge edgeToParametersSpec
-		isOfClass = String("parameters")
-		toNode = String("record:")
-		multiplicity = IntegerRange("0..1")
 
 hasNode componentTypeSpec
 	isOfClass = String("componentType")
