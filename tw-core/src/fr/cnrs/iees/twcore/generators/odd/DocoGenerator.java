@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -133,7 +134,7 @@ public class DocoGenerator {
 	private List<TreeGraphDataNode> relTypes;
 	private List<TreeGraphDataNode> groupTypes;
 	private List<TreeGraphDataNode> spaceTypes;
-	private List<TreeGraphDataNode> scTypes;
+	private List<TreeGraphDataNode> rootStoppingConditions;
 	private List<TreeGraphDataNode> initTypes;
 	private List<TreeGraphDataNode> trackerTypes;
 	private List<TreeGraphDataNode> ephemeralComponents;
@@ -196,7 +197,7 @@ public class DocoGenerator {
 		groupTypes = new ArrayList<>();
 		relTypes = new ArrayList<>();
 		spaceTypes = new ArrayList<>();
-		scTypes = new ArrayList<>();
+		rootStoppingConditions = new ArrayList<>();
 		initTypes = new ArrayList<>();
 		driverTypes = new ArrayList<>();
 		decTypes = new ArrayList<>();
@@ -260,7 +261,9 @@ public class DocoGenerator {
 				timeline = n;
 			} else if (n.classId().equals(N_STOPPINGCONDITION.label())) {
 				String sn = getSimpleName((String) n.properties().getPropertyValue(twaSubclass));
-				scTypes.add(n);
+				// TODO: later use these as root a sc tree. All these are implicitly "OR".
+				if (n.getParent().classId().equals(N_DYNAMICS.label()))
+					rootStoppingConditions.add(n);
 				scDesc.put(n, n.id() + formatClassifier(sn));
 			} else if (n.classId().equals(N_DATATRACKER.label())) {
 				trackerTypes.add(n);
@@ -848,7 +851,7 @@ public class DocoGenerator {
 			doc.addParagraph("Observation").applyHeading(true, level);
 			doc.addParagraph("Table " + (++tableNumber) + ". Data tracker details.");
 			writeTable(doc, entries, "Data tracker", "Details", "Tracked data", "Time", "Process", "Component");
-			
+
 			doc.addParagraph("\nAdd space and graph widget outputs if present");
 		}
 	}
@@ -912,7 +915,7 @@ public class DocoGenerator {
 	 */
 	private void writeInputData(TextDocument doc, int level) {
 		doc.addParagraph("Input data").applyHeading(true, level);
-		
+
 		doc.addParagraph("Add refs to all input files here");
 	}
 
@@ -924,7 +927,7 @@ public class DocoGenerator {
 	 */
 	private void writeSubmodels(TextDocument doc, int level) {
 		doc.addParagraph("Submodels").applyHeading(true, level);
-		
+
 		doc.addParagraph("Ha interesting! What should be put here - display a hierarchy if present?");
 	}
 
@@ -1220,7 +1223,7 @@ public class DocoGenerator {
 
 	private List<String> getStoppingConditionDetails() {
 		List<String> entries = new ArrayList<>();
-		for (TreeGraphDataNode sc : scTypes) {
+		for (TreeGraphDataNode sc : rootStoppingConditions) {
 			String c1 = scDesc.get(sc);
 			for (String key : sc.properties().getKeysAsArray()) {
 				Object value = sc.properties().getPropertyValue(key);
@@ -1256,7 +1259,7 @@ public class DocoGenerator {
 
 		/*-
 		 * initialise
-		 * if (have next time)
+		 * for each time event
 		 * 	if (stopping condition)
 		 * 		assign decs <- zero
 		 * 		if time for time1
@@ -1277,12 +1280,12 @@ public class DocoGenerator {
 		for (TreeGraphDataNode init : initTypes)
 			flowChart.append(funcDesc.get(init)).append("\n");
 
-		flowChart.append("if have time event\n");
-		if (!scTypes.isEmpty()) {
+		flowChart.append("for each time event\n");
+		if (!rootStoppingConditions.isEmpty()) {
 			StringBuilder sb = new StringBuilder().append("\tif ");
 			// TODO: build a better string when we have examples of complex stopping
 			// conditions. All sc that are children of Dynamics are implicitly "OR"
-			for (TreeGraphDataNode sc : scTypes) {
+			for (TreeGraphDataNode sc : rootStoppingConditions) {
 				StoppingConditionNode stpCond = (StoppingConditionNode) sc;
 				sb.append(stpCond.getInstance(0).toString()).append(" or ");
 			}
@@ -1348,14 +1351,26 @@ public class DocoGenerator {
 
 					// cf: comments for this method
 					funcs = orderFunc(funcs);
-
-					for (TreeNode func : funcs) {
+					Iterator<TreeNode> iter = funcs.iterator();
+					while (iter.hasNext()) {
+						TreeNode func = iter.next();
 						if (hasConsequence(func)) {
 							flowChart.append(funcIndent).append("if ").append(funcDesc.get(func)).append("\n");
 							appendConsequences(funcIndent + "\t", flowChart, func);
-						} else
+						} else if (isDecisionFunc((TreeGraphDataNode) func)) {
+							if (negationFunc((TreeGraphDataNode) func))
+								flowChart.append(funcIndent).append("if not ").append(funcDesc.get(func))
+										.append(" then\n");
+							else
+								flowChart.append(funcIndent).append("if ").append(funcDesc.get(func)).append(" then\n");
+
+							flowChart.append(funcIndent).append(sep)
+									.append(getDecisionConsequence((TreeGraphDataNode) func)).append("\n");
+						} else {
 							flowChart.append(funcIndent).append(funcDesc.get(func)).append("\n");
+						}
 					}
+
 					// Do trackers last
 					for (TreeNode tracker : trackers) {
 						flowChart.append(funcIndent).append("record ")
@@ -1365,7 +1380,14 @@ public class DocoGenerator {
 				}
 			}
 		}
-		boolean haveEphemeralRelations = false;// TODO Don't know what to do here?
+		/**
+		 * TODO Don't know what to do here? How do i know that a relation is ephemeral?
+		 * 
+		 * 1. if either of the to/from cats belongsTo ephemeral category?
+		 * 
+		 * 2. if their processes are located in space?
+		 */
+		boolean haveEphemeralRelations = false;
 		flowChart.append("\tadvance time\n");
 		if (haveEphemeralRelations) {
 			flowChart.append("\tremove old relations\n");
@@ -1378,9 +1400,35 @@ public class DocoGenerator {
 		}
 
 		if (!driverTypes.isEmpty())
-			flowChart.append("\tassign next drivers <- current values\n");
+			flowChart.append("\tassign drivers <- newly computed values\n");
 
 		return flowChart.toString();
+	}
+
+	private String getDecisionConsequence(TreeGraphDataNode func) {
+		String result = "";
+		TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+		switch (ft) {
+		case MaintainRelationDecision: {
+			return "deleteRelation";
+		}
+		case RelateToDecision: {
+			return "setRelation (" + getProcessAppliesToDesc((ProcessNode) func.getParent())+")";
+		}
+		default: {
+			return result;
+		}
+		}
+	}
+
+	private boolean negationFunc(TreeGraphDataNode func) {
+		TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+		return ft.equals(TwFunctionTypes.MaintainRelationDecision);
+	}
+
+	private boolean isDecisionFunc(TreeGraphDataNode func) {
+		TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+		return ft.returnType().equals("boolean");
 	}
 
 	/**
