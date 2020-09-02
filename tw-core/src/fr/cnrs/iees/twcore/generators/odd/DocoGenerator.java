@@ -50,6 +50,7 @@ import java.util.Set;
 
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
+import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.text.Paragraph;
 
@@ -148,6 +149,7 @@ public class DocoGenerator {
 	private static final int level1 = 1;
 	private static final int level2 = 2;
 	private static final int level3 = 3;
+	private static final int level4 = 4;
 
 	private static int tableNumber;
 	private static int figureNumber;
@@ -357,9 +359,9 @@ public class DocoGenerator {
 			writeTitle(document, "Overview, Design concepts and Details", level1);
 			// setHeading(document, level1);
 
-			writePurpose(document, level2);
-
-			writeEVS(document, level2);
+			writePurpose(document,level2);
+			
+			writeEVS(document,level2);
 			writeAgentsIndividuals(document, level3);
 			writeSpatialUnits(document, level3);
 			writeEnvironment(document, level3);
@@ -394,20 +396,24 @@ public class DocoGenerator {
 			// document.addPageBreak();
 
 			writeTitle(document, "Appendix 1: Specification graph metrics", level1);
-			writeAppendix1(document);
-			document.addParagraph("[Add selected graph images here]");
+
+			writeMetrics(document, "Specification metrics", level2);
+			writeGraphImages(document, "Specification graph", level2);
+			writeSrcCode(document, "Source code snippets", level2, level4);
+
 			// ----- end Appendix 1
 
 			// try and format all tables
-//			for (Table t : document.getTableList()) {
-//				/**
-//				 * Doesn't work . Also it's really a table property because when set for one col
-//				 * it's set for all.
-//				 */
-//				Iterator<Column> ci = t.getColumnIterator();
-//				while (ci.hasNext())
-//					ci.next().setUseOptimalWidth(true);
-//			}
+			for (Table t : document.getTableList()) {
+				/**
+				 * Doesn't work . Also it's really a table property because when set for one col
+				 * it's set for all.
+				 */
+				Iterator<Column> ci = t.getColumnIterator();
+				while (ci.hasNext())
+					ci.next().setUseOptimalWidth(true);
+				
+			}
 
 			document.save(Project.makeFile(cfg.root().id() + ".odt"));
 
@@ -950,24 +956,34 @@ public class DocoGenerator {
 //------------ end of ODD ------------------
 
 //------------- appendix 1 -----------------
-	private void writeAppendix1(TextDocument doc) {
+	private void writeMetrics(TextDocument doc, String title, int level) {
+		doc.addParagraph(title).applyHeading(true, level);
 		List<String> entries = getMetricsDetails();
 		doc.addParagraph("Table " + (++tableNumber) + ". Configuration graph metrics");
 		writeTable(doc, entries, "Metric", "Value*");
 		doc.addParagraph("*obtained after subtracting the values of a minimal configuration.");
+	}
 
-		doc.addParagraph("\nCode snippets:");
+	private void writeGraphImages(TextDocument doc, String title, int level) {
+		doc.addParagraph(title).applyHeading(true, level);
+		doc.addParagraph("[Add selected graph images here]");
+	}
+
+	private void writeSrcCode(TextDocument doc, String title, int level, int sublevel) {
+		doc.addParagraph(title).applyHeading(true, level);
+		// doc.addParagraph("\nCode snippets:");
 
 		for (Map.Entry<String, List<String>> snp : snippetMap.entrySet()) {
-			Paragraph para = doc.addParagraph("--- " + snp.getKey() + " --------------------\n");
-			Font font = para.getFont();
+			doc.addParagraph(snp.getKey() + "(...)").applyHeading(true, sublevel);
+			Paragraph para1 = doc.addParagraph("");
+			Font font = para1.getFont();
 			font.setFamilyName("Liberation Mono");
 			font.setSize(10);
-			para.setFont(font);
+			para1.setFont(font);
 			for (String line : snp.getValue()) {
 				if (line.startsWith("\t\t"))
 					line = line.substring(2, line.length() - 1);
-				para.appendTextContent(line + "\n", true);
+				para1.appendTextContent(line + "\n", true);
 			}
 		}
 	}
@@ -1413,7 +1429,7 @@ public class DocoGenerator {
 			return "deleteRelation";
 		}
 		case RelateToDecision: {
-			return "setRelation (" + getProcessAppliesToDesc((ProcessNode) func.getParent())+")";
+			return "setRelation (" + getProcessAppliesToDesc((ProcessNode) func.getParent()) + ")";
 		}
 		default: {
 			return result;
@@ -1785,6 +1801,12 @@ public class DocoGenerator {
 	private static void writeTable(TextDocument doc, List<String> entries, String... headers) {
 		Table table = doc.addTable(entries.size() + 1, headers.length);
 		table.setTableName("Table " + tableNumber + ".");
+		
+		// none of this optimal width stuff seems to have any effect!!
+		Iterator<Column> ci = table.getColumnIterator();
+		while (ci.hasNext())
+			ci.next().setUseOptimalWidth(true);
+
 
 		// col,row
 		for (int i = 0; i < headers.length; i++)
@@ -1795,6 +1817,10 @@ public class DocoGenerator {
 			for (int j = 0; j < parts.length; j++)
 				table.getCellByPosition(j, i + 1).setStringValue(parts[j]);
 		}
+		
+
+		while (ci.hasNext())
+			ci.next().setUseOptimalWidth(true);
 
 		doc.addParagraph(null);
 	}
