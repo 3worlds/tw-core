@@ -46,7 +46,7 @@ hasNode categorySpec
 
 hasNode componentTypeSpec
 	isOfClass = String("componentType")
-	hasParent = StringTable(([1]"structure:"))
+	hasParent = StringTable(([2]"structure:","groupType:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty componentLifeSpanPropertySpec
 		hasName = String("lifeSpan")
@@ -100,17 +100,16 @@ hasNode componentTypeSpec
 // initial state for an atomic component instance of a ComponentType
 hasNode componentSpec
 	isOfClass = String("component")
-	hasParent = StringTable(([2]"componentType:","group:"))
+	hasParent = StringTable(([1]"componentType:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty numberOfInstancesSpec
 		hasName = String("nInstances")
 		type = String("Integer")
 		multiplicity = IntegerRange("0..1")
-	hasEdge componentToSystemSpec
+	hasEdge componentToGroupSpec
 		isOfClass = String("instanceOf")
-		toNode = String("componentType:")
+		toNode = String("group:")
 		multiplicity = IntegerRange("0..1") // optional - only requierd if groups are present
-	// TODO HERE: a location MUST be present if this component is affected by a Process using a Space
 	hasEdge componentToSpaceSpec
 		isOfClass = String("location")
 		toNode = String("space:")
@@ -129,6 +128,7 @@ hasNode groupTypeSpec
 	isOfClass = String("groupType")
 	hasParent = StringTable(([1]"structure:"))
 	multiplicity = IntegerRange("0..*")
+	// predefined categories
 	hasEdge groupToSystemElementsCategorySpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:*group*")
@@ -141,12 +141,14 @@ hasNode groupTypeSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:*assemblage*")
 		multiplicity = IntegerRange("1..1")
+	// other categories
 	hasEdge groupCategoryBelongsToSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:")
 		multiplicity = IntegerRange("1..*")
 	mustSatisfyQuery groupExclusiveCategoryCheckSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
+	// group data
 	hasProperty groupDecoratorSpec
 		hasName = String("decoratorClass")
 		type =  String("String")
@@ -164,10 +166,10 @@ hasNode groupSpec
 	isOfClass = String("group")
 	hasParent = StringTable(([1]"groupType:"))
 	multiplicity = IntegerRange("0..*")
-	hasEdge groupToSystemSpec
-		isOfClass = String("groupOf")
-		toNode = String("componentType:")
-		multiplicity = IntegerRange("0..1")
+//	hasEdge groupToSystemSpec
+//		isOfClass = String("groupOf")
+//		toNode = String("componentType:")
+//		multiplicity = IntegerRange("0..1")
 	hasEdge groupToLifeCycleSpec
 		isOfClass = String("cycle")
 		toNode = String("lifeCycle:")
@@ -176,10 +178,10 @@ hasNode groupSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
-	mustSatisfyQuery groupObjectSpec
-		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
-		nodeLabel1 = String("componentType")
-		nodeLabel2 = String("lifeCycle")
+//	mustSatisfyQuery groupObjectSpec
+//		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
+//		nodeLabel1 = String("componentType")
+//		nodeLabel2 = String("lifeCycle")
 	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
 		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
 	mustSatisfyQuery lifeCycleMustHaveNoComponents
