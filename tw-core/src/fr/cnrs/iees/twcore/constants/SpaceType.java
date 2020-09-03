@@ -33,19 +33,19 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 public enum SpaceType {
 
 // continuousFlatSurface: a flat plan with continuous coordinates
-	continuousFlatSurface ("a flat plan with continuous coordinates",
+	continuousFlatSurface ("A 2D plan with continuous coordinates.",
 		"au.edu.anu.twcore.ecosystem.runtime.space.FlatSurface"),
 
 // squareGrid: a flat square 2D grid for e.g. cellular automata
-	squareGrid ("a flat square 2D grid for e.g. cellular automata",
+	squareGrid ("A flat 2D grid of square cells for e.g., cellular automata.",
 		"au.edu.anu.twcore.ecosystem.runtime.space.SquareGrid"),
 
 // topographicSurface: a topographic plan with elevations
-	topographicSurface ("a topographic plan with elevations",
+	topographicSurface ("A topographic surface with elevations.",
 		"au.edu.anu.twcore.ecosystem.runtime.space.TopoSurface"),
 
 // linearNetwork: a graph of connected segments for e.g., hydrologic networks
-	linearNetwork ("a graph of connected segments for e.g., hydrologic networks",
+	linearNetwork ("A graph of connected segments for e.g., hydrologic networks.",
 		"au.edu.anu.twcore.ecosystem.runtime.space.LineNetwork");
 	
 	private final String description;

@@ -72,7 +72,9 @@ import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
+import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.twcore.constants.SpaceType;
+import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.twcore.constants.TrackerType;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
@@ -359,9 +361,9 @@ public class DocoGenerator {
 			writeTitle(document, "Overview, Design concepts and Details", level1);
 			// setHeading(document, level1);
 
-			writePurpose(document,level2);
-			
-			writeEVS(document,level2);
+			writePurpose(document, level2);
+
+			writeEVS(document, level2);
 			writeAgentsIndividuals(document, level3);
 			writeSpatialUnits(document, level3);
 			writeEnvironment(document, level3);
@@ -1111,9 +1113,11 @@ public class DocoGenerator {
 					List<TreeGraphDataNode> funcs = (List<TreeGraphDataNode>) get(proc.getChildren(),
 							selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
 					for (TreeGraphDataNode func : funcs) {
+						TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+
 						String c3 = funcDesc.get(func);
 						entries.add(new StringBuilder().append(c1).append(sep).append(c2).append(sep).append(c3)
-								.toString());
+								.append("\n").append("Description: ").append(ft.description()).toString());
 						c1 = "";
 						c2 = c1;
 					}
@@ -1184,8 +1188,10 @@ public class DocoGenerator {
 		StringBuilder sb = new StringBuilder();
 		// we only need the scale and origin in units of shortest time unit
 		sb.append(timeline.toShortString());
-		sb.append(sep).append(P_TIMELINE_SCALE.key()).append("=")
+		sb.append(sep).append(P_TIMELINE_SCALE.key()).append(": ")
 				.append(timeline.properties().getPropertyValue(P_TIMELINE_SCALE.key()));
+		TimeScaleType tst = (TimeScaleType) timeline.properties().getPropertyValue(P_TIMELINE_SCALE.key());
+		sb.append("\n(").append(tst.description()).append(")");
 		entries.add(sb.toString());
 		sb = new StringBuilder();
 		sb.append(sep).append(P_TIMELINE_TIMEORIGIN.key())//
@@ -1199,16 +1205,18 @@ public class DocoGenerator {
 		for (TreeGraphDataNode timer : timersClock) {
 			sb = new StringBuilder();
 			sb.append(timer.toShortString());
-			sb.append(sep).append("Type=").append(ClockTimer.class.getSimpleName());
+			sb.append(sep).append("Type: ").append(ClockTimer.class.getSimpleName());
 			entries.add(sb.toString());
 			sb = new StringBuilder();
 
-			sb.append(sep).append(P_TIMEMODEL_TU.key()).append("=")
+			sb.append(sep).append(P_TIMEMODEL_TU.key()).append(": ")
 					.append(timer.properties().getPropertyValue(P_TIMEMODEL_TU.key()));
+			TimeUnits tu = (TimeUnits) timer.properties().getPropertyValue(P_TIMEMODEL_TU.key());
+			sb.append("\n(").append(tu.description()).append(")");
 			entries.add(sb.toString());
 			sb = new StringBuilder();
 
-			sb.append(sep).append(P_TIMEMODEL_NTU.key()).append("=")
+			sb.append(sep).append(P_TIMEMODEL_NTU.key()).append(": ")
 					.append(timer.properties().getPropertyValue(P_TIMEMODEL_NTU.key()));
 			entries.add(sb.toString());
 		}
@@ -1527,8 +1535,8 @@ public class DocoGenerator {
 		// need a better string here. from/to but this depends on the function type
 		if (relationType != null) {
 			List<Duple<TreeGraphDataNode, TreeGraphDataNode>> fromToCats = getFromToCategories(relationType);
-			sb.append(", ").append(relationType.id()).append(" (").append(fromToCats.get(0).getFirst().id())
-					.append("→").append(fromToCats.get(0).getSecond().id()).append(")");
+			sb.append(", ").append(relationType.id()).append(" (").append(fromToCats.get(0).getFirst().id()).append("→")
+					.append(fromToCats.get(0).getSecond().id()).append(")");
 		}
 
 		return sb.toString().replaceFirst(", ", "");
@@ -1696,14 +1704,27 @@ public class DocoGenerator {
 		List<String> entries = new ArrayList<>();
 		for (TreeGraphDataNode space : spaceTypes) {
 			String c1 = space.toShortString();
+			SpaceType st = (SpaceType) space.properties().getPropertyValue(P_SPACETYPE.key());
+			entries.add(new StringBuilder().append(c1).append(sep).append("Description: ").append(st.description())
+					.toString());
+			c1 = "";
+			if (space.properties().hasProperty(P_SPACE_EDGEEFFECTS.key())) {
+				EdgeEffects eEff = (EdgeEffects) space.properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
+				entries.add(new StringBuilder().append(c1).append(sep).append("Edge effects: ")
+						.append(eEff.description()).toString());
+				c1 = "";
+			}
 			for (String key : space.properties().getKeysAsSet()) {
 				StringBuilder sb = new StringBuilder();
-				sb.append(key)//
-						.append(" = ")//
-						.append(space.properties().getPropertyValue(key));
-				String c2 = sb.toString();
-				entries.add(new StringBuilder().append(c1).append(sep).append(c2).toString());
-				c1 = "";
+				if (!key.equals(P_SPACETYPE.key()) && !key.equals(P_SPACE_EDGEEFFECTS.key())) {
+					sb.append(key)//
+							.append(": ")//
+							.append(space.properties().getPropertyValue(key));
+
+					String c2 = sb.toString();
+					entries.add(new StringBuilder().append(c1).append(sep).append(c2).toString());
+					c1 = "";
+				}
 			}
 		}
 		return entries;
@@ -1802,7 +1823,7 @@ public class DocoGenerator {
 	private static void writeTable(TextDocument doc, List<String> entries, String... headers) {
 		Table table = doc.addTable(entries.size() + 1, headers.length);
 		table.setTableName("Table " + tableNumber + ".");
-		
+
 		// none of this optimal width stuff seems to have any effect!!
 		Iterator<Column> ci = table.getColumnIterator();
 		while (ci.hasNext())
@@ -1818,7 +1839,6 @@ public class DocoGenerator {
 			for (int j = 0; j < parts.length; j++)
 				table.getCellByPosition(j, i + 1).setStringValue(parts[j]);
 		}
-		
 
 		while (ci.hasNext())
 			ci.next().setUseOptimalWidth(true);

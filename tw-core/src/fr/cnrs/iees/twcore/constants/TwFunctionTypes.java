@@ -40,7 +40,7 @@ import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 public enum TwFunctionTypes {
 
 // ChangeState: change the state, ie the values of internal variables, of a system component
-	ChangeState ("change the state, ie the values of internal variables, of a system component",
+	ChangeState ("change the state, i.e. the values of the internal variables, of a system component",
 		"changeState",
 		"void",
 		""),
