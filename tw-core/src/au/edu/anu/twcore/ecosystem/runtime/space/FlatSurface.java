@@ -33,19 +33,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
-
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import fr.cnrs.iees.graph.Graph;
-import fr.cnrs.iees.twcore.constants.EdgeEffects;
+import fr.cnrs.iees.twcore.constants.BorderType;
+import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.indexing.BoundedRegionIndexingTree;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 import fr.cnrs.iees.uit.space.Sphere;
 import fr.cnrs.iees.uit.space.SphereImpl;
-import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * A spatial representation of a rectangular flat surface.
@@ -56,9 +54,7 @@ import fr.ens.biologie.generic.utils.Logging;
 // todo: toroidal correction
 public class FlatSurface extends SpaceAdapter {
 
-	private static Logger log = Logging.getLogger(FlatSurface.class);
-
-	private static final int ndim = 2;
+	private static final int ndim = SpaceType.continuousFlatSurface.dimensions();
 
 	private class flatSurfaceLocation implements Location {
 		protected Point loc;
@@ -71,7 +67,7 @@ public class FlatSurface extends SpaceAdapter {
 			loc = Point.newPoint(x,y);
 			// replace truncated part by a random dev to make sure two positions are never exactly the same
 			locDeviation = Point.newPoint(jitterRNG.nextDouble()*p,jitterRNG.nextDouble()*p);
-			checkLocation(this);
+//			checkLocation(this);
 		}
 		@Override
 		public Point asPoint() {
@@ -87,47 +83,16 @@ public class FlatSurface extends SpaceAdapter {
 
 	private BoundedRegionIndexingTree<SystemComponent> indexer;
 
-	private final double xmin,xmax,ymin,ymax; // to save access time - redundant with boundingBox()
+//	private final double xmin,xmax,ymin,ymax; // to save access time - redundant with boundingBox()
 
 	public FlatSurface(double xmin, double xmax, double ymin, double ymax,
-			double prec, String units, EdgeEffects ee, SpaceDataTracker dt,String proposedId) {
-		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,ee,dt,proposedId);
+			double prec, String units, BorderType[][] bt, SpaceDataTracker dt,String proposedId) {
+		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,bt,dt,proposedId);
 		indexer = new BoundedRegionIndexingTree<>(boundingBox());
-		this.xmin = boundingBox().lowerBound(0);
-		this.xmax = boundingBox().upperBound(0);
-		this.ymin = boundingBox().lowerBound(1);
-		this.ymax = boundingBox().upperBound(1);
-	}
-
-	private void checkLocation(flatSurfaceLocation location) {
-		switch (edgeEffectCorrection()) {
-			case bufferAndWrap:
-				// TODO
-			case bufferZone:
-				// TODO
-			case noCorrection:
-				if (!boundingBox().contains(location.loc)) {
-					log.warning("Proposed location "+location.loc+" out of range "+ boundingBox()+
-						" - new location generated.");
-					double x = Math.floor((xmin+rng().nextDouble()*(xmax-xmin))/precision())*precision();
-					double y = Math.floor((ymin+rng().nextDouble()*(ymax-ymin))/precision())*precision();
-					Point newloc = Point.newPoint(x,y);
-					Point locD = Point.newPoint(jitterRNG.nextDouble()*precision(),jitterRNG.nextDouble()*precision());
-					// CAUTION: theoretical possibility of an infinite loop here...
-					while (!boundingBox().contains(Point.add(newloc,locD)))
-						locD = Point.newPoint(jitterRNG.nextDouble()*precision(),jitterRNG.nextDouble()*precision());
-					location.loc = newloc;
-					location.locDeviation = locD;
-				}
-				break;
-			case wrapAround1D:
-				// TODO
-			case wrapAround2D:
-				// TODO
-			case wrapAroundAllD:
-				// TODO
-				break;
-		}
+//		this.xmin = boundingBox().lowerBound(0);
+//		this.xmax = boundingBox().upperBound(0);
+//		this.ymin = boundingBox().lowerBound(1);
+//		this.ymax = boundingBox().upperBound(1);
 	}
 
 	@Override
@@ -242,4 +207,5 @@ public class FlatSurface extends SpaceAdapter {
 		}
 		return false;
 	}
+
 }

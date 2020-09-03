@@ -8,7 +8,7 @@ import fr.cnrs.iees.identity.Identity;
  * @author J. Gignoux - 14 juil. 2020
  *
  */
-public interface Shaped<I extends Identity, S extends Shape> extends Identity  {
+public interface Shaped<I extends Identity, S extends TwShape> extends Identity  {
 
 	public S Shape();
 

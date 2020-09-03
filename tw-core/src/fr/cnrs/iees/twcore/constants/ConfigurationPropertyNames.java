@@ -120,6 +120,7 @@ public enum ConfigurationPropertyNames {
 	P_SPACE_SEARCHRADIUS		("searchRadius"),
 	P_SPACE_COORDINATES			("coordinates"),
 	P_SPACE_EDGEEFFECTS			("edgeEffects"),
+	P_SPACE_BORDERTYPE			("borderType"),
 	P_SNIPPET_JAVACODE          ("javaCode"),
 	;
 

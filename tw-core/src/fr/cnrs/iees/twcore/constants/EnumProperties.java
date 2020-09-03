@@ -52,7 +52,6 @@ public class EnumProperties {
 	public static void recordEnums() {
 		DataElementType.defaultValue();
 		DateTimeType.defaultValue();
-		EdgeEffects.defaultValue();
 		ExperimentDesignType.defaultValue();
 		FileType.defaultValue();
 		Grouping.defaultValue();
@@ -72,6 +71,8 @@ public class EnumProperties {
 		RngResetType.defaultValue();
 		RngSeedSourceType.defaultValue();
 		RngAlgType.defaultValue();
+		BorderType.defaultValue();
+		EdgeEffectCorrection.defaultValue();
 	}
 
 	// register geometric classes so they can be used as properties

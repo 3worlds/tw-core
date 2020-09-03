@@ -30,8 +30,6 @@ package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.Spatialized;
@@ -50,9 +48,7 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
-import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.Sealable;
-import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * An ancestor class for 3Worlds "Processes". The descendant Processes implement different
@@ -64,8 +60,6 @@ public abstract class AbstractProcess
 		implements TwProcess, Sealable, MultipleDataTrackerHolder<Metadata>,
 			Spatialized<DynamicSpace<SystemComponent,LocatedSystemComponent>> {
 
-	private static Logger log = Logging.getLogger(AbstractProcess.class);
-	
 	private boolean sealed = false;
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
     private ArenaComponent ecosystem = null;
@@ -166,65 +160,10 @@ public abstract class AbstractProcess
 				space.dataTracker().closeTimeStep(); // this sends the message to the widget
 	}
 	
-	private double fixCoordinate(double coord, double lower, double upper, double side) {
-		while (coord<lower)
-			coord += side;
-		while (coord>upper)
-			coord -= side;
-		return coord;
-	}
-
-	private double[] applyEdgeEffectCorrection(double[] newLoc) {
-		if (newLoc.length!=space.ndim()) {
-			log.warning("Wrong number of dimensions: default location generated");
-			newLoc = space.defaultLocation();
-		}
-		switch (space.edgeEffectCorrection()) {
-		case bufferAndWrap:
-			if (!space.boundingBox().contains(Point.newPoint(newLoc)))
-				return null;
-			break;
-		case bufferZone:
-			// TODO
-			if (!space.boundingBox().contains(Point.newPoint(newLoc)))
-				return null;
-			break;
-		case noCorrection:
-			// TODO
-			if (!space.boundingBox().contains(Point.newPoint(newLoc)))
-				return null;
-			break;
-		case wrapAround1D:	
-			// crude: assumes the wrapped dimension is first one
-			newLoc[0] = fixCoordinate(newLoc[0],
-				space.boundingBox().lowerBound(0),
-				space.boundingBox().upperBound(0),
-				space.boundingBox().sideLength(0));
-			break;
-		case wrapAround2D:
-			// crude: assumes the wrapped dimension are the two first ones
-			for (int i=0; i<2; i++)
-				newLoc[i] = fixCoordinate(newLoc[i],
-					space.boundingBox().lowerBound(i),
-					space.boundingBox().upperBound(i),
-					space.boundingBox().sideLength(i));
-			break;
-		case wrapAroundAllD:
-			for (int i=0; i<newLoc.length; i++)
-				newLoc[i] = fixCoordinate(newLoc[i],
-					space.boundingBox().lowerBound(i),
-					space.boundingBox().upperBound(i),
-					space.boundingBox().sideLength(i));
-			break;
-		default:
-			break;
-		}
-		return newLoc;
-	}
-	
 	// for descendants
 	protected void relocate(SystemComponent sc, double[] newLoc) {
-		newLoc = applyEdgeEffectCorrection(newLoc);
+//		newLoc = applyEdgeEffectCorrection(newLoc);
+		newLoc = space.fixLocation(newLoc);
 		if (newLoc==null) {
 			// new location is outside the space - other should be deleted:
 			sc.container().removeItem(sc);
@@ -240,7 +179,8 @@ public abstract class AbstractProcess
 	
 	// for descendants
 	protected void locate(SystemComponent sc, ComponentContainer cont, double[] newLoc) {
-		newLoc = applyEdgeEffectCorrection(newLoc);
+//		newLoc = applyEdgeEffectCorrection(newLoc);
+		newLoc = space.fixLocation(newLoc);
 		if (newLoc==null)
 			cont.removeItem(sc);
 		else {

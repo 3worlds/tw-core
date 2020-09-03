@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
@@ -45,12 +46,13 @@ import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
-import fr.cnrs.iees.twcore.constants.EdgeEffects;
+import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * The base class for all space implementations in 3Worlds.
@@ -60,6 +62,8 @@ import fr.cnrs.iees.uit.space.Point;
  */
 public abstract class SpaceAdapter
 		implements DynamicSpace<SystemComponent,LocatedSystemComponent> {
+	
+	private static Logger log = Logging.getLogger(SpaceAdapter.class);
 
 	private Identity id = null;
 	/**
@@ -79,7 +83,15 @@ public abstract class SpaceAdapter
 	/** Space measurement units */
 	private String units;
 	/** type of edge-effect correction */
-	private EdgeEffects correction;
+//	private EdgeEffects correction; // deprecated to below
+	/** observation window */
+	private Box obsWindow;
+	/** border behaviour per dimension */
+	private BorderType[] upperBorderTypes;
+	private BorderType[] lowerBorderTypes;
+	
+	private TwShape shape;
+	
 	/** absolute location of this space in the SpaceOrganiser -
 	 * must be a box with dim = the greatest number of dims of any space */
 //	private Box absoluteLimits;
@@ -97,15 +109,22 @@ public abstract class SpaceAdapter
 	private boolean changed = false;
 
 
-	public SpaceAdapter(Box box, double prec, String units, EdgeEffects ee, SpaceDataTracker dt, String proposedId) {
+	public SpaceAdapter(Box box, 
+			double prec, 
+			String units, 
+			BorderType[][] borderBehaviours, 
+			SpaceDataTracker dt, 
+			String proposedId) {
 		super();
 		limits = box;
+		obsWindow = limits; // default value
+		upperBorderTypes = borderBehaviours[1];
+		lowerBorderTypes = borderBehaviours[0];		
 		//	precision based on shortest side of plot - NB I think that's a mistake - cf below
 //		precision = Math.max(prec,minimalPrecision)*Math.min(limits.sideLength(0),limits.sideLength(1));
 		// absolute precision, i.e. in units of measurement.
 		precision = Math.max(prec,minimalPrecision);
 		this.units = units;
-		correction = ee;
 		dataTracker = dt;
 		DynamicSpace.super.preProcess(); // to set the scope if not set
 		id = scope().newId(true,proposedId);
@@ -128,10 +147,10 @@ public abstract class SpaceAdapter
 		return units;
 	}
 
-	@Override
-	public final EdgeEffects edgeEffectCorrection() {
-		return correction;
-	}
+//	@Override
+//	public final EdgeEffects edgeEffectCorrection() {
+//		return correction;
+//	}
 
 	@Override
 	public Location locate(SystemComponent focal, Point location) {
@@ -275,18 +294,105 @@ public abstract class SpaceAdapter
 	}
 
 	@Override
-	public String id() {
+	public final String id() {
 		return id.id();
 	}
 
 	@Override
-	public boolean changed() {
+	public final boolean changed() {
 		return changed;
 	}
 
 	@Override
-	public void change() {
+	public final void change() {
 		changed = true;
+	}
+	
+	// NB: check this !!
+	@Override
+	public double squaredEuclidianDistance(double[] focal, double[] other) {
+		double dist = DynamicSpace.super.squaredEuclidianDistance(focal, other);
+		double[] alt = other.clone();
+		for (int dim=0; dim<ndim(); dim++) {
+			if (upperBorderTypes[dim]==BorderType.wrap) {
+				alt[dim] -= limits.sideLength(dim);
+				dist = Math.min(dist,DynamicSpace.super.squaredEuclidianDistance(focal,alt));
+			}
+			if (lowerBorderTypes[dim]==BorderType.wrap) {
+				alt[dim] += limits.sideLength(dim);
+				dist = Math.min(dist,DynamicSpace.super.squaredEuclidianDistance(focal,alt));
+			}
+		}
+		return dist;
+	}
+
+	@Override
+	public double[] fixLocation(double[] location) {
+		if (location.length!=ndim()) {
+			log.warning("Wrong number of dimensions: default location generated");
+			location = defaultLocation();
+		}
+		double[] newLoc = location.clone();
+		// if point is inside limit, skip all corrections
+		while (!limits.contains(Point.newPoint(newLoc))) {
+			for (int dim=0; dim<ndim(); dim++) {
+				double upper = limits.upperBound(dim);
+				switch (upperBorderTypes[dim]) {
+				case infinite: // always ok 
+					break;
+				case oblivion: // point owner must be destroyed
+					if (newLoc[dim]>upper)
+						return null;
+					break;
+				case reflection: // point bounces back inside (may fall beyond the other side, though)
+					if (newLoc[dim]>upper)
+						newLoc[dim] = 2*upper-newLoc[dim];
+					break;
+				case sticky: // point sticks on border
+					newLoc[dim] = Math.min(newLoc[dim],upper);
+					break;
+				case wrap: // points enters on the other side
+					while (newLoc[dim]>upper)
+						newLoc[dim] -= limits.sideLength(dim);
+					break;
+				default:
+					break;
+				}
+				double lower = limits.lowerBound(dim);
+				switch (lowerBorderTypes[dim]) {
+				case infinite: // always ok 
+					break;
+				case oblivion: // point owner must be destroyed
+					if (newLoc[dim]<lower)
+						return null;
+					break;
+				case reflection: // point bounces back inside (may fall beyond the other side, though)
+					if (newLoc[dim]<lower)
+						newLoc[dim] = 2*lower-newLoc[dim];
+					break;
+				case sticky: // point sticks on border
+					newLoc[dim] = Math.max(newLoc[dim],lower);
+					break;
+				case wrap: // points enters on the other side
+					while (newLoc[dim]<lower)
+						newLoc[dim] += limits.sideLength(dim);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		return newLoc;
+	}
+
+	@Override
+	public final Box ObservationWindow() {
+		return obsWindow;
+	}
+
+	@Override
+	public final TwShape asShape() {
+		return shape;
 	}
 
 }

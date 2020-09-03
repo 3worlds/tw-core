@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.RngNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
@@ -55,7 +56,8 @@ import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
-import fr.cnrs.iees.twcore.constants.EdgeEffects;
+import fr.cnrs.iees.twcore.constants.BorderType;
+import fr.cnrs.iees.twcore.constants.EdgeEffectCorrection;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
@@ -79,13 +81,14 @@ public class SpaceNode
 	private boolean sealed = false;
 	private Map<Integer,DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces = new HashMap<>();
 	private SpaceType stype = null;
-	private EdgeEffects eecorr = null;
+	private EdgeEffectCorrection eecorr = null;
+	private StringTable borderTypes = null;
 	// the name of coordinates relative to this space (eg "<this.id()>.x")
 	private Set<String> coordNames = new HashSet<>();
 	private String units = "arbitrary units";
 	private double precision = 0.0;
 	private RngNode rngNode = null;
-	private boolean attachDataTrackerToSpace = false;
+	private boolean attachDataTrackerToSpace = false;	
 
 	public SpaceNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -100,7 +103,9 @@ public class SpaceNode
 	public void initialise() {
 		super.initialise();
 		stype = (SpaceType) properties().getPropertyValue(P_SPACETYPE.key());
-		eecorr = (EdgeEffects) properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
+		eecorr = (EdgeEffectCorrection) properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
+		if (properties().hasProperty(P_SPACE_BORDERTYPE.key()))
+			borderTypes = (StringTable) properties().getPropertyValue(P_SPACE_BORDERTYPE.key());
 		if (properties().hasProperty(P_SPACE_PREC.key()))
 			precision = (double)properties().getPropertyValue(P_SPACE_PREC.key());
 		if (properties().hasProperty(P_SPACE_UNITS.key()))
@@ -119,6 +124,18 @@ public class SpaceNode
 	public int initRank() {
 		return N_SPACE.initRank();
 	}
+	
+	private BorderType[][] getBorders() {
+		// 1st dimension of borderTypes = 2 (lower/upper border)
+		// 2nd dimension of borderTypes = ndim (number of dimensions of space)
+		int ndim = borderTypes.getDimensioners()[1].getLength();
+		BorderType[][] result = new BorderType[2][ndim];
+		for (int i=0; i<ndim; i++) {
+			result[0][i] = BorderType.valueOf(borderTypes.getByInt(0,i));
+			result[1][i] = BorderType.valueOf(borderTypes.getByInt(1,i));
+		}
+		return result;
+	}
 
 	private DynamicSpace<SystemComponent,LocatedSystemComponent> makeSpace(int id) {
 		DynamicSpace<SystemComponent,LocatedSystemComponent> result = null;
@@ -136,12 +153,15 @@ public class SpaceNode
 //			dt = new SpaceDataTracker(id,properties());
 			dt = new SpaceDataTracker(id,l);
 		}
+		BorderType[][] borders = eecorr.borderTypes(stype.dimensions());
+		if (borders==null)
+			borders = getBorders();
 		switch (stype) {
 			case continuousFlatSurface:
 				Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
 				Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
 				result = new FlatSurface(xlim.inf(),xlim.sup(),ylim.inf(),ylim.sup(),
-					precision,units,eecorr,dt,id());
+					precision,units,borders,dt,id());
 				break;
 			case linearNetwork:
 				break;
@@ -151,7 +171,7 @@ public class SpaceNode
 				int ny = nx;
 				if (properties().hasProperty("ny"))
 					ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
-				result = new SquareGrid(cellSize,nx,ny,precision,units,eecorr,dt,id());
+				result = new SquareGrid(cellSize,nx,ny,precision,units,borders,dt,id());
 				break;
 			case topographicSurface:
 				break;

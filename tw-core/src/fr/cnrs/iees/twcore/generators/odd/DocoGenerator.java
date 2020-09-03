@@ -36,7 +36,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
-import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -53,7 +52,6 @@ import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
 import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
-import org.odftoolkit.simple.table.TableTemplate;
 import org.odftoolkit.simple.text.Paragraph;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
@@ -74,7 +72,7 @@ import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
-import fr.cnrs.iees.twcore.constants.EdgeEffects;
+import fr.cnrs.iees.twcore.constants.EdgeEffectCorrection;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
@@ -1712,7 +1710,7 @@ public class DocoGenerator {
 					.toString());
 			c1 = "";
 			if (space.properties().hasProperty(P_SPACE_EDGEEFFECTS.key())) {
-				EdgeEffects eEff = (EdgeEffects) space.properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
+				EdgeEffectCorrection eEff = (EdgeEffectCorrection) space.properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
 				entries.add(new StringBuilder().append(c1).append(sep).append("Edge effects: ")
 						.append(eEff.description()).toString());
 				c1 = "";

@@ -7,6 +7,6 @@ package au.edu.anu.twcore.ecosystem.runtime.space;
  * @author J. Gignoux - 14 juil. 2020
  *
  */
-public interface Shape {
+public interface TwShape {
 
 }

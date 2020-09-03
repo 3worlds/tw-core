@@ -33,9 +33,9 @@ import java.util.Collection;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.twcore.constants.EdgeEffects;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Distance;
 import fr.cnrs.iees.uit.space.Point;
 
 /**
@@ -54,11 +54,20 @@ public interface Space<T> {
 	public Box boundingBox();
 	
 	/**
-	 * Every space has an edge effect correction method attached to it.
+	 * part of the space that is considered to compute statistics and outputs - enables to
+	 * have a safety zone around the central space to reduce edge effects. NB in most
+	 * cases it's = boundingBox().
 	 * 
 	 * @return
 	 */
-	public EdgeEffects edgeEffectCorrection();
+	public Box ObservationWindow();
+	
+//	/**
+//	 * Every space has an edge effect correction method attached to it.
+//	 * 
+//	 * @return
+//	 */
+//	public EdgeEffects edgeEffectCorrection();
 	
 	/**
 	 * Spaces can be 1,2,3,n-dimensional. This function returns their dimension.
@@ -74,6 +83,13 @@ public interface Space<T> {
 	 * @return
 	 */
 	public Graph<? extends Node, ? extends Edge> asGraph();
+	
+	/**
+	 * A drawable object representing this space
+	 * 
+	 * @return
+	 */
+	public TwShape asShape();
 	
 	/**
 	 * Locates a system component within this space. This will trigger a call to 
@@ -194,5 +210,49 @@ public interface Space<T> {
 	 * @return true if candidate coordinates are not different from reference location coordinates
 	 */
 	public boolean equalLocation(Location reference, double[] candidate);
+	
+	/**
+	 * Distance computations, including edge-effect corrections 
+	 * 
+	 * @param points
+	 * @return
+	 */
+	// this one is to be overriden in descendants
+	public default double squaredEuclidianDistance(double[] focal, double[] other) {
+		switch(ndim()) {
+			case 1:
+				return Distance.sqr(Distance.distance1D(focal[0],other[0]));
+			case 2:
+				return Distance.squaredEuclidianDistance(focal[0],focal[1],other[0],other[1]);
+			case 3:
+				return Distance.squaredEuclidianDistance(focal[0],focal[1],focal[2],other[0],other[1],other[2]);
+			default:
+				return Distance.squaredEuclidianDistance(Point.newPoint(focal),Point.newPoint(other));
+		}
+	}
+	// all these lead to the previous, no need to everride
+	public default double squaredEuclidianDistance(Point focal, Point other) {
+		return squaredEuclidianDistance(focal.asArray(),other.asArray());
+	}
+	public default double squaredEuclidianDistance(Location focal, Location other) {
+		return squaredEuclidianDistance(focal.asPoint().asArray(),other.asPoint().asArray());
+	}
+	public default double euclidianDistance(Point focal, Point other) {
+		return Math.sqrt(squaredEuclidianDistance(focal.asArray(),other.asArray()));
+	}
+	public default double euclidianDistance(Location focal, Location other) {
+		return Math.sqrt(squaredEuclidianDistance(focal.asPoint().asArray(),other.asPoint().asArray()));
+	}
+	public default double euclidianDistance(double[] focal, double[] other) {
+		return Math.sqrt(squaredEuclidianDistance(focal,other));
+	}
+	
+	/**
+	 * check and fix location of proposed point as per edge effect correction
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public double[] fixLocation(double[] location);
 	
 }

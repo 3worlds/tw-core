@@ -241,8 +241,13 @@ hasNode spaceSpec
 		multiplicity = IntegerRange("1..1")
 	hasProperty edgeEffectsSpec
 		hasName = String("edgeEffects")
-		type = String("EdgeEffects")
+		type = String("EdgeEffectCorrection")
 		multiplicity = IntegerRange("1..1")
+	hasProperty borderTypeSpec
+		hasName = String("borderType")
+		type = String("StringTable") // of dimension 2 and ndim
+		multiplicity = IntegerRange("0..1")
+		// TODO: bordertype must be of same dimension as space
 	hasProperty spacePrecisionSpec
 		hasName = String("precision")
 		type = String("Double")

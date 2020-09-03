@@ -42,7 +42,8 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.twcore.constants.EdgeEffects;
+import fr.cnrs.iees.twcore.constants.BorderType;
+import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.utils.Duple;
@@ -57,7 +58,7 @@ import fr.ens.biologie.generic.utils.Duple;
 //todo: toroidal correction
 public class SquareGrid extends SpaceAdapter {
 
-	private static final int ndim = 2;
+	private static final int ndim = SpaceType.squareGrid.dimensions();
 
 	private class squareGridLocation implements Location {
 		protected int[] loc = new int[2];
@@ -95,9 +96,9 @@ public class SquareGrid extends SpaceAdapter {
 
 	@SuppressWarnings("unchecked")
 	public SquareGrid(double cellSize, int nx, int ny, double prec, String units,
-			EdgeEffects ee, SpaceDataTracker dt,String proposedId) {
+			BorderType[][] bt, SpaceDataTracker dt,String proposedId) {
 		super(Box.boundingBox(Point.newPoint(0.0,0.0),Point.newPoint(nx*cellSize,ny*cellSize)),
-			prec, units, ee, dt,proposedId);
+			prec, units, bt, dt,proposedId);
 		this.cellSize = cellSize;
 		this.nx = nx;
 		this.ny = ny;
