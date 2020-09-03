@@ -1278,6 +1278,7 @@ public class DocoGenerator {
 		return entries;
 	}
 
+	@SuppressWarnings("unchecked")
 	private String getFlowChart() {
 		SimulatorNode sim = (SimulatorNode) get(cfg.root().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())),
 				children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
@@ -1287,7 +1288,8 @@ public class DocoGenerator {
 		 * initialise
 		 * for each time event
 		 * 	if (stopping condition)
-		 * 		assign decs  ← zero
+		 * 		for each (a,b,c) (belonging to category with decs)
+		 * 			assign decs  ← zero
 		 * 		if time for time1
 		 * 			with (entities) cf JG: for entities string desc see getProcessAppliesToDesc()
 		 * 				if (decision)
@@ -1322,10 +1324,17 @@ public class DocoGenerator {
 		}
 		// init decorators
 		for (TreeGraphDataNode dec : decTypes) {
+			TreeGraphDataNode cat = (TreeGraphDataNode)get(dec.edges(Direction.IN),selectOne(hasTheLabel(E_DECORATORS.label())),startNode());
+			List<TreeGraphDataNode> targets = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),selectOneOrMany(hasTheLabel(E_BELONGSTO.label())) ,edgeListStartNodes());
+			String actors = "";
+			for (TreeGraphDataNode target:targets)
+				actors+=", "+target.id();
+			actors = actors.replaceFirst(", ", "");
+			flowChart.append("\tfor each(").append(actors).append(")\n");
 			Map<String, List<String>> details = getDataTreeDetails(dec);
 			for (Map.Entry<String, List<String>> entry : details.entrySet())
 				// we need the element class here assign boolean <- false etc...
-				flowChart.append(sep).append("assign ").append(entry.getKey()).append(" ← zero\n");
+				flowChart.append(sep).append("\tassign ").append(entry.getKey()).append(" ← zero\n");
 		}
 
 		// get dependsOn orders
