@@ -412,7 +412,8 @@ public class DocoGenerator {
 				Iterator<Column> ci = t.getColumnIterator();
 				while (ci.hasNext())
 					ci.next().setUseOptimalWidth(true);
-				
+				t.setWidth(t.getWidth());
+
 			}
 
 			document.save(Project.makeFile(cfg.root().id() + ".odt"));
@@ -503,7 +504,7 @@ public class DocoGenerator {
 		// ComponentTypes,
 		entries = getEntityDetails();
 		doc.addParagraph("Table " + (++tableNumber) + ". Component (Entity) description");
-		writeTable(doc, entries, "Component type", "Role", "Component", "Drivers", "Time", "Space");
+		writeTable(doc, entries, "Component type", "Categories", "Component", "Drivers", "Time", "Space");
 
 		// RelationType
 		entries = getRelationsDetails();
@@ -1277,7 +1278,7 @@ public class DocoGenerator {
 		 * initialise
 		 * for each time event
 		 * 	if (stopping condition)
-		 * 		assign decs <- zero
+		 * 		assign decs  ← zero
 		 * 		if time for time1
 		 * 			with (entities) cf JG: for entities string desc see getProcessAppliesToDesc()
 		 * 				if (decision)
@@ -1286,7 +1287,7 @@ public class DocoGenerator {
 		 *  	etc...
 		 *  	advance time
 		 *  	create/destroy ephemeral relations and components
-		 * 		assign next drivers <- current values 	
+		 * 		assign next drivers  ← current values 	
 		 * 
 		 * */
 		StringBuilder flowChart = new StringBuilder();
@@ -1315,7 +1316,7 @@ public class DocoGenerator {
 			Map<String, List<String>> details = getDataTreeDetails(dec);
 			for (Map.Entry<String, List<String>> entry : details.entrySet())
 				// we need the element class here assign boolean <- false etc...
-				flowChart.append(sep).append("assign ").append(entry.getKey()).append(" <- zero\n");
+				flowChart.append(sep).append("assign ").append(entry.getKey()).append(" ← zero\n");
 		}
 
 		// get dependsOn orders
@@ -1416,7 +1417,7 @@ public class DocoGenerator {
 		}
 
 		if (!driverTypes.isEmpty())
-			flowChart.append("\tassign drivers <- newly computed values\n");
+			flowChart.append("\tassign drivers  ← newly computed values\n");
 
 		return flowChart.toString();
 	}
@@ -1527,7 +1528,7 @@ public class DocoGenerator {
 		if (relationType != null) {
 			List<Duple<TreeGraphDataNode, TreeGraphDataNode>> fromToCats = getFromToCategories(relationType);
 			sb.append(", ").append(relationType.id()).append(" (").append(fromToCats.get(0).getFirst().id())
-					.append("->").append(fromToCats.get(0).getSecond().id()).append(")");
+					.append("→").append(fromToCats.get(0).getSecond().id()).append(")");
 		}
 
 		return sb.toString().replaceFirst(", ", "");
@@ -1664,7 +1665,7 @@ public class DocoGenerator {
 				String c2a = pair.getFirst().id();
 				String c2b = pair.getSecond().id();
 				entries.add(
-						new StringBuilder().append(c1).append(sep).append(c2a).append(" -> ").append(c2b).toString());
+						new StringBuilder().append(c1).append(sep).append(c2a).append(" → ").append(c2b).toString());
 			}
 		}
 		return entries;
@@ -1807,7 +1808,7 @@ public class DocoGenerator {
 		while (ci.hasNext())
 			ci.next().setUseOptimalWidth(true);
 
-
+		table.setWidth(table.getWidth());
 		// col,row
 		for (int i = 0; i < headers.length; i++)
 			table.getCellByPosition(i, 0).setStringValue(headers[i]);
@@ -1821,6 +1822,8 @@ public class DocoGenerator {
 
 		while (ci.hasNext())
 			ci.next().setUseOptimalWidth(true);
+
+		table.setWidth(table.getWidth());
 
 		doc.addParagraph(null);
 	}
