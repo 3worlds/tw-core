@@ -36,6 +36,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
+import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -52,6 +53,7 @@ import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
 import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
+import org.odftoolkit.simple.table.TableTemplate;
 import org.odftoolkit.simple.text.Paragraph;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
@@ -406,6 +408,7 @@ public class DocoGenerator {
 			// ----- end Appendix 1
 
 			// try and format all tables
+//			TableTemplate template = document.LoadTableTemplateFromForeignTable(new FileInputStream("TableTemplate.odt"), "Table1");
 			for (Table t : document.getTableList()) {
 				/**
 				 * Doesn't work . Also it's really a table property because when set for one col
@@ -415,7 +418,7 @@ public class DocoGenerator {
 				while (ci.hasNext())
 					ci.next().setUseOptimalWidth(true);
 				t.setWidth(t.getWidth());
-
+//				t.applyStyle(template);
 			}
 
 			document.save(Project.makeFile(cfg.root().id() + ".odt"));
