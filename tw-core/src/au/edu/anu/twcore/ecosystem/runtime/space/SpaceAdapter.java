@@ -64,6 +64,7 @@ public abstract class SpaceAdapter
 		implements DynamicSpace<SystemComponent,LocatedSystemComponent> {
 	
 	private static Logger log = Logging.getLogger(SpaceAdapter.class);
+	private static final String jitterRNGName = "SpaceJitterRNG";
 
 	private Identity id = null;
 	/**
@@ -96,8 +97,7 @@ public abstract class SpaceAdapter
 	 * must be a box with dim = the greatest number of dims of any space */
 //	private Box absoluteLimits;
 	 /** A RNG available to descendants to create jitter around locations if needed */
-	protected Random jitterRNG = RngFactory.newInstance("SpaceJitterRNG", 0, RngResetType.never,
-			RngSeedSourceType.secure,RngAlgType.Pcg32).getRandom();
+	protected Random jitterRNG = null;
 	/** list of SystemComponents to insert later */
 	private List<LocatedSystemComponent> toInsert = new LinkedList<>();
 	/** list of SystemComponents to delete later */
@@ -116,6 +116,9 @@ public abstract class SpaceAdapter
 			SpaceDataTracker dt, 
 			String proposedId) {
 		super();
+		if (RngFactory.find(jitterRNGName)==null)
+			RngFactory.newInstance(jitterRNGName, 0, RngResetType.never,RngSeedSourceType.secure,RngAlgType.Pcg32);
+		jitterRNG = RngFactory.find(jitterRNGName).getRandom();
 		limits = box;
 		obsWindow = limits; // default value
 		upperBorderTypes = borderBehaviours[1];
