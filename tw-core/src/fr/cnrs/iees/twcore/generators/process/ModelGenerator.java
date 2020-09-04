@@ -67,6 +67,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
+import au.edu.anu.twcore.ecosystem.runtime.space.SpatialFunctions;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -88,7 +89,7 @@ import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Distance;
+//import fr.cnrs.iees.uit.space.Distance;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.JavaCode;
 import fr.ens.biologie.generic.utils.Logging;
@@ -865,7 +866,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			// check this: it's probably completely wrong!
 			hasSpace = ((ProcessNode) function.getParent().getParent()).hasSpace();
 		if (hasSpace) {
-			imports.add("static " + Distance.class.getCanonicalName() + ".*");
+			imports.add(SpatialFunctions.class.getCanonicalName());
+//			imports.add("static " + Distance.class.getCanonicalName() + ".*");
 			imports.add(Point.class.getCanonicalName());
 			imports.add(Box.class.getCanonicalName());
 		}
@@ -1010,6 +1012,13 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				method.addArgument(arg.name(), simpleType(arg.type()), arg.description());
 				headerComment.append("@param ").append(arg.name()).append(' ').append(arg.description()).append('\n');
 				replicateNames.add(arg.name());
+		}
+		// spatial functions
+		if (hasSpace) {
+			TwFunctionArguments arg = spFunc;
+			method.addArgument(arg.name(), simpleType(arg.type()), arg.description());
+			headerComment.append("@param ").append(arg.name()).append(' ').append(arg.description()).append('\n');
+			replicateNames.add(arg.name());
 		}
 
 		// event timers, if any

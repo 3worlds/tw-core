@@ -439,6 +439,11 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			if (callArg!=null)
 				callStatement += indent+indent+indent+ callArg + ",\n";
 		}
+		
+		// spatial functions
+		if (gen.hasSpace) {
+			callStatement += indent+indent+indent+ "space,\n";
+		}
 
 		// event timer queues, if any
 		Collection<TimerNode> queues = (Collection<TimerNode>) get(spec.edges(Direction.IN),

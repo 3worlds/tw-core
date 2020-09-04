@@ -311,22 +311,38 @@ public abstract class SpaceAdapter
 		changed = true;
 	}
 	
-	// NB: check this !!
+	// Recursive - veeery tricky! 
+	private double minDist(int depth, int ndim, double[] focal, double[] other) {
+		double dist=Double.MAX_VALUE;
+		if ((upperBorderTypes[depth]==BorderType.wrap)&&
+			(lowerBorderTypes[depth]==BorderType.wrap)) {
+			double[] alt = other.clone();
+			if (depth==ndim-1)
+				dist = Math.min(dist,DynamicSpace.super.squaredEuclidianDistance(focal,alt));
+			else
+				dist = Math.min(dist,minDist(depth+1,ndim,focal,alt));
+			alt[depth] = other[depth]-limits.sideLength(depth);
+			if (depth==ndim-1)
+				dist = Math.min(dist,DynamicSpace.super.squaredEuclidianDistance(focal,alt));
+			else
+				dist = Math.min(dist,minDist(depth+1,ndim,focal,alt));
+			alt[depth] = other[depth]+limits.sideLength(depth);
+			if (depth==ndim-1)
+				dist = Math.min(dist,DynamicSpace.super.squaredEuclidianDistance(focal,alt));
+			else
+				dist = Math.min(dist,minDist(depth+1,ndim,focal,alt));
+		}
+		else
+			if (depth==ndim-1)
+				dist = Math.min(dist,DynamicSpace.super.squaredEuclidianDistance(focal,other));
+			else
+				dist = Math.min(dist,minDist(depth+1,ndim,focal,other));
+		return dist;
+	}
+	
 	@Override
 	public double squaredEuclidianDistance(double[] focal, double[] other) {
-		double dist = DynamicSpace.super.squaredEuclidianDistance(focal, other);
-		double[] alt = other.clone();
-		for (int dim=0; dim<ndim(); dim++) {
-			if (upperBorderTypes[dim]==BorderType.wrap) {
-				alt[dim] -= limits.sideLength(dim);
-				dist = Math.min(dist,DynamicSpace.super.squaredEuclidianDistance(focal,alt));
-			}
-			if (lowerBorderTypes[dim]==BorderType.wrap) {
-				alt[dim] += limits.sideLength(dim);
-				dist = Math.min(dist,DynamicSpace.super.squaredEuclidianDistance(focal,alt));
-			}
-		}
-		return dist;
+ 		return minDist(0,ndim(),focal,other);
 	}
 
 	@Override
