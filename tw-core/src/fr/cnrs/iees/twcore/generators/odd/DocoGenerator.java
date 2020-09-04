@@ -36,6 +36,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
+import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -52,6 +53,7 @@ import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
 import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
+import org.odftoolkit.simple.table.TableTemplate;
 import org.odftoolkit.simple.text.Paragraph;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
@@ -406,17 +408,19 @@ public class DocoGenerator {
 			// ----- end Appendix 1
 
 			// try and format all tables
-//			TableTemplate template = document.LoadTableTemplateFromForeignTable(new FileInputStream("TableTemplate.odt"), "Table1");
+			//this.getClass().getResourceAsStream("TableTemplate.odt");
+			TableTemplate template = document.LoadTableTemplateFromForeignTable(this.getClass().getResourceAsStream("TableTemplate.odt"), "Table1");
 			for (Table t : document.getTableList()) {
 				/**
 				 * Doesn't work . Also it's really a table property because when set for one col
 				 * it's set for all.
 				 */
-				Iterator<Column> ci = t.getColumnIterator();
-				while (ci.hasNext())
-					ci.next().setUseOptimalWidth(true);
+//				Iterator<Column> ci = t.getColumnIterator();
+//				while (ci.hasNext())
+//					ci.next().setUseOptimalWidth(true);
 				t.setWidth(t.getWidth());
-//				t.applyStyle(template);
+				
+				t.applyStyle(template);
 			}
 
 			document.save(Project.makeFile(cfg.root().id() + ".odt"));
@@ -1833,13 +1837,16 @@ public class DocoGenerator {
 	private static void writeTable(TextDocument doc, List<String> entries, String... headers) {
 		Table table = doc.addTable(entries.size() + 1, headers.length);
 		table.setTableName("Table " + tableNumber + ".");
+	
 
 		// none of this optimal width stuff seems to have any effect!!
-		Iterator<Column> ci = table.getColumnIterator();
-		while (ci.hasNext())
-			ci.next().setUseOptimalWidth(true);
-
-		table.setWidth(table.getWidth());
+	
+//		Iterator<Column> ci = table.getColumnIterator();
+//		while (ci.hasNext()) {
+//			ci.next().setUseOptimalWidth(true);
+//		}
+//
+//		table.setWidth(table.getWidth());
 		// col,row
 		for (int i = 0; i < headers.length; i++)
 			table.getCellByPosition(i, 0).setStringValue(headers[i]);
@@ -1850,10 +1857,10 @@ public class DocoGenerator {
 				table.getCellByPosition(j, i + 1).setStringValue(parts[j]);
 		}
 
-		while (ci.hasNext())
-			ci.next().setUseOptimalWidth(true);
-
-		table.setWidth(table.getWidth());
+//		while (ci.hasNext())
+//			ci.next().setUseOptimalWidth(true);
+//
+//		table.setWidth(table.getWidth());
 
 		doc.addParagraph(null);
 	}
