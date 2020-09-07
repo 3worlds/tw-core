@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import fr.cnrs.iees.twcore.constants.BorderType;
+import fr.cnrs.iees.uit.space.Point;
 
 /**
  * Testing distance computation with edge effects
@@ -77,6 +78,19 @@ class FlatSurfaceTest {
 		assertEquals(loc[0],12);
 		assertEquals(loc[1],50);
 	}
-	
+
+	@Test
+	final void testOtherClosestLocation() {
+		assertEquals(flat.otherClosestLocation(A,B)[0],10);
+		assertEquals(flat.otherClosestLocation(A,B)[1],35);
+		assertEquals(flat.otherClosestLocation(A,E)[0],0);
+		assertEquals(flat.otherClosestLocation(A,E)[1],20);
+		
+		assertEquals(flat2.otherClosestLocation(A,E)[0],20);
+		assertEquals(flat2.otherClosestLocation(A,E)[1],50);
+		
+		assertEquals(flat3.otherClosestLocation(A,E)[0],0);
+		assertEquals(flat3.otherClosestLocation(A,E)[1],50);
+	}
 
 }
