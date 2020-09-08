@@ -51,6 +51,7 @@ import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
 import fr.cnrs.iees.uit.space.Box;
+import static fr.cnrs.iees.uit.space.Distance.*;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -332,48 +333,83 @@ public abstract class SpaceAdapter
 			}
 		}
 	}
+//	private distLoc minDist(int depth, int ndim, double[] focal, double[] other) {
+//		distLoc result = new distLoc(Double.MAX_VALUE,other);
+//		if ((upperBorderTypes[depth]==BorderType.wrap)&&
+//			(lowerBorderTypes[depth]==BorderType.wrap)) {
+//			double[] alt = other.clone();
+//			if (depth==ndim-1)
+//				result.setMin(squaredEuclidianDistance(focal,alt),alt);
+//			else
+//				result.setMin(minDist(depth+1,ndim,focal,alt));
+//
+//			alt[depth] = other[depth]-limits.sideLength(depth);
+//			if (depth==ndim-1) 
+//				result.setMin(squaredEuclidianDistance(focal,alt),alt);
+//			else
+//				result.setMin(minDist(depth+1,ndim,focal,alt));
+//			
+//			alt[depth] = other[depth]+limits.sideLength(depth);
+//			if (depth==ndim-1) 
+//				result.setMin(DynamicSpace.super.squaredEuclidianDistance(focal,alt),alt);
+//			else
+//				result.setMin(minDist(depth+1,ndim,focal,alt));
+//		}
+//		else
+//			if (depth==ndim-1)
+//				result.setMin(DynamicSpace.super.squaredEuclidianDistance(focal,other),other);
+//			else
+//				result.setMin(minDist(depth+1,ndim,focal,other));
+//		return result;
+//	}
 	// Recursive - veeery tricky!
 	// returns both the minimal distance and the corresponding (corrected) location
-	private distLoc minDist(int depth, int ndim, double[] focal, double[] other) {
-		distLoc result = new distLoc(Double.MAX_VALUE,other);
+	private distLoc minDist(int depth, int ndim, Point focal, Point other) {
+		distLoc result = new distLoc(Double.MAX_VALUE,other.asArray());
 		if ((upperBorderTypes[depth]==BorderType.wrap)&&
 			(lowerBorderTypes[depth]==BorderType.wrap)) {
-			double[] alt = other.clone();
+			Point alt = other.clone();
 			if (depth==ndim-1)
-				result.setMin(DynamicSpace.super.squaredEuclidianDistance(focal,alt),alt);
+				result.setMin(squaredEuclidianDistance(focal,alt),alt.asArray());
 			else
 				result.setMin(minDist(depth+1,ndim,focal,alt));
-
-			alt[depth] = other[depth]-limits.sideLength(depth);
+			alt = Point.add(other,-limits.sideLength(depth),depth);
 			if (depth==ndim-1) 
-				result.setMin(DynamicSpace.super.squaredEuclidianDistance(focal,alt),alt);
+				result.setMin(squaredEuclidianDistance(focal,alt),alt.asArray());
 			else
 				result.setMin(minDist(depth+1,ndim,focal,alt));
 			
-			alt[depth] = other[depth]+limits.sideLength(depth);
+			alt = Point.add(other,+limits.sideLength(depth),depth);
 			if (depth==ndim-1) 
-				result.setMin(DynamicSpace.super.squaredEuclidianDistance(focal,alt),alt);
+				result.setMin(squaredEuclidianDistance(focal,alt),alt.asArray());
 			else
 				result.setMin(minDist(depth+1,ndim,focal,alt));
 		}
 		else
 			if (depth==ndim-1)
-				result.setMin(DynamicSpace.super.squaredEuclidianDistance(focal,other),other);
+				result.setMin(squaredEuclidianDistance(focal,other),other.asArray());
 			else
 				result.setMin(minDist(depth+1,ndim,focal,other));
 		return result;
 	}
 	
+//	@Override
+//	public double squaredEuclidianDistance(double[] focal, double[] other) {
+// 		return minDist(0,ndim(),focal,other).dist;
+//	}
+	
+//	// returns the (corrected) location of other matching the shortest distance between other and focal
+//	@Override
+//	public double[] fixOtherLocation(double[] focal, double[] other) {
+//		return minDist(0,ndim(),focal,other).loc;
+//	}
+
+	// returns the (corrected) location of other matching the shortest distance between other and focal
 	@Override
-	public double squaredEuclidianDistance(double[] focal, double[] other) {
- 		return minDist(0,ndim(),focal,other).dist;
+	public Point fixOtherLocation(Point focal, Point other) {
+		return Point.newPoint(minDist(0,ndim(),focal,other).loc); // TODO: optimize this
 	}
 	
-	// returns the (corrected) location of other matching the shortest distance between other and focal
-	public double[] otherClosestLocation(double[] focal, double[] other) {
-		return minDist(0,ndim(),focal,other).loc;
-	}
-
 	@Override
 	public double[] fixLocation(double[] location) {
 		if (location.length!=ndim()) {

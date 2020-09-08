@@ -62,7 +62,6 @@ public enum TwFunctionArguments {
 	random			("java.util.Random", "random number generator"),
 	decider			("au.edu.anu.twcore.ecosystem.runtime.biology.DecisionFunction", "decision function"),
 	timer			("au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue", "event timers fed by this method"),
-	spFunc			("au.edu.anu.twcore.ecosystem.runtime.space.SpatialFunctions","distance functions with corrections for edge-effects"),
 	;
 	private final String type;
 	private final String description;

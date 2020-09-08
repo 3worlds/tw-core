@@ -218,4 +218,14 @@ public interface Space<T> {
 	 */
 	public double[] fixLocation(double[] location);
 	
+	/**
+	 * fix location of other relative to focal according to edge effect correction
+	 * 
+	 * @param focal
+	 * @param other
+	 * @return
+	 */
+	public Point fixOtherLocation(Point focal, Point other);
+
+	
 }

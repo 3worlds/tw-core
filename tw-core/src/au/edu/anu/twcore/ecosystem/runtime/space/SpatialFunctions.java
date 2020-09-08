@@ -8,6 +8,7 @@ import fr.cnrs.iees.uit.space.Point;
  * @author Jacques Gignoux - 4 sept. 2020
  *
  */
+@Deprecated
 public interface SpatialFunctions {
 
 	/**

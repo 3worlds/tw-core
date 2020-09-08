@@ -71,6 +71,7 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator.memberInfo;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator.recInfo;
+import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
@@ -318,12 +319,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		recToInnerVar.put("constants","Cnt");
 		recToInnerVar.put("decorators","Dec");
 		recToInnerVar.put("currentState","Drv");
-//		Map<TwFunctionArguments,List<Tuple<ConfigurationEdgeLabels,String,String>>> reqArgs = gen.method(name).callerArguments2();
 		String classToCall = gen.className();
 		String indent = "\t";
-//		callStatement = classToCall+"."+
-//				Strings.toLowerCase(name.substring(0,1))+
-//				name.substring(1)+"(\n";
 		callStatement = classToCall+"."+
 				name.substring(0,1).toLowerCase()+
 				name.substring(1)+"(\n";
@@ -416,10 +413,20 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			// read-only argument read from space
 			if (type.innerVars().contains("limits"))
 				callStatement += indent+indent+indent+ "space.boundingBox(),\n";
-			if (type.innerVars().contains("focalLoc"))
-				callStatement += indent+indent+indent+ "space.locationOf((SystemComponent)focal).asPoint(),\n";
-			if (type.innerVars().contains("otherLoc"))
-				callStatement += indent+indent+indent+ "space.locationOf((SystemComponent)other).asPoint(),\n";
+			if (type.innerVars().contains("focalLoc")) {
+				dataClassesToImport.add(Point.class.getCanonicalName());
+				List<String> innerVarInitialisation = new LinkedList<>();
+				innerVarInitialisation.add("Point focalLoc = space.locationOf((SystemComponent)focal).asPoint()");
+				innerVarInit.put("focalLoc",innerVarInitialisation);
+				callStatement += indent+indent+indent+ "focalLoc,\n";
+			}
+			if (type.innerVars().contains("otherLoc")) {
+				dataClassesToImport.add(Point.class.getCanonicalName());
+				List<String> innerVarInitialisation = new LinkedList<>();
+				innerVarInitialisation.add("Point otherLoc = space.locationOf((SystemComponent)other).asPoint()");
+				innerVarInit.put("otherLoc",innerVarInitialisation);
+				callStatement += indent+indent+indent+ "space.fixOtherLocation(focalLoc,otherLoc),\n";
+			}
 			// writeable arguments
 			if (type.writeableArguments().contains(nextFocalLoc))
 				callStatement += indent+indent+indent+ "nextFocalLoc,\n";
@@ -438,11 +445,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				callArg = "this";
 			if (callArg!=null)
 				callStatement += indent+indent+indent+ callArg + ",\n";
-		}
-		
-		// spatial functions
-		if (gen.hasSpace) {
-			callStatement += indent+indent+indent+ "space,\n";
 		}
 
 		// event timer queues, if any

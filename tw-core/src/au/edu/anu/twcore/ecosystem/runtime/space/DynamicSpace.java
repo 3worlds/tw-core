@@ -35,8 +35,6 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.rngFactory.RngHolder;
 import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.uit.space.Distance;
-import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.Resettable;
 
 /**
@@ -51,8 +49,7 @@ public interface DynamicSpace<I extends Identity,T extends Located<I,Location>>
 			ResettableContainer<T>,
 			RngHolder,
 			SingleDataTrackerHolder<Metadata>,
-			Resettable,
-			SpatialFunctions {
+			Resettable {
 
 	// default: no tracking assumed
 	@Override
@@ -66,19 +63,19 @@ public interface DynamicSpace<I extends Identity,T extends Located<I,Location>>
 		return null;
 	}
 
-	// this one is to be overriden in descendants
-	@Override
-	public default double squaredEuclidianDistance(double[] focal, double[] other) {
-		switch(ndim()) {
-			case 1:
-				return Distance.sqr(Distance.distance1D(focal[0],other[0]));
-			case 2:
-				return Distance.squaredEuclidianDistance(focal[0],focal[1],other[0],other[1]);
-			case 3:
-				return Distance.squaredEuclidianDistance(focal[0],focal[1],focal[2],other[0],other[1],other[2]);
-			default:
-				return Distance.squaredEuclidianDistance(Point.newPoint(focal),Point.newPoint(other));
-		}
-	}
+//	// this one is to be overriden in descendants
+//	@Override
+//	public default double squaredEuclidianDistance(double[] focal, double[] other) {
+//		switch(ndim()) {
+//			case 1:
+//				return Distance.sqr(Distance.distance1D(focal[0],other[0]));
+//			case 2:
+//				return Distance.squaredEuclidianDistance(focal[0],focal[1],other[0],other[1]);
+//			case 3:
+//				return Distance.squaredEuclidianDistance(focal[0],focal[1],focal[2],other[0],other[1],other[2]);
+//			default:
+//				return Distance.squaredEuclidianDistance(Point.newPoint(focal),Point.newPoint(other));
+//		}
+//	}
 
 }

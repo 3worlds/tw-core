@@ -24,8 +24,6 @@ class FlatSurfaceTest {
 	private FlatSurface flat3 = new FlatSurface(0,20,20,50,0.01,"m",bt3,null,"FS");
 	private double[] A = {5,30};
 	private double[] B = {10,35};
-	private double[] C = {15,20};
-	private double[] D = {0,25};
 	private double[] E = {20,50};
 	private double[] F = {25,15};
 	private double[] G = {12,52};
@@ -33,24 +31,6 @@ class FlatSurfaceTest {
 	@BeforeEach
 	private void init() {
 //		flat = new FlatSurface(0,20,20,50,0.01,"m",bt,null,"FS");
-	}
-
-	@Test
-	final void testSquaredEuclidianDistance() {
-		assertEquals(flat.squaredEuclidianDistance(A,B),50);
-		assertEquals(flat.squaredEuclidianDistance(A,C),200);
-		assertEquals(flat.squaredEuclidianDistance(A,D),50);
-		assertEquals(flat.squaredEuclidianDistance(B,C),250);
-		assertEquals(flat.squaredEuclidianDistance(D,C),50);
-		assertEquals(flat.squaredEuclidianDistance(A,E),125);
-		
-		assertEquals(flat2.squaredEuclidianDistance(A,B),50);
-		assertEquals(flat2.squaredEuclidianDistance(D,C),250);
-		assertEquals(flat2.squaredEuclidianDistance(A,E),625);
-		
-		assertEquals(flat3.squaredEuclidianDistance(A,B),50);
-		assertEquals(flat3.squaredEuclidianDistance(D,C),50);
-		assertEquals(flat3.squaredEuclidianDistance(A,E),425);
 	}
 
 	@Test
@@ -81,16 +61,16 @@ class FlatSurfaceTest {
 
 	@Test
 	final void testOtherClosestLocation() {
-		assertEquals(flat.otherClosestLocation(A,B)[0],10);
-		assertEquals(flat.otherClosestLocation(A,B)[1],35);
-		assertEquals(flat.otherClosestLocation(A,E)[0],0);
-		assertEquals(flat.otherClosestLocation(A,E)[1],20);
+		assertEquals(flat.fixOtherLocation(Point.newPoint(A),Point.newPoint(B)).coordinate(0),10);
+		assertEquals(flat.fixOtherLocation(Point.newPoint(A),Point.newPoint(B)).coordinate(1),35);
+		assertEquals(flat.fixOtherLocation(Point.newPoint(A),Point.newPoint(E)).coordinate(0),0);
+		assertEquals(flat.fixOtherLocation(Point.newPoint(A),Point.newPoint(E)).coordinate(1),20);
 		
-		assertEquals(flat2.otherClosestLocation(A,E)[0],20);
-		assertEquals(flat2.otherClosestLocation(A,E)[1],50);
+		assertEquals(flat2.fixOtherLocation(Point.newPoint(A),Point.newPoint(E)).coordinate(0),20);
+		assertEquals(flat2.fixOtherLocation(Point.newPoint(A),Point.newPoint(E)).coordinate(1),50);
 		
-		assertEquals(flat3.otherClosestLocation(A,E)[0],0);
-		assertEquals(flat3.otherClosestLocation(A,E)[1],50);
+		assertEquals(flat3.fixOtherLocation(Point.newPoint(A),Point.newPoint(E)).coordinate(0),0);
+		assertEquals(flat3.fixOtherLocation(Point.newPoint(A),Point.newPoint(E)).coordinate(1),50);
 	}
 
 }
