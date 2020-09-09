@@ -383,7 +383,7 @@ public abstract class SpaceAdapter
 				double upper = limits.upperBound(dim);
 				switch (upperBorderTypes[dim]) {
 				case infinite: // always ok 
-					break;
+					return newLoc;
 				case oblivion: // point owner must be destroyed
 					if (newLoc[dim]>upper)
 						return null;
@@ -405,7 +405,7 @@ public abstract class SpaceAdapter
 				double lower = limits.lowerBound(dim);
 				switch (lowerBorderTypes[dim]) {
 				case infinite: // always ok 
-					break;
+					return newLoc;
 				case oblivion: // point owner must be destroyed
 					if (newLoc[dim]<lower)
 						return null;
@@ -430,7 +430,7 @@ public abstract class SpaceAdapter
 	}
 
 	@Override
-	public final Box ObservationWindow() {
+	public final Box observationWindow() {
 		return obsWindow;
 	}
 

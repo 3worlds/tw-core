@@ -59,7 +59,7 @@ public interface Space<T> {
 	 * 
 	 * @return
 	 */
-	public Box ObservationWindow();
+	public Box observationWindow();
 	
 //	/**
 //	 * Every space has an edge effect correction method attached to it.
