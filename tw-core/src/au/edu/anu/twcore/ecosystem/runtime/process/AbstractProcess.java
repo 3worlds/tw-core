@@ -162,10 +162,12 @@ public abstract class AbstractProcess
 	
 	// for descendants
 	protected void relocate(SystemComponent sc, double[] newLoc) {
-//		newLoc = applyEdgeEffectCorrection(newLoc);
 		newLoc = space.fixLocation(newLoc);
 		if (newLoc==null) {
 			// new location is outside the space - other should be deleted:
+			// huh? maybe not if it's present in other spaces ???
+			// Possible flaw here!
+			unlocate(sc);
 			sc.container().removeItem(sc);
 		}
 		else {
@@ -179,7 +181,6 @@ public abstract class AbstractProcess
 	
 	// for descendants
 	protected void locate(SystemComponent sc, ComponentContainer cont, double[] newLoc) {
-//		newLoc = applyEdgeEffectCorrection(newLoc);
 		newLoc = space.fixLocation(newLoc);
 		if (newLoc==null)
 			cont.removeItem(sc);

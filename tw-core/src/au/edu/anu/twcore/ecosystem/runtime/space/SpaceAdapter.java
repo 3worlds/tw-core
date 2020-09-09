@@ -315,15 +315,15 @@ public abstract class SpaceAdapter
 	// class needed by the minDist(...) method below
 	private class distLoc {
 		double dist;
-		double[] loc;
-		distLoc(double dist, double[] loc) {
+		Point loc;
+		distLoc(double dist, Point loc) {
 			this.dist = dist;
 			this.loc = loc;
 		}
-		void setMin(double d, double[] otherLoc) {
+		void setMin(double d, Point otherLoc) {
 			if (dist>d) {
 				dist = d;
-				loc = otherLoc.clone();
+				loc = otherLoc;
 			}
 		}
 		void setMin(distLoc other) {
@@ -333,81 +333,41 @@ public abstract class SpaceAdapter
 			}
 		}
 	}
-//	private distLoc minDist(int depth, int ndim, double[] focal, double[] other) {
-//		distLoc result = new distLoc(Double.MAX_VALUE,other);
-//		if ((upperBorderTypes[depth]==BorderType.wrap)&&
-//			(lowerBorderTypes[depth]==BorderType.wrap)) {
-//			double[] alt = other.clone();
-//			if (depth==ndim-1)
-//				result.setMin(squaredEuclidianDistance(focal,alt),alt);
-//			else
-//				result.setMin(minDist(depth+1,ndim,focal,alt));
-//
-//			alt[depth] = other[depth]-limits.sideLength(depth);
-//			if (depth==ndim-1) 
-//				result.setMin(squaredEuclidianDistance(focal,alt),alt);
-//			else
-//				result.setMin(minDist(depth+1,ndim,focal,alt));
-//			
-//			alt[depth] = other[depth]+limits.sideLength(depth);
-//			if (depth==ndim-1) 
-//				result.setMin(DynamicSpace.super.squaredEuclidianDistance(focal,alt),alt);
-//			else
-//				result.setMin(minDist(depth+1,ndim,focal,alt));
-//		}
-//		else
-//			if (depth==ndim-1)
-//				result.setMin(DynamicSpace.super.squaredEuclidianDistance(focal,other),other);
-//			else
-//				result.setMin(minDist(depth+1,ndim,focal,other));
-//		return result;
-//	}
 	// Recursive - veeery tricky!
 	// returns both the minimal distance and the corresponding (corrected) location
 	private distLoc minDist(int depth, int ndim, Point focal, Point other) {
-		distLoc result = new distLoc(Double.MAX_VALUE,other.asArray());
+		distLoc result = new distLoc(Double.MAX_VALUE,other);
 		if ((upperBorderTypes[depth]==BorderType.wrap)&&
 			(lowerBorderTypes[depth]==BorderType.wrap)) {
 			Point alt = other.clone();
 			if (depth==ndim-1)
-				result.setMin(squaredEuclidianDistance(focal,alt),alt.asArray());
+				result.setMin(squaredEuclidianDistance(focal,alt),alt);
 			else
 				result.setMin(minDist(depth+1,ndim,focal,alt));
 			alt = Point.add(other,-limits.sideLength(depth),depth);
 			if (depth==ndim-1) 
-				result.setMin(squaredEuclidianDistance(focal,alt),alt.asArray());
+				result.setMin(squaredEuclidianDistance(focal,alt),alt);
 			else
 				result.setMin(minDist(depth+1,ndim,focal,alt));
 			
 			alt = Point.add(other,+limits.sideLength(depth),depth);
 			if (depth==ndim-1) 
-				result.setMin(squaredEuclidianDistance(focal,alt),alt.asArray());
+				result.setMin(squaredEuclidianDistance(focal,alt),alt);
 			else
 				result.setMin(minDist(depth+1,ndim,focal,alt));
 		}
 		else
 			if (depth==ndim-1)
-				result.setMin(squaredEuclidianDistance(focal,other),other.asArray());
+				result.setMin(squaredEuclidianDistance(focal,other),other);
 			else
 				result.setMin(minDist(depth+1,ndim,focal,other));
 		return result;
 	}
-	
-//	@Override
-//	public double squaredEuclidianDistance(double[] focal, double[] other) {
-// 		return minDist(0,ndim(),focal,other).dist;
-//	}
-	
-//	// returns the (corrected) location of other matching the shortest distance between other and focal
-//	@Override
-//	public double[] fixOtherLocation(double[] focal, double[] other) {
-//		return minDist(0,ndim(),focal,other).loc;
-//	}
 
 	// returns the (corrected) location of other matching the shortest distance between other and focal
 	@Override
 	public Point fixOtherLocation(Point focal, Point other) {
-		return Point.newPoint(minDist(0,ndim(),focal,other).loc); // TODO: optimize this
+		return minDist(0,ndim(),focal,other).loc; 
 	}
 	
 	@Override
