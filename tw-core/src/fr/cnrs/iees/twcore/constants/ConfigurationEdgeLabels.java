@@ -89,7 +89,7 @@ public enum ConfigurationEdgeLabels {
 	E_AUTOVAR		("autoVar",			"auto1",		AutoVarEdge.class),
 	E_DRIVERS		("drivers",			"drvs1",		DriverEdge.class),
 	E_DECORATORS	("decorators",		"decs1",		DecoratorEdge.class),
-	E_CONSTANTS		("constants",		"cnts1",		ConstantsEdge.class),
+	E_CONSTANTS		("constants",		"cnsts1",		ConstantsEdge.class),
 	E_PARAMETERS	("parameters",		"pars1",		ParameterEdge.class), // should be deprecated
 	E_BELONGSTO		("belongsTo",		"bt1",			BelongsToEdge.class),
 	E_INITIALISEDBY	("initialisedBy",	"ib1",		InitialisedByEdge.class),
