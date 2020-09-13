@@ -662,7 +662,12 @@ public class DocoGenerator {
 //		Textbox box = paragraph.addTextbox(new FrameRectangle(1, 1, 1, 2, SupportedLinearMeasure.CM));
 //		box.setTextContent("this is a text box");
 
-		doc.addParagraph(getFlowChart());
+		Paragraph para1 = doc.addParagraph(getFlowChart());
+		Font font = para1.getFont();
+		font.setFamilyName("Liberation Mono");
+		font.setSize(10);
+		para1.setFont(font);
+
 		doc.addParagraph("Figure " + (++figureNumber) + ". Flow chart");
 		doc.addParagraph("");
 
@@ -673,8 +678,8 @@ public class DocoGenerator {
 
 		// Entity, timer and functions
 		entries = getEntityFunctionsEntries();
-		doc.addParagraph("Table " + (++tableNumber) + ". Entity functions");
-		writeTable(doc, entries, "Entity", "Timer", "Functions");
+		doc.addParagraph("Table " + (++tableNumber) + ". Component (Entity) functions");
+		writeTable(doc, entries, "Component", "Timer", "Functions");
 
 		entries = getStoppingConditionDetails();
 		if (!entries.isEmpty()) {
@@ -1032,6 +1037,9 @@ public class DocoGenerator {
 			entries.add(new StringBuilder().append(c1).append(sep).append(c2).append(sep).append(c3).append(sep)
 					.append(c4).append(sep).append(c5).append(sep).append(c6).toString());
 
+		}
+		if (!spaceTypes.isEmpty()) {
+			
 		}
 		return entries;
 	}
