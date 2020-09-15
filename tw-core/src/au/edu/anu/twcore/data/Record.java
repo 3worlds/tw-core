@@ -29,18 +29,23 @@
 package au.edu.anu.twcore.data;
 
 import fr.cnrs.iees.graph.DataHolder;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
@@ -72,12 +77,12 @@ public class Record extends InitialisableNode {
 
 	public static List<TreeGraphDataNode> getLeaves(TreeGraphDataNode rootRecord) {
 		List<TreeGraphDataNode> result = new ArrayList<>();
-		getLeaves(result,rootRecord);
+		getLeaves(result, rootRecord);
 		return result;
 	}
 
 	private static void getLeaves(List<TreeGraphDataNode> result, TreeNode record) {
-		for (TreeNode child:record.getChildren()) {
+		for (TreeNode child : record.getChildren()) {
 			if (child.classId().equals(N_FIELD.label()))
 				result.add((TreeGraphDataNode) child);
 			else if (child.classId().equals(N_TABLE.label())) {
@@ -86,25 +91,39 @@ public class Record extends InitialisableNode {
 				if (table.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
 					result.add((TreeGraphDataNode) child);
 				} else// There can be only one child but this is easiest.
-					for (TreeNode tableRecord:child.getChildren())
-						getLeaves(result,tableRecord);
+					for (TreeNode tableRecord : child.getChildren())
+						getLeaves(result, tableRecord);
 			}
 		}
-		
 
-		
 	}
 
+	@SuppressWarnings("unchecked")
 	public static int[][] collectDims(TreeNode parent) {
 		List<int[]> dimList = new ArrayList<>();
 		while (parent != null) {
 			if (parent instanceof TableNode) {
-				// presumably, these are now sorted
-				Dimensioner[] dims = ((TableNode) parent).dimensioners();
-				int[] dd = new int[dims.length];
+				// Have to do this the hard way - not by instantiation
+				// Get the edges and sort by rank
+				List<ALDataEdge> edges = (List<ALDataEdge>) get(parent.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_SIZEDBY.label())));
+				edges.sort(new Comparator<ALDataEdge>() {
+
+					@Override
+					public int compare(ALDataEdge e1, ALDataEdge e2) {
+						Integer r1 = (Integer) e1.properties().getPropertyValue(P_DIMENSIONER_RANK.key());
+						Integer r2 = (Integer) e2.properties().getPropertyValue(P_DIMENSIONER_RANK.key());
+						return r1.compareTo(r2);
+					}
+				});
+				int[] dd = new int[edges.size()];
 				dimList.add(dd);
-				for (int j = 0; j < dd.length; j++)
-					dd[j] = dims[j].getLength();
+				int idx = 0;
+				for (ALDataEdge edge:edges) {
+					TreeGraphDataNode dimNode = (TreeGraphDataNode) edge.endNode();
+					int size = (Integer) dimNode.properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
+					dd[idx++]=size;
+				}
 			}
 			parent = parent.getParent();
 		}
@@ -117,6 +136,5 @@ public class Record extends InitialisableNode {
 		}
 		return result;
 	}
-
 
 }

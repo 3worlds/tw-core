@@ -36,7 +36,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
-import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -51,7 +50,6 @@ import java.util.Set;
 
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
-import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.table.TableTemplate;
 import org.odftoolkit.simple.text.Paragraph;
