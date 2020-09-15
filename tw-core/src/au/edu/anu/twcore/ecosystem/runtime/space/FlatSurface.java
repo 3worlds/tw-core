@@ -40,6 +40,8 @@ import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.indexing.BoundedRegionIndexingTree;
+import fr.cnrs.iees.uit.indexing.ExpandingRegionIndexingTree;
+import fr.cnrs.iees.uit.indexing.RegionIndexingTree;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 import fr.cnrs.iees.uit.space.Sphere;
@@ -51,7 +53,6 @@ import fr.cnrs.iees.uit.space.SphereImpl;
  * @author Jacques Gignoux - 28 janv. 2020
  *
  */
-// todo: toroidal correction
 public class FlatSurface extends SpaceAdapter {
 
 	private static final int ndim = SpaceType.continuousFlatSurface.dimensions();
@@ -81,18 +82,19 @@ public class FlatSurface extends SpaceAdapter {
 
 	private Map<SystemComponent,Location> locatedItems = new HashMap<>();
 
-	private BoundedRegionIndexingTree<SystemComponent> indexer;
-
-//	private final double xmin,xmax,ymin,ymax; // to save access time - redundant with boundingBox()
+	private RegionIndexingTree<SystemComponent> indexer;
 
 	public FlatSurface(double xmin, double xmax, double ymin, double ymax,
 			double prec, String units, BorderType[][] bt, SpaceDataTracker dt,String proposedId) {
 		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,bt,dt,proposedId);
-		indexer = new BoundedRegionIndexingTree<>(boundingBox());
-//		this.xmin = boundingBox().lowerBound(0);
-//		this.xmax = boundingBox().upperBound(0);
-//		this.ymin = boundingBox().lowerBound(1);
-//		this.ymax = boundingBox().upperBound(1);
+		if ((upperBorderTypes[0]==BorderType.infinite)||
+			(upperBorderTypes[1]==BorderType.infinite)||
+			(lowerBorderTypes[0]==BorderType.infinite)||
+			(lowerBorderTypes[1]==BorderType.infinite)) {
+			indexer = new ExpandingRegionIndexingTree<>(boundingBox());
+		}
+		else
+			indexer = new BoundedRegionIndexingTree<>(boundingBox());
 	}
 
 	@Override
@@ -207,5 +209,32 @@ public class FlatSurface extends SpaceAdapter {
 		}
 		return false;
 	}
-
+	
+	@Override
+	public Box boundingBox() {		
+		if (indexer instanceof ExpandingRegionIndexingTree) {
+			Box reg = super.boundingBox();		
+			double xmin = reg.lowerBound(0);
+			double xmax = reg.upperBound(0);
+			double ymin = reg.lowerBound(1);
+			double ymax = reg.upperBound(1);
+			if (lowerBorderTypes[0]==BorderType.infinite)
+				if (indexer.region()!=null)
+					xmin = indexer.region().lowerBound(0);
+			if (upperBorderTypes[0]==BorderType.infinite)
+				if (indexer.region()!=null)
+					xmax = indexer.region().upperBound(0);
+			if (lowerBorderTypes[1]==BorderType.infinite)
+				if (indexer.region()!=null)
+					ymin = indexer.region().lowerBound(1);
+			if (upperBorderTypes[1]==BorderType.infinite)
+				if (indexer.region()!=null)
+					ymax = indexer.region().upperBound(1);
+			reg = Box.boundingBox(Point.newPoint(xmin,ymin), Point.newPoint(xmax,ymax));
+			return reg;
+		}
+		else
+			return super.boundingBox();
+	}
+	
 }

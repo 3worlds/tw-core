@@ -84,13 +84,11 @@ public abstract class SpaceAdapter
 	private double precision;
 	/** Space measurement units */
 	private String units;
-	/** type of edge-effect correction */
-//	private EdgeEffects correction; // deprecated to below
 	/** observation window */
 	private Box obsWindow;
 	/** border behaviour per dimension */
-	private BorderType[] upperBorderTypes;
-	private BorderType[] lowerBorderTypes;
+	protected BorderType[] upperBorderTypes;
+	protected BorderType[] lowerBorderTypes;
 	
 	private TwShape shape;
 	
@@ -137,7 +135,7 @@ public abstract class SpaceAdapter
 	// Space<T>
 
 	@Override
-	public final Box boundingBox() {
+	public Box boundingBox() {
 		return limits;
 	}
 
@@ -150,11 +148,6 @@ public abstract class SpaceAdapter
 	public final String units() {
 		return units;
 	}
-
-//	@Override
-//	public final EdgeEffects edgeEffectCorrection() {
-//		return correction;
-//	}
 
 	@Override
 	public Location locate(SystemComponent focal, Point location) {
