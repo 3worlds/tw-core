@@ -79,6 +79,7 @@ public class PropertiesMatchDefinitionQuery extends Query {
 
 	private String msg;
 
+	// NB this doesnt check complex data structures, ie tables of records of tables
 	@Override
 	public Query process(Object input) { // input is a variableValues or constantValues node
 		defaultProcess(input);
@@ -135,11 +136,12 @@ public class PropertiesMatchDefinitionQuery extends Query {
 						satisfied = false;
 						return this;
 					}
-				} else {
+				} else { // record entry is a table
 					TableNode tblDef = (TableNode) def;
 					Dimensioner[] defDims = tblDef.dimensioners();
 					Table trgValue = (Table) trgProps.getPropertyValue(def.id());
 					Dimensioner[] trgDims = trgValue.getDimensioners();
+					// check table dimensions
 					if (trgDims.length != defDims.length) {
 						msg = "Property '" + def.id() + "' has " + defDims.length + " dimensions but has "
 								+ trgDims.length + ".";
@@ -156,10 +158,13 @@ public class PropertiesMatchDefinitionQuery extends Query {
 						}
 
 					}
-					Table defValue = tblDef.newInstance();
-					if (!trgValue.getClass().equals(defValue.getClass())) {
-						msg = "Property '" + def.id() + " is of class '" + trgValue.getClass()
-								+ "' but should be of class '" + defValue.getClass() + "'.";
+					// check table element type
+					DataElementType defDType = (DataElementType) tblDef.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
+//					Table defValue = tblDef.newInstance();
+//					if (!trgValue.getClass().equals(defValue.getClass())) {
+					if (!defDType.name().equals(trgValue.elementSimpleClassName())) {
+						msg = "Property '" + def.id() + " is of class '" + trgValue.elementSimpleClassName()
+							+ "' but should be of class '" + defDType.name() + "'.";
 						satisfied = false;
 						return this;
 					}
@@ -183,6 +188,13 @@ public class PropertiesMatchDefinitionQuery extends Query {
 
 	/* Public static - available for use by MM for matching purpose */
 	// argument 'node' is a variableValues or constantValues node
+	
+	// TODO: 16/9/2020 rewrite this method because:
+	// CAUTION: tree structure has changed:
+	// constantValues or variableValues are now children of System, Component or Group
+	// who are themselves children of ComponentType, GroupType (System has no parent).
+	// no more instanceOf edge here
+	
 	@SuppressWarnings("unchecked")
 	public static Duple<Boolean, Collection<TreeGraphDataNode>> getDataDefs(TreeGraphDataNode node,
 			String dataCategory) {
@@ -194,8 +206,10 @@ public class PropertiesMatchDefinitionQuery extends Query {
 			return null;
 		TreeGraphDataNode ct = null;
 
-		ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
-				endNode());
+		// CAUTION: this is wrong now!
+		ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), 
+			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
+			endNode());
 
 		if (ct == null)
 			ct = parent;
@@ -211,13 +225,15 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		}
 
 		List<TreeGraphDataNode> cats = (List<TreeGraphDataNode>) get(ct.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
+			edgeListEndNodes());
 		if (cats.isEmpty())
 			return null;
 		Set<TreeGraphDataNode> definitions = new HashSet<>();
 		for (TreeGraphDataNode cat : cats) {
-			Record rootRecord = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(dataCategory)),
-					endNode());
+			Record rootRecord = (Record) get(cat.edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(dataCategory)),
+				endNode());
 			if (rootRecord != null)
 				definitions.addAll(Record.getLeaves(rootRecord));
 			if (cat.id().contentEquals("*ephemeral*"))
