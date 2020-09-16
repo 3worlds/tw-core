@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
@@ -85,8 +86,10 @@ public class FlatSurface extends SpaceAdapter {
 	private RegionIndexingTree<SystemComponent> indexer;
 
 	public FlatSurface(double xmin, double xmax, double ymin, double ymax,
-			double prec, String units, BorderType[][] bt, SpaceDataTracker dt,String proposedId) {
-		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,bt,dt,proposedId);
+			double prec, String units, BorderType[][] bt, Box guard, double guardWidth,
+			SpaceDataTracker dt,String proposedId) {
+		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,
+			bt,guard,guardWidth,dt,proposedId);
 		if ((upperBorderTypes[0]==BorderType.infinite)||
 			(upperBorderTypes[1]==BorderType.infinite)||
 			(lowerBorderTypes[0]==BorderType.infinite)||

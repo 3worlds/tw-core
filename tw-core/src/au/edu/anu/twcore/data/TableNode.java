@@ -61,6 +61,7 @@ import au.edu.anu.twcore.InitialisableNode;
  */
 public class TableNode 
 		extends InitialisableNode 
+		// TODO (16/9/2020): get rid of the Factory interface, it's useless and dangerous here
 		implements Factory<Table>, Sealable {
 
 	private boolean sealed = false;
@@ -117,6 +118,7 @@ public class TableNode
 	}
 
 	@Override
+	@Deprecated // we dont want to see this anymore - it must go.
 	public Table newInstance() {
 		if (!sealed)
 			initialise();

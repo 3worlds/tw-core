@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.exceptions.TwcoreException;
@@ -96,9 +97,10 @@ public class SquareGrid extends SpaceAdapter {
 
 	@SuppressWarnings("unchecked")
 	public SquareGrid(double cellSize, int nx, int ny, double prec, String units,
-			BorderType[][] bt, SpaceDataTracker dt,String proposedId) {
+			BorderType[][] bt, Box guard, double guardWidth,
+			SpaceDataTracker dt,String proposedId) {
 		super(Box.boundingBox(Point.newPoint(0.0,0.0),Point.newPoint(nx*cellSize,ny*cellSize)),
-			prec, units, bt, dt,proposedId);
+			prec, units, bt, guard, guardWidth, dt,proposedId);
 		this.cellSize = cellSize;
 		this.nx = nx;
 		this.ny = ny;

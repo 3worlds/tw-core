@@ -112,6 +112,8 @@ public abstract class SpaceAdapter
 			double prec, 
 			String units, 
 			BorderType[][] borderBehaviours, 
+			Box obsWindow,
+			double guardWidth,
 			SpaceDataTracker dt, 
 			String proposedId) {
 		super();
@@ -119,7 +121,15 @@ public abstract class SpaceAdapter
 			RngFactory.newInstance(jitterRNGName, 0, RngResetType.never,RngSeedSourceType.secure,RngAlgType.Pcg32);
 		jitterRNG = RngFactory.find(jitterRNGName).getRandom();
 		limits = box;
-		obsWindow = limits; // default value
+		if (obsWindow==null)
+			if (guardWidth>0.0)
+				this.obsWindow = Box.boundingBox(
+					Point.add(limits.lowerBounds(),guardWidth),
+					Point.add(limits.upperBounds(),-guardWidth));
+			else
+				this.obsWindow = Box.boundingBox(limits.lowerBounds(),limits.upperBounds());
+		else
+			this.obsWindow = Box.boundingBox(obsWindow.lowerBounds(),obsWindow.upperBounds());
 		upperBorderTypes = borderBehaviours[1];
 		lowerBorderTypes = borderBehaviours[0];		
 		//	precision based on shortest side of plot - NB I think that's a mistake - cf below

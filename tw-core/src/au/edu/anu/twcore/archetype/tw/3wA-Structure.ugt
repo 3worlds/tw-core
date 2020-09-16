@@ -243,13 +243,12 @@ hasNode spaceSpec
 		hasName = String("edgeEffects")
 		type = String("EdgeEffectCorrection")
 		multiplicity = IntegerRange("1..1")
-		// TODO: if edgeEffect = custom, then borderType must be set
-		// otherwise not needed --> warning ?
 	hasProperty borderTypeSpec
 		hasName = String("borderType")
 		type = String("StringTable") // of dimension 2 and ndim
 		multiplicity = IntegerRange("0..1")
-		// TODO: bordertype must be of same dimension as space
+	mustSatisfyQuery borderTypeValidityQuery
+		className = String("au.edu.anu.twcore.archetype.tw.BorderTypeValidityQuery")
 	hasProperty spacePrecisionSpec
 		hasName = String("precision")
 		type = String("Double")
@@ -258,6 +257,19 @@ hasNode spaceSpec
 		hasName = String("units")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
+	hasProperty spaceGuardStripWidthSpec
+		hasName = String("guardAreaWidth")
+		type = String("Double")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery guardAreaMaxWidthQuery
+		className = String("au.edu.anu.twcore.archetype.tw.GuardAreaMaxWidthQuery")
+	hasProperty spaceGuardAreaSpec
+		hasName = String("observationWindow")
+		type = String("Box")
+		multiplicity = IntegerRange("0..1")	
+	mustSatisfyQuery boxDimensionQuery
+		className = String("au.edu.anu.twcore.archetype.tw.BoxInSpaceDimensionQuery")
+		boxProp = String("observationWindow") 	
 	hasEdge spaceRngSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")

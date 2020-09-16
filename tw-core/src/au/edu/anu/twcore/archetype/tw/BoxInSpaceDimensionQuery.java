@@ -26,26 +26,48 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
+package au.edu.anu.twcore.archetype.tw;
 
-package au.edu.anu.twcore.archetype;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_SPACETYPE;
 
-/* not sure about naming conventions. 
-To avoid name collisions with uses of this kind of interface, perhaps a prefix: suggest "at" here.
+import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
+import fr.cnrs.iees.twcore.constants.SpaceType;
+import fr.cnrs.iees.uit.space.Box;
 
- To clarify the category of each string:
- 
- s : specification node
- 
- sn: specification name (eg hasProeprty name) = atsnName??
- 
- sp: specification property atspReference, atspMultiplicity
- 
- sl: specification label eg slHasNode
- 
-  well not sure about this. See what happens and refactor as required.
-*/
-@Deprecated
-public interface ArchetypeConstants {
-	public static final String atspName = "name";
+/**
+ * checks that a box property in a space has the same dimension as the space
+ * 
+ * @author Jacques Gignoux - 16 sept. 2020
+ *
+ */
+// Tested OK 16/6/2020
+public class BoxInSpaceDimensionQuery extends Query {
+
+	private String propName;
+	
+	public BoxInSpaceDimensionQuery(String boxProp) {
+		super();
+		propName = boxProp;
+	}
+
+	@Override
+	public Query process(Object input) { // input is a space node
+		defaultProcess(input);
+		SpaceNode spn = (SpaceNode) input;
+		SpaceType stype = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
+		if (spn.properties().hasProperty(propName)) {
+			Box prop = (Box)spn.properties().getPropertyValue(propName);
+			satisfied = (prop.dim()==stype.dimensions());
+		}
+		else
+			satisfied = true; // no problem if no Box property
+		return this;
+	}
+
+	@Override
+	public String toString() {
+		return "[" + stateString() +"'"+ propName + "' must have the same dimensions as its containing space]";
+	}
 
 }

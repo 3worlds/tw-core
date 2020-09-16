@@ -121,6 +121,8 @@ public enum ConfigurationPropertyNames {
 	P_SPACE_COORDINATES			("coordinates"),
 	P_SPACE_EDGEEFFECTS			("edgeEffects"),
 	P_SPACE_BORDERTYPE			("borderType"),
+	P_SPACE_GUARDAREA			("guardAreaWidth"),
+	P_SPACE_OBSWINDOW			("observationWindow"),
 	P_SNIPPET_JAVACODE          ("javaCode"),
 	;
 

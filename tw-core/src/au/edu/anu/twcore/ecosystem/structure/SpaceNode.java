@@ -59,6 +59,7 @@ import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.EdgeEffectCorrection;
 import fr.cnrs.iees.twcore.constants.SpaceType;
+import fr.cnrs.iees.uit.space.Box;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.utils.Interval;
@@ -83,6 +84,8 @@ public class SpaceNode
 	private SpaceType stype = null;
 	private EdgeEffectCorrection eecorr = null;
 	private StringTable borderTypes = null;
+	private Box obsWindow = null;
+	private double guardWidth = 0.0;
 	// the name of coordinates relative to this space (eg "<this.id()>.x")
 	private Set<String> coordNames = new HashSet<>();
 	private String units = "arbitrary units";
@@ -110,6 +113,10 @@ public class SpaceNode
 			precision = (double)properties().getPropertyValue(P_SPACE_PREC.key());
 		if (properties().hasProperty(P_SPACE_UNITS.key()))
 			units = (String)properties().getPropertyValue(P_SPACE_UNITS.key());
+		if (properties().hasProperty(P_SPACE_GUARDAREA.key()))
+			guardWidth = (double) properties().getPropertyValue(P_SPACE_GUARDAREA.key());
+		if (properties().hasProperty(P_SPACE_OBSWINDOW.key()))
+			obsWindow = (Box) properties().getPropertyValue(P_SPACE_OBSWINDOW.key());
 		rngNode = (RngNode) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_USERNG.label())),
 			endNode());
@@ -161,7 +168,7 @@ public class SpaceNode
 				Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
 				Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
 				result = new FlatSurface(xlim.inf(),xlim.sup(),ylim.inf(),ylim.sup(),
-					precision,units,borders,dt,id());
+					precision,units,borders,obsWindow,guardWidth,dt,id());
 				break;
 			case linearNetwork:
 				break;
@@ -171,7 +178,7 @@ public class SpaceNode
 				int ny = nx;
 				if (properties().hasProperty("ny"))
 					ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
-				result = new SquareGrid(cellSize,nx,ny,precision,units,borders,dt,id());
+				result = new SquareGrid(cellSize,nx,ny,precision,units,borders,obsWindow,guardWidth,dt,id());
 				break;
 			case topographicSurface:
 				break;

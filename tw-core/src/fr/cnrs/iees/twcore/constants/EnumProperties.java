@@ -30,8 +30,10 @@ package fr.cnrs.iees.twcore.constants;
 
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.BoxImpl;
 import fr.cnrs.iees.uit.space.Point;
 import fr.cnrs.iees.uit.space.Sphere;
+import fr.cnrs.iees.uit.space.SphereImpl;
 
 /**
  * A class to initialise user-defined properties - must be called before any use of ValidProperties
@@ -77,14 +79,19 @@ public class EnumProperties {
 
 	// register geometric classes so they can be used as properties
 	static {
+		// TODO: Caution: the real implemented class must be used. Here, IT'S NOT GOING TO WORK
+		// because there are many point subclasses.
+		// code must be changed in ValidPropertyType to handle subclassing.
 		ValidPropertyTypes.recordPropertyType(Point.class.getSimpleName(),
 			Point.class.getName(),
 			Point.newPoint(0.0));
+		// Caution: the real implemented class must be used. Here, BoxImpl
 		ValidPropertyTypes.recordPropertyType(Box.class.getSimpleName(),
-			Box.class.getName(),
+			BoxImpl.class.getName(),
 			Box.boundingBox(Point.newPoint(0.0),Point.newPoint(0.0)));
+		// Caution: the real implemented class must be used. Here, SphereImpl
 		ValidPropertyTypes.recordPropertyType(Sphere.class.getSimpleName(),
-			Sphere.class.getName(),
+			SphereImpl.class.getName(),
 			Sphere.newSphere(Point.newPoint(0.0),0.0));
 	}
 }
