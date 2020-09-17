@@ -46,11 +46,14 @@ import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -136,5 +139,22 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 			dataTracker.sendMetadataTo((GridNode) widget, dataTracker.getInstance());
 		}
 	}
+
+	/**
+	 * The list of function types that are compatible with the Arena
+	 */
+	public static TwFunctionTypes[] compatibleFunctionTypes = {
+		ChangeState,				// arena may change its drivers
+		CreateOtherDecision,		// arena may create new items of its ComponentType
+		SetInitialState,			// arena may set its constants at creation time
+// THESE are not possible because relations are only between SystemComponents		
+//		ChangeOtherCategoryDecision,// arena may change the category of a component
+//		ChangeOtherState,			// arena change the state of a component
+//		DeleteOtherDecision,		// arena may delete another component
+//		ChangeRelationState,		// arena may change the state of a relation
+//		MaintainRelationDecision,	// arena may maintain a relation
+//		RelateToDecision,			// arena may relate to a new component (ALWAYS unindexed search)
+//		SetOtherInitialState		// arena may set the initial state of another component ???
+	};
 
 }

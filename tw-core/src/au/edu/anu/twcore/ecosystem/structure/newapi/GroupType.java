@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.structure.newapi;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
 import java.util.Collection;
 
@@ -44,6 +45,7 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * Replacement for the Group class
@@ -99,5 +101,22 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 				null,id(),superContainer);
 	}
+
+	/**
+	 * The list of function types that are compatible with a GroupType
+	 */
+	public static TwFunctionTypes[] compatibleFunctionTypes = {
+		ChangeState,				// a group may change its drivers
+		CreateOtherDecision,		// a group may create new items of its ComponentType
+		SetInitialState,			// a group may set its constants at creation time
+// THESE are not possible because relations are only between SystemComponents		
+//		ChangeOtherCategoryDecision,// a group may change the category of a component
+//		ChangeOtherState,			// a group may change the state of a component
+//		DeleteOtherDecision,		// a group may delete another component
+//		ChangeRelationState,		// a group may change the state of a relation
+//		MaintainRelationDecision,	// a group may maintain a relation
+//		RelateToDecision,			// a group may relate to a new component (ALWAYS unindexed search)
+//		SetOtherInitialState		// a group may set the initial state of another component ???
+	};
 
 }

@@ -566,6 +566,9 @@ public class ComponentProcess
 		return categoryId;
 	}
 
+	/**
+	 * The list of function types that are compatible with a ComponentProcess
+	 */
 	public static TwFunctionTypes[] compatibleFunctionTypes = {
 		ChangeCategoryDecision,
 		ChangeState,

@@ -55,6 +55,7 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * replacement for ComponentType
@@ -138,5 +139,10 @@ public class ComponentType extends ElementType<ComponentFactory, SystemComponent
 	public int initRank() {
 		return N_COMPONENTTYPE.initRank();
 	}
+
+	/**
+	 * The list of function types that are compatible with a ComponentType (all of them)
+	 */
+	public static TwFunctionTypes[] compatibleFunctionTypes = TwFunctionTypes.values(); 
 
 }

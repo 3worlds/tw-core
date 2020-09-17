@@ -56,10 +56,13 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Sets;
+
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
+import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
@@ -74,6 +77,8 @@ import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.GroupType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.DataHolder;
@@ -95,7 +100,7 @@ import fr.ens.biologie.generic.JavaCode;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
- * A class to generate the skeleton of a user-editable model code
+ * A class to generate the skeleton of a user-editable model code.
  *
  * @author Jacques Gignoux - 2 avr. 2020
  *
@@ -103,8 +108,10 @@ import fr.ens.biologie.generic.utils.Logging;
 public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 
 	private static Logger log = Logging.getLogger(ModelGenerator.class);
+	// the simple name of the generated class
 	private String className = null;
 	private String modelName = null;
+	// the fully classified name of the generated class
 	private String generatedClassName = null;
 	private String packageName = null;
 	private String packagePath;
@@ -137,7 +144,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	}
 
 	/**
-	 * Constructor able to manage previously generated code
+	 * Constructor
 	 *
 	 */
 	@SuppressWarnings("unchecked") // graph root, ecology.id()
@@ -153,80 +160,35 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// method comments:
 		// working explanations
 
-		/*- NOTE: Need to remove ref any previous user code here. It does not need to be managed like this- IAN*/
-		// check if a file was already generated for this model in user project
-		// if yes, extract all user code as snippets.
 		packagePath = Project.makeFile(LOCALJAVACODE, validJavaName(wordUpperCaseName(modelDir))).getAbsolutePath();
-//		String previousModel = UserProjectLink.srcRoot()+File.separator+
-//			ProjectPaths.REMOTECODE+File.separator+
-//			validJavaName(wordUpperCaseName(modelDir))+File.separator+
-//			className+".java";
-//		if (Files.exists(Path.of(previousModel))) {
-//			File previousFile = new File(previousModel);
-//			List<String> lines = new LinkedList<>();
-//			try {
-//				lines = Files.readAllLines(previousFile.toPath());
-//			} catch (IOException e) {
-//				log.severe(()->"File "+previousFile+" could not be read - file regenerated instead");
-//			}
-//			String record = null;
-//			for (String line:lines) {
-//				if (line.strip().startsWith("import "))
-//					imports.add(line.substring(line.indexOf("import")+6,line.indexOf(';')).strip());
-////				if (line.contains("END CODE INSERTION ZONE"))
-//				if (line.contains(Comments.endCodeInsert))
-//					record = null;
-//				if (record!=null) {
-//					if (snippets.get(record)==null)
-//						snippets.put(record,new LinkedList<>());
-//					// TODO: this will fail if there are more than one return statement per method
-//					if (line.strip().startsWith("return "))
-//						snippets.get(record).add(line);
-//					else
-//						if (line.startsWith("//"))
-//							snippets.get(record).add(line);
-//						else
-//							snippets.get(record).add("//"+line);
-//				}
-////				if (line.contains("INSERT YOUR CODE BELOW THIS LINE"))
-//				if (line.contains(Comments.beginCodeInsert))
-//					record = line.substring(line.indexOf("//")+2,line.indexOf('-')).strip();
-//			}
-////			// debugging
-////			for (String s:snippets.keySet()) {
-////				System.out.println("Snippet for method'"+s+"': ");
-////				for (String ss: snippets.get(s))
-////					System.out.println("\t"+ss);
-////			}
-//		}
-//		else {
 		imports.add("static java.lang.Math.*");
-//		}
 		// get all nodes susceptible to require generated data:
 		// system/arena, lifecycle, group, component, space
 		// NB these nodes may also have setInitialState functions
 		/** must eventually deal with the fact that System is [1..*]? -IDD */
-		TreeGraphDataNode systemNode = (TreeGraphDataNode) get(root3w, children(),
-				selectOne(hasTheLabel(N_SYSTEM.label())));
+		TreeGraphDataNode systemNode = (TreeGraphDataNode) get(root3w, 
+			children(),
+			selectOne(hasTheLabel(N_SYSTEM.label())));
 
 		List<TreeGraphDataNode> cpt = (List<TreeGraphDataNode>) get(systemNode, children(),
-				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())), // NB -structure is now [0..1] -IDD
-				children(),
-				selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()),
-					hasTheLabel(N_GROUP.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
-		// The above query returns null if there is no structureNode - left tidy up for
-		// now -IDD
+			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())),
+			children(),
+			selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()),
+				hasTheLabel(N_GROUPTYPE.label()), 
+				hasTheLabel(N_COMPONENTTYPE.label()))));
 		if (cpt == null)
 			cpt = new ArrayList<TreeGraphDataNode>();
 		cpt.add(systemNode);
 		for (TreeGraphDataNode tn : cpt) {
 			generatedData cl = new generatedData();
 			// search for autovar definitions, if any
-			List<TreeGraphDataNode> ccats = (List<TreeGraphDataNode>) get(tn.edges(Direction.OUT),
-				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+			List<Category> ccats = (List<Category>) get(tn.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), 
+				edgeListEndNodes());
 			for (TreeGraphDataNode cc : ccats) {
 				TreeGraphDataNode auto = (TreeGraphDataNode) get(cc.edges(Direction.OUT),
-					selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())), endNode());
+					selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())), 
+					endNode());
 				if (auto != null) {
 					if (cc.id().equals(Category.ephemeral))
 						cl.autoVars = ComponentData.class.getName();
@@ -263,9 +225,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				}
 			// this because ComponentType is unsealed at that time
 			SortedSet<Category> categories = new TreeSet<>(); // caution: sorted set !
-			Collection<Category> nl = (Collection<Category>) get(tn.edges(Direction.OUT),
-				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
-			categories.addAll(((Categorized<SystemComponent>) tn).getSuperCategories(nl));
+			categories.addAll(((Categorized<SystemComponent>) tn).getSuperCategories(ccats));
 			dataClassNames.put(categories, cl);
 			elementTypeCategories.put(tn, categories);
 		}
@@ -465,10 +425,14 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 
 		@Override
 		public String toString() {
-			String s = "[" + name + ":" + klass + " [ ";
-			for (memberInfo f : members)
-				s += f.toString() + " ";
-			s += "]]";
+			String s = "[" + name + ":" + klass;
+			if (members!=null) {
+				s +=  " [ ";
+				for (memberInfo f : members)
+					s += f.toString() + " ";
+				s += "]";
+			}
+			s += "]";
 			return s;
 		}
 	}
@@ -546,23 +510,79 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			}
 		return result;
 	}
-
+	
+	private TreeGraphDataNode getSystemNode(TreeGraphDataNode fp) {
+		while ((fp!=null) & !(fp instanceof ArenaType))
+			fp = (TreeGraphDataNode) fp.getParent();
+		return fp;
+	}
+	
+	/** finds the categories of the group of a focal (or other) component */
+	@SuppressWarnings("unchecked")
+	protected SortedSet<Category> findGroupCategories(TreeGraphDataNode function,
+			Set<Category> componentCats, // the categories of the process acting on the component
+			TwFunctionArguments arg) {
+		SortedSet<Category> cats = new TreeSet<>();
+		if ((arg==group)||(arg==otherGroup)) {
+			Set<GroupType> selectedGroups = new HashSet<>();
+			TreeGraphDataNode sys = getSystemNode(function);
+			// get all the groups in the system
+			Collection<GroupType> grps = (Collection<GroupType>) get(sys.getChildren(),
+				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())),
+				children(),
+				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+			Set<Category> allGroupCats = new HashSet<>(); 
+			// now find which group is above the current component type....
+			for (GroupType gt:grps) {
+				// collect all categories of all groupTypes for later intersection
+				allGroupCats.addAll((Collection<Category>) get(gt.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+					edgeListEndNodes()));
+				// find all categories of each component and check they contain all cats of componentCats
+				// if yes, then this GroupType is valid
+				Collection<ComponentType> cpts = (Collection<ComponentType>) get(gt.getChildren(),
+					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+				for (ComponentType ct:cpts) {
+					Collection<Category> ctcats = (Collection<Category>) get(ct.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+						edgeListEndNodes());
+					if (ctcats.containsAll(componentCats)) {
+						selectedGroups.add(gt);
+						break;
+					}
+				}
+			}
+			// if there is more than one GroupType, only categories common to all of them
+			// are used in the generated code.
+			for (GroupType gt:selectedGroups) {
+				Set<Category> gtCats = new HashSet<>(); 
+				gtCats.addAll((Collection<Category>) get(gt.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+					edgeListEndNodes()));
+				allGroupCats = Sets.intersection(gtCats,allGroupCats);
+			}
+			cats.addAll(allGroupCats);
+		}
+		return cats;
+	}
+	
+	/** finds the categories of a focal component */
 	@SuppressWarnings("unchecked")
 	protected SortedSet<Category> findCategories(TreeGraphDataNode function, TwFunctionArguments arg) {
 		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		TreeGraphDataNode fp = (TreeGraphDataNode) function.getParent();
 		SortedSet<Category> cats = new TreeSet<>();
 		TreeGraphDataNode arenaNode = null;
-//		TreeGraphDataNode groupNode = null;
 		// 1 general case: function parent is a process
 		if (fp instanceof ProcessNode) {
-			TreeGraphDataNode pn = fp;
+			ProcessNode pn = (ProcessNode) fp;
 			// get arena data types
-			if (arg == arena)  					// timeModel   timeLine    dynamics    system
-				arenaNode = (TreeGraphDataNode) pn.getParent().getParent().getParent().getParent();
-			if (arg==group)
-//				groupNode=  // get the node from the components of the samecategories as the process...
-				;
+			if (arg == arena)
+				arenaNode = getSystemNode(fp);
+			if ((arg==group)||(arg==otherGroup)) {					
+				// it should be a mistake to reach here
+				// use findGroupCategories instead
+			}
 			if ((arg == lifeCycle) || (arg == group)) {
 				// TODO: get the component type matching process categories, then get the
 				// grouptype
@@ -605,8 +625,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			if (pftype==CreateOtherDecision) { // NB the only possible consequence is SetOtherInitialState
 				// search for a life cycle
 				ProcessNode pn = (ProcessNode) fp.getParent();
-				if (arg == arena)  				// timeModel   timeLine    dynamics    system
-					arenaNode = (TreeGraphDataNode) pn.getParent().getParent().getParent().getParent();
+				if (arg == arena)
+					arenaNode = getSystemNode(fp);
 				List<TreeGraphDataNode> lcs = (List<TreeGraphDataNode>) get(pn.edges(Direction.IN),
 					edgeListStartNodes(),
 					selectZeroOrMany(hasTheLabel(N_LIFECYCLE.label())));
@@ -636,15 +656,12 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes()));
 			return cats;
 		}
-
 		if (arenaNode!=null) {
 			cats.addAll((Collection<Category>) get(arenaNode.edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
 				edgeListEndNodes()));
 			return cats;
 		}
-
-
 		return cats;
 	}
 
@@ -666,6 +683,15 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return false;
 	}
 
+	/**
+	 * This method works out the comment to add to generated files regarding Timer information.
+	 * Since each method in the generated model class file can follow a different Timer, a specific
+	 * comment is generated for every method.
+	 * 
+	 * @param function the specification node of a TwFunction descendant
+	 * @param ftype the function type of the the function
+	 * @return the comment as a string ready for insertion in source code
+	 */
 	@SuppressWarnings("unchecked")
 	public String timerComment(TreeGraphDataNode function, TwFunctionTypes ftype) {
 		// functions independent from timers
@@ -784,12 +810,25 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				.getPropertyValue(P_FUNCTIONTYPE.key());
 			EnumMap<TwFunctionArguments, List<recInfo>> newDS = new EnumMap<>(TwFunctionArguments.class);
 			dataStructures.put(method, newDS);
+			SortedSet<Category> focalCats = findCategories(functions.get(method), focal);
+			SortedSet<Category> otherCats = findCategories(functions.get(method), other);
+
 			for (TwFunctionArguments a : ftype.readOnlyArguments())
 				if ((a != t) & (a != dt)) {
 				newDS.put(a, new LinkedList<recInfo>());
 				// TODO: make sure all categories are searched for all the context classes
 				// ie goup, life cycle, arena etc.
-				SortedSet<Category> cats = findCategories(functions.get(method), a);
+				SortedSet<Category> cats = null;
+				if (a.equals(focal))
+					cats = focalCats;
+				else if (a.equals(other))
+					cats = otherCats;
+				else if (a.equals(group))
+					cats = findGroupCategories(functions.get(method),focalCats,a);
+				else if (a.equals(otherGroup))
+					cats = findGroupCategories(functions.get(method),otherCats,a);
+				else
+					cats = findCategories(functions.get(method), a);
 				Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> fields = getAllMembers(cats);
 				for (ConfigurationEdgeLabels el : EnumSet.of(E_AUTOVAR, E_CONSTANTS, E_DECORATORS, E_DRIVERS)) {
 					recInfo ri = new recInfo();
@@ -827,15 +866,20 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	// the arena arguments are skipped only when the focal element is the arena
 	// this only occurs when focal belongs to *arena*
 	public boolean skipArena(SortedSet<Category> focalCats) {
-//		for (TreeGraphDataNode tgn:elementTypeCategories.keySet())
-//			if (tgn instanceof ArenaType)
-//				return elementTypeCategories.get(tgn).equals(focalCats);
 		for (Category cat : focalCats)
-			if (cat.id().contentEquals(Category.arena))
+			if (cat.id().equals(Category.arena))
 				return true;
 		return false;
 	}
 
+	/**
+	 * This method generates the code for all user-defined functions. It (1) create a static method header
+	 * and body in the model source file, and (2) passes to the to-be-generated TwFunction descendant 
+	 * code generator the information required to call the static methods.
+	 * 
+	 * @param function
+	 * @return
+	 */
 	@SuppressWarnings({ "unchecked" })
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
 		Map<String, ConfigurationEdgeLabels> nameLabelMatches = new HashMap<>();
@@ -873,6 +917,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// applies to : rel or cat
 		SortedSet<Category> focalCats = findCategories(function, focal);
 		SortedSet<Category> otherCats = findCategories(function, other);
+// this is not needed here - used only for comments		
+//		SortedSet<Category> focalGroupCats = findGroupCategories(function,focalCats,group);
+//		SortedSet<Category> focalOtherCats = findGroupCategories(function,otherCats,otherGroup);
 //		boolean hasLifeCycle = hasLifeCycle(focalCats);
 		if (otherCats.isEmpty())
 			headerComment.append("<p>- applies to categories {<em>")
@@ -943,8 +990,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						if (mb.fullType != null)
 							imports.add(mb.fullType);
 						String prefix = "";
-						if (arg.name().contains("other"))
-							prefix = "other_";
+						if (EnumSet.of(other,group,otherGroup,lifeCycle,otherLifeCycle).contains(arg))
+							prefix = arg.name()+"_";
 						method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
 							prefix+mb.name, mb.type,
 							arg.description() + rec.name + " " + mb.comment);
@@ -1092,14 +1139,27 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @return the simple name of the generated class (e.g. "MyModel")
+	 */
 	public String className() {
 		return className;
 	}
 
+	/**
+	 * 
+	 * @return the fully qualified name of the generated class (e.g. "my.pack.age.MyModel")
+	 */
 	public String generatedClassName() {
 		return generatedClassName;
 	}
 
+	/**
+	 * 
+	 * @return the complete path to the generated class source file (e.g. 
+	 * "~/.3w/project_mine_2020-09-04-08-26-27-415/local/java/code/my/pack/age/MyModel.java")
+	 */
 	public File getFile() {
 		String name = generatedClassName.replace(this.packageName + ".", "");
 		String path = packagePath + File.separator + name;
