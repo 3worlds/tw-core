@@ -50,6 +50,7 @@ import java.util.Set;
 
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
+import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.table.TableTemplate;
 import org.odftoolkit.simple.text.Paragraph;
@@ -64,6 +65,7 @@ import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
@@ -277,19 +279,28 @@ public class DocoGenerator {
 				snippetNodes.add(n);
 			}
 		}
+		/**
+		 * It would be nice for the reader if a distinction was made between
+		 * initFunctions and other functions. This is not straight forward because in
+		 * the absence of snippets we cant tell what type of function it is just from
+		 * the model java file. We would have to look at the corresponding function file
+		 */
 		if (UserProjectLink.haveUserProject()) {
 			snippetMap = UserProjectLink.getSnippets();
 		} else {
 			snippetMap = new HashMap<>();
 			for (TreeGraphDataNode snippetNode : snippetNodes) {
 				StringTable tbl = (StringTable) snippetNode.properties().getPropertyValue(P_SNIPPET_JAVACODE.key());
-				String key = snippetNode.getParent().id().toLowerCase();
+				char c[] = snippetNode.getParent().id().toCharArray();
 				List<String> value = new ArrayList<>();
-				// TODO haven't distinguished between inits and functions
-				snippetMap.put(key, value);
+				c[0] = Character.toLowerCase(c[0]);
+				// TODO haven't distinguished between initFunctions and functions
+				// This is not possible unless every function has a snippet node from which its
+				// parents can be found. Unless we look at the ancestor of the function in the
+				// generated code and see if it is an initfunction
+				snippetMap.put(new String(c), value);
 				for (int i = 0; i < tbl.size(); i++)
 					value.add(tbl.getWithFlatIndex(i));
-
 			}
 		}
 
@@ -405,23 +416,21 @@ public class DocoGenerator {
 
 			// ----- end Appendix 1
 
-			// try and format all tables
-			//this.getClass().getResourceAsStream("TableTemplate.odt");
-			TableTemplate template = document.LoadTableTemplateFromForeignTable(this.getClass().getResourceAsStream("TableTemplate.odt"), "Table1");
+			// Use this table as the style default
+			TableTemplate template = document.LoadTableTemplateFromForeignTable(
+					this.getClass().getResourceAsStream("TableTemplate.odt"), "Table1");
 			for (Table t : document.getTableList()) {
-				/**
-				 * Doesn't work . Also it's really a table property because when set for one col
-				 * it's set for all.
-				 */
-//				Iterator<Column> ci = t.getColumnIterator();
-//				while (ci.hasNext())
-//					ci.next().setUseOptimalWidth(true);
-				t.setWidth(t.getWidth());
-				
 				t.applyStyle(template);
+				/**
+				 * Trying to set the column widths but this doesn't seem to work.
+				 */
+				Iterator<Column> ci = t.getColumnIterator();
+				while (ci.hasNext())
+					ci.next().setUseOptimalWidth(true);
+				t.setWidth(t.getWidth());
 			}
 
-			document.save(Project.makeFile(cfg.root().id() + ".odt"));
+			document.save(Project.makeFile(ProjectPaths.RUNTIME, cfg.root().id() + ".odt"));
 
 			// free resources
 			document.close();
@@ -1037,7 +1046,7 @@ public class DocoGenerator {
 
 		}
 		if (!spaceTypes.isEmpty()) {
-			
+
 		}
 		return entries;
 	}
@@ -1334,11 +1343,13 @@ public class DocoGenerator {
 		}
 		// init decorators
 		for (TreeGraphDataNode dec : decTypes) {
-			TreeGraphDataNode cat = (TreeGraphDataNode)get(dec.edges(Direction.IN),selectOne(hasTheLabel(E_DECORATORS.label())),startNode());
-			List<TreeGraphDataNode> targets = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),selectOneOrMany(hasTheLabel(E_BELONGSTO.label())) ,edgeListStartNodes());
+			TreeGraphDataNode cat = (TreeGraphDataNode) get(dec.edges(Direction.IN),
+					selectOne(hasTheLabel(E_DECORATORS.label())), startNode());
+			List<TreeGraphDataNode> targets = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
+					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes());
 			String actors = "";
-			for (TreeGraphDataNode target:targets)
-				actors+=", "+target.id();
+			for (TreeGraphDataNode target : targets)
+				actors += ", " + target.id();
 			actors = actors.replaceFirst(", ", "");
 			flowChart.append("\tfor each(").append(actors).append(")\n");
 			Map<String, List<String>> details = getDataTreeDetails(dec);
@@ -1729,7 +1740,8 @@ public class DocoGenerator {
 					.toString());
 			c1 = "";
 			if (space.properties().hasProperty(P_SPACE_EDGEEFFECTS.key())) {
-				EdgeEffectCorrection eEff = (EdgeEffectCorrection) space.properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
+				EdgeEffectCorrection eEff = (EdgeEffectCorrection) space.properties()
+						.getPropertyValue(P_SPACE_EDGEEFFECTS.key());
 				entries.add(new StringBuilder().append(c1).append(sep).append("Edge effects: ")
 						.append(eEff.description()).toString());
 				c1 = "";
@@ -1843,10 +1855,9 @@ public class DocoGenerator {
 	private static void writeTable(TextDocument doc, List<String> entries, String... headers) {
 		Table table = doc.addTable(entries.size() + 1, headers.length);
 		table.setTableName("Table " + tableNumber + ".");
-	
 
 		// none of this optimal width stuff seems to have any effect!!
-	
+
 //		Iterator<Column> ci = table.getColumnIterator();
 //		while (ci.hasNext()) {
 //			ci.next().setUseOptimalWidth(true);
