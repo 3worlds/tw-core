@@ -63,7 +63,7 @@ import fr.ens.biologie.generic.utils.Logging;
  */
 public abstract class SpaceAdapter
 		implements DynamicSpace<SystemComponent,LocatedSystemComponent> {
-	
+
 	private static Logger log = Logging.getLogger(SpaceAdapter.class);
 	private static final String jitterRNGName = "SpaceJitterRNG";
 
@@ -89,9 +89,9 @@ public abstract class SpaceAdapter
 	/** border behaviour per dimension */
 	protected BorderType[] upperBorderTypes;
 	protected BorderType[] lowerBorderTypes;
-	
+
 	private TwShape shape;
-	
+
 	/** absolute location of this space in the SpaceOrganiser -
 	 * must be a box with dim = the greatest number of dims of any space */
 //	private Box absoluteLimits;
@@ -108,13 +108,13 @@ public abstract class SpaceAdapter
 	private boolean changed = false;
 
 
-	public SpaceAdapter(Box box, 
-			double prec, 
-			String units, 
-			BorderType[][] borderBehaviours, 
+	public SpaceAdapter(Box box,
+			double prec,
+			String units,
+			BorderType[][] borderBehaviours,
 			Box obsWindow,
 			double guardWidth,
-			SpaceDataTracker dt, 
+			SpaceDataTracker dt,
 			String proposedId) {
 		super();
 		if (RngFactory.find(jitterRNGName)==null)
@@ -131,7 +131,7 @@ public abstract class SpaceAdapter
 		else
 			this.obsWindow = Box.boundingBox(obsWindow.lowerBounds(),obsWindow.upperBounds());
 		upperBorderTypes = borderBehaviours[1];
-		lowerBorderTypes = borderBehaviours[0];		
+		lowerBorderTypes = borderBehaviours[0];
 		//	precision based on shortest side of plot - NB I think that's a mistake - cf below
 //		precision = Math.max(prec,minimalPrecision)*Math.min(limits.sideLength(0),limits.sideLength(1));
 		// absolute precision, i.e. in units of measurement.
@@ -161,7 +161,7 @@ public abstract class SpaceAdapter
 
 	@Override
 	public Location locate(SystemComponent focal, Point location) {
-		return locate(focal,location.x(),location.y()); // FLAW here! what about 3D spaces ?
+		return locate(focal,location.asArray());
 	}
 
 	@Override
@@ -314,7 +314,7 @@ public abstract class SpaceAdapter
 	public final void change() {
 		changed = true;
 	}
-	
+
 	// class needed by the minDist(...) method below
 	private class distLoc {
 		double dist;
@@ -348,13 +348,13 @@ public abstract class SpaceAdapter
 			else
 				result.setMin(minDist(depth+1,ndim,focal,alt));
 			alt = Point.add(other,-limits.sideLength(depth),depth);
-			if (depth==ndim-1) 
+			if (depth==ndim-1)
 				result.setMin(squaredEuclidianDistance(focal,alt),alt);
 			else
 				result.setMin(minDist(depth+1,ndim,focal,alt));
-			
+
 			alt = Point.add(other,+limits.sideLength(depth),depth);
-			if (depth==ndim-1) 
+			if (depth==ndim-1)
 				result.setMin(squaredEuclidianDistance(focal,alt),alt);
 			else
 				result.setMin(minDist(depth+1,ndim,focal,alt));
@@ -370,9 +370,9 @@ public abstract class SpaceAdapter
 	// returns the (corrected) location of other matching the shortest distance between other and focal
 	@Override
 	public Point fixOtherLocation(Point focal, Point other) {
-		return minDist(0,ndim(),focal,other).loc; 
+		return minDist(0,ndim(),focal,other).loc;
 	}
-	
+
 	@Override
 	public double[] fixLocation(double[] location) {
 		if (location.length!=ndim()) {
@@ -385,7 +385,7 @@ public abstract class SpaceAdapter
 			for (int dim=0; dim<ndim(); dim++) {
 				double upper = limits.upperBound(dim);
 				switch (upperBorderTypes[dim]) {
-				case infinite: // always ok 
+				case infinite: // always ok
 					return newLoc;
 				case oblivion: // point owner must be destroyed
 					if (newLoc[dim]>upper)
@@ -407,7 +407,7 @@ public abstract class SpaceAdapter
 				}
 				double lower = limits.lowerBound(dim);
 				switch (lowerBorderTypes[dim]) {
-				case infinite: // always ok 
+				case infinite: // always ok
 					return newLoc;
 				case oblivion: // point owner must be destroyed
 					if (newLoc[dim]<lower)

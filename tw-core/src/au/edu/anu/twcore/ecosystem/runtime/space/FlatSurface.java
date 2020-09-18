@@ -212,11 +212,11 @@ public class FlatSurface extends SpaceAdapter {
 		}
 		return false;
 	}
-	
+
 	@Override
-	public Box boundingBox() {		
+	public Box boundingBox() {
 		if (indexer instanceof ExpandingRegionIndexingTree) {
-			Box reg = super.boundingBox();		
+			Box reg = super.boundingBox();
 			double xmin = reg.lowerBound(0);
 			double xmax = reg.upperBound(0);
 			double ymin = reg.lowerBound(1);
@@ -239,5 +239,5 @@ public class FlatSurface extends SpaceAdapter {
 		else
 			return super.boundingBox();
 	}
-	
+
 }
