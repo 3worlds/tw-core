@@ -107,24 +107,22 @@ public class SpaceNode
 	public void initialise() {
 		super.initialise();
 		stype = (SpaceType) properties().getPropertyValue(P_SPACETYPE.key());
-		eecorr = (EdgeEffectCorrection) properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
-		//if (properties().hasProperty(P_SPACE_BORDERTYPE.key()))
-			borderTypes = (StringTable) properties().getPropertyValue(P_SPACE_BORDERTYPE.key());
-			eecorr = BorderListType.getEdgeEffectCorrection((BorderListType) borderTypes);
+		// eecorr = (EdgeEffectCorrection)
+		// properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
+		// if (properties().hasProperty(P_SPACE_BORDERTYPE.key()))
+		borderTypes = (StringTable) properties().getPropertyValue(P_SPACE_BORDERTYPE.key());
+		eecorr = BorderListType.getEdgeEffectCorrection((BorderListType) borderTypes);
 		if (properties().hasProperty(P_SPACE_PREC.key()))
-			precision = (double)properties().getPropertyValue(P_SPACE_PREC.key());
+			precision = (double) properties().getPropertyValue(P_SPACE_PREC.key());
 		if (properties().hasProperty(P_SPACE_UNITS.key()))
-			units = (String)properties().getPropertyValue(P_SPACE_UNITS.key());
+			units = (String) properties().getPropertyValue(P_SPACE_UNITS.key());
 		if (properties().hasProperty(P_SPACE_GUARDAREA.key()))
 			guardWidth = (double) properties().getPropertyValue(P_SPACE_GUARDAREA.key());
 		if (properties().hasProperty(P_SPACE_OBSWINDOW.key()))
 			obsWindow = (Box) properties().getPropertyValue(P_SPACE_OBSWINDOW.key());
-		rngNode = (RngNode) get(edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_USERNG.label())),
-			endNode());
+		rngNode = (RngNode) get(edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_USERNG.label())), endNode());
 		// if at least one widget is listening to this space, add a datatracker to space
-		List<Edge> l = (List<Edge>) get(edges(Direction.IN),
-			selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())));
+		List<Edge> l = (List<Edge>) get(edges(Direction.IN), selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())));
 		attachDataTrackerToSpace = !l.isEmpty();
 		seal();
 	}
