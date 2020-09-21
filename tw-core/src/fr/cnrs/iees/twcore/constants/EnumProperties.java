@@ -73,8 +73,9 @@ public class EnumProperties {
 		RngResetType.defaultValue();
 		RngSeedSourceType.defaultValue();
 		RngAlgType.defaultValue();
-		BorderType.defaultValue();
+		BorderType.defaultValue();// is this needed? IDD
 		EdgeEffectCorrection.defaultValue();
+		BorderListType.defaultValue();
 	}
 
 	// register geometric classes so they can be used as properties

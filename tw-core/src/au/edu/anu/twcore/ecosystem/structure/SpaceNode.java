@@ -56,6 +56,7 @@ import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
+import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.EdgeEffectCorrection;
 import fr.cnrs.iees.twcore.constants.SpaceType;
@@ -107,8 +108,9 @@ public class SpaceNode
 		super.initialise();
 		stype = (SpaceType) properties().getPropertyValue(P_SPACETYPE.key());
 		eecorr = (EdgeEffectCorrection) properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
-		if (properties().hasProperty(P_SPACE_BORDERTYPE.key()))
+		//if (properties().hasProperty(P_SPACE_BORDERTYPE.key()))
 			borderTypes = (StringTable) properties().getPropertyValue(P_SPACE_BORDERTYPE.key());
+			eecorr = BorderListType.getEdgeEffectCorrection((BorderListType) borderTypes);
 		if (properties().hasProperty(P_SPACE_PREC.key()))
 			precision = (double)properties().getPropertyValue(P_SPACE_PREC.key());
 		if (properties().hasProperty(P_SPACE_UNITS.key()))

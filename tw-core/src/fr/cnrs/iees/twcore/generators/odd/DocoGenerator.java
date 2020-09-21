@@ -34,6 +34,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+
+import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
 import java.time.LocalDateTime;
@@ -1739,13 +1741,13 @@ public class DocoGenerator {
 			entries.add(new StringBuilder().append(c1).append(sep).append("Description: ").append(st.description())
 					.toString());
 			c1 = "";
-			if (space.properties().hasProperty(P_SPACE_EDGEEFFECTS.key())) {
-				EdgeEffectCorrection eEff = (EdgeEffectCorrection) space.properties()
-						.getPropertyValue(P_SPACE_EDGEEFFECTS.key());
-				entries.add(new StringBuilder().append(c1).append(sep).append("Edge effects: ")
-						.append(eEff.description()).toString());
-				c1 = "";
-			}
+			BorderListType blt = (BorderListType) space.properties().getPropertyValue(P_SPACE_BORDERTYPE.key());
+			// if (space.properties().hasProperty(P_SPACE_EDGEEFFECTS.key())) {
+			EdgeEffectCorrection eEff = BorderListType.getEdgeEffectCorrection(blt);
+			entries.add(new StringBuilder().append(c1).append(sep).append("Edge effects: ").append(eEff.description())
+					.toString());
+			c1 = "";
+			// }
 			for (String key : space.properties().getKeysAsSet()) {
 				StringBuilder sb = new StringBuilder();
 				if (!key.equals(P_SPACETYPE.key()) && !key.equals(P_SPACE_EDGEEFFECTS.key())) {
@@ -1760,6 +1762,7 @@ public class DocoGenerator {
 			}
 		}
 		return entries;
+
 	}
 
 	private List<String> getMetricsDetails() {

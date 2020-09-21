@@ -44,10 +44,11 @@ public class BorderListType extends StringTable {
 	public BorderListType(Dimensioner[] readDimensioners) {
 		super(readDimensioners);
 	}
-	//private static char QUOTE = '"';
+
+	// private static char QUOTE = '"';
 	// TODO IDD something needs to be done about this duplication
 	public static BorderListType valueOf(String value) {
-		if ((value==null)||value.isBlank()||value.isEmpty())
+		if ((value == null) || value.isBlank() || value.isEmpty())
 			return null;
 		char[][] bdel = bdel();
 		char[] isep = isep();
@@ -59,20 +60,19 @@ public class BorderListType extends StringTable {
 		StringBuilder sb = new StringBuilder();
 		int n = 0;
 		boolean inquote = false;
-		for (int i=0; i<ss.length(); i++) {
+		for (int i = 0; i < ss.length(); i++) {
 			char c = ss.charAt(i);
-			if (c==DOUBLEQUOTE)
+			if (c == DOUBLEQUOTE)
 				inquote = !inquote;
 			else if (inquote)
 				sb.append(c);
 			else if (!inquote) {
-				if (c==isep[TABLEix]) {
-					if (n==result.flatSize-1)
-						throw new OmugiException("Too many values read: table size == "+result.flatSize);
+				if (c == isep[TABLEix]) {
+					if (n == result.flatSize - 1)
+						throw new OmugiException("Too many values read: table size == " + result.flatSize);
 					result.data[n++] = sb.toString().trim();
 					sb = new StringBuilder();
-				}
-				else
+				} else
 					sb.append(c);
 			}
 		}
@@ -113,6 +113,70 @@ public class BorderListType extends StringTable {
 
 	public static BorderListType defaultValue() {
 		return valueOf("([1]null)");
+	}
+
+	public static EdgeEffectCorrection getEdgeEffectCorrection(BorderListType blt) {
+
+		boolean periodic = true;
+		for (int i = 0; i < blt.size(); i++)
+			if (!blt.getWithFlatIndex(i).equals(BorderType.wrap.name()))
+				periodic = false;
+		if (periodic)
+			return EdgeEffectCorrection.periodic;
+
+		boolean reflective = true;
+		for (int i = 0; i < blt.size(); i++)
+			if (!blt.getWithFlatIndex(i).equals(BorderType.reflection.name()))
+				reflective = false;
+		if (reflective)
+			return EdgeEffectCorrection.reflective;
+
+		boolean island = true;
+		for (int i = 0; i < blt.size(); i++)
+			if (!blt.getWithFlatIndex(i).equals(BorderType.oblivion.name()))
+				reflective = false;
+		if (island)
+			return EdgeEffectCorrection.island;
+
+		boolean unbounded = true;
+		for (int i = 0; i < blt.size(); i++)
+			if (!blt.getWithFlatIndex(i).equals(BorderType.infinite.name()))
+				unbounded = false;
+		if (unbounded)
+			return EdgeEffectCorrection.unbounded;
+
+		boolean bounded = true;
+		for (int i = 0; i < blt.size(); i++)
+			if (!blt.getWithFlatIndex(i).equals(BorderType.sticky.name()))
+				bounded = false;
+		if (bounded)
+			return EdgeEffectCorrection.bounded;
+
+		boolean tubular = true;
+		if (!blt.getWithFlatIndex(0).equals(BorderType.wrap.name()))
+			tubular = false;
+		if (!blt.getWithFlatIndex(1).equals(BorderType.wrap.name()))
+			tubular = false;
+		for (int i = 2; i < blt.size(); i++)
+			if (blt.getWithFlatIndex(i).equals(BorderType.wrap.name()))
+				tubular = false;
+		if (tubular)
+			return EdgeEffectCorrection.tubular;
+
+		return EdgeEffectCorrection.custom;
+	}
+
+	public static int getUnpairedWrapIndex(BorderListType blt) {
+		String wrap = BorderType.wrap.name();
+		for (int i = 0; i < blt.size() - 1; i += 2) {
+			String b1 = blt.getWithFlatIndex(i);
+			String b2 = blt.getWithFlatIndex(i + 1);
+			if (b1.equals(wrap) && !b2.equals(wrap))
+				return i;
+			if (!b1.equals(wrap) && b2.equals(wrap))
+				return i;
+		}
+		return -1;
 	}
 
 	static {
