@@ -226,6 +226,10 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			// this because ComponentType is unsealed at that time
 			SortedSet<Category> categories = new TreeSet<>(); // caution: sorted set !
 			categories.addAll(((Categorized<SystemComponent>) tn).getSuperCategories(ccats));
+			
+			/// BUG HERE - some data are missing in dataClassNames
+			
+			
 			dataClassNames.put(categories, cl);
 			elementTypeCategories.put(tn, categories);
 		}
@@ -308,39 +312,47 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 
 	// returns the generated data class that contains a given field name
 	// this works because fields and tables all have unique names
-	public String containingClass(String field) {
+	public String containingClass(String field, ConfigurationEdgeLabels elab) {
 		for (Set<Category> set : dataClassNames.keySet()) {
 			for (Category c : set) {
 				TreeGraphDataNode rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_DRIVERS.label())), endNode());
+					selectZeroOrOne(hasTheLabel(elab.label())), 
+					endNode());
 				if (rec != null) {
 					for (TreeNode t : rec.getChildren())
 						// this works for tables and fields
 						if (field.equals(t.id()))
-							return dataClassNames.get(set).drivers;
+							if (elab==E_DRIVERS)
+								return dataClassNames.get(set).drivers;
+							else if (elab==E_DECORATORS)
+								return dataClassNames.get(set).decorators;
+							else if (elab==E_CONSTANTS)
+								return dataClassNames.get(set).constants;
+							else if (elab==E_AUTOVAR)
+								return dataClassNames.get(set).autoVars;
 				}
-				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_DECORATORS.label())), endNode());
-				if (rec != null) {
-					for (TreeNode t : rec.getChildren())
-						if (field.equals(t.id()))
-							return dataClassNames.get(set).decorators;
-				}
-				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())), endNode());
-				if (rec != null) {
-					for (TreeNode t : rec.getChildren())
-						if (field.equals(t.id()))
-							return dataClassNames.get(set).constants;
-				}
-				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
-					selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
-					endNode());
-				if (rec != null) {
-					for (TreeNode t : rec.getChildren())
-						if (field.equals(t.id()))
-							return dataClassNames.get(set).autoVars;
-				}
+//				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+//						selectZeroOrOne(hasTheLabel(E_DECORATORS.label())), endNode());
+//				if (rec != null) {
+//					for (TreeNode t : rec.getChildren())
+//						if (field.equals(t.id()))
+//							return dataClassNames.get(set).decorators;
+//				}
+//				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+//						selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())), endNode());
+//				if (rec != null) {
+//					for (TreeNode t : rec.getChildren())
+//						if (field.equals(t.id()))
+//							return dataClassNames.get(set).constants;
+//				}
+//				rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
+//					selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
+//					endNode());
+//				if (rec != null) {
+//					for (TreeNode t : rec.getChildren())
+//						if (field.equals(t.id()))
+//							return dataClassNames.get(set).autoVars;
+//				}
 			}
 		}
 		return null;
@@ -839,7 +851,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (fields.get(el) != null)
 						for (memberInfo mi : fields.get(el)) {
 							if (ri.klass == null) {
-								ri.klass = containingClass(mi.name);
+								ri.klass = containingClass(mi.name,el);
 								ri.members = fields.get(el);
 								break;
 							}
@@ -942,10 +954,10 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		if (method == null) {
 			String mname = fname.substring(0, 1).toLowerCase() + fname.substring(1);
 			TreeGraphDataNode snippetNode = (TreeGraphDataNode) get(function.getChildren(),
-					selectZeroOrOne(hasTheLabel(N_SNIPPET.label())));
+				selectZeroOrOne(hasTheLabel(N_SNIPPET.label())));
 			if (snippetNode != null) {
 				StringTable tblSnippet = (StringTable) snippetNode.properties()
-						.getPropertyValue(P_SNIPPET_JAVACODE.key());
+					.getPropertyValue(P_SNIPPET_JAVACODE.key());
 				List<String> snptLines = new ArrayList<>();
 				for (int i = 0; i < tblSnippet.size(); i++)
 					snptLines.add(tblSnippet.getWithFlatIndex(i));

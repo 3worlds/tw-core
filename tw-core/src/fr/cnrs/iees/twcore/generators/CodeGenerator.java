@@ -129,24 +129,29 @@ public class CodeGenerator {
 
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(systemNode.getChildren(),
 					selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
-			// generate data classes for SystemComponents
+			// generate data classes
 			if (structure != null) {
-				List<TreeGraphDataNode> componentTypes = getChildrenLabelled(structure, N_COMPONENTTYPE.label());
-				for (TreeGraphDataNode componentType : componentTypes) {
+				// for ComponentTypes
+				List<TreeGraphDataNode> componentTypes = (List<TreeGraphDataNode>) get(structure.subTree(),
+					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+				for (TreeGraphDataNode componentType : componentTypes)
 					generateDataCode(componentType, systemNode.id());
 					// out of here system has the names of the generated data classes
-
-				}
+				// for GroupTypes
+				List<TreeGraphDataNode> groupTypes = (List<TreeGraphDataNode>) get(structure.subTree(),
+					selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+				for (TreeGraphDataNode groupType : groupTypes)
+					generateDataCode(groupType, systemNode.id());
+				// TODO: for LifeCycleTypes
+//				List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(dynamics, N_LIFECYCLE.label());
+//				for (TreeGraphDataNode lifeCycle : lifeCycles) {
+//					generateDataCode(lifeCycle, systemNode.id());
+//				}
+				// ...
 			}
-			// generate data classes for LifeCycles, if any
-			List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(dynamics, N_LIFECYCLE.label());
-			for (TreeGraphDataNode lifeCycle : lifeCycles) {
-				generateDataCode(lifeCycle, systemNode.id());
-			}
-			// generate data classes for Ecosystem, if any
-			// caution here: Ecosystem may have no category at all
+			// for Arena
 			Collection<Category> cats = (Collection<Category>) get(systemNode.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			if (!cats.isEmpty())
 				generateDataCode(systemNode, systemNode.id());
 			// prepare user modifiable model file
@@ -155,8 +160,8 @@ public class CodeGenerator {
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
 			List<TreeGraphDataNode> timerNodes = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
-					selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
-					selectZeroOrMany(hasTheLabel(N_TIMER.label())));
+				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
+				selectZeroOrMany(hasTheLabel(N_TIMER.label())));
 			if (timerNodes != null)
 				for (TreeGraphDataNode timerNode : timerNodes) {
 					List<TreeGraphDataNode> processes = getChildrenLabelled(timerNode, N_PROCESS.label());
@@ -166,9 +171,11 @@ public class CodeGenerator {
 				}
 			// initialiser function code here
 			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(systemNode, children(),
+					// CAUTION: this query is out of date now!					
 					selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())), children(),
 					selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()), hasTheLabel(N_GROUP.label()),
 							hasTheLabel(N_SPACE.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
+			// TODO: subtrees must be searched too
 			// NB structure is now [0..1]
 			if (initables == null)
 				initables = new ArrayList<TreeGraphDataNode>();
@@ -179,8 +186,7 @@ public class CodeGenerator {
 				if (initFuncs != null)
 					if (!initFuncs.isEmpty())
 						generateFunctionCode(initFuncs.get(0), systemNode.id());
-			}
-			
+			}		
 		}
 		// write the user code file
 		modelgen.generateCode();
@@ -300,8 +306,8 @@ public class CodeGenerator {
 		TreeGraphDataNode spec = Categorized.buildUniqueDataList(system, E_DRIVERS.label(), log);
 		generateDataCode(spec, system, modelName, P_DRIVERCLASS.key());
 		// 2. parameters
-		spec = Categorized.buildUniqueDataList(system, E_PARAMETERS.label(), log);
-		generateDataCode(spec, system, modelName, P_PARAMETERCLASS.key());
+//		spec = Categorized.buildUniqueDataList(system, E_PARAMETERS.label(), log);
+//		generateDataCode(spec, system, modelName, P_PARAMETERCLASS.key());
 		// 3. decorators
 		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label(), log);
 		generateDataCode(spec, system, modelName, P_DECORATORCLASS.key());
