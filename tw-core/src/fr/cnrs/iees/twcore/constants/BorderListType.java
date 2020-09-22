@@ -134,7 +134,7 @@ public class BorderListType extends StringTable {
 		boolean island = true;
 		for (int i = 0; i < blt.size(); i++)
 			if (!blt.getWithFlatIndex(i).equals(BorderType.oblivion.name()))
-				reflective = false;
+				island = false;
 		if (island)
 			return EdgeEffectCorrection.island;
 

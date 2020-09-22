@@ -76,15 +76,14 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  * @author Jacques Gignoux - 28 janv. 2020
  *
  */
-public class SpaceNode
-		extends InitialisableNode
-		implements LimitedEdition<DynamicSpace<SystemComponent,LocatedSystemComponent>>, Sealable {
+public class SpaceNode extends InitialisableNode
+		implements LimitedEdition<DynamicSpace<SystemComponent, LocatedSystemComponent>>, Sealable {
 
 	private boolean sealed = false;
-	private Map<Integer,DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces = new HashMap<>();
+	private Map<Integer, DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces = new HashMap<>();
 	private SpaceType stype = null;
 	private EdgeEffectCorrection eecorr = null;
-	private StringTable borderTypes = null;
+	private StringTable borderList = null;// Order x,y,(z)... pairs : left,right, bottom, top
 	private Box obsWindow = null;
 	private double guardWidth = 0.0;
 	// the name of coordinates relative to this space (eg "<this.id()>.x")
@@ -92,7 +91,7 @@ public class SpaceNode
 	private String units = "arbitrary units";
 	private double precision = 0.0;
 	private RngNode rngNode = null;
-	private boolean attachDataTrackerToSpace = false;	
+	private boolean attachDataTrackerToSpace = false;
 
 	public SpaceNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -110,8 +109,12 @@ public class SpaceNode
 		// eecorr = (EdgeEffectCorrection)
 		// properties().getPropertyValue(P_SPACE_EDGEEFFECTS.key());
 		// if (properties().hasProperty(P_SPACE_BORDERTYPE.key()))
-		borderTypes = (StringTable) properties().getPropertyValue(P_SPACE_BORDERTYPE.key());
-		eecorr = BorderListType.getEdgeEffectCorrection((BorderListType) borderTypes);
+
+		// actually a (BorderListType) - descendant of StringTable 1D otherwise.
+		// BorderListType exists so the MM property sheet can decide on which property
+		// editor to use based on its class.
+		borderList = (BorderListType) properties().getPropertyValue(P_SPACE_BORDERTYPE.key());
+		eecorr = BorderListType.getEdgeEffectCorrection((BorderListType) borderList);
 		if (properties().hasProperty(P_SPACE_PREC.key()))
 			precision = (double) properties().getPropertyValue(P_SPACE_PREC.key());
 		if (properties().hasProperty(P_SPACE_UNITS.key()))
@@ -131,61 +134,75 @@ public class SpaceNode
 	public int initRank() {
 		return N_SPACE.initRank();
 	}
-	
+
 	private BorderType[][] getBorders() {
 		// 1st dimension of borderTypes = 2 (lower/upper border)
 		// 2nd dimension of borderTypes = ndim (number of dimensions of space)
-		int ndim = borderTypes.getDimensioners()[1].getLength();
+
+		// WATCH OUT! We now have some conflict between IDD and JG! I have made
+		// borderTypes a 1 D stringTable (BorderListType)
+		// I won't go any further with this for fear of trashing where this connects
+		// with the uit
+//		int ndim = borderTypes.getDimensioners()[1].getLength();
+		int ndim = borderList.size() / 2;
 		BorderType[][] result = new BorderType[2][ndim];
-		for (int i=0; i<ndim; i++) {
-			result[0][i] = BorderType.valueOf(borderTypes.getByInt(0,i));
-			result[1][i] = BorderType.valueOf(borderTypes.getByInt(1,i));
+		// I'm assuming that borderList values are in pairs. So for 2d left,right,
+		// bottom, top.
+		// However, y axis in the GUI increases DOWN while Cartesian it goes up so top
+		// and bottom may need to be reversed somewhere, probably just in the
+		// borderListType property editor or maybe its taken care of in the rendering.
+		// Wait and see.
+		for (int i = 0; i < ndim; i++) {
+			int x1 = i * 2;
+			int x2 = x1 + 1;
+//			result[0][i] = BorderType.valueOf(borderList.getByInt(0, i));
+//			result[1][i] = BorderType.valueOf(borderList.getByInt(1, i));
+			result[0][i] = BorderType.valueOf(borderList.getWithFlatIndex(x1));
+			result[1][i] = BorderType.valueOf(borderList.getWithFlatIndex(x2));
 		}
 		return result;
 	}
 
-	private DynamicSpace<SystemComponent,LocatedSystemComponent> makeSpace(int id) {
-		DynamicSpace<SystemComponent,LocatedSystemComponent> result = null;
+	private DynamicSpace<SystemComponent, LocatedSystemComponent> makeSpace(int id) {
+		DynamicSpace<SystemComponent, LocatedSystemComponent> result = null;
 		SpaceDataTracker dt = null;
 		if (attachDataTrackerToSpace) {
 			// weird: bug fix: attach time metadata to data tracker ???
 			// space <- structure <- system -> dynamics -> timeline
 			ReadOnlyDataHolder timeLine = (ReadOnlyDataHolder) get(getParent().getParent().getChildren(),
-				selectOne(hasTheLabel(N_DYNAMICS.label())),
-				children(),
-				selectOne(hasTheLabel(N_TIMELINE.label())));
+					selectOne(hasTheLabel(N_DYNAMICS.label())), children(), selectOne(hasTheLabel(N_TIMELINE.label())));
 			ExtendablePropertyList l = new ExtendablePropertyListImpl();
 			l.addProperties(timeLine.properties());
 			l.addProperties(properties());
 //			dt = new SpaceDataTracker(id,properties());
-			dt = new SpaceDataTracker(id,l);
+			dt = new SpaceDataTracker(id, l);
 		}
 		BorderType[][] borders = eecorr.borderTypes(stype.dimensions());
-		if (borders==null)
+		if (borders == null)
 			borders = getBorders();
 		switch (stype) {
-			case continuousFlatSurface:
-				Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
-				Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
-				result = new FlatSurface(xlim.inf(),xlim.sup(),ylim.inf(),ylim.sup(),
-					precision,units,borders,obsWindow,guardWidth,dt,id());
-				break;
-			case linearNetwork:
-				break;
-			case squareGrid:
-				double cellSize = (double) properties().getPropertyValue(P_SPACE_CELLSIZE.key());
-				int nx = (int) properties().getPropertyValue(P_SPACE_NX.key());
-				int ny = nx;
-				if (properties().hasProperty("ny"))
-					ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
-				result = new SquareGrid(cellSize,nx,ny,precision,units,borders,obsWindow,guardWidth,dt,id());
-				break;
-			case topographicSurface:
-				break;
-			default:
-				break;
+		case continuousFlatSurface:
+			Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
+			Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
+			result = new FlatSurface(xlim.inf(), xlim.sup(), ylim.inf(), ylim.sup(), precision, units, borders,
+					obsWindow, guardWidth, dt, id());
+			break;
+		case linearNetwork:
+			break;
+		case squareGrid:
+			double cellSize = (double) properties().getPropertyValue(P_SPACE_CELLSIZE.key());
+			int nx = (int) properties().getPropertyValue(P_SPACE_NX.key());
+			int ny = nx;
+			if (properties().hasProperty("ny"))
+				ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
+			result = new SquareGrid(cellSize, nx, ny, precision, units, borders, obsWindow, guardWidth, dt, id());
+			break;
+		case topographicSurface:
+			break;
+		default:
+			break;
 		}
-		if (rngNode!=null)
+		if (rngNode != null)
 			result.setRng(rngNode.getInstance(id));
 		else
 			result.setRng(result.defaultRng(id));
@@ -193,7 +210,7 @@ public class SpaceNode
 	}
 
 	@Override
-	public DynamicSpace<SystemComponent,LocatedSystemComponent> getInstance(int id) {
+	public DynamicSpace<SystemComponent, LocatedSystemComponent> getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!spaces.containsKey(id))
@@ -218,16 +235,16 @@ public class SpaceNode
 		return coordNames;
 	}
 
-	public void attachSpaceWidget(DataReceiver<SpaceData,Metadata> widget) {
-		for (DynamicSpace<SystemComponent,LocatedSystemComponent> sp:spaces.values())
+	public void attachSpaceWidget(DataReceiver<SpaceData, Metadata> widget) {
+		for (DynamicSpace<SystemComponent, LocatedSystemComponent> sp : spaces.values())
 			if (sp instanceof SingleDataTrackerHolder) {
 				SpaceDataTracker dts = sp.dataTracker();
-				if (dts!=null) {
+				if (dts != null) {
 					dts.addObserver(widget);
 //					dts.sendMetadata(dts.getInstance());
 					dts.sendMetadataTo((GridNode) widget, dts.getInstance());
 				}
-		}
+			}
 	}
 
 }
