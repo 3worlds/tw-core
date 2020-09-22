@@ -877,7 +877,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		TwFunctionTypes ftype = (TwFunctionTypes) funk.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		TreeGraphDataNode catNode = (TreeGraphDataNode) funk.getParent();
 		List<Category> cats = null;
-		// 1st case: parent is an ElementType, so has categories
+		// 1st ca se: parent is an ElementType, so has categories
 		if (catNode instanceof ElementType) {
 			cats = (List<Category>) get(catNode.edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
@@ -890,6 +890,22 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// 2nd case: parent is a function, so get up one level
 		if (catNode instanceof FunctionNode)
 			catNode = (TreeGraphDataNode) catNode.getParent();
+		// FLAW HERE: consequences are not always of the same type (category/relation) as their parent
+		// Consequences exist for:
+		// 1 changeCategory [C] --> setOtherInitialState [R]
+		// 2 changeOtherCategory [R] --> setOtherInitialState [R]
+		// 3 createOther [C] --> setOtherInitialState [R]
+		// 4 delete [C] --> changeOtherState [R]
+		// 5 deleteother [C] --> changeOtherState [R]
+		// cases 1-3 are dealt by life cycle; case 3 can exist without a LC, in which case both
+		// ends of the relation are the same category as the parent - 'easy'
+		// case 4 requires a relation. A solution is to define this kind of relation as part of the life cycle
+		// case 5 may require two relations, one for the decision, one for the consequence. ???
+		// Use cases for 4 and 5: 4, decomposition; 5, predation or predation + decomposition.
+		// in case 5 (1) if no life cycle relation is given then the consequence applies to the reverse
+		// relation; (2) if a life cycle relation is given the consequence applies to the 
+		//// bububububube... predefined relations !!!
+		
 		// 3rd case: catNode is a ProcessNode
 		// Possible problem here: if Process does not apply to a systemElementsSet category
 		// then no category will be found and the default *component* category will be used
@@ -909,6 +925,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			// 3b relation process
 			for (TwFunctionTypes tft : AbstractRelationProcess.compatibleFunctionTypes)
 				if (tft.equals(ftype)) {
+					// error here with consequence function
 					RelationType relnode = (RelationType) get(catNode.edges(Direction.OUT),
 						selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())), endNode());
 					relationType = relnode.id();
