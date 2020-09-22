@@ -52,6 +52,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
+
 //import org.bouncycastle.util.Strings; something goes wrong with this library when running from jar (security??)
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
@@ -61,7 +63,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
@@ -334,11 +335,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			callStatement += indent+indent+indent+ arg.name() + ",\n";
 		// arena, lifeCycle, group, space focal, other, otherGroup, otherLifeCycle
 		// including return values
-		SortedSet<Category> focalCats = gen.findCategories(spec,focal);
+//		SortedSet<Category> focalCats = gen.findCategories(spec,focal);
 		for (TwFunctionArguments arg:gen.dataStructure(name).keySet()) {
 			List<recInfo> comp = gen.dataStructure(name).get(arg);
 			// generation of inner classes for return values
-			if (!(arg.equals(arena) & gen.skipArena(focalCats)))
+//			if (!(arg.equals(arena) & gen.skipArena(focalCats)))
+			if (!gen.excludeArgument(arg, (FunctionNode) spec))
 				for (recInfo rec:comp)
 					if (rec!=null)
 						if (rec.klass!=null) // this occurs when a category has no data attached

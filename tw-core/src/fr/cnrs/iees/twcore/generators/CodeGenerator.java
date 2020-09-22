@@ -100,7 +100,6 @@ public class CodeGenerator {
 	// (au.edu.anu.twapps.mm.configGraph)
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
-		// UserProjectLink.clearFiles();
 
 		File localCodeRoot = Project.makeFile(ProjectPaths.LOCALJAVA);
 		try {
@@ -110,25 +109,22 @@ public class CodeGenerator {
 			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
 		}
 
+		// generate code for every system node found
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
-				N_SYSTEM.label());
-
-		// File systemDir = null;
+			N_SYSTEM.label());
 		for (TreeGraphDataNode systemNode : systemNodes) {
-
 			/**
 			 * TODO :This is crap - there can be many systems but we have one dir - see ref
 			 * to 'systemDir' outside this loop below
-			 */
+			 */ // JG 9/2020: is the above comment still true?
 			// wordUpperCaseName is "camelBack" format used for java package names
 			File systemDir = Project.makeFile(ProjectPaths.LOCALJAVACODE, wordUpperCaseName(systemNode.id()));
 			systemDir.mkdirs();
-
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(systemNode.getChildren(),
-					selectOne(hasTheLabel(N_DYNAMICS.label())));
-
+				selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(systemNode.getChildren(),
-					selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+			
 			// generate data classes
 			if (structure != null) {
 				// for ComponentTypes
@@ -154,7 +150,8 @@ public class CodeGenerator {
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			if (!cats.isEmpty())
 				generateDataCode(systemNode, systemNode.id());
-			// prepare user modifiable model file
+			
+			// generate user modifiable model class file
 			modelgen = new ModelGenerator(graph.root(), systemNode.id());
 			// generate TwFunction classes
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
@@ -170,13 +167,12 @@ public class CodeGenerator {
 					}
 				}
 			// initialiser function code here
-			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(systemNode, children(),
-					// CAUTION: this query is out of date now!					
-					selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())), children(),
-					selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLE.label()), hasTheLabel(N_GROUP.label()),
-							hasTheLabel(N_SPACE.label()), hasTheLabel(N_COMPONENTTYPE.label()))));
-			// TODO: subtrees must be searched too
-			// NB structure is now [0..1]
+			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(systemNode.subTree(),
+				selectZeroOrMany(orQuery(
+					hasTheLabel(N_LIFECYCLE.label()), 
+					hasTheLabel(N_GROUP.label()),
+//					hasTheLabel(N_SPACE.label()), 
+					hasTheLabel(N_COMPONENTTYPE.label()) )));
 			if (initables == null)
 				initables = new ArrayList<TreeGraphDataNode>();
 			initables.add(systemNode);
@@ -187,18 +183,15 @@ public class CodeGenerator {
 					if (!initFuncs.isEmpty())
 						generateFunctionCode(initFuncs.get(0), systemNode.id());
 			}		
+			// write the user code file
+			modelgen.generateCode();
 		}
-		// write the user code file
-		modelgen.generateCode();
-		// UserProjectLink.setModelFile(modelgen.getFile());
 
+		// compile code to check it
 		String result = compileLocalTree(localCodeRoot);
-
 		if (!result.isBlank())
 			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, localCodeRoot, result));
-
 		if (!ErrorList.haveErrors()) {
-			// UserProjectLink.pushFiles();
 			UserProjectLink.pushCompiledTree(localCodeRoot, modelgen.getFile());
 		}
 		return !ErrorList.haveErrors();
@@ -238,7 +231,6 @@ public class CodeGenerator {
 		if (spec != null) {
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
 			gen.generateCode();
-			// UserProjectLink.addDataFile(gen.getFile());
 			if (system.properties().hasProperty(dataGroup)) {
 				String oldValue = (String) system.properties().getPropertyValue(dataGroup);
 				String newValue = gen.generatedClassName();
@@ -318,6 +310,9 @@ public class CodeGenerator {
 		// (immobile components)
 	}
 
+	
+	// TODO HERE: arguments to user model functions change with the organisation level, ie
+	// group, arena, lifecylce, component...
 	@SuppressWarnings("unchecked")
 	private void generateProcessCode(TreeGraphDataNode process, String modelName) {
 		// crash here is if 0 functions
