@@ -46,4 +46,6 @@ public interface DecisionFunction {
 	 */
 	public boolean decide(Double proba);
 
+//	public int decide(double...weights);
+	
 }

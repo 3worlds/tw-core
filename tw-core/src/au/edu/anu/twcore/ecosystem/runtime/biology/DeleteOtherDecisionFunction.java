@@ -46,6 +46,9 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
  * result is a decision as a boolean.
  *
  */
+@Deprecated
+//23/9/20  Why deprecation: this function can be replaced by changeOtherState followed by DeleteDecision
+// with consequence changeOtherState. So we dont need it.
 public abstract class DeleteOtherDecisionFunction extends AbstractDecisionFunction {
 
 	private List<ChangeOtherStateFunction> consequences =

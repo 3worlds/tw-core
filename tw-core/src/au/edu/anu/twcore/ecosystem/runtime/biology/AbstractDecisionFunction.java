@@ -54,5 +54,23 @@ public abstract class AbstractDecisionFunction extends TwFunctionAdapter impleme
 	public final boolean decide(Double proba) {
 		return (rng.nextDouble()<proba);
 	}
+	
+//	// multinomial decision making
+//	public final int decide(double...weights) {
+//		double totalWeight = 0.0;
+//		for (int i=0; i<weights.length; i++)
+//			totalWeight += weights[i];
+//		double bounds[] = new double[weights.length];
+//		bounds[0] = weights[0]/totalWeight;
+//		for (int i=1; i<weights.length; i++)
+//			bounds[i] = bounds[i-1]+weights[i]/totalWeight;
+//		// last cell is always 1.0 normally
+//		int result=0;
+//		double proba = rng.nextDouble();
+//		while (proba>=bounds[result])
+//			result++;
+//		// proba==1 is always possible and would return out of range index hence protection
+//		return Math.min(result,weights.length-1); 	
+//	}
 
 }

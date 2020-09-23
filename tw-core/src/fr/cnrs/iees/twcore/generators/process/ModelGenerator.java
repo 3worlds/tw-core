@@ -626,7 +626,11 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// 2 parent is a functionNode, means we are dealing with a consequence
 		else if (fp instanceof FunctionNode) {
 			TwFunctionTypes pftype = (TwFunctionTypes) fp.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-			if (pftype==CreateOtherDecision) { // NB the only possible consequence is SetOtherInitialState
+			switch (pftype) {
+			case ChangeCategoryDecision:
+				// TODO: search the LifeCycle for the correct categories
+				break;
+			case CreateOtherDecision:
 				// search for a life cycle
 				ProcessNode pn = (ProcessNode) fp.getParent();
 				if (arg == arena)
@@ -637,20 +641,23 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				if (!lcs.isEmpty()) {
 					// TODO: get categories from life cycle information
 				}
-				// if not, then offspring categories = parent categories
-				else {
-					if ((arg==focal) || (arg==other)) {
-						cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
-							selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
-							edgeListEndNodes()));
-						return cats;
-					}
-					else {
-						// TODO: cats for arena, group, lifecycle etc.
-					}
+				// if no life cycle:
+				// + same categories as focal if no life cycle
+				else if ((arg==focal) || (arg==other)) {
+					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+						edgeListEndNodes()));
+					return cats;
 				}
-			}
-
+				break;
+			case DeleteDecision:
+				// TODO: a relation must have been set in some way ???
+				break;
+			default:
+				// all other cases should not exist
+				log.warning("Wrong consequence function type ("+ftype+ ") for function  "+fp.id());
+				break;
+			}			
 		}
 		// 3 parent is not a ProcessNode nor a FunctionNode, so it must be an
 		// ElementType descendant
@@ -887,9 +894,40 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (excludedFocalArguments.keySet().contains(c.id()))
 						focalLevel = c.id();
 		}
-		// 2nd case: parent is a function, so get up one level
-		if (catNode instanceof FunctionNode)
-			catNode = (TreeGraphDataNode) catNode.getParent();
+		// 2nd case: parent is a function
+		if (catNode instanceof FunctionNode) {
+			TwFunctionTypes fftype = (TwFunctionTypes) catNode.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+			switch (fftype) {
+			case ChangeCategoryDecision:
+				// whatever the life cycle, it can only apply to components:
+				focalLevel = Category.component;
+				otherLevel = Category.component;
+				break;
+			case CreateOtherDecision:
+				// TODO: search the LifeCycle for the correct categories
+				// if no life cycle:
+				otherLevel = Category.component;
+				// if no life cycle search the Process for the parent level
+				cats = null;
+				ProcessNode cpn = (ProcessNode) catNode.getParent();
+				cats = (List<Category>) get(cpn.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+					edgeListEndNodes());
+				if (cats!=null)
+					for (Category c:cats)
+						if (excludedFocalArguments.keySet().contains(c.id()))
+							focalLevel = c.id();
+				break;
+			case DeleteDecision:
+				// TODO: a relation must have been set in some way ???
+				focalLevel = Category.component;
+				break;
+			default:
+				// all other cases should not exist
+				log.warning("Wrong consequence function type ("+ftype+ ") for function  "+catNode.id());
+				break;
+			}			
+		}
 		// FLAW HERE: consequences are not always of the same type (category/relation) as their parent
 		// Consequences exist for:
 		// 1 changeCategory [C] --> setOtherInitialState [R]

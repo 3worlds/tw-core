@@ -47,6 +47,9 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
  * result is a decision index (based on dsl, will chose which transformation to apply to focal)
  *
  */
+@Deprecated
+// 23/9/20 Why deprecation: this function can be replaced by changeOtherState followed by ChangeCategory
+// with consequence setOtherInitialState. So we dont need it.
 public abstract class ChangeOtherCategoryDecisionFunction extends AbstractDecisionFunction {
 
 	private List<SetOtherInitialStateFunction> consequences = new LinkedList<SetOtherInitialStateFunction>();
