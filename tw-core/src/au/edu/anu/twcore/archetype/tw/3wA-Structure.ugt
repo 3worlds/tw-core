@@ -60,16 +60,8 @@ hasNode componentTypeSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:")
 		multiplicity = IntegerRange("1..*")
-//	hasEdge componentInitialiserEdgeSpec
-//		isOfClass = String("initialisedBy")
-//		toNode = String("initialiser:")
-//		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery exclusiveCategoryCheckSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
-//	hasProperty componentParameterSpec
-//		hasName = String("parameterClass")
-//		type =  String("String")
-//		multiplicity = IntegerRange("0..1")
 	hasProperty componentDecoratorSpec
 		hasName = String("decoratorClass")
 		type =  String("String")
@@ -82,10 +74,6 @@ hasNode componentTypeSpec
 		hasName = String("constantClass")
 		type =  String("String")
 		multiplicity = IntegerRange("0..1")
-//	hasProperty autoRelocateFunctionSpec
-//		hasName = String("relocateFunctionName")
-//		type = String("StringTable")
-//		multiplicity = IntegerRange("0..1")
 	hasEdge systemToComponentCategorySpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:*component*")
