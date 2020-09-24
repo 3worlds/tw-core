@@ -378,10 +378,13 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	// Recursive
 	private void addItems(QuickListOfLists<T> result, CategorizedContainer<T> container, Set<Category> requestedCats) {
-		if (container.itemCategorized().belongsTo(requestedCats))
-			result.addList(container.items());
-		for (CategorizedContainer<T> sc : container.subContainers.values())
-			addItems(result, sc);
+		// fix due to weird bug (null item categories)
+		if (container.itemCategorized()!=null) {
+			if (container.itemCategorized().belongsTo(requestedCats))
+				result.addList(container.items());
+			for (CategorizedContainer<T> sc : container.subContainers.values())
+				addItems(result, sc);
+		}
 	}
 
 	/**
