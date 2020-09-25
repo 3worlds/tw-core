@@ -78,7 +78,7 @@ public class Component
 
 	private boolean sealed = false;
 //	private TwData variables = null;
-	private ComponentType componentFactory = null;
+	private ComponentType componentType = null;
 	// This is FLAWED: assumes only ONE component per simulator ???, no, its fine, different components
 	// have different Component nodes
 	private Map<Integer,List<SystemComponent>> individuals = new HashMap<>();
@@ -114,7 +114,7 @@ public class Component
 			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
 		nComponentTypes = ((Collection<?>)get(getParent().getParent().getChildren(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())))).size();
-		componentFactory = (ComponentType) getParent();
+		componentType = (ComponentType) getParent();
 		List<LocationEdge> spaces = (List<LocationEdge>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_LOCATION.label())));
 		for (LocationEdge spe:spaces) {
@@ -179,7 +179,7 @@ public class Component
 			List<SystemComponent> result = new ArrayList<>(nInstances);
 			for (int i=0; i<nInstances; i++) {
 				// instantiate component
-				SystemComponent sc = componentFactory.getInstance(id).newInstance();
+				SystemComponent sc = componentType.getInstance(id).newInstance();
 				// fill component with initial values
 				for (TreeNode tn:getChildren())
 					if (tn instanceof VariableValues) {
@@ -187,6 +187,9 @@ public class Component
 						((VariableValues)tn).fill(sc.currentState());
 						// this copies automatic variables, if any
 						((VariableValues)tn).fill(sc.autoVar());
+					}
+					else if (tn instanceof ConstantValues) {
+						((ConstantValues) tn).fill(sc.constants());
 					}
 				// including spatial coordinates
 				for (SpaceNode spn:coordinates.keySet()) {
@@ -197,12 +200,19 @@ public class Component
 				}
 				// insert component into container
 				ComponentContainer container = null;
-				if (arena!=null)
-					if (nComponentTypes==1) // means the container is the ArenaComponent
+				// 1st case: there is a group
+				if (group!=null) {
+					container = group.getInstance(id).content();
+				}
+				// 2nd case: there is no group
+				else if (arena!=null) { // is this really needed? must never be null!
+					// if there is only one component type, then the arena must be the container
+					if (nComponentTypes==1) 
 						container = arena.getInstance(id).getInstance().content();
+					// otherwise, a default group container per componentType is created, with no data
 					else { // group container must be created and inserted under arena
 						ComponentContainer parentContainer = arena.getInstance(id).getInstance().content();
-						String containerId = componentFactory.categoryId(); // check this is ok
+						String containerId = componentType.categoryId(); // check this is ok
 						container = (ComponentContainer) parentContainer.subContainer(containerId);
 						// POSSIBLE FLAW HERE: there is no Group node matching this group factory
 						if (container==null) {
@@ -214,9 +224,8 @@ public class Component
 							container = gComp.content();
 						}
 					}
-				else if (group!=null) // container is an existing group
-					container = group.getInstance(id);
-				container.setCategorized(componentFactory.getInstance(id));
+				}
+				container.setCategorized(componentType.getInstance(id));
 				container.addInitialItem(sc);
 				sc.setContainer((ComponentContainer)container);
 				// add component instance into list of new instances

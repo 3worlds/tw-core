@@ -204,13 +204,13 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 
 	private void setInitialCommunity(int index) {
 		TreeGraphNode struc = (TreeGraphNode) get(getParent(), children(),
-				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		if (struc != null)
 			for (TreeNode c : struc.getChildren()) {
 				if (c instanceof ElementType<?, ?>)
-					for (TreeNode cc : c.getChildren())
+					for (TreeNode cc : c.subTree())
 						if (cc instanceof Component) {
-							// this instantiates the SYstemComponent and puts it into the right container
+							// this instantiates the SystemComponent and puts it into the right container
 							((Component) cc).getInstance(index);
 						}
 			}

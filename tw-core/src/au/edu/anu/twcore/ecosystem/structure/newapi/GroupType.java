@@ -76,6 +76,12 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 	public int initRank() {
 		return initRank(this,baseInitRank);
 	}
+	
+	@Override
+	public void initialise() {
+		super.initialise();
+		// containerData initialised in GroupFactory
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

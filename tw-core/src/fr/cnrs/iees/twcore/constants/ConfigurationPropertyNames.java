@@ -64,6 +64,7 @@ public enum ConfigurationPropertyNames {
 	P_RELATION_LIFESPAN			("lifeSpan"),
 	P_COMPONENT_MOBILE			("mobile"),
 	P_COMPONENT_NINST			("nInstances"),
+	P_GROUP_NINST				("nInstances"),
 	P_PARAMETERCLASS			("parameterClass"),
 	P_DRIVERCLASS				("driverClass"),
 	P_DECORATORCLASS			("decoratorClass"),

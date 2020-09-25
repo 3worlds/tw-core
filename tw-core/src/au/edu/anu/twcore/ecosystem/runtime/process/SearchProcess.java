@@ -181,10 +181,14 @@ public class SearchProcess
 		
 		// optimised approach using space indexers
 		// NB: is an arena ever going to be contained in a space? normally no.
-		else if (component==arena)
+		else if (component==arena) {
 			if (arena.content()!=null)
 				for (SystemComponent focal:arena.content().allItems(focalCategories)) 
 					indexedLoop(t,dt,focal);
+		}
+		
+		
+		
 //		if (container.categoryInfo() instanceof Ecosystem) {
 //			setContext(focalContext,container);
 //			setContext(otherContext,container);

@@ -46,6 +46,7 @@ import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
@@ -232,11 +233,11 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 //	}
 
 	// There may be a time bottleneck here
-	public boolean isTracked(CategorizedComponent sc) {
+	public boolean isTracked(CategorizedComponent<?> sc) {
 		boolean result = false;
 		result = trackedComponents.contains(sc);
-		if (!result) {
-			CategorizedComponent isc = trackedGroup.initialForItem(sc.id());
+		if ((!result)&&(sc instanceof SystemComponent)) {
+			CategorizedComponent<?> isc = trackedGroup.initialForItem(sc.id());
 			if (isc != null)
 				result = trackedComponents.contains(isc);
 		}

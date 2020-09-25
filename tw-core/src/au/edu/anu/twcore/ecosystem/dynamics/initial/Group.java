@@ -29,42 +29,33 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.ecosystem.dynamics.Initialiser;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
-//import au.edu.anu.twcore.ecosystem.structure.ComponentType;
-import fr.cnrs.iees.graph.Direction;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
+import au.edu.anu.twcore.ecosystem.structure.newapi.GroupType;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-
 import java.util.HashMap;
 import java.util.Map;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 /**
- * A class matching the "ecosystem/dynamics/GroupType/group" node of the 3w configuration
+ * A class matching the "system/structure/groupType/group" node of the 3w configuration
  *
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-// TODO: REFACTOR! this is currently a mess!
 public class Group
 		extends InitialisableNode
-		implements Sealable, LimitedEdition<ComponentContainer> {
+		implements Sealable, LimitedEdition<GroupComponent> {
 
 	private boolean sealed = false;
-	private ComponentContainer container = null;
-	private Map<Integer,ComponentContainer> groups = new HashMap<>();
+	private Map<Integer,GroupComponent> groups = new HashMap<>();
 	private static final int baseInitRank = N_GROUP.initRank();
+	private GroupType groupType = null;
 
 	// default constructor
 	public Group(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -80,7 +71,7 @@ public class Group
 	public void initialise() {
 		super.initialise();
 		sealed = false;
-		// ...
+		groupType = (GroupType) getParent();
 		sealed = true;
 	}
 
@@ -107,57 +98,21 @@ public class Group
 		return sealed;
 	}
 
-	private ComponentContainer makeContainer(int index) {
-
-
-		// WIP - refactoring in here ! check consistency with GroupComponent ??
-
-		// 1 leaf group
-		TreeGraphNode n = (TreeGraphNode) get(edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
-			endNode());
-		if (n!=null) {
-			// make sure parent container exists before
-			ComponentContainer parentC = null;
-			if (getParent() instanceof Group)
-				parentC = ((Group)getParent()).getInstance(index);
-//			else if (getParent() instanceof InitialState)
-//				parentC = ((InitialState)getParent()).getInstance(index);
-			// instantiate container
-			ComponentType sf = (ComponentType) n;
-			sf.initialise();
-//			container = sf.makeContainer(index,id(),parentC);
-		}
-//		// 2 life cycle group
-//		n = (TreeGraphNode) get(edges(Direction.OUT),
-//			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
-//			endNode());
-//		if (n!=null) {
-//			// make sure parent container exists before
-//			ComponentContainer parentC = null;
-//			if (getParent() instanceof InitialState)
-//				parentC = ((InitialState)getParent()).getInstance(index);
-//			// instantiate container
-//			LifeCycle lc = (LifeCycle) n;
-//			lc.initialise();
-//			container = lc.makeContainer(index,id(),parentC);
-//		}
-		// fill container with initial values
-		for (TreeNode tn:getChildren())
-			if (tn instanceof ConstantValues)
-				((ConstantValues) tn).fill(container.parameters());
-		// compute secondary parameters if initialiser present
-		Initialiser.computeSecondaryParameters(this, container, index);
-
-		return container;
-	}
-
 	@Override
-	public ComponentContainer getInstance(int id) {
+	public GroupComponent getInstance(int id) {
 		if (!sealed)
 			initialise();
-		if (!groups.containsKey(id))
-			groups.put(id,makeContainer(id));
+		if (!groups.containsKey(id)) {
+			// instantiate GroupComponent (with container, and super container)
+			GroupComponent gc = groupType.getInstance(id).newInstance();
+			// fill group with initial values
+			for (TreeNode tn:getChildren())
+				if (tn instanceof VariableValues)
+					((VariableValues)tn).fill(gc.currentState());
+				else if (tn instanceof ConstantValues)
+					((ConstantValues) tn).fill(gc.constants());
+			groups.put(id,gc);
+		}
 		return groups.get(id);
 	}
 

@@ -88,8 +88,8 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 		// this will be the unique instance of SystemComponent in the model
 		// so no need for an associated container. Otherwise it's always here.
 		Collection<TreeNode> nl = (Collection<TreeNode>) get(getChildren(),
-				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())), children(), selectZeroOrMany(
-						notQuery(orQuery(hasTheLabel(N_CATEGORY.label()), hasTheLabel(N_CATEGORYSET.label())))));
+			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())), children(), selectZeroOrMany(
+				notQuery(orQuery(hasTheLabel(N_CATEGORY.label()), hasTheLabel(N_CATEGORYSET.label())))));
 		if (nl == null || nl.isEmpty())
 			makeContainer = false;
 		seal();
@@ -105,8 +105,7 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 	protected ArenaFactory makeTemplate(int id) {
 
 		List<Edge> listeners = (List<Edge>) get(edges(Direction.IN),
-				selectZeroOrMany(hasTheLabel(E_TRACKSYSTEM.label())));
-
+			selectZeroOrMany(hasTheLabel(E_TRACKSYSTEM.label())));
 		
 		if (!listeners.isEmpty()) {
 			// attach time metadata to data tracker - we will need a time from the simulator
@@ -121,12 +120,12 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 
 		if (setinit != null)
 			return new ArenaFactory(categories, /* categoryId(), */
-					autoVarTemplate, driverTemplate, decoratorTemplate, lifetimeConstantTemplate,
-					(SetInitialStateFunction) setinit.getInstance(id), makeContainer, id(), dataTracker);
+				autoVarTemplate, driverTemplate, decoratorTemplate, lifetimeConstantTemplate,
+				(SetInitialStateFunction) setinit.getInstance(id), makeContainer, id(), dataTracker);
 		else
 			return new ArenaFactory(categories, /* categoryId(), */
-					autoVarTemplate, driverTemplate, decoratorTemplate, lifetimeConstantTemplate, null, makeContainer,
-					id(), dataTracker);
+				autoVarTemplate, driverTemplate, decoratorTemplate, lifetimeConstantTemplate, null, makeContainer,
+				id(), dataTracker);
 	}
 	
 	public  GraphDataTracker getDataTracker() {

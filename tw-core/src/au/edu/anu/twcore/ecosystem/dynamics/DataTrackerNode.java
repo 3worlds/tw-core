@@ -77,9 +77,11 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
@@ -366,6 +368,8 @@ public class DataTrackerNode extends InitialisableNode
 			// end dead code
 			else if (e.endNode() instanceof Component)
 				trackedComponents.add((Component) e.endNode());
+			else if (e.endNode() instanceof Group)
+				trackedComponents.add((Group)e.endNode());
 //			trackedGroups.add((LimitedEdition<ComponentContainer>) trackedComponents.get(0).getParent());
 		}
 	}
@@ -501,6 +505,11 @@ public class DataTrackerNode extends InitialisableNode
 						// TODO: check this one
 						trackedContainer = ((HierarchicalComponent) cp.get(0)).content().parentContainer();
 				}
+			}
+			else if (etype instanceof Group) {
+				GroupComponent gc = ((Group)etype).getInstance(index);
+				ls.add(gc);
+				trackedContainer = gc.container(); 
 			}
 		}
 		if (dataTrackerClass.equals(DataTracker0D.class.getName()))

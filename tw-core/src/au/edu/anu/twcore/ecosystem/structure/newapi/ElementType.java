@@ -76,7 +76,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 	boolean sealed = false;
 	Map<Integer,T> templates = new HashMap<>();
 	protected SortedSet<Category> categories = new TreeSet<>();
-	private List<String> categoryNames = null;
+	protected List<String> categoryNames = null;
 	private String categoryId = null;
 	/** TwData templates to clone to create new systems */
 	protected TwData autoVarTemplate = null;

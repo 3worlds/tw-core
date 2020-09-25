@@ -233,6 +233,8 @@ public class ComponentProcess
 						double[] newLoc = null;
 						if (space!=null)
 							newLoc = new double[space.ndim()];
+						// TODO: this is temporary as it is only valid when no lifecycle is present
+						otherGroup = focalGroup;
 						// TODO: finish this call (missing lifecycle, etc)
 						func.setOtherInitialState(t, dt,
 							arena, null, focalGroup, focal,
