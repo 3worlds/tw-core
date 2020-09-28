@@ -28,12 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.twcore.constants.BorderListType;
-import fr.cnrs.iees.twcore.constants.BorderType;
-import fr.cnrs.iees.twcore.constants.EdgeEffectCorrection;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;

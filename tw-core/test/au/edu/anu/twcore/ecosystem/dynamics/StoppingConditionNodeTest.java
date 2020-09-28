@@ -34,7 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.session.SimulationSession;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -61,7 +60,6 @@ class StoppingConditionNodeTest {
 	@Test
 	final void testInitialise() {
 		// this should call initialise in proper order
-		new SimulationSession(specs);
 		for (TreeGraphNode nn:specs.nodes()) {
 			InitialisableNode n = (InitialisableNode) nn;
 			if (n instanceof StoppingConditionNode) {

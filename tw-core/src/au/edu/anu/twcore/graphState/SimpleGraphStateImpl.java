@@ -31,8 +31,6 @@ package au.edu.anu.twcore.graphState;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.twcore.graphState.IGraphState;
-
 /**
  * @author Ian Davies
  *

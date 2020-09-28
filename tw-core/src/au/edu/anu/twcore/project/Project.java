@@ -98,7 +98,7 @@ public class Project implements ProjectPaths, TwPaths {
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
 	private static File projectDirectory;
 	private static final String sep = "_";
-	private static final char sepch = '_';
+//	private static final char sepch = '_';
 	private static final String klassName = Project.class.getName();
 	private static Logger log = Logging.getLogger(Project.class);
 
