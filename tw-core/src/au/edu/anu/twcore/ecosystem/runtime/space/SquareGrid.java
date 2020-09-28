@@ -83,6 +83,10 @@ public class SquareGrid extends SpaceAdapter {
 		public String toString() {
 			return "["+loc[0]+","+loc[1]+"]";
 		}
+		@Override
+		public boolean equals(Object obj) {
+			throw new TwcoreException("equals() disabled for locations. use Space.equalLocation() to compare locations.");
+		}
 	}
 
 	private int nx = 0;

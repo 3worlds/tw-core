@@ -37,6 +37,7 @@ import java.util.Map;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
@@ -76,8 +77,8 @@ public class FlatSurface extends SpaceAdapter {
 			return loc;
 		}
 		@Override
-		public String toString() {
-			return loc.toString();
+		public boolean equals(Object obj) {
+			throw new TwcoreException("equals() disabled for locations. use Space.equalLocation() to compare locations.");
 		}
 	}
 
