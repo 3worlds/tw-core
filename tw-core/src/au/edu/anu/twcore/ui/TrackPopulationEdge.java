@@ -40,6 +40,7 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
  * @author Jacques Gignoux - 13 nov. 2019
  *
  */
+@Deprecated
 public class TrackPopulationEdge extends ALDataEdge {
 
 	public TrackPopulationEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {

@@ -54,6 +54,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
@@ -84,7 +85,6 @@ public class ComponentProcess
 	private List<ChangeStateFunction> CSfunctions = new LinkedList<ChangeStateFunction>();
 	private List<DeleteDecisionFunction> Dfunctions = new LinkedList<DeleteDecisionFunction>();
 	private List<CreateOtherDecisionFunction> COfunctions = new LinkedList<CreateOtherDecisionFunction>();
-//	private List<RelocateFunction> Rfunctions = new LinkedList<RelocateFunction>();
 
 	// local variables for looping
 	private HierarchicalContext focalContext = new HierarchicalContext();
@@ -137,13 +137,13 @@ public class ComponentProcess
 			// in all cases, recurse on subcontainers to find more matching items
 			// and recursively add context information to context.
 			for (CategorizedContainer<SystemComponent> cc:component.content().subContainers()) {
-				loop(t,dt,cc.hierarchicalView());
+				loop(t,dt,((DescribedContainer<SystemComponent>)cc).descriptors());
 			}
 		}
 	}
 
 	
-	private void executeFunctions(double t, double dt, CategorizedComponent<ComponentContainer> focal) {
+	private void executeFunctions(double t, double dt, CategorizedComponent focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
 		if (focal.currentState() != null) {
 			focal.currentState().writeDisable(); // we dont care anymore about that, except for tables...
@@ -168,7 +168,7 @@ public class ComponentProcess
 			for (DeleteDecisionFunction function : Dfunctions)
 				if (function.delete(t, dt, arena, null,focalGroup, focal, space)) {
 		//-----------------------------------------------------------------------------------	
-			focal.container().removeItem((SystemComponent) focal); // safe - delayed removal
+			((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
 			unlocate((SystemComponent)focal);
 			// remove from tracklist if dead - safe, data sending has already been made
@@ -218,7 +218,7 @@ public class ComponentProcess
 				newBornSettings nbs = new newBornSettings();
 				nbs.factory = (ComponentFactory) focal.elementFactory();
 				nbs.name = focal.membership().categoryId();
-				nbs.container = focal.container();
+				nbs.container = (ComponentContainer) ((SystemComponent)focal).container();
 				newBornSpecs.add(nbs);
 			}
 			for (newBornSettings nbs:newBornSpecs) {
@@ -261,7 +261,7 @@ public class ComponentProcess
 	}
 
 	// single loop on a container which matches the process categories
-	private void executeFunctions(CategorizedContainer<CategorizedComponent<ComponentContainer>> container,
+	private void executeFunctions(DescribedContainer<CategorizedComponent> container,
 		double t, double dt) {
 //		Box limits = null;
 //		if (space!=null)

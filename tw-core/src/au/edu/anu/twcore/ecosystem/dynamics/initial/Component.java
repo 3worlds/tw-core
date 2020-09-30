@@ -202,16 +202,16 @@ public class Component
 				ComponentContainer container = null;
 				// 1st case: there is a group
 				if (group!=null) {
-					container = group.getInstance(id).content();
+					container = (ComponentContainer)group.getInstance(id).content();
 				}
 				// 2nd case: there is no group
 				else if (arena!=null) { // is this really needed? must never be null!
 					// if there is only one component type, then the arena must be the container
 					if (nComponentTypes==1) 
-						container = arena.getInstance(id).getInstance().content();
+						container = (ComponentContainer)arena.getInstance(id).getInstance().content();
 					// otherwise, a default group container per componentType is created, with no data
 					else { // group container must be created and inserted under arena
-						ComponentContainer parentContainer = arena.getInstance(id).getInstance().content();
+						ComponentContainer parentContainer = (ComponentContainer)arena.getInstance(id).getInstance().content();
 						String containerId = componentType.categoryId(); // check this is ok
 						container = (ComponentContainer) parentContainer.subContainer(containerId);
 						// POSSIBLE FLAW HERE: there is no Group node matching this group factory
@@ -221,7 +221,7 @@ public class Component
 								null,null,null,null,null,
 								containerId,parentContainer);
 							GroupComponent gComp = gfac.newInstance();
-							container = gComp.content();
+							container = (ComponentContainer)gComp.content();
 						}
 					}
 				}

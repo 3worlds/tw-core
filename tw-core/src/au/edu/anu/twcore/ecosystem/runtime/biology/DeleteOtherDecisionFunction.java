@@ -35,7 +35,6 @@ import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
@@ -78,13 +77,13 @@ public abstract class DeleteOtherDecisionFunction extends AbstractDecisionFuncti
 	public abstract boolean delete(
 		double t,
 		double dt,
-		CategorizedComponent<ComponentContainer> arena,
-		CategorizedComponent<ComponentContainer> lifeCycle,
-		CategorizedComponent<ComponentContainer> group,
-		CategorizedComponent<ComponentContainer> focal,
-		CategorizedComponent<ComponentContainer> otherLifeCycle,
-		CategorizedComponent<ComponentContainer> otherGroup,
-		CategorizedComponent<ComponentContainer> other,
+		CategorizedComponent arena,
+		CategorizedComponent lifeCycle,
+		CategorizedComponent group,
+		CategorizedComponent focal,
+		CategorizedComponent otherLifeCycle,
+		CategorizedComponent otherGroup,
+		CategorizedComponent other,
 		DynamicSpace<SystemComponent,LocatedSystemComponent> space);
 
 	@Override

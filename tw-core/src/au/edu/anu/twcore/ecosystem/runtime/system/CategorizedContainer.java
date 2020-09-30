@@ -36,9 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.containers.ContainerHierarchicalView;
 import au.edu.anu.twcore.ecosystem.runtime.containers.NestedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.containers.NestedDynamicContainer;
 import au.edu.anu.twcore.ecosystem.runtime.containers.ResettableContainer;
@@ -86,7 +84,7 @@ public abstract class CategorizedContainer<T extends Identity>
 //		extends AbstractPopulationContainer<T>
 		implements NestedContainer<T>, NestedDynamicContainer<T>, ResettableContainer<T>,
 		SimpleContainer<T>,
-		ContainerHierarchicalView, Resettable, Sealable {
+		Resettable, Sealable {
 
 //	static {
 //		props.add(TCOUNT.shortName());
@@ -107,14 +105,13 @@ public abstract class CategorizedContainer<T extends Identity>
 	// variables (unique, owned)
 //	private TwData variables = null;
 	// replace with:
-	private HierarchicalComponent avatar = null;
 
 	// items contained at this level (owned)
 	protected Map<String, T> items = new HashMap<>();
 	// items contained at lower levels
-	private Map<String, CategorizedContainer<T>> subContainers = new HashMap<>();
+	protected Map<String, CategorizedContainer<T>> subContainers = new HashMap<>();
 	// my container, if any
-	private CategorizedContainer<T> superContainer = null;
+	protected CategorizedContainer<T> superContainer = null;
 	// initial state
 	protected Set<T> initialItems = new HashSet<>();
 	// a map of runtime item ids to initial items
@@ -153,8 +150,7 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	public CategorizedContainer(// Categorized<T> cats,
 			String proposedId,
-			CategorizedContainer<T> parent,
-			HierarchicalComponent data) {
+			CategorizedContainer<T> parent) {
 //			TwData parameters, TwData variables) {
 		super();
 		id = scope().newId(true,proposedId);
@@ -162,7 +158,6 @@ public abstract class CategorizedContainer<T extends Identity>
 //		categoryInfo = cats;
 //		this.parameters = data.constants(); // will be those of the HierarchicalComponent
 //		this.variables = variables;
-		avatar = data;
 		if (parent != null) {
 			superContainer = parent;
 			superContainer.subContainers.put(id(), this);
@@ -175,11 +170,6 @@ public abstract class CategorizedContainer<T extends Identity>
 	public final void setCategorized(Categorized<T> cats) {
 		if (itemCategories==null)
 			itemCategories = cats;
-	}
-
-	protected void setData(HierarchicalComponent data) {
-		if (avatar==null)
-			avatar = data;
 	}
 
 	// four ways to add items to the initialItems list
@@ -209,16 +199,16 @@ public abstract class CategorizedContainer<T extends Identity>
 		return initialItems;
 	}
 
-	/**
-	 * Returns the set of categories ({@linkplain Category}) associated to this
-	 * container. If this container has variables and parameters, they are specified
-	 * by these categories.
-	 *
-	 * @return the object holding all the category information
-	 */
-	public Categorized<?> containerCategorized() {
-		return avatar.membership();
-	}
+//	/**
+//	 * Returns the set of categories ({@linkplain Category}) associated to this
+//	 * container. If this container has variables and parameters, they are specified
+//	 * by these categories.
+//	 *
+//	 * @return the object holding all the category information
+//	 */
+//	public Categorized<?> containerCategorized() {
+//		return avatar.membership();
+//	}
 
 	/**
 	 * Returns the set of categories ({@linkplain Category}) associated to the items
@@ -231,18 +221,18 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 
-	/**
-	 * Returns the parameter set associated to this container. It is specified by
-	 * the categories associated to the container, accessible through the
-	 * {@code categoryInfo()} method.
-	 *
-	 * @return the parameter set - may be {@code null}
-	 */
-	public TwData parameters() {
-		if (avatar!=null)
-			return avatar.constants();
-		return null;
-	}
+//	/**
+//	 * Returns the parameter set associated to this container. It is specified by
+//	 * the categories associated to the container, accessible through the
+//	 * {@code categoryInfo()} method.
+//	 *
+//	 * @return the parameter set - may be {@code null}
+//	 */
+//	public TwData parameters() {
+//		if (avatar!=null)
+//			return avatar.constants();
+//		return null;
+//	}
 
 	/**
 	 * Returns the {@linkplain Population} data associated to this container.
@@ -453,8 +443,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	// CAUTION HERE!
 //	@Override
 	public void resetCounters() {
-		if (avatar.autoVar() instanceof ContainerData)
-			((ContainerData)avatar.autoVar()).resetCounters();
+//		if (avatar.autoVar() instanceof ContainerData)
+//			((ContainerData)avatar.autoVar()).resetCounters();
 	}
 
 	// Resettable methods
@@ -519,10 +509,6 @@ public abstract class CategorizedContainer<T extends Identity>
 		changed = false;
 	}
 
-	@Override
-	public HierarchicalComponent hierarchicalView() {
-		return avatar;
-	}
 
 	@Override
 	public String toString() {
@@ -531,30 +517,30 @@ public abstract class CategorizedContainer<T extends Identity>
 		sb.append("container:");
 		sb.append(id().toString());
 		sb.append('[');
-		if (containerCategorized().categories() != null) {
-			if (first)
-				first = false;
-			else
-				sb.append(' ');
-			sb.append("categories:");
-			sb.append(containerCategorized().categories().toString());
-		}
-		if (avatar.constants() != null) {
-			if (first)
-				first = false;
-			else
-				sb.append(' ');
-			sb.append("constants:(");
-			sb.append(avatar.constants().toString());
-			sb.append(')');
-		}
+//		if (containerCategorized().categories() != null) {
+//			if (first)
+//				first = false;
+//			else
+//				sb.append(' ');
+//			sb.append("categories:");
+//			sb.append(containerCategorized().categories().toString());
+//		}
+//		if (avatar.constants() != null) {
+//			if (first)
+//				first = false;
+//			else
+//				sb.append(' ');
+//			sb.append("constants:(");
+//			sb.append(avatar.constants().toString());
+//			sb.append(')');
+//		}
 		if (first)
 			first = false;
 		else
 			sb.append(' ');
 		sb.append("variables:(");
-		if (avatar.autoVar() != null)
-			sb.append(avatar.autoVar().toString());
+//		if (avatar.autoVar() != null)
+//			sb.append(avatar.autoVar().toString());
 		sb.append(')');
 		// TODO: adapt this !
 		if (!initialItems.isEmpty()) {

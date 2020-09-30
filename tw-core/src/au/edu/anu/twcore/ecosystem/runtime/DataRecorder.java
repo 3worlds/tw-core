@@ -46,6 +46,6 @@ public interface DataRecorder {
 
 	public void record(SimulatorStatus status, TwData... props);
 
-	public boolean isTracked(CategorizedComponent<?> sc);
+	public boolean isTracked(CategorizedComponent sc);
 
 }

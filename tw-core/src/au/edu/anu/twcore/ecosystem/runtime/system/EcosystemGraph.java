@@ -61,7 +61,7 @@ public class EcosystemGraph
 		super();
 		this.relations = relations;
 		this.arena = arena;
-		this.components = arena.content(); // may be null
+		this.components = (ComponentContainer) arena.content(); // may be null
 	}
 
 	// GRAPH interface
@@ -70,7 +70,7 @@ public class EcosystemGraph
 		super();
 		this.relations = new HashMap<String,RelationContainer>();
 		this.arena = arena;
-		this.components = arena.content(); // may be null
+		this.components = (ComponentContainer) arena.content(); // may be null
 	}
 
 	@Override

@@ -31,7 +31,6 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
@@ -71,10 +70,10 @@ public abstract class SetInitialStateFunction extends TwFunctionAdapter {
 	 * @param nextFocalLoc the new location of the focal component, if the parent process is using a space
 	 */
 	public abstract void setInitialState(
-		CategorizedComponent<ComponentContainer> arena,
-		CategorizedComponent<ComponentContainer> lifeCycle,
-		CategorizedComponent<ComponentContainer> group,
-		CategorizedComponent<ComponentContainer> focal,
+		CategorizedComponent arena,
+		CategorizedComponent lifeCycle,
+		CategorizedComponent group,
+		CategorizedComponent focal,
 		DynamicSpace<SystemComponent,LocatedSystemComponent> space,
 		double[] nextFocalLoc);
 }

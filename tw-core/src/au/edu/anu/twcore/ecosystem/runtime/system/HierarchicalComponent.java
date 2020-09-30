@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Containing;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -47,17 +48,32 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 
 public abstract class HierarchicalComponent
 		extends TreeGraphDataNode
-		implements CategorizedComponent<ComponentContainer>, Containing<ComponentContainer> {
+		implements CategorizedComponent, 
+			Containing<DescribedContainer<SystemComponent>>, 
+			Contained<DescribedContainer<SystemComponent>> {
 
-	protected Categorized<? extends CategorizedComponent<ComponentContainer>> categories = null;
-	private ComponentContainer content = null;
+	protected Categorized<? extends CategorizedComponent> categories = null;
+	private DescribedContainer<SystemComponent> content = null;
 
 	public HierarchicalComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
 	@Override
-	public Categorized<? extends CategorizedComponent<ComponentContainer>> membership() {
+	public void setContainer(DescribedContainer<SystemComponent> container) {
+	}
+
+	@Override
+	public DescribedContainer<SystemComponent> container() {
+		return null;
+	}
+
+	@Override
+	public void removeFromContainer() {
+	}
+	
+	@Override
+	public Categorized<? extends CategorizedComponent> membership() {
 		return categories;
 	}
 
@@ -65,7 +81,7 @@ public abstract class HierarchicalComponent
 	 * CAUTION: can be set only once, ideally just after construction
 	 */
 	@Override
-	public void setCategorized(Categorized<? extends CategorizedComponent<ComponentContainer>> cats) {
+	public void setCategorized(Categorized<? extends CategorizedComponent> cats) {
 		if (categories==null)
 			categories = cats;
 	}
@@ -80,13 +96,13 @@ public abstract class HierarchicalComponent
 	 * CAUTION: can be set only once, ideally just after construction
 	 */
 	@Override
-	public void setContent(ComponentContainer container) {
+	public void setContent(DescribedContainer<SystemComponent> container) {
 		if (content==null)
 			content = container;
 	}
 
 	@Override
-	public ComponentContainer content() {
+	public DescribedContainer<SystemComponent> content() {
 		return content;
 	}
 

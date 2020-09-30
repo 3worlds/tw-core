@@ -52,13 +52,13 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIO
  *
  */
 public class RelationContainer
-		implements DynamicContainer<SystemRelation>, Resettable, Related<CategorizedComponent<ComponentContainer>>  {
+		implements DynamicContainer<SystemRelation>, Resettable, Related<CategorizedComponent>  {
 
 	private Identity id = null;
 	//
 	private RelationType relationType = null;
 	// the list of system component pairs to later relate
-	private Set<Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>>> relationsToAdd = new HashSet<>();
+	private Set<Duple<CategorizedComponent,CategorizedComponent>> relationsToAdd = new HashSet<>();
 	// the list of system relations to remove
 	private Set<SystemRelation> relationsToRemove = new HashSet<>();
 	private boolean changed = false;
@@ -86,7 +86,7 @@ public class RelationContainer
 	}
 
 	// use this instead of the previous
-	public void addItem(CategorizedComponent<ComponentContainer> from, CategorizedComponent<ComponentContainer> to) {
+	public void addItem(CategorizedComponent from, CategorizedComponent to) {
 		relationsToAdd.add(new Duple<>(from,to));
 	}
 
@@ -104,7 +104,7 @@ public class RelationContainer
 		}
 		relationsToRemove.clear();
 		// establish all new relations
-		for (Duple<CategorizedComponent<ComponentContainer>,CategorizedComponent<ComponentContainer>> item : relationsToAdd) {
+		for (Duple<CategorizedComponent,CategorizedComponent> item : relationsToAdd) {
 			SystemRelation sr = item.getFirst().relateTo(item.getSecond(),relationType.id());
 			sr.setContainer(this);
 			sr.setRelated(relationType);
@@ -114,12 +114,12 @@ public class RelationContainer
 	}
 
 	@Override
-	public Categorized<CategorizedComponent<ComponentContainer>> from() {
+	public Categorized<CategorizedComponent> from() {
 		return relationType.from();
 	}
 
 	@Override
-	public Categorized<CategorizedComponent<ComponentContainer>> to() {
+	public Categorized<CategorizedComponent> to() {
 		return relationType.to();
 	}
 

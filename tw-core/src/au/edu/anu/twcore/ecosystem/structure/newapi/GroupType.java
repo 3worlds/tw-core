@@ -92,7 +92,7 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 		// if no life cycle present, the super container must be the arena
 		if (lcl.isEmpty()) {
 			ArenaType system = (ArenaType) getParent().getParent();
-			superContainer = system.getInstance(id).getInstance().content();
+			superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
 		}
 		else {
 			// TODO ! get the proper life cycle container !

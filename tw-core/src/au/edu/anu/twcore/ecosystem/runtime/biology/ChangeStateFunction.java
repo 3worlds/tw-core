@@ -31,7 +31,6 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
@@ -64,10 +63,10 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 	 * @param nextFocalLoc the new location of the focal component, if the parent process is using a space
 	 */
 	public abstract void changeState(double t, double dt,
-		CategorizedComponent<ComponentContainer> arena,
-		CategorizedComponent<ComponentContainer> lifeCycle,
-		CategorizedComponent<ComponentContainer> group,
-		CategorizedComponent<ComponentContainer> focal,
+		CategorizedComponent arena,
+		CategorizedComponent lifeCycle,
+		CategorizedComponent group,
+		CategorizedComponent focal,
 		DynamicSpace<SystemComponent,LocatedSystemComponent> space,
 		double[] nextFocalLoc);
 

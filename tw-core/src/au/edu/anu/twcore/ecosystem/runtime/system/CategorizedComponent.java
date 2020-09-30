@@ -41,8 +41,6 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
-import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
-import au.edu.anu.twcore.ecosystem.runtime.containers.Container;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
@@ -53,32 +51,19 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
  * @author J. Gignoux - 16 avr. 2020
  *
  */
-public interface CategorizedComponent<T extends Container>
-		extends DataElement, Node, DynamicSystem, Cloneable, Contained<T> {
-
-	@Override
-	default void setContainer(T container) {
-	}
-
-	@Override
-	default T container() {
-		return null;
-	}
-
-	@Override
-	default void removeFromContainer() {
-	}
+public interface CategorizedComponent
+		extends DataElement, Node, DynamicSystem, Cloneable {
 
 	/** indexes to access state variable table */
 	static final int CURRENT = 1;
 	static final int NEXT = CURRENT - 1;
 	static final int PAST0 = CURRENT + 1;
 
-	public Categorized<? extends CategorizedComponent<T>> membership();
+	public Categorized<? extends CategorizedComponent> membership();
 
-	public ElementFactory<? extends CategorizedComponent<T>> elementFactory();
+	public ElementFactory<? extends CategorizedComponent> elementFactory();
 
-	public void setCategorized(Categorized<? extends CategorizedComponent<T>> cats);
+	public void setCategorized(Categorized<? extends CategorizedComponent> cats);
 
 	@Override
 	public default TwData currentState() {
@@ -157,7 +142,7 @@ public interface CategorizedComponent<T extends Container>
 		}
 	}
 
-	public default SystemRelation relateTo(CategorizedComponent<T> toComponent, String relationType) {
+	public default SystemRelation relateTo(CategorizedComponent toComponent, String relationType) {
 		SystemRelation rel = (SystemRelation) connectTo(Direction.OUT,toComponent,
 			new SharedPropertyListImpl(SystemRelation.DEFAULT_PROPERTIES));
 		rel.properties().setProperty(P_RELATIONTYPE.key(),relationType);

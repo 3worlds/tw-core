@@ -40,7 +40,7 @@ import au.edu.anu.twcore.data.runtime.OutputXYData;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Population;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
@@ -57,7 +57,7 @@ public class DataTrackerXY extends AbstractDataTracker<OutputXYData, Metadata> {
 	private CategorizedComponent trackedComponent = null;
 	private long currentTime = 0L;
 	private DataLabel currentItem = null;
-	private CategorizedContainer<CategorizedComponent> trackedContainer = null;
+	private DescribedContainer<CategorizedComponent> trackedContainer = null;
 	private SamplingMode trackMode;
 	private Metadata metadata = null;
 	// TODO: replace these with data labels for diving into the TwData tree
@@ -67,7 +67,7 @@ public class DataTrackerXY extends AbstractDataTracker<OutputXYData, Metadata> {
 
 	public DataTrackerXY(int simulatorId,
 			SamplingMode selection,
-			CategorizedContainer<CategorizedComponent> trackedGroup,
+			DescribedContainer<CategorizedComponent> trackedGroup,
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
@@ -193,7 +193,7 @@ public class DataTrackerXY extends AbstractDataTracker<OutputXYData, Metadata> {
 						}
 						break;
 					case RANDOM:
-						int max = ((Population)trackedContainer.hierarchicalView().autoVar()).count();
+						int max = ((Population)trackedContainer.descriptors().autoVar()).count();
 						int stop = rng.nextInt(max);
 						int i=0;
 						for (CategorizedComponent cc:trackedContainer.items()) {

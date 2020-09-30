@@ -42,6 +42,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 
@@ -72,10 +73,10 @@ public class RelationProcess extends AbstractRelationProcess {
 //	private ComponentContainer lifeCycleContainer = null;
 	//new API
 	private ArenaComponent arena = null;
-	private CategorizedComponent<ComponentContainer> focalLifeCycle = null;
-	private CategorizedComponent<ComponentContainer> otherLifeCycle = null;
-	private CategorizedComponent<ComponentContainer> focalGroup = null;
-	private CategorizedComponent<ComponentContainer> otherGroup = null;
+	private CategorizedComponent focalLifeCycle = null;
+	private CategorizedComponent otherLifeCycle = null;
+	private CategorizedComponent focalGroup = null;
+	private CategorizedComponent otherGroup = null;
 
 
 	public RelationProcess(ArenaComponent world, RelationContainer relation,
@@ -347,8 +348,8 @@ public class RelationProcess extends AbstractRelationProcess {
 	}
 
 	private void executeFunctions(double t, double dt,
-			CategorizedComponent<ComponentContainer> focal,
-			CategorizedComponent<ComponentContainer> other,
+			CategorizedComponent focal,
+			CategorizedComponent other,
 			SystemRelation rel) {
 		// ChangeOtherStateFunction
         for (ChangeOtherStateFunction function:COSfunctions) {
@@ -378,8 +379,8 @@ public class RelationProcess extends AbstractRelationProcess {
 	        		rel.container().removeItem(rel);
 		        	if (space!=null)
 		        		if (space.dataTracker()!=null)
-		        			space.dataTracker().deleteLine(focal.container().itemId(focal.id()),
-		        				other.container().itemId(other.id()));
+		        			space.dataTracker().deleteLine(((SystemComponent)focal).container().itemId(focal.id()),
+		        				((SystemComponent)other).container().itemId(other.id()));
 	        	}
 	        }
 	        // if there is no maintainrelation function, the relation only lasts for 1 time step
@@ -423,12 +424,12 @@ public class RelationProcess extends AbstractRelationProcess {
 	// * process both ends of a relation in one single pass - changeOtherState enables it
 	// * replace edge list by a map indexed by edge labels -> faster access to the proper edges
 	@SuppressWarnings("unchecked")
-	private void loopOnOthers(double t, double dt, CategorizedComponent<ComponentContainer> focal) {
+	private void loopOnOthers(double t, double dt, CategorizedComponent focal) {
 		for (SystemRelation sr:focal.getRelations()) {
 			if (sr.membership().to().equals(to())) {
-				CategorizedComponent<ComponentContainer> other = (CategorizedComponent<ComponentContainer>) sr.endNode();
-				other.container().change();
-				otherGroup = other.container().hierarchicalView();
+				CategorizedComponent other = (CategorizedComponent) sr.endNode();
+				((SystemComponent) other).container().change();
+				otherGroup = ((SystemComponent) other).container().descriptors();
 				// TODO: fix this:
 //				otherLifeCycle = otherGroup.container().hierarchicalView();
 				executeFunctions(t,dt,focal,other,sr);
@@ -465,7 +466,7 @@ public class RelationProcess extends AbstractRelationProcess {
 			// in all cases, recurse on subcontainers to find more matching items
 			// and recursively add context information to context.
 			for (CategorizedContainer<SystemComponent> cc:component.content().subContainers()) {
-				loop(t,dt,cc.hierarchicalView());
+				loop(t,dt,((DescribedContainer<SystemComponent>)cc).descriptors());
 			}
 		}
 	}

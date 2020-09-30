@@ -45,7 +45,7 @@ import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -76,7 +76,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 	// metadata for numeric fields, ie min max units etc.
 	private ReadOnlyPropertyList fieldMetadata = null;
 	// the list of containers in which to search for new components to track
-	private CategorizedContainer<CategorizedComponent> trackedGroup = null;
+	private DescribedContainer<CategorizedComponent> trackedGroup = null;
 	// the sampled components
 	private Set<CategorizedComponent> trackedComponents = new HashSet<>();
 
@@ -92,7 +92,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 			StatisticalAggregatesSet tableStatistics,
 			SamplingMode selection,
 			int sampleSize,
-			CategorizedContainer<CategorizedComponent> trackedGroup,
+			DescribedContainer<CategorizedComponent> trackedGroup,
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
@@ -233,11 +233,11 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 //	}
 
 	// There may be a time bottleneck here
-	public boolean isTracked(CategorizedComponent<?> sc) {
+	public boolean isTracked(CategorizedComponent sc) {
 		boolean result = false;
 		result = trackedComponents.contains(sc);
 		if ((!result)&&(sc instanceof SystemComponent)) {
-			CategorizedComponent<?> isc = trackedGroup.initialForItem(sc.id());
+			CategorizedComponent isc = trackedGroup.initialForItem(sc.id());
 			if (isc != null)
 				result = trackedComponents.contains(isc);
 		}
@@ -274,7 +274,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 				switch (trackMode) {
 				case FIRST:
 					while (goOn) {
-						Iterator<CategorizedComponent> list = trackedGroup.items().iterator();
+						Iterator<? extends CategorizedComponent> list = trackedGroup.items().iterator();
 						CategorizedComponent next = list.next();
 						while (trackedComponents.contains(next))
 							next = list.next();

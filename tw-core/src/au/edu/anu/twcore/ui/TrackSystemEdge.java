@@ -33,6 +33,7 @@ import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.identity.Identity;
 
+@Deprecated
 public class TrackSystemEdge extends ALEdge {
 
 	public TrackSystemEdge(Identity id, Node start, Node end, EdgeFactory graph) {

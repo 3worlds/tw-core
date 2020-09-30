@@ -78,7 +78,7 @@ class CategorizedContainerTest {
 	private class icontainer extends CategorizedContainer<Identity> {
 		private icontainer(Categorized<Identity> cats, String proposedId,
 				CategorizedContainer<Identity> parent) {
-			super(proposedId,parent,null);
+			super(proposedId,parent);
 		}
 		@Override
 		public Identity cloneItem(Identity item) {
@@ -165,8 +165,8 @@ class CategorizedContainerTest {
 
 	@Test
 	final void testCategoryInfo() {
-		show("testCategoryInfo",cc.containerCategorized().categoryId());
-		assertEquals(cc.containerCategorized(),ca);
+		show("testCategoryInfo",cc.itemCategorized().categoryId());
+		assertEquals(cc.itemCategorized(),ca);
 	}
 
 	@Test

@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
+import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALDataNode;
 import fr.cnrs.iees.identity.Identity;
@@ -46,7 +47,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  */
 public class SystemComponent
 		extends ALDataNode
-		implements CategorizedComponent<ComponentContainer> {
+		implements CategorizedComponent, Contained<DescribedContainer<SystemComponent>> {
 
 	private Categorized<SystemComponent> categories = null;
 	/** container */
@@ -59,7 +60,7 @@ public class SystemComponent
 	// used only once at init time
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setCategorized(Categorized<? extends CategorizedComponent<ComponentContainer>> cat) {
+	public void setCategorized(Categorized<? extends CategorizedComponent> cat) {
 		if (categories==null)
 			categories = (Categorized<SystemComponent>) cat;
 	}
@@ -141,13 +142,13 @@ public class SystemComponent
 	// Contained interface
 
 	@Override
-	public void setContainer(ComponentContainer container) {
+	public void setContainer(DescribedContainer<SystemComponent> container) {
 		if (this.container==null)
-			this.container = container;
+			this.container = (ComponentContainer) container;
 	}
 
 	@Override
-	public ComponentContainer container() {
+	public DescribedContainer<SystemComponent> container() {
 		return container;
 	}
 

@@ -281,28 +281,28 @@ hasNode dataTrackerSpec
 		toNode = String("system:") // was: initialState
 		multiplicity = IntegerRange("0..1")
 
-	// tracking of population data, ie groups
-	hasEdge trackPopulationEdgeSpec
-		// todo: check this population is of the proper category?
-		isOfClass = String("trackPopulation")
-		toNode = String("group:")
-		multiplicity = IntegerRange("0..*")
-		hasProperty trackPopulationVariableSpec
-			hasName = String("variables")
-			type = String("PopulationVariablesSet")
-			multiplicity = IntegerRange("1..1")
-	hasEdge trackTotalPopulationEdgeSpec
-		isOfClass = String("trackPopulation")
-		toNode = String("initialState:")
-		multiplicity = IntegerRange("0..*")
-		hasProperty trackTotalPopulationVariableSpec
-			hasName = String("variables")
-			type = String("PopulationVariablesSet")
-			multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery trackItemConditionSpec
-		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery")
-		edgeLabel1 = String("trackPopulation")
-		edgeLabel2 = StringTable(([3]"trackField","trackTable","trackComponent"))
+//	// tracking of population data, ie groups
+//	hasEdge trackPopulationEdgeSpec
+//		// todo: check this population is of the proper category?
+//		isOfClass = String("trackPopulation")
+//		toNode = String("group:")
+//		multiplicity = IntegerRange("0..*")
+//		hasProperty trackPopulationVariableSpec
+//			hasName = String("variables")
+//			type = String("PopulationVariablesSet")
+//			multiplicity = IntegerRange("1..1")
+//	hasEdge trackTotalPopulationEdgeSpec
+//		isOfClass = String("trackPopulation")
+//		toNode = String("initialState:")
+//		multiplicity = IntegerRange("0..*")
+//		hasProperty trackTotalPopulationVariableSpec
+//			hasName = String("variables")
+//			type = String("PopulationVariablesSet")
+//			multiplicity = IntegerRange("1..1")
+//	mustSatisfyQuery trackItemConditionSpec
+//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery")
+//		edgeLabel1 = String("trackPopulation")
+//		edgeLabel2 = StringTable(([3]"trackField","trackTable","trackComponent"))
 	mustSatisfyQuery ifComponentMustHaveEitherFieldOrTableEdge
 		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
 		edgeLabel1 = String("trackComponent")

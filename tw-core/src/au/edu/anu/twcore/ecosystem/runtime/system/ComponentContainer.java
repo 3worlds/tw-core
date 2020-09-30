@@ -36,7 +36,10 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class ComponentContainer extends CategorizedContainer<SystemComponent> {
+public class ComponentContainer extends DescribedContainer<SystemComponent> {
+
+
+//CategorizedContainer<SystemComponent> {
 
 	public ComponentContainer(String proposedId,
 			ComponentContainer parent, HierarchicalComponent data) {
@@ -74,7 +77,7 @@ public class ComponentContainer extends CategorizedContainer<SystemComponent> {
 	 * only if was changed
 	 */
 	public void prepareStep() {
-		HierarchicalComponent hv = hierarchicalView();
+		HierarchicalComponent hv = descriptors();
 		if (hv.decorators()!=null) {
 //			hv.decorators().writeEnable();
 			hv.decorators().clear();

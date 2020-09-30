@@ -51,10 +51,8 @@ import java.util.List;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
-import au.edu.anu.twcore.data.runtime.RuntimeGraphData;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.data.runtime.SpaceData;
-import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
@@ -125,12 +123,12 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 				for (SpaceNode spn : spaces)
 					if (widget instanceof DataReceiver)
 						spn.attachSpaceWidget((DataReceiver<SpaceData, Metadata>) widget);
-
-				ArenaType arenaType = (ArenaType) get(edges(Direction.OUT),
-						selectZeroOrOne(hasTheLabel(E_TRACKSYSTEM.label())), endNode());
-				
-				if (arenaType!=null)
-					arenaType.attachGraphWidget((DataReceiver<RuntimeGraphData, Metadata>) widget);
+				// CAUTION: change here. was:
+//				ArenaType arenaType = (ArenaType) get(edges(Direction.OUT),
+//						selectZeroOrOne(hasTheLabel(E_TRACKSYSTEM.label())), endNode());
+//				if (arenaType!=null)
+//					arenaType.attachGraphWidget((DataReceiver<RuntimeGraphData, Metadata>) widget);
+				// Now: TODO!
 
 			} catch (Exception e) {
 				e.printStackTrace();

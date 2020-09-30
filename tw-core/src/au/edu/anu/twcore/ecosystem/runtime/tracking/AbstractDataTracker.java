@@ -171,7 +171,7 @@ public abstract class AbstractDataTracker<T, M>
 	}
 
 	@Override
-	public boolean isTracked(CategorizedComponent<?> sc) {
+	public boolean isTracked(CategorizedComponent sc) {
 		return false;
 	}
 }

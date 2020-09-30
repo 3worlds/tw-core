@@ -238,8 +238,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			}
 			// fix generic types and fill mmg with arguments names and types
 			for (int j=0; j<argTypes.length; j++) {
-				if (argTypes[j].contains("CategorizedComponent"))
-					argTypes[j] += "<ComponentContainer>";
+//				if (argTypes[j].contains("CategorizedComponent"))
+//					argTypes[j] += "<ComponentContainer>";
 				if (argTypes[j].contains("DynamicSpace"))
 					argTypes[j] += "<SystemComponent,LocatedSystemComponent>";
 //				mmg.setArgument(argNames[j], argTypes[j], "");

@@ -80,7 +80,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -484,18 +484,18 @@ public class DataTrackerNode extends InitialisableNode
 		return sealed;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private DataTracker<?, ?> makeDataTracker(int index) {
 		AbstractDataTracker<?, ?> result = null;
 		List<CategorizedComponent> ls = new ArrayList<>();
-		CategorizedContainer<? extends CategorizedComponent> trackedContainer = null;
+		DescribedContainer<? extends CategorizedComponent> trackedContainer = null;
 		for (TreeGraphNode etype:trackedComponents) {
 			if (etype instanceof ArenaType) {
 				trackedContainer = null;
 				ls.add((CategorizedComponent)((ArenaType)etype).getInstance(index).getInstance());
 			}
 			else if (etype instanceof Component) {
-				List<? extends CategorizedComponent<?>> cp = ((Component)etype).getInstance(index);
+				List<? extends CategorizedComponent> cp = ((Component)etype).getInstance(index);
 				// TODO: FLAW HERE the number of initial items may be larger than the rquested sample size!
 				if (!cp.isEmpty()) {
 					ls.addAll(cp);
@@ -503,7 +503,8 @@ public class DataTrackerNode extends InitialisableNode
 						trackedContainer = ((SystemComponent) cp.get(0)).container();
 					else if (cp.get(0) instanceof HierarchicalComponent)
 						// TODO: check this one
-						trackedContainer = ((HierarchicalComponent) cp.get(0)).content().parentContainer();
+						trackedContainer = (DescribedContainer<? extends CategorizedComponent>) 
+							((HierarchicalComponent) cp.get(0)).content().parentContainer();
 				}
 			}
 			else if (etype instanceof Group) {
@@ -514,14 +515,14 @@ public class DataTrackerNode extends InitialisableNode
 		}
 		if (dataTrackerClass.equals(DataTracker0D.class.getName()))
 			result = new DataTracker0D(index,stats, tstats, selection, sampleSize,
-				(CategorizedContainer<CategorizedComponent>) trackedContainer, ls,
+				 (DescribedContainer<CategorizedComponent>) trackedContainer, ls,
 				expandedTrackList.keySet(),fieldMetadata);
 		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
 			result = new DataTracker2D(index);
 		}
 		else if (dataTrackerClass.equals(DataTrackerXY.class.getName()))
 			result = new DataTrackerXY(index,selection,
-				(CategorizedContainer<CategorizedComponent>) trackedContainer, ls,
+				(DescribedContainer<CategorizedComponent>) trackedContainer, ls,
 				expandedTrackList.keySet(),fieldMetadata);
 		// TODO: remove senderId and put it in constructor
 //		if (result != null)

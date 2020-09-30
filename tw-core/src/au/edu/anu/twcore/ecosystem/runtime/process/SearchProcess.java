@@ -46,6 +46,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import fr.cnrs.iees.uit.space.Box;
@@ -78,10 +79,10 @@ public class SearchProcess
 	private ComponentContainer otherGroupContainer = null;
 	// new API
 	private ArenaComponent arena = null;
-	private CategorizedComponent<ComponentContainer> focalLifeCycle = null;
-	private CategorizedComponent<ComponentContainer> otherLifeCycle = null;
-	private CategorizedComponent<ComponentContainer> focalGroup = null;
-	private CategorizedComponent<ComponentContainer> otherGroup = null;
+	private CategorizedComponent focalLifeCycle = null;
+	private CategorizedComponent otherLifeCycle = null;
+	private CategorizedComponent focalGroup = null;
+	private CategorizedComponent otherGroup = null;
 
 	public SearchProcess(ArenaComponent world, RelationContainer relation,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space,double searchR) {
@@ -98,11 +99,11 @@ public class SearchProcess
 
 	private void crudeLoop(double t, double dt,
 		HierarchicalComponent focal,
-		CategorizedContainer<SystemComponent> others) {
+		DescribedContainer<SystemComponent> others) {
 		if ((others.itemCategorized()!=null) &&
 			(others.itemCategorized().belongsTo(otherCategories)) ) {
-				if (others.hierarchicalView() instanceof GroupComponent)
-					otherGroup = others.hierarchicalView();
+				if (others.descriptors() instanceof GroupComponent)
+					otherGroup = others.descriptors();
 				// todo: life cycles
 				for (SystemComponent fc:focal.content().items())
 					for (SystemComponent sc: others.items())
@@ -110,7 +111,7 @@ public class SearchProcess
 		}
 		else
 			for (CategorizedContainer<SystemComponent> subc: others.subContainers())
-				crudeLoop(t,dt,focal,subc);
+				crudeLoop(t,dt,focal,(DescribedContainer<SystemComponent>) subc);
 	}
 	
 	// this looping method only works on SystemComponents
@@ -171,10 +172,10 @@ public class SearchProcess
 							crudeLoop(t,dt,component,arena.content());
 					for (CategorizedContainer<SystemComponent> subc: component.content().subContainers())
 						if (subc.itemCategorized().belongsTo(focalCategories)) {
-							if (subc.hierarchicalView() instanceof GroupComponent)
-								focalGroup = subc.hierarchicalView();
+							if (((DescribedContainer<SystemComponent>)subc).descriptors() instanceof GroupComponent)
+								focalGroup = ((DescribedContainer<SystemComponent>)subc).descriptors();
 							// TODO: life cycles
-							crudeLoop(t,dt,subc.hierarchicalView(),arena.content());
+							crudeLoop(t,dt,((DescribedContainer<SystemComponent>)subc).descriptors(),arena.content());
 					}
 				}
 		}
@@ -249,12 +250,12 @@ public class SearchProcess
 
 	private void executeFunctions(double t, double dt, SystemComponent focal, SystemComponent other) {
 		// group container
-		HierarchicalComponent hc = focal.container().hierarchicalView();
+		HierarchicalComponent hc = focal.container().descriptors();
 		focal.container().change();
 		if (hc!=null)
 			if (hc instanceof GroupComponent)
 				focalGroup = hc;
-		hc = other.container().hierarchicalView();
+		hc = other.container().descriptors();
 		other.container().change();
 		if (hc!=null)
 			if (hc instanceof GroupComponent)
@@ -285,54 +286,54 @@ public class SearchProcess
 		}
 	}
 
-	@Deprecated // but useful code in there, dont erase before spaces are ack !
-	private void executeFunctions(CategorizedContainer<SystemComponent> focalContainer,
-			CategorizedContainer<SystemComponent> otherContainer,
-			double t, double dt) {
-		for (SystemComponent focal:focalContainer.items()) {
-			// brute force approach - SLOW O(n²) - maybe a warning should be issued in MM
-			if (space==null) {
-				for (SystemComponent other:otherContainer.items())
-					if (other!=focal)
-						doRelate(t,dt,focal,other,null,null,null);
-			}
-			// optimised approach using space indexers
-			else {
-				// search radius positive, means we only search until this distance
-				if (searchRadius>space.precision()) {
-					// dont search if item already related !
-					Iterable<SystemComponent> lsc = space.getItemsWithin(focal,searchRadius);
-					if (lsc!=null)
-						for (SystemComponent other:lsc) {
-							Location focalLoc = space.locationOf(focal);
-							// focal cannot relate to itself
-							if (other!=focal)
-								// do no check already related components [should be done before]
-								if (!focal.getRelatives(relContainer.type().id()).contains(other))
-									if (other.membership().belongsTo(otherCategories))
-										if (!otherContainer.containsInitialItem(other))
-											doRelate(t,dt,focal,other,
-												focalLoc,space.locationOf(other),space.boundingBox());
-						}
-				}
-				// search radius null, means we search for the nearest neighbours only
-				else {
-					Iterable<SystemComponent> lsc = space.getNearestItems(focal);
-					if (lsc!=null)
-						for (SystemComponent other:lsc) {
-							Location focalLoc = space.locationOf(focal);
-							if (other!=focal)
-								if (!focal.getRelatives(relContainer.type().id()).contains(other))
-									if (other.membership().belongsTo(otherCategories))
-										if (!otherContainer.containsInitialItem(other))
-											doRelate(t,dt,focal,other,
-												focalLoc,
-												space.locationOf(other),
-												space.boundingBox());
-					}
-				}
-			}
-		}
-	}
+//	@Deprecated // but useful code in there, dont erase before spaces are ack !
+//	private void executeFunctions(CategorizedContainer focalContainer,
+//			CategorizedContainer<SystemComponent> otherContainer,
+//			double t, double dt) {
+//		for (SystemComponent focal:focalContainer.items()) {
+//			// brute force approach - SLOW O(n²) - maybe a warning should be issued in MM
+//			if (space==null) {
+//				for (SystemComponent other:otherContainer.items())
+//					if (other!=focal)
+//						doRelate(t,dt,focal,other,null,null,null);
+//			}
+//			// optimised approach using space indexers
+//			else {
+//				// search radius positive, means we only search until this distance
+//				if (searchRadius>space.precision()) {
+//					// dont search if item already related !
+//					Iterable<SystemComponent> lsc = space.getItemsWithin(focal,searchRadius);
+//					if (lsc!=null)
+//						for (SystemComponent other:lsc) {
+//							Location focalLoc = space.locationOf(focal);
+//							// focal cannot relate to itself
+//							if (other!=focal)
+//								// do no check already related components [should be done before]
+//								if (!focal.getRelatives(relContainer.type().id()).contains(other))
+//									if (other.membership().belongsTo(otherCategories))
+//										if (!otherContainer.containsInitialItem(other))
+//											doRelate(t,dt,focal,other,
+//												focalLoc,space.locationOf(other),space.boundingBox());
+//						}
+//				}
+//				// search radius null, means we search for the nearest neighbours only
+//				else {
+//					Iterable<SystemComponent> lsc = space.getNearestItems(focal);
+//					if (lsc!=null)
+//						for (SystemComponent other:lsc) {
+//							Location focalLoc = space.locationOf(focal);
+//							if (other!=focal)
+//								if (!focal.getRelatives(relContainer.type().id()).contains(other))
+//									if (other.membership().belongsTo(otherCategories))
+//										if (!otherContainer.containsInitialItem(other))
+//											doRelate(t,dt,focal,other,
+//												focalLoc,
+//												space.locationOf(other),
+//												space.boundingBox());
+//					}
+//				}
+//			}
+//		}
+//	}
 
 }

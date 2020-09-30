@@ -54,7 +54,6 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 
 /**
@@ -65,7 +64,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 public class RelationType
 		extends InitialisableNode
 		implements LimitedEdition<RelationContainer>,
-			Related<CategorizedComponent<ComponentContainer>>, Sealable, DefaultStrings {
+			Related<CategorizedComponent>, Sealable, DefaultStrings {
 
 	// predefined values for the type property of SystemRelation
 	public enum predefinedRelationTypes {
@@ -83,7 +82,7 @@ public class RelationType
 	}
 
 	// a little class to record the from and to category lists
-	private class cat implements Categorized<CategorizedComponent<ComponentContainer>> {
+	private class cat implements Categorized<CategorizedComponent> {
 		private SortedSet<Category> categories = new TreeSet<>();
 		private String categoryId = null;
 		private cat(Collection<Category>cats) {
@@ -147,14 +146,14 @@ public class RelationType
 	}
 
 	@Override
-	public Categorized<CategorizedComponent<ComponentContainer>> from() {
+	public Categorized<CategorizedComponent> from() {
 		if (!sealed)
 			initialise();
 		return fromCat;
 	}
 
 	@Override
-	public Categorized<CategorizedComponent<ComponentContainer>> to() {
+	public Categorized<CategorizedComponent> to() {
 		if (!sealed)
 			initialise();
 		return toCat;
