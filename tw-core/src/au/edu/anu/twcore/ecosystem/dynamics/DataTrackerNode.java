@@ -81,15 +81,13 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerXY;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.GroupType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
@@ -97,12 +95,32 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
  * "ecosystem/dynamics/timeLine/timeModel/process/dataTracker" node label in the
  * 3Worlds configuration tree. Had many properties but needs refactoring.
  *
+ * <p>Rules for {@code trackComponent} cross-links:</p>
+ * <dl>
+ * <dt>to  {@code component}:</dt>
+ *  <dd>track this component and forget it if ephemeral. <br/>  {@code trackField} must be data from
+ * this component's  {@code componentType}</dd>
+ *  <dt>to  {@code group}:</dt>
+ *  <dd> 
+ *  <ul>
+ *  <li>if  parent {@code ProcessNode} categories are all found in this group's {@code GroupType}:<br/>
+ *  track this group variables</li>
+ *  <li>otherwise:<br/>
+ *  track  {@code sampleSize} components of this group according to sampling strategy</li>
+ *  </ul>
+ *  </dd>
+ *  <dt>to  {@code GroupType}</dt>
+ *  <dd>track {@code group}s of this  {@code GroupType} according to sampling strategy<br/>
+ *  {@code trackField} must be data from this {@code GroupType}</dd>
+ *  <dt>to system (arena):</dt>
+ *  <dd>track data from the {@code ArenaComponent}; ignore sampling strategy as there is only one arena.
+ *  {@code trackField} must be data from the {@code ArenaComponent}</dd>
+ *  
+ * </dl>
+ *
  * @author Jacques Gignoux - 7 juin 2019
  *
  */
-// NB: now (5/5/2020) population trackers are not needed anymore since populationdata are now in
-// categorizedComponents
-
 public class DataTrackerNode extends InitialisableNode
 		implements LimitedEdition<DataTracker<?, ? extends Metadata>>, Sealable, DefaultStrings {
 
@@ -121,22 +139,17 @@ public class DataTrackerNode extends InitialisableNode
 	private boolean sealed = false;
 	private SamplingMode selection = null;
 	private int sampleSize = 0;
-//	private Grouping grouping = null;
 	private StatisticalAggregatesSet stats = null;
 	private StatisticalAggregatesSet tstats = null;
 //	private boolean viewOthers = false;
 	private Object dataTrackerClass;
-//	private StringTable track = null;
 	private ExtendablePropertyList fieldMetadata = new ExtendablePropertyListImpl();
 	// a map of all table dimensions
 	private Map<String, int[]> tableDims = new HashMap<>();
 	private Map<String, TrackMeta> expandedTrackList = new HashMap<>();
 	// target objects of tracking: groups or systemComponents
-//	private List<LimitedEdition<ComponentContainer>> trackedGroups = new ArrayList<>();
-//	private List<Component> trackedComponents = new ArrayList<>();
 	private List<TreeGraphNode> trackedComponents = new ArrayList<>();
-//	private boolean groupTracker;
-//	private InitialState ecosystemContainer = null;
+	private List<Category> processCategories = null;
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -275,18 +288,17 @@ public class DataTrackerNode extends InitialisableNode
 
 	@SuppressWarnings("unchecked")
 	private void setupComponentTracker() {
-//		groupTracker = false;
 		// list of categories or relations the process applies to
 		List<Node> ln = (List<Node>) get(getParent().edges(Direction.OUT),
 			selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
 			edgeListEndNodes());
-		// get all the variables to track
+		
+		// variables to track
 		if (!ln.isEmpty())
 			// relation variables
 			if (ln.get(0) instanceof RelationType) {
 				// TODO: implement code for relation data trackers
-				// NO: we dont trak anything from a relation process
-				// unless maybe one day there are relation data to track
+				// when there are data in relations (not yet)
 			}
 			// category variables
 			else {
@@ -294,7 +306,6 @@ public class DataTrackerNode extends InitialisableNode
 					selectOneOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),hasTheLabel(E_TRACKTABLE.label()))));
 				SortedMap<String, TrackMeta> fm = new TreeMap<>();
 				for (Node n : ln) {
-//					if (n instanceof Category) {
 					// 1 - get all the info where indexing and full label is not needed (tables)
 					for (Edge e : le) {
 						String trackName = e.endNode().id();
@@ -336,42 +347,11 @@ public class DataTrackerNode extends InitialisableNode
 					setFieldMetadata(tm, trackName);
 				}
 			}
-//		for (Node n : ln) {
-//			if (n instanceof RelationType) {
-//				// TODO: implement code for relation data trackers
-//				// NO: we dont trak anything from a relation process
-//				// unless maybe one day there are relation data tro track
-//			} else ;
-//		}
-		// get the initial components to track
-		// NB: this list either contains initial components OR points to a single group
-		// to be tracked
-		// CAUTION: this is adding the INITIAL components, not the RUNTIME ones
-		List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())));
-		for (Edge e : ll) {
-			if (e.endNode() instanceof ArenaType) {
-				ArenaType ar = (ArenaType) ll.get(0).endNode();
-				trackedComponents.add(ar);
-			}
-			// this is all dead now!
-//			if (ll.get(0).endNode() instanceof Component) {
-//				trackedComponents.add((Component) ll.get(0).endNode());
-//				LimitedEdition<ComponentContainer> tgroup =
-//					(LimitedEdition<ComponentContainer>) trackedComponents.get(0).getParent();
-//				if (tgroup instanceof InitialState)
-//					ecosystemContainer = (InitialState) tgroup;
-//				else
-//					trackedGroups.add(tgroup);
-//			} else
-//				trackedGroups.add((LimitedEdition<ComponentContainer>) ll.get(0).endNode());
-			// end dead code
-			else if (e.endNode() instanceof Component)
-				trackedComponents.add((Component) e.endNode());
-			else if (e.endNode() instanceof Group)
-				trackedComponents.add((Group)e.endNode());
-//			trackedGroups.add((LimitedEdition<ComponentContainer>) trackedComponents.get(0).getParent());
-		}
+		
+		// Objects to track
+		trackedComponents.addAll((List<TreeGraphNode>)get(edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())),
+			edgeListEndNodes()));
 	}
 
 	private void setFieldMetadata(TrackMeta tm, String trackName) {
@@ -394,41 +374,16 @@ public class DataTrackerNode extends InitialisableNode
 				fieldMetadata.addProperty(trackName + P_FIELD_PREC.key(), tm.prec);
 	}
 
-//	@SuppressWarnings("unchecked")
-//	private void setupPopulationTracker() {
-//		groupTracker = true;
-//		List<Edge> trackedEdges = (List<Edge>) get(edges(Direction.OUT),
-//				selectZeroOrMany(hasTheLabel(E_TRACKPOP.label())));
-//		for (Edge e : trackedEdges) {
-//			if (e instanceof ReadOnlyDataHolder) {
-//				ReadOnlyDataHolder rodh = (ReadOnlyDataHolder) e;
-//				if (rodh.properties().hasProperty(P_TRACKPOP_VAR.key())) {
-//					for (PopulationVariables pv : ((PopulationVariablesSet) rodh.properties()
-//							.getPropertyValue(P_TRACKPOP_VAR.key())).values()) {
-//						TrackMeta tm = new TrackMeta();
-//						tm.label = new IndexedDataLabel(pv.shortName());
-//						tm.irange = IntegerRange.valueOf(pv.range());
-//						try {
-//							tm.trackType = Class.forName(pv.type());
-//						} catch (ClassNotFoundException e1) {
-//							e1.printStackTrace();
-//						}
-//						tm.units = pv.units();
-//						setFieldMetadata(tm, pv.shortName());
-//						expandedTrackList.put(tm.label.toString(), tm);
-//					}
-//				}
-//			}
-//			LimitedEdition<ComponentContainer> group = (LimitedEdition<ComponentContainer>) e.endNode();
-//			trackedGroups.add(group);
-//		}
-//	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
+			// record process categories (= trackable data)
+			// NB only category processes can have a data tracker. Hence:
+			processCategories = (List<Category>) get(getParent().edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
+				edgeListEndNodes());
 			// optional properties - if absent take default value
 			if (properties().hasProperty(P_DATATRACKER_SELECT.key()))
 				selection = (SamplingMode) properties().getPropertyValue(P_DATATRACKER_SELECT.key());
@@ -457,11 +412,6 @@ public class DataTrackerNode extends InitialisableNode
 				hasTheLabel(E_TRACKTABLE.label()))));
 			if (!ll.isEmpty())
 				setupComponentTracker();
-			// population tracker - now deprecated
-//			ll = (List<Edge>) get(edges(Direction.OUT),
-//				selectZeroOrMany(hasTheLabel(E_TRACKPOP.label())));
-//			if (!ll.isEmpty())
-//				setupPopulationTracker();
 			// the type of tracker
 			dataTrackerClass = properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
 			sealed = true;
@@ -488,73 +438,45 @@ public class DataTrackerNode extends InitialisableNode
 	private DataTracker<?, ?> makeDataTracker(int index) {
 		AbstractDataTracker<?, ?> result = null;
 		List<CategorizedComponent> ls = new ArrayList<>();
-		DescribedContainer<? extends CategorizedComponent> trackedContainer = null;
+		DescribedContainer<? extends CategorizedComponent> samplingPool = null;
 		for (TreeGraphNode etype:trackedComponents) {
-			if (etype instanceof ArenaType) {
-				trackedContainer = null;
+			if (etype instanceof ArenaType)
 				ls.add((CategorizedComponent)((ArenaType)etype).getInstance(index).getInstance());
-			}
-			else if (etype instanceof Component) {
-				List<? extends CategorizedComponent> cp = ((Component)etype).getInstance(index);
-				// TODO: FLAW HERE the number of initial items may be larger than the rquested sample size!
-				if (!cp.isEmpty()) {
-					ls.addAll(cp);
-					if (cp.get(0) instanceof SystemComponent)
-						trackedContainer = ((SystemComponent) cp.get(0)).container();
-					else if (cp.get(0) instanceof HierarchicalComponent)
-						// TODO: check this one
-						trackedContainer = (DescribedContainer<? extends CategorizedComponent>) 
-							((HierarchicalComponent) cp.get(0)).content().parentContainer();
-				}
-			}
+			else if (etype instanceof Component)
+				// CAUTION: this is adding the INITIAL components, not the RUNTIME ones
+				ls.addAll(((Component)etype).getInstance(index));
 			else if (etype instanceof Group) {
-				GroupComponent gc = ((Group)etype).getInstance(index);
-				ls.add(gc);
-				trackedContainer = gc.container(); 
+				Group group = (Group) etype;
+				List<Category> groupCats = (List<Category>) get(group.getParent().edges(Direction.OUT),
+					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+					edgeListEndNodes());
+				// if the process tracks group data, then track the group
+				if (groupCats.containsAll(processCategories))
+					ls.add(group.getInstance(index));
+				else
+				// if the process tracks component data, then track the group SystemComponents
+					samplingPool = group.getInstance(index).content();
+			}
+			else if (etype instanceof GroupType) {
+				List<Group> groups = (List<Group>) get(etype.getChildren(), 
+					selectOneOrMany(hasTheLabel(N_GROUP.label())));
+				for (Group g:groups)
+					ls.add(g.getInstance(index));
 			}
 		}
 		if (dataTrackerClass.equals(DataTracker0D.class.getName()))
 			result = new DataTracker0D(index,stats, tstats, selection, sampleSize,
-				 (DescribedContainer<CategorizedComponent>) trackedContainer, ls,
+				 (DescribedContainer<CategorizedComponent>) samplingPool, ls,
 				expandedTrackList.keySet(),fieldMetadata);
 		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
 			result = new DataTracker2D(index);
 		}
 		else if (dataTrackerClass.equals(DataTrackerXY.class.getName()))
 			result = new DataTrackerXY(index,selection,
-				(DescribedContainer<CategorizedComponent>) trackedContainer, ls,
+				(DescribedContainer<CategorizedComponent>) samplingPool, ls,
 				expandedTrackList.keySet(),fieldMetadata);
-		// TODO: remove senderId and put it in constructor
-//		if (result != null)
-//			result.setSender(index);
 		return result;
 	}
-// old code
-//	private DataTracker<?, ?> makeDataTracker(int index) {
-//		AbstractDataTracker<?, ?> result = null;
-//		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
-//			List<ComponentContainer> lsc = new ArrayList<ComponentContainer>();
-//			if (ecosystemContainer != null) {
-//				// assuming only 1 component is tracked!
-//				SystemComponent sc = trackedComponents.get(0).getInstance(index);
-//				String gname = defaultPrefix + "group" + nameSeparator + sc.membership().categoryId();
-//				lsc.add((ComponentContainer) ecosystemContainer.getInstance(index).subContainer(gname));
-//			} else
-//				for (LimitedEdition<ComponentContainer> group : trackedGroups)
-//					lsc.add(group.getInstance(index));
-//			List<SystemComponent> ls = new ArrayList<SystemComponent>();
-//			for (Component c : trackedComponents)
-//				ls.add(c.getInstance(index));
-//			result = new DataTracker0D(stats, tstats, selection, sampleSize, lsc, ls, expandedTrackList.keySet(),
-//					fieldMetadata, groupTracker);
-//		} else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
-//			result = new DataTracker2D();
-//		}
-//		if (result != null)
-//			result.setSender(index);
-//		return result;
-//	}
-
 
 	// CAUTION: this method assumes that the widgets have been instantiated AFTER
 	// the DataTrackers
@@ -575,30 +497,6 @@ public class DataTrackerNode extends InitialisableNode
 			dt.sendMetadataTo((GridNode)widget,dt.getInstance());
 		}
 	}
-
-//	public void attachTimeSeriesWidget(DataReceiver<Output0DData, Metadata> widget) {
-//		for (DataTracker<?, Metadata> dt : dataTrackers.values())
-//			if (dt instanceof DataTracker0D) {
-//				((DataTracker0D) dt).addObserver(widget);
-//				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
-//			}
-//	}
-//
-//	public void attachMapWidget(DataReceiver<Output2DData, Metadata> widget) {
-//		for (DataTracker<?, Metadata> dt : dataTrackers.values())
-//			if (dt instanceof DataTracker2D) {
-//				((DataTracker2D) dt).addObserver(widget);
-//				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
-//			}
-//	}
-//
-//	public void attachXYPlotWidget(DataReceiver<OutputXYData, Metadata> widget) {
-//		for (DataTracker<?, Metadata> dt : dataTrackers.values())
-//			if (dt instanceof DataTrackerXY) {
-//				((DataTrackerXY) dt).addObserver(widget);
-//				dt.sendMetadataTo((GridNode) widget, (Metadata) dt.getInstance());
-//			}
-//	}
 
 	@SuppressWarnings("unchecked")
 	@Override

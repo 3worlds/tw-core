@@ -41,7 +41,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
@@ -423,7 +422,6 @@ public class RelationProcess extends AbstractRelationProcess {
 	// NB: two possible optimisations here
 	// * process both ends of a relation in one single pass - changeOtherState enables it
 	// * replace edge list by a map indexed by edge labels -> faster access to the proper edges
-	@SuppressWarnings("unchecked")
 	private void loopOnOthers(double t, double dt, CategorizedComponent focal) {
 		for (SystemRelation sr:focal.getRelations()) {
 			if (sr.membership().to().equals(to())) {

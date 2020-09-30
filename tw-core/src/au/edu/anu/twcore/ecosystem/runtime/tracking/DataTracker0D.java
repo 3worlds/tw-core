@@ -62,37 +62,41 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
  */
 public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 
-//	private static final String rngName = "DataTracker RNG";
-
-	private static String[] propertyKeys = { P_DATATRACKER_SELECT.key(), P_DATATRACKER_STATISTICS.key(),
-			P_DATATRACKER_TABLESTATS.key(), P_DATATRACKER_TRACK.key(), P_DATATRACKER_SAMPLESIZE.key(),
-			Output0DMetadata.TSMETA };
+	// metadata properties
+	private static String[] propertyKeys = { P_DATATRACKER_SELECT.key(), 
+		P_DATATRACKER_STATISTICS.key(),
+		P_DATATRACKER_TABLESTATS.key(), 
+		P_DATATRACKER_TRACK.key(), 
+		P_DATATRACKER_SAMPLESIZE.key(),
+		Output0DMetadata.TSMETA };
 	private SimplePropertyList metaprops;
 	private Output0DMetadata metadata;
 	private int metadataType = -1;
-	private long currentTime = Long.MIN_VALUE;
-	private DataLabel currentItem = null;
 	private Metadata singletonMD = null;
 	// metadata for numeric fields, ie min max units etc.
 	private ReadOnlyPropertyList fieldMetadata = null;
-	// the list of containers in which to search for new components to track
-	private DescribedContainer<CategorizedComponent> trackedGroup = null;
-	// the sampled components
-	private Set<CategorizedComponent> trackedComponents = new HashSet<>();
-
+	
+	// current properties  
+	private long currentTime = Long.MIN_VALUE;
+	private DataLabel currentItem = null;
 	private int trackSampleSize = 0;
+	private boolean trackAll = false;
 	private SamplingMode trackMode;
-	// true if tracking a group, false if tracking components
-	private boolean permanentComponents = false;
-
-//	private Random rng;
+	// true if all tracked components are permanent, false if at least one is ephemeral
+	private boolean permanentComponents = true;
+	
+	// the list of containers in which to search for new components to track
+	private DescribedContainer<CategorizedComponent> samplingPool = null;
+//	private Iterable<CategorizedComponent> samplingPool = null;
+	// the sampled components
+	private Set<CategorizedComponent> sample = new HashSet<>();
 
 	public DataTracker0D(int simulatorId,
 			StatisticalAggregatesSet statistics,
 			StatisticalAggregatesSet tableStatistics,
 			SamplingMode selection,
 			int sampleSize,
-			DescribedContainer<CategorizedComponent> trackedGroup,
+			DescribedContainer<CategorizedComponent> samplingPool,
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
@@ -105,6 +109,8 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(), tableStatistics);
 		metaprops.setProperty(P_DATATRACKER_SAMPLESIZE.key(), sampleSize);
 		trackSampleSize = sampleSize;
+		if (trackSampleSize==-1)
+			trackAll = true;
 		metadata = new Output0DMetadata();
 		for (String s : track) {
 			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
@@ -112,17 +118,18 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 			addMetadataVariable(c, l);
 		}
 		metaprops.setProperty(Output0DMetadata.TSMETA, metadata);
-		this.trackedGroup = trackedGroup;
-		this.trackedComponents.addAll(trackedComponents);
+		this.samplingPool = samplingPool;
+		this.sample.addAll(trackedComponents);
 		if (!trackedComponents.isEmpty()) {
-			for (CategorizedComponent cp: this.trackedComponents)
-				if (cp.isPermanent()) {
-					permanentComponents = true;
+			for (CategorizedComponent cp: this.sample)
+				if (!cp.isPermanent()) {
+					permanentComponents = false;
 					break;
 			}
 		}
-		else if (trackedGroup!=null) {
+		else if (samplingPool!=null) {
 			// TODO: get the permanent value from the group characteristics.
+			// huh? what does this mean?
 		}
 //		// TODO: check this is ok for a RNG - do we want other settings?
 //		Generator gen = RngFactory.find(rngName);
@@ -228,18 +235,14 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 		}
 	}
 
-//	public boolean isTracked(CategorizedContainer<CategorizedComponent> cc) {
-//		return trackedGroup.equals(cc);
-//	}
-
 	// There may be a time bottleneck here
 	public boolean isTracked(CategorizedComponent sc) {
 		boolean result = false;
-		result = trackedComponents.contains(sc);
+		result = sample.contains(sc);
 		if ((!result)&&(sc instanceof SystemComponent)) {
-			CategorizedComponent isc = trackedGroup.initialForItem(sc.id());
+			CategorizedComponent isc = samplingPool.initialForItem(sc.id());
 			if (isc != null)
-				result = trackedComponents.contains(isc);
+				result = sample.contains(isc);
 		}
 		return result;
 	}
@@ -249,111 +252,89 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 	@Override
 	public void updateTrackList() {
 		if (!permanentComponents) {
-			// if we track system components, then trackedGroups only contains one group
-			// first cleanup the tracked list from components which are gone from the
-			// container list
-			Iterator<CategorizedComponent> isc = trackedComponents.iterator();
-			while (isc.hasNext()) {
-				if (!trackedGroup.contains(isc.next()))
-					isc.remove();
+			if (trackAll) {
+				sample.clear();
+				for (CategorizedComponent cc:samplingPool.items())
+					sample.add(cc);
 			}
-
-			if (false) { // means there are not enough components to select them
-	//	TODO: CODE BROKEN HERE
-	//
-	//			if ((trackSampleSize == -1) || // means the whole container is tracked
-	//					(container.populationData().count() <= trackSampleSize)) { // means there are not enough components to select them
-	//				trackedComponents.clear();
-	//				for (SystemComponent sc : container.items())
-	//					trackedComponents.add(sc);
-			}
-			// only a selected subset is tracked
-			else if (trackedComponents.size() < trackSampleSize) {
-				// then proceed to selection
-				boolean goOn = true;
-				switch (trackMode) {
-				case FIRST:
-					while (goOn) {
-						Iterator<? extends CategorizedComponent> list = trackedGroup.items().iterator();
-						CategorizedComponent next = list.next();
-						while (trackedComponents.contains(next))
-							next = list.next();
-						if (next == null)
-							goOn = false;
-						else {
-							trackedComponents.add(next);
-							if (trackedComponents.size() == trackSampleSize)
+			else {
+				// if we track system components, then sample only contains one group
+				// first cleanup the tracked list from components which are gone from the
+				// container list
+				Iterator<CategorizedComponent> isc = sample.iterator();
+				while (isc.hasNext()) {
+					if (!samplingPool.contains(isc.next()))
+						isc.remove();
+				}
+				// only a selected subset is tracked
+				if (sample.size() < trackSampleSize) {
+					// then proceed to selection
+					boolean goOn = true;
+					switch (trackMode) {
+					case FIRST:
+						while (goOn) {
+							Iterator<? extends CategorizedComponent> list = samplingPool.items().iterator();
+							CategorizedComponent next = list.next();
+							while (sample.contains(next))
+								next = list.next();
+							if (next == null)
+								goOn = false; // to stop at end of pool when trackSampleSize is too large
+							else {
+								sample.add(next);
+								if (sample.size() == trackSampleSize)
+									goOn = false;
+							}
+						}
+						break;
+					case RANDOM:
+						// calls to random will crash if argument is zero 
+						goOn = true;
+						LinkedList<CategorizedComponent> ll = new LinkedList<>();
+						for (CategorizedComponent sc : samplingPool.items())
+							ll.add(sc);
+						while (goOn) {
+							int i;
+							CategorizedComponent next = null;
+							if (ll.size()>0)
+								do {
+									i = rng.nextInt(ll.size());
+									next = ll.get(i);
+									ll.remove(i); // if already in sample, no need to draw it again
+								} while ((sample.contains(next))&&(ll.size()>0));
+							if (ll.size()==0)
+								goOn = false;
+							if (next!=null)
+								sample.add(next);
+							if (sample.size() == trackSampleSize)
 								goOn = false;
 						}
-					}
-					break;
-				case RANDOM:
-					goOn = true;
-					LinkedList<CategorizedComponent> ll = new LinkedList<>();
-					for (CategorizedComponent sc : trackedGroup.items())
-						ll.add(sc);
-					while (goOn) {
-	//						int i = RngFactory.find(rngName).getRandom().nextInt(ll.size());
-						int i = rng.nextInt(ll.size());
-						CategorizedComponent next = ll.get(i);
-						while (trackedComponents.contains(next)) {
-	//							i = RngFactory.find(rngName).getRandom().nextInt(ll.size());
-							i = rng.nextInt(ll.size());
-							next = ll.get(i);
+						break;
+					case LAST:
+						goOn = true;
+						while (goOn) {
+							// reverse the list order
+							LinkedList<CategorizedComponent> l = new LinkedList<>();
+							for (CategorizedComponent sc : samplingPool.items())
+								l.addFirst(sc);
+							// as before
+							Iterator<CategorizedComponent> list = l.iterator();
+							CategorizedComponent next = list.next();
+							while (sample.contains(next))
+								next = list.next();
+							if (next == null)
+								goOn = false; // to stop at end of pool when trackSampleSize is too large
+							else {
+								sample.add(next);
+								if (sample.size() == trackSampleSize)
+									goOn = false;
+							}
 						}
-						if (next == null) // this should never happen actually
-							goOn = false;
-						else {
-							trackedComponents.add(next);
-							if (trackedComponents.size() == trackSampleSize)
-								goOn = false;
-							else
-								ll.remove(next); // remove from drawing list
-						}
+						break;
 					}
-					break;
-				case LAST:
-					goOn = true;
-					while (goOn) {
-						// reverse the list order
-						LinkedList<CategorizedComponent> l = new LinkedList<>();
-						for (CategorizedComponent sc : trackedGroup.items())
-							l.addFirst(sc);
-						// as before
-						Iterator<CategorizedComponent> list = l.iterator();
-						CategorizedComponent next = list.next();
-						while (trackedComponents.contains(next))
-							next = list.next();
-						if (next == null)
-							goOn = false;
-						else {
-							trackedComponents.add(next);
-							if (trackedComponents.size() == trackSampleSize)
-								goOn = false;
-						}
-					}
-					break;
 				}
 			}
 		}
 	}
-
-//	// use this for simple property lists, eg Population data
-//	// assumes label = property name
-//	public void record(SimulatorStatus status, ReadOnlyPropertyList props) {
-//		if (hasObservers()) {
-//			Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
-//			tsd.setTime(currentTime);
-//			tsd.setItemLabel(currentItem);
-//			for (DataLabel lab : metadata.intNames())
-//				tsd.setValue(lab, ((Number) props.getPropertyValue(lab.getEnd())).longValue());
-//			for (DataLabel lab : metadata.doubleNames())
-//				tsd.setValue(lab, ((Number) props.getPropertyValue(lab.getEnd())).doubleValue());
-//			for (DataLabel lab : metadata.stringNames())
-//				tsd.setValue(lab, (String) props.getPropertyValue(lab.getEnd()));
-//			sendData(tsd);
-//		}
-//	}
 
 	@Override
 	public Metadata getInstance() {

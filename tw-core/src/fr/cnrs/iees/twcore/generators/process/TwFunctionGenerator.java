@@ -59,7 +59,6 @@ import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -191,8 +190,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
 				if (!arggrp.type().equals("double[]")) {
 					argClasses.add(arggrp.type());
-					if (arggrp.type().contains("CategorizedComponent"))
-						argClasses.add(ComponentContainer.class.getName());
+//					if (arggrp.type().contains("CategorizedComponent"))
+//						argClasses.add(ComponentContainer.class.getName());
 					if (arggrp.type().contains("DynamicSpace")) {
 						argClasses.add(SystemComponent.class.getName());
 						argClasses.add(LocatedSystemComponent.class.getName());
