@@ -164,7 +164,21 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 					item.constants().writeEnable();
 				if (item.currentState()!=null)
 					item.currentState().writeEnable();
-				item.initialiser().setInitialState(null, null, null, item, null, null);
+				CategorizedComponent group = null;
+				CategorizedComponent lifeCycle = null;
+				CategorizedComponent arena = null; 
+				CategorizedComponent cc = descriptors();
+				if (cc instanceof GroupComponent) {
+					group = cc;
+					cc = ((DescribedContainer<?>)((GroupComponent)cc).content().superContainer).descriptors();
+					// TODO: life cycle
+					if (cc instanceof ArenaComponent) {
+						arena = cc;
+					}
+				}
+				else if (cc instanceof ArenaComponent)
+					arena = cc;
+				item.initialiser().setInitialState(arena, lifeCycle, group, item, null, null);
 				if (item.constants()!=null)
 					item.constants().writeDisable();
 				if (item.currentState()!=null)
