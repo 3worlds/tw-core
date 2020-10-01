@@ -240,7 +240,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 		boolean result = false;
 		result = sample.contains(sc);
 		if ((!result)&&(sc instanceof SystemComponent)) {
-			CategorizedComponent isc = samplingPool.initialForItem(sc.id());
+			CategorizedComponent isc = ((SystemComponent)sc).container().initialForItem(sc.id());;
 			if (isc != null)
 				result = sample.contains(isc);
 		}
