@@ -212,6 +212,7 @@ public class CodeGenerator {
 		options.add("-classpath");
 		options.add(System.getProperty("java.class.path"));
 		options.add("-Xlint"); // due to a strange error with DataContainer (usually a warning, actually ??)
+		//options.add("-nowarn");// TODO: TMP: switching off warnings
 		StringWriter errors = new StringWriter();
 		javax.tools.JavaCompiler.CompilationTask task = compiler.getTask(errors, null, null, options, null,
 				compilationUnits);
