@@ -131,10 +131,13 @@ public class SearchProcess
 						// this could be optimised according to relation lifespan
 						// by having two lists of items in space, one for just added items,
 						// one for items added for at least 1 time step
-						if (!focal.getRelatives(relContainer.type().id()).contains(other))
+						if (!focal.getRelatives(relContainer.type().id()).contains(other)) {
+							if (other.container()==null)
+								System.out.println("Stop!");
 							if (!other.container().containsInitialItem(other))
 								if (other.membership().belongsTo(otherCategories)) // slow? check this.
 									executeFunctions(t,dt,focal,other);
+						}
 				}
 			}
 		}

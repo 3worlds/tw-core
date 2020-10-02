@@ -104,6 +104,8 @@ public class Group
 			initialise();
 		if (!groups.containsKey(id)) {
 			// instantiate GroupComponent (with container, and super container)
+			// with this group's id as name
+			groupType.getInstance(id).setName(id());
 			GroupComponent gc = groupType.getInstance(id).newInstance();
 			// fill group with initial values
 			for (TreeNode tn:getChildren())
