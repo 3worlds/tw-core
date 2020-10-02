@@ -238,11 +238,15 @@ public class ComponentProcess
 						// TODO: this is temporary as it is only valid when no lifecycle is present
 						otherGroup = focalGroup;
 						// TODO: finish this call (missing lifecycle, etc)
+						// NB lifecycle must be the same for parent and child.
 						func.setOtherInitialState(t, dt,
 							arena, null, focalGroup, focal,
 							null, otherGroup, newBorn, space, newLoc);
 						if (space!=null) 
 							locate(newBorn,nbs.container,newLoc);
+						// DEBUG: this sometimes happens!
+						if (newBorn.container()==null)
+							System.out.println("Stop! (ComponentProcess.249)");
 					}
 					if (function.relateToOther())
 						focal.relateTo(newBorn,parentTo.key()); // delayed addition
@@ -568,6 +572,38 @@ public class ComponentProcess
 	@Override
 	public String categoryId() {
 		return categoryId;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName())
+			.append(" applies to [")
+			.append(categoryId())
+			.append("]");
+		if (CSfunctions.size()+Dfunctions.size()+COfunctions.size()+CCfunctions.size()>0) {
+			sb.append(" functions {");
+			for (TwFunction f:CSfunctions) sb.append(f.toString()).append(", ");
+			for (TwFunction f:Dfunctions) sb.append(f.toString()).append(", ");
+			for (TwFunction f:COfunctions) sb.append(f.toString()).append(", ");
+			for (TwFunction f:CCfunctions) sb.append(f.toString()).append(", ");
+			if (sb.charAt(sb.length()-2)==',') {
+				sb.deleteCharAt(sb.length()-1);
+				sb.deleteCharAt(sb.length()-1);
+			}
+			sb.append('}');
+		}
+		if (trackers.size()>0) {
+			sb.append(" data trackers {");
+			for (DataTracker<?,?> dt:trackers)
+				sb.append(dt.getClass().getSimpleName()).append(", ");
+			if (sb.charAt(sb.length()-2)==',') {
+				sb.deleteCharAt(sb.length()-1);
+				sb.deleteCharAt(sb.length()-1);
+			}
+			sb.append('}');
+		}
+		return sb.toString();
 	}
 
 	/**

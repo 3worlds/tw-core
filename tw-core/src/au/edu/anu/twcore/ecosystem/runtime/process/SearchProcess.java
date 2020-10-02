@@ -132,8 +132,6 @@ public class SearchProcess
 						// by having two lists of items in space, one for just added items,
 						// one for items added for at least 1 time step
 						if (!focal.getRelatives(relContainer.type().id()).contains(other)) {
-							if (other.container()==null)
-								System.out.println("Stop!");
 							if (!other.container().containsInitialItem(other))
 								if (other.membership().belongsTo(otherCategories)) // slow? check this.
 									executeFunctions(t,dt,focal,other);
@@ -338,5 +336,17 @@ public class SearchProcess
 //			}
 //		}
 //	}
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append(" functions {");
+		for (TwFunction f:RTfunctions) sb.append(f.toString()).append(", ");
+		if (sb.charAt(sb.length()-2)==',') {
+			sb.deleteCharAt(sb.length()-1);
+			sb.deleteCharAt(sb.length()-1);
+		}
+		sb.append('}');
+		return sb.toString();
+	}
 
 }
