@@ -52,27 +52,32 @@ public class ContainerData
 		implements Population {
 
 	// the lists of items which sizes are tracked here
-	final Collection<?> items;
-	final Collection<?> itemsAdded;
-	final Collection<?> itemsRemoved;
+	private final Collection<?> items;
+	private final Collection<?> itemsAdded;
+	private final Collection<?> itemsRemoved;
+	private final DescribedContainer<?> cont; 
 
 	private static String[] propsArray = {COUNT.getter(),NADDED.getter(),NREMOVED.getter()};
 	private static Set<String> props = new HashSet<String>(Arrays.asList(propsArray));
 //	protected static PropertyKeys propsPK = new PropertyKeys(props);
 
-	/** Basic constructor - can be used to track any 3 lists, actually*/
-	public ContainerData(Collection<?> items,
-			Collection<?> itemsAdded,
-			Collection<?> itemsRemoved) {
-		super();
-		this.items = items;
-		this.itemsAdded = itemsAdded;
-		this.itemsRemoved = itemsRemoved;
-	}
+//	/** Basic constructor - can be used to track any 3 lists, actually*/
+//	public ContainerData(Collection<?> items,
+//			Collection<?> itemsAdded,
+//			Collection<?> itemsRemoved) {
+//		super();
+//		this.items = items;
+//		this.itemsAdded = itemsAdded;
+//		this.itemsRemoved = itemsRemoved;
+//	}
 
 	/** constructor for ComponentContainer */
-	public ContainerData(CategorizedContainer<?> container) {
-		this(container.items.values(),container.itemsToAdd,container.itemsToRemove);
+	public ContainerData(DescribedContainer<?> container) {
+		super();
+		cont = container;
+		items = container.items.values();
+		itemsAdded = container.itemsToAdd;
+		itemsRemoved = container.itemsToRemove;
 	}
 
 	// ReadOnlyPropertyList
@@ -117,7 +122,7 @@ public class ContainerData
 
 	@Override
 	public ContainerData clone() {
-		return new ContainerData(items,itemsAdded,itemsRemoved);
+		return new ContainerData(cont);
 	}
 
 	@Override
@@ -127,19 +132,52 @@ public class ContainerData
 
 	// Population
 
+	// recursive
+	private int countSubContainers (int count, CategorizedContainer<?> catcont) {
+		count += catcont.items.size();
+		for (CategorizedContainer<?> cc: catcont.subContainers())
+			count += countSubContainers(count,cc);
+		return count;
+	}
+	
 	@Override
 	public final int count() {
-		return items.size();
+		if (cont.subContainers.isEmpty())
+			return items.size();
+		else
+			return countSubContainers(0,cont);
+	}
+
+	// recursive
+	private int countAddedSubContainers (int count, CategorizedContainer<?> catcont) {
+		count += catcont.itemsToAdd.size();
+		for (CategorizedContainer<?> cc: catcont.subContainers())
+			count += countSubContainers(count,cc);
+		return count;
 	}
 
 	@Override
 	public final int nAdded() {
-		return itemsAdded.size();
+		if (cont.subContainers.isEmpty())
+			return itemsAdded.size();
+		else
+			return countAddedSubContainers(0,cont);
+	}
+
+	// recursive
+	private int countRemovedSubContainers (int count, CategorizedContainer<?> catcont) {
+		count += catcont.itemsToRemove.size();
+		for (CategorizedContainer<?> cc: catcont.subContainers())
+			count += countSubContainers(count,cc);
+		return count;
 	}
 
 	@Override
 	public final int nRemoved() {
-		return itemsRemoved.size();
+		if (cont.subContainers.isEmpty())
+			return itemsRemoved.size();
+		else
+			return countRemovedSubContainers(0,cont);
 	}
 
 	@Override
@@ -170,7 +208,7 @@ public class ContainerData
 
 	@Override
 	protected TwData cloneStructure() {
-		return new ContainerData(items,itemsAdded,itemsRemoved);
+		return new ContainerData(cont);
 	}
 
 	@Override
