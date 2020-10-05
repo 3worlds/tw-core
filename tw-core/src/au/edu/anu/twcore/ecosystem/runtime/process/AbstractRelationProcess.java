@@ -80,6 +80,19 @@ public abstract class AbstractRelationProcess
 	public final Categorized<CategorizedComponent> to() {
 		return relContainer.to();
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName())
+			.append(" applies to [")
+			.append(focalCategoryId)
+			.append("]→[")
+			.append(otherCategoryId)
+			.append("]");
+		return sb.toString();
+	}
+
 
 	public static TwFunctionTypes[] compatibleFunctionTypes = {
 		ChangeOtherCategoryDecision,

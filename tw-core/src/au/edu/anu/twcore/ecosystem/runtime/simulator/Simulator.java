@@ -28,8 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
-import static fr.cnrs.iees.twcore.constants.SimulatorStatus.Final;
-import static fr.cnrs.iees.twcore.constants.SimulatorStatus.Initial;
+import static fr.cnrs.iees.twcore.constants.SimulatorStatus.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -388,7 +387,9 @@ public class Simulator implements Resettable {
 
 	// returns true if stopping condition is met
 	public boolean stop() {
-		boolean finished = stoppingCondition.stop();
+		boolean finished = false;
+		if (status==Active)
+			finished = stoppingCondition.stop();
 		if (finished)
 			status = Final;
 		return finished;

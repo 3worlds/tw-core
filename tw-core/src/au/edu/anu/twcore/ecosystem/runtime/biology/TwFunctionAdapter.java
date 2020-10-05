@@ -168,4 +168,24 @@ public abstract class TwFunctionAdapter implements TwFunction {
 		return rng;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(getClass().getSimpleName());
+		Iterable<? extends TwFunction> csq = getConsequences();
+		if (csq!=null) {
+			sb.append("⇒[");
+			for (TwFunction f: getConsequences())
+				sb.append(f.toString()).append(", ");
+			if (sb.charAt(sb.length()-2)==',') {
+				sb.deleteCharAt(sb.length()-1);
+				sb.deleteCharAt(sb.length()-1);
+			}
+			sb.append(']');
+			if (sb.length()==3)
+				sb.delete(0,sb.length());
+		}
+		return sb.toString();
+	}
+
+	
 }

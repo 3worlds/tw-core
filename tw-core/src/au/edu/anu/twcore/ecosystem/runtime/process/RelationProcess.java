@@ -469,4 +469,19 @@ public class RelationProcess extends AbstractRelationProcess {
 		}
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append(" functions {");
+		for (TwFunction f:COSfunctions) sb.append(f.toString()).append(", ");
+		for (TwFunction f:MRfunctions) sb.append(f.toString()).append(", ");
+		for (TwFunction f:CRfunctions) sb.append(f.toString()).append(", ");
+		if (sb.charAt(sb.length()-2)==',') {
+			sb.deleteCharAt(sb.length()-1);
+			sb.deleteCharAt(sb.length()-1);
+		}
+		sb.append('}');
+		return sb.toString();
+	}
+
 }

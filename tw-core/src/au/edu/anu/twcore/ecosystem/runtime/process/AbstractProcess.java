@@ -87,8 +87,6 @@ public abstract class AbstractProcess
 	@Override
 	public final Sealable seal() {
 		sealed = true;
-//    	trackers.addAll(tsTrackers);
-//    	trackers.addAll(mapTrackers);
  		return this;
 	}
 
