@@ -72,6 +72,14 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 	}
 
 
+	@Override
+	public void removeItem(SystemComponent item) {		
+		super.removeItem(item);
+		for (SystemRelation sr:item.getRelations()) {
+			sr.container().removeItem(sr);
+		}
+	}
+
 	/**
 	 * clears decorators and population counters for next time step,
 	 * only if was changed

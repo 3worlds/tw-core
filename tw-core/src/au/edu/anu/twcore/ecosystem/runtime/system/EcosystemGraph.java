@@ -204,7 +204,6 @@ public class EcosystemGraph
 			arena.getDataTracker().setInitialTime();
 			arena.getDataTracker().recordItem(SimulatorStatus.Initial,this , arena.id());
 		}
-
 	}
 
 	@Override

@@ -127,6 +127,15 @@ public class SearchProcess
 				for (SystemComponent other:lsc) {
 					// focal cannot relate to itself
 					if (other!=focal)
+						
+						
+						if (((SystemComponent) other).container()==null)
+							System.out.println(other.id());
+						else
+
+							
+
+						
 						// do no check already related components [should be done before]
 						// this could be optimised according to relation lifespan
 						// by having two lists of items in space, one for just added items,

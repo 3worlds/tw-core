@@ -262,6 +262,7 @@ public class ComponentProcess
 				tracker.recordItem(focalContext.buildItemId(focal.id()));
 				tracker.record(currentStatus,focal.currentState(),focal.decorators(),focal.autoVar());
 		}
+		
 	}
 
 	// single loop on a container which matches the process categories
