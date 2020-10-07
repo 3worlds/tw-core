@@ -195,7 +195,8 @@ public abstract class AbstractProcess
 	protected void unlocate(SystemComponent sc) {
 		for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
 			((ComponentFactory)sc.membership()).spaces()) {
-			space.removeItem(new LocatedSystemComponent((SystemComponent)sc));
+//			space.removeItem(new LocatedSystemComponent((SystemComponent)sc));
+			space.remove(sc);
 			if (space.dataTracker()!=null)
 				space.dataTracker().deletePoint(sc.container().itemId(sc.id()));
 		}

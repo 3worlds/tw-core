@@ -62,20 +62,9 @@ public interface DynamicSpace<I extends Identity,T extends Located<I,Location>>
 	default Metadata metadata() {
 		return null;
 	}
+	
+	public void add(I item, Location loc);
 
-//	// this one is to be overriden in descendants
-//	@Override
-//	public default double squaredEuclidianDistance(double[] focal, double[] other) {
-//		switch(ndim()) {
-//			case 1:
-//				return Distance.sqr(Distance.distance1D(focal[0],other[0]));
-//			case 2:
-//				return Distance.squaredEuclidianDistance(focal[0],focal[1],other[0],other[1]);
-//			case 3:
-//				return Distance.squaredEuclidianDistance(focal[0],focal[1],focal[2],other[0],other[1],other[2]);
-//			default:
-//				return Distance.squaredEuclidianDistance(Point.newPoint(focal),Point.newPoint(other));
-//		}
-//	}
+	public void remove(I item);
 
 }

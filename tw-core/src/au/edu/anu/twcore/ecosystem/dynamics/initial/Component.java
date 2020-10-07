@@ -192,11 +192,20 @@ public class Component
 						((ConstantValues) tn).fill(sc.constants());
 					}
 				// including spatial coordinates
+				// NEW: if only one instance, use the space coordinate as provided
+				// otherwise, generate random coordinates.
 				for (SpaceNode spn:coordinates.keySet()) {
 					DynamicSpace<SystemComponent,LocatedSystemComponent> sp = spn.getInstance(id);
-					Location loc = sp.makeLocation(coordinates.get(spn));
-					LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
-					sp.addInitialItem(lsc);
+					if (nInstances>1) {
+						Location loc = sp.makeLocation(sp.randomLocation());
+						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
+						sp.addInitialItem(lsc);
+					}
+					else {
+						Location loc = sp.makeLocation(coordinates.get(spn));
+						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
+						sp.addInitialItem(lsc);
+					}
 				}
 				// insert component into container
 				ComponentContainer container = null;

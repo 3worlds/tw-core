@@ -69,7 +69,7 @@ public abstract class HierarchicalComponent
 	}
 
 	@Override
-	public void removeFromContainer() {
+	public void detachFromContainer() {
 	}
 	
 	@Override

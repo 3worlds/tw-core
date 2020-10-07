@@ -122,6 +122,9 @@ public class SearchProcess
 		if (searchRadius>space.precision()) {
 			// dont search if item already related !
 			Iterable<SystemComponent> lsc = space.getItemsWithin(focal,searchRadius);
+			// in all cases: do not add already related stuff. how?
+			// if ephemeral: relative may have moved
+			// if permanent: only remove relative when gone from 
 			if (lsc!=null) {
 				Location focalLoc = space.locationOf(focal);
 				for (SystemComponent other:lsc) {
@@ -130,7 +133,9 @@ public class SearchProcess
 						
 						
 						if (((SystemComponent) other).container()==null)
-							System.out.println(other.id());
+							System.out.println("indexedLoop "+other.id());
+					// those who get this problem were related at time 1 because they had close
+					// locations and then moved to new locs but older relations were maintained
 						else
 
 							
@@ -194,8 +199,9 @@ public class SearchProcess
 		// NB: is an arena ever going to be contained in a space? normally no.
 		else if (component==arena) {
 			if (arena.content()!=null)
-				for (SystemComponent focal:arena.content().allItems(focalCategories)) 
+				for (SystemComponent focal:arena.content().allItems(focalCategories)) {
 					indexedLoop(t,dt,focal);
+				}
 		}
 		
 		

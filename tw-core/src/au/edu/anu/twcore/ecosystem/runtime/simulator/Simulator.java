@@ -68,6 +68,7 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -338,7 +339,12 @@ public class Simulator implements Resettable {
 				for (LocatedSystemComponent lisc : space.getInitialItems())
 					if (lisc.item() == isc) {
 						// locate the initial item clone at the location of the initial item
-						Location initLoc = space.locate(sc, lisc.location());
+						Location initLoc;
+						if (!space.boundingBox().contains(lisc.location().asPoint())) {
+							initLoc = space.locate(sc, Point.newPoint(space.defaultLocation()));
+						}
+						else
+							initLoc = space.locate(sc, lisc.location());
 						// send coordinates to data tracker if needed
 						if (space.dataTracker() != null) {
 							double x[] = new double[initLoc.asPoint().dim()];

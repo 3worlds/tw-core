@@ -153,7 +153,7 @@ public class SystemComponent
 	}
 
 	@Override
-	public void removeFromContainer() {
+	public void detachFromContainer() {
 		container = null;
 	}
 

@@ -100,7 +100,7 @@ public class RelationContainer
 		// delete all old relations
 		for (SystemRelation sr:relationsToRemove) {
 			sr.startNode().disconnectFrom(Direction.OUT,sr.endNode()); // Do NOT use sr.disconnect() --> ConcurrentModificationException
-			sr.removeFromContainer();
+			sr.detachFromContainer();
 		}
 		relationsToRemove.clear();
 		// establish all new relations

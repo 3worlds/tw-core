@@ -52,6 +52,6 @@ public interface Contained<T extends Container> {
 	/**
 	 * deletes its container, making it a free-floating object. Use with caution
 	 */
-	public void removeFromContainer();
+	public void detachFromContainer();
 
 }

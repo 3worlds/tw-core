@@ -123,9 +123,11 @@ public class SpaceNode extends InitialisableNode
 			guardWidth = (double) properties().getPropertyValue(P_SPACE_GUARDAREA.key());
 		if (properties().hasProperty(P_SPACE_OBSWINDOW.key()))
 			obsWindow = (Box) properties().getPropertyValue(P_SPACE_OBSWINDOW.key());
-		rngNode = (RngNode) get(edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_USERNG.label())), endNode());
+		rngNode = (RngNode) get(edges(Direction.OUT), 
+			selectZeroOrOne(hasTheLabel(E_USERNG.label())), endNode());
 		// if at least one widget is listening to this space, add a datatracker to space
-		List<Edge> l = (List<Edge>) get(edges(Direction.IN), selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())));
+		List<Edge> l = (List<Edge>) get(edges(Direction.IN), 
+			selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())));
 		attachDataTrackerToSpace = !l.isEmpty();
 		seal();
 	}

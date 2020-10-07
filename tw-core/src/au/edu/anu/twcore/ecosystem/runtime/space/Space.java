@@ -182,6 +182,8 @@ public interface Space<T> {
 			coords[i] = c.coordinate(i);
 		return coords;
 	}
+	
+	public double[] randomLocation();
 
 	/**
 	 * clears all items EXCEPT those that were located with locateUnclearable

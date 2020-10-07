@@ -143,7 +143,7 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 		resetCounters(); // Pb: values are actually delayed by 1 time step doing this ???
 		for (String id : itemsToRemove) {
 			SystemComponent sc = items.remove(id);
-			((SystemComponent)sc).removeFromContainer();
+			((SystemComponent)sc).detachFromContainer();
 			if (sc != null) {
 //				populationData.count--;
 //				populationData.nRemoved++;

@@ -31,8 +31,6 @@ package au.edu.anu.twcore.ecosystem.runtime.space;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -98,9 +96,9 @@ public abstract class SpaceAdapter
 	 /** A RNG available to descendants to create jitter around locations if needed */
 	protected Random jitterRNG = null;
 	/** list of SystemComponents to insert later */
-	private List<LocatedSystemComponent> toInsert = new LinkedList<>();
+	private Set<LocatedSystemComponent> toInsert = new HashSet<>();
 	/** list of SystemComponents to delete later */
-	private List<SystemComponent> toDelete = new LinkedList<>();
+	private Set<SystemComponent> toDelete = new HashSet<>();
 	/** list of initial SystemComponents */
 	private Set<LocatedSystemComponent> initialComponents = new HashSet<>();
 	/** mapping of cloned item to their initial components */
@@ -226,12 +224,22 @@ public abstract class SpaceAdapter
 		// CAUTION: what happens if the system is to be deleted in containers after relocation?
 		toInsert.add(item);
 	}
+	
+	@Override
+	public final void add(SystemComponent item, Location loc) {
+		addItem(new LocatedSystemComponent(item,loc));
+	}
 
 	@Override
 	public final void removeItem(LocatedSystemComponent item) {
 		toDelete.add(item.item());
 	}
 
+	@Override
+	public final void remove(SystemComponent item) {
+		toDelete.add(item);
+	}
+	
 	// This is called after all graph changes (structure and state)
 	@Override
 	public final void effectChanges() {
@@ -435,6 +443,16 @@ public abstract class SpaceAdapter
 	@Override
 	public final Box observationWindow() {
 		return obsWindow;
+	}
+
+	
+	
+	@Override
+	public double[] randomLocation() {
+		double[] result = new double[limits.dim()];
+		for (int i=0; i<result.length; i++)
+			result[i] = limits.lowerBound(i) + rng.nextDouble()*limits.sideLength(i);
+		return result;
 	}
 
 	@Override

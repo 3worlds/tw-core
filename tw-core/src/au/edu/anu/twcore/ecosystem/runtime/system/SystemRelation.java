@@ -77,7 +77,7 @@ public class SystemRelation extends ALDataEdge implements Contained<RelationCont
 	}
 
 	@Override
-	public void removeFromContainer() {
+	public void detachFromContainer() {
 		container = null;
 	}
 
