@@ -266,11 +266,11 @@ public abstract class SpaceAdapter
 		initialComponents.addAll(items);
 	}
 
-	@Override
-	public final void setInitialItems(Iterable<LocatedSystemComponent> items) {
-		for (LocatedSystemComponent lsc:items)
-			initialComponents.add(lsc);
-	}
+//	@Override
+//	public final void setInitialItems(Iterable<LocatedSystemComponent> items) {
+//		for (LocatedSystemComponent lsc:items)
+//			initialComponents.add(lsc);
+//	}
 
 	@Override
 	public final void addInitialItem(LocatedSystemComponent item) {

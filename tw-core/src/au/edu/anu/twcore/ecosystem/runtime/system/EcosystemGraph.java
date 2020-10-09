@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +75,7 @@ public class EcosystemGraph
 	}
 
 	@Override
-	public Iterable<SystemComponent> nodes() {
+	public Collection<SystemComponent> nodes() {
 		if (components!=null)
 			return components.allItems();
 		return null;
@@ -119,11 +120,11 @@ public class EcosystemGraph
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Iterable<SystemRelation> edges() {
+	public Collection<SystemRelation> edges() {
 		QuickListOfLists<SystemRelation> ql = new QuickListOfLists<>();
 		if (components!=null)
 			for (SystemComponent sc:components.allItems())
-				ql.addList((Iterable<SystemRelation>)sc.edges(Direction.OUT));
+				ql.addList((Collection<SystemRelation>)sc.edges(Direction.OUT));
 		return ql;
 	}
 

@@ -58,12 +58,12 @@ public interface ResettableContainer<T extends Identity> extends Container {
 	 */
 	public void setInitialItems(Collection<T> items);
 
-	/**
-	 * Add any list of items to a container
-	 *
-	 * @param items an Iterable of items to add
-	 */
-	public void setInitialItems(Iterable<T> items);
+//	/**
+//	 * Add any list of items to a container
+//	 *
+//	 * @param items an Iterable of items to add
+//	 */
+//	public void setInitialItems(Iterable<T> items);
 
 	/**
 	 * Add a single initialItem to a container

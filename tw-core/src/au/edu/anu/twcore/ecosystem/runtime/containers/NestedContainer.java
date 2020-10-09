@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.containers;
 
+import java.util.Collection;
+
 import fr.cnrs.iees.identity.Identity;
 
 /**
@@ -62,7 +64,7 @@ public interface NestedContainer<T extends Identity> extends Container {
 	 *
 	 * @return a read-only container list
 	 */
-	public Iterable<? extends SimpleContainer<T>> subContainers();
+	public Collection<? extends SimpleContainer<T>> subContainers();
 
 
 	public NestedContainer<T> parentContainer();
@@ -74,7 +76,7 @@ public interface NestedContainer<T extends Identity> extends Container {
 	 *
 	 * @return a read-only list of items
 	 */
-	public Iterable<T> allItems();
+	public Collection<T> allItems();
 
 	/** counts the total number of items, including those of subContainers */
 //	public int totalCount();

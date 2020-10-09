@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -185,11 +186,11 @@ public abstract class CategorizedContainer<T extends Identity>
 		initialItems.addAll(items);
 	}
 
-	public void setInitialItems(Iterable<T> items) {
-		initialItems.clear();
-		for (T item : items)
-			initialItems.add(item);
-	}
+//	public void setInitialItems(Iterable<T> items) {
+//		initialItems.clear();
+//		for (T item : items)
+//			initialItems.add(item);
+//	}
 
 	public void addInitialItem(T item) {
 		initialItems.add(item);
@@ -293,8 +294,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * @return a read-only item list
 	 */
 	@Override
-	public Iterable<T> items() {
-		return items.values();
+	public Collection<T> items() {
+		return Collections.unmodifiableCollection(items.values());
 	}
 
 	/**
@@ -341,8 +342,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * @return a read-only container list
 	 */
 	@Override
-	public Iterable<CategorizedContainer<T>> subContainers() {
-		return subContainers.values();
+	public Collection<CategorizedContainer<T>> subContainers() {
+		return Collections.unmodifiableCollection(subContainers.values());
 	}
 
 	// Recursive
@@ -360,7 +361,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * @return a read-only list of items
 	 */
 	@Override
-	public Iterable<T> allItems() {
+	public Collection<T> allItems() {
 		QuickListOfLists<T> l = new QuickListOfLists<T>();
 		addItems(l, this);
 		return l;
@@ -382,7 +383,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * @param requestedCats the required categories
 	 * @return a read-only list of items
 	 */
-	public Iterable<T> allItems(Set<Category> requestedCats) {
+	public Collection<T> allItems(Set<Category> requestedCats) {
 		QuickListOfLists<T> l = new QuickListOfLists<T>();
 		addItems(l, this, requestedCats);
 		return l;

@@ -30,8 +30,8 @@
 	</publications>
 
 	<dependencies>
-		<dependency org="fr.ens.biologie" name="generics" rev="[0.2.0,)"/>
-		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="[0.3.0,)"/>
+		<dependency org="fr.ens.biologie" name="generics" rev="[0.2.1,)"/>
+		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="[0.4.0,)"/>
 		<dependency org="au.edu.anu.rscs.aot" name="qgraph" rev="[0.1.3,)"/>
 		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="[0.1.8,)"/>
 		<dependency org="fr.cnrs.iees.rvgrid" name="rvgrid" rev="[0.0.3,)"/>

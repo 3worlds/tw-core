@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.containers;
 
+import java.util.Collection;
+
 import fr.cnrs.iees.identity.Identity;
 
 /**
@@ -37,17 +39,6 @@ import fr.cnrs.iees.identity.Identity;
  *
  */
 public interface SimpleContainer<T extends Identity> extends Container {
-
-	/**
-	 * Returns the {@linkplain Population} data associated to this container.
-	 * Population data are automatic variables added to any container (they include
-	 * such things as number of items, number of newly created and deleted items).
-	 * Population data are computed internally depending on the dynamics of the
-	 * items stored in the container.
-	 *
-	 * @return the population data as a read-only property list
-	 */
-//	public ContainerData populationData(); // TODO: temporary
 
 	/**
 	 * Gets the item matching the id passed as argument. Only searches this
@@ -64,7 +55,7 @@ public interface SimpleContainer<T extends Identity> extends Container {
 	 *
 	 * @return a read-only item list
 	 */
-	public Iterable<T> items();
+	public Collection<T> items();
 
 	public boolean contains(T item);
 
