@@ -1036,8 +1036,7 @@ public class DocoGenerator {
 
 			List<TreeGraphDataNode> comps = (List<TreeGraphDataNode>) get(t.edges(Direction.OUT),
 //					selectZeroOrMany(orQuery(hasTheLabel(E_TRACKCOMPONENT.label()), hasTheLabel(E_TRACKPOP.label()))),
-					selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())),
-					edgeListEndNodes());
+					selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())), edgeListEndNodes());
 
 			sb = new StringBuilder();
 			for (TreeGraphDataNode comp : comps)
@@ -1803,7 +1802,9 @@ public class DocoGenerator {
 				kRange = P_FIELD_RANGE.key();
 				kInterval = P_FIELD_INTERVAL.key();
 			}
-			String desc = (String) n.properties().getPropertyValue(kDesc);
+			String desc = "";
+			if (n.properties().hasProperty(kDesc))
+				desc = (String) n.properties().getPropertyValue(kDesc);
 			desc = desc.trim();
 
 			int[][] sizes = Record.collectDims(item);
