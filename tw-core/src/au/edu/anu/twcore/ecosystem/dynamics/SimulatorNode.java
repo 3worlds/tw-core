@@ -184,7 +184,7 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 		}
 		// *** finally, instantiate simulator
 		Simulator sim = new Simulator(index, rootStop, timeLine, timeModels, timers, timeModelMasks.clone(), pco, spo,
-				ecosystem);
+				ecosystem,scnodes.isEmpty());
 		rootStop.attachSimulator(sim);
 		return sim;
 	}

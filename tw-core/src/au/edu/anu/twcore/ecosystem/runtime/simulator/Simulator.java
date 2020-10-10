@@ -161,6 +161,7 @@ public class Simulator implements Resettable {
 	 * @param timeModelMasks
 	 * @param processCallingOrder
 	 * @param ecosystem
+	 * @param haveStoppingConditions 
 	 */
 	@SuppressWarnings("unchecked")
 	public Simulator(int id,
@@ -171,7 +172,7 @@ public class Simulator implements Resettable {
 			int[] timeModelMasks,
 			Map<Integer, List<List<TwProcess>>> processCallingOrder,
 			SpaceOrganiser space,
-			EcosystemGraph ecosystem) {
+			EcosystemGraph ecosystem, boolean noStoppingConditions) {
 		super();
 		log.info("START Simulator " + id + " instantiated");
 		this.id = id;
@@ -188,6 +189,14 @@ public class Simulator implements Resettable {
 		timetracker = new TimeTracker();
 //		timetracker.setSender(id);
 		metadata = new Metadata(id, refTimer.properties());
+		
+		String scDesc = stoppingCondition.toString();
+		if (noStoppingConditions)//i.e. not the default stopping condition
+			scDesc = "(never)";
+		
+		// Add the description of the stopping condition for display by widgets if required
+		metadata.addProperty("StoppingDesc", scDesc);
+		
 		trackers.put(timetracker, metadata);
 		for (List<List<TwProcess>> llp : processCallingOrder.values())
 			for (List<TwProcess> lp : llp)
