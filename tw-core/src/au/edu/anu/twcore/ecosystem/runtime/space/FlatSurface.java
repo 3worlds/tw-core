@@ -28,10 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -41,16 +39,17 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
-import fr.cnrs.iees.uit.indexing.BoundedRegionIndexingTree;
-import fr.cnrs.iees.uit.indexing.ExpandingRegionIndexingTree;
-import fr.cnrs.iees.uit.indexing.RegionIndexingTree;
+import fr.cnrs.iees.uit.indexing.ExpandingLimitedPrecisionIndexingTree;
+import fr.cnrs.iees.uit.indexing.LimitedPrecisionIndexingTree;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 import fr.cnrs.iees.uit.space.Sphere;
-import fr.cnrs.iees.uit.space.SphereImpl;
 
 /**
  * A spatial representation of a rectangular flat surface.
+ * Locations are known to a given precision that must be passed as an argument to the constructor.
+ * Internally, coordinates are stored as longs computed from real (double) coordinates truncated to
+ * precision.
  *
  * @author Jacques Gignoux - 28 janv. 2020
  *
@@ -59,18 +58,16 @@ public class FlatSurface extends SpaceAdapter {
 
 	private static final int ndim = SpaceType.continuousFlatSurface.dimensions();
 
+	// Locations for this space - just a 2D Point
 	private class flatSurfaceLocation implements Location {
 		protected Point loc;
-		protected Point locDeviation;
 		protected flatSurfaceLocation(double...xyloc) {
 			super();
-			double p = precision();
-			double x = Math.floor(xyloc[0]/p)*p; // truncates location to nearest precision unit
-			double y = Math.floor(xyloc[1]/p)*p; // truncates location to nearest precision unit
-			loc = Point.newPoint(x,y);
-			// replace truncated part by a random dev to make sure two positions are never exactly the same
-			locDeviation = Point.newPoint(jitterRNG.nextDouble()*p,jitterRNG.nextDouble()*p);
-//			checkLocation(this);
+			loc = Point.newPoint(xyloc);
+		}
+		protected flatSurfaceLocation(Point p) {
+			super();
+			loc = p;
 		}
 		@Override
 		public Point asPoint() {
@@ -82,9 +79,9 @@ public class FlatSurface extends SpaceAdapter {
 		}
 	}
 
-	private Map<SystemComponent,Location> locatedItems = new HashMap<>();
+	private Map<SystemComponent,Point> locatedItems = new HashMap<>();
 
-	private RegionIndexingTree<SystemComponent> indexer;
+	private LimitedPrecisionIndexingTree<SystemComponent> indexer;
 
 	public FlatSurface(double xmin, double xmax, double ymin, double ymax,
 			double prec, String units, BorderType[][] bt, Box guard, double guardWidth,
@@ -95,10 +92,10 @@ public class FlatSurface extends SpaceAdapter {
 			(upperBorderTypes[1]==BorderType.infinite)||
 			(lowerBorderTypes[0]==BorderType.infinite)||
 			(lowerBorderTypes[1]==BorderType.infinite)) {
-			indexer = new ExpandingRegionIndexingTree<>(boundingBox());
+			indexer = new ExpandingLimitedPrecisionIndexingTree<>(boundingBox(),prec);
 		}
 		else
-			indexer = new BoundedRegionIndexingTree<>(boundingBox());
+			indexer = new LimitedPrecisionIndexingTree<>(boundingBox(),prec);
 	}
 
 	@Override
@@ -114,12 +111,10 @@ public class FlatSurface extends SpaceAdapter {
 
 	@Override
 	public Location locate(SystemComponent focal, double...location) {
-		flatSurfaceLocation at = new flatSurfaceLocation(location);
+		Point at = Point.newPoint(location);
 		locatedItems.put(focal,at);
-		// new item is located in the quadtree in the square to the right and above its loc
-		// by 1 precision unit
-		indexer.insert(focal,Point.add(at.loc,at.locDeviation));
-		return at;
+		indexer.insert(focal,at);
+		return makeLocation(at);
 	}
 
 	@Override
@@ -130,38 +125,21 @@ public class FlatSurface extends SpaceAdapter {
 
 	@Override
 	public Iterable<SystemComponent> getNearestItems(SystemComponent item) {
-		flatSurfaceLocation at = (flatSurfaceLocation) locatedItems.get(item);
-		// get the closest SystemComponent
-		SystemComponent closest = indexer.getNearestItem(locatedItems.get(item).asPoint());
-		List<SystemComponent> result = new ArrayList<>();
-		// closest might be within <precision> distance of item
-		// in this case we must search the square box of side <precision> for all
-		// other items because they are considered at the same location
-		Box jitterBox = Box.boundingBox(at.loc,Point.add(at.loc,precision()));
-		if (jitterBox.contains(locatedItems.get(closest).asPoint())) // maybe wrong here - this is not exact location
-			for (SystemComponent sc:indexer.getItemsWithin(jitterBox))
-				result.add(sc);
-		// if nothing else was found in the box, or if closest was further away
-		// then it's the only result to return
-		if (result.isEmpty())
-			result.add(closest);
-		return result;
+		return indexer.getNearestItems(locatedItems.get(item));
 	}
 
 	@Override
 	public Iterable<SystemComponent> getItemsWithin(SystemComponent item, double distance) {
 		if (item==null)
 			System.out.println("Null system component passed to getItemsWithin(...)");
-		Location lok = locatedItems.get(item);
-		Point p = lok.asPoint();
-//		Sphere itemSphere = new SphereImpl(locatedItems.get(item).asPoint(),distance);
-		Sphere itemSphere = new SphereImpl(p,distance);
+		Point p = locatedItems.get(item);
+		Sphere itemSphere = Sphere.newSphere(p,distance);
 		return indexer.getItemsWithin(itemSphere);
 	}
 
 	@Override
 	public Location locationOf(SystemComponent focal) {
-		return locatedItems.get(focal);
+		return makeLocation(locatedItems.get(focal));
 	}
 
 	@Override
@@ -184,7 +162,7 @@ public class FlatSurface extends SpaceAdapter {
 
 	@Override
 	public void clear() {
-		indexer = new BoundedRegionIndexingTree<>(boundingBox());
+		indexer.clear();
 		locatedItems.clear();
 	}
 
@@ -195,10 +173,7 @@ public class FlatSurface extends SpaceAdapter {
 
 	@Override
 	public Location makeLocation(Point point) {
-		double[] d = new double[point.dim()];
-		for (int i=0; i< d.length; i++)
-			d[i] = point.coordinate(i);
-		return new flatSurfaceLocation(d);
+		return new flatSurfaceLocation(point);
 	}
 
 	@Override
@@ -214,30 +189,34 @@ public class FlatSurface extends SpaceAdapter {
 		return false;
 	}
 
+	// NOTICE that now the full limit of the underlying space indexer is not reachable
+	// only the required limits set at creation are accessible.
+	// This because the indexer limits are a square of size 2^n > real limits
+	
 	@Override
 	public Box boundingBox() {
-		if (indexer instanceof ExpandingRegionIndexingTree) {
-			Box reg = super.boundingBox();
-			double xmin = reg.lowerBound(0);
-			double xmax = reg.upperBound(0);
-			double ymin = reg.lowerBound(1);
-			double ymax = reg.upperBound(1);
-			if (lowerBorderTypes[0]==BorderType.infinite)
-				if (indexer.region()!=null)
-					xmin = indexer.region().lowerBound(0);
-			if (upperBorderTypes[0]==BorderType.infinite)
-				if (indexer.region()!=null)
-					xmax = indexer.region().upperBound(0);
-			if (lowerBorderTypes[1]==BorderType.infinite)
-				if (indexer.region()!=null)
-					ymin = indexer.region().lowerBound(1);
-			if (upperBorderTypes[1]==BorderType.infinite)
-				if (indexer.region()!=null)
-					ymax = indexer.region().upperBound(1);
-			reg = Box.boundingBox(Point.newPoint(xmin,ymin), Point.newPoint(xmax,ymax));
-			return reg;
-		}
-		else
+//		if (indexer instanceof ExpandingLimitedPrecisionIndexingTree) {
+//			Box reg = super.boundingBox();
+//			double xmin = reg.lowerBound(0);
+//			double xmax = reg.upperBound(0);
+//			double ymin = reg.lowerBound(1);
+//			double ymax = reg.upperBound(1);
+//			if (lowerBorderTypes[0]==BorderType.infinite)
+//				if (indexer.region()!=null)
+//					xmin = indexer.root().lowerBounds.coordinate(0);
+//			if (upperBorderTypes[0]==BorderType.infinite)
+//				if (indexer.region()!=null)
+//					xmax = indexer.region().upperBound(0);
+//			if (lowerBorderTypes[1]==BorderType.infinite)
+//				if (indexer.region()!=null)
+//					ymin = indexer.region().lowerBound(1);
+//			if (upperBorderTypes[1]==BorderType.infinite)
+//				if (indexer.region()!=null)
+//					ymax = indexer.region().upperBound(1);
+//			reg = Box.boundingBox(Point.newPoint(xmin,ymin), Point.newPoint(xmax,ymax));
+//			return reg;
+//		}
+//		else
 			return super.boundingBox();
 	}
 
