@@ -61,9 +61,9 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 		super(DataMessageTypes.SPACE,simId);
 		metadata = new Metadata(simId,meta);
 		setInitialTime();
-
 //		setSender(simId);
 	}
+	
 	public void setInitialTime() {
 		DateTimeType dtt = (DateTimeType) metadata.properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
 		currentTime = dtt.getDateTime();
@@ -99,36 +99,9 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 		sendData(ctMessage);
 	}
 
-//	@Deprecated
-//	public void recordItem(SimulatorStatus status, double[] coord, String... labels) {
-//		SpaceData msg = new SpaceData(status, senderId, metadata.type());
-//		msg.setTime(currentTime);
-//		msg.setItemLabel(labels);
-//		msg.newLocation(coord);
-//		sendData(msg);
-//	}
-//
-//	@Deprecated
-//	public void removeItem(SimulatorStatus status, String... labels) {
-//		SpaceData msg = new SpaceData(status, senderId, metadata.type());
-//		msg.setTime(currentTime);
-//		msg.deleteLocation(labels);
-//		sendData(msg);
-//	}
-
 	@Override
 	public Metadata getInstance() {
 		return metadata;
 	}
 	
-//	@Deprecated
-//	public void recordItem(SimulatorStatus status, Point start, Point end, String... labels) {
-//		SpaceData msg = new SpaceData(status, senderId, metadata.type());
-//		msg.setTime(currentTime);
-//		msg.setItemLabel(labels);
-//		msg.newLine(start,end);
-//		sendData(msg);
-//	}
-
-
 }

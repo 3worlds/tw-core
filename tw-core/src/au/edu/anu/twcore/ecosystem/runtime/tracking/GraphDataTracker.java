@@ -30,7 +30,6 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.RuntimeGraphData;
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
@@ -63,18 +62,6 @@ public class GraphDataTracker extends AbstractDataTracker<RuntimeGraphData, Meta
 	@Override
 	public Metadata getInstance() {
 		return metadata;
-	}
-
-	@Override
-	public void recordItem(String... labels) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void record(SimulatorStatus status, TwData... props) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void setInitialTime() {

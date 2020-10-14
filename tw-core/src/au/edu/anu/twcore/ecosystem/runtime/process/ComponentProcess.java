@@ -58,6 +58,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
@@ -172,9 +173,9 @@ public class ComponentProcess
 			// also remove from space !!!
 			unlocate((SystemComponent)focal);
 			// remove from tracklist if dead - safe, data sending has already been made
-			for (DataTracker<?,Metadata> tracker:trackers)
+			for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 				if (tracker.isTracked(focal))
-					tracker.removeTrackedItem((SystemComponent) focal);
+					tracker.removeFromSample((SystemComponent) focal);
 			// if present, spreads some values to other components
 			// (e.g. "decomposition", or "erosion")
 			for (ChangeOtherStateFunction consequence:function.getConsequences()) {
@@ -257,7 +258,7 @@ public class ComponentProcess
 		}
 
 		// call data trackers AFTER computations so that decorators are different from zero
-		for (DataTracker<?,Metadata> tracker:trackers)
+		for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 			if (tracker.isTracked(focal)) {
 				tracker.recordItem(focalContext.buildItemId(focal.id()));
 				tracker.record(currentStatus,focal.currentState(),focal.decorators(),focal.autoVar());

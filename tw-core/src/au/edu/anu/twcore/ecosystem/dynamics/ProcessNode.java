@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 
 import au.edu.anu.rscs.aot.collections.DynamicList;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
@@ -39,7 +40,9 @@ import au.edu.anu.twcore.ecosystem.runtime.process.RelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
@@ -178,7 +181,8 @@ public class ProcessNode
 		List<DataTrackerNode> ldt = (List<DataTrackerNode>) get(getChildren(),
 			selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
 		for (DataTrackerNode dt:ldt) {
-			result.addDataTracker(dt.getInstance(index));
+			result.addDataTracker((SamplerDataTracker<CategorizedComponent,?,Metadata>)
+				dt.getInstance(index));
 		}
 		result.seal();
 		return result;

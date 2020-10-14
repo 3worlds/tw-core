@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime;
 
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.rvgrid.observer.Observable;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
@@ -60,14 +59,14 @@ import fr.ens.biologie.generic.Singleton;
  *
  */
 public interface DataTracker<T, M>
-		extends Observable<DataReceiver<T, M>>, Singleton<M>, Resettable, DataRecorder {
+		extends Observable<DataReceiver<T, M>>, Singleton<M>, Resettable {
 
 	/**
 	 * Removes an observer from this data tracker's list
 	 *
 	 * @param observer the observer to remove.
 	 */
-	public void removeObserver(DataReceiver<T, M> observer);
+//	public void removeObserver(DataReceiver<T, M> observer);
 
 	/**
 	 * Sends a data record of class {@code T} to all its observers
@@ -98,13 +97,6 @@ public interface DataTracker<T, M>
 	 *
 	 * @return true if this data tracker has observers, false otherwise.
 	 */
-	public boolean hasObservers();
-
-//	public boolean hasObserver(DataReceiver<T,M> dr);
-
-	public void updateTrackList();
-
-	public void removeTrackedItem(SystemComponent wasTracked);
-
+//	public boolean hasObservers();
 
 }

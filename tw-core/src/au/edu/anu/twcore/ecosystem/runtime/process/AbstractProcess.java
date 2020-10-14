@@ -29,9 +29,10 @@
 package au.edu.anu.twcore.ecosystem.runtime.process;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import au.edu.anu.twcore.data.runtime.Metadata;
-import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.Spatialized;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
@@ -40,12 +41,14 @@ import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.ens.biologie.generic.Sealable;
@@ -72,7 +75,7 @@ public abstract class AbstractProcess
 	protected double searchRadius = 0.0;
 	protected double currentTime = 0.0;
 
-	protected List<DataTracker<?,Metadata>> trackers = new ArrayList<>();
+	protected List<SamplerDataTracker<CategorizedComponent,?,Metadata>> trackers = new ArrayList<>();
 
 	public AbstractProcess(ArenaComponent world, Timer timer,
 			DynamicSpace<SystemComponent,LocatedSystemComponent> space,
@@ -118,14 +121,9 @@ public abstract class AbstractProcess
 ////			tracker.setSender(id);
 //	}
 
-	public void addDataTracker(DataTracker<?,Metadata> tracker) {
-		if (!isSealed()) {
+	public void addDataTracker(SamplerDataTracker<CategorizedComponent,?,Metadata> tracker) {
+		if (!isSealed())
 			trackers.add(tracker);
-//			if (tracker instanceof DataTracker0D)
-//				tsTrackers.add((DataTracker0D) tracker);
-//			else if (tracker instanceof DataTracker2D)
-//				mapTrackers.add((DataTracker2D) tracker);
-		}
 	}
 
 	public final double time() {
@@ -133,8 +131,8 @@ public abstract class AbstractProcess
 	}
 
 	@Override
-	public Iterable<DataTracker<?,Metadata>> dataTrackers() {
-		return trackers;
+	public Collection<SamplerDataTracker<CategorizedComponent,?,Metadata>> dataTrackers() {
+		return Collections.unmodifiableCollection(trackers);
 	}
 
 	@Override
@@ -142,7 +140,7 @@ public abstract class AbstractProcess
 		currentStatus = status;
 		currentTime = timer.userTime(t);
 //		for (DataTracker0D tracker:tsTrackers)
-		for (DataTracker<?,Metadata> tracker:trackers)
+		for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 			tracker.recordTime(t);
 		if (space!=null)
 			if (space.dataTracker()!=null)

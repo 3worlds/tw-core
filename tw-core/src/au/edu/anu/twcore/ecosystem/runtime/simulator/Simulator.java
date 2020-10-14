@@ -37,12 +37,11 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
-//import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.Timeline;
-//import au.edu.anu.twcore.ecosystem.dynamics.TimeModel;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.Sampler;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
@@ -101,6 +100,10 @@ public class Simulator implements Resettable {
 					output.setSpaces(null);
 				sendData(output);
 			}
+		}
+		@Override
+		public Metadata getInstance() {
+			return null;
 		}
 	}
 
@@ -324,7 +327,8 @@ public class Simulator implements Resettable {
 				for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
 					space.effectChanges();
 			for (DataTracker<?, Metadata> tracker : trackers.keySet())
-				tracker.updateTrackList();
+				if (tracker instanceof Sampler)
+					((Sampler<?>)tracker).updateSample();
 		}
 	}
 

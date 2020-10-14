@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import au.edu.anu.twcore.data.runtime.Metadata;
 
@@ -39,28 +40,58 @@ import au.edu.anu.twcore.data.runtime.Metadata;
  * @author Jacques Gignoux - 1 oct. 2019
  *
  */
-public class DataTracker2D extends AbstractDataTracker<Output2DData, Metadata> {
+public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Output2DData, Metadata> {
 
 	public DataTracker2D(int simulatorId) {
 		super(DataMessageTypes.DIM2,simulatorId);
 	}
 
 	@Override
+	public void updateSample() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeFromSample(CategorizedComponent wasTracked) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToSample(CategorizedComponent toTrack) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isTracked(CategorizedComponent item) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
 	public void recordTime(long time) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void recordItem(String... labels) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void record(SimulatorStatus status, TwData... props) {
 		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public Metadata getInstance() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
+import java.util.Collection;
+
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 
 /**
@@ -39,6 +41,6 @@ import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
  */
 public interface MultipleDataTrackerHolder<M> {
 	
-	public Iterable<? extends DataTracker<?,M>> dataTrackers();
+	public Collection<? extends DataTracker<?,M>> dataTrackers();
 
 }

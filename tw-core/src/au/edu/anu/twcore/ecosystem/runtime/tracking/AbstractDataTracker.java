@@ -33,10 +33,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
-import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
@@ -47,7 +44,6 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
-import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -114,7 +110,7 @@ public abstract class AbstractDataTracker<T, M>
 
 	@SuppressWarnings("unlikely-arg-type")
 	@Override
-	public void sendMetadataTo(GridNode gn, M meta) {
+	public final void sendMetadataTo(GridNode gn, M meta) {
 		if (observers.contains(gn)) {
 			log.info("Sending data to receiver " + gn.toString());
 			RVMessage dataMessage = new RVMessage(DataMessageTypes.METADATA, meta, this, gn);
@@ -124,54 +120,8 @@ public abstract class AbstractDataTracker<T, M>
 	}
 
 	@Override
-	public boolean hasObservers() {
+	public final boolean hasObservers() {
 		return !observers.isEmpty();
 	}
 
-//	public void setSender(int id) {
-//		senderId = id;
-//	}
-//
-	// As this is an abstract class, shouldn't these dummy methods be removed to force descendants to make a
-	// decision about this?
-	@Override
-	public M getInstance() {
-		// dummy - for descendants
-		return null;
-	}
-
-	@Override
-	public void updateTrackList() {
-		// do nothing - for descendants
-	}
-
-	@Override
-	public void removeTrackedItem(SystemComponent wasTracked) {
-		// do nothing - for descendants
-	}
-
-	@Override
-	public void postProcess() {
-		// send a reset message to all observer widgets
-	}
-
-	@Override
-	public void recordTime(long time) {
-		// do nothing - for descendants
-	}
-
-	@Override
-	public void recordItem(String... labels) {
-		// do nothing - for descendants
-	}
-
-	@Override
-	public void record(SimulatorStatus status, TwData... props) {
-		// do nothing - for descendants
-	}
-
-	@Override
-	public boolean isTracked(CategorizedComponent sc) {
-		return false;
-	}
 }

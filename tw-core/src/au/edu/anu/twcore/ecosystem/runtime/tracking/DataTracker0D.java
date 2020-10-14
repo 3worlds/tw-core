@@ -60,7 +60,7 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
  * @author Jacques Gignoux - 1 oct. 2019
  *
  */
-public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
+public class DataTracker0D extends SamplerDataTracker<CategorizedComponent,Output0DData, Metadata> {
 
 	// metadata properties
 	private static String[] propertyKeys = { P_DATATRACKER_SELECT.key(), 
@@ -250,7 +250,7 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 	// use this to select new SystemComponents if some are missing
 	// only needed if components are not permanent
 	@Override
-	public void updateTrackList() {
+	public void updateSample() {
 		if (!permanentComponents) {
 			if (trackAll) {
 				sample.clear();
@@ -345,6 +345,18 @@ public class DataTracker0D extends AbstractDataTracker<Output0DData, Metadata> {
 				singletonMD.addProperties(fieldMetadata);
 		}
 		return singletonMD;
+	}
+
+	@Override
+	public void removeFromSample(CategorizedComponent wasTracked) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToSample(CategorizedComponent toTrack) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

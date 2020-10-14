@@ -29,7 +29,6 @@
 package au.edu.anu.twcore.ecosystem.runtime;
 
 import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
@@ -45,7 +44,5 @@ public interface DataRecorder {
 	public void recordItem(String... labels);
 
 	public void record(SimulatorStatus status, TwData... props);
-
-	public boolean isTracked(CategorizedComponent sc);
-
+	
 }

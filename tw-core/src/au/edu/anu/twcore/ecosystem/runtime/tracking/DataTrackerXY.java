@@ -52,7 +52,7 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @author J. Gignoux - 15 mai 2020
  *
  */
-public class DataTrackerXY extends AbstractDataTracker<OutputXYData, Metadata> {
+public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,OutputXYData, Metadata> {
 
 	private CategorizedComponent trackedComponent = null;
 	private long currentTime = 0L;
@@ -176,7 +176,7 @@ public class DataTrackerXY extends AbstractDataTracker<OutputXYData, Metadata> {
 	}
 
 	@Override
-	public void updateTrackList() {
+	public void updateSample() {
 		if (!trackedComponent.isPermanent()) {
 			if (trackedContainer==null) {
 				trackedComponent = null;
@@ -216,6 +216,18 @@ public class DataTrackerXY extends AbstractDataTracker<OutputXYData, Metadata> {
 	@Override
 	public Metadata getInstance() {
 		return metadata;
+	}
+
+	@Override
+	public void removeFromSample(CategorizedComponent wasTracked) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToSample(CategorizedComponent toTrack) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
