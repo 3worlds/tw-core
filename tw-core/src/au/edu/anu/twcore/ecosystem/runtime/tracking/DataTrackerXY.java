@@ -38,9 +38,7 @@ import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.OutputXYData;
 import au.edu.anu.twcore.data.runtime.TwData;
-import au.edu.anu.twcore.ecosystem.runtime.Population;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
@@ -57,8 +55,6 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 	private CategorizedComponent trackedComponent = null;
 	private long currentTime = 0L;
 	private DataLabel currentItem = null;
-	private DescribedContainer<CategorizedComponent> trackedContainer = null;
-	private SamplingMode trackMode;
 	private Metadata metadata = null;
 	// TODO: replace these with data labels for diving into the TwData tree
 	// but this is already done in the DataTracker0D...
@@ -67,17 +63,15 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 
 	public DataTrackerXY(int simulatorId,
 			SamplingMode selection,
-			DescribedContainer<CategorizedComponent> trackedGroup,
+			Collection<CategorizedComponent> trackedGroup,
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
-		super(DataMessageTypes.XY,simulatorId);
+		super(DataMessageTypes.XY,simulatorId,selection,1,trackedGroup,trackedComponents);
 		senderId = simulatorId;
 		if (trackedComponents!=null)
 			if (!trackedComponents.isEmpty())
 				trackedComponent = trackedComponents.get(0);
-		trackedContainer = trackedGroup;
-		trackMode = selection;
 		// Assuming here that fieldMetadata only contains 2 properties
 		metadata = new Metadata(senderId,fieldMetadata);
 		// the properties are sorted in alphabetical order: first is x, second is y
@@ -94,7 +88,6 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 				break;
 			i++;
 		}
-
 	}
 
 	@Override
@@ -177,40 +170,43 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 
 	@Override
 	public void updateSample() {
-		if (!trackedComponent.isPermanent()) {
-			if (trackedContainer==null) {
-				trackedComponent = null;
-				currentItem = null;
-			}
-			else if (!trackedContainer.contains(trackedComponent)) {
-				trackedComponent = null;
-				currentItem = null;
-				switch (trackMode) {
-					case FIRST:
-						for (CategorizedComponent cc:trackedContainer.items()) {
-							trackedComponent = cc;
-							break;
-						}
-						break;
-					case RANDOM:
-						int max = ((Population)trackedContainer.descriptors().autoVar()).count();
-						int stop = rng.nextInt(max);
-						int i=0;
-						for (CategorizedComponent cc:trackedContainer.items()) {
-							trackedComponent = cc;
-							if (i==stop)
-								break;
-							i++;
-						}
-						break;
-					case LAST:
-						for (CategorizedComponent cc:trackedContainer.items())
-							trackedComponent = cc;
-						break;
-				}
-				// NB: trackedComponent may sill be null here
-			}
-		}
+		super.updateSample();
+// TODO: refactor this completely		
+		
+//		if (!trackedComponent.isPermanent()) {
+//			if (samplingPool==null) {
+//				trackedComponent = null;
+//				currentItem = null;
+//			}
+//			else if (!trackedContainer.contains(trackedComponent)) {
+//				trackedComponent = null;
+//				currentItem = null;
+//				switch (trackMode) {
+//					case FIRST:
+//						for (CategorizedComponent cc:trackedContainer.items()) {
+//							trackedComponent = cc;
+//							break;
+//						}
+//						break;
+//					case RANDOM:
+//						int max = ((Population)trackedContainer.descriptors().autoVar()).count();
+//						int stop = rng.nextInt(max);
+//						int i=0;
+//						for (CategorizedComponent cc:trackedContainer.items()) {
+//							trackedComponent = cc;
+//							if (i==stop)
+//								break;
+//							i++;
+//						}
+//						break;
+//					case LAST:
+//						for (CategorizedComponent cc:trackedContainer.items())
+//							trackedComponent = cc;
+//						break;
+//				}
+//				// NB: trackedComponent may sill be null here
+//			}
+//		}
 	}
 
 	@Override
@@ -218,16 +214,5 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 		return metadata;
 	}
 
-	@Override
-	public void removeFromSample(CategorizedComponent wasTracked) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addToSample(CategorizedComponent toTrack) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

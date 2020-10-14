@@ -464,17 +464,28 @@ public class DataTrackerNode extends InitialisableNode
 					ls.add(g.getInstance(index));
 			}
 		}
-		if (dataTrackerClass.equals(DataTracker0D.class.getName()))
-			result = new DataTracker0D(index,stats, tstats, selection, sampleSize,
-				 (DescribedContainer<CategorizedComponent>) samplingPool, ls,
-				expandedTrackList.keySet(),fieldMetadata);
-		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
-			result = new DataTracker2D(index);
+		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
+			if (samplingPool!=null)
+				result = new DataTracker0D(index,stats, tstats, selection, sampleSize,
+					((DescribedContainer<CategorizedComponent>) samplingPool).items(), ls,
+					expandedTrackList.keySet(),fieldMetadata);
+			else
+				result = new DataTracker0D(index,stats, tstats, selection, sampleSize,
+					null, ls, expandedTrackList.keySet(),fieldMetadata);
 		}
-		else if (dataTrackerClass.equals(DataTrackerXY.class.getName()))
-			result = new DataTrackerXY(index,selection,
-				(DescribedContainer<CategorizedComponent>) samplingPool, ls,
-				expandedTrackList.keySet(),fieldMetadata);
+		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
+			// TODO: dummy construction at the moment
+			result = new DataTracker2D(index, selection, index, null, null);
+		}
+		else if (dataTrackerClass.equals(DataTrackerXY.class.getName())) {
+			if (samplingPool!=null)
+				result = new DataTrackerXY(index,selection,
+					((DescribedContainer<CategorizedComponent>) samplingPool).items(), ls,
+					expandedTrackList.keySet(),fieldMetadata);
+			else
+				result = new DataTrackerXY(index,selection, null,ls,expandedTrackList.keySet(),
+					fieldMetadata);
+		}
 		return result;
 	}
 

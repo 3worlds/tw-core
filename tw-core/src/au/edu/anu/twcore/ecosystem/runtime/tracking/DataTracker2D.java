@@ -31,7 +31,12 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
+import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+
+import java.util.Collection;
+import java.util.List;
+
 import au.edu.anu.twcore.data.runtime.Metadata;
 
 /**
@@ -42,32 +47,13 @@ import au.edu.anu.twcore.data.runtime.Metadata;
  */
 public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Output2DData, Metadata> {
 
-	public DataTracker2D(int simulatorId) {
-		super(DataMessageTypes.DIM2,simulatorId);
-	}
-
-	@Override
-	public void updateSample() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeFromSample(CategorizedComponent wasTracked) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addToSample(CategorizedComponent toTrack) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean isTracked(CategorizedComponent item) {
-		// TODO Auto-generated method stub
-		return false;
+	public DataTracker2D(int simulatorId, 
+			SamplingMode selection, 
+			int sampleSize,
+			Collection<CategorizedComponent> samplingPool, 
+			List<CategorizedComponent> trackedComponents) {
+		super(DataMessageTypes.DIM2, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -93,5 +79,6 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Outpu
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }
