@@ -31,7 +31,10 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.IndexedDataLabel;
@@ -47,6 +50,7 @@ import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
+import fr.ens.biologie.generic.utils.Statistics;
 
 /**
  * A data tracker for time series.
@@ -76,6 +80,9 @@ public class DataTracker0D extends SamplerDataTracker<CategorizedComponent,Outpu
 	// true if all tracked components are permanent, false if at least one is ephemeral
 	private boolean permanentComponents = true;
 	
+	// statistical aggregators - one per variable
+	private Map<String,Statistics> aggregators = new HashMap<>();
+	
 	public DataTracker0D(int simulatorId,
 			StatisticalAggregatesSet statistics,
 			StatisticalAggregatesSet tableStatistics,
@@ -97,6 +104,7 @@ public class DataTracker0D extends SamplerDataTracker<CategorizedComponent,Outpu
 			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
 			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
 			addMetadataVariable(c, l);
+			aggregators.put(s,new Statistics());
 		}
 		metaprops.setProperty(Output0DMetadata.TSMETA, metadata);
 		if (!trackedComponents.isEmpty()) {
@@ -120,6 +128,8 @@ public class DataTracker0D extends SamplerDataTracker<CategorizedComponent,Outpu
 	@Override
 	public void recordTime(long time) {
 		currentTime = time;
+		for (Statistics stat:aggregators.values())
+			stat.reset();
 	}
 
 	@Override
