@@ -68,9 +68,9 @@ public abstract class SpaceAdapter
 	private Identity id = null;
 	/**
 	 * Space grain -
-	 * 	the minimal relative precision of locations is 1E-5
-	 * 	ie points apart from less than this relative distance are considered to have the same location
-	 * 	it is relative to space bounding box diagonal */
+	 * 	the minimal absolute precision of locations is 1E-5
+	 * 	ie points apart from less than this relative distance are considered to have the same location.
+	 * 	It is absolute, ie does not depend on distance units */
 	private static final double minimalPrecision = 0.00001;
 	/** random number generator attached to this Space, if any */
 	private Random rng = null;
@@ -130,8 +130,6 @@ public abstract class SpaceAdapter
 			this.obsWindow = Box.boundingBox(obsWindow.lowerBounds(),obsWindow.upperBounds());
 		upperBorderTypes = borderBehaviours[1];
 		lowerBorderTypes = borderBehaviours[0];
-		//	precision based on shortest side of plot - NB I think that's a mistake - cf below
-//		precision = Math.max(prec,minimalPrecision)*Math.min(limits.sideLength(0),limits.sideLength(1));
 		// absolute precision, i.e. in units of measurement.
 		precision = Math.max(prec,minimalPrecision);
 		this.units = units;

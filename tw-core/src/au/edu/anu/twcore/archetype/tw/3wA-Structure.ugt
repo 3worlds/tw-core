@@ -241,7 +241,7 @@ hasNode spaceSpec
 	hasProperty spacePrecisionSpec
 		hasName = String("precision")
 		type = String("Double")
-		multiplicity = IntegerRange("0..1")
+		multiplicity = IntegerRange("1..1")
 	hasProperty spaceUnitsSpec
 		hasName = String("units")
 		type = String("String")
