@@ -442,8 +442,6 @@ public abstract class SpaceAdapter
 	public final Box observationWindow() {
 		return obsWindow;
 	}
-
-	
 	
 	@Override
 	public double[] randomLocation() {

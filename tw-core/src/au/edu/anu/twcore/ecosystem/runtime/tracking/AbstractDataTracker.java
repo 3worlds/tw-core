@@ -98,7 +98,7 @@ public abstract class AbstractDataTracker<T, M>
 			}
 	}
 
-	//@Override
+	@Override
 	public final void removeObserver(DataReceiver<T, M> observer) {
 		observers.remove(observer);
 	}
@@ -119,7 +119,7 @@ public abstract class AbstractDataTracker<T, M>
 			throw new TwcoreException("Attempt to send metadata msg to unobserved receiver. " + gn);
 	}
 
-	//@Override
+	@Override
 	public final boolean hasObservers() {
 		return !observers.isEmpty();
 	}

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.runtime.Spatialized;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -49,6 +50,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.ens.biologie.generic.Sealable;
@@ -193,10 +196,22 @@ public abstract class AbstractProcess
 	protected void unlocate(SystemComponent sc) {
 		for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
 			((ComponentFactory)sc.membership()).spaces()) {
-//			space.removeItem(new LocatedSystemComponent((SystemComponent)sc));
 			space.remove(sc);
-			if (space.dataTracker()!=null)
-				space.dataTracker().deletePoint(sc.container().itemId(sc.id()));
+			if (space.dataTracker()!=null) {
+				String[] sclab = sc.container().itemId(sc.id());
+				// lines must be cleared before points
+				for (Edge r:sc.edges(Direction.OUT)) {
+					SystemComponent end = (SystemComponent)r.endNode();
+					String[] endlab = end.container().itemId(end.id()); 
+					space.dataTracker().deleteLine(sclab,endlab);
+				}
+				for (Edge r:sc.edges(Direction.IN)) {
+					SystemComponent start = (SystemComponent)r.startNode();
+					String[] startlab = start.container().itemId(start.id()); 
+					space.dataTracker().deleteLine(startlab,sclab);
+				}
+				space.dataTracker().deletePoint(sclab);
+			}
 		}
 	}
 	

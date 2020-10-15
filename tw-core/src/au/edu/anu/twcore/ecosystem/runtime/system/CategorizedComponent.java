@@ -35,6 +35,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIONTYPE;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import au.edu.anu.twcore.data.runtime.TwData;
@@ -173,8 +174,8 @@ public interface CategorizedComponent
 	// TODO: These three methods could be optimized y storing the edges in a Map sorted by labels
 
 	@SuppressWarnings("unchecked")
-	public default Iterable<SystemRelation> getRelations() {
-		return (Iterable<SystemRelation>) edges(Direction.OUT);
+	public default Collection<SystemRelation> getRelations() {
+		return Collections.unmodifiableCollection((Collection<SystemRelation>) edges(Direction.OUT));
 	}
 
 	@SuppressWarnings("unchecked")
