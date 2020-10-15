@@ -86,7 +86,7 @@ public class VersionSettings {
 			{"au.edu.anu.rscs.aot", "omugi", "[0.4.0,)", null},
 			{"au.edu.anu.rscs.aot", "qgraph", "[0.1.3,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.1.8,)", null},
-			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.0.4,)", null},
+			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.0.3,)", null},
 			{"fr.cnrs.iees.uit", "uit", "[0.3.0,)", null},
 			{"org.apache.commons", "commons-text", "[1,)", null},
 			// removed as twsetup is now in separate lib.
