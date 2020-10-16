@@ -245,9 +245,9 @@ public class ComponentProcess
 							null, otherGroup, newBorn, space, newLoc);
 						if (space!=null) 
 							locate(newBorn,nbs.container,newLoc);
-						// DEBUG: this sometimes happens!
-						if (newBorn.container()==null)
-							System.out.println("Stop! (ComponentProcess.249)");
+						// DEBUG: this sometimes happens! Quite often ACTUALLY
+//						if (newBorn.container()==null)
+//							System.out.println("Stop! (ComponentProcess.249)");
 					}
 					if (function.relateToOther())
 						focal.relateTo(newBorn,parentTo.key()); // delayed addition

@@ -132,11 +132,11 @@ public class SearchProcess
 					if (other!=focal)
 						
 						
-						if (((SystemComponent) other).container()==null)
-							System.out.println("indexedLoop "+other.id());
-					// those who get this problem were related at time 1 because they had close
-					// locations and then moved to new locs but older relations were maintained
-						else
+//						if (((SystemComponent) other).container()==null)
+//							System.out.println("indexedLoop "+other.id());
+//					// those who get this problem were related at time 1 because they had close
+//					// locations and then moved to new locs but older relations were maintained
+//						else
 
 							
 
