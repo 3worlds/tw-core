@@ -28,12 +28,14 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
+import java.util.concurrent.Semaphore;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
 
 /**
  * The thread in which a (single) simulator is running
  *
- * @author Jacques Gignoux - 30 août 2019 - copied from Shayne's Simulator$RunningStateThread
+ * @author Jacques Gignoux - 30 août 2019 - copied from Shayne's
+ *         Simulator$RunningStateThread
  *
  */
 public class SimulatorThread implements Runnable {
@@ -45,62 +47,85 @@ public class SimulatorThread implements Runnable {
 		this.dep = dep;
 	}
 
-	// code found there: https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
+	// code found there:
+	// https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
 	private volatile boolean running = true;
 	private volatile boolean paused = false;
 	private final Object pauseLock = new Object();
+	// cf: https://stackoverflow.com/questions/17825508/fairness-setting-in-semaphore-class
+//	private volatile Semaphore stepLock = new Semaphore(1,true);// a "fair" method 
+	private volatile Semaphore stepLock = new Semaphore(1);// a "unfair" method 
+//	private final Semaphore stepLock = new Semaphore(1); // makes not difference
 
-    @Override
-    public void run() {
-        while (running) {
-            synchronized (pauseLock) {
-                if (!running) { // may have changed while waiting to
-                    // synchronize on pauseLock
-                    break;
-                }
-                if (paused) {
-                    try {
-                        synchronized (pauseLock) {
-                            pauseLock.wait(); // will cause this Thread to block until
-                            // another thread calls pauseLock.notifyAll()
-                            // Note that calling wait() will
-                            // relinquish the synchronized lock that this
-                            // thread holds on pauseLock so another thread
-                            // can acquire the lock to call notifyAll()
-                            // (link with explanation below this code)
-                        }
-                    } catch (InterruptedException ex) {
-                        break;
-                    }
-                    if (!running) { // running might have changed since we paused
-                        break;
-                    }
-                }
-            }
-            // Your code here
-            dep.stepSimulators();
-        }
-    }
+	@Override
+	public void run() {
+		while (running) {
+			synchronized (pauseLock) {
+				if (!running) { // may have changed while waiting to
+					// synchronize on pauseLock
+					break;
+				}
+				if (paused) {
+					try {
+						synchronized (pauseLock) {
+							pauseLock.wait(); // will cause this Thread to block until
+							// another thread calls pauseLock.notifyAll()
+							// Note that calling wait() will
+							// relinquish the synchronized lock that this
+							// thread holds on pauseLock so another thread
+							// can acquire the lock to call notifyAll()
+							// (link with explanation below this code)
+						}
+					} catch (InterruptedException ex) {
+						break;
+					}
+					if (!running) { // running might have changed since we paused
+						break;
+					}
+				}
+			} // end of pause lock
+			try {
+				/** Make Pause wait until the step completes */
+//				System.out.println("STEP: "+stepLock.availablePermits());
+//				stepLock.availablePermits();
+				stepLock.acquire();
+				dep.stepSimulators();
+				stepLock.release();
+				Thread.sleep(1);// need this to prevent hogging the semaphore. The "fair" approach does not seem to work!
+				// Instead we get the crash within a step problem back again??
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-    public void stop() {
-        running = false;
-        // you might also want to interrupt() the Thread that is
-        // running this Runnable, too, or perhaps call:
-        resume();
-        // to unblock
-    }
+	public void stop() {
+		running = false;
+		// you might also want to interrupt() the Thread that is
+		// running this Runnable, too, or perhaps call:
+		resume();
+		// to unblock
+	}
 
-    public void pause() {
-        // you may want to throw an IllegalStateException if !running
-        paused = true;
-    }
+	public void pause() {
+		// you may want to throw an IllegalStateException if !running
+		// This is not the same thread as the run() loop
+		try {
+			/** Force thread to wait until the current step completes*/
+			stepLock.acquire();
+			paused = true;
+			stepLock.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public void resume() {
-        synchronized (pauseLock) {
-            paused = false;
-            pauseLock.notifyAll(); // Unblocks thread
-        }
-    }
+	public void resume() {
+		synchronized (pauseLock) {
+			paused = false;
+			pauseLock.notifyAll(); // Unblocks thread
+		}
+	}
 
 // Shayne's code
 
@@ -130,8 +155,5 @@ public class SimulatorThread implements Runnable {
 //			return !quit;
 //		}
 //	}
-
-
-
 
 }
