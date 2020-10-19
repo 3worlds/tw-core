@@ -63,7 +63,7 @@ public class SimpleDeployer extends Deployer {
 	}
 
 	@Override
-	public void runProc() {
+	public synchronized void runProc() {
 		if (!threadUp) {
 			Thread runningStateThread = new Thread(runnable);
 			runningStateThread.start();
@@ -73,51 +73,58 @@ public class SimpleDeployer extends Deployer {
 	}
 
 	@Override
-	public void waitProc() {
+	public synchronized void waitProc() {
 		if (sim != null)
 			sim.preProcess();
 	}
 
 	@Override
-	public void stepProc() {
+	public synchronized void stepProc() {
 		if (!threadUp) {
 			Thread runningStateThread = new Thread(runnable);
 			runningStateThread.start();
+			// first step is not taken - why?
+			// pause() is too fast after start()
 			threadUp = true;
 			runnable.pause();
-		} else if (runnable != null) {
 			runnable.resume();
 			runnable.pause();
+		} else if (runnable != null) {
+			runnable.resume();// the sim step is taking place AFTER pause - really? - or is this just that
+								// println statements come in any order
+			runnable.pause(); // this should(?) wait on sim step to complete??
+//			System.out.println("STEP RETURN: "+runnable.stepLock.availablePermits());
 		}
 	}
 
 	@Override
-	public void finishProc() {
+	public synchronized void finishProc() {
 		if (runnable != null)
 			runnable.pause();
 	}
 
 	@Override
-	public void pauseProc() {
+	public synchronized void pauseProc() {
 		if (runnable != null)
 			runnable.pause();
 	}
 
 	@Override
-	public void quitProc() {
+	public synchronized void quitProc() {
 		// open dialog box so that user can check everything is ok before quitting
+		// yet to be used
 		if (runnable != null)
 			runnable.stop();
 	}
 
 	@Override
-	public void resetProc() {
+	public synchronized void resetProc() {
 		if (sim != null)
 			sim.postProcess();
 	}
 
 	@Override
-	public void stepSimulators() {
+	public synchronized void stepSimulators() {
 		if (sim != null) {
 			if (sim.stop()) {
 				// this sends a message to itself to switch to the finished state

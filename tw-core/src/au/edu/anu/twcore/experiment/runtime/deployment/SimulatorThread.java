@@ -52,11 +52,15 @@ public class SimulatorThread implements Runnable {
 	private volatile boolean running = true;
 	private volatile boolean paused = false;
 	private final Object pauseLock = new Object();
-	// cf: https://stackoverflow.com/questions/17825508/fairness-setting-in-semaphore-class
+	// cf:
+	// https://stackoverflow.com/questions/17825508/fairness-setting-in-semaphore-class
+	// The fair method does not seem to solve the problem of the main loop hogging
+	// the semaphore
 //	private volatile Semaphore stepLock = new Semaphore(1,true);// a "fair" method 
-	private volatile Semaphore stepLock = new Semaphore(1);// a "unfair" method 
+	private volatile Semaphore stepLock = new Semaphore(1);// a "unfair" method
 //	private final Semaphore stepLock = new Semaphore(1); // makes not difference
 
+//	private int counter = 0;
 	@Override
 	public void run() {
 		while (running) {
@@ -84,18 +88,27 @@ public class SimulatorThread implements Runnable {
 					}
 				}
 			} // end of pause lock
+
 			try {
-				/** Make Pause wait until the step completes */
-//				System.out.println("STEP: "+stepLock.availablePermits());
-//				stepLock.availablePermits();
-				stepLock.acquire();
-				dep.stepSimulators();
+				try {
+					/** Make Pause wait until the step completes */
+					stepLock.acquire();
+					dep.stepSimulators();
+//					System.out.println("STEP: "+(++counter));
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} finally {
 				stepLock.release();
-				Thread.sleep(1);// need this to prevent hogging the semaphore. The "fair" approach does not seem to work!
-				// Instead we get the crash within a step problem back again??
+//				System.out.println("STEP RELEASE");
+			}
+			/** Needed this to prevent hogging the semaphore. */
+			try {
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+
 		}
 	}
 
@@ -111,12 +124,16 @@ public class SimulatorThread implements Runnable {
 		// you may want to throw an IllegalStateException if !running
 		// This is not the same thread as the run() loop
 		try {
-			/** Force thread to wait until the current step completes*/
-			stepLock.acquire();
-			paused = true;
+			try {
+				/** Force thread to wait until the current step completes */
+				stepLock.acquire();
+				paused = true;
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} finally {
 			stepLock.release();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -124,6 +141,7 @@ public class SimulatorThread implements Runnable {
 		synchronized (pauseLock) {
 			paused = false;
 			pauseLock.notifyAll(); // Unblocks thread
+//			System.out.println("RESUME SYNC");
 		}
 	}
 
