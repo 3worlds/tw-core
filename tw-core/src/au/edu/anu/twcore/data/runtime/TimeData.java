@@ -29,9 +29,6 @@
 
 package au.edu.anu.twcore.data.runtime;
 
-import java.util.Collection;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
@@ -44,8 +41,8 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 public class TimeData extends OutputData {
 	/* ensure a known uninitialized value */
 	private long time = Long.MIN_VALUE;
-	private ComponentContainer community;
-	private Collection<? extends Space<?>> spaces;
+//	private ComponentContainer community;
+//	private Collection<? extends Space<?>> spaces;
 
 	public TimeData(SimulatorStatus status, int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
@@ -59,25 +56,25 @@ public class TimeData extends OutputData {
 		return time;
 	}
 
-	public void setCommunity(ComponentContainer community) {
-		this.community = community;
-	}
+//	public void setCommunity(ComponentContainer community) {
+//		this.community = community;
+//	}
 
 	// send whole community - let widget decide what to do with it
-	public ComponentContainer getCommunity() {
-		return community;
-	}
+//	public ComponentContainer getCommunity() {
+//		return community;
+//	}
 
 	// send all spaces and let widget decide what to do - it needs an edge to a
 	// SpaceNode then ask for the space by SC id I suppose.
 
-	public void setSpaces(Collection<? extends Space<?>> spaces) {
-		this.spaces = spaces;
-	}
+//	public void setSpaces(Collection<? extends Space<?>> spaces) {
+//		this.spaces = spaces;
+//	}
 
-	public Collection<? extends Space<?>> getSpaces() {
-		return spaces;
-	}
+//	public Collection<? extends Space<?>> getSpaces() {
+//		return spaces;
+//	}
 
 	@Override
 	public String toString() {

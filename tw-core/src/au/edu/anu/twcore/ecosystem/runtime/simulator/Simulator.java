@@ -93,11 +93,11 @@ public class Simulator implements Resettable {
 				TimeData output = new TimeData(status, id, metadata.type());
 //				output.setTime(lastTime);
 				output.setTime(time);// used the passed in parameter to avoid side effects.
-				output.setCommunity(ecosystem.community());
-				if (mainSpace!=null)
-					output.setSpaces(mainSpace.spaces());
-				else
-					output.setSpaces(null);
+//				output.setCommunity(ecosystem.community());
+//				if (mainSpace!=null)
+//					output.setSpaces(mainSpace.spaces());
+//				else
+//					output.setSpaces(null);
 				sendData(output);
 			}
 		}
