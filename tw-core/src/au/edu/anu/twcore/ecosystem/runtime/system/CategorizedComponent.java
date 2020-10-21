@@ -126,7 +126,6 @@ public interface CategorizedComponent
 
 	}
 
-
 	@Override
 	public default void stepForward() {
 		TwData[] state = ((SystemComponentPropertyListImpl)properties()).drivers();

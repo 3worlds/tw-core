@@ -12,8 +12,24 @@ import au.edu.anu.twcore.ecosystem.runtime.Sampler;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 
 /**
- * An ancestor for data trackers which get their data from a sample of objects (typicallty,
- * CategorizedComponent and its subclasses) taken from a population.
+ * <p>An ancestor for data trackers which get their data from a sample of objects (typically,
+ * CategorizedComponent and its subclasses) taken from a population.</p>
+ * 
+ * <p>Naming conventions for tracked data:</p>
+ * <ul>
+ * <li>if sample of size 1: <strong>systemName>groupName>componentId>variableName[index]</strong> </li>
+ * <li>if sample of size >1 and no statistics required: same as above, with a different 
+ * <strong>componentId</strong> for each channel</li>
+ * <li>if sample of size >1 and statistics: <strong>systemName>groupName>statistic>variableName[index]</strong> 
+ * (where statistic = mean, var, n, sum etc...) + in the data message, the list of the ids of the 
+ * components currently included in the sample (may be useful for the final rendering).</li>
+ * <li>if tracking components in a model without groups:
+ * <strong>systemName>componentId>variableName[index]</strong> or 
+ * <strong>systemName>statistic>variableName[index]</strong></li>
+ * <li>if tracking groups: <strong>systemName>groupName>variableName[index]</strong> or 
+ * <strong>systemName>groupTypeName>statistic>variableName[index]</strong></li>
+ * <li>if tracking system only: <strong>systemName>variableName[index]</strong></li>
+ * </ul>
  * 
  * @author Jacques Gignoux - 14 oct. 2020
  *
@@ -26,13 +42,13 @@ public abstract class SamplerDataTracker<C,T,M>
 		implements Sampler<C>, DataRecorder {
 
 	// sampling strategy
-	private int trackSampleSize = 0;
+	protected int trackSampleSize = 0;
 	private boolean trackAll = false;
 	private SamplingMode trackMode;
 	// sample 
 	protected Set<C> sample = new HashSet<>();
 	// population from which sample is drawn
-	private Collection<C> samplingPool = null;
+	protected Collection<C> samplingPool = null;
 	
 	protected SamplerDataTracker(int messageType, 
 			int simulatorId,
@@ -46,8 +62,13 @@ public abstract class SamplerDataTracker<C,T,M>
 		if (trackSampleSize==-1)
 			trackAll = true;
 		this.samplingPool = samplingPool;
-		if (trackedComponents!=null)
-			sample.addAll(trackedComponents);
+		if (trackedComponents!=null) {
+			if ((!trackAll)&&(trackedComponents.size()>trackSampleSize))
+				for (int i=0; i<trackSampleSize; i++)
+					sample.add(trackedComponents.get(i));
+			else
+				sample.addAll(trackedComponents);
+		}
 	}
 	
 	// use this to select new SystemComponents if some are missing
