@@ -259,7 +259,7 @@ public class Simulator implements Resettable {
 
 	// run one simulation step
 	@SuppressWarnings("unused")
-	public void step() {
+	public synchronized void step() {
 		status = SimulatorStatus.Active;
 		log.info("Time = " + lastTime);
 //		timetracker.sendData(lastTime);
@@ -376,7 +376,7 @@ public class Simulator implements Resettable {
 
 	// postProcess() + preProcess() = reset a simulation at its initial state
 	@Override
-	public void preProcess() {
+	public synchronized void preProcess() {
 		status = Initial;
 		stoppingCondition.preProcess();
 		for (Timer t : timerList)
@@ -390,7 +390,7 @@ public class Simulator implements Resettable {
 	}
 
 	@Override
-	public void postProcess() {
+	public synchronized void postProcess() {
 		status = Final;
 		lastTime = startTime;
 		stoppingCondition.postProcess();
