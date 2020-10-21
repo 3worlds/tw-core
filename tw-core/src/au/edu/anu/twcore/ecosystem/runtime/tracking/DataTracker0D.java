@@ -28,29 +28,18 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.IndexedDataLabel;
-import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DData;
-import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
-import fr.ens.biologie.generic.utils.Statistics;
 
 /**
  * A data tracker for time series.
@@ -58,30 +47,28 @@ import fr.ens.biologie.generic.utils.Statistics;
  * @author Jacques Gignoux - 1 oct. 2019
  *
  */
-public class DataTracker0D extends SamplerDataTracker<CategorizedComponent,Output0DData, Metadata> {
+public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 
 	// metadata properties
-	private static String[] propertyKeys = { P_DATATRACKER_SELECT.key(), 
-		P_DATATRACKER_STATISTICS.key(),
-		P_DATATRACKER_TABLESTATS.key(), 
-		P_DATATRACKER_TRACK.key(), 
-		P_DATATRACKER_SAMPLESIZE.key(),
-		Output0DMetadata.TSMETA };
-	private SimplePropertyList metaprops;
-	private Output0DMetadata metadata;
-	private int metadataType = -1;
-	private Metadata singletonMD = null;
+//	private static String[] propertyKeys = { P_DATATRACKER_SELECT.key(), 
+//		P_DATATRACKER_STATISTICS.key(),
+//		P_DATATRACKER_TABLESTATS.key(), 
+//		P_DATATRACKER_TRACK.key(), 
+//		P_DATATRACKER_SAMPLESIZE.key(),
+//		Output0DMetadata.TSMETA };
+//	private SimplePropertyList metaprops;
+//	private Output0DMetadata metadata;
 	// metadata for numeric fields, ie min max units etc.
-	private ReadOnlyPropertyList fieldMetadata = null;
+//	private ReadOnlyPropertyList fieldMetadata = null;
 	
 	// current properties  
 	private long currentTime = Long.MIN_VALUE;
 	private DataLabel currentItem = null;
 	// true if all tracked components are permanent, false if at least one is ephemeral
-	private boolean permanentComponents = true;
-	
-	// statistical aggregators - one per variable
-	private Map<String,Statistics> aggregators = new HashMap<>();
+//	private boolean permanentComponents = true;
+//	
+//	// statistical aggregators - one per variable
+//	private Map<String,Statistics> aggregators = new HashMap<>();
 	
 	public DataTracker0D(int simulatorId,
 			StatisticalAggregatesSet statistics,
@@ -92,44 +79,46 @@ public class DataTracker0D extends SamplerDataTracker<CategorizedComponent,Outpu
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
-		super(DataMessageTypes.DIM0,simulatorId,selection,sampleSize,samplingPool,trackedComponents);
-		this.fieldMetadata = fieldMetadata;
-		metaprops = new SimplePropertyListImpl(propertyKeys);
-		metaprops.setProperty(P_DATATRACKER_SELECT.key(), selection);
-		metaprops.setProperty(P_DATATRACKER_STATISTICS.key(), statistics);
-		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(), tableStatistics);
-		metaprops.setProperty(P_DATATRACKER_SAMPLESIZE.key(), sampleSize);
-		metadata = new Output0DMetadata();
-		for (String s : track) {
-			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
-			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
-			addMetadataVariable(c, l);
-			aggregators.put(s,new Statistics());
-		}
-		metaprops.setProperty(Output0DMetadata.TSMETA, metadata);
-		if (!trackedComponents.isEmpty()) {
-			for (CategorizedComponent cp: sample)
-				if (!cp.isPermanent()) {
-					permanentComponents = false;
-					break;
-			}
-		}
+		super(DataMessageTypes.DIM0,simulatorId,selection,sampleSize,samplingPool,trackedComponents,
+			statistics,track,fieldMetadata);
+//		metadata = new Output0DMetadata();
+
+//		this.fieldMetadata = fieldMetadata;
+//		metaprops = new SimplePropertyListImpl(propertyKeys);
+//		metaprops.setProperty(P_DATATRACKER_SELECT.key(), selection);
+//		metaprops.setProperty(P_DATATRACKER_STATISTICS.key(), statistics);
+//		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(), tableStatistics);
+//		metaprops.setProperty(P_DATATRACKER_SAMPLESIZE.key(), sampleSize);
+//		metadata = new Output0DMetadata();
+//		for (String s : track) {
+//			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
+//			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
+//			addMetadataVariable(c, l);
+//			aggregators.put(s,new Statistics());
+//		}
+//		metaprops.setProperty(Output0DMetadata.TSMETA, metadata);
+//		if (!trackedComponents.isEmpty()) {
+//			for (CategorizedComponent cp: sample)
+//				if (!cp.isPermanent()) {
+//					permanentComponents = false;
+//					break;
+//			}
+//		}
 	}
 
-	private void addMetadataVariable(Class<?> c, DataLabel lab) {
-		if (c.equals(String.class))
-			metadata.addStringVariable(lab);
-		else if (c.equals(Double.class) | c.equals(Float.class))
-			metadata.addDoubleVariable(lab);
-		else
-			metadata.addIntVariable(lab);
-	}
+//	private void addMetadataVariable(Class<?> c, DataLabel lab) {
+//		if (c.equals(String.class))
+//			metadata.addStringVariable(lab);
+//		else if (c.equals(Double.class) | c.equals(Float.class))
+//			metadata.addDoubleVariable(lab);
+//		else
+//			metadata.addIntVariable(lab);
+//	}
 
 	@Override
 	public void recordTime(long time) {
 		currentTime = time;
-		for (Statistics stat:aggregators.values())
-			stat.reset();
+		resetStatistics();
 	}
 
 	@Override
@@ -213,36 +202,26 @@ public class DataTracker0D extends SamplerDataTracker<CategorizedComponent,Outpu
 		}
 	}
 
-	// There may be a time bottleneck here
-	@Override
-	public boolean isTracked(CategorizedComponent sc) {
-		boolean result = false;
-		result = sample.contains(sc);
-		if ((!result)&&(sc instanceof SystemComponent)) {
-			CategorizedComponent isc = ((SystemComponent)sc).container().initialForItem(sc.id());;
-			if (isc != null)
-				result = sample.contains(isc);
-		}
-		return result;
-	}
+//	// There may be a time bottleneck here
+//	@Override
+//	public boolean isTracked(CategorizedComponent sc) {
+//		boolean result = false;
+//		result = sample.contains(sc);
+//		if ((!result)&&(sc instanceof SystemComponent)) {
+//			CategorizedComponent isc = ((SystemComponent)sc).container().initialForItem(sc.id());;
+//			if (isc != null)
+//				result = sample.contains(isc);
+//		}
+//		return result;
+//	}
 
 	// use this to select new SystemComponents if some are missing
 	// only needed if components are not permanent
-	@Override
-	public void updateSample() {
-		if (!permanentComponents) 
-			super.updateSample();
-	}
+//	@Override
+//	public void updateSample() {
+//		if (!permanentComponents) 
+//			super.updateSample();
+//	}
 
-	@Override
-	public Metadata getInstance() {
-		if (singletonMD == null) {
-			singletonMD = new Metadata(senderId, metaprops);
-			metadataType = singletonMD.type();
-			if (fieldMetadata != null)
-				singletonMD.addProperties(fieldMetadata);
-		}
-		return singletonMD;
-	}
 
 }
