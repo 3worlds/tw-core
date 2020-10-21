@@ -51,11 +51,11 @@ public abstract class OutputData {
 		this.metadataType = metadataType;
 	}
 	
-	public SimulatorStatus status() {
+	public final SimulatorStatus status() {
 		return status;
 	}
 
-	public int sender() {
+	public final int sender() {
 		return senderId;
 	}
 
@@ -63,7 +63,7 @@ public abstract class OutputData {
 	 * 
 	 * @return the metadata type matching this data record
 	 */
-	public int type() {
+	public final int type() {
 		return metadataType;
 	}
 
