@@ -63,7 +63,7 @@ public class SimpleDeployer extends Deployer {
 	}
 
 	@Override
-	public synchronized void runProc() {
+	public  void runProc() {
 		if (!threadUp) {
 			Thread runningStateThread = new Thread(runnable);
 			runningStateThread.start();
@@ -73,13 +73,13 @@ public class SimpleDeployer extends Deployer {
 	}
 
 	@Override
-	public synchronized void waitProc() {
+	public  void waitProc() {
 		if (sim != null)
 			sim.preProcess();
 	}
 
 	@Override
-	public synchronized void stepProc() {
+	public  void stepProc() {
 		if (!threadUp) {
 			Thread runningStateThread = new Thread(runnable);
 			runningStateThread.start();
@@ -98,19 +98,19 @@ public class SimpleDeployer extends Deployer {
 	}
 
 	@Override
-	public synchronized void finishProc() {
+	public  void finishProc() {
 		if (runnable != null)
 			runnable.pause();
 	}
 
 	@Override
-	public synchronized void pauseProc() {
+	public  void pauseProc() {
 		if (runnable != null)
 			runnable.pause();
 	}
 
 	@Override
-	public synchronized void quitProc() {
+	public  void quitProc() {
 		// open dialog box so that user can check everything is ok before quitting
 		// yet to be used
 		if (runnable != null)
@@ -118,13 +118,13 @@ public class SimpleDeployer extends Deployer {
 	}
 
 	@Override
-	public synchronized void resetProc() {
+	public  void resetProc() {
 		if (sim != null)
 			sim.postProcess();
 	}
 
 	@Override
-	public synchronized void stepSimulators() {
+	public  void stepSimulators() {
 		if (sim != null) {
 			if (sim.stop()) {
 				// this sends a message to itself to switch to the finished state

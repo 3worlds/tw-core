@@ -57,7 +57,7 @@ public class SimulatorThread implements Runnable {
 	// The fair method does not seem to solve the problem of the main loop hogging
 	// the semaphore
 //	private volatile Semaphore stepLock = new Semaphore(1,true);// a "fair" method 
-	private volatile Semaphore stepLock = new Semaphore(1);// a "unfair" method
+//	private volatile Semaphore stepLock = new Semaphore(1);// a "unfair" method
 //	private final Semaphore stepLock = new Semaphore(1); // makes not difference
 
 //	private int counter = 0;
@@ -89,20 +89,20 @@ public class SimulatorThread implements Runnable {
 				}
 			} // end of pause lock
 
-			try {
-				try {
-					/** Make Pause wait until the step completes */
-					stepLock.acquire();
+//			try {
+//				try {
+//					/** Make Pause wait until the step completes */
+//					stepLock.acquire();
 					dep.stepSimulators();
-//					System.out.println("STEP: "+(++counter));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			} finally {
-				stepLock.release();
-//				System.out.println("STEP RELEASE");
-			}
-			/** Needed this to prevent hogging the semaphore. */
+////					System.out.println("STEP: "+(++counter));
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			} finally {
+//				stepLock.release();
+////				System.out.println("STEP RELEASE");
+//			}
+//			/** Needed this to prevent hogging the semaphore. */
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
@@ -123,18 +123,18 @@ public class SimulatorThread implements Runnable {
 	public void pause() {
 		// you may want to throw an IllegalStateException if !running
 		// This is not the same thread as the run() loop
-		try {
-			try {
+//		try {
+//			try {
 				/** Force thread to wait until the current step completes */
-				stepLock.acquire();
+//				stepLock.acquire();
 				paused = true;
 
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		} finally {
-			stepLock.release();
-		}
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		} finally {
+//			stepLock.release();
+//		}
 	}
 
 	public void resume() {
