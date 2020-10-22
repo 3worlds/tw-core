@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.data.runtime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -80,16 +81,16 @@ public class Output0DMetadata {
 	}
 	
 	// looping helpers
-	public Iterable<DataLabel> intNames() {
-		return intNames;
+	public List<DataLabel> intNames() {
+		return Collections.unmodifiableList(intNames);
 	}
 
-	public Iterable<DataLabel> doubleNames() {
-		return doubleNames;
+	public List<DataLabel> doubleNames() {
+		return Collections.unmodifiableList(doubleNames);
 	}
 	
-	public Iterable<DataLabel> stringNames() {
-		return stringNames;
+	public List<DataLabel> stringNames() {
+		return Collections.unmodifiableList(stringNames);
 	}
 	
 	public int indexOf(DataLabel key) {

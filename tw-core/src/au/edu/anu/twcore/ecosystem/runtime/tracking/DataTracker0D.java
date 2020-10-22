@@ -28,12 +28,16 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_FIELD_LABEL;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_FIELD_TYPE;
+
 import java.util.Collection;
 import java.util.List;
 import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.IndexedDataLabel;
 import au.edu.anu.twcore.data.runtime.Output0DData;
+import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -57,7 +61,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 //		P_DATATRACKER_SAMPLESIZE.key(),
 //		Output0DMetadata.TSMETA };
 //	private SimplePropertyList metaprops;
-//	private Output0DMetadata metadata;
+	private Output0DMetadata metadata;
 	// metadata for numeric fields, ie min max units etc.
 //	private ReadOnlyPropertyList fieldMetadata = null;
 	
@@ -81,7 +85,16 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 			ReadOnlyPropertyList fieldMetadata) {
 		super(DataMessageTypes.DIM0,simulatorId,selection,sampleSize,samplingPool,trackedComponents,
 			statistics,track,fieldMetadata);
-//		metadata = new Output0DMetadata();
+		metadata = new Output0DMetadata();
+		for (String s : track) {
+			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
+			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
+			addMetadataVariable(c, l);
+//			aggregators.put(s,new Statistics());
+//			variableChannels.add(s);
+		}
+		metaprops.setProperty(Output0DMetadata.TSMETA, metadata);
+
 
 //		this.fieldMetadata = fieldMetadata;
 //		metaprops = new SimplePropertyListImpl(propertyKeys);
@@ -182,46 +195,68 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 		}
 	}
 
+	private void addMetadataVariable(Class<?> c, DataLabel lab) {
+		if (c.equals(String.class))
+			metadata.addStringVariable(lab);
+		else if (c.equals(Double.class) | c.equals(Float.class))
+			metadata.addDoubleVariable(lab);
+		else
+			metadata.addIntVariable(lab);
+	}
+	
 	// use this for SystemComponent TwData variables
 	@Override
 	public void record(SimulatorStatus status, TwData... props) {
 		if (hasObservers()) {
-			Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
-			tsd.setTime(currentTime);
-			tsd.setItemLabel(currentItem);
-			for (TwData data:props)
-				if (data!=null) {
-				for (DataLabel lab : metadata.intNames())
-					getRecValue(0, data, lab, tsd);
-				for (DataLabel lab : metadata.doubleNames())
-					getRecValue(0, data, lab, tsd);
-				for (DataLabel lab : metadata.stringNames())
-					getRecValue(0, data, lab, tsd);
-			}
-			sendData(tsd);
+//			// this to handle statistics
+//			if (isAggregating()) {
+//				// read all data into a (dummy) message because finding the precise data in 
+//				// the TwData hierarchy is difficult otherwise
+//				Output0DData tmp = new Output0DData(status, senderId, metadataType, metadata);
+//				for (TwData data:props)
+//					if (data!=null) {
+//						for (DataLabel lab : metadata.intNames())
+//							getRecValue(0, data, lab, tmp);
+//						for (DataLabel lab : metadata.doubleNames())
+//							getRecValue(0, data, lab, tmp);
+//						for (DataLabel lab : metadata.stringNames())
+//							getRecValue(0, data, lab, tmp);
+//				}
+//				// aggregate the data into aggregators
+//				for (TwData data:props)
+//					if (data!=null) {
+//						for (int i=0; i<tmp.getIntValues().length; i++)
+//							aggregateData(tmp.getIntValues()[i],metadata.intNames().get(i));
+//						for (int i=0; i<tmp.getDoubleValues().length; i++)
+//							aggregateData(tmp.getDoubleValues()[i],metadata.doubleNames().get(i));
+//						for (int i=0; i<tmp.getStringValues().length; i++)
+//							aggregateData(tmp.getStringValues()[i],metadata.stringNames().get(i));
+//				}
+//				// if the item sample is the last for this sample, then send the aggregated message
+//				if (nAggregated()==sample.size()) { // CAUTION: wont work if trackAll ? yes because sample.size() and not trackSampleSize
+//					Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
+//					// loop on all stats. Pb: all stats are doubles while variables were not.
+//					// put them in message
+//					// send message
+//					sendData(tsd);
+//				}
+//			}
+//			else {
+				Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
+				tsd.setTime(currentTime);
+				for (TwData data:props)
+					if (data!=null) {
+					for (DataLabel lab : metadata.intNames())
+						getRecValue(0, data, lab, tsd);
+					for (DataLabel lab : metadata.doubleNames())
+						getRecValue(0, data, lab, tsd);
+					for (DataLabel lab : metadata.stringNames())
+						getRecValue(0, data, lab, tsd);
+				}
+				tsd.setItemLabel(currentItem);
+				sendData(tsd);
+//			}
 		}
 	}
-
-//	// There may be a time bottleneck here
-//	@Override
-//	public boolean isTracked(CategorizedComponent sc) {
-//		boolean result = false;
-//		result = sample.contains(sc);
-//		if ((!result)&&(sc instanceof SystemComponent)) {
-//			CategorizedComponent isc = ((SystemComponent)sc).container().initialForItem(sc.id());;
-//			if (isc != null)
-//				result = sample.contains(isc);
-//		}
-//		return result;
-//	}
-
-	// use this to select new SystemComponents if some are missing
-	// only needed if components are not permanent
-//	@Override
-//	public void updateSample() {
-//		if (!permanentComponents) 
-//			super.updateSample();
-//	}
-
 
 }

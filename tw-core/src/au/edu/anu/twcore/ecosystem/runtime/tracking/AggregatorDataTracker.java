@@ -4,12 +4,14 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DMetadata;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -30,7 +32,7 @@ public abstract class AggregatorDataTracker<T>
 		extends SamplerDataTracker<CategorizedComponent, T, Metadata> {
 	
 	// statistical aggregators - one per variable
-	private Map<String,Statistics> aggregators = new HashMap<>();
+	private Map<DataLabel,Statistics> aggregators = new HashMap<>();
 	protected SimplePropertyList metaprops;
 	private static String[] propertyKeys = { P_DATATRACKER_SELECT.key(), 
 			P_DATATRACKER_STATISTICS.key(),
@@ -46,15 +48,10 @@ public abstract class AggregatorDataTracker<T>
 	// the part of the data channel label describing the sample
 	private List<DataLabel> itemChannels = new ArrayList<>();
 	// the part of the data channel label describing the variable/constant tracked
-	private List<String> variableChannels = new ArrayList<>();
 	private Map<CategorizedComponent,String> itemIdList = new HashMap<>();
 	private DataLabel containerLabel = null;
 	private Metadata singletonMD = null;
 	protected int metadataType = -1;
-
-	
-	protected Output0DMetadata metadata;
-
 
 	protected AggregatorDataTracker(int messageType, 
 			int simulatorId, 
@@ -66,10 +63,6 @@ public abstract class AggregatorDataTracker<T>
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
 		super(messageType, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
-		
-		metadata = new Output0DMetadata(); // TODO: remove this from here
-		
-		
 		this.fieldMetadata = fieldMetadata;
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(), selection);
@@ -78,13 +71,9 @@ public abstract class AggregatorDataTracker<T>
 		metaprops.setProperty(P_DATATRACKER_SAMPLESIZE.key(), sampleSize);
 		this.statistics = statistics;
 		for (String s : track) {
-			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
 			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
-			addMetadataVariable(c, l);
-			aggregators.put(s,new Statistics());
-			variableChannels.add(s);
+			aggregators.put(l,new Statistics());
 		}
-		metaprops.setProperty(Output0DMetadata.TSMETA, metadata);
 		if (!trackedComponents.isEmpty()) {
 			for (CategorizedComponent cp: sample)
 				if (!cp.isPermanent()) {
@@ -96,6 +85,8 @@ public abstract class AggregatorDataTracker<T>
 		resetSampleIds();
 	}
 	
+	// need a method to build a stat message from a std OUtput0D data message ?
+	
 	protected void resetStatistics() {
 		for (Statistics stat:aggregators.values())
 			stat.reset();
@@ -106,6 +97,8 @@ public abstract class AggregatorDataTracker<T>
 			CategorizedComponent item =	sample.iterator().next();
 			if (item  instanceof SystemComponent)
 				containerLabel = new DataLabel(((SystemComponent)item).container().fullId());
+			else if (item instanceof ArenaComponent)
+				containerLabel = new DataLabel();
 			else if (item instanceof HierarchicalComponent)
 				containerLabel = new DataLabel(((HierarchicalComponent)item).content().parentContainer().fullId());
 		}
@@ -114,15 +107,6 @@ public abstract class AggregatorDataTracker<T>
 	private void resetSampleIds() {
 		for (CategorizedComponent cc:sample)
 			itemIdList.put(cc,cc.id());
-	}
-	
-	private void addMetadataVariable(Class<?> c, DataLabel lab) {
-		if (c.equals(String.class))
-			metadata.addStringVariable(lab);
-		else if (c.equals(Double.class) | c.equals(Float.class))
-			metadata.addDoubleVariable(lab);
-		else
-			metadata.addIntVariable(lab);
 	}
 	
 	// container.fullId() creates the String[] with system>lifecycle>group as
@@ -159,6 +143,8 @@ public abstract class AggregatorDataTracker<T>
 	}
 
 	// There may be a time bottleneck here
+	// maybe all initial items should be removed from sample in updateSample if their counterparts
+	// are available ?
 	@Override
 	public boolean isTracked(CategorizedComponent sc) {
 		boolean result = false;
@@ -181,5 +167,63 @@ public abstract class AggregatorDataTracker<T>
 		}
 		return singletonMD;
 	}
+	
+	protected Collection<DataLabel> variableChannels() {
+		return Collections.unmodifiableCollection(aggregators.keySet());
+	}
+	
+	protected void aggregateData(double value, DataLabel channel) {
+		if (statistics!=null)
+			aggregators.get(channel).add(value);
+	}
+	protected void aggregateData(long value, DataLabel channel) {
+		if (statistics!=null)
+			aggregators.get(channel).add(value);
+	}
+	protected void aggregateData(String value, DataLabel channel) {
+		if (statistics!=null)
+			aggregators.get(channel).add(value);
+	}
+	
+	// assuming all aggregators have the same number of observation, which makes sense because
+	// there is only one sample here
+	// of course it may be true before the last variable is updated, so be careful
+	protected int nAggregated() {
+		if (statistics!=null) {
+			if (aggregators.size()>0)
+				return aggregators.values().iterator().next().n();
+			else
+				return 0;
+		}
+		else
+			return 1;
+	}
+	
+	public boolean isAggregating() {
+		return statistics!=null;
+	}
 
+	protected double aggregatedValue(DataLabel channel, StatisticalAggregates stat) {
+		Statistics s = aggregators.get(channel);
+		switch (stat) {
+		case CV:
+			return s.average()/Math.sqrt(s.variance());
+		case MEAN:
+			return s.average();
+		case N:
+			return s.n(); // this is an int actually
+		case SE:
+			return Math.sqrt(s.variance());
+		case SUM:
+			return s.sum(); // concatenate for  string
+		case VAR:
+			return s.variance();
+//		case MIN:
+//			return s.min();
+//		case MAX:
+//			return s.max();
+		default:
+			return Double.NaN;
+		}
+	}
 }
