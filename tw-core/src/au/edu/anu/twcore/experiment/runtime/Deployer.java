@@ -57,6 +57,7 @@ public abstract class Deployer
 		super(new Transition(waiting.state(),initialise.event()),stateList());
 	}
 
+	// TODO: Possibly a better design is to pass simulators in the constructor and have a method startThreads 
 	public void attachSimulator(Simulator sim) {
 	}
 

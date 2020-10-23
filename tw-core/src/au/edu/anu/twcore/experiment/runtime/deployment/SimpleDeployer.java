@@ -44,87 +44,76 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 public class SimpleDeployer extends Deployer {
 
 	private Simulator sim = null;
-	private SimulatorThread runnable = null;
-	private boolean threadUp = false;
+	private final SimulatorThread runnable;// final so must be constructed
 
+	/**
+	 * NB: It's bad practice to start a thread in a constructor. Therefore, start()
+	 * is called (now with thread in paused state) when the sim is attached.
+	 * 
+	 * A better design maybe to pass the simulator in the constructor
+	 */
 	public SimpleDeployer() {
 		super();
 		runnable = new SimulatorThread(this);
 	}
 
+	// This happens immediately after construction (above). Therefore, sim can never
+	// == null
 	@Override
 	public void attachSimulator(Simulator sim) {
 		this.sim = sim;
+		Thread runningStateThread = new Thread(runnable);
+		// NB: Starts in Paused state
+		runningStateThread.start();
 	}
 
 	@Override
 	public void detachSimulator(Simulator sim) {
+		// never used
+		quitProc();
 		this.sim = null;
 	}
 
 	@Override
-	public  void runProc() {
-		if (!threadUp) {
-			Thread runningStateThread = new Thread(runnable);
-			runningStateThread.start();
-			threadUp = true;
-		} else
-			runnable.resume();
+	public void runProc() {
+		runnable.resume();
 	}
 
 	@Override
-	public  void waitProc() {
-		if (sim != null)
-			sim.preProcess();
+	public void waitProc() {
+		sim.preProcess();
+	}
+	
+	@Override
+	public void resetProc() {
+		sim.postProcess();
 	}
 
 	@Override
-	public  void stepProc() {
-		if (!threadUp) {
-			Thread runningStateThread = new Thread(runnable);
-			runningStateThread.start();
-			// first step is not taken - why?
-			// pause() is too fast after start()
-			threadUp = true;
-			runnable.pause();
-			runnable.resume();
-			runnable.pause();
-		} else if (runnable != null) {
-			runnable.resume();// the sim step is taking place AFTER pause - really? - or is this just that
-								// println statements come in any order
-			runnable.pause(); // this should(?) wait on sim step to complete??
-//			System.out.println("STEP RETURN: "+runnable.stepLock.availablePermits());
-		}
+	public void stepProc() {
+		runnable.resume();
+		runnable.pause();
 	}
 
 	@Override
-	public  void finishProc() {
-		if (runnable != null)
-			runnable.pause();
+	public void finishProc() {
+		runnable.pause();
 	}
 
 	@Override
-	public  void pauseProc() {
-		if (runnable != null)
-			runnable.pause();
+	public void pauseProc() {
+		runnable.pause();
 	}
 
 	@Override
-	public  void quitProc() {
-		// open dialog box so that user can check everything is ok before quitting
-		// yet to be used
-		if (runnable != null)
-			runnable.stop();
+	public void quitProc() {
+		// unused - maybe never will be used
+		runnable.stop();
 	}
 
-	@Override
-	public  void resetProc() {
-		if (sim != null)
-			sim.postProcess();
-	}
 
 	@Override
-	public  void stepSimulators() {
+	public void stepSimulators() {
 		if (sim != null) {
 			if (sim.stop()) {
 				// this sends a message to itself to switch to the finished state

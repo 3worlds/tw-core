@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
-import java.util.concurrent.Semaphore;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
 
 /**
@@ -50,7 +49,7 @@ public class SimulatorThread implements Runnable {
 	// code found there:
 	// https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
 	private volatile boolean running = true;
-	private volatile boolean paused = false;
+	private volatile boolean paused = true; // Now starts in Paused state - seems much simplier: IDD
 	private final Object pauseLock = new Object();
 
 	@Override
