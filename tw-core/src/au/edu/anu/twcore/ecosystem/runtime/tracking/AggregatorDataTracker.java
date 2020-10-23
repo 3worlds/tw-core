@@ -46,7 +46,7 @@ public abstract class AggregatorDataTracker<T>
 	private boolean permanentComponents = true;
 	private StatisticalAggregatesSet statistics = null;
 	// the part of the data channel label describing the sample
-	private List<DataLabel> itemChannels = new ArrayList<>();
+	private Map<StatisticalAggregates,DataLabel> itemChannels = new HashMap<>();
 	// the part of the data channel label describing the variable/constant tracked
 	private Map<CategorizedComponent,String> itemIdList = new HashMap<>();
 	private DataLabel containerLabel = null;
@@ -115,18 +115,22 @@ public abstract class AggregatorDataTracker<T>
 		if (containerLabel==null)
 			setContainerLabel();
 		itemChannels.clear();
-		if (statistics==null) // no stats: one channel per tracked component
-			for (CategorizedComponent item:sample) {
-				DataLabel result = containerLabel.clone();
-				result.append(item.id());
-				itemChannels.add(result);			
-		}		
-		else  // stats: one channel per statistic required
+//		if (statistics==null) // no stats: one channel per tracked component
+//			for (CategorizedComponent item:sample) {
+//				DataLabel result = containerLabel.clone();
+//				result.append(item.id());
+//				itemChannels.add(result);			
+//		}		
+//		else  // stats: one channel per statistic required
 			for (StatisticalAggregates stat:statistics.values()) {
 				DataLabel result = containerLabel.clone();
 				result.append(stat.toString());
-				itemChannels.add(result);
+				itemChannels.put(stat,result);
 		}
+	}
+	
+	public DataLabel itemName(StatisticalAggregates stat) {
+		return itemChannels.get(stat);
 	}
 	
 	@Override
@@ -201,6 +205,10 @@ public abstract class AggregatorDataTracker<T>
 	
 	public boolean isAggregating() {
 		return statistics!=null;
+	}
+	
+	public Collection<StatisticalAggregates> statisticsRequired() {
+		return Collections.unmodifiableSet(statistics.values());
 	}
 
 	protected double aggregatedValue(DataLabel channel, StatisticalAggregates stat) {

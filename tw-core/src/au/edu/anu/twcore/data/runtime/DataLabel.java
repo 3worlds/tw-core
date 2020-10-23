@@ -91,6 +91,18 @@ public class DataLabel implements Comparable<DataLabel>, Cloneable {
 	public String getEnd() {
 		return label.get(label.size()-1);
 	}
+	
+	public String toStringSkipRoot() {
+		StringBuilder sb = new StringBuilder();
+		if (label.size()==1)
+			return label.get(0);
+		for (int i=1; i<label.size(); i++) {
+			sb.append(label.get(i));
+			if (i<label.size()-1)
+				sb.append(HIERARCHY_DOWN);
+		}
+		return sb.toString();
+	}	
 
 	@Override
 	public String toString() {

@@ -42,6 +42,7 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+import fr.cnrs.iees.twcore.constants.StatisticalAggregates;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 
@@ -62,6 +63,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 //		Output0DMetadata.TSMETA };
 //	private SimplePropertyList metaprops;
 	private Output0DMetadata metadata;
+	private Output0DMetadata aggregatedMetadata;
 	// metadata for numeric fields, ie min max units etc.
 //	private ReadOnlyPropertyList fieldMetadata = null;
 	
@@ -89,44 +91,19 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 		for (String s : track) {
 			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
 			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
-			addMetadataVariable(c, l);
-//			aggregators.put(s,new Statistics());
-//			variableChannels.add(s);
+			addMetadataVariable(metadata,c, l);
 		}
-		metaprops.setProperty(Output0DMetadata.TSMETA, metadata);
-
-
-//		this.fieldMetadata = fieldMetadata;
-//		metaprops = new SimplePropertyListImpl(propertyKeys);
-//		metaprops.setProperty(P_DATATRACKER_SELECT.key(), selection);
-//		metaprops.setProperty(P_DATATRACKER_STATISTICS.key(), statistics);
-//		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(), tableStatistics);
-//		metaprops.setProperty(P_DATATRACKER_SAMPLESIZE.key(), sampleSize);
-//		metadata = new Output0DMetadata();
-//		for (String s : track) {
-//			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
-//			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
-//			addMetadataVariable(c, l);
-//			aggregators.put(s,new Statistics());
-//		}
-//		metaprops.setProperty(Output0DMetadata.TSMETA, metadata);
-//		if (!trackedComponents.isEmpty()) {
-//			for (CategorizedComponent cp: sample)
-//				if (!cp.isPermanent()) {
-//					permanentComponents = false;
-//					break;
-//			}
-//		}
+		// for statistical aggregates of data, this is how they will be sent to widgets
+		aggregatedMetadata = new Output0DMetadata();
+		for (String s : track) {
+			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
+			addMetadataVariable(aggregatedMetadata,Double.class, l);
+		}
+		if (isAggregating())
+			metaprops.setProperty(Output0DMetadata.TSMETA, aggregatedMetadata);
+		else
+			metaprops.setProperty(Output0DMetadata.TSMETA, metadata);
 	}
-
-//	private void addMetadataVariable(Class<?> c, DataLabel lab) {
-//		if (c.equals(String.class))
-//			metadata.addStringVariable(lab);
-//		else if (c.equals(Double.class) | c.equals(Float.class))
-//			metadata.addDoubleVariable(lab);
-//		else
-//			metadata.addIntVariable(lab);
-//	}
 
 	@Override
 	public void recordTime(long time) {
@@ -195,53 +172,53 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 		}
 	}
 
-	private void addMetadataVariable(Class<?> c, DataLabel lab) {
+	private void addMetadataVariable(Output0DMetadata meta, Class<?> c, DataLabel lab) {
 		if (c.equals(String.class))
-			metadata.addStringVariable(lab);
+			meta.addStringVariable(lab);
 		else if (c.equals(Double.class) | c.equals(Float.class))
-			metadata.addDoubleVariable(lab);
+			meta.addDoubleVariable(lab);
 		else
-			metadata.addIntVariable(lab);
+			meta.addIntVariable(lab);
 	}
 	
 	// use this for SystemComponent TwData variables
 	@Override
 	public void record(SimulatorStatus status, TwData... props) {
 		if (hasObservers()) {
-//			// this to handle statistics
-//			if (isAggregating()) {
-//				// read all data into a (dummy) message because finding the precise data in 
-//				// the TwData hierarchy is difficult otherwise
-//				Output0DData tmp = new Output0DData(status, senderId, metadataType, metadata);
-//				for (TwData data:props)
-//					if (data!=null) {
-//						for (DataLabel lab : metadata.intNames())
-//							getRecValue(0, data, lab, tmp);
-//						for (DataLabel lab : metadata.doubleNames())
-//							getRecValue(0, data, lab, tmp);
-//						for (DataLabel lab : metadata.stringNames())
-//							getRecValue(0, data, lab, tmp);
-//				}
-//				// aggregate the data into aggregators
-//				for (TwData data:props)
-//					if (data!=null) {
-//						for (int i=0; i<tmp.getIntValues().length; i++)
-//							aggregateData(tmp.getIntValues()[i],metadata.intNames().get(i));
-//						for (int i=0; i<tmp.getDoubleValues().length; i++)
-//							aggregateData(tmp.getDoubleValues()[i],metadata.doubleNames().get(i));
-//						for (int i=0; i<tmp.getStringValues().length; i++)
-//							aggregateData(tmp.getStringValues()[i],metadata.stringNames().get(i));
-//				}
-//				// if the item sample is the last for this sample, then send the aggregated message
-//				if (nAggregated()==sample.size()) { // CAUTION: wont work if trackAll ? yes because sample.size() and not trackSampleSize
-//					Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
-//					// loop on all stats. Pb: all stats are doubles while variables were not.
-//					// put them in message
-//					// send message
-//					sendData(tsd);
-//				}
-//			}
-//			else {
+			// this to handle statistics
+			if (isAggregating()) {
+				// read all data into a (dummy) message because finding the precise data in 
+				// the TwData hierarchy is difficult otherwise
+				Output0DData tmp = new Output0DData(status, senderId, metadataType, metadata);
+				for (TwData data:props)
+					if (data!=null) {
+						for (DataLabel lab : metadata.intNames())
+							getRecValue(0, data, lab, tmp);
+						for (DataLabel lab : metadata.doubleNames())
+							getRecValue(0, data, lab, tmp);
+						for (DataLabel lab : metadata.stringNames())
+							getRecValue(0, data, lab, tmp);
+				}
+				// aggregate the data into aggregators
+				for (int i=0; i<tmp.getIntValues().length; i++)
+					aggregateData(tmp.getIntValues()[i],metadata.intNames().get(i));
+				for (int i=0; i<tmp.getDoubleValues().length; i++)
+					aggregateData(tmp.getDoubleValues()[i],metadata.doubleNames().get(i));
+				for (int i=0; i<tmp.getStringValues().length; i++)
+					aggregateData(tmp.getStringValues()[i],metadata.stringNames().get(i));
+				// if the item sample is the last for this sample, then send the aggregated message
+				if (nAggregated()==sample.size()) { // CAUTION: wont work if trackAll ? yes because sample.size() and not trackSampleSize
+					Output0DData tsd = new Output0DData(status, senderId, metadataType, aggregatedMetadata);
+					for (StatisticalAggregates sag:statisticsRequired()) {
+						for (DataLabel lab:variableChannels())
+							tsd.setValue(lab, aggregatedValue(lab,sag));
+						tsd.setTime(currentTime);
+						tsd.setItemLabel(itemName(sag));
+						sendData(tsd); // 1 message per statistical aggregate, ie mean, cv, etc.
+					}
+				}
+			}
+			else {
 				Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
 				tsd.setTime(currentTime);
 				for (TwData data:props)
@@ -255,7 +232,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 				}
 				tsd.setItemLabel(currentItem);
 				sendData(tsd);
-//			}
+			}
 		}
 	}
 
