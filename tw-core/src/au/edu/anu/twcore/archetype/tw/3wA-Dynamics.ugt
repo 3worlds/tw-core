@@ -225,7 +225,7 @@ hasNode dataTrackerSpec
 	hasProperty samplingModeSpec
 		hasName = String("samplingMode")
 		type = String("SamplingMode")
-		multiplicity = IntegerRange("1..1") // if absent, only tracks the target component
+		multiplicity = IntegerRange("0..1") // if absent, only tracks the target component
 	hasProperty sampleSizeSpec
 		hasName = String("sampleSize")
 		type = String("String") // valid values: any >0 number, or "ALL" - defaults to 1

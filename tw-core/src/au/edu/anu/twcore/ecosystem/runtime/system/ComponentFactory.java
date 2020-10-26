@@ -55,8 +55,8 @@ public class ComponentFactory extends ElementFactory<SystemComponent> {
 	public ComponentFactory(Set<Category> categories,
 			Collection<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces,
 			TwData auto, TwData drv,
-			TwData dec, TwData ltc, SetInitialStateFunction setinit) {
-		super(categories, auto, drv, dec, ltc, setinit);
+			TwData dec, TwData ltc, SetInitialStateFunction setinit, boolean permanent) {
+		super(categories, auto, drv, dec, ltc, setinit, permanent);
 		this.spaces.addAll(spaces);
 	}
 

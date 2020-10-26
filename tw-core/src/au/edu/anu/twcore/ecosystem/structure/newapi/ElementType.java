@@ -85,6 +85,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 	protected TwData lifetimeConstantTemplate = null;
 	SimplePropertyList properties = null;
 	protected InitFunctionNode setinit = null;
+	protected boolean isPermanent = true;
 
 	// default constructor
 	public ElementType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -107,8 +108,10 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		categoryNames = new ArrayList<>(categories.size());
 		for (Category c:categories)
 			categoryNames.add(c.id()); // order is maintained
-		if (categoryNames.contains(Category.ephemeral))
+		if (categoryNames.contains(Category.ephemeral)) {
+			isPermanent = false;
 			autoVarTemplate = new ComponentData();
+		}
 		// NB: maybe permanent systems should have a different scope for their identities, so that
 		// the same name can be used at every reset
 		// on the other hand, the container name can be used for unicity
@@ -186,5 +189,10 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
+	
+	public final boolean isPermanent() {
+		return isPermanent;
+	}
+
 
 }

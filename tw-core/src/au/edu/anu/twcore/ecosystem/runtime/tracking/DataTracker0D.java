@@ -82,11 +82,13 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 			SamplingMode selection,
 			int sampleSize,
 			Collection<CategorizedComponent> samplingPool,
+			String[] samplingPoolIds,
+			boolean samplingPoolPermanent,
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
-		super(DataMessageTypes.DIM0,simulatorId,selection,sampleSize,samplingPool,trackedComponents,
-			statistics,track,fieldMetadata);
+		super(DataMessageTypes.DIM0,simulatorId,selection,sampleSize,samplingPool,samplingPoolIds,
+			samplingPoolPermanent,trackedComponents,statistics,track,fieldMetadata);
 		metadata = new Output0DMetadata();
 		for (String s : track) {
 			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());

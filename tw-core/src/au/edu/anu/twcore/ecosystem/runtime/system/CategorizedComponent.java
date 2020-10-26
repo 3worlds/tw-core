@@ -191,5 +191,9 @@ public interface CategorizedComponent
 			edgeListEndNodes());
 		return list;
 	}
+	
+	public default String[] hierarchicalId() {
+		return null;
+	}
 
 }

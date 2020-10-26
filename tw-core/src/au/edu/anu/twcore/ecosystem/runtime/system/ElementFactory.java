@@ -75,6 +75,7 @@ public abstract class ElementFactory<T extends DataElement>
 	Map<String, Integer> propertyMap = new HashMap<String, Integer>();
 
 	SetInitialStateFunction setinit;
+	protected boolean isPermanent = true;
 
 	/**
 	 * basic constructor
@@ -83,7 +84,7 @@ public abstract class ElementFactory<T extends DataElement>
 	 */
 	public ElementFactory(Set<Category> categories,
 			TwData auto, TwData drv, TwData dec, TwData ltc,
-			SetInitialStateFunction setinit) {
+			SetInitialStateFunction setinit, boolean permanent) {
 		super();
 		this.categories.addAll(categories);
 //		this.categoryId = categoryId;
@@ -112,6 +113,7 @@ public abstract class ElementFactory<T extends DataElement>
 			for (String key : lifetimeConstantTemplate.getKeysAsSet())
 				propertyMap.put(key, CONST);
 		this.setinit = setinit;
+		this.isPermanent = permanent;
 	}
 
 	// Singleton
@@ -142,6 +144,10 @@ public abstract class ElementFactory<T extends DataElement>
 
 	public final SetInitialStateFunction initialiser() {
 		return setinit;
+	}
+	
+	public final boolean isPermanent() {
+		return isPermanent;
 	}
 
 }

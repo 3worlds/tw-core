@@ -2,18 +2,19 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -39,6 +40,7 @@ public abstract class AggregatorDataTracker<T>
 			P_DATATRACKER_TABLESTATS.key(), 
 			P_DATATRACKER_TRACK.key(), 
 			P_DATATRACKER_SAMPLESIZE.key(),
+			"sample",
 			Output0DMetadata.TSMETA };
 	// metadata for numeric fields, ie min max units etc.
 	protected ReadOnlyPropertyList fieldMetadata = null;
@@ -46,9 +48,9 @@ public abstract class AggregatorDataTracker<T>
 	private boolean permanentComponents = true;
 	private StatisticalAggregatesSet statistics = null;
 	// the part of the data channel label describing the sample
-	private Map<StatisticalAggregates,DataLabel> itemChannels = new HashMap<>();
+	private Map<StatisticalAggregates,DataLabel> statChannels = new HashMap<>();
 	// the part of the data channel label describing the variable/constant tracked
-	private Map<CategorizedComponent,String> itemIdList = new HashMap<>();
+	private Map<CategorizedComponent,DataLabel> itemChannels = new HashMap<>();
 	private DataLabel containerLabel = null;
 	private Metadata singletonMD = null;
 	protected int metadataType = -1;
@@ -58,11 +60,14 @@ public abstract class AggregatorDataTracker<T>
 			SamplingMode selection, 
 			int sampleSize,
 			Collection<CategorizedComponent> samplingPool, 
+			String[] samplingPoolIds,
+			boolean samplingPoolPermanent,
 			List<CategorizedComponent> trackedComponents, 
 			StatisticalAggregatesSet statistics,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
-		super(messageType, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
+		super(messageType, simulatorId, selection, sampleSize, 
+				samplingPool, trackedComponents);
 		this.fieldMetadata = fieldMetadata;
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(), selection);
@@ -74,15 +79,34 @@ public abstract class AggregatorDataTracker<T>
 			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
 			aggregators.put(l,new Statistics());
 		}
-		if (!trackedComponents.isEmpty()) {
-			for (CategorizedComponent cp: sample)
-				if (!cp.isPermanent()) {
-					permanentComponents = false;
-					break;
-			}
+		if (samplingPool!=null) {
+			permanentComponents = samplingPoolPermanent;
+			containerLabel = new DataLabel(samplingPoolIds);
 		}
+		else
+			if (!trackedComponents.isEmpty()) {
+				for (CategorizedComponent cp: sample) {
+					if (!cp.isPermanent())
+						permanentComponents = false;
+						break;
+				}
+				if (sample.size()>=1) {
+					CategorizedComponent item =	sample.iterator().next();
+					containerLabel = new DataLabel(item.hierarchicalId());
+					if (!(item instanceof ArenaComponent))
+						containerLabel.stripEnd();
+				}
+		}
+		// container label
 		makeItemLabels();
-		resetSampleIds();
+		if (permanentComponents) {
+			StringTable itemIds = new StringTable(new Dimensioner(itemChannels.size()));
+			int i=0;
+			for (DataLabel dl:itemChannels.values())
+				itemIds.setWithFlatIndex(dl.toString(),i++);
+			metaprops.setProperty("sample",itemIds);
+		}
+
 	}
 	
 	// need a method to build a stat message from a std OUtput0D data message ?
@@ -92,45 +116,50 @@ public abstract class AggregatorDataTracker<T>
 			stat.reset();
 	}
 	
-	private void setContainerLabel() {		
-		if (sample.size()>=1) {
-			CategorizedComponent item =	sample.iterator().next();
-			if (item  instanceof SystemComponent)
-				containerLabel = new DataLabel(((SystemComponent)item).container().fullId());
-			else if (item instanceof ArenaComponent)
-				containerLabel = new DataLabel();
-			else if (item instanceof HierarchicalComponent)
-				containerLabel = new DataLabel(((HierarchicalComponent)item).content().parentContainer().fullId());
-		}
-	}
+//	private void setContainerLabel() {		
+//		if (sample.size()>=1) {
+//			CategorizedComponent item =	sample.iterator().next();
+//			containerLabel = new DataLabel(item.hierarchicalId());
+//			if (!(item instanceof ArenaComponent))
+//				containerLabel.stripEnd();
+//			
+//			// TODO: what if samplingpool empty ?
+//			
+//			if (item  instanceof SystemComponent)
+//				containerLabel = new DataLabel(((SystemComponent)item).container().fullId());
+//			else if (item instanceof ArenaComponent)
+//				containerLabel = new DataLabel();
+//			else if (item instanceof HierarchicalComponent)
+//				containerLabel = new DataLabel(((HierarchicalComponent)item).content().parentContainer().fullId());
+//		}
+//	}
 	
 	private void resetSampleIds() {
-		for (CategorizedComponent cc:sample)
-			itemIdList.put(cc,cc.id());
+		itemChannels.clear();
+		for (CategorizedComponent cc:sample) {
+			DataLabel dl = new DataLabel(cc.hierarchicalId());
+			itemChannels.put(cc,dl);
+		}
 	}
 	
 	// container.fullId() creates the String[] with system>lifecycle>group as
 	// found in the hierarchy of containers. Doesnt include the groupType name
 	private void makeItemLabels() {
-		if (containerLabel==null)
-			setContainerLabel();
-		itemChannels.clear();
-//		if (statistics==null) // no stats: one channel per tracked component
-//			for (CategorizedComponent item:sample) {
-//				DataLabel result = containerLabel.clone();
-//				result.append(item.id());
-//				itemChannels.add(result);			
-//		}		
-//		else  // stats: one channel per statistic required
+//		if (containerLabel==null)
+//			setContainerLabel();
+		statChannels.clear();
+		if (statistics==null) // no stats: one channel per tracked component
+			resetSampleIds();
+		else  // stats: one channel per statistic required
 			for (StatisticalAggregates stat:statistics.values()) {
 				DataLabel result = containerLabel.clone();
 				result.append(stat.toString());
-				itemChannels.put(stat,result);
+				statChannels.put(stat,result);
 		}
 	}
 	
 	public DataLabel itemName(StatisticalAggregates stat) {
-		return itemChannels.get(stat);
+		return statChannels.get(stat);
 	}
 	
 	@Override
@@ -142,8 +171,8 @@ public abstract class AggregatorDataTracker<T>
 		}
 	}
 	
-	public Collection<String> sampleIds() {
-		return itemIdList.values();
+	public Collection<DataLabel> sampleIds() {
+		return itemChannels.values();
 	}
 
 	// There may be a time bottleneck here
@@ -208,7 +237,10 @@ public abstract class AggregatorDataTracker<T>
 	}
 	
 	public Collection<StatisticalAggregates> statisticsRequired() {
-		return Collections.unmodifiableSet(statistics.values());
+		if (statistics!=null)
+			return Collections.unmodifiableSet(statistics.values());
+		else
+			return null;
 	}
 
 	protected double aggregatedValue(DataLabel channel, StatisticalAggregates stat) {

@@ -56,7 +56,7 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 
 	public ArenaFactory(Set<Category> categories, /* String categoryId, */ TwData auto, TwData drv, TwData dec,
 			TwData ltc, SetInitialStateFunction setinit, boolean makeContainer, String name, GraphDataTracker dt) {
-		super(categories, /* categoryId, */ auto, drv, dec, ltc, setinit);
+		super(categories, /* categoryId, */ auto, drv, dec, ltc, setinit,true);
 		this.makeContainer = makeContainer;
 		this.name = name;
 		this.dataTracker = dt;

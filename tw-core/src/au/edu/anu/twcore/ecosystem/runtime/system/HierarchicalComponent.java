@@ -106,5 +106,10 @@ public abstract class HierarchicalComponent
 		return content;
 	}
 
+	@Override
+	public final String[] hierarchicalId() {
+		return content.fullId();
+	}
+
 
 }

@@ -154,6 +154,9 @@ public abstract class SamplerDataTracker<C,T,M>
 							}
 						}
 						break;
+					default:
+						// do nothing if no sampling mode specified
+						return;
 					}
 				}
 			}

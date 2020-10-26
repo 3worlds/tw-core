@@ -88,7 +88,7 @@ public class ComponentProcess
 	private List<CreateOtherDecisionFunction> COfunctions = new LinkedList<CreateOtherDecisionFunction>();
 
 	// local variables for looping
-	private HierarchicalContext focalContext = new HierarchicalContext();
+//	private HierarchicalContext focalContext = new HierarchicalContext();
 	private LifeCycle lifeCycle = null;
 //	private Ecosystem ecosystem = null;
 //	private SystemFactory group = null;
@@ -260,7 +260,7 @@ public class ComponentProcess
 		// call data trackers AFTER computations so that decorators are different from zero
 		for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 			if (tracker.isTracked(focal)) {
-				tracker.recordItem(focalContext.buildItemId(focal.id()));
+				tracker.recordItem(focal.hierarchicalId());
 				tracker.record(currentStatus,focal.currentState(),focal.decorators(),focal.autoVar());
 		}
 		

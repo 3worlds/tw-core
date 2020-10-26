@@ -87,6 +87,7 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerXY;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.newapi.GroupType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
@@ -384,11 +385,7 @@ public class DataTrackerNode extends InitialisableNode
 			processCategories = (List<Category>) get(getParent().edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
 				edgeListEndNodes());
-			// optional properties - if absent take default value
-			if (properties().hasProperty(P_DATATRACKER_SELECT.key()))
-				selection = (SamplingMode) properties().getPropertyValue(P_DATATRACKER_SELECT.key());
-			else
-				selection = SamplingMode.defaultValue();
+			// required properties
 			if (properties().hasProperty(P_DATATRACKER_SAMPLESIZE.key())) {
 				String s = (String) properties().getPropertyValue(P_DATATRACKER_SAMPLESIZE.key());
 				if (s.isBlank())
@@ -399,14 +396,19 @@ public class DataTrackerNode extends InitialisableNode
 					sampleSize = Integer.valueOf(s);
 			} else
 				sampleSize = -1;
+			if (properties().hasProperty(P_DATATRACKER_SELECT.key()))
+				selection = (SamplingMode) properties().getPropertyValue(P_DATATRACKER_SELECT.key());
+			else
+				selection = SamplingMode.defaultValue();
+			// optional properties
 			if (properties().hasProperty(P_DATATRACKER_STATISTICS.key()))
 				stats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
-			else
-				stats = StatisticalAggregatesSet.defaultValue();
+//			else
+//				stats = StatisticalAggregatesSet.defaultValue();
 			if (properties().hasProperty(P_DATATRACKER_TABLESTATS.key()))
 				tstats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_TABLESTATS.key());
-			else
-				tstats = StatisticalAggregatesSet.defaultValue();
+//			else
+//				tstats = StatisticalAggregatesSet.defaultValue();
 			List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
 				selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),
 				hasTheLabel(E_TRACKTABLE.label()))));
@@ -439,12 +441,15 @@ public class DataTrackerNode extends InitialisableNode
 		AbstractDataTracker<?, ?> result = null;
 		List<CategorizedComponent> ls = new ArrayList<>();
 		DescribedContainer<? extends CategorizedComponent> samplingPool = null;
+		boolean permanent = true;
 		for (TreeGraphNode etype:trackedComponents) {
 			if (etype instanceof ArenaType)
 				ls.add((CategorizedComponent)((ArenaType)etype).getInstance(index).getInstance());
-			else if (etype instanceof Component)
+			else if (etype instanceof Component) {
 				// CAUTION: this is adding the INITIAL components, not the RUNTIME ones
 				ls.addAll(((Component)etype).getInstance(index));
+				permanent = ((ComponentType) etype.getParent()).isPermanent();
+			}
 			else if (etype instanceof Group) {
 				Group group = (Group) etype;
 				List<Category> groupCats = (List<Category>) get(group.getParent().edges(Direction.OUT),
@@ -453,9 +458,15 @@ public class DataTrackerNode extends InitialisableNode
 				// if the process tracks group data, then track the group
 				if (groupCats.containsAll(processCategories))
 					ls.add(group.getInstance(index));
-				else
+				else {
 				// if the process tracks component data, then track the group SystemComponents
 					samplingPool = group.getInstance(index).content();
+					
+					// TODO: find this bloody permanent status for components of this group !
+					// shit!
+					permanent = false;
+//					group.getInstance(index).
+				}
 			}
 			else if (etype instanceof GroupType) {
 				List<Group> groups = (List<Group>) get(etype.getChildren(), 
@@ -467,11 +478,12 @@ public class DataTrackerNode extends InitialisableNode
 		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
 			if (samplingPool!=null)
 				result = new DataTracker0D(index,stats, tstats, selection, sampleSize,
-					((DescribedContainer<CategorizedComponent>) samplingPool).items(), ls,
-					expandedTrackList.keySet(),fieldMetadata);
+					((DescribedContainer<CategorizedComponent>) samplingPool).items(),
+					samplingPool.fullId(),permanent,
+					ls,expandedTrackList.keySet(),fieldMetadata);
 			else
 				result = new DataTracker0D(index,stats, tstats, selection, sampleSize,
-					null, ls, expandedTrackList.keySet(),fieldMetadata);
+					null, null, permanent, ls, expandedTrackList.keySet(),fieldMetadata);
 		}
 		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
 			// TODO: dummy construction at the moment

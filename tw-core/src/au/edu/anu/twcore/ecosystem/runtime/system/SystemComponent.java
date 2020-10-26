@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.Arrays;
+
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
@@ -156,5 +158,19 @@ public class SystemComponent
 	public void detachFromContainer() {
 		container = null;
 	}
+
+	@Override
+	public String[] hierarchicalId() {
+		String[] s = Arrays.copyOf(container.fullId(),container.fullId().length+1);
+		s[s.length-1] = id();
+		return s;
+	}
+
+	@Override
+	public boolean isPermanent() {
+		return ((ComponentFactory) categories).isPermanent();
+	}
+	
+	
 
 }

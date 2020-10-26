@@ -55,7 +55,7 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 	public GroupFactory(Set<Category> categories, /*String categoryId,*/ 
 			TwData auto, TwData drv, TwData dec, TwData ltc,
 			SetInitialStateFunction setinit, String name, ComponentContainer parent) {
-		super(categories, /*categoryId,*/ auto, drv, dec, ltc, setinit);
+		super(categories, /*categoryId,*/ auto, drv, dec, ltc, setinit,true);
 		this.parent = parent;
 		groupTypeName = name;
 	}

@@ -129,10 +129,10 @@ public class ComponentType extends ElementType<ComponentFactory, SystemComponent
 		if (setinit!=null)
 			return new ComponentFactory(categories,sps,
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-				(SetInitialStateFunction)setinit.getInstance(id));
+				(SetInitialStateFunction)setinit.getInstance(id),isPermanent);
 		else
 			return new ComponentFactory(categories,sps,
-				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,null);
+				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,null,isPermanent);
 	}
 	
 	@Override
