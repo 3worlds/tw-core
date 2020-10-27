@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import org.assertj.core.util.Arrays;
+
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Containing;
@@ -108,7 +110,10 @@ public abstract class HierarchicalComponent
 
 	@Override
 	public final String[] hierarchicalId() {
-		return content.fullId();
+		if (content!=null)
+			return content.fullId();
+		else
+			return Arrays.array(id());
 	}
 
 

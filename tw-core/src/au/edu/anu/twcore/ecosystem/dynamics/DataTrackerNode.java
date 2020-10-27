@@ -41,6 +41,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
+import fr.cnrs.iees.twcore.constants.LifespanType;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 import fr.ens.biologie.generic.LimitedEdition;
@@ -461,11 +462,20 @@ public class DataTrackerNode extends InitialisableNode
 				else {
 				// if the process tracks component data, then track the group SystemComponents
 					samplingPool = group.getInstance(index).content();
-					
-					// TODO: find this bloody permanent status for components of this group !
-					// shit!
-					permanent = false;
-//					group.getInstance(index).
+					// in the groupType of this group's componentTypes, search the one
+					// which has the same categories as this process to know if the items are permanent
+					List<ComponentType> ctl = (List<ComponentType>) get(group.getParent().getChildren(), 
+						selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+					for (ComponentType ct:ctl) {
+						List<Category> componentCats = (List<Category>) get(ct.edges(Direction.OUT),
+							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+							edgeListEndNodes());
+						// CAUTION: not sure this test works 100% - there may be ambiguities 
+						if (componentCats.containsAll(processCategories)) {
+							LifespanType lft = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
+							permanent = (lft==LifespanType.permanent);
+						}
+					}
 				}
 			}
 			else if (etype instanceof GroupType) {
