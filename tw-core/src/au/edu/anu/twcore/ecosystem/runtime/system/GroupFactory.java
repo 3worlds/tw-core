@@ -76,7 +76,7 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 		if (groupName!=null) {
 			if (!ComponentContainer.containerScope.contains(groupName)) 
 				container = new ComponentContainer(groupName,parent,null);
-			else {
+			else { // groupName already in use
 				container = new ComponentContainer(groupTypeName,parent,null);
 				String s = container.id();
 				log.warning(()->"Group container couldnt be created with name '"+groupName

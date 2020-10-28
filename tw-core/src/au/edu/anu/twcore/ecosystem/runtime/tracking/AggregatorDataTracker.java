@@ -16,9 +16,11 @@ import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
+import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregates;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
@@ -72,7 +74,7 @@ public abstract class AggregatorDataTracker<T>
 		metaprops = new SimplePropertyListImpl(propertyKeys);
 		metaprops.setProperty(P_DATATRACKER_SELECT.key(), selection);
 		metaprops.setProperty(P_DATATRACKER_STATISTICS.key(), statistics);
-//		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(), tableStatistics);
+//TODO:		metaprops.setProperty(P_DATATRACKER_TABLESTATS.key(), tableStatistics);
 		metaprops.setProperty(P_DATATRACKER_SAMPLESIZE.key(), sampleSize);
 		this.statistics = statistics;
 		for (String s : track) {
@@ -106,33 +108,12 @@ public abstract class AggregatorDataTracker<T>
 				itemIds.setWithFlatIndex(dl.toString(),i++);
 			metaprops.setProperty("sample",itemIds);
 		}
-
 	}
-	
-	// need a method to build a stat message from a std OUtput0D data message ?
 	
 	protected void resetStatistics() {
 		for (Statistics stat:aggregators.values())
 			stat.reset();
 	}
-	
-//	private void setContainerLabel() {		
-//		if (sample.size()>=1) {
-//			CategorizedComponent item =	sample.iterator().next();
-//			containerLabel = new DataLabel(item.hierarchicalId());
-//			if (!(item instanceof ArenaComponent))
-//				containerLabel.stripEnd();
-//			
-//			// TODO: what if samplingpool empty ?
-//			
-//			if (item  instanceof SystemComponent)
-//				containerLabel = new DataLabel(((SystemComponent)item).container().fullId());
-//			else if (item instanceof ArenaComponent)
-//				containerLabel = new DataLabel();
-//			else if (item instanceof HierarchicalComponent)
-//				containerLabel = new DataLabel(((HierarchicalComponent)item).content().parentContainer().fullId());
-//		}
-//	}
 	
 	private void resetSampleIds() {
 		itemChannels.clear();
@@ -145,8 +126,6 @@ public abstract class AggregatorDataTracker<T>
 	// container.fullId() creates the String[] with system>lifecycle>group as
 	// found in the hierarchy of containers. Doesnt include the groupType name
 	private void makeItemLabels() {
-//		if (containerLabel==null)
-//			setContainerLabel();
 		statChannels.clear();
 		if (statistics==null) // no stats: one channel per tracked component
 			resetSampleIds();
@@ -218,6 +197,36 @@ public abstract class AggregatorDataTracker<T>
 			aggregators.get(channel).add(value);
 	}
 	
+	
+	@Override
+	public void preProcess() {
+		super.preProcess();
+		if (permanentComponents) {
+			resetSampleIds();
+			StringTable itemIds = new StringTable(new Dimensioner(itemChannels.size()));
+			int i=0;
+			for (DataLabel dl:itemChannels.values())
+				itemIds.setWithFlatIndex(dl.toString(),i++);
+			metaprops.setProperty("sample",itemIds);
+		}
+//		// I HATE THIS!
+//		// 1) it sends another Metadata message overriding the initial one
+//		// 2) it trashes singletonMD by making it inconsistent with the data actually sent.
+//		// But what to do? at widget instantiation time, the runtime systemComponents have
+//		// not yet been instantiated, hence their ids cannot be sent as metadata
+//		// one possible solution to this very bad design would be, for permanent system 
+//		// components, to move the initial item in the runtime items and place a copy of
+//		// it as the initial system....
+//		/// hey.... that's not so bad, actually....
+//		for (DataReceiver<T, Metadata> w:observers()) {
+//			singletonMD = new Metadata(senderId, metaprops);
+//			metadataType = singletonMD.type();
+//			if (fieldMetadata != null)
+//				singletonMD.addProperties(fieldMetadata);
+//			sendMetadataTo((GridNode)w, singletonMD);
+//		}
+	}
+
 	// assuming all aggregators have the same number of observation, which makes sense because
 	// there is only one sample here
 	// of course it may be true before the last variable is updated, so be careful

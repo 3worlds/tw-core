@@ -113,8 +113,14 @@ public abstract class HierarchicalComponent
 		if (content!=null)
 			return content.fullId();
 		else
-			return Arrays.array(id());
+			return Arrays.array(name());
 	}
 
+	public String name() {
+		if (content!=null)
+			return content.id();
+		else
+			return id();
+	}
 
 }

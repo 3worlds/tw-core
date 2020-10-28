@@ -195,5 +195,9 @@ public interface CategorizedComponent
 	public default String[] hierarchicalId() {
 		return null;
 	}
+	
+	public default String name() {
+		return id();
+	}
 
 }

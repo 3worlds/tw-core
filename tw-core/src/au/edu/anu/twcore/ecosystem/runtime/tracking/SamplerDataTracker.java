@@ -9,6 +9,7 @@ import java.util.Set;
 
 import au.edu.anu.twcore.ecosystem.runtime.DataRecorder;
 import au.edu.anu.twcore.ecosystem.runtime.Sampler;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 
 /**
@@ -161,6 +162,28 @@ public abstract class SamplerDataTracker<C,T,M>
 				}
 			}
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void preProcess() {
+		super.preProcess();
+		// replace initial items with runtime items in sample
+		List<C> newSample = new LinkedList<>();
+		Iterator<C> sampleIt = sample.iterator();
+		while (sampleIt.hasNext()) {
+			C s = sampleIt.next();
+			if (s instanceof SystemComponent) {
+				SystemComponent isc = (SystemComponent) s;
+				if (isc.container().containsInitialItem(isc))
+					for (SystemComponent sc:isc.container().items())
+						if (isc==isc.container().initialForItem(sc.id())) {
+						sampleIt.remove();
+						newSample.add((C) sc); 					
+				}
+			}
+		}		
+		sample.addAll(newSample);
 	}
 
 	@Override

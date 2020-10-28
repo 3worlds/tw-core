@@ -399,17 +399,13 @@ public class DataTrackerNode extends InitialisableNode
 				sampleSize = -1;
 			if (properties().hasProperty(P_DATATRACKER_SELECT.key()))
 				selection = (SamplingMode) properties().getPropertyValue(P_DATATRACKER_SELECT.key());
-			else
-				selection = SamplingMode.defaultValue();
+//			else
+//				selection = SamplingMode.defaultValue();
 			// optional properties
 			if (properties().hasProperty(P_DATATRACKER_STATISTICS.key()))
 				stats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
-//			else
-//				stats = StatisticalAggregatesSet.defaultValue();
 			if (properties().hasProperty(P_DATATRACKER_TABLESTATS.key()))
 				tstats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_TABLESTATS.key());
-//			else
-//				tstats = StatisticalAggregatesSet.defaultValue();
 			List<Edge> ll = (List<Edge>) get(edges(Direction.OUT),
 				selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),
 				hasTheLabel(E_TRACKTABLE.label()))));

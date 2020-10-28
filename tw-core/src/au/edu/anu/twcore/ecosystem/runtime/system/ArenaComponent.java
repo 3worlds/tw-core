@@ -92,5 +92,9 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 	public GraphDataTracker getDataTracker() {
 		return dataTracker;
 	}
+	
+	public String name() {
+		return elementFactory().name;
+	}
 
 }

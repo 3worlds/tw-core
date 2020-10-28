@@ -50,7 +50,7 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 
 	private ArenaComponent arena = null;
 	private boolean makeContainer = true;
-	private String name = null;
+	protected String name = null;
 
 	private GraphDataTracker dataTracker;
 

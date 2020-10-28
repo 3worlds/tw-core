@@ -387,6 +387,9 @@ public class Simulator implements Resettable {
 		// computes coordinates of items just added before
 		if (ecosystem.community()!=null)
 			computeInitialCoordinates(ecosystem.community());
+		// reset data tracker sample lists, ie replace initial items by runtime items
+		for (DataTracker<?, Metadata> tracker:trackers.keySet())
+			tracker.preProcess();
 	}
 
 	@Override

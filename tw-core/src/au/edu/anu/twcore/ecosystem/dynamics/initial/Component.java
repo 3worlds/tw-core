@@ -221,7 +221,8 @@ public class Component
 					// otherwise, a default group container per componentType is created, with no data
 					else { // group container must be created and inserted under arena
 						ComponentContainer parentContainer = (ComponentContainer)arena.getInstance(id).getInstance().content();
-						String containerId = componentType.categoryId(); // check this is ok
+//						String containerId = componentType.categoryId(); // check this is ok - it's too long actually
+						String containerId = "group";
 						container = (ComponentContainer) parentContainer.subContainer(containerId);
 						// POSSIBLE FLAW HERE: there is no Group node matching this group factory
 						if (container==null) {

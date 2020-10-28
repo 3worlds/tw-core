@@ -54,27 +54,13 @@ import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
  */
 public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 
-	// metadata properties
-//	private static String[] propertyKeys = { P_DATATRACKER_SELECT.key(), 
-//		P_DATATRACKER_STATISTICS.key(),
-//		P_DATATRACKER_TABLESTATS.key(), 
-//		P_DATATRACKER_TRACK.key(), 
-//		P_DATATRACKER_SAMPLESIZE.key(),
-//		Output0DMetadata.TSMETA };
-//	private SimplePropertyList metaprops;
+	// metadata for raw data
 	private Output0DMetadata metadata;
+	// metadata for aggregated data
 	private Output0DMetadata aggregatedMetadata;
-	// metadata for numeric fields, ie min max units etc.
-//	private ReadOnlyPropertyList fieldMetadata = null;
-	
 	// current properties  
 	private long currentTime = Long.MIN_VALUE;
 	private DataLabel currentItem = null;
-	// true if all tracked components are permanent, false if at least one is ephemeral
-//	private boolean permanentComponents = true;
-//	
-//	// statistical aggregators - one per variable
-//	private Map<String,Statistics> aggregators = new HashMap<>();
 	
 	public DataTracker0D(int simulatorId,
 			StatisticalAggregatesSet statistics,

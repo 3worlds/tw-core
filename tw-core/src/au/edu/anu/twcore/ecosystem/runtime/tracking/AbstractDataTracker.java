@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -123,5 +125,10 @@ public abstract class AbstractDataTracker<T, M>
 	public final boolean hasObservers() {
 		return !observers.isEmpty();
 	}
-
+	
+	//@Overrride
+	public final Collection<DataReceiver<T, M>> observers() {
+		return Collections.unmodifiableCollection(observers);
+	}
+	
 }
