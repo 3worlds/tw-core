@@ -125,6 +125,8 @@ public enum ConfigurationPropertyNames {
 	P_SPACE_GUARDAREA			("guardAreaWidth"),
 	P_SPACE_OBSWINDOW			("observationWindow"),
 	P_SNIPPET_JAVACODE          ("javaCode"),
+	P_WIDGET_SENDER				("sender"),
+	P_WIDGET_MAXAXES			("maxAxes"),
 	;
 
 	private final String pname;

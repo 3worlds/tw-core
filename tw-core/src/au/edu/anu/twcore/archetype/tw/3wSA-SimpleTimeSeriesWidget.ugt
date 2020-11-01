@@ -12,17 +12,31 @@ archetype 3wSA-SimpleTimeSeriesWidget
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
+		
 		hasProperty SimpleTimeSeriesWidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
 			multiplicity = IntegerRange("1..1")
+		
+		hasProperty SimpleTimeSeriesWidgetmaxAxesProperty
+			hasName = String("maxAxes")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery SimpleTimeWidgetMaxAxesInRangeQuery
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]1,10))
+		
 		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab","container"))
+
 		hasEdge SimpleTimeSeriesWidgetDataTrackerEdgeSpec
 			isOfClass = String("trackSeries")
 			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
+			
+			
+
 		// TODO: must check that the edge end node has property subclass==
 		// au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker
 
