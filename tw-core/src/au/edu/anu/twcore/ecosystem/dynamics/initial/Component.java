@@ -216,13 +216,13 @@ public class Component
 				// 2nd case: there is no group
 				else if (arena!=null) { // is this really needed? must never be null!
 					// if there is only one component type, then the arena must be the container
-					if (nComponentTypes==1) 
+					if (nComponentTypes==1)
 						container = (ComponentContainer)arena.getInstance(id).getInstance().content();
 					// otherwise, a default group container per componentType is created, with no data
 					else { // group container must be created and inserted under arena
 						ComponentContainer parentContainer = (ComponentContainer)arena.getInstance(id).getInstance().content();
-//						String containerId = componentType.categoryId(); // check this is ok - it's too long actually
-						String containerId = "group";
+						String containerId = componentType.categoryId(); // check this is ok - IT's NOT!!!
+//						String containerId = "group";
 						container = (ComponentContainer) parentContainer.subContainer(containerId);
 						// POSSIBLE FLAW HERE: there is no Group node matching this group factory
 						if (container==null) {
