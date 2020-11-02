@@ -127,6 +127,7 @@ public enum ConfigurationPropertyNames {
 	P_SNIPPET_JAVACODE          ("javaCode"),
 	P_WIDGET_SENDER				("sender"),
 	P_WIDGET_MAXAXES			("maxAxes"),
+	P_WIDGET_BUFFERSIZE			("bufferSize"),
 	;
 
 	private final String pname;
