@@ -15,23 +15,23 @@ import fr.cnrs.iees.twcore.constants.SamplingMode;
 /**
  * <p>An ancestor for data trackers which get their data from a sample of objects (typically,
  * CategorizedComponent and its subclasses) taken from a population.</p>
- * 
+ *
  * <p>Naming conventions for tracked data:</p>
  * <ul>
  * <li>if sample of size 1: <strong>systemName>groupName>componentId>variableName[index]</strong> </li>
- * <li>if sample of size >1 and no statistics required: same as above, with a different 
+ * <li>if sample of size >1 and no statistics required: same as above, with a different
  * <strong>componentId</strong> for each channel</li>
- * <li>if sample of size >1 and statistics: <strong>systemName>groupName>statistic>variableName[index]</strong> 
- * (where statistic = mean, var, n, sum etc...) + in the data message, the list of the ids of the 
+ * <li>if sample of size >1 and statistics: <strong>systemName>groupName>statistic>variableName[index]</strong>
+ * (where statistic = mean, var, n, sum etc...) + in the data message, the list of the ids of the
  * components currently included in the sample (may be useful for the final rendering).</li>
  * <li>if tracking components in a model without groups:
- * <strong>systemName>componentId>variableName[index]</strong> or 
+ * <strong>systemName>componentId>variableName[index]</strong> or
  * <strong>systemName>statistic>variableName[index]</strong></li>
- * <li>if tracking groups: <strong>systemName>groupName>variableName[index]</strong> or 
+ * <li>if tracking groups: <strong>systemName>groupName>variableName[index]</strong> or
  * <strong>systemName>groupTypeName>statistic>variableName[index]</strong></li>
  * <li>if tracking system only: <strong>systemName>variableName[index]</strong></li>
  * </ul>
- * 
+ *
  * @author Jacques Gignoux - 14 oct. 2020
  *
  * @param <C> the type of object to sample
@@ -46,12 +46,13 @@ public abstract class SamplerDataTracker<C,T,M>
 	protected int trackSampleSize = 0;
 	private boolean trackAll = false;
 	private SamplingMode trackMode;
-	// sample 
+	// sample
 	protected Set<C> sample = new HashSet<>();
+	private Set<C> initialSample = new HashSet<>();
 	// population from which sample is drawn
 	protected Collection<C> samplingPool = null;
-	
-	protected SamplerDataTracker(int messageType, 
+
+	protected SamplerDataTracker(int messageType,
 			int simulatorId,
 			SamplingMode selection,
 			int sampleSize,
@@ -66,12 +67,13 @@ public abstract class SamplerDataTracker<C,T,M>
 		if (trackedComponents!=null) {
 			if ((!trackAll)&&(trackedComponents.size()>trackSampleSize))
 				for (int i=0; i<trackSampleSize; i++)
-					sample.add(trackedComponents.get(i));
+					initialSample.add(trackedComponents.get(i));
 			else
-				sample.addAll(trackedComponents);
+				initialSample.addAll(trackedComponents);
+			sample.addAll(initialSample);
 		}
 	}
-	
+
 	// use this to select new SystemComponents if some are missing
 	// only needed if components are not permanent
 	// TODO: handle missing sampling strategy !
@@ -112,7 +114,7 @@ public abstract class SamplerDataTracker<C,T,M>
 						}
 						break;
 					case RANDOM:
-						// calls to random will crash if argument is zero 
+						// calls to random will crash if argument is zero
 						goOn = true;
 						LinkedList<C> ll = new LinkedList<>();
 						for (C sc : samplingPool)
@@ -163,27 +165,25 @@ public abstract class SamplerDataTracker<C,T,M>
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void preProcess() {
 		super.preProcess();
 		// replace initial items with runtime items in sample
-		List<C> newSample = new LinkedList<>();
-		Iterator<C> sampleIt = sample.iterator();
-		while (sampleIt.hasNext()) {
-			C s = sampleIt.next();
+		sample.clear();
+		for (C s:initialSample) {
 			if (s instanceof SystemComponent) {
 				SystemComponent isc = (SystemComponent) s;
 				if (isc.container().containsInitialItem(isc))
 					for (SystemComponent sc:isc.container().items())
 						if (isc==isc.container().initialForItem(sc.id())) {
-						sampleIt.remove();
-						newSample.add((C) sc); 					
+						sample.add((C) sc);
 				}
 			}
-		}		
-		sample.addAll(newSample);
+			else
+				sample.add(s);
+		}
 	}
 
 	@Override
@@ -195,7 +195,7 @@ public abstract class SamplerDataTracker<C,T,M>
 	public void addToSample(C toTrack) {
 		sample.add(toTrack);
 	}
-	
+
 	@Override
 	public boolean isTracked(C item) {
 		return sample.contains(item);

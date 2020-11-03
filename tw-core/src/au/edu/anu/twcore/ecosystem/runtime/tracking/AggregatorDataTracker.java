@@ -255,17 +255,17 @@ public abstract class AggregatorDataTracker<T>
 	protected double aggregatedValue(DataLabel channel, StatisticalAggregates stat) {
 		Statistics s = aggregators.get(channel);
 		switch (stat) {
-		case CV:
+		case cv:
 			return s.average()/Math.sqrt(s.variance());
-		case MEAN:
+		case mean:
 			return s.average();
 		case N:
 			return s.n(); // this is an int actually
-		case SE:
+		case se:
 			return Math.sqrt(s.variance());
-		case SUM:
+		case sum:
 			return s.sum(); // concatenate for  string
-		case VAR:
+		case var:
 			return s.variance();
 //		case MIN:
 //			return s.min();

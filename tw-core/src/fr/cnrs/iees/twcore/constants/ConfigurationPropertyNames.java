@@ -91,10 +91,8 @@ public enum ConfigurationPropertyNames {
 	P_UICONTAINER_ORIENT		("orientation"),
 	P_UIORDER					("order"),
 	P_DATATRACKER_SELECT		("samplingMode"),
-//	P_DATATRACKER_GROUPBY		("groupBy"),
 	P_DATATRACKER_STATISTICS	("statistics"),
 	P_DATATRACKER_TABLESTATS	("tableStatistics"),
-//	P_DATATRACKER_VIEWOTHERS	("viewOthers"),
 	P_DATATRACKER_TRACK			("track"),
 	P_DATATRACKER_SAMPLESIZE	("sampleSize"),
 	P_DATASOURCE_FILE			("file"),
@@ -128,6 +126,7 @@ public enum ConfigurationPropertyNames {
 	P_WIDGET_SENDER				("sender"),
 	P_WIDGET_MAXAXES			("maxAxes"),
 	P_WIDGET_BUFFERSIZE			("bufferSize"),
+	P_EXP_DEPLOYMENT			("deployment"),
 	;
 
 	private final String pname;

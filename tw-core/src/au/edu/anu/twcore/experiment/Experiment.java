@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -34,8 +34,10 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
+import fr.cnrs.iees.twcore.constants.DeploymentType;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
+import fr.ens.biologie.generic.utils.Logging;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
@@ -49,18 +51,18 @@ import au.edu.anu.twcore.experiment.runtime.deployment.SimpleDeployer;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ExperimentDesignType.*;
-
-import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Class matching the "experiment" node label in the 3Worlds configuration tree.
  * Has no properties. Returns a controller to communicate with simulators
- * 
+ *
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
 public class Experiment extends InitialisableNode implements Singleton<StateMachineController>, Sealable {
+
+	private static Logger log = Logging.getLogger(Experiment.class);
 
 	private boolean sealed = false;
 	private StateMachineController controller = null;
@@ -95,31 +97,54 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 					sim = (SimulatorNode) get(getParent().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())),
 							children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
 				}
-
-				// single run experiment
-				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
-					int nSims = 1;
-						int nReps = (Integer) d.properties().getPropertyValue(P_TREATMENT_REPLICATES.key());
-						nSims += nReps;					
-					if (nSims == 1) {
-						deployer = new SimpleDeployer();
+				DeploymentType deptype = DeploymentType.defaultValue(); // local deployer
+				if (properties().hasProperty(P_EXP_DEPLOYMENT.key()))
+					deptype = (DeploymentType) properties().getPropertyValue(P_EXP_DEPLOYMENT.key());
+				switch (deptype) {
+				case multipleRemote:
+					log.warning(()->"Multiple remote deployment not yet implemented - moving to multiple local deployment");
+				case multipleLocal:
+					deployer = new ParallelDeployer();
+					// actually we do not have to setup these right now - we may defer this to the
+					// design node, who is able to comput how many simulators will be needed
+					// remember that number of threads is independent of number of simulators.
+					for (int i = 0; i < workOutNumberOfSimulators(); i++)
 						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-					} else {
-						deployer = new ParallelDeployer();
-						for (int i = 0; i < nSims; i++)
-							deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-					}
-
+					break;
+				case singleLocal:
+					deployer = new SimpleDeployer();
+					deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
+					break;
 				}
-				// file, factorial etc  etc design
-				// multiple simulators, remote
-				// TODO
+//				// single run experiment
+//				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
+//					int nSims = 1;
+//						int nReps = (Integer) d.properties().getPropertyValue(P_TREATMENT_REPLICATES.key());
+//						nSims += nReps;
+//					if (nSims == 1) {
+//						deployer = new SimpleDeployer();
+//						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
+//					} else {
+//						deployer = new ParallelDeployer();
+//						for (int i = 0; i < nSims; i++)
+//							deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
+//					}
+//
+//				}
+//				// file, factorial etc  etc design
+//				// multiple simulators, remote
+//				// TODO
 				controller = new StateMachineController(deployer);
 				// this puts the deployer in "waiting" state
 				// controller.sendEvent(initialise.event());
 			}
 			sealed = true;
 		}
+	}
+
+	// TODO for Ian: implement something clever here
+	private int workOutNumberOfSimulators() {
+		return 2;
 	}
 
 	@Override

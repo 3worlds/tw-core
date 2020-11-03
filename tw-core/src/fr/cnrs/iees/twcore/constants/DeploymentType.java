@@ -30,20 +30,20 @@ import java.util.HashSet;
 import java.util.Set;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
-public enum SamplingMode {
+public enum DeploymentType {
 
-// RANDOM: selects a random system component in each group
-	RANDOM ("selects a random system component in each group"),
+// singleLocal: run on the local computer in a single execution thread
+	singleLocal ("run on the local computer in a single execution thread"),
 
-// FIRST: selects the first system component in each group as stored in the simulator’s lists (quite unpredictable unless there is only one item in the list)
-	FIRST ("selects the first system component in each group as stored in the simulator’s lists (quite unpredictable unless there is only one item in the list)"),
+// multipleLocal: run on the local computer in multiple threads, taking advantage of multiple processors
+	multipleLocal ("run on the local computer in multiple threads, taking advantage of multiple processors"),
 
-// LAST: selects the last system component in each group as stored in the simulator’s lists (quite unpredictable unless there is only one item in the list)
-	LAST ("selects the last system component in each group as stored in the simulator’s lists (quite unpredictable unless there is only one item in the list)");
+// multipleRemote: run on a remote parallel computer (cluster, grid, etc.) [uses OpenMole]
+	multipleRemote ("run on a remote parallel computer (cluster, grid, etc.) [uses OpenMole]");
 	
 	private final String description;
 
-	private SamplingMode(String description) {
+	private DeploymentType(String description) {
 		this.description = description;
 	}
 
@@ -52,8 +52,8 @@ public enum SamplingMode {
 	}
 
 	public static String[] toStrings() {
-		String[] result = new String[SamplingMode.values().length];
-		for (SamplingMode s: SamplingMode.values())
+		String[] result = new String[DeploymentType.values().length];
+		for (DeploymentType s: DeploymentType.values())
 			result[s.ordinal()] = s.name();
 		Arrays.sort(result);
 		return result;
@@ -61,18 +61,18 @@ public enum SamplingMode {
 
 	public static Set<String> keySet() {
 		Set<String> result = new HashSet<String>();
-		for (SamplingMode e: SamplingMode.values())
+		for (DeploymentType e: DeploymentType.values())
 			result.add(e.toString());
 		return result;
 	}
 
-	public static SamplingMode defaultValue() {
-		return RANDOM;
+	public static DeploymentType defaultValue() {
+		return singleLocal;
 	}
 
 	static {
-		ValidPropertyTypes.recordPropertyType(SamplingMode.class.getSimpleName(), 
-		SamplingMode.class.getName(),defaultValue());
+		ValidPropertyTypes.recordPropertyType(DeploymentType.class.getSimpleName(), 
+		DeploymentType.class.getName(),defaultValue());
 	}
 
 }

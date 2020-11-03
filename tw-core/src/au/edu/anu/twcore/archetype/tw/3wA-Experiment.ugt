@@ -4,12 +4,16 @@ hasNode experimentSpec
 	hasParent =  StringTable(([1]"3worlds:"))
 	multiplicity = IntegerRange("1..1")
 	hasEdge baseLineSpec
-		isOfClass = String("baseLine")               
+		isOfClass = String("baseLine")
 		toNode = String("system:")
 		multiplicity = IntegerRange("0..1") // Used to find the associated simulatorNode. Not required if only one system:
 	mustSatisfyQuery baselineQuery
 		className = String("au.edu.anu.twcore.archetype.tw.BaselineQuery")
-	
+	hasProperty experimentDeploymentType
+		hasName = String("deployment")
+		type = String("DeploymentType")
+		multiplicity = IntegerRange("0..1")
+
 hasNode designSpec
 	isOfClass = String("design")
 	hasParent =  StringTable(([1]"experiment:"))
@@ -28,14 +32,14 @@ hasNode designSpec
 		className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
 		proplist = StringTable(([2]file,type))
 
-	hasProperty designReplicatesPropertySpec
-		hasName = String("replicates")
-		type = String("Integer")
-		multiplicity = IntegerRange("0..1")
-		
-	mustSatisfyQuery RealNumberTablePrecSpecCondition
-		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-		conditions = StringTable(([3]"replicates","type","singleRun"))
+//	hasProperty designReplicatesPropertySpec
+//		hasName = String("replicates")
+//		type = String("Integer")
+//		multiplicity = IntegerRange("0..1")
+
+//	mustSatisfyQuery RealNumberTablePrecSpecCondition
+//		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+//		conditions = StringTable(([3]"replicates","type","singleRun"))
 
 
 hasNode treatmentSpec
@@ -47,7 +51,7 @@ hasNode treatmentSpec
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
 	hasEdge modelSetupEdgeSpec
-		isOfClass = String("modelSetup")               
+		isOfClass = String("modelSetup")
 		toNode = String("system:")
 		multiplicity = IntegerRange("0..1")
 
@@ -64,7 +68,7 @@ hasNode modelChangeSpec
 		hasName = String("replaceWith")
 		type = String("DoubleTable")
 		multiplicity = IntegerRange("1..1")
-		
+
 hasNode timePeriodSpec
 	isOfClass = String("timePeriod")
 	hasParent =  StringTable(([1]"experiment:"))
@@ -78,7 +82,7 @@ hasNode timePeriodSpec
 		type = String("DateTimeType")
 		multiplicity = IntegerRange("0..1")
 	hasEdge timePeriodStopSpec
-		isOfClass = String("stopOn")               
+		isOfClass = String("stopOn")
 		toNode = String("stoppingCondition:")
 		multiplicity = IntegerRange("0..1")
 	// TODO Needs a query to make end>start
@@ -126,7 +130,6 @@ hasNode dataSinkSpec
 		toNode = String("dataTracker:")
 		multiplicity = IntegerRange("1..1")
 	// TODO: more is needed to really implement this (ie file format...)
-	
+
 	// TODO: it might be better if the File property was in the sub-arch rather than the base class
 	// Then i can determine a "Type" for the file and use the appropriate extensions - Ian
-	
