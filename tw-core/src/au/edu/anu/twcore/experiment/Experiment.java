@@ -51,6 +51,8 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ExperimentDesignType.*;
 
+import java.util.List;
+
 /**
  * Class matching the "experiment" node label in the 3Worlds configuration tree.
  * Has no properties. Returns a controller to communicate with simulators
@@ -96,16 +98,20 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 				// single run experiment
 				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
-					deployer = new SimpleDeployer();
-					deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-				}
-				// multiple simulators, local
-				else { // TODO: there should be a condition here
-					deployer = new ParallelDeployer();
-					// TODO: fix this - it's only fake code
-					for (int i = 0; i < 10; i++)
+					int nSims = 1;
+						int nReps = (Integer) d.properties().getPropertyValue(P_TREATMENT_REPLICATES.key());
+						nSims += nReps;					
+					if (nSims == 1) {
+						deployer = new SimpleDeployer();
 						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
+					} else {
+						deployer = new ParallelDeployer();
+						for (int i = 0; i < nSims; i++)
+							deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
+					}
+
 				}
+				// file, factorial etc  etc design
 				// multiple simulators, remote
 				// TODO
 				controller = new StateMachineController(deployer);

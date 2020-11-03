@@ -28,6 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
 
 /**
@@ -39,10 +43,30 @@ import au.edu.anu.twcore.experiment.runtime.Deployer;
  *
  */
 public class ParallelDeployer extends Deployer {
-
+	// TODO Make proper use of new Java concurrency thread pool executor
+//	private final List<SimulatorThread> runnables;
+//	private final List<Simulator> sims;
 	public ParallelDeployer() {
-		// TODO Auto-generated constructor stub
+//		runnables = new ArrayList<>();
+//		sims = new ArrayList<>();
 		// use the PausableThreadPoolExecutor to run simulators
+		
+	}
+	@Override
+	public void attachSimulator(Simulator sim) {
+//		sims.add(sim);
+//		SimulatorThread st = new SimulatorThread(this);
+//		runnables.add(st);
+//		
+//		Thread t = new Thread(st);
+//		t.start();
+		
+	}
+
+	@Override
+	public void detachSimulator(Simulator sim) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -92,5 +116,6 @@ public class ParallelDeployer extends Deployer {
 		// TODO Auto-generated method stub
 
 	}
+
 
 }

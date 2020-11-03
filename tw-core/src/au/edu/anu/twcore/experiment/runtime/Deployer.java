@@ -37,7 +37,8 @@ import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
 import fr.cnrs.iees.rvgrid.statemachine.Transition;
 
 /**
- * The class which manages Simulators according to experiment size and constraints
+ * The class which manages Simulators according to experiment size and
+ * constraints
  * <ul>
  * <li>receives commands from StateMachineController</li>
  * <li>sends status to StateMachineController</li>
@@ -49,20 +50,18 @@ import fr.cnrs.iees.rvgrid.statemachine.Transition;
  * @author Jacques Gignoux - 29 août 2019
  *
  */
-public abstract class Deployer
-		extends StateMachineEngine<StateMachineController>
-		implements DeployerProcedures	{
+public abstract class Deployer extends StateMachineEngine<StateMachineController> implements DeployerProcedures {
 
 	public Deployer() {
-		super(new Transition(waiting.state(),initialise.event()),stateList());
+		super(new Transition(waiting.state(), initialise.event()), stateList());
 	}
 
-	// TODO: Possibly a better design is to pass simulators in the constructor and have a method startThreads 
-	public void attachSimulator(Simulator sim) {
-	}
+	// TODO: Possibly a better design is to pass simulators in the constructor and
+	// have a method startThreads
+// But what about remote simulators??
+	public abstract void attachSimulator(Simulator sim);
 
-	public void detachSimulator(Simulator sim) {
-	}
+	public abstract void detachSimulator(Simulator sim);
 
 	public abstract void stepSimulators();
 
