@@ -43,7 +43,6 @@ import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
@@ -148,17 +147,17 @@ public abstract class AbstractProcess
 		if (space!=null)
 			if (space.dataTracker()!=null)
 				space.dataTracker().recordTime(status,t);
-		
+
 		GraphDataTracker gdt = ecosystem.getDataTracker();
 		if (gdt!=null)
 			gdt.recordTime(t);
-		
+
 		loop(currentTime,timer.userTime(dt),ecosystem());
 		if (space!=null)
 			if (space.dataTracker()!=null)
 				space.dataTracker().closeTimeStep(); // this sends the message to the widget
 	}
-	
+
 	// for descendants
 	protected void relocate(SystemComponent sc, double[] newLoc) {
 		newLoc = space.fixLocation(newLoc);
@@ -177,7 +176,7 @@ public abstract class AbstractProcess
 				space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
 		}
 	}
-	
+
 	// for descendants
 	protected void locate(SystemComponent sc, ComponentContainer cont, double[] newLoc) {
 		newLoc = space.fixLocation(newLoc);
@@ -188,9 +187,9 @@ public abstract class AbstractProcess
 			space.addItem(newLocSc);
 			if (space.dataTracker()!=null)
 				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
-		}	
+		}
 	}
-	
+
 	// for descendants
 	// NB: removes a SC from ALL spaces, not only from this one
 	protected void unlocate(SystemComponent sc) {
@@ -202,67 +201,67 @@ public abstract class AbstractProcess
 				// lines must be cleared before points
 				for (Edge r:sc.edges(Direction.OUT)) {
 					SystemComponent end = (SystemComponent)r.endNode();
-					String[] endlab = end.container().itemId(end.id()); 
+					String[] endlab = end.container().itemId(end.id());
 					space.dataTracker().deleteLine(sclab,endlab);
 				}
 				for (Edge r:sc.edges(Direction.IN)) {
 					SystemComponent start = (SystemComponent)r.startNode();
-					String[] startlab = start.container().itemId(start.id()); 
+					String[] startlab = start.container().itemId(start.id());
 					space.dataTracker().deleteLine(startlab,sclab);
 				}
 				space.dataTracker().deletePoint(sclab);
 			}
 		}
 	}
-	
-	/**
-	 * Utility for descendants. Fills a hierarchical context from container information
-	 *
-	 * @param context the context to fill
-	 * @param container the container which information is to add to the context
-	 */
-	protected void setContext(HierarchicalContext context,
-			CategorizedContainer<SystemComponent> container) {
-//		if (container.containerCategorized() instanceof Ecosystem) {
-//			context.ecosystemParameters = container.parameters();
-////			context.ecosystemVariables = container.variables();
-////			context.ecosystemPopulationData = container.populationData();
-//			context.ecosystemName = container.id();
-//		}
-//		else if (container.containerCategorized() instanceof LifeCycle) {
-//			context.lifeCycleParameters = container.parameters();
-////			context.lifeCycleVariables = container.variables();
-////			context.lifeCyclePopulationData = container.populationData();
-//			context.lifeCycleName = container.id();
-//		}
-//		else if (container.containerCategorized() instanceof SystemFactory)  {
-//			context.groupParameters = container.parameters();
-////			context.groupVariables = container.variables();
-////			context.groupPopulationData = container.populationData();
-//			context.groupName = container.id();
-//		}
-	}
 
-	/**
-	 * Utility for descendants. Instantiates and fills a hierarchical context from
-	 * component information.
-	 *
-	 * @param component the component to extract container information from
-	 * @return the new instance of the context
-	 */
-	protected HierarchicalContext getContext(SystemComponent component) {
-		HierarchicalContext context = new HierarchicalContext();
-		// group or ecosystem
-		setContext(context,component.container());
-		// lifecycle or ecosystem
-		if (component.container().parentContainer()!=null) {
-			setContext(context,component.container());
-			// ecosystem
-			if (component.container().parentContainer().parentContainer()!=null)
-				setContext(context,component.container().parentContainer().parentContainer());
-		}
-		return context;
-	}
+//	/**
+//	 * Utility for descendants. Fills a hierarchical context from container information
+//	 *
+//	 * @param context the context to fill
+//	 * @param container the container which information is to add to the context
+//	 */
+//	protected void setContext(HierarchicalContext context,
+//			CategorizedContainer<SystemComponent> container) {
+////		if (container.containerCategorized() instanceof Ecosystem) {
+////			context.ecosystemParameters = container.parameters();
+//////			context.ecosystemVariables = container.variables();
+//////			context.ecosystemPopulationData = container.populationData();
+////			context.ecosystemName = container.id();
+////		}
+////		else if (container.containerCategorized() instanceof LifeCycle) {
+////			context.lifeCycleParameters = container.parameters();
+//////			context.lifeCycleVariables = container.variables();
+//////			context.lifeCyclePopulationData = container.populationData();
+////			context.lifeCycleName = container.id();
+////		}
+////		else if (container.containerCategorized() instanceof SystemFactory)  {
+////			context.groupParameters = container.parameters();
+//////			context.groupVariables = container.variables();
+//////			context.groupPopulationData = container.populationData();
+////			context.groupName = container.id();
+////		}
+//	}
+//
+//	/**
+//	 * Utility for descendants. Instantiates and fills a hierarchical context from
+//	 * component information.
+//	 *
+//	 * @param component the component to extract container information from
+//	 * @return the new instance of the context
+//	 */
+//	protected HierarchicalContext getContext(SystemComponent component) {
+//		HierarchicalContext context = new HierarchicalContext();
+//		// group or ecosystem
+//		setContext(context,component.container());
+//		// lifecycle or ecosystem
+//		if (component.container().parentContainer()!=null) {
+//			setContext(context,component.container());
+//			// ecosystem
+//			if (component.container().parentContainer().parentContainer()!=null)
+//				setContext(context,component.container().parentContainer().parentContainer());
+//		}
+//		return context;
+//	}
 
 	public abstract void addFunction(TwFunction function);
 

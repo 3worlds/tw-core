@@ -73,37 +73,36 @@ public class ComponentProcess
 		extends AbstractProcess
 		implements Categorized<SystemComponent> {
 
+	// helper class for generating new SystemComponents
 	private class newBornSettings {
 		ComponentFactory factory = null;
 		ComponentContainer container = null;
-		String name = null;
+//		String name = null;
 	}
 
+	// categories this Process applies to
 	private SortedSet<Category> focalCategories = new TreeSet<>();
 	private String categoryId = null;
-
+	// functions run by this process
 	private List<ChangeCategoryDecisionFunction> CCfunctions = new LinkedList<ChangeCategoryDecisionFunction>();
 	private List<ChangeStateFunction> CSfunctions = new LinkedList<ChangeStateFunction>();
 	private List<DeleteDecisionFunction> Dfunctions = new LinkedList<DeleteDecisionFunction>();
 	private List<CreateOtherDecisionFunction> COfunctions = new LinkedList<CreateOtherDecisionFunction>();
-
 	// local variables for looping
-//	private HierarchicalContext focalContext = new HierarchicalContext();
-	private LifeCycle lifeCycle = null;
-//	private Ecosystem ecosystem = null;
-//	private SystemFactory group = null;
-
-//	private ComponentContainer lifeCycleContainer = null;
-//	private SystemContainer ecosystemContainer = null;
-//	private SystemContainer groupContainer = null;
-
-	// new API
-	// the whole system component - always valid, always here, always unique
 	private ArenaComponent arena = null;
-	// lifecycle
 	private GroupComponent focalGroup = null;
 	private GroupComponent otherGroup = null;
+	// lifecycle
+	private LifeCycle lifeCycle = null;
 
+	/**
+	 * Constructor
+	 * @param world the root component (ArenaComponent) for looping
+	 * @param categories the categories of components this process applies to
+	 * @param timer the Timer running this process
+	 * @param space the Space attached to this process
+	 * @param searchR the maximal search radius in this space
+	 */
 	public ComponentProcess(ArenaComponent world, Collection<Category> categories,
 			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
 		super(world,timer,space,searchR);
@@ -143,7 +142,7 @@ public class ComponentProcess
 		}
 	}
 
-	
+
 	private void executeFunctions(double t, double dt, CategorizedComponent focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
 		if (focal.currentState() != null) {
@@ -157,7 +156,7 @@ public class ComponentProcess
 			if (space!=null)
 				newLoc = new double[space.ndim()];
 			function.changeState(t,dt,arena,null,focalGroup,focal,space,newLoc);
-			if (space!=null) 
+			if (space!=null)
 				if (!space.equalLocation(space.locationOf((SystemComponent)focal),newLoc))
 					relocate((SystemComponent)focal,newLoc);
 		}
@@ -168,7 +167,7 @@ public class ComponentProcess
 		if (focal instanceof SystemComponent)
 			for (DeleteDecisionFunction function : Dfunctions)
 				if (function.delete(t, dt, arena, null,focalGroup, focal, space)) {
-		//-----------------------------------------------------------------------------------	
+		//-----------------------------------------------------------------------------------
 			((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
 			unlocate((SystemComponent)focal);
@@ -189,7 +188,7 @@ public class ComponentProcess
 					consequence.changeOtherState(t, dt,
 						arena, null, focalGroup, focal,
 						null, otherGroup, other, space, newLoc);
-					if (space!=null) 
+					if (space!=null)
 						if (!space.equalLocation(space.locationOf((SystemComponent)other),newLoc))
 							relocate((SystemComponent)other,newLoc);
 				}
@@ -218,7 +217,7 @@ public class ComponentProcess
 			else {
 				newBornSettings nbs = new newBornSettings();
 				nbs.factory = (ComponentFactory) focal.elementFactory();
-				nbs.name = focal.membership().categoryId();
+//				nbs.name = focal.membership().categoryId();
 				nbs.container = (ComponentContainer) ((SystemComponent)focal).container();
 				newBornSpecs.add(nbs);
 			}
@@ -237,22 +236,25 @@ public class ComponentProcess
 						if (space!=null)
 							newLoc = new double[space.ndim()];
 						// TODO: this is temporary as it is only valid when no lifecycle is present
-						otherGroup = focalGroup;
+						if (lifeCycle==null)
+							otherGroup = focalGroup;
+						else {
+
+						}
 						// TODO: finish this call (missing lifecycle, etc)
 						// NB lifecycle must be the same for parent and child.
 						func.setOtherInitialState(t, dt,
 							arena, null, focalGroup, focal,
 							null, otherGroup, newBorn, space, newLoc);
-						if (space!=null) 
+						if (space!=null)
 							locate(newBorn,nbs.container,newLoc);
-						// DEBUG: this sometimes happens! Quite often ACTUALLY
-//						if (newBorn.container()==null)
-//							System.out.println("Stop! (ComponentProcess.249)");
 					}
+					// CAUTION: this relation cannot have a matching RelationType
 					if (function.relateToOther())
 						focal.relateTo(newBorn,parentTo.key()); // delayed addition
-					// TODO: display relation in space widget??
-					nbs.container.addItem(newBorn); // safe - delayed addition
+					// Reminder: this is just a list for delayed addition in ecosystem.effectChanges()
+					// before this, the newBorn container field is null
+					nbs.container.addItem(newBorn);
 				}
 			}
 		}
@@ -263,7 +265,7 @@ public class ComponentProcess
 				tracker.recordItem(focal.hierarchicalId());
 				tracker.record(currentStatus,focal.currentState(),focal.decorators(),focal.autoVar());
 		}
-		
+
 	}
 
 	// single loop on a container which matches the process categories
@@ -575,7 +577,7 @@ public class ComponentProcess
 	public String categoryId() {
 		return categoryId;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
