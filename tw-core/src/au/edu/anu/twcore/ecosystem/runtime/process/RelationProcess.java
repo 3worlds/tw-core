@@ -367,13 +367,13 @@ public class RelationProcess extends AbstractRelationProcess {
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
         }
-        
+
         // MaintainRelationDecisionFunction for ephemeral relations
         if (!rel.container().isPermanent()) {
 	        // MaintainRelationDecision
 	        for (MaintainRelationDecisionFunction function:MRfunctions) {
-	        	if (!function.maintainRelation(t, dt, arena, 
-	        		/*lifeCycle*/null, focalGroup, focal, 
+	        	if (!function.maintainRelation(t, dt, arena,
+	        		/*lifeCycle*/null, focalGroup, focal,
 	        		/*otherLifeCycle*/null, otherGroup, other, space)) {
 	        		rel.container().removeItem(rel);
 		        	if (space!=null)
@@ -383,10 +383,12 @@ public class RelationProcess extends AbstractRelationProcess {
 	        	}
 	        }
 	        // if there is no maintainrelation function, the relation only lasts for 1 time step
+	        // FLAW: this is only goign to work if there is a relationProcess for another reason
+	        // + it may happen after an attempt to set the relation again.
 	        if (MRfunctions.isEmpty())
 	        	rel.container().removeItem(rel);
-        }   
-        
+        }
+
         // ChangeRelationStateFunction
         for (ChangeRelationStateFunction function:CRfunctions) {
         	if (other.currentState()!=null) {
@@ -403,7 +405,7 @@ public class RelationProcess extends AbstractRelationProcess {
 				newFocalLoc = new double[space.ndim()];
 				newOtherLoc = new double[space.ndim()];
 			}
-        	function.changeRelationState(t, dt, arena, /*lifeCycle*/null, focalGroup, focal, 
+        	function.changeRelationState(t, dt, arena, /*lifeCycle*/null, focalGroup, focal,
         			/*otherLifeCycle*/null, otherGroup, other, space, newFocalLoc, newOtherLoc);
 			if (space!=null) {
 				if (!space.equalLocation(space.locationOf((SystemComponent)focal), newFocalLoc))
