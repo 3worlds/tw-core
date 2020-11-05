@@ -196,4 +196,8 @@ public class RelationType
 		return sealed;
 	}
 
+	public boolean autoDelete() {
+		return autoDelete;
+	}
+
 }

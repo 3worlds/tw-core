@@ -219,14 +219,14 @@ public class SearchProcess
 			// SCs, so only once with permanent components.
 			// with permanent components, no need to call this process all the time!
 
-//			if (focal.isPermanent() && other.isPermanent() && relContainer.isPermanent())
-
-			// this occurs only in cases where a maintainrelationfunction has not been defined
-			if (focal.getRelatives(relContainer.id()).contains(other))
-				// already related, skip it
-				System.out.println("Already related "+focal.id()+"->"+other.id())
-				;
-			else if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
+			// CODE below not needed anymore in theory - seems to work ok
+//			// this occurs only in cases where a maintainrelationfunction has not been defined
+//			if (focal.getRelatives(relContainer.id()).contains(other))
+//				// already related, skip it
+//				System.out.println("Already related "+focal.id()+"->"+other.id())
+//				;
+//			else
+			if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
 				otherLifeCycle,otherGroup,other,space)) {
 				relContainer.addItem(focal,other);
 				if (space!=null)

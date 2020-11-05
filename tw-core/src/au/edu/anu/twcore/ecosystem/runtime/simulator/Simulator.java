@@ -51,6 +51,7 @@ import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
+import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
@@ -164,7 +165,7 @@ public class Simulator implements Resettable {
 	 * @param timeModelMasks
 	 * @param processCallingOrder
 	 * @param ecosystem
-	 * @param haveStoppingConditions 
+	 * @param haveStoppingConditions
 	 */
 	@SuppressWarnings("unchecked")
 	public Simulator(int id,
@@ -192,14 +193,14 @@ public class Simulator implements Resettable {
 		timetracker = new TimeTracker();
 //		timetracker.setSender(id);
 		metadata = new Metadata(id, refTimer.properties());
-		
+
 		String scDesc = stoppingCondition.toString();
 		if (noStoppingConditions)//i.e. not the default stopping condition
 			scDesc = "(never)";
-		
+
 		// Add the description of the stopping condition for display by widgets if required
 		metadata.addProperty("StoppingDesc", scDesc);
-		
+
 		trackers.put(timetracker, metadata);
 		for (List<List<TwProcess>> llp : processCallingOrder.values())
 			for (List<TwProcess> lp : llp)
@@ -222,10 +223,10 @@ public class Simulator implements Resettable {
 //					}
 		}
 		// add system (arena) GraphDataTracker
-		GraphDataTracker gdt = ecosystem.arena().getDataTracker();		
+		GraphDataTracker gdt = ecosystem.arena().getDataTracker();
 		if (gdt!=null)
 			trackers.put(gdt,gdt.getInstance());
-		
+
 		// add space data trackers to datatracker list
 		if (mainSpace!=null)
 			for (Space<SystemComponent> sp : mainSpace.spaces())
@@ -263,6 +264,10 @@ public class Simulator implements Resettable {
 		status = SimulatorStatus.Active;
 		log.info("Time = " + lastTime);
 //		timetracker.sendData(lastTime);
+		//0 cleanup ephemeral relations if any (must be done here)
+		for (RelationContainer rc:ecosystem.relations())
+			if (rc.autoDelete())
+				rc.effectChanges();
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;

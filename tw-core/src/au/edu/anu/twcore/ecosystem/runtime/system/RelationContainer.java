@@ -99,7 +99,8 @@ public class RelationContainer
 	public void effectChanges() {
 		// delete all old relations
 		for (SystemRelation sr:relationsToRemove) {
-			sr.startNode().disconnectFrom(Direction.OUT,sr.endNode()); // Do NOT use sr.disconnect() --> ConcurrentModificationException
+			// Do NOT use sr.disconnect() --> ConcurrentModificationException
+			sr.startNode().disconnectFrom(Direction.OUT,sr.endNode());
 			sr.detachFromContainer();
 		}
 		relationsToRemove.clear();
@@ -108,6 +109,9 @@ public class RelationContainer
 			SystemRelation sr = item.getFirst().relateTo(item.getSecond(),relationType.id());
 			sr.setContainer(this);
 			sr.setRelated(relationType);
+			// if autodelete is true, then tag all the new relations to be deleted next time step
+			if (relationType.autoDelete())
+				relationsToRemove.add(sr);
 		}
 		relationsToAdd.clear();
 		changed = false;
@@ -146,6 +150,8 @@ public class RelationContainer
 		return permanent;
 	}
 
-
+	public boolean autoDelete() {
+		return relationType.autoDelete();
+	}
 
 }

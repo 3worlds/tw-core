@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -171,6 +172,10 @@ public class EcosystemGraph
 
 	public RelationContainer relations(String rel) {
 		return relations.get(rel);
+	}
+
+	public Collection<RelationContainer> relations() {
+		return Collections.unmodifiableCollection(relations.values());
 	}
 
 	public void effectChanges() {
