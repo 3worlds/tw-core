@@ -80,7 +80,7 @@ public abstract class AbstractRelationProcess
 	public final Categorized<CategorizedComponent> to() {
 		return relContainer.to();
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -93,6 +93,9 @@ public abstract class AbstractRelationProcess
 		return sb.toString();
 	}
 
+	public boolean isPermanent() {
+		return relContainer.isPermanent();
+	}
 
 	public static TwFunctionTypes[] compatibleFunctionTypes = {
 		ChangeOtherCategoryDecision,

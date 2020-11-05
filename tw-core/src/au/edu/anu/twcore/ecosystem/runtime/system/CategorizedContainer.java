@@ -421,11 +421,12 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * <em>all</em> its sub-containers (before a call to this method, items are just
 	 * stored into {@code itemsToRemove} and {@code itemsToAdd})
 	 */
+	@SafeVarargs
 	// Recursive
-	public void effectAllChanges() {
-		effectChanges();
+	public final void effectAllChanges(Collection<T>...changedLists) {
+		effectChanges(changedLists);
 		for (CategorizedContainer<T> c : subContainers())
-			c.effectAllChanges();
+			c.effectAllChanges(changedLists);
 	}
 
 	@Override
@@ -500,8 +501,9 @@ public abstract class CategorizedContainer<T extends Identity>
 		depth = -1;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void effectChanges() {
+	public void effectChanges(Collection<T>...changedLists) {
 		changed = false;
 	}
 

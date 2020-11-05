@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.process;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,8 +70,6 @@ public class SearchProcess
 		extends AbstractRelationProcess  {
 
 	private List<RelateToDecisionFunction> RTfunctions = new LinkedList<>();
-//	private HierarchicalContext focalContext = new HierarchicalContext();
-//	private HierarchicalContext otherContext = new HierarchicalContext();
 	private ComponentContainer ecosystemContainer = null;
 
 	private ComponentContainer focalLifeCycleContainer = null;
@@ -100,7 +99,7 @@ public class SearchProcess
 	private void crudeLoop(double t, double dt,
 		HierarchicalComponent focal,
 		DescribedContainer<SystemComponent> others) {
-		if (!relContainer.isPermanent()) {
+//		if (!relContainer.isPermanent()) {
 			if ((others.itemCategorized()!=null) &&
 				(others.itemCategorized().belongsTo(otherCategories)) ) {
 					if (others.descriptors() instanceof GroupComponent)
@@ -113,88 +112,125 @@ public class SearchProcess
 			else
 				for (CategorizedContainer<SystemComponent> subc: others.subContainers())
 					crudeLoop(t,dt,focal,(DescribedContainer<SystemComponent>) subc);
-		}
+//		}
 	}
 
 	// this looping method only works on SystemComponents
-	// TODO: find group and life cycle!
+	// TODO: find life cycle!
 	private void indexedLoop(double t, double dt,
 			SystemComponent focal) {
-		// permanent relations are set at component birth and unset at component death
-		// here we only deal with ephemeral relations
-		if (!relContainer.isPermanent()) {
-			// search radius positive, means we only search until this distance
-			if (searchRadius>space.precision()) {
-				// dont search if item already related !
-				Iterable<SystemComponent> lsc = space.getItemsWithin(focal,searchRadius);
-				// in all cases: do not add already related stuff. how?
-				// if ephemeral: relative may have moved
-				// if permanent: only remove relative when gone from
-				if (lsc!=null) {
-					Location focalLoc = space.locationOf(focal);
-					for (SystemComponent other:lsc) {
-						// focal cannot relate to itself
-						if (other!=focal)
-							// do no check already related components [should be done before]
-							// this could be optimised according to relation lifespan
-							// by having two lists of items in space, one for just added items,
-							// one for items added for at least 1 time step
-							if (!focal.getRelatives(relContainer.type().id()).contains(other)) {
-								if (!other.container().containsInitialItem(other))
-									if (other.membership().belongsTo(otherCategories)) // slow? check this.
-										executeFunctions(t,dt,focal,other);
-							}
-					}
+//		if (!relContainer.isPermanent()) {
+		// search radius positive, means we only search until this distance
+		if (searchRadius>space.precision()) {
+			// dont search if item already related !
+			Iterable<SystemComponent> lsc = space.getItemsWithin(focal,searchRadius);
+			// in all cases: do not add already related stuff. how?
+			// if ephemeral: relative may have moved
+			// if permanent: only remove relative when gone from
+			if (lsc!=null) {
+				Location focalLoc = space.locationOf(focal);
+				for (SystemComponent other:lsc) {
+					// focal cannot relate to itself
+					if (other!=focal)
+						// do no check already related components [should be done before]
+						// this could be optimised according to relation lifespan
+						// by having two lists of items in space, one for just added items,
+						// one for items added for at least 1 time step
+						if (!focal.getRelatives(relContainer.type().id()).contains(other)) {
+							if (!other.container().containsInitialItem(other))
+								if (other.membership().belongsTo(otherCategories)) // slow? check this.
+									executeFunctions(t,dt,focal,other);
+						}
 				}
 			}
-			// search radius null, means we search for the nearest neighbours only
-			else {
-				Iterable<SystemComponent> lsc = space.getNearestItems(focal);
-				if (lsc!=null)
-					for (SystemComponent other:lsc) {
-						Location focalLoc = space.locationOf(focal);
-						if (other!=focal)
-							if (!focal.getRelatives(relContainer.type().id()).contains(other))
-								if (!other.container().containsInitialItem(other))
-									if (other.membership().belongsTo(otherCategories))
-										executeFunctions(t,dt,focal,other);
+		}
+		// search radius null, means we search for the nearest neighbours only
+		else {
+			Iterable<SystemComponent> lsc = space.getNearestItems(focal);
+			if (lsc!=null)
+				for (SystemComponent other:lsc) {
+					Location focalLoc = space.locationOf(focal);
+					if (other!=focal)
+						if (!focal.getRelatives(relContainer.type().id()).contains(other))
+							if (!other.container().containsInitialItem(other))
+								if (other.membership().belongsTo(otherCategories))
+									executeFunctions(t,dt,focal,other);
+			}
+		}
+//		}
+	}
+
+	// recursive loop on all sub containers of the community - only for ephemeral relations
+	@Override
+	protected void loop(double t, double dt, HierarchicalComponent component) {
+		if (!relContainer.isPermanent()) {
+			if (component instanceof ArenaComponent)
+				arena = (ArenaComponent) component;
+			// UNINDEXED SEARCH - SLOW O(n²) - maybe a warning should be issued in MM?
+			if (space==null) {
+				if (component.membership().belongsTo(focalCategories)) {
+					if (arena.content()!=null)
+						crudeLoop(t,dt,component,arena.content());
 				}
+				else
+					if ((component.content()!=null) && (arena.content()!=null)) {
+						if (component.content().itemCategorized()!=null)
+							if (component.content().itemCategorized().belongsTo(focalCategories))
+								crudeLoop(t,dt,component,arena.content());
+						for (CategorizedContainer<SystemComponent> subc: component.content().subContainers())
+							if (subc.itemCategorized().belongsTo(focalCategories)) {
+								if (((DescribedContainer<SystemComponent>)subc).descriptors() instanceof GroupComponent)
+									focalGroup = ((DescribedContainer<SystemComponent>)subc).descriptors();
+								// TODO: life cycles
+								crudeLoop(t,dt,((DescribedContainer<SystemComponent>)subc).descriptors(),arena.content());
+						}
+					}
+			}
+			// INDEXED SEARCH - faster O(log(n))
+			// NB: is an arena ever going to be contained in a space? normally no.
+			else if (component==arena) {
+				if (arena.content()!=null)
+					for (SystemComponent focal:arena.content().allItems(focalCategories)) {
+						indexedLoop(t,dt,focal);
+					}
 			}
 		}
 	}
 
-	// recursive loop on all sub containers of the community
-	@Override
-	protected void loop(double t, double dt, HierarchicalComponent component) {
-		if (component instanceof ArenaComponent)
-			arena = (ArenaComponent) component;
-		// UNINDEXED SEARCH - SLOW O(n²) - maybe a warning should be issued in MM?
-		if (space==null) {
-			if (component.membership().belongsTo(focalCategories)) {
-				if (arena.content()!=null)
-					crudeLoop(t,dt,component,arena.content());
-			}
-			else
-				if ((component.content()!=null) && (arena.content()!=null)) {
-					if (component.content().itemCategorized()!=null)
-						if (component.content().itemCategorized().belongsTo(focalCategories))
-							crudeLoop(t,dt,component,arena.content());
-					for (CategorizedContainer<SystemComponent> subc: component.content().subContainers())
-						if (subc.itemCategorized().belongsTo(focalCategories)) {
-							if (((DescribedContainer<SystemComponent>)subc).descriptors() instanceof GroupComponent)
-								focalGroup = ((DescribedContainer<SystemComponent>)subc).descriptors();
-							// TODO: life cycles
-							crudeLoop(t,dt,((DescribedContainer<SystemComponent>)subc).descriptors(),arena.content());
-					}
-				}
+
+//	// for permanent relations only
+	private void crudeLoop(Collection<SystemComponent> comps,
+		DescribedContainer<SystemComponent> others) {
+		for (SystemComponent focal:comps)
+			if (focal.membership().belongsTo(focalCategories))
+				if ((others.itemCategorized()!=null) &&
+					(others.itemCategorized().belongsTo(otherCategories)) ) {
+						if (others.descriptors() instanceof GroupComponent)
+							otherGroup = others.descriptors();
+					// todo: life cycles
+						for (SystemComponent sc: others.items())
+							executeFunctions(0.0,0.0,focal,sc);
 		}
-		// INDEXED SEARCH - faster O(log(n))
-		// NB: is an arena ever going to be contained in a space? normally no.
-		else if (component==arena) {
-			if (arena.content()!=null)
-				for (SystemComponent focal:arena.content().allItems(focalCategories)) {
-					indexedLoop(t,dt,focal);
-				}
+		else
+			for (CategorizedContainer<SystemComponent> subc: others.subContainers())
+				crudeLoop(comps,(DescribedContainer<SystemComponent>) subc);
+	}
+
+	// establish permanent relations at systemComponent creation time
+	public void setPermanentRelations(Collection<SystemComponent> comps,ComponentContainer comm) {
+		if (relContainer.isPermanent()) {
+			arena = (ArenaComponent) comm.descriptors();
+			if (space==null) {
+				// unindexed search
+				if (comm!=null)
+					crudeLoop(comps,comm);
+			}
+			else {
+				// indexed search
+				if (comm!=null)
+					for (SystemComponent focal:comps)
+						indexedLoop(0.0,0.0,focal);
+			}
 		}
 	}
 

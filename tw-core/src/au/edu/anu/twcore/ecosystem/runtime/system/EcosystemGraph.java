@@ -28,9 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
@@ -178,24 +180,25 @@ public class EcosystemGraph
 		return Collections.unmodifiableCollection(relations.values());
 	}
 
-	public void effectChanges() {
+	public Collection<SystemComponent> effectChanges() {
 		// First, graph structural changes
 		// remove and create all relations
 		for (RelationContainer relc:relations.values())
 			relc.effectChanges();
 		// remove and create all components
+		List<SystemComponent> newComponents = new ArrayList<>();
 		if (components!=null) {
 			// this may possibly remove relations set just before
-			components.effectAllChanges();
+			components.effectAllChanges(newComponents);
 			// Second, graph state changes (recursive)
 			components.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
 		}
-		// here???
 		if (arena.getDataTracker()!=null) {
-			arena.getDataTracker().recordItem(SimulatorStatus.Active,this , arena.id());
+			arena.getDataTracker().recordItem(SimulatorStatus.Active,this,arena.id());
 		}
 		// special treatment of arena only
 		arena.stepForward();
+		return newComponents;
 	}
 
 	@Override

@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.containers;
 
+import java.util.Collection;
+
 import fr.cnrs.iees.identity.Identity;
 
 /**
@@ -65,8 +67,10 @@ public interface DynamicContainer<T extends Identity> extends Container {
 	 * call to this method, they are just stored into {@code itemsToRemove} and
 	 * {@code itemsToAdd}). NB: to recursively effect changes for all
 	 * sub-containers, use {@code effectAllChanges()}.
+	 * The arguments are here in case a return list of items is needed - depends on context of course
 	 */
-	public void effectChanges();
+	@SuppressWarnings("unchecked")
+	public void effectChanges(Collection<T>...changedLists);
 
 	/**
 	 * Flag used to signal if the container has been changed during a computation step

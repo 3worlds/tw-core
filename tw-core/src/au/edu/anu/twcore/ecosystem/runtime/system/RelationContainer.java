@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -95,8 +96,9 @@ public class RelationContainer
 		relationsToRemove.add(relation);
 	}
 
+	@SafeVarargs
 	@Override
-	public void effectChanges() {
+	public final void effectChanges(Collection<SystemRelation>...changedLists) {
 		// delete all old relations
 		for (SystemRelation sr:relationsToRemove) {
 			// Do NOT use sr.disconnect() --> ConcurrentModificationException

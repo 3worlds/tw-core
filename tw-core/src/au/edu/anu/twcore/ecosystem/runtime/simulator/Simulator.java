@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
 import static fr.cnrs.iees.twcore.constants.SimulatorStatus.*;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Sampler;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
+import au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.Location;
@@ -259,7 +261,7 @@ public class Simulator implements Resettable {
 	}
 
 	// run one simulation step
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unused", "unchecked" })
 	public synchronized void step() {
 		status = SimulatorStatus.Active;
 		log.info("Time = " + lastTime);
@@ -327,14 +329,32 @@ public class Simulator implements Resettable {
 						au.writeDisable();
 			}
 			// apply all changes to community
-			ecosystem.effectChanges();
+			Collection<SystemComponent> newComp = ecosystem.effectChanges();
+			// apply changes to spaces
 			if (mainSpace!=null)
 				for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
 					space.effectChanges();
+			// set permanent relation for newly created (and located) systems
+			setPermanentRelations(newComp);
+			for (RelationContainer rc:ecosystem.relations())
+				rc.effectChanges();
+			// resample community for data trackers who need it
 			for (DataTracker<?, Metadata> tracker : trackers.keySet())
 				if (tracker instanceof Sampler)
 					((Sampler<?>)tracker).updateSample();
 		}
+	}
+
+	// establish permanent relations at creation of SystemComponents
+	private void setPermanentRelations(Collection<SystemComponent> comps) {
+		for (List<List<TwProcess>> llp:processCallingOrder.values())
+			for (List<TwProcess> lp:llp)
+				for (TwProcess p:lp)
+					if (p instanceof SearchProcess) {
+						SearchProcess proc = (SearchProcess) p;
+						if (proc.isPermanent())
+							proc.setPermanentRelations(comps,ecosystem.community());
+					}
 	}
 
 	/**
@@ -392,6 +412,9 @@ public class Simulator implements Resettable {
 		// computes coordinates of items just added before
 		if (ecosystem.community()!=null)
 			computeInitialCoordinates(ecosystem.community());
+		if (ecosystem.community()!=null)
+			setPermanentRelations(ecosystem.community().allItems());
+		// new community
 		// reset data tracker sample lists, ie replace initial items by runtime items
 		for (DataTracker<?, Metadata> tracker:trackers.keySet())
 			tracker.preProcess();

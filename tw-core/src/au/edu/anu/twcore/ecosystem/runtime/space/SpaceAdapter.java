@@ -222,7 +222,7 @@ public abstract class SpaceAdapter
 		// CAUTION: what happens if the system is to be deleted in containers after relocation?
 		toInsert.add(item);
 	}
-	
+
 	@Override
 	public final void add(SystemComponent item, Location loc) {
 		addItem(new LocatedSystemComponent(item,loc));
@@ -237,12 +237,14 @@ public abstract class SpaceAdapter
 	public final void remove(SystemComponent item) {
 		toDelete.add(item);
 	}
-	
-	// This is called after all graph changes (structure and state)
+
+	// ResettableContainer
+
+	@SafeVarargs
 	@Override
-	public final void effectChanges() {
+	public final void effectChanges(Collection<LocatedSystemComponent>... changedLists) {
 		for (SystemComponent sc:toDelete)
-			unlocate(sc);
+		unlocate(sc);
 		toDelete.clear();
 		// CAUTION: what happens if the system is to be deleted in containers after relocation?
 		for (LocatedSystemComponent lsc:toInsert)
@@ -250,8 +252,6 @@ public abstract class SpaceAdapter
 		toInsert.clear();
 		changed = false;
 	}
-
-	// ResettableContainer
 
 	@Override
 	public final void setInitialItems(LocatedSystemComponent... items) {
@@ -442,7 +442,7 @@ public abstract class SpaceAdapter
 	public final Box observationWindow() {
 		return obsWindow;
 	}
-	
+
 	@Override
 	public double[] randomLocation() {
 		double[] result = new double[limits.dim()];
