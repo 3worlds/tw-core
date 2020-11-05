@@ -76,6 +76,7 @@ public class EnumProperties {
 		BorderType.defaultValue();// is this needed? IDD
 		EdgeEffectCorrection.defaultValue();
 		BorderListType.defaultValue();
+		DeploymentType.defaultValue();
 	}
 
 	// register geometric classes so they can be used as properties
