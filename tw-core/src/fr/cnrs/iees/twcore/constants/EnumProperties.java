@@ -73,7 +73,7 @@ public class EnumProperties {
 		RngResetType.defaultValue();
 		RngSeedSourceType.defaultValue();
 		RngAlgType.defaultValue();
-		BorderType.defaultValue();// is this needed? IDD
+		BorderType.defaultValue();
 		EdgeEffectCorrection.defaultValue();
 		BorderListType.defaultValue();
 		DeploymentType.defaultValue();
