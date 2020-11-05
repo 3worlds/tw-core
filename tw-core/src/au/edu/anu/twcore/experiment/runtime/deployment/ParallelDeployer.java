@@ -28,11 +28,19 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
-import java.util.ArrayList;
+import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.finalise;
+
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
+import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 
 /**
  * A class to deploy a series of simulator on a threadPool
@@ -43,79 +51,114 @@ import au.edu.anu.twcore.experiment.runtime.Deployer;
  *
  */
 public class ParallelDeployer extends Deployer {
-	// TODO Make proper use of new Java concurrency thread pool executor
-//	private final List<SimulatorThread> runnables;
-//	private final List<Simulator> sims;
+	final ThreadPoolExecutor executor;
+	final List<Future<SimulatorThread>> futures;
+	final Map<Simulator, SimulatorThread> simMap;
+
+	// what is the clean way to call the runnable
 	public ParallelDeployer() {
-//		runnables = new ArrayList<>();
-//		sims = new ArrayList<>();
-		// use the PausableThreadPoolExecutor to run simulators
-		
+		executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+		futures = new LinkedList<>();
+		simMap = new ConcurrentHashMap<>();
 	}
+
 	@Override
 	public void attachSimulator(Simulator sim) {
-//		sims.add(sim);
-//		SimulatorThread st = new SimulatorThread(this);
-//		runnables.add(st);
-//		
-//		Thread t = new Thread(st);
-//		t.start();
-		
+		// Maybe we need a CallBack r
+		SimulatorThread runnable = new SimulatorThread(this);
+		simMap.put(sim, runnable);
+		futures.add((Future<SimulatorThread>) executor.submit(runnable));
 	}
 
 	@Override
 	public void detachSimulator(Simulator sim) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void runProc() {
-		// TODO Auto-generated method stub
-
+		// This looks very bad. Works but not for long i presume
+		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+			entry.getValue().resume();
+		}
 	}
 
 	@Override
 	public void waitProc() {
-		// TODO Auto-generated method stub
+		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+			entry.getKey().preProcess();
+		}
 
 	}
 
 	@Override
 	public void stepProc() {
-		// TODO Auto-generated method stub
+		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+			synchronized (this) {
+				SimulatorThread t = entry.getValue();
+				t.resume();
+				t.pause();
+			}
+		}
 
 	}
 
 	@Override
 	public void finishProc() {
-		// TODO Auto-generated method stub
+		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+			entry.getValue().pause();
+		}
 
 	}
 
 	@Override
 	public void pauseProc() {
-		// TODO Auto-generated method stub
+		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+			entry.getValue().pause();
+		}
 
 	}
 
 	@Override
 	public void quitProc() {
-		// TODO Auto-generated method stub
+		for (Future<SimulatorThread> f:futures) {
+			f.cancel(true);
+		}
 
 	}
 
 	@Override
 	public void resetProc() {
-		// TODO Auto-generated method stub
+		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+			entry.getKey().postProcess();
+		}
 
 	}
 
 	@Override
 	public void stepSimulators() {
-		// TODO Auto-generated method stub
+//		What can you do here?? This can't work - we have to wait for all to finish then send the msg
+		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+
+			Simulator sim = entry.getKey();
+			if (sim.stop()) {
+				// this sends a message to itself to switch to the finished state
+				RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
+				callRendezvous(message);
+			}
+			if (!sim.isFinished()) {
+				sim.step();
+				if (sim.stop()) {
+					// this sends a message to itself to switch to the finished state
+					RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
+					callRendezvous(message);
+
+				}
+			}
+
+		}
 
 	}
-
 
 }
