@@ -250,18 +250,9 @@ public class SearchProcess
 		for (RelateToDecisionFunction function: RTfunctions) {
 			double[] focalLoc = null;
 			double[] otherLoc = null;
-			// TODO: check these two are not yet related if relation is permanent
-			// if relation is permanent, it is set at birth and unset at death of
-			// SCs, so only once with permanent components.
-			// with permanent components, no need to call this process all the time!
-
-			// CODE below not needed anymore in theory - seems to work ok
-//			// this occurs only in cases where a maintainrelationfunction has not been defined
-//			if (focal.getRelatives(relContainer.id()).contains(other))
-//				// already related, skip it
-//				System.out.println("Already related "+focal.id()+"->"+other.id())
-//				;
-//			else
+			if (focal.getRelatives(relContainer.id()).contains(other))
+				;
+			else
 			if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
 				otherLifeCycle,otherGroup,other,space)) {
 				relContainer.addItem(focal,other);

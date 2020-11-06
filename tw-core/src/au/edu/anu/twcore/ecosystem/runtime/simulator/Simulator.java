@@ -266,10 +266,6 @@ public class Simulator implements Resettable {
 		status = SimulatorStatus.Active;
 		log.info("Time = " + lastTime);
 //		timetracker.sendData(lastTime);
-		//0 cleanup ephemeral relations if any (must be done here)
-		for (RelationContainer rc:ecosystem.relations())
-			if (rc.autoDelete())
-				rc.effectChanges();
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;
@@ -337,7 +333,8 @@ public class Simulator implements Resettable {
 			// set permanent relation for newly created (and located) systems
 			setPermanentRelations(newComp);
 			for (RelationContainer rc:ecosystem.relations())
-				rc.effectChanges();
+				if (rc.isPermanent())
+					rc.effectChanges();
 			// resample community for data trackers who need it
 			for (DataTracker<?, Metadata> tracker : trackers.keySet())
 				if (tracker instanceof Sampler)
