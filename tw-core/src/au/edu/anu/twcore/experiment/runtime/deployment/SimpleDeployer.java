@@ -50,7 +50,7 @@ public class SimpleDeployer extends Deployer {
 	 * NB: It's bad practice to start a thread in a constructor. Therefore, start()
 	 * is called (now with thread in paused state) when the sim is attached.
 	 * 
-	 * A better design maybe to pass the simulator in the constructor
+	 * May be this thread should be created and destroyed on finish or reset.
 	 */
 	public SimpleDeployer() {
 		super();
@@ -109,6 +109,7 @@ public class SimpleDeployer extends Deployer {
 	public void quitProc() {
 		// unused - maybe never will be used
 		runnable.stop();
+		
 	}
 
 

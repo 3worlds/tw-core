@@ -49,116 +49,117 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
  *
  * @author Jacques Gignoux - 3 sept. 2019
  *
+ *
+ *         May be this thread should be created and destroyed on finish or
+ *         reset. meaning the executor will be empty when all threads are
+ *         finished.
+ * 
+ *         So Simulator thread would loop while (!quit) and quit becomes true
+ *         when finished or reset from paused block.
+ *         !quit = running = threadAlive or whatever name
+ *         Therefore the deployer must keep a list of sims for resubmitting 
  */
 public class ParallelDeployer extends Deployer {
 	final ThreadPoolExecutor executor;
-	final List<Future<SimulatorThread>> futures;
-	final Map<Simulator, SimulatorThread> simMap;
+//	final List<Future<SimulatorThread>> futures;
+	final Map<Simulator, SimulatorThread> simThreads;
 
 	// what is the clean way to call the runnable
 	public ParallelDeployer() {
 		executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-		futures = new LinkedList<>();
-		simMap = new ConcurrentHashMap<>();
+//		futures = new LinkedList<>();
+		simThreads = new ConcurrentHashMap<>();
 	}
 
 	@Override
 	public void attachSimulator(Simulator sim) {
 		// Maybe we need a CallBack r
 		SimulatorThread runnable = new SimulatorThread(this);
-		simMap.put(sim, runnable);
-		futures.add((Future<SimulatorThread>) executor.submit(runnable));
+		simThreads.put(sim, runnable);
+//		futures.add((Future<SimulatorThread>) executor.submit(runnable));
+		executor.submit(runnable);
 	}
 
 	@Override
 	public void detachSimulator(Simulator sim) {
-		// TODO Auto-generated method stub
-
+		synchronized (this) {
+			simThreads.get(sim).stop();
+			simThreads.remove(sim);
+		}
 	}
 
 	@Override
 	public void runProc() {
-		// This looks very bad. Works but not for long i presume
-		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+		System.out.println("waitProc() called");
+		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
 			entry.getValue().resume();
-		}
 	}
 
 	@Override
 	public void waitProc() {
-		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+		System.out.println("waitProc() called");
+		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
 			entry.getKey().preProcess();
-		}
-
 	}
 
 	@Override
 	public void stepProc() {
-		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
-			synchronized (this) {
-				SimulatorThread t = entry.getValue();
-				t.resume();
-				t.pause();
-			}
-		}
-
+		System.out.println("stepProc() not supported");
+//		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet()) 
+//			synchronized (this) {
+//				SimulatorThread t = entry.getValue();
+//				t.resume();
+//				t.pause();
+//			}
 	}
 
 	@Override
 	public void finishProc() {
-		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
+		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
 			entry.getValue().pause();
-		}
-
 	}
 
 	@Override
 	public void pauseProc() {
-		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
-			entry.getValue().pause();
-		}
+		System.out.println("pauseProc() not supported");
 
+//		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
+//			entry.getValue().pause();
 	}
 
 	@Override
 	public void quitProc() {
-		for (Future<SimulatorThread> f:futures) {
-			f.cancel(true);
-		}
-
+		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
+			entry.getKey().stop();
+		executor.shutdown();
 	}
 
 	@Override
 	public void resetProc() {
-		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
-			entry.getKey().postProcess();
-		}
-
+		System.out.println("resetProc() not supported");
+//		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
+//			entry.getKey().postProcess();
 	}
 
 	@Override
 	public void stepSimulators() {
-//		What can you do here?? This can't work - we have to wait for all to finish then send the msg
-		for (Map.Entry<Simulator, SimulatorThread> entry : simMap.entrySet()) {
-
+		int nStop = 0;
+		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet()) {
 			Simulator sim = entry.getKey();
-			if (sim.stop()) {
-				// this sends a message to itself to switch to the finished state
-				RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
-				callRendezvous(message);
-			}
+			if (sim.stop())
+				nStop++;
 			if (!sim.isFinished()) {
 				sim.step();
 				if (sim.stop()) {
-					// this sends a message to itself to switch to the finished state
-					RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
-					callRendezvous(message);
-
+					nStop++;
 				}
 			}
-
 		}
+		if (nStop == simThreads.size()) {
+			System.out.println("All stopped: finialise event sent");
 
+			RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
+			callRendezvous(message);
+		}
 	}
-
 }
