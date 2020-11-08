@@ -40,13 +40,16 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 /**
  * A data tracker for spatial data of SystemComponents (no edges at the moment).
  *
- * The metadata are the space properties, namely: type (SpaceType), edgeEffects (EdgeEffects),
- * precision (double), units (String), plus the descendant-specific properties:
+ * The metadata are the space properties, namely: type (SpaceType), edgeEffects
+ * (EdgeEffects), precision (double), units (String), plus the
+ * descendant-specific properties:
  *
- * for FlatSurface: x-limits 'Interval) and y-limits (Interval)
- * for SquareGrid: cellSize(double), x-nCells (int), y-nCells (int) (optional, if absent = x-nCells)
+ * for FlatSurface: x-limits 'Interval) and y-limits (Interval) for SquareGrid:
+ * cellSize(double), x-nCells (int), y-nCells (int) (optional, if absent =
+ * x-nCells)
  *
- * This DataTracker is not instantiated by a DataTrackerNode, but by the SpaceNode it points to.
+ * This DataTracker is not instantiated by a DataTrackerNode, but by the
+ * SpaceNode it points to.
  *
  * @author Jacques Gignoux - 14 févr. 2020
  *
@@ -58,12 +61,12 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 	private SpaceData ctMessage = null;
 
 	public SpaceDataTracker(int simId, ReadOnlyPropertyList meta) {
-		super(DataMessageTypes.SPACE,simId);
-		metadata = new Metadata(simId,meta);
+		super(DataMessageTypes.SPACE, simId);
+		metadata = new Metadata(simId, meta);
 		setInitialTime();
 //		setSender(simId);
 	}
-	
+
 	public void setInitialTime() {
 		DateTimeType dtt = (DateTimeType) metadata.properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
 		currentTime = dtt.getDateTime();
@@ -74,28 +77,35 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 		ctMessage = new SpaceData(status, senderId, metadata.type());
 		ctMessage.setTime(currentTime);
 	}
-	
+
 	public void createPoint(double[] coord, String... labels) {
-		ctMessage.createPoint(new DataLabel(labels),coord);
+		ctMessage.createPoint(new DataLabel(labels), coord);
 	}
-	
+
 	public void movePoint(double[] newCoord, String... labels) {
-		ctMessage.movePoint(new DataLabel(labels),newCoord);
+		ctMessage.movePoint(new DataLabel(labels), newCoord);
 	}
-	
-	public void deletePoint(String...labels) {
+
+	public void deletePoint(String... labels) {
 		ctMessage.deletePoint(new DataLabel(labels));
 	}
-	
+
 	public void createLine(String[] startLabels, String[] endLabels) {
 		ctMessage.createLine(new DataLabel(startLabels), new DataLabel(endLabels));
 	}
-	
+
 	public void deleteLine(String[] startLabels, String[] endLabels) {
 		ctMessage.deleteLine(new DataLabel(startLabels), new DataLabel(endLabels));
 	}
 
 	public void closeTimeStep() {
+		/**
+		 * This data continues to be written to by other processes AFTER sending.
+		 * Therefore, to avoid concurrentModification exceptions, it must be cloned by
+		 * the recipient IN THIS THREAD. This is a bit expensive so a redesign to avoid
+		 * this would be preferable.
+		 */
+
 		sendData(ctMessage);
 	}
 
@@ -103,5 +113,5 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 	public Metadata getInstance() {
 		return metadata;
 	}
-	
+
 }

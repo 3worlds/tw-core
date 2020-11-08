@@ -153,8 +153,8 @@ public abstract class AbstractProcess
 			gdt.recordTime(t);
 
 		loop(currentTime,timer.userTime(dt),ecosystem());
-		if (space!=null)
-			if (space.dataTracker()!=null)
+		if (space != null)
+			if (space.dataTracker() != null)
 				space.dataTracker().closeTimeStep(); // this sends the message to the widget
 	}
 
