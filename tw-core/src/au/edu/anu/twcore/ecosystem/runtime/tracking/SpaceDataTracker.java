@@ -105,8 +105,9 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 		 * the recipient IN THIS THREAD. This is a bit expensive so a redesign to avoid
 		 * this would be preferable.
 		 */
-
+		/// FIXED!
 		sendData(ctMessage);
+		ctMessage = null;
 	}
 
 	@Override

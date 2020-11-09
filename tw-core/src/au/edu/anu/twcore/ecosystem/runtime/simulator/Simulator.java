@@ -331,7 +331,7 @@ public class Simulator implements Resettable {
 				for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
 					space.effectChanges();
 			// set permanent relation for newly created (and located) systems
-			setPermanentRelations(newComp);
+			setPermanentRelations(newComp,nexttime);
 			for (RelationContainer rc:ecosystem.relations())
 				if (rc.isPermanent())
 					rc.effectChanges();
@@ -343,14 +343,18 @@ public class Simulator implements Resettable {
 	}
 
 	// establish permanent relations at creation of SystemComponents
-	private void setPermanentRelations(Collection<SystemComponent> comps) {
+	private void setPermanentRelations(Collection<SystemComponent> comps,long time) {
 		for (List<List<TwProcess>> llp:processCallingOrder.values())
 			for (List<TwProcess> lp:llp)
 				for (TwProcess p:lp)
 					if (p instanceof SearchProcess) {
 						SearchProcess proc = (SearchProcess) p;
+						if (proc.space()!=null)
+							proc.space().dataTracker().recordTime(status,time); // creates the message
 						if (proc.isPermanent())
 							proc.setPermanentRelations(comps,ecosystem.community());
+						if (proc.space()!=null)
+							proc.space().dataTracker().closeTimeStep(); // sends the message
 					}
 	}
 
@@ -410,7 +414,7 @@ public class Simulator implements Resettable {
 		if (ecosystem.community()!=null)
 			computeInitialCoordinates(ecosystem.community());
 		if (ecosystem.community()!=null)
-			setPermanentRelations(ecosystem.community().allItems());
+			setPermanentRelations(ecosystem.community().allItems(),0L);
 		// new community
 		// reset data tracker sample lists, ie replace initial items by runtime items
 		for (DataTracker<?, Metadata> tracker:trackers.keySet())
