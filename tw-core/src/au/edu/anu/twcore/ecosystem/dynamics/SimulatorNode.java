@@ -68,8 +68,8 @@ import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
+import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.Structure;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**

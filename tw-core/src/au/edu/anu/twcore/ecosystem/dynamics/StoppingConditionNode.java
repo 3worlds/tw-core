@@ -63,7 +63,7 @@ import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
+import au.edu.anu.twcore.ecosystem.structure.ElementType;
 
 /**
  * Class matching the "ecosystem/dynamics/stoppingCondition" node label in the 3Worlds configuration tree.

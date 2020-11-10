@@ -26,7 +26,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.structure.newapi;
+package au.edu.anu.twcore.ecosystem.structure;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;

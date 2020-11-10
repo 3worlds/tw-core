@@ -30,7 +30,7 @@ package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
-import au.edu.anu.twcore.ecosystem.structure.newapi.GroupType;
+import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;

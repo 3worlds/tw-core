@@ -34,7 +34,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
+import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;

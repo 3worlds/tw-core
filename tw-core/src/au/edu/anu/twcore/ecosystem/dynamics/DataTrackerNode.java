@@ -87,9 +87,9 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerXY;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ComponentType;
-import au.edu.anu.twcore.ecosystem.structure.newapi.GroupType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**

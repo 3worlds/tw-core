@@ -26,7 +26,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.structure.newapi;
+package au.edu.anu.twcore.ecosystem.structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +54,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
 import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
-import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;

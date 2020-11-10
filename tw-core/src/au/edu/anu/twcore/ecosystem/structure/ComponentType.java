@@ -26,7 +26,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.structure.newapi;
+package au.edu.anu.twcore.ecosystem.structure;
 
 
 
@@ -41,8 +41,6 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
