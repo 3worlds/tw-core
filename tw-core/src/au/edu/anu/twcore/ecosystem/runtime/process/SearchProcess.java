@@ -199,21 +199,21 @@ public class SearchProcess
 
 
 //	// for permanent relations only
-	private void crudeLoop(Collection<SystemComponent> comps,
+	private void crudeLoop(SystemComponent focal,
 		DescribedContainer<SystemComponent> others) {
-		for (SystemComponent focal:comps)
-			if (focal.membership().belongsTo(focalCategories))
-				if ((others.itemCategorized()!=null) &&
-					(others.itemCategorized().belongsTo(otherCategories)) ) {
-						if (others.descriptors() instanceof GroupComponent)
-							otherGroup = others.descriptors();
-					// todo: life cycles
-						for (SystemComponent sc: others.items())
+		if (focal.membership().belongsTo(focalCategories))
+			if ((others.itemCategorized()!=null) &&
+				(others.itemCategorized().belongsTo(otherCategories)) ) {
+					if (others.descriptors() instanceof GroupComponent)
+						otherGroup = others.descriptors();
+				// todo: life cycles
+					for (SystemComponent sc: others.items())
+						if (focal!=sc)
 							executeFunctions(0.0,0.0,focal,sc);
 		}
 		else
 			for (CategorizedContainer<SystemComponent> subc: others.subContainers())
-				crudeLoop(comps,(DescribedContainer<SystemComponent>) subc);
+				crudeLoop(focal,(DescribedContainer<SystemComponent>) subc);
 	}
 
 	// establish permanent relations at systemComponent creation time
@@ -223,7 +223,8 @@ public class SearchProcess
 			if (space==null) {
 				// unindexed search
 				if (comm!=null)
-					crudeLoop(comps,comm);
+					for (SystemComponent focal:comps)
+						crudeLoop(focal,comm);
 			}
 			else {
 				// indexed search

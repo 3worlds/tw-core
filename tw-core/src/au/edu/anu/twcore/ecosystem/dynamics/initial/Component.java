@@ -112,6 +112,8 @@ public class Component
 		sealed = false;
 		if (properties().hasProperty(P_COMPONENT_NINST.key()))
 			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
+		if (nInstances==0)
+			nInstances=1;
 		nComponentTypes = ((Collection<?>)get(getParent().getParent().getChildren(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())))).size();
 		componentType = (ComponentType) getParent();
