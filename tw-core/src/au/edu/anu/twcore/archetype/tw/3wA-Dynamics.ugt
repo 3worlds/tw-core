@@ -105,6 +105,9 @@ hasNode processSpec
 		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
 		nodeLabel1 = String("category")
 		nodeLabel2 = String("relationType")
+	mustSatisfyQuery lifespanFunctionCompatibility
+		className = String("au.edu.anu.twcore.archetype.tw.LifespanFunctionCompatibilityQuery")
+
 	hasEdge dependsOnSpec
 		isOfClass = String("dependsOn")
 		toNode = String("process:")
@@ -198,7 +201,7 @@ hasNode snippet
 		hasName = String("javaCode")
 		type = String("StringTable")
 		multiplicity = IntegerRange("1..1")
-	
+
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")
 	hasParent = StringTable(([1]"process:"))
@@ -229,7 +232,7 @@ hasNode dataTrackerSpec
 	hasProperty sampleSizeSpec
 		hasName = String("sampleSize")
 		type = String("String") // valid values: any >0 number, or "ALL" - defaults to 1
-		multiplicity = IntegerRange("1..1") 
+		multiplicity = IntegerRange("1..1")
 
 	// tracking of data fields
 	hasEdge trackFieldEdgeSpec

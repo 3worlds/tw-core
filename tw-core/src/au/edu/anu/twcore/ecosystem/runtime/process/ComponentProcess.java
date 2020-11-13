@@ -269,8 +269,8 @@ public class ComponentProcess
 	}
 
 	// single loop on a container which matches the process categories
-	private void executeFunctions(DescribedContainer<CategorizedComponent> container,
-		double t, double dt) {
+//	private void executeFunctions(DescribedContainer<CategorizedComponent> container,
+//		double t, double dt) {
 //		Box limits = null;
 //		if (space!=null)
 //			limits = space.boundingBox();
@@ -552,7 +552,7 @@ public class ComponentProcess
 //			}
 //			// TODO: relocate self (ie movement)
 //		}
-	}
+//	}
 
 	@Override
 	public void addFunction(TwFunction function) {

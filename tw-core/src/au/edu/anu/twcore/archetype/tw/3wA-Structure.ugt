@@ -48,10 +48,6 @@ hasNode componentTypeSpec
 	isOfClass = String("componentType")
 	hasParent = StringTable(([2]"structure:","groupType:"))
 	multiplicity = IntegerRange("0..*")
-	hasProperty componentLifeSpanPropertySpec
-		hasName = String("lifeSpan")
-		type = String("LifespanType")
-		multiplicity = IntegerRange("1..1")
 	hasProperty componentMobilePropertySpec
 		hasName = String("mobile")
 		type = String("Boolean")
@@ -110,7 +106,7 @@ hasNode componentSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
-		
+
 // Group specifications
 hasNode groupTypeSpec
 	isOfClass = String("groupType")
@@ -255,10 +251,10 @@ hasNode spaceSpec
 	hasProperty spaceGuardAreaSpec
 		hasName = String("observationWindow")
 		type = String("Box")
-		multiplicity = IntegerRange("0..1")	
+		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery boxDimensionQuery
 		className = String("au.edu.anu.twcore.archetype.tw.BoxInSpaceDimensionQuery")
-		boxProp = String("observationWindow") 	
+		boxProp = String("observationWindow")
 	hasEdge spaceRngSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")

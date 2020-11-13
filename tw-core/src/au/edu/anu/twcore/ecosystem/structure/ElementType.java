@@ -188,9 +188,12 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
-	
+
 	public final boolean isPermanent() {
-		return isPermanent;
+		if (sealed)
+			return isPermanent;
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
 	}
 
 
