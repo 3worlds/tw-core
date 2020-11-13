@@ -69,6 +69,7 @@ public class SpaceData extends TimeData implements Cloneable {
 
 	public void createPoint(DataLabel label, double... coord) {
 		pointsToCreate.put(label, coord.clone());
+		System.out.println("createPoint\tTime: "+this.time()+"#: "+pointsToCreate.size()+"\tThread: "+Thread.currentThread().getId());
 	}
 
 	public void deletePoint(DataLabel label) {
