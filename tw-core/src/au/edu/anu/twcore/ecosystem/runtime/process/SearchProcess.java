@@ -230,7 +230,8 @@ public class SearchProcess
 				// indexed search
 				if (comm!=null)
 					for (SystemComponent focal:comps)
-						indexedLoop(0.0,0.0,focal);
+						if (focal.membership().belongsTo(focalCategories))
+							indexedLoop(0.0,0.0,focal);
 			}
 		}
 	}

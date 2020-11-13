@@ -170,7 +170,8 @@ public class ComponentProcess
 		//-----------------------------------------------------------------------------------
 			((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
-			unlocate((SystemComponent)focal);
+			if (space!=null)
+				unlocate((SystemComponent)focal);
 			// remove from tracklist if dead - safe, data sending has already been made
 			for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 				if (tracker.isTracked(focal))

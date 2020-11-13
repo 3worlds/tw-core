@@ -326,10 +326,15 @@ public class Simulator implements Resettable {
 			}
 			// apply all changes to community
 			Collection<SystemComponent> newComp = ecosystem.effectChanges();
-			// apply changes to spaces
+			// apply changes to spaces, including data tracking
 			if (mainSpace!=null)
-				for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
+				for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces()) {
+//					if (space.dataTracker()!=null)
+//						space.dataTracker().recordTime(status,nexttime); // this initialises the messages
 					space.effectChanges();
+//					if (space.dataTracker()!=null)
+//						space.dataTracker().closeTimeStep(); // this sends the messages
+				}
 			// set permanent relation for newly created (and located) systems
 			setPermanentRelations(newComp,nexttime);
 			for (RelationContainer rc:ecosystem.relations())

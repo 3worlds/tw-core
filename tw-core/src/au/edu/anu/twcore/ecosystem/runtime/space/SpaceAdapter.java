@@ -243,12 +243,23 @@ public abstract class SpaceAdapter
 	@SafeVarargs
 	@Override
 	public final void effectChanges(Collection<LocatedSystemComponent>... changedLists) {
-		for (SystemComponent sc:toDelete)
-		unlocate(sc);
+		for (SystemComponent sc:toDelete) {
+			unlocate(sc);
+//			// CAUTION: make sure recordTime() has been called before - normally it's done in
+//			// simulator.step();
+//			if (dataTracker!=null) {
+//				dataTracker.deletePoint(sc.container().itemId(sc.id()));
+//			}
+		}
 		toDelete.clear();
 		// CAUTION: what happens if the system is to be deleted in containers after relocation?
-		for (LocatedSystemComponent lsc:toInsert)
+		for (LocatedSystemComponent lsc:toInsert) {
 			locate(lsc.item(),lsc.location());
+//			if (dataTracker!=null) {
+//				dataTracker.createPoint(lsc.location().asPoint().asArray(), // YURKL! change this method!
+//					lsc.item().container().itemId(lsc.item().id()));
+//			}
+		}
 		toInsert.clear();
 		changed = false;
 	}
