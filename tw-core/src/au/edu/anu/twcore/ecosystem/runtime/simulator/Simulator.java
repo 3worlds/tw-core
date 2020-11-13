@@ -180,8 +180,8 @@ public class Simulator implements Resettable {
 			SpaceOrganiser space,
 			EcosystemGraph ecosystem, boolean noStoppingConditions) {
 		super();
-		log.info("START Simulator " + id + " instantiated");
 		this.id = id;
+		log.info(()->"START Simulator " + this.id + " instantiated");
 		this.stoppingCondition = stoppingCondition;
 //		this.refTimer = refTimer;
 		this.timerList = timers;
@@ -237,7 +237,7 @@ public class Simulator implements Resettable {
 			if (dts != null)
 				trackers.put(dts, dts.getInstance());
 		}
-		log.info("END Simulator " + id + " instantiated");
+		log.info(()->"END Simulator " + this.id + " instantiated");
 	}
 
 	public int id() {
@@ -264,7 +264,7 @@ public class Simulator implements Resettable {
 	@SuppressWarnings({ "unused", "unchecked" })
 	public synchronized void step() {
 		status = SimulatorStatus.Active;
-		log.info("Time = " + lastTime);
+		log.info(()->"START Simulator " + id +" stepping time = " + lastTime);
 //		timetracker.sendData(lastTime);
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
@@ -340,6 +340,7 @@ public class Simulator implements Resettable {
 				if (tracker instanceof Sampler)
 					((Sampler<?>)tracker).updateSample();
 		}
+		log.info(()->"END Simulator " + id +" stepping time = " + lastTime);
 	}
 
 	// establish permanent relations at creation of SystemComponents
@@ -404,6 +405,7 @@ public class Simulator implements Resettable {
 	@Override
 	public synchronized void preProcess() {
 		status = Initial;
+		log.info(()->"START Simulator " + id + " reset/pre");
 		stoppingCondition.preProcess();
 		for (Timer t : timerList)
 			t.preProcess();
@@ -419,11 +421,13 @@ public class Simulator implements Resettable {
 		// reset data tracker sample lists, ie replace initial items by runtime items
 		for (DataTracker<?, Metadata> tracker:trackers.keySet())
 			tracker.preProcess();
+		log.info(()->"END Simulator " + id + " reset/pre");
 	}
 
 	@Override
 	public synchronized void postProcess() {
 		status = Final;
+		log.info(()->"START Simulator " + id + " reset/post");
 		lastTime = startTime;
 		stoppingCondition.postProcess();
 		for (Timer t : timerList)
@@ -434,6 +438,7 @@ public class Simulator implements Resettable {
 		if (mainSpace!=null)
 			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
 				space.postProcess();
+		log.info(()->"END Simulator " + id + " reset/post");
 	}
 
 	// returns true if stopping condition is met
