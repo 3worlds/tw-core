@@ -50,7 +50,7 @@ import fr.ens.biologie.generic.utils.Duple;
  * @author Jacques Gignoux - 14 févr. 2020
  *
  */
-public class SpaceData extends TimeData implements Cloneable {
+public class SpaceData extends TimeData /**implements Cloneable*/ {
 
 	/** List of points to definitely remove because their Component is gone */
 	private Set<DataLabel> pointsToDelete = new HashSet<>();
@@ -69,7 +69,6 @@ public class SpaceData extends TimeData implements Cloneable {
 
 	public void createPoint(DataLabel label, double... coord) {
 		pointsToCreate.put(label, coord.clone());
-		System.out.println("createPoint\tTime: "+this.time()+"#: "+pointsToCreate.size()+"\tThread: "+Thread.currentThread().getId());
 	}
 
 	public void deletePoint(DataLabel label) {
@@ -108,23 +107,24 @@ public class SpaceData extends TimeData implements Cloneable {
 		return linesToDelete;
 	}
 
-	@Override
-	public SpaceData clone() {
-		// Cloning for recipients
-		SpaceData result = new SpaceData(status(), sender(), type());
-		result.setTime(time());
-		result.linesToCreate.addAll(linesToCreate);
-		result.linesToDelete.addAll(linesToDelete);
-		result.pointsToDelete.addAll(pointsToDelete);
-		pointsToMove.forEach((k, v) -> {
-			result.pointsToMove().put(k, v);
-		});
-		pointsToCreate.forEach((k, v) -> {
-			result.pointsToCreate.put(k, v);
-		});
-		return result;
-
-	}
+//	/** This was used for debugging but is probably not needed. (IDD)*/
+//	@Override
+//	public SpaceData clone() {
+//		// Cloning for recipients
+//		SpaceData result = new SpaceData(status(), sender(), type());
+//		result.setTime(time());
+//		result.linesToCreate.addAll(linesToCreate);
+//		result.linesToDelete.addAll(linesToDelete);
+//		result.pointsToDelete.addAll(pointsToDelete);
+//		pointsToMove.forEach((k, v) -> {
+//			result.pointsToMove().put(k, v);
+//		});
+//		pointsToCreate.forEach((k, v) -> {
+//			result.pointsToCreate.put(k, v);
+//		});
+//		return result;
+//
+//	}
 
 	@Override
 	public String toString() {
