@@ -37,7 +37,6 @@ import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.RelateToDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
@@ -58,18 +57,16 @@ import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
  * @author Jacques Gignoux - 16 janv. 2020
  *
  */
-
-// TODO: a setInitialRelation function for permanent components with permanent relations
 public class SearchProcess
 		extends AbstractRelationProcess  {
 
 	private List<RelateToDecisionFunction> RTfunctions = new LinkedList<>();
-	private ComponentContainer ecosystemContainer = null;
-
-	private ComponentContainer focalLifeCycleContainer = null;
-	private ComponentContainer focalGroupContainer = null;
-	private ComponentContainer otherLifeCycleContainer = null;
-	private ComponentContainer otherGroupContainer = null;
+//	private ComponentContainer ecosystemContainer = null;
+//
+//	private ComponentContainer focalLifeCycleContainer = null;
+//	private ComponentContainer focalGroupContainer = null;
+//	private ComponentContainer otherLifeCycleContainer = null;
+//	private ComponentContainer otherGroupContainer = null;
 	// new API
 	private ArenaComponent arena = null;
 	private CategorizedComponent focalLifeCycle = null;

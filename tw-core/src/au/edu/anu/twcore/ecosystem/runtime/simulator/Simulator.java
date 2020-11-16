@@ -258,7 +258,6 @@ public class Simulator implements Resettable {
 	public synchronized void step() {
 		status = SimulatorStatus.Active;
 		log.info(()->"START Simulator " + id +" stepping time = " + lastTime);
-//		timetracker.sendData(lastTime);
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;
@@ -272,6 +271,12 @@ public class Simulator implements Resettable {
 			status = SimulatorStatus.Final;
 		else {
 			long step = nexttime - lastTime;
+			// send drawing data for deleted ephemeral relations (dirty fix, but needed)
+			for (RelationContainer rc: ecosystem.relations())
+				if (rc.autoDelete()) {
+					for (DynamicSpace<SystemComponent, LocatedSystemComponent> sp:mainSpace.spaces())
+					rc.sendDataForAutoDeletedRelations(sp,nexttime,status);
+			}
 			// send the time as supplied to the processes in this step
 			timetracker.sendData(nexttime);
 			lastTime = nexttime;

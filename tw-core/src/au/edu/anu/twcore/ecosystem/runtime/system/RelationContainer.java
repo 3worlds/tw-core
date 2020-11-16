@@ -36,12 +36,16 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.containers.DynamicContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.twcore.constants.LifespanType;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
@@ -105,10 +109,19 @@ public class RelationContainer
 	public final void effectChanges(Collection<SystemRelation>...changedLists) {
 		// delete all old relations
 		for (SystemRelation sr:relationsToRemove) {
-			// Do NOT use sr.disconnect() --> ConcurrentModificationException
-			log.info(()->"Removing relation "+sr.toShortString());
-			sr.startNode().disconnectFrom(Direction.OUT,sr.endNode());
-			sr.detachFromContainer();
+			// if a relation is in both deletion and addition sets, remove it from
+			// sets and do nothing (this is possible with ephemeral relations)
+			Duple<CategorizedComponent,CategorizedComponent> ends =
+				new Duple<CategorizedComponent,CategorizedComponent>
+					((CategorizedComponent)sr.startNode(),(CategorizedComponent)sr.endNode());
+			if (relationsToAdd.contains(ends))
+				relationsToAdd.remove(ends);
+			else {
+				// Do NOT use sr.disconnect() --> ConcurrentModificationException
+				log.info(()->"Removing relation "+sr.toShortString());
+				sr.startNode().disconnectFrom(Direction.OUT,sr.endNode());
+				sr.detachFromContainer();
+			}
 		}
 		relationsToRemove.clear();
 		// establish all new relations
@@ -162,4 +175,20 @@ public class RelationContainer
 		return relationType.autoDelete();
 	}
 
+	public void sendDataForAutoDeletedRelations(Space<SystemComponent> sp,
+			long time,
+			SimulatorStatus status) {
+		if (sp instanceof SingleDataTrackerHolder) {
+			SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<?>) sp).dataTracker();
+			if (!relationsToRemove.isEmpty()) {
+				dts.recordTime(status, time);
+				for (SystemRelation sr:relationsToRemove) {
+					SystemComponent sn = (SystemComponent)sr.startNode();
+					SystemComponent en = (SystemComponent) sr.endNode();
+					dts.deleteLine(sn.container().itemId(sn.id()),en.container().itemId(en.id()));
+				}
+				dts.closeTimeStep();
+			}
+		}
+	}
 }
