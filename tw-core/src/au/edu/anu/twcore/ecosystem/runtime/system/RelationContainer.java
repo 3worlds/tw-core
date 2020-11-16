@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
@@ -43,6 +44,8 @@ import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.twcore.constants.LifespanType;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Duple;
+import fr.ens.biologie.generic.utils.Logging;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATION_LIFESPAN;
 
 /**
@@ -55,6 +58,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIO
 public class RelationContainer
 		implements DynamicContainer<SystemRelation>, Resettable, Related<CategorizedComponent>  {
 
+	private static Logger log = Logging.getLogger(RelationContainer.class);
 	private Identity id = null;
 	//
 	private RelationType relationType = null;
@@ -102,6 +106,7 @@ public class RelationContainer
 		// delete all old relations
 		for (SystemRelation sr:relationsToRemove) {
 			// Do NOT use sr.disconnect() --> ConcurrentModificationException
+			log.info(()->"Removing relation "+sr.toShortString());
 			sr.startNode().disconnectFrom(Direction.OUT,sr.endNode());
 			sr.detachFromContainer();
 		}
@@ -111,6 +116,7 @@ public class RelationContainer
 			SystemRelation sr = item.getFirst().relateTo(item.getSecond(),relationType.id());
 			sr.setContainer(this);
 			sr.setRelated(relationType);
+			log.info(()->"Creating relation "+sr.toShortString());
 			// if autodelete is true, then tag all the new relations to be deleted next time step
 			if (relationType.autoDelete())
 				relationsToRemove.add(sr);

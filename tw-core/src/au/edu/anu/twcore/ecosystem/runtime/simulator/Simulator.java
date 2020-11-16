@@ -89,18 +89,11 @@ public class Simulator implements Resettable {
 		private TimeTracker() {
 			super(DataMessageTypes.TIME,id);
 		}
-
 		// returns quickly if there are no observers - no point building a TimeData
 		void sendData(long time) {
 			if (hasObservers()) {
 				TimeData output = new TimeData(status, id, metadata.type());
-//				output.setTime(lastTime);
-				output.setTime(time);// used the passed in parameter to avoid side effects.
-//				output.setCommunity(ecosystem.community());
-//				if (mainSpace!=null)
-//					output.setSpaces(mainSpace.spaces());
-//				else
-//					output.setSpaces(null);
+				output.setTime(time);
 				sendData(output);
 			}
 		}
@@ -328,13 +321,8 @@ public class Simulator implements Resettable {
 			Collection<SystemComponent> newComp = ecosystem.effectChanges();
 			// apply changes to spaces, including data tracking
 			if (mainSpace!=null)
-				for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces()) {
-//					if (space.dataTracker()!=null)
-//						space.dataTracker().recordTime(status,nexttime); // this initialises the messages
+				for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
 					space.effectChanges();
-//					if (space.dataTracker()!=null)
-//						space.dataTracker().closeTimeStep(); // this sends the messages
-				}
 			// set permanent relation for newly created (and located) systems
 			setPermanentRelations(newComp,nexttime);
 			for (RelationContainer rc:ecosystem.relations())

@@ -32,15 +32,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-//import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.RelateToDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.Location;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
@@ -50,8 +47,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
 
 /**
  * Processes for searching the SystemComponent lists to establish relations between them.
@@ -65,7 +60,6 @@ import fr.cnrs.iees.uit.space.Point;
  */
 
 // TODO: a setInitialRelation function for permanent components with permanent relations
-@SuppressWarnings("unused")
 public class SearchProcess
 		extends AbstractRelationProcess  {
 
@@ -99,36 +93,38 @@ public class SearchProcess
 	private void crudeLoop(double t, double dt,
 		HierarchicalComponent focal,
 		DescribedContainer<SystemComponent> others) {
-//		if (!relContainer.isPermanent()) {
 			if ((others.itemCategorized()!=null) &&
 				(others.itemCategorized().belongsTo(otherCategories)) ) {
 					if (others.descriptors() instanceof GroupComponent)
 						otherGroup = others.descriptors();
 					// todo: life cycles
-					for (SystemComponent fc:focal.content().items())
+					for (SystemComponent fc:focal.content().items()) {
+						Collection<SystemComponent> fcOthers = fc.getRelatives(relContainer.type().id());
 						for (SystemComponent sc: others.items())
-							executeFunctions(t,dt,fc,sc);
+							if (sc!=fc)
+								if (!fcOthers.contains(sc))
+									executeFunctions(t,dt,fc,sc);
+					}
 			}
 			else
 				for (CategorizedContainer<SystemComponent> subc: others.subContainers())
 					crudeLoop(t,dt,focal,(DescribedContainer<SystemComponent>) subc);
-//		}
 	}
 
 	// this looping method only works on SystemComponents
 	// TODO: find life cycle!
 	private void indexedLoop(double t, double dt,
 			SystemComponent focal) {
-//		if (!relContainer.isPermanent()) {
 		// search radius positive, means we only search until this distance
 		if (searchRadius>space.precision()) {
-			// dont search if item already related !
 			Iterable<SystemComponent> lsc = space.getItemsWithin(focal,searchRadius);
 			// in all cases: do not add already related stuff. how?
 			// if ephemeral: relative may have moved
 			// if permanent: only remove relative when gone from
 			if (lsc!=null) {
-				Location focalLoc = space.locationOf(focal);
+				// search for items already related through this particular relation
+				Collection<SystemComponent> others = focal.getRelatives(relContainer.type().id());
+//				Location focalLoc = space.locationOf(focal);
 				for (SystemComponent other:lsc) {
 					// focal cannot relate to itself
 					if (other!=focal)
@@ -136,9 +132,10 @@ public class SearchProcess
 						// this could be optimised according to relation lifespan
 						// by having two lists of items in space, one for just added items,
 						// one for items added for at least 1 time step
-						if (!focal.getRelatives(relContainer.type().id()).contains(other)) {
+						if (other.membership().belongsTo(otherCategories))
 							if (!other.container().containsInitialItem(other))
-								if (other.membership().belongsTo(otherCategories)) // slow? check this.
+								// dont search if item already related ! (NB: might be more efficient with set intersection ?)
+								if (!others.contains(other)) {
 									executeFunctions(t,dt,focal,other);
 						}
 				}
@@ -147,17 +144,18 @@ public class SearchProcess
 		// search radius null, means we search for the nearest neighbours only
 		else {
 			Iterable<SystemComponent> lsc = space.getNearestItems(focal);
-			if (lsc!=null)
+			if (lsc!=null) {
+				Collection<SystemComponent> others = focal.getRelatives(relContainer.type().id());
 				for (SystemComponent other:lsc) {
-					Location focalLoc = space.locationOf(focal);
+//					Location focalLoc = space.locationOf(focal);
 					if (other!=focal)
-						if (!focal.getRelatives(relContainer.type().id()).contains(other))
+						if (other.membership().belongsTo(otherCategories))
 							if (!other.container().containsInitialItem(other))
-								if (other.membership().belongsTo(otherCategories))
+								if (!others.contains(other))
 									executeFunctions(t,dt,focal,other);
+				}
 			}
 		}
-//		}
 	}
 
 	// recursive loop on all sub containers of the community - only for ephemeral relations
@@ -201,14 +199,15 @@ public class SearchProcess
 //	// for permanent relations only
 	private void crudeLoop(SystemComponent focal,
 		DescribedContainer<SystemComponent> others) {
-		if (focal.membership().belongsTo(focalCategories))
-			if ((others.itemCategorized()!=null) &&
-				(others.itemCategorized().belongsTo(otherCategories)) ) {
-					if (others.descriptors() instanceof GroupComponent)
-						otherGroup = others.descriptors();
-				// todo: life cycles
-					for (SystemComponent sc: others.items())
-						if (focal!=sc)
+		if ((others.itemCategorized()!=null) &&
+			(others.itemCategorized().belongsTo(otherCategories)) ) {
+				if (others.descriptors() instanceof GroupComponent)
+					otherGroup = others.descriptors();
+			// todo: life cycles
+				Collection<SystemComponent> fcOthers = focal.getRelatives(relContainer.type().id());
+				for (SystemComponent sc: others.items())
+					if (focal!=sc)
+						if (!fcOthers.contains(sc))
 							executeFunctions(0.0,0.0,focal,sc);
 		}
 		else
@@ -224,7 +223,8 @@ public class SearchProcess
 				// unindexed search
 				if (comm!=null)
 					for (SystemComponent focal:comps)
-						crudeLoop(focal,comm);
+						if (focal.membership().belongsTo(focalCategories))
+							crudeLoop(focal,comm);
 			}
 			else {
 				// indexed search
@@ -250,11 +250,14 @@ public class SearchProcess
 				otherGroup = hc;
 		// TODO: lifeCycle
 		for (RelateToDecisionFunction function: RTfunctions) {
-			double[] focalLoc = null;
-			double[] otherLoc = null;
-			if (focal.getRelatives(relContainer.id()).contains(other))
-				;
-			else
+//			double[] focalLoc = null;
+//			double[] otherLoc = null;
+//			// THIS MUST BE REMOVED FROM HERE! big waste of time! already in indexedLoop!
+//			// just kept here for debugging.
+//			if (focal.getRelatives(relContainer.id()).contains(other))
+//				System.out.println("coucou");
+//
+//			else
 			if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
 				otherLifeCycle,otherGroup,other,space)) {
 				relContainer.addItem(focal,other);
