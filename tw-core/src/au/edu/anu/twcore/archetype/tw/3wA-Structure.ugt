@@ -196,7 +196,6 @@ hasNode initFunctionSpec
 		toNode = String("rng:")
 		multiplicity = IntegerRange("0..1")
 
-
 hasNode relationTypeSpec
 	isOfClass = String("relationType")
 	hasParent = StringTable(([1]"structure:"))
@@ -223,6 +222,21 @@ hasNode spaceSpec
 		hasName = String("type")
 		type = String("SpaceType")
 		multiplicity = IntegerRange("1..1")
+	// Mapping of variables to coordinates
+	hasEdge spaceCoordinateMapping
+		isOfClass = String("coordinate")
+		toNode = String("field:")
+		multiplicity = IntegerRange("1..*")
+		hasProperty coordinateRankSpec
+			hasName = String("rank")
+			type = String("Integer")
+			multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery spaceCoordinateDimensionMatchQuery
+		className = String("au.edu.anu.twcore.archetype.tw.SpaceDimensionConsistencyQuery")
+	mustSatisfyQuery coordinatesInTheSameRecordQuery
+		className = String("au.edu.anu.twcore.archetype.tw.EdgeToSiblingNodesQuery")
+		edgeLabel = String("coordinate")
+	// Edge effect correction / border type
 //	hasProperty edgeEffectsSpec
 //		hasName = String("edgeEffects")
 //		type = String("EdgeEffectCorrection")
@@ -234,6 +248,7 @@ hasNode spaceSpec
 		multiplicity = IntegerRange("1..1")//? maybe not?
 	mustSatisfyQuery borderTypeValidityQuery
 		className = String("au.edu.anu.twcore.archetype.tw.BorderTypeValidityQuery")
+	// spatial grain (defines the smallest possible distance in that space)
 	hasProperty spacePrecisionSpec
 		hasName = String("precision")
 		type = String("Double")
@@ -242,6 +257,7 @@ hasNode spaceSpec
 		hasName = String("units")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
+	// guard areaor observation window
 	hasProperty spaceGuardStripWidthSpec
 		hasName = String("guardAreaWidth")
 		type = String("Double")
@@ -252,9 +268,11 @@ hasNode spaceSpec
 		hasName = String("observationWindow")
 		type = String("Box")
 		multiplicity = IntegerRange("0..1")
+		// space bounding box (NB: replace with true limits in the future)
 	mustSatisfyQuery boxDimensionQuery
 		className = String("au.edu.anu.twcore.archetype.tw.BoxInSpaceDimensionQuery")
 		boxProp = String("observationWindow")
+	// random number generator for space
 	hasEdge spaceRngSpec
 		isOfClass = String("useRNG")
 		toNode = String("rng:")

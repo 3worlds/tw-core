@@ -39,12 +39,12 @@ import au.edu.anu.twcore.experiment.SourceEdge;
 import au.edu.anu.twcore.ecosystem.structure.AutoVarEdge;
 import au.edu.anu.twcore.ecosystem.structure.DriverEdge;
 import au.edu.anu.twcore.ecosystem.structure.DecoratorEdge;
-import au.edu.anu.twcore.ecosystem.structure.ParameterEdge;
 import au.edu.anu.twcore.ecosystem.structure.ConstantsEdge;
 import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 import au.edu.anu.twcore.ecosystem.structure.InitialisedByEdge;
 import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
 import au.edu.anu.twcore.ecosystem.structure.FromCategoryEdge;
+import au.edu.anu.twcore.ecosystem.structure.CoordinateMappingEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.AppliesToEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.DependsOnEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.EffectedByEdge;
@@ -88,12 +88,12 @@ public enum ConfigurationEdgeLabels {
 	E_DRIVERS		("drivers",			"drvs1",		DriverEdge.class),
 	E_DECORATORS	("decorators",		"decs1",		DecoratorEdge.class),
 	E_CONSTANTS		("constants",		"cnsts1",		ConstantsEdge.class),
-	E_PARAMETERS	("parameters",		"pars1",		ParameterEdge.class), // should be deprecated
+//	E_PARAMETERS	("parameters",		"pars1",		ParameterEdge.class), // should be deprecated
 	E_BELONGSTO		("belongsTo",		"bt1",			BelongsToEdge.class),
-	E_INITIALISEDBY	("initialisedBy",	"ib1",		InitialisedByEdge.class),
+	E_INITIALISEDBY	("initialisedBy",	"ib1",			InitialisedByEdge.class),
 	E_TOCATEGORY	("toCategory",		"to1",			ToCategoryEdge.class),
 	E_FROMCATEGORY	("fromCategory",	"from1",		FromCategoryEdge.class),
-	// ecosystem / dynamics
+	E_COORDMAPPING	("coordinate",		"crdmp",		CoordinateMappingEdge.class),	// ecosystem / dynamics
 	E_APPLIESTO		("appliesTo",		"aplyTo1",		AppliesToEdge.class),
 	E_DEPENDSON		("dependsOn",		"depsOn1",		DependsOnEdge.class),
 	E_EFFECTEDBY	("effectedBy",		"effdBy1",		EffectedByEdge.class),
