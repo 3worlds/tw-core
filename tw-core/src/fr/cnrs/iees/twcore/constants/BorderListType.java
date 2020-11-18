@@ -121,6 +121,15 @@ public class BorderListType extends StringTable {
 		return -1;
 	}
 
+	public static boolean isWrongTubularOrientation(BorderListType blt) {
+		String wrap = BorderType.wrap.name();
+		if (blt.size()!=4)
+			return false;
+		else if (blt.getWithFlatIndex(2).equals(wrap) && !blt.getWithFlatIndex(0).equals(wrap)) 
+				return true;
+		return false;
+	}
+	
 	static {
 		ValidPropertyTypes.recordPropertyType(BorderListType.class.getSimpleName(), BorderListType.class.getName(),
 				defaultValue());

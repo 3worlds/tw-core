@@ -31,8 +31,11 @@ public class SpaceDimensionConsistencyQuery extends Query {
 		SpaceNode spn = (SpaceNode) input;
 		SpaceType spt = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
 		dimension = spt.dimensions();
+		// Avoid triggering a lower level query by *not* using oneOrMany: use zeroOrMany
+		// instead. Otherwise the
+		// user gets msgs that are impossible to interpret
 		List<Edge> coordEdges = (List<Edge>) get(spn.edges(Direction.OUT),
-			selectOneOrMany(hasTheLabel(E_COORDMAPPING.label())));
+			selectZeroOrMany(hasTheLabel(E_COORDMAPPING.label())));
 		satisfied = (coordEdges.size()==dimension);
 		return this;
 	}
