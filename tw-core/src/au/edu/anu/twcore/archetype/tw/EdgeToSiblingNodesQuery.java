@@ -36,7 +36,9 @@ public class EdgeToSiblingNodesQuery extends Query {
 		// this gets all the nodes of the edge list which have node at their other end
 		List<TreeGraphNode> fields = (List<TreeGraphNode>) get(node.edges(), selectZeroOrMany(hasTheLabel(label)),
 				edgeListOtherNodes(node));
-		if (fields.size() >= 1) {
+		if (fields.isEmpty())// level it to the SpaceDimensionsConistancyQuery to flag the problem
+			satisfied = true;
+		else if (fields.size() >= 1) {
 			satisfied = true;
 			/**
 			 * Parent may be null but thats ok. If all parents are null (i.e. during MM
