@@ -192,7 +192,7 @@ public class FlatSurface extends SpaceAdapter {
 	// NOTICE that now the full limit of the underlying space indexer is not reachable
 	// only the required limits set at creation are accessible.
 	// This because the indexer limits are a square of size 2^n > real limits
-	
+
 	@Override
 	public Box boundingBox() {
 //		if (indexer instanceof ExpandingLimitedPrecisionIndexingTree) {

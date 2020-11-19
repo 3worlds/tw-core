@@ -239,6 +239,8 @@ hasNode spaceSpec
 	mustSatisfyQuery coordinateRanksAreDifferentQuery
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
 		parameters = StringTable(([2]"coordinate","rank"))
+	mustSatisfyQuery spaceCoordinateNumberTypeQuery
+		className = String("au.edu.anu.twcore.archetype.tw.SpaceCoordinateTypeQuery")
 
 	// Edge effect correction / border type
 //	hasProperty edgeEffectsSpec
