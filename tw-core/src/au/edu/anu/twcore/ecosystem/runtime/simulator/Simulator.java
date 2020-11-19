@@ -272,11 +272,11 @@ public class Simulator implements Resettable {
 		else {
 			long step = nexttime - lastTime;
 			// send drawing data for deleted ephemeral relations (dirty fix, but needed)
-			for (RelationContainer rc: ecosystem.relations())
-				if (rc.autoDelete()) {
-					for (DynamicSpace<SystemComponent, LocatedSystemComponent> sp:mainSpace.spaces())
-					rc.sendDataForAutoDeletedRelations(sp,nexttime,status);
-			}
+			if (mainSpace!=null)
+				for (RelationContainer rc: ecosystem.relations())
+					if (rc.autoDelete())
+						for (DynamicSpace<SystemComponent, LocatedSystemComponent> sp:mainSpace.spaces())
+							rc.sendDataForAutoDeletedRelations(sp,nexttime,status);
 			// send the time as supplied to the processes in this step
 			timetracker.sendData(nexttime);
 			lastTime = nexttime;

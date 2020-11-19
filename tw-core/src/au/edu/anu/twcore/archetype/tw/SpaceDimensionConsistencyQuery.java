@@ -12,7 +12,7 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 /**
- * Check that the number of edge coordinates of a space exactly matches its dimension
+ * Check that the number of edge coordinates of a space exactly matches its dimension.
  *
  * @author J. Gignoux - 18 nov. 2020
  *
@@ -25,15 +25,17 @@ public class SpaceDimensionConsistencyQuery extends Query {
 		super();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 *  <p>The expected input is a {@linkplain SpaceNode}.</p>
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public Query process(Object input) { // input is a SpaceNode
 		SpaceNode spn = (SpaceNode) input;
 		SpaceType spt = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
 		dimension = spt.dimensions();
-		// Avoid triggering a lower level query by *not* using oneOrMany: use zeroOrMany
-		// instead. Otherwise the
-		// user gets msgs that are impossible to interpret
 		List<Edge> coordEdges = (List<Edge>) get(spn.edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_COORDMAPPING.label())));
 		satisfied = (coordEdges.size()==dimension);

@@ -19,27 +19,32 @@ public class EdgeToSiblingNodesQuery extends Query {
 
 	private String label;
 
+	/**
+	 * Constructor for use in archetype <strong>.ugt</strong> files.
+	 * @param label the label (as returned by {@linkplain fr.cnrs.iees.graph.Edge#classId})
+	 * of the edges that are to be tested
+	 */
 	public EdgeToSiblingNodesQuery(String label) {
 		super();
 		this.label = label;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 *  <p>The expected input is a {@linkplain TreeGraphNode} with IN or OUT
+	 *  edges having the <em>label</em> passed to the constructor.</p>
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // input is a SpaceNode
+	public Query process(Object input) { // input is a TreeGraphNode
 		defaultProcess(input);
 		TreeGraphNode node = (TreeGraphNode) input;
-		/**
-		 * Avoid triggering a lower level query by *not* using oneOrMany: use zeroOrMany
-		 * instead. Otherwise the user gets msgs that are impossible to interpret.
-		 */
-		// this gets all the nodes of the edge list which have node at their other end
-		List<TreeGraphNode> fields = (List<TreeGraphNode>) get(node.edges(), selectZeroOrMany(hasTheLabel(label)),
-				edgeListOtherNodes(node));
-		if (fields.isEmpty())// level it to the SpaceDimensionsConistancyQuery to flag the problem
-			satisfied = true;
-		else if (fields.size() >= 1) {
-			satisfied = true;
+		List<TreeGraphNode> fields = (List<TreeGraphNode>) get(node.edges(),
+			selectZeroOrMany(hasTheLabel(label)),
+			edgeListOtherNodes(node));
+		satisfied = true;
+		if (fields.size() >= 1) {
 			/**
 			 * Parent may be null but thats ok. If all parents are null (i.e. during MM
 			 * editing) then this query can't make a decision so returning satisfied is ok
@@ -47,7 +52,7 @@ public class EdgeToSiblingNodesQuery extends Query {
 			 */
 			TreeGraphNode theParent = (TreeGraphNode) fields.get(0).getParent();
 			for (TreeGraphNode f : fields)
-				if (f.getParent() != theParent)
+				if ((f.getParent()!=null) && (f.getParent()!=theParent))
 					satisfied = false;
 		}
 		return this;
