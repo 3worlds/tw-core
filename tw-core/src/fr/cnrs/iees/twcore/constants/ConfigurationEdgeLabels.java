@@ -62,6 +62,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.LoadFromEdge;
 
 import au.edu.anu.twcore.ui.TrackTimeEdge;
 import au.edu.anu.twcore.ui.TrackTimeSeriesEdge;
+import fr.cnrs.iees.graph.Edge;
 import au.edu.anu.twcore.ui.TrackFieldEdge;
 import au.edu.anu.twcore.ui.TrackTableEdge;
 import au.edu.anu.twcore.ui.TrackComponentEdge;
@@ -116,6 +117,8 @@ public enum ConfigurationEdgeLabels {
 	E_TRACKCOMPONENT("trackComponent",	"trks1",		TrackComponentEdge.class),
 	E_TRACKSPACE	("trackSpace",		"trks1",		TrackSpaceEdge.class),
 //	E_TRACKSYSTEM	("trackSystem",		"trks1",		TrackSystemEdge.class)
+	// Utility - in some cases one may save a child node as an out node with a specific label
+	E_CHILD			("_CHILD",			"child",				Edge.class)
 	;
 	//=========================================================================
 	private final String label;

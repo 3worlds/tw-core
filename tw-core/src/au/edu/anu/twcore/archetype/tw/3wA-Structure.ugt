@@ -236,6 +236,10 @@ hasNode spaceSpec
 	mustSatisfyQuery coordinatesInTheSameRecordQuery
 		className = String("au.edu.anu.twcore.archetype.tw.EdgeToSiblingNodesQuery")
 		edgeLabel = String("coordinate")
+	mustSatisfyQuery coordinateRanksAreDifferentQuery
+		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
+		parameters = StringTable(([2]"coordinate","rank"))
+
 	// Edge effect correction / border type
 //	hasProperty edgeEffectsSpec
 //		hasName = String("edgeEffects")
