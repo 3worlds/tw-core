@@ -10,9 +10,6 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_COORDMAPPING;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_FIELD_TYPE;
-import static fr.cnrs.iees.twcore.constants.DataElementType.*;
-
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -35,12 +32,13 @@ public class SpaceCoordinateTypeQuery extends Query {
 		List<DataHolder> fields = (List<DataHolder>) get(space.edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_COORDMAPPING.label())),
 			edgeListEndNodes());
-		EnumSet<DataElementType> numberTypes = EnumSet.of(Double,Integer,Long,Float,Short,Byte);
+//		EnumSet<DataElementType> numberTypes = EnumSet.of(Double,Integer,Long,Float,Short,Byte);
 		satisfied = true;
 		for (DataHolder f:fields) {
 			if (f.properties().hasProperty(P_FIELD_TYPE.key())) {
 				DataElementType ftype = (DataElementType) f.properties().getPropertyValue(P_FIELD_TYPE.key());
-				if (!numberTypes.contains(ftype))
+//				if (!numberTypes.contains(ftype))
+				if (!ftype.isNumeric())
 					satisfied = false;
 			}
 		}

@@ -124,7 +124,7 @@ public class CodeGenerator {
 				selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(systemNode.getChildren(),
 				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
-			
+
 			// generate data classes
 			if (structure != null) {
 				// for ComponentTypes
@@ -150,7 +150,7 @@ public class CodeGenerator {
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			if (!cats.isEmpty())
 				generateDataCode(systemNode, systemNode.id());
-			
+
 			// generate user modifiable model class file
 			modelgen = new ModelGenerator(graph.root(), systemNode.id());
 			// generate TwFunction classes
@@ -169,9 +169,9 @@ public class CodeGenerator {
 			// initialiser function code here
 			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(systemNode.subTree(),
 				selectZeroOrMany(orQuery(
-					hasTheLabel(N_LIFECYCLE.label()), 
+					hasTheLabel(N_LIFECYCLE.label()),
 					hasTheLabel(N_GROUP.label()),
-//					hasTheLabel(N_SPACE.label()), 
+//					hasTheLabel(N_SPACE.label()),
 					hasTheLabel(N_COMPONENTTYPE.label()) )));
 			if (initables == null)
 				initables = new ArrayList<TreeGraphDataNode>();
@@ -182,7 +182,7 @@ public class CodeGenerator {
 				if (initFuncs != null)
 					if (!initFuncs.isEmpty())
 						generateFunctionCode(initFuncs.get(0), systemNode.id());
-			}		
+			}
 			// write the user code file
 			modelgen.generateCode();
 		}
@@ -231,25 +231,33 @@ public class CodeGenerator {
 	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
 			String dataGroup) {
 		if (spec != null) {
+			// generate the new class
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
 			gen.generateCode();
+			// keep the graph in sync with the newly generated class
+			// check the new generated class name replaces the old one in properties driverClass, constantClass, etc.
 			if (system.properties().hasProperty(dataGroup)) {
 				String oldValue = (String) system.properties().getPropertyValue(dataGroup);
 				String newValue = gen.generatedClassName();
 				if (!newValue.equals(oldValue)) {
 					system.properties().setProperty(dataGroup, newValue);
 					GraphState.setChanged(); // Seems to be secret French business so we won't look
+ 											 // rhaa! it's jsut telling the graph the property value has changed!
 				}
 			} else {
+			// set the properties driverClass, constantClass, etc. if they didnt exist
 				((ResizeablePropertyList) system.properties()).addProperty(dataGroup, gen.generatedClassName());
 				GraphState.setChanged();
 			}
+			// if the spec node itsef was generated, delete it
 			if (spec.properties().hasProperty("generated"))
 				if (spec.properties().getPropertyValue("generated").equals(true)) {
 					spec.disconnect();
 					graph.removeNode(spec);
 				}
 		} else if (system.properties().hasProperty(dataGroup)) {
+			// if the spec was deleted from a previous version, remove the property refering to the former
+			// class name in the graph
 			((ResizeablePropertyList) system.properties()).removeProperty(dataGroup);
 			GraphState.setChanged();
 		}
@@ -294,14 +302,11 @@ public class CodeGenerator {
 //	}
 
 	private void generateDataCode(TreeGraphDataNode system, String modelName) {
-		// 0. Automatic variables
+		// 1. Automatic variables
 		// NO CODE GENERATION for automatic variables!
-		// 1. drivers
+		// 2. drivers
 		TreeGraphDataNode spec = Categorized.buildUniqueDataList(system, E_DRIVERS.label(), log);
 		generateDataCode(spec, system, modelName, P_DRIVERCLASS.key());
-		// 2. parameters
-//		spec = Categorized.buildUniqueDataList(system, E_PARAMETERS.label(), log);
-//		generateDataCode(spec, system, modelName, P_PARAMETERCLASS.key());
 		// 3. decorators
 		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label(), log);
 		generateDataCode(spec, system, modelName, P_DECORATORCLASS.key());
@@ -312,7 +317,7 @@ public class CodeGenerator {
 		// (immobile components)
 	}
 
-	
+
 	// TODO HERE: arguments to user model functions change with the organisation level, ie
 	// group, arena, lifecylce, component...
 	@SuppressWarnings("unchecked")
