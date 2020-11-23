@@ -43,7 +43,7 @@ import fr.ens.biologie.generic.Resettable;
  *
  * @param <T>
  */
-public interface DynamicSpace<I extends Identity,T extends Located<I,Location>>
+public interface DynamicSpace<I extends Identity,T extends LocatedOLD<I,Location>>
 	extends Space<I>,
 			DynamicContainer<T>,
 			ResettableContainer<T>,

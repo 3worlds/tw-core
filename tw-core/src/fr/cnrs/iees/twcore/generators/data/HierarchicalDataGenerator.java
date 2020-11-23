@@ -38,8 +38,10 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -96,7 +98,7 @@ public abstract class HierarchicalDataGenerator
 
 	private boolean hadErrors = false;
 
-	protected abstract ClassGenerator getRecordClassGenerator(String className,String comment);
+	protected abstract ClassGenerator getRecordClassGenerator(String className,String comment,Set<String> locatedMethods);
 
 	protected abstract ClassGenerator getTableClassGenerator(String className, String contentType,String comment);
 
@@ -117,9 +119,6 @@ public abstract class HierarchicalDataGenerator
 		cn = validJavaName(initialUpperCase(wordUpperCaseName(cn)));
 		log.info("Generating data class '"+cn+"'");
 		String comment = comment(general,classComment(cn),generatedCode(false,modelName, ""));
-		ClassGenerator cg = getRecordClassGenerator(cn,comment);
-		// generate imports and inherited methods
-		headerCode(cg,cn);
 		Iterable<TreeNode> childrenList = null;
 		// CAUTION: now specs are defined either with child nodes or with specific edges
 		if (spec.hasChildren())
@@ -141,6 +140,19 @@ public abstract class HierarchicalDataGenerator
 		// all this to make sure coordinates come in the proper order and are numbered 0,1,2,3 etc.
 		for (Node n:rankedCoordFields.values())
 			coordinateFields.add(n);
+		// instantiate class generator
+		Set<String> locatedMethods = null;
+		if (!coordinateFields.isEmpty()) {
+			locatedMethods = new HashSet<>();
+			// TODO: this is brittle - consider getting those names using reflection from the Located interface
+			locatedMethods.add("coordinates");
+			locatedMethods.add("coordinate");
+			locatedMethods.add("asPoint");
+			locatedMethods.add("setCoordinates");
+		}
+		ClassGenerator cg = getRecordClassGenerator(cn,comment,locatedMethods);
+		// generate imports and inherited methods
+		headerCode(cg,cn);
 		// generate field code
 		for (TreeNode ff:childrenList) {
 			TreeGraphDataNode f = (TreeGraphDataNode) ff;
@@ -160,7 +172,7 @@ public abstract class HierarchicalDataGenerator
 			}
 			// generate field code for other ("plain") types
 			else
-				primitiveFieldCode(cg,fname,ftype,coordinateFields.indexOf(f)+1);
+				primitiveFieldCode(cg,fname,ftype,coordinateFields.indexOf(f)+1,coordinateFields.size());
 			// generate specific accessors for fields used as spatial coordinates
 			if (coordinateFields.contains(f))
 				fieldCode(cg,fname,ftype,coordinateFields.indexOf(f)+1,coordinateFields.size());
@@ -189,7 +201,7 @@ public abstract class HierarchicalDataGenerator
 	 */
 	protected abstract void fieldCode(ClassGenerator cg,String fname,String ftype, int coordRank,int coordSize);
 	protected abstract void tableFieldCode(ClassGenerator cg,String fname,String ftype);
-	protected abstract void primitiveFieldCode(ClassGenerator cg,String fname,String ftype, int coordRank);
+	protected abstract void primitiveFieldCode(ClassGenerator cg,String fname,String ftype, int coordRank,int coordSize);
 	protected abstract void finalCode(ClassGenerator cg);
 
 	/**

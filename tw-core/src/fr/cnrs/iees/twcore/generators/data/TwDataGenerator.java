@@ -29,12 +29,16 @@
 package fr.cnrs.iees.twcore.generators.data;
 
 import java.io.File;
+import java.util.Set;
+
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
@@ -58,14 +62,16 @@ public class TwDataGenerator
 	}
 
 	@Override
-	protected ClassGenerator getRecordClassGenerator(String className,String comment) {
-		return new ClassGenerator(packageName, comment, className,TwData.class.getCanonicalName());
+	protected ClassGenerator getRecordClassGenerator(String className,String comment,Set<String> locatedMethods) {
+		return new ClassGenerator(packageName, comment, className, locatedMethods,
+			TwData.class.getCanonicalName(),
+			LocationData.class.getCanonicalName());
 //			"au.edu.anu.rscs.aot.graph.properties.SimplePropertyList"); // doesnt seem required ??
 	}
 
 	@Override
 	protected ClassGenerator getTableClassGenerator(String className, String contentType, String comment) {
-		return new ClassGenerator(packageName, comment, className,
+		return new ClassGenerator(packageName, comment, className,null,
 			ObjectTable.class.getPackageName()+".ObjectTable<"+contentType+">");
 	}
 	public File getFile() {
@@ -113,11 +119,16 @@ public class TwDataGenerator
 		MethodGenerator m = new MethodGenerator("public",ftype,fname);
 		m.setReturnStatement("return "+fname);
 		cg.setMethod("get"+fname, m);
-		// additional code if this field is used as a spacecoordinate (the coord getter)
-		if (coordRank>0) {
-			m = new MethodGenerator("public","double","coord"+coordRank);
-			m.setReturnStatement("return coords["+(coordRank-1)+"]");
-			cg.setMethod("getCoord"+coordRank, m);
+		// additional code if this field is used as a spacecoordinate (the coord getters)
+		if (coordRank==1) {
+			m = cg.getMethod("coordinate");
+			m.setArgumentNames("rank");
+			m.setReturnStatement("return coords[rank]");
+			m = cg.getMethod("coordinates");
+			m.setReturnStatement("return coords");
+			m = cg.getMethod("asPoint");
+			cg.setImport(Point.class.getCanonicalName());
+			m.setReturnStatement("return Point.newPoint(coords)");
 		}
 		// generic methods inherited from SimplePropertyList
 		cg.getMethod("getPropertyValue").setStatement("if (v0.equals(\""+fname+"\")) return "+fname);
@@ -143,7 +154,8 @@ public class TwDataGenerator
 	protected void primitiveFieldCode(ClassGenerator cg,
 			String fname,
 			String ftype,
-			int coordRank) {
+			int coordRank,
+			int coordSize) {
 		cg.getMethod("clear").setStatement(fname+ " = "+zero(checkType(ftype)));
 		cg.getMethod("clone").setStatement("clone."+fname+" = "+fname);
 		cg.getMethod("hasProperty").setStatement("if (v0.equals(\""+fname+"\")) return true");
@@ -155,17 +167,22 @@ public class TwDataGenerator
 			// the usual setter
 			MethodGenerator m = new MethodGenerator("public","void",fname,ftype);
 			m.setStatement("if (!isReadOnly()) {\n\t\t\t"
-					+fname+" = v0;\n"
-					+"\t\t\tcoords["+(coordRank-1)+"] = (double) v0;\n"
-					+"\t\t}");
+				+fname+" = v0;\n"
+				+"\t\t\tcoords["+(coordRank-1)+"] = (double) v0;\n"
+				+"\t\t}");
 			cg.setMethod("set"+fname, m);
 			// the coord setter
-			m = new MethodGenerator("public","void","coord"+coordRank,"double");
-			m.setStatement("if (!isReadOnly()) {\n\t\t\t"
-					+fname+" = ("+ftype+") v0;\n"
-					+"\t\t\tcoords["+(coordRank-1)+"] = v0;\n"
-					+"\t\t}");
-			cg.setMethod("setCoord"+coordRank, m);
+//			m = new MethodGenerator("public","void","coord"+coordRank,"double");
+//			m.setStatement("if (!isReadOnly()) {\n\t\t\t"
+//					+fname+" = ("+ftype+") v0;\n"
+//					+"\t\t\tcoords["+(coordRank-1)+"] = v0;\n"
+//					+"\t\t}");
+			m = cg.getMethod("setCoordinates");
+			if (coordRank == 1) {
+				m.setArgumentNames("coord");
+				m.setStatement("for (int i=0; i<coord.length; i++) coords[i] = coord[i]");
+			}
+			m.setStatement(fname+" = ("+ftype+") coord["+(coordRank-1)+"]");
 			// one more statement in clear
 			cg.setImport("java.util.Arrays");
 			if (coordRank==1)
@@ -187,10 +204,13 @@ public class TwDataGenerator
 		String[] ff = new String[cg.nfields()];
 		ff = cg.fields().toArray(ff);
 		String s="";
-		for (int i=0; i<ff.length-1; i++) s+="\""+ff[i]+"\",";
+		for (int i=0; i<ff.length-1; i++)
+			if (!s.equals("coords"))
+				s+="\""+ff[i]+"\",";
 		if (ff.length==0)
 			System.out.println(cg.getClassName()+ " has no members!!");
-		s+="\""+ff[ff.length-1]+"\"";
+		if (!ff[ff.length-1].equals("coords"))
+			s+="\""+ff[ff.length-1]+"\"";
 		cg.getMethod("getKeysAsArray").setStatement("String[] result = {"+s+"}");
 		cg.getMethod("getKeysAsArray").setReturnStatement("return result");
 	}

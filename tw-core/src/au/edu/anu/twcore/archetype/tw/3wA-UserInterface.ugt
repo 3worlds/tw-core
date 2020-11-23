@@ -43,7 +43,7 @@ hasNode topSpec
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
 	// must have at least one child widget
-	mustSatisfyQuery coordinateRanksAreDifferentQuery
+	mustSatisfyQuery coordinateRanksAreDifferentQuery1
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
 		parameters = StringTable(([2]"_CHILD","order"))
 
@@ -52,7 +52,7 @@ hasNode bottomSpec
 	hasParent = StringTable(([1]"userInterface:"))
 	multiplicity = IntegerRange("0..1")
 	// must have at least one child widget
-	mustSatisfyQuery coordinateRanksAreDifferentQuery
+	mustSatisfyQuery coordinateRanksAreDifferentQuery2
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
 		parameters = StringTable(([2]"_CHILD","order"))
 
@@ -69,7 +69,7 @@ hasNode tabSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ChildAtLeastOneOfOneOrTwoOfTwoQuery")
 		nodeLabel1 = String("widget")
 		nodeLabel2 = String("container")
-	mustSatisfyQuery coordinateRanksAreDifferentQuery
+	mustSatisfyQuery coordinateRanksAreDifferentQuery3
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
 		parameters = StringTable(([2]"_CHILD","order"))
 
@@ -89,7 +89,7 @@ hasNode containerSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ChildAtLeastOneOfOneOrTwoOfTwoQuery")
 		nodeLabel1 = String("widget")
 		nodeLabel2 = String("container")
-	mustSatisfyQuery coordinateRanksAreDifferentQuery
+	mustSatisfyQuery coordinateRanksAreDifferentQuery4
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
 		parameters = StringTable(([2]"_CHILD","order"))
 
