@@ -70,9 +70,9 @@ public class RankingPropertyQuery extends Query {
 	public String toString() {
 		String msg = propName;
 		if (edgeLabel.equals(E_CHILD.label()))
-			msg += " values of children nodes must be all different";
+			msg += " values of child nodes must be unique";
 		else
-			msg += " values of "+edgeLabel+" edges must be all different";
+			msg += " values of "+edgeLabel+" edges be unique";
 		return stateString() + msg;
 	}
 
