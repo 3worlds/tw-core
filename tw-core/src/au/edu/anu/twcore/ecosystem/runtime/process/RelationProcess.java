@@ -362,8 +362,10 @@ public class RelationProcess extends AbstractRelationProcess {
         	function.changeOtherState(t,dt,
         		arena, focalLifeCycle, focalGroup, focal,
         		otherLifeCycle, otherGroup, other, space,newLoc);
-			if (space!=null)
-				relocate((SystemComponent)other,newLoc);
+			if (space!=null) {
+//				relocate((SystemComponent)other,newLoc);
+				relocate((SystemComponent)other);
+			}
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
         }
@@ -408,10 +410,16 @@ public class RelationProcess extends AbstractRelationProcess {
         	function.changeRelationState(t, dt, arena, /*lifeCycle*/null, focalGroup, focal,
         			/*otherLifeCycle*/null, otherGroup, other, space, newFocalLoc, newOtherLoc);
 			if (space!=null) {
-				if (!space.equalLocation(space.locationOf((SystemComponent)focal), newFocalLoc))
-					relocate((SystemComponent)focal,newFocalLoc);
-				if (!space.equalLocation(space.locationOf((SystemComponent)other), newOtherLoc))
-					relocate((SystemComponent)other,newOtherLoc);
+				relocate((SystemComponent)focal);
+//				if (!space.equalLocation(space.locationOf((SystemComponent)focal), newFocalLoc)) {
+////					relocate((SystemComponent)focal,newFocalLoc);
+//
+//				}
+				relocate((SystemComponent)other);
+//				if (!space.equalLocation(space.locationOf((SystemComponent)other), newOtherLoc)) {
+////					relocate((SystemComponent)other,newOtherLoc);
+//
+//				}
 			}
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();

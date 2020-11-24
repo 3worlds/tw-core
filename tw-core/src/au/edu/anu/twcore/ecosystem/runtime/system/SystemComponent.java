@@ -191,4 +191,9 @@ public class SystemComponent
 		return null;
 	}
 
+	@Override
+	public boolean mobile() {
+		return (dynamicLocation);
+	}
+
 }

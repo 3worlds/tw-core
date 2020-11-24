@@ -199,12 +199,20 @@ public class Component
 				for (SpaceNode spn:coordinates.keySet()) {
 					DynamicSpace<SystemComponent,LocatedSystemComponent> sp = spn.getInstance(id);
 					if (nInstances>1) {
-						Location loc = sp.makeLocation(sp.randomLocation());
+						// new
+						double[] initLoc = sp.randomLocation();
+						sc.locationData().setCoordinates(initLoc);
+						//
+						Location loc = sp.makeLocation(initLoc);
 						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
 						sp.addInitialItem(lsc);
 					}
 					else {
-						Location loc = sp.makeLocation(coordinates.get(spn));
+						// new
+						double[] initLoc = coordinates.get(spn);
+						sc.locationData().setCoordinates(initLoc);
+						//
+						Location loc = sp.makeLocation(initLoc);
 						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
 						sp.addInitialItem(lsc);
 					}

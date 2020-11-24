@@ -66,7 +66,6 @@ public class TwDataGenerator
 		return new ClassGenerator(packageName, comment, className, locatedMethods,
 			TwData.class.getCanonicalName(),
 			LocationData.class.getCanonicalName());
-//			"au.edu.anu.rscs.aot.graph.properties.SimplePropertyList"); // doesnt seem required ??
 	}
 
 	@Override

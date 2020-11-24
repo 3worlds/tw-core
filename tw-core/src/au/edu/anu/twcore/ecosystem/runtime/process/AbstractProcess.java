@@ -159,6 +159,7 @@ public abstract class AbstractProcess
 	}
 
 	// for descendants
+	@Deprecated
 	protected void relocate(SystemComponent sc, double[] newLoc) {
 		newLoc = space.fixLocation(newLoc);
 		if (newLoc==null) {
@@ -176,8 +177,42 @@ public abstract class AbstractProcess
 				space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
 		}
 	}
+	// for descendants
+	protected void relocate(SystemComponent sc) {
+		double[] oldLoc = sc.locationData().coordinates();
+		double[] newLoc = space.fixLocation(oldLoc);
+
+
+		// PROBLEM HERE: mixup between current and next location
+
+
+		// 1 the component jumped out of space - it must go - well, unsure.
+		if (newLoc==null) {
+			// new location is outside the space - sc should be deleted:
+			// huh? maybe not if it's present in other spaces ???
+			// Possible flaw here!
+			unlocate(sc);
+			sc.container().removeItem(sc);
+		}
+		// 2 the component didnt move - nothing to do
+		else if (oldLoc.equals(newLoc)) {
+			// DO NOTHING
+		}
+		// the component did move
+		else {
+			sc.locationData().setCoordinates(newLoc);
+			// TODO: refactor this:
+			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
+			space.removeItem(new LocatedSystemComponent(sc,space.locationOf(sc)));
+			space.addItem(newLocSc);
+			if (space.dataTracker()!=null)
+				space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
+		}
+	}
+
 
 	// for descendants
+	@Deprecated
 	protected void locate(SystemComponent sc, ComponentContainer cont, double[] newLoc) {
 		newLoc = space.fixLocation(newLoc);
 		if (newLoc==null)
@@ -189,9 +224,32 @@ public abstract class AbstractProcess
 				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
 		}
 	}
+	// for descendants
+	protected void locate(SystemComponent sc, ComponentContainer cont) {
+		double[] oldLoc = sc.locationData().coordinates(); 	// always non null
+		double[] newLoc = space.fixLocation(oldLoc); 		// may be null
+		// 1 the component jumped out of space - it must go
+		if (newLoc==null)
+			cont.removeItem(sc);
+		// 2 the component didnt move - nothing to do
+		else if (oldLoc.equals(newLoc)) {
+			// DO NOTHING
+		}
+		// 3 the component location was corrected to another location
+		else {
+			sc.locationData().setCoordinates(newLoc);
+			// TODO: refactor this:
+			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
+			space.addItem(newLocSc);
+			if (space.dataTracker()!=null)
+				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
+		}
+	}
+
 
 	// for descendants
 	// NB: removes a SC from ALL spaces, not only from this one
+	// NO NEED TO CHANGE THAT ONE
 	protected void unlocate(SystemComponent sc) {
 		for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
 			((ComponentFactory)sc.membership()).spaces()) {
@@ -213,55 +271,6 @@ public abstract class AbstractProcess
 			}
 		}
 	}
-
-//	/**
-//	 * Utility for descendants. Fills a hierarchical context from container information
-//	 *
-//	 * @param context the context to fill
-//	 * @param container the container which information is to add to the context
-//	 */
-//	protected void setContext(HierarchicalContext context,
-//			CategorizedContainer<SystemComponent> container) {
-////		if (container.containerCategorized() instanceof Ecosystem) {
-////			context.ecosystemParameters = container.parameters();
-//////			context.ecosystemVariables = container.variables();
-//////			context.ecosystemPopulationData = container.populationData();
-////			context.ecosystemName = container.id();
-////		}
-////		else if (container.containerCategorized() instanceof LifeCycle) {
-////			context.lifeCycleParameters = container.parameters();
-//////			context.lifeCycleVariables = container.variables();
-//////			context.lifeCyclePopulationData = container.populationData();
-////			context.lifeCycleName = container.id();
-////		}
-////		else if (container.containerCategorized() instanceof SystemFactory)  {
-////			context.groupParameters = container.parameters();
-//////			context.groupVariables = container.variables();
-//////			context.groupPopulationData = container.populationData();
-////			context.groupName = container.id();
-////		}
-//	}
-//
-//	/**
-//	 * Utility for descendants. Instantiates and fills a hierarchical context from
-//	 * component information.
-//	 *
-//	 * @param component the component to extract container information from
-//	 * @return the new instance of the context
-//	 */
-//	protected HierarchicalContext getContext(SystemComponent component) {
-//		HierarchicalContext context = new HierarchicalContext();
-//		// group or ecosystem
-//		setContext(context,component.container());
-//		// lifecycle or ecosystem
-//		if (component.container().parentContainer()!=null) {
-//			setContext(context,component.container());
-//			// ecosystem
-//			if (component.container().parentContainer().parentContainer()!=null)
-//				setContext(context,component.container().parentContainer().parentContainer());
-//		}
-//		return context;
-//	}
 
 	public abstract void addFunction(TwFunction function);
 
