@@ -62,10 +62,10 @@ public class SystemComponent
 
 	public SystemComponent(Identity id, SimplePropertyList props, GraphFactory factory) {
 		super(id, props, factory);
-		if (((LocationData)constants()).coordinates()!=null)
+		if ((constants()!=null) && (((LocationData)constants()).coordinates()!=null))
 			constantLocation = (LocationData)constants(); // this never changes over life time
 		else
-			if (((LocationData)currentState()).coordinates()!=null)
+			if ((currentState()!=null) && (((LocationData)currentState()).coordinates()!=null))
 				dynamicLocation = true; // the exact record changes every time step
 	}
 
