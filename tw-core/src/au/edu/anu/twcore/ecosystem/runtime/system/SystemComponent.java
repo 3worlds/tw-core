@@ -192,6 +192,14 @@ public class SystemComponent
 	}
 
 	@Override
+	public LocationData nextLocationData() {
+		if (dynamicLocation)
+			return (LocationData) nextState();
+		return null;
+	}
+
+
+	@Override
 	public boolean mobile() {
 		return (dynamicLocation);
 	}

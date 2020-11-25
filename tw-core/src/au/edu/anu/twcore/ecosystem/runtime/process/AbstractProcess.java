@@ -177,15 +177,18 @@ public abstract class AbstractProcess
 				space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
 		}
 	}
-	// for descendants
+
+	/**
+	 * For use in descendant Process classes. This method fixes the user-computed coordinates
+	 * according to space edge effect corrections and relocates a formerly located point
+	 * to its new location
+	 *
+	 * @param sc the SystemComponent to relocate
+	 */
 	protected void relocate(SystemComponent sc) {
-		double[] oldLoc = sc.locationData().coordinates();
-		double[] newLoc = space.fixLocation(oldLoc);
-
-
-		// PROBLEM HERE: mixup between current and next location
-
-
+		double[] oldLoc = sc.locationData().coordinates(); 	// always non null
+		double[] newLoc = sc.nextLocationData().coordinates();
+		newLoc = space.fixLocation(newLoc); 		// may be null
 		// 1 the component jumped out of space - it must go - well, unsure.
 		if (newLoc==null) {
 			// new location is outside the space - sc should be deleted:
@@ -200,7 +203,7 @@ public abstract class AbstractProcess
 		}
 		// the component did move
 		else {
-			sc.locationData().setCoordinates(newLoc);
+			sc.nextLocationData().setCoordinates(newLoc);
 			// TODO: refactor this:
 			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
 			space.removeItem(new LocatedSystemComponent(sc,space.locationOf(sc)));
@@ -224,10 +227,22 @@ public abstract class AbstractProcess
 				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
 		}
 	}
-	// for descendants
+
+	/**
+	 * For use in descendant Process classes. This method the user-computed coordinates
+	 * according to space edge effect corrections. This method is called at creation of
+	 * a SystemComponent only, so coordinates may be constants or driver values.
+	 *
+	 * @param sc the SystemComponent to locate
+	 * @param cont the component container, to compute its label
+	 */
 	protected void locate(SystemComponent sc, ComponentContainer cont) {
-		double[] oldLoc = sc.locationData().coordinates(); 	// always non null
-		double[] newLoc = space.fixLocation(oldLoc); 		// may be null
+		double[] oldLoc, newLoc;
+		if (sc.mobile())
+			oldLoc = sc.nextLocationData().coordinates(); 	// always non null
+		else
+			oldLoc = sc.locationData().coordinates(); 		// always non null
+		newLoc = space.fixLocation(oldLoc);					// may be null
 		// 1 the component jumped out of space - it must go
 		if (newLoc==null)
 			cont.removeItem(sc);
@@ -237,7 +252,10 @@ public abstract class AbstractProcess
 		}
 		// 3 the component location was corrected to another location
 		else {
-			sc.locationData().setCoordinates(newLoc);
+			if (sc.mobile())
+				sc.nextLocationData().setCoordinates(newLoc);
+			else
+				sc.locationData().setCoordinates(newLoc);
 			// TODO: refactor this:
 			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
 			space.addItem(newLocSc);

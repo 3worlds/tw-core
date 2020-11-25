@@ -25,4 +25,14 @@ public interface Locatable {
 	 */
 	public boolean mobile();
 
+	/**
+	 * For dynamic objects only, return the computed next value for locations.
+	 * Default is to assume no dynamics
+	 *
+	 * @return
+	 */
+	public default LocationData nextLocationData() {
+		return locationData();
+	}
+
 }
