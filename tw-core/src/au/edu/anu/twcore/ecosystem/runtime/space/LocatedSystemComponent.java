@@ -36,7 +36,7 @@ import fr.cnrs.iees.identity.IdentityScope;
  * @author Jacques Gignoux - 13 mars 2020
  *
  */
-//@Deprecated
+@Deprecated
 public class LocatedSystemComponent
 		implements LocatedOLD<SystemComponent,Location> {
 

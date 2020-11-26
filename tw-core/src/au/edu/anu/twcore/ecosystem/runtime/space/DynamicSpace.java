@@ -34,7 +34,6 @@ import au.edu.anu.twcore.ecosystem.runtime.containers.ResettableContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.rngFactory.RngHolder;
-import fr.cnrs.iees.identity.Identity;
 import fr.ens.biologie.generic.Resettable;
 
 /**
@@ -43,8 +42,8 @@ import fr.ens.biologie.generic.Resettable;
  *
  * @param <T>
  */
-public interface DynamicSpace<I extends Identity,T extends LocatedOLD<I,Location>>
-	extends Space<I>,
+public interface DynamicSpace<T extends Locatable>
+	extends Space<T>,
 			DynamicContainer<T>,
 			ResettableContainer<T>,
 			RngHolder,
@@ -63,8 +62,15 @@ public interface DynamicSpace<I extends Identity,T extends LocatedOLD<I,Location
 		return null;
 	}
 
-	public void add(I item, Location loc);
-
-	public void remove(I item);
+	/**
+	 * relocate an item already present in space to another location. Item must be a mobile Locatable
+	 *
+	 * @param item the relocated item
+	 */
+	public void relocate(T item);
+//
+//	public void add(T item);
+//
+//	public void remove(T item);
 
 }

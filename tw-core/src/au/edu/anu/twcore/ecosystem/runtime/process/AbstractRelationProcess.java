@@ -37,7 +37,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
@@ -62,7 +61,7 @@ public abstract class AbstractRelationProcess
 	protected SortedSet<Category> otherCategories = new TreeSet<>();
 
 	public AbstractRelationProcess(ArenaComponent world, RelationContainer relation,
-			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
+			Timer timer, DynamicSpace<SystemComponent> space, double searchR) {
 		super(world, timer, space, searchR);
 		relContainer = relation;
 		focalCategoryId = relContainer.from().buildCategorySignature();

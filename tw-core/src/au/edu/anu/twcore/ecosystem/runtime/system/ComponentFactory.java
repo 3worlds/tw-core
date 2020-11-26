@@ -36,7 +36,6 @@ import java.util.Set;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.properties.SimplePropertyList;
 
@@ -48,12 +47,12 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  *
  */
 public class ComponentFactory extends ElementFactory<SystemComponent> {
-	
+
 	/** The list of spaces in which the components made by this factory MUST be located */
-	private List<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces = new ArrayList<>();
+	private List<DynamicSpace<SystemComponent>> spaces = new ArrayList<>();
 
 	public ComponentFactory(Set<Category> categories,
-			Collection<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces,
+			Collection<DynamicSpace<SystemComponent>> spaces,
 			TwData auto, TwData drv,
 			TwData dec, TwData ltc, SetInitialStateFunction setinit, boolean permanent) {
 		super(categories, auto, drv, dec, ltc, setinit, permanent);
@@ -74,7 +73,7 @@ public class ComponentFactory extends ElementFactory<SystemComponent> {
 		return result;
 	}
 
-	public Iterable<DynamicSpace<SystemComponent,LocatedSystemComponent>> spaces() {
+	public Iterable<DynamicSpace<SystemComponent>> spaces() {
 		return spaces;
 	}
 

@@ -48,8 +48,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
@@ -70,7 +68,6 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -275,7 +272,7 @@ public class Simulator implements Resettable {
 			if (mainSpace!=null)
 				for (RelationContainer rc: ecosystem.relations())
 					if (rc.autoDelete())
-						for (DynamicSpace<SystemComponent, LocatedSystemComponent> sp:mainSpace.spaces())
+						for (DynamicSpace<SystemComponent> sp:mainSpace.spaces())
 							rc.sendDataForAutoDeletedRelations(sp,nexttime,status);
 			// send the time as supplied to the processes in this step
 			timetracker.sendData(nexttime);
@@ -326,7 +323,7 @@ public class Simulator implements Resettable {
 			Collection<SystemComponent> newComp = ecosystem.effectChanges();
 			// apply changes to spaces, including data tracking
 			if (mainSpace!=null)
-				for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
+				for (DynamicSpace<SystemComponent> space : mainSpace.spaces())
 					space.effectChanges();
 			// set permanent relation for newly created (and located) systems
 			setPermanentRelations(newComp,nexttime);
@@ -363,32 +360,42 @@ public class Simulator implements Resettable {
 	 */
 	private void computeInitialCoordinates(CategorizedContainer<SystemComponent> container) {
 		for (SystemComponent sc : container.items()) {
-			Iterable<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces =
+			Iterable<DynamicSpace<SystemComponent>> spaces =
 				((ComponentFactory) sc.membership()).spaces();
-			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : spaces) {
-				// get the initial item matching this
-				SystemComponent isc = container.initialForItem(sc.id());
+			// get the initial item matching this
+			SystemComponent isc = container.initialForItem(sc.id());
+			for (DynamicSpace<SystemComponent> space : spaces) {
 //				if (isc!=null) // must always be non null, normally
 				// get the location of this initial item
 				if (space.dataTracker() != null) {
 					space.dataTracker().setInitialTime();
 					space.dataTracker().recordTime(status,startTime);
 				}
-				for (LocatedSystemComponent lisc : space.getInitialItems())
-					if (lisc.item() == isc) {
+				if (space.getInitialItems().contains(isc)) {
+//				for (SystemComponent lisc : space.getInitialItems())
+//					if (lisc == isc) {
 						// locate the initial item clone at the location of the initial item
-						Location initLoc;
-						if (!space.boundingBox().contains(lisc.location().asPoint())) {
-							initLoc = space.locate(sc, Point.newPoint(space.defaultLocation()));
+//						Location initLoc;
+//						if (!space.boundingBox().contains(lisc.location().asPoint())) {
+//							initLoc = space.locate(sc, Point.newPoint(space.defaultLocation()));
+//						}
+						if (!space.boundingBox().contains(isc.locationData().asPoint())) {
+							sc.locationData().setCoordinates(space.defaultLocation());
+							space.locate(sc);
 						}
-						else
-							initLoc = space.locate(sc, lisc.location());
+						else {
+//							initLoc = space.locate(sc, lisc.location());
+							// at init time all coordinates are in locationData()
+							sc.locationData().setCoordinates(isc.locationData().coordinates());
+							space.locate(sc);
+						}
 						// send coordinates to data tracker if needed
 						if (space.dataTracker() != null) {
-							double x[] = new double[initLoc.asPoint().dim()];
-							for (int i = 0; i < initLoc.asPoint().dim(); i++)
-								x[i] = initLoc.asPoint().coordinate(i);
-							space.dataTracker().createPoint(x, container.itemId(sc.id()));
+//							double x[] = new double[initLoc.asPoint().dim()];
+//							for (int i = 0; i < initLoc.asPoint().dim(); i++)
+//								x[i] = initLoc.asPoint().coordinate(i);
+//							space.dataTracker().createPoint(x, container.itemId(sc.id()));
+							space.dataTracker().createPoint(sc.locationData().coordinates(),container.itemId(sc.id()));
 						}
 				}
 				if (space.dataTracker() != null)
@@ -434,7 +441,7 @@ public class Simulator implements Resettable {
 		ecosystem.postProcess();
 		// remove all items from spaces
 		if (mainSpace!=null)
-			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
+			for (DynamicSpace<SystemComponent> space : mainSpace.spaces())
 				space.postProcess();
 		log.info(()->"END Simulator " + id + " reset/post");
 	}

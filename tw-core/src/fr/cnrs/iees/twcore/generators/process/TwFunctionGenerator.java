@@ -58,7 +58,6 @@ import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -194,7 +193,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //						argClasses.add(ComponentContainer.class.getName());
 					if (arggrp.type().contains("DynamicSpace")) {
 						argClasses.add(SystemComponent.class.getName());
-						argClasses.add(LocatedSystemComponent.class.getName());
 					}
 				}
 //		for (TwFunctionArguments arggrp:type.writeableArguments())
@@ -240,7 +238,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //				if (argTypes[j].contains("CategorizedComponent"))
 //					argTypes[j] += "<ComponentContainer>";
 				if (argTypes[j].contains("DynamicSpace"))
-					argTypes[j] += "<SystemComponent,LocatedSystemComponent>";
+					argTypes[j] += "<SystemComponent>";
 //				mmg.setArgument(argNames[j], argTypes[j], "");
 				mg.setArgumentName(j,argNames[j]);
 				mg.setArgumentType(j, argTypes[j]);

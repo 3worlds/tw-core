@@ -34,7 +34,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.*;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
@@ -79,7 +78,7 @@ public class RelationProcess extends AbstractRelationProcess {
 
 
 	public RelationProcess(ArenaComponent world, RelationContainer relation,
-			Timer timer, DynamicSpace<SystemComponent,LocatedSystemComponent> space, double searchR) {
+			Timer timer, DynamicSpace<SystemComponent> space, double searchR) {
 		super(world,relation,timer,space,searchR);
 	}
 
@@ -232,7 +231,7 @@ public class RelationProcess extends AbstractRelationProcess {
 //			        		other.autoVar(), other.constants(), other.currentState(),
 //			        		other.decorators(), otherLocation)) {
 //			        		other.container().removeItem(other);
-//							for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:((SystemFactory)other.membership()).spaces()) {
+//							for (<SystemComponent,LocatedSystemComponent> space:((SystemFactory)other.membership()).spaces()) {
 //								space.unlocate(other);
 //								if (space.dataTracker()!=null)
 //									space.dataTracker().removeItem(currentStatus,

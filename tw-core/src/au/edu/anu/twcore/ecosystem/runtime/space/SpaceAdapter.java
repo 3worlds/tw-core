@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -60,7 +61,7 @@ import fr.ens.biologie.generic.utils.Logging;
  *
  */
 public abstract class SpaceAdapter
-		implements DynamicSpace<SystemComponent,LocatedSystemComponent> {
+		implements DynamicSpace<SystemComponent> {
 
 	private static Logger log = Logging.getLogger(SpaceAdapter.class);
 	private static final String jitterRNGName = "SpaceJitterRNG";
@@ -96,13 +97,13 @@ public abstract class SpaceAdapter
 	 /** A RNG available to descendants to create jitter around locations if needed */
 	protected Random jitterRNG = null;
 	/** list of SystemComponents to insert later */
-	private Set<LocatedSystemComponent> toInsert = new HashSet<>();
+	private Set<SystemComponent> toInsert = new HashSet<>();
 	/** list of SystemComponents to delete later */
 	private Set<SystemComponent> toDelete = new HashSet<>();
 	/** list of initial SystemComponents */
-	private Set<LocatedSystemComponent> initialComponents = new HashSet<>();
+	private Set<SystemComponent> initialComponents = new HashSet<>();
 	/** mapping of cloned item to their initial components */
-	private Map<String, LocatedSystemComponent> itemsToInitials = new HashMap<>();
+	private Map<String,SystemComponent> itemsToInitials = new HashMap<>();
 	private boolean changed = false;
 
 
@@ -155,15 +156,15 @@ public abstract class SpaceAdapter
 		return units;
 	}
 
-	@Override
-	public Location locate(SystemComponent focal, Point location) {
-		return locate(focal,location.asArray());
-	}
-
-	@Override
-	public Location locate(SystemComponent focal, Location location) {
-		return locate(focal,location.asPoint());
-	}
+//	@Override
+//	public Location locate(SystemComponent focal, Point location) {
+//		return locate(focal,location.asArray());
+//	}
+//
+//	@Override
+//	public Location locate(SystemComponent focal, Location location) {
+//		return locate(focal,location.asPoint());
+//	}
 
 	// RngHolder
 
@@ -218,60 +219,49 @@ public abstract class SpaceAdapter
 	// DynamicContainer<T>
 
 	@Override
-	public final void addItem(LocatedSystemComponent item) {
+	public final void addItem(SystemComponent item) {
 		// CAUTION: what happens if the system is to be deleted in containers after relocation?
 		toInsert.add(item);
 	}
 
-	@Override
-	public final void add(SystemComponent item, Location loc) {
-		addItem(new LocatedSystemComponent(item,loc));
-	}
+//	@Override
+//	public final void add(SystemComponent item) {
+//		addItem(item);
+//	}
 
 	@Override
-	public final void removeItem(LocatedSystemComponent item) {
-		toDelete.add(item.item());
-	}
-
-	@Override
-	public final void remove(SystemComponent item) {
+	public final void removeItem(SystemComponent item) {
 		toDelete.add(item);
 	}
+
+//	@Override
+//	public final void remove(SystemComponent item) {
+//		toDelete.add(item);
+//	}
 
 	// ResettableContainer
 
 	@SafeVarargs
 	@Override
-	public final void effectChanges(Collection<LocatedSystemComponent>... changedLists) {
-		for (SystemComponent sc:toDelete) {
+	public final void effectChanges(Collection<SystemComponent>... changedLists) {
+		for (SystemComponent sc:toDelete)
 			unlocate(sc);
-//			// CAUTION: make sure recordTime() has been called before - normally it's done in
-//			// simulator.step();
-//			if (dataTracker!=null) {
-//				dataTracker.deletePoint(sc.container().itemId(sc.id()));
-//			}
-		}
 		toDelete.clear();
 		// CAUTION: what happens if the system is to be deleted in containers after relocation?
-		for (LocatedSystemComponent lsc:toInsert) {
-			locate(lsc.item(),lsc.location());
-//			if (dataTracker!=null) {
-//				dataTracker.createPoint(lsc.location().asPoint().asArray(), // YURKL! change this method!
-//					lsc.item().container().itemId(lsc.item().id()));
-//			}
-		}
+		for (SystemComponent lsc:toInsert)
+			locate(lsc);
 		toInsert.clear();
 		changed = false;
 	}
 
 	@Override
-	public final void setInitialItems(LocatedSystemComponent... items) {
-		for (LocatedSystemComponent lsc:items)
+	public final void setInitialItems(SystemComponent... items) {
+		for (SystemComponent lsc:items)
 			initialComponents.add(lsc);
 	}
 
 	@Override
-	public final void setInitialItems(Collection<LocatedSystemComponent> items) {
+	public final void setInitialItems(Collection<SystemComponent> items) {
 		initialComponents.addAll(items);
 	}
 
@@ -282,22 +272,22 @@ public abstract class SpaceAdapter
 //	}
 
 	@Override
-	public final void addInitialItem(LocatedSystemComponent item) {
+	public final void addInitialItem(SystemComponent item) {
 		initialComponents.add(item);
 	}
 
 	@Override
-	public final Set<LocatedSystemComponent> getInitialItems() {
-		return initialComponents;
+	public final Set<SystemComponent> getInitialItems() {
+		return Collections.unmodifiableSet(initialComponents);
 	}
 
 	@Override
-	public final boolean containsInitialItem(LocatedSystemComponent item) {
+	public final boolean containsInitialItem(SystemComponent item) {
 		return initialComponents.contains(item);
 	}
 
 	@Override
-	public final LocatedSystemComponent initialForItem(String id) {
+	public final SystemComponent initialForItem(String id) {
 		return itemsToInitials.get(id);
 	}
 

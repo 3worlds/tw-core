@@ -110,8 +110,8 @@ public class FlatSurface extends SpaceAdapter {
 	}
 
 	@Override
-	public Location locate(SystemComponent focal, double...location) {
-		Point at = Point.newPoint(location);
+	public Location locate(SystemComponent focal) {
+		Point at = Point.newPoint(focal.locationData().coordinates());
 		locatedItems.put(focal,at);
 		indexer.insert(focal,at);
 		return makeLocation(at);
@@ -218,6 +218,16 @@ public class FlatSurface extends SpaceAdapter {
 //		}
 //		else
 			return super.boundingBox();
+	}
+
+	@Override
+	public void relocate(SystemComponent item) {
+		if (item.mobile()) {
+			Point newLoc = Point.newPoint(item.nextLocationData().coordinates());
+			indexer.remove(item);
+			indexer.insert(item, newLoc);
+			locatedItems.put(item,newLoc);
+		}
 	}
 
 }

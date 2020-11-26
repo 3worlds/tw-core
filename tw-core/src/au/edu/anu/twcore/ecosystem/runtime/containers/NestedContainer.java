@@ -30,15 +30,13 @@ package au.edu.anu.twcore.ecosystem.runtime.containers;
 
 import java.util.Collection;
 
-import fr.cnrs.iees.identity.Identity;
-
 /**
  * An interface for methods to add to a container to make it hierarchical (ie containing subcontainers)
  *
  * @author Jacques Gignoux - 16 janv. 2020
  *
  */
-public interface NestedContainer<T extends Identity> extends Container {
+public interface NestedContainer<T> extends Container {
 
 	/**
 	 * Gets the sub-container matching the id passed as an argument. Only searches

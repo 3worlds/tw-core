@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -31,8 +31,6 @@ package au.edu.anu.twcore.ecosystem.runtime.containers;
 import java.util.Collection;
 import java.util.Set;
 
-import fr.cnrs.iees.identity.Identity;
-
 /**
  * An interface for containers that can be reset to an initial state. Such containers maintain
  * an initial content that can replace their current content when a reset method is called.
@@ -40,7 +38,7 @@ import fr.cnrs.iees.identity.Identity;
  * @author Jacques Gignoux - 16 janv. 2020
  *
  */
-public interface ResettableContainer<T extends Identity> extends Container {
+public interface ResettableContainer<T> extends Container {
 
 	// four ways to add items to the initialItems list
 	@SuppressWarnings("unchecked")

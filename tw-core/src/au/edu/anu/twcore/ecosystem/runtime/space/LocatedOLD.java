@@ -36,7 +36,7 @@ import fr.cnrs.iees.identity.Identity;
  * @author Jacques Gignoux - 30 janv. 2020
  *
  */
-//@Deprecated
+@Deprecated
 public interface LocatedOLD<I extends Identity, T extends Location> extends Identity {
 
 	public T location();

@@ -49,8 +49,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
@@ -197,24 +195,26 @@ public class Component
 				// NEW: if only one instance, use the space coordinate as provided
 				// otherwise, generate random coordinates.
 				for (SpaceNode spn:coordinates.keySet()) {
-					DynamicSpace<SystemComponent,LocatedSystemComponent> sp = spn.getInstance(id);
+					DynamicSpace<SystemComponent> sp = spn.getInstance(id);
 					if (nInstances>1) {
 						// new
 						double[] initLoc = sp.randomLocation();
 						sc.locationData().setCoordinates(initLoc);
+						sp.addInitialItem(sc);
 						//
-						Location loc = sp.makeLocation(initLoc);
-						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
-						sp.addInitialItem(lsc);
+//						Location loc = sp.makeLocation(initLoc);
+//						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
+//						sp.addInitialItem(lsc);
 					}
 					else {
 						// new
 						double[] initLoc = coordinates.get(spn);
 						sc.locationData().setCoordinates(initLoc);
+						sp.addInitialItem(sc);
 						//
-						Location loc = sp.makeLocation(initLoc);
-						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
-						sp.addInitialItem(lsc);
+//						Location loc = sp.makeLocation(initLoc);
+//						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
+//						sp.addInitialItem(lsc);
 					}
 				}
 				// insert component into container

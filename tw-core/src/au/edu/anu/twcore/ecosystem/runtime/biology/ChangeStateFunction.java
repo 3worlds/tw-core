@@ -29,7 +29,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
@@ -67,7 +66,7 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 		CategorizedComponent lifeCycle,
 		CategorizedComponent group,
 		CategorizedComponent focal,
-		DynamicSpace<SystemComponent,LocatedSystemComponent> space,
+		DynamicSpace<SystemComponent> space,
 		double[] nextFocalLoc);
 
 }

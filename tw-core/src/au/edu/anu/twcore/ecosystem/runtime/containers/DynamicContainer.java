@@ -30,8 +30,6 @@ package au.edu.anu.twcore.ecosystem.runtime.containers;
 
 import java.util.Collection;
 
-import fr.cnrs.iees.identity.Identity;
-
 /**
  * An interface for containers which must delay addition and deletion of items up to
  * a given step
@@ -40,7 +38,7 @@ import fr.cnrs.iees.identity.Identity;
  *
  * @param <T>
  */
-public interface DynamicContainer<T extends Identity> extends Container {
+public interface DynamicContainer<T> extends Container {
 
 	/**
 	 * Tag an item for addition into this container's item list. The item will be
