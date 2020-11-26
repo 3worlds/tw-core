@@ -197,10 +197,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 						argClasses.add(LocatedSystemComponent.class.getName());
 					}
 				}
-		for (TwFunctionArguments arggrp:type.writeableArguments())
-			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
-				if (!arggrp.type().equals("double[]"))
-					argClasses.add(arggrp.type());
+//		for (TwFunctionArguments arggrp:type.writeableArguments())
+//			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
+//				if (!arggrp.type().equals("double[]"))
+//					argClasses.add(arggrp.type());
 //		if (!eventTimerNames.isEmpty())
 //			argClasses.add(EventQueue.class.getName()); // not needed!
 		for (String s:argClasses)
@@ -221,7 +221,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			//argument list
 			Set<TwFunctionArguments> argSet = new TreeSet<>();
 			argSet.addAll(type.readOnlyArguments());
-			argSet.addAll(type.writeableArguments());
+//			argSet.addAll(type.writeableArguments());
 			// argument names
 			String[] argNames = new String[argSet.size()];
 			int i=0;
@@ -429,10 +429,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				callStatement += indent+indent+indent+ "space.fixOtherLocation(focalLoc,otherLoc),\n";
 			}
 			// writeable arguments
-			if (type.writeableArguments().contains(nextFocalLoc))
-				callStatement += indent+indent+indent+ "nextFocalLoc,\n";
-			if (type.writeableArguments().contains(nextOtherLoc))
-				callStatement += indent+indent+indent+ "nextOtherLoc,\n";
+//			if (type.writeableArguments().contains(nextFocalLoc))
+//				callStatement += indent+indent+indent+ "nextFocalLoc,\n";
+//			if (type.writeableArguments().contains(nextOtherLoc))
+//				callStatement += indent+indent+indent+ "nextOtherLoc,\n";
 		}
 //		else
 //			callStatement += indent+indent+indent+ "null,\n";

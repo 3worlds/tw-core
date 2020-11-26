@@ -135,11 +135,11 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private String relationType = null;
 	// the categories of the arena component
 	private Map<TreeGraphDataNode, SortedSet<Category>> elementTypeCategories = new HashMap<>();
-	protected boolean hasSpace = false;	
+	protected boolean hasSpace = false;
 	// the organisation level to which the currently generated method applies
 	private String focalLevel = Category.component; // defaults to component
 	private String otherLevel = Category.component; // defaults to component
-	
+
 	// some arguments in generated methods are excluded according to the organisation level
 	private static Map<String,EnumSet<TwFunctionArguments>> excludedFocalArguments = new HashMap<>();
 	private static Map<String,EnumSet<TwFunctionArguments>> excludedOtherArguments = new HashMap<>();
@@ -172,7 +172,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	 */
 	@SuppressWarnings("unchecked") // graph root, ecology.id()
 	public ModelGenerator(TreeGraphDataNode root3w, String modelDir) {
-		super(null);		
+		super(null);
 		excludedFocalArguments.size(); // this to trigger call to the static block prior to use the fields
 		className = validJavaName(wordUpperCaseName(initialUpperCase(root3w.id())));
 		modelName = modelDir;
@@ -183,7 +183,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		generateClassComment(root3w);
 		// method comments:
 		// working explanations
-		
+
 		packagePath = Project.makeFile(LOCALJAVACODE, validJavaName(wordUpperCaseName(modelDir))).getAbsolutePath();
 		imports.add("static java.lang.Math.*");
 		// get all nodes susceptible to require generated data:
@@ -336,7 +336,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		for (Set<Category> set : dataClassNames.keySet()) {
 			for (Category c : set) {
 				TreeGraphDataNode rec = (TreeGraphDataNode) get(c.edges(Direction.OUT),
-					selectZeroOrOne(hasTheLabel(elab.label())), 
+					selectZeroOrOne(hasTheLabel(elab.label())),
 					endNode());
 				if (rec != null) {
 					for (TreeNode t : rec.getChildren())
@@ -570,7 +570,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	}
 
 	/** finds the categories of a focal component */
-	// Possible FLAW here: what about the category hierarchy? 
+	// Possible FLAW here: what about the category hierarchy?
 	@SuppressWarnings("unchecked")
 	protected SortedSet<Category> findCategories(TreeGraphDataNode function, TwFunctionArguments arg) {
 		TwFunctionTypes ftype = (TwFunctionTypes) function.properties().getPropertyValue(P_FUNCTIONTYPE.key());
@@ -657,7 +657,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				// all other cases should not exist
 				log.warning("Wrong consequence function type ("+ftype+ ") for function  "+fp.id());
 				break;
-			}			
+			}
 		}
 		// 3 parent is not a ProcessNode nor a FunctionNode, so it must be an
 		// ElementType descendant
@@ -871,7 +871,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 		return dataStructures.get(method);
 	}
-	
+
 	// this sets the 'organisation level", ie, if a method applies to a component, group, lifecycle
 	// or arena instance (either as focal or other). It updates the focalLevel and otherLevel fields,
 	// which are valid for one function, and must be equal to a Category predefined value
@@ -926,7 +926,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				// all other cases should not exist
 				log.warning("Wrong consequence function type ("+ftype+ ") for function  "+catNode.id());
 				break;
-			}			
+			}
 		}
 		// FLAW HERE: consequences are not always of the same type (category/relation) as their parent
 		// Consequences exist for:
@@ -941,9 +941,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// case 5 may require two relations, one for the decision, one for the consequence. ???
 		// Use cases for 4 and 5: 4, decomposition; 5, predation or predation + decomposition.
 		// in case 5 (1) if no life cycle relation is given then the consequence applies to the reverse
-		// relation; (2) if a life cycle relation is given the consequence applies to the 
+		// relation; (2) if a life cycle relation is given the consequence applies to the
 		//// bububububube... predefined relations !!!
-		
+
 		// 3rd case: catNode is a ProcessNode
 		// Possible problem here: if Process does not apply to a systemElementsSet category
 		// then no category will be found and the default *component* category will be used
@@ -986,7 +986,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				}
 			}
 	}
-	
+
 	// returns true if argument arg must be excluded from the method argument list
 	// not very efficient because searches the whole function categories for every argument
 	// for use in TwFunctionGenerator
@@ -999,7 +999,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		else
 			return false;
 	}
-	
+
 	/**
 	 * This method generates the code for all user-defined functions. It (1) create a static method header
 	 * and body in the model source file, and (2) passes to the to-be-generated TwFunction descendant
@@ -1094,7 +1094,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		EnumSet<TwFunctionArguments> argSet2 = EnumSet.noneOf(TwFunctionArguments.class);
 		argSet2.addAll(ftype.readOnlyArguments());
 		argSet2.addAll(ftype.localArguments());
-		argSet2.addAll(ftype.writeableArguments());
+//		argSet2.addAll(ftype.writeableArguments());
 
 		// t, dt
 		Set<TwFunctionArguments> intersection = new TreeSet<>(ftype.readOnlyArguments());
@@ -1162,23 +1162,23 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				method.addArgument(limits.name(), simpleType(limits.type()), limits.description());
 				headerComment.append("@param ").append(limits.name()).append(' ').append(limits.description()).append('\n');
 				replicateNames.add(limits.name());
-			if (ftype.innerVars().contains("focalLoc"))
-				method.addArgument(focalLoc.name(), simpleType(focalLoc.type()), focalLoc.description());
-				headerComment.append("@param ").append(focalLoc.name()).append(' ').append(focalLoc.description()).append('\n');
-				replicateNames.add(focalLoc.name());
-			if (ftype.innerVars().contains("otherLoc"))
-				method.addArgument(otherLoc.name(), simpleType(otherLoc.type()), otherLoc.description());
-				headerComment.append("@param ").append(otherLoc.name()).append(' ').append(otherLoc.description()).append('\n');
-				replicateNames.add(otherLoc.name());
+//			if (ftype.innerVars().contains("focalLoc"))
+//				method.addArgument(focalLoc.name(), simpleType(focalLoc.type()), focalLoc.description());
+//				headerComment.append("@param ").append(focalLoc.name()).append(' ').append(focalLoc.description()).append('\n');
+//				replicateNames.add(focalLoc.name());
+//			if (ftype.innerVars().contains("otherLoc"))
+//				method.addArgument(otherLoc.name(), simpleType(otherLoc.type()), otherLoc.description());
+//				headerComment.append("@param ").append(otherLoc.name()).append(' ').append(otherLoc.description()).append('\n');
+//				replicateNames.add(otherLoc.name());
 			// writeable arguments
-			if (ftype.writeableArguments().contains(nextFocalLoc))
-				method.addArgument(nextFocalLoc.name(), simpleType(nextFocalLoc.type()), nextFocalLoc.description());
-				headerComment.append("@param ").append(nextFocalLoc.name()).append(' ').append(nextFocalLoc.description()).append('\n');
-				replicateNames.add(nextFocalLoc.name());
-			if (ftype.writeableArguments().contains(nextOtherLoc))
-				method.addArgument(nextOtherLoc.name(), simpleType(nextOtherLoc.type()), nextOtherLoc.description());
-				headerComment.append("@param ").append(nextOtherLoc.name()).append(' ').append(nextOtherLoc.description()).append('\n');
-				replicateNames.add(nextOtherLoc.name());
+//			if (ftype.writeableArguments().contains(nextFocalLoc))
+//				method.addArgument(nextFocalLoc.name(), simpleType(nextFocalLoc.type()), nextFocalLoc.description());
+//				headerComment.append("@param ").append(nextFocalLoc.name()).append(' ').append(nextFocalLoc.description()).append('\n');
+//				replicateNames.add(nextFocalLoc.name());
+//			if (ftype.writeableArguments().contains(nextOtherLoc))
+//				method.addArgument(nextOtherLoc.name(), simpleType(nextOtherLoc.type()), nextOtherLoc.description());
+//				headerComment.append("@param ").append(nextOtherLoc.name()).append(' ').append(nextOtherLoc.description()).append('\n');
+//				replicateNames.add(nextOtherLoc.name());
 		}
 
 		// random, decide,

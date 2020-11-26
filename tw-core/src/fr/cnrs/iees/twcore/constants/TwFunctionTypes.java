@@ -3,12 +3,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *                    *** 3Worlds - A software for the simulation of ecosystems ***
@@ -110,7 +110,7 @@ public enum TwFunctionTypes {
 		"setOtherInitialState",
 		"void",
 		"");
-	
+
 	private final String description;
 	private final String method;
 	private final String returnType;
@@ -159,7 +159,7 @@ public enum TwFunctionTypes {
 	}
 
 	static {
-		ValidPropertyTypes.recordPropertyType(TwFunctionTypes.class.getSimpleName(), 
+		ValidPropertyTypes.recordPropertyType(TwFunctionTypes.class.getSimpleName(),
 		TwFunctionTypes.class.getName(),defaultValue());
 	}
 
@@ -228,8 +228,8 @@ public enum TwFunctionTypes {
             result.add("otherDrv");
             result.add("otherDec");
             result.add("limits");
-            result.add("focalLoc");
-            result.add("otherLoc");
+//            result.add("focalLoc");
+//            result.add("otherLoc");
         break;
         case ChangeRelationState:
             result.add("focalDrv");
@@ -237,14 +237,14 @@ public enum TwFunctionTypes {
             result.add("otherDrv");
             result.add("otherDec");
             result.add("limits");
-            result.add("focalLoc");
-            result.add("otherLoc");
+//            result.add("focalLoc");
+//            result.add("otherLoc");
         break;
         case ChangeState:
             result.add("focalDrv");
             result.add("focalDec");
             result.add("limits");
-            result.add("focalLoc");
+//            result.add("focalLoc");
         break;
         case SetInitialState:
             result.add("focalDrv");
@@ -254,37 +254,37 @@ public enum TwFunctionTypes {
             result.add("otherDrv");
             result.add("otherCnt");
             result.add("limits");
-            result.add("focalLoc");
+//            result.add("focalLoc");
         break;
         case ChangeOtherCategoryDecision:
         case DeleteOtherDecision:
         case MaintainRelationDecision:
         case RelateToDecision:
             result.add("limits");
-            result.add("focalLoc");
-            result.add("otherLoc");
+//            result.add("focalLoc");
+//            result.add("otherLoc");
         default:
             result.add("limits");
-            result.add("focalLoc");
+//            result.add("focalLoc");
         break;
         }
         return result;
     }
 
-    public Set<TwFunctionArguments> writeableArguments() {
-        switch (this) {
-        case ChangeRelationState:
-            return EnumSet.of(nextFocalLoc,nextOtherLoc);
-        case ChangeOtherState:
-        case SetOtherInitialState:
-            return EnumSet.of(nextOtherLoc);
-        case ChangeState:
-        case SetInitialState:
-            return EnumSet.of(nextFocalLoc);
-        default:
-            return EnumSet.noneOf(TwFunctionArguments.class);
-        }
-    }
+//    public Set<TwFunctionArguments> writeableArguments() {
+//        switch (this) {
+//        case ChangeRelationState:
+//            return EnumSet.of(nextFocalLoc,nextOtherLoc);
+//        case ChangeOtherState:
+//        case SetOtherInitialState:
+//            return EnumSet.of(nextOtherLoc);
+//        case ChangeState:
+//        case SetInitialState:
+//            return EnumSet.of(nextFocalLoc);
+//        default:
+//            return EnumSet.noneOf(TwFunctionArguments.class);
+//        }
+//    }
 
 }
 
