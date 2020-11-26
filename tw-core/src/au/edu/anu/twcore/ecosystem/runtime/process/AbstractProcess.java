@@ -185,30 +185,32 @@ public abstract class AbstractProcess
 	 * @param sc the SystemComponent to relocate
 	 */
 	protected void relocate(SystemComponent sc) {
-		double[] oldLoc = sc.locationData().coordinates(); 	// always non null
-		double[] newLoc = sc.nextLocationData().coordinates();
-		newLoc = space.fixLocation(newLoc); 		// may be null
-		// 1 the component jumped out of space - it must go - well, unsure.
-		if (newLoc==null) {
-			// new location is outside the space - sc should be deleted:
-			// huh? maybe not if it's present in other spaces ???
-			// Possible flaw here!
-			unlocate(sc);
-			sc.container().removeItem(sc);
-		}
-		// 2 the component didnt move - nothing to do
-		else if (oldLoc.equals(newLoc)) {
-			// DO NOTHING
-		}
-		// the component did move
-		else {
-			sc.nextLocationData().setCoordinates(newLoc);
-			space.relocate(sc);
-//			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
-//			space.removeItem(new LocatedSystemComponent(sc,space.locationOf(sc)));
-//			space.addItem(newLocSc);
-			if (space.dataTracker()!=null)
-				space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
+		if (sc.mobile()) { // doesnt make sense for fixed items
+			double[] oldLoc = sc.locationData().coordinates(); 	// always non null
+			double[] newLoc = sc.nextLocationData().coordinates();
+			newLoc = space.fixLocation(newLoc); 		// may be null
+			// 1 the component jumped out of space - it must go - well, unsure.
+			if (newLoc==null) {
+				// new location is outside the space - sc should be deleted:
+				// huh? maybe not if it's present in other spaces ???
+				// Possible flaw here!
+				unlocate(sc);
+				sc.container().removeItem(sc);
+			}
+			// 2 the component didnt move - nothing to do
+			else if (oldLoc.equals(newLoc)) {
+				// DO NOTHING
+			}
+			// the component did move
+			else {
+				sc.nextLocationData().setCoordinates(newLoc);
+				space.relocate(sc);
+	//			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
+	//			space.removeItem(new LocatedSystemComponent(sc,space.locationOf(sc)));
+	//			space.addItem(newLocSc);
+				if (space.dataTracker()!=null)
+					space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
+			}
 		}
 	}
 
