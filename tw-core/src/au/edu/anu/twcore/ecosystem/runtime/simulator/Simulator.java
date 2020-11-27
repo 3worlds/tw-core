@@ -365,38 +365,23 @@ public class Simulator implements Resettable {
 			// get the initial item matching this
 			SystemComponent isc = container.initialForItem(sc.id());
 			for (DynamicSpace<SystemComponent> space : spaces) {
-//				if (isc!=null) // must always be non null, normally
 				// get the location of this initial item
 				if (space.dataTracker() != null) {
 					space.dataTracker().setInitialTime();
 					space.dataTracker().recordTime(status,startTime);
 				}
 				if (space.getInitialItems().contains(isc)) {
-//				for (SystemComponent lisc : space.getInitialItems())
-//					if (lisc == isc) {
-						// locate the initial item clone at the location of the initial item
-//						Location initLoc;
-//						if (!space.boundingBox().contains(lisc.location().asPoint())) {
-//							initLoc = space.locate(sc, Point.newPoint(space.defaultLocation()));
-//						}
-						if (!space.boundingBox().contains(isc.locationData().asPoint())) {
-							sc.locationData().setCoordinates(space.defaultLocation());
-							space.locate(sc);
-						}
-						else {
-//							initLoc = space.locate(sc, lisc.location());
-							// at init time all coordinates are in locationData()
-							sc.locationData().setCoordinates(isc.locationData().coordinates());
-							space.locate(sc);
-						}
-						// send coordinates to data tracker if needed
-						if (space.dataTracker() != null) {
-//							double x[] = new double[initLoc.asPoint().dim()];
-//							for (int i = 0; i < initLoc.asPoint().dim(); i++)
-//								x[i] = initLoc.asPoint().coordinate(i);
-//							space.dataTracker().createPoint(x, container.itemId(sc.id()));
-							space.dataTracker().createPoint(sc.locationData().coordinates(),container.itemId(sc.id()));
-						}
+					if (!space.boundingBox().contains(isc.locationData().asPoint())) {
+						sc.locationData().setCoordinates(space.defaultLocation());
+						space.locate(sc);
+					}
+					else {
+						sc.locationData().setCoordinates(isc.locationData().coordinates());
+						space.locate(sc);
+					}
+					// send coordinates to data tracker if needed
+					if (space.dataTracker() != null)
+						space.dataTracker().createPoint(sc.locationData().coordinates(),container.itemId(sc.id()));
 				}
 				if (space.dataTracker() != null)
 					space.dataTracker().closeTimeStep();

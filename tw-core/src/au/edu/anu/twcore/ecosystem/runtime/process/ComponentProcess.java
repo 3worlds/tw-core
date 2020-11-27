@@ -157,8 +157,6 @@ public class ComponentProcess
 			function.changeState(t,dt,arena,null,focalGroup,focal,space,newLoc);
 			if (space!=null)
 				relocate((SystemComponent)focal);
-//				if (!space.equalLocation(space.locationOf((SystemComponent)focal),newLoc))
-//					relocate((SystemComponent)focal,newLoc);
 		}
 		if (focal.currentState() != null)
 			focal.nextState().writeDisable();
@@ -191,8 +189,6 @@ public class ComponentProcess
 						null, otherGroup, other, space, newLoc);
 					if (space!=null)
 						relocate((SystemComponent)other);
-//						if (!space.equalLocation(space.locationOf((SystemComponent)other),newLoc))
-//							relocate((SystemComponent)other,newLoc);
 				}
 			}
 		} //-------------------------------------------------------------------------

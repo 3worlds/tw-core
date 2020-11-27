@@ -67,15 +67,12 @@ public abstract class AbstractProcess
 	private boolean sealed = false;
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
     private ArenaComponent ecosystem = null;
-    // dataTrackers - common to all process types
-    // NB: space data trackers are contained into spaces
-//	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
-//	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
 	protected Timer timer = null;
 	protected DynamicSpace<SystemComponent> space = null;
 	protected double searchRadius = 0.0;
 	protected double currentTime = 0.0;
-
+    // dataTrackers - common to all process types
+    // NB: space data trackers are contained into spaces
 	protected List<SamplerDataTracker<CategorizedComponent,?,Metadata>> trackers = new ArrayList<>();
 
 	public AbstractProcess(ArenaComponent world, Timer timer,
@@ -112,16 +109,6 @@ public abstract class AbstractProcess
 		return ecosystem;
 	}
 
-//	public void setSender(int id) {
-//		for (DataTracker<?,Metadata> tracker:trackers)
-//			if (tracker instanceof AbstractDataTracker)
-//				((AbstractDataTracker<?, Metadata>)tracker).setSender(id);
-////		for (DataTracker0D tracker:tsTrackers)
-////			tracker.setSender(id);
-////		for (DataTracker2D tracker:mapTrackers)
-////			tracker.setSender(id);
-//	}
-
 	public void addDataTracker(SamplerDataTracker<CategorizedComponent,?,Metadata> tracker) {
 		if (!isSealed())
 			trackers.add(tracker);
@@ -140,7 +127,6 @@ public abstract class AbstractProcess
 	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
 		currentTime = timer.userTime(t);
-//		for (DataTracker0D tracker:tsTrackers)
 		for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 			tracker.recordTime(t);
 		if (space!=null)
@@ -156,26 +142,6 @@ public abstract class AbstractProcess
 			if (space.dataTracker() != null)
 				space.dataTracker().closeTimeStep(); // this sends the message to the widget
 	}
-
-//	// for descendants
-//	@Deprecated
-//	protected void relocate(SystemComponent sc, double[] newLoc) {
-//		newLoc = space.fixLocation(newLoc);
-//		if (newLoc==null) {
-//			// new location is outside the space - other should be deleted:
-//			// huh? maybe not if it's present in other spaces ???
-//			// Possible flaw here!
-//			unlocate(sc);
-//			sc.container().removeItem(sc);
-//		}
-//		else {
-//			SystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
-//			space.removeItem(new LocatedSystemComponent(sc,space.locationOf(sc)));
-//			space.addItem(newLocSc);
-//			if (space.dataTracker()!=null)
-//				space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
-//		}
-//	}
 
 	/**
 	 * For use in descendant Process classes. This method fixes the user-computed coordinates
@@ -205,29 +171,11 @@ public abstract class AbstractProcess
 			else {
 				sc.nextLocationData().setCoordinates(newLoc);
 				space.relocate(sc);
-	//			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
-	//			space.removeItem(new LocatedSystemComponent(sc,space.locationOf(sc)));
-	//			space.addItem(newLocSc);
 				if (space.dataTracker()!=null)
 					space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
 			}
 		}
 	}
-
-
-//	// for descendants
-//	@Deprecated
-//	protected void locate(SystemComponent sc, ComponentContainer cont, double[] newLoc) {
-//		newLoc = space.fixLocation(newLoc);
-//		if (newLoc==null)
-//			cont.removeItem(sc);
-//		else {
-//			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
-//			space.addItem(newLocSc);
-//			if (space.dataTracker()!=null)
-//				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
-//		}
-//	}
 
 	/**
 	 * For use in descendant Process classes. This method the user-computed coordinates
@@ -257,18 +205,14 @@ public abstract class AbstractProcess
 				sc.nextLocationData().setCoordinates(newLoc);
 			else
 				sc.locationData().setCoordinates(newLoc);
-//			// TODO: refactor this:
-//			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
 			space.addItem(sc);
 			if (space.dataTracker()!=null)
 				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
 		}
 	}
 
-
 	// for descendants
 	// NB: removes a SC from ALL spaces, not only from this one
-	// NO NEED TO CHANGE THAT ONE
 	protected void unlocate(SystemComponent sc) {
 		for (DynamicSpace<SystemComponent> space:
 			((ComponentFactory)sc.membership()).spaces()) {

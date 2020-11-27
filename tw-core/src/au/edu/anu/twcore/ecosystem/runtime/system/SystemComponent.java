@@ -97,11 +97,6 @@ public class SystemComponent
 		return elementFactory().setinit;
 	}
 
-
-//	public TwData parameters() {
-//		return container.parameters();
-//	}
-
 	@Override
 	public SystemComponent clone() {
 		SystemComponent result = elementFactory().newInstance();

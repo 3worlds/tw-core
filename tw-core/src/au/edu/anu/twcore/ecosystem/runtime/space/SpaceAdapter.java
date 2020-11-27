@@ -156,16 +156,6 @@ public abstract class SpaceAdapter
 		return units;
 	}
 
-//	@Override
-//	public Location locate(SystemComponent focal, Point location) {
-//		return locate(focal,location.asArray());
-//	}
-//
-//	@Override
-//	public Location locate(SystemComponent focal, Location location) {
-//		return locate(focal,location.asPoint());
-//	}
-
 	// RngHolder
 
 	@Override
@@ -224,20 +214,10 @@ public abstract class SpaceAdapter
 		toInsert.add(item);
 	}
 
-//	@Override
-//	public final void add(SystemComponent item) {
-//		addItem(item);
-//	}
-
 	@Override
 	public final void removeItem(SystemComponent item) {
 		toDelete.add(item);
 	}
-
-//	@Override
-//	public final void remove(SystemComponent item) {
-//		toDelete.add(item);
-//	}
 
 	// ResettableContainer
 
@@ -264,12 +244,6 @@ public abstract class SpaceAdapter
 	public final void setInitialItems(Collection<SystemComponent> items) {
 		initialComponents.addAll(items);
 	}
-
-//	@Override
-//	public final void setInitialItems(Iterable<LocatedSystemComponent> items) {
-//		for (LocatedSystemComponent lsc:items)
-//			initialComponents.add(lsc);
-//	}
 
 	@Override
 	public final void addInitialItem(SystemComponent item) {

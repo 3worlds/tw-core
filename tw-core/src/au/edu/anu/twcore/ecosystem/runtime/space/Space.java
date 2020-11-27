@@ -61,13 +61,6 @@ public interface Space<T extends Locatable> {
 	 */
 	public Box observationWindow();
 
-//	/**
-//	 * Every space has an edge effect correction method attached to it.
-//	 *
-//	 * @return
-//	 */
-//	public EdgeEffects edgeEffectCorrection();
-
 	/**
 	 * Spaces can be 1,2,3,n-dimensional. This function returns their dimension.
 	 *
@@ -99,26 +92,12 @@ public interface Space<T extends Locatable> {
 	 */
 	public Location locate(T focal);
 
-//	public Location locate(T focal, Point location);
-//
-//	public Location locate(T focal, Location location);
-
-//	/**
-//	 * Sets the location of unclearable items - these locations are not clearable through the
-//	 * clear() method and will be kept forever.
-//	 *
-//	 * @param focal
-//	 * @param location
-//	 */
-//	public void locateUnclearable(T focal, double...location);
-
 	/**
 	 * Finds the location of an item in this space
 	 *
 	 * @param focal
 	 * @return
 	 */
-//	public Point locationOf(T focal);
 	public Location locationOf(T focal);
 
 	/**

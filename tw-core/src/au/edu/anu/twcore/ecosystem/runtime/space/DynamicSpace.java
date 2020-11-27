@@ -68,9 +68,5 @@ public interface DynamicSpace<T extends Locatable>
 	 * @param item the relocated item
 	 */
 	public void relocate(T item);
-//
-//	public void add(T item);
-//
-//	public void remove(T item);
 
 }

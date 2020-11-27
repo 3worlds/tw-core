@@ -362,7 +362,6 @@ public class RelationProcess extends AbstractRelationProcess {
         		arena, focalLifeCycle, focalGroup, focal,
         		otherLifeCycle, otherGroup, other, space,newLoc);
 			if (space!=null) {
-//				relocate((SystemComponent)other,newLoc);
 				relocate((SystemComponent)other);
 			}
         	if (other.currentState()!=null)
@@ -410,15 +409,7 @@ public class RelationProcess extends AbstractRelationProcess {
         			/*otherLifeCycle*/null, otherGroup, other, space, newFocalLoc, newOtherLoc);
 			if (space!=null) {
 				relocate((SystemComponent)focal);
-//				if (!space.equalLocation(space.locationOf((SystemComponent)focal), newFocalLoc)) {
-////					relocate((SystemComponent)focal,newFocalLoc);
-//
-//				}
 				relocate((SystemComponent)other);
-//				if (!space.equalLocation(space.locationOf((SystemComponent)other), newOtherLoc)) {
-////					relocate((SystemComponent)other,newOtherLoc);
-//
-//				}
 			}
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
@@ -438,7 +429,6 @@ public class RelationProcess extends AbstractRelationProcess {
 				((SystemComponent) other).container().change();
 				otherGroup = ((SystemComponent) other).container().descriptors();
 				// TODO: fix this:
-//				otherLifeCycle = otherGroup.container().hierarchicalView();
 				executeFunctions(t,dt,focal,other,sr);
 			}
 		}
