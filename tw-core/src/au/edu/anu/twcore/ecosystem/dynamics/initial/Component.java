@@ -42,12 +42,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
 import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.ArenaType;
-import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
@@ -55,6 +53,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
+import au.edu.anu.twcore.ecosystem.structure.Structure;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -81,7 +80,7 @@ public class Component
 	// have different Component nodes
 	private Map<Integer,List<SystemComponent>> individuals = new HashMap<>();
 
-	private Map<SpaceNode,double[]> coordinates = new HashMap<>();
+//	private Map<SpaceNode,double[]> coordinates = new HashMap<>();
 	// the container in which new components should be placeds
 	private ArenaType arena = null;
 	// the group instance this component is instance of
@@ -103,7 +102,6 @@ public class Component
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
@@ -115,16 +113,6 @@ public class Component
 		nComponentTypes = ((Collection<?>)get(getParent().getParent().getChildren(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())))).size();
 		componentType = (ComponentType) getParent();
-		List<LocationEdge> spaces = (List<LocationEdge>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_LOCATION.label())));
-		for (LocationEdge spe:spaces) {
-			SpaceNode space = (SpaceNode) spe.endNode();
-			DoubleTable tab = (DoubleTable) spe.properties().getPropertyValue(P_SPACE_COORDINATES.key());
-			double[] coord = new double[tab.size()];
-			for (int i=0; i<coord.length; i++)
-				coord[i] = tab.getWithFlatIndex(i);
-			coordinates.put(space,coord);
-		}
 		// this edge, if present, points to a Group node
 		Edge instof = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
@@ -180,8 +168,8 @@ public class Component
 			for (int i=0; i<nInstances; i++) {
 				// instantiate component
 				SystemComponent sc = componentType.getInstance(id).newInstance();
-				// fill component with initial values
-				for (TreeNode tn:getChildren())
+				// fill component with initial values (including coordinates)
+				for (TreeNode tn:getChildren()) {
 					if (tn instanceof VariableValues) {
 						// this copies all variables contained in Drivers but ignores automatc variables
 						((VariableValues)tn).fill(sc.currentState());
@@ -191,30 +179,29 @@ public class Component
 					else if (tn instanceof ConstantValues) {
 						((ConstantValues) tn).fill(sc.constants());
 					}
-				// including spatial coordinates
-				// NEW: if only one instance, use the space coordinate as provided
-				// otherwise, generate random coordinates.
-				for (SpaceNode spn:coordinates.keySet()) {
-					DynamicSpace<SystemComponent> sp = spn.getInstance(id);
-					if (nInstances>1) {
-						// new
+				}
+				// get all spaces in this model
+				TreeNode struc = this;
+				while (!(struc instanceof Structure))
+					struc = struc.getParent();
+				@SuppressWarnings("unchecked")
+				Collection<SpaceNode> spaces = (Collection<SpaceNode>) get(struc,
+					children(),
+					selectZeroOrMany(hasTheLabel(N_SPACE.label())));
+				for (SpaceNode space:spaces) {
+					DynamicSpace<SystemComponent> sp = space.getInstance(id);
+					// locate component in all spaces
+					// Rule: if n instances >1 or no constantValue or variableValue node,
+					// then generate random locations - otherwise use provided locations
+					if ((getChildren().isEmpty())||(nInstances>1)) { // no coordinates were passed in init
+						// generate random coordinates
 						double[] initLoc = sp.randomLocation();
 						sc.locationData().setCoordinates(initLoc);
 						sp.addInitialItem(sc);
-						//
-//						Location loc = sp.makeLocation(initLoc);
-//						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
-//						sp.addInitialItem(lsc);
 					}
 					else {
-						// new
-						double[] initLoc = coordinates.get(spn);
-						sc.locationData().setCoordinates(initLoc);
+						// use coordinates found in children nodes
 						sp.addInitialItem(sc);
-						//
-//						Location loc = sp.makeLocation(initLoc);
-//						LocatedSystemComponent lsc = new LocatedSystemComponent(sc,loc);
-//						sp.addInitialItem(lsc);
 					}
 				}
 				// insert component into container

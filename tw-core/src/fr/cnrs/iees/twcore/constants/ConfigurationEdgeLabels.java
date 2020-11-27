@@ -106,7 +106,7 @@ public enum ConfigurationEdgeLabels {
 	E_LOADFROM		("loadFrom",		"ldFrom1",		LoadFromEdge.class),
 	E_USERNG		("useRNG",			"uses1",		UseRNGEdge.class),
 	E_SPACE			("inSpace",			"in1",			ProcessSpaceEdge.class),
-	E_LOCATION		("location",		"loc1",			LocationEdge.class),
+//	E_LOCATION		("location",		"loc1",			LocationEdge.class),
 	E_FEDBY			("fedBy",			"fedBy1",		FedByEdge.class),// edge from function to EventQueue
 	// user interface
 	E_TRACKTIME		("trackTime",		"trks1",		TrackTimeEdge.class),

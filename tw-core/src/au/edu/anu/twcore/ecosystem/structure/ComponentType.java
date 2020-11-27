@@ -28,8 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.structure;
 
-
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -44,7 +42,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;

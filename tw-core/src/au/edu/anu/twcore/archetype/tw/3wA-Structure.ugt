@@ -94,14 +94,14 @@ hasNode componentSpec
 		isOfClass = String("instanceOf")
 		toNode = String("group:")
 		multiplicity = IntegerRange("0..1") // optional - only requierd if groups are present
-	hasEdge componentToSpaceSpec
-		isOfClass = String("location")
-		toNode = String("space:")
-		multiplicity = IntegerRange("0..1")
-		hasProperty spaceComponentCoordinatesSpec
-			hasName = String("coordinates")
-			type = String("DoubleTable")
-			multiplicity = IntegerRange("1..1")
+//	hasEdge componentToSpaceSpec
+//		isOfClass = String("location")
+//		toNode = String("space:")
+//		multiplicity = IntegerRange("0..1")
+//		hasProperty spaceComponentCoordinatesSpec
+//			hasName = String("coordinates")
+//			type = String("DoubleTable")
+//			multiplicity = IntegerRange("1..1")
 	hasEdge instanceOfToSourceLoadFromSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
