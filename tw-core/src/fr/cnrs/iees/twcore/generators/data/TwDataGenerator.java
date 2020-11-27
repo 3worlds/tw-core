@@ -159,10 +159,12 @@ public class TwDataGenerator
 		cg.getMethod("clone").setStatement("clone."+fname+" = "+fname);
 		cg.getMethod("hasProperty").setStatement("if (v0.equals(\""+fname+"\")) return true");
 		cg.getMethod("propertyToString").setStatement("if (v0.equals(\""+fname+"\")) return String.valueOf("+fname+")");
-		cg.getMethod("setProperty").setStatement("if (v0.equals(\""+fname+"\")) "+fname+" = ("+ftype+") v1");
+//		cg.getMethod("setProperty").setStatement("if (v0.equals(\""+fname+"\")) "+fname+" = ("+ftype+") v1");
 		cg.getMethod("getPropertyClass").setStatement("if (v0.equals(\""+fname+"\")) return "+ftype+".class");
 		// specific setters - only for primitive types !
 		if (coordRank>0) {
+			cg.getMethod("setProperty").
+				setStatement("if (v0.equals(\""+fname+"\")) "+fname+"(("+ftype+")v1)");
 			// the usual setter
 			MethodGenerator m = new MethodGenerator("public","void",fname,ftype);
 			m.setStatement("if (!isReadOnly()) {\n\t\t\t"
@@ -191,6 +193,7 @@ public class TwDataGenerator
 					+"] = coords["+(coordRank-1)+"]");
 		}
 		else {
+			cg.getMethod("setProperty").setStatement("if (v0.equals(\""+fname+"\")) "+fname+" = ("+ftype+") v1");
 			MethodGenerator m = new MethodGenerator("public","void",fname,ftype);
 			m.setStatement("if (!isReadOnly()) "+fname+" = v0");
 			cg.setMethod("set"+fname, m);
