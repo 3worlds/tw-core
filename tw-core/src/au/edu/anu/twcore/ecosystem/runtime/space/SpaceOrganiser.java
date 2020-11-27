@@ -111,19 +111,19 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 		return sealed;
 	}
 
-	/**
-	 * Finds a SystemComponent in the named space, returns null if not found.
-	 *
-	 * @param item
-	 * @param inSpace
-	 * @return
-	 */
-	public Location whereIs(SystemComponent item, String inSpace) {
-		DynamicSpace<SystemComponent> sp = spaces.get(inSpace);
-		if (sp!=null)
-			return sp.locationOf(item);
-		return null;
-	}
+//	/**
+//	 * Finds a SystemComponent in the named space, returns null if not found.
+//	 *
+//	 * @param item
+//	 * @param inSpace
+//	 * @return
+//	 */
+//	public Location whereIs(SystemComponent item, String inSpace) {
+//		DynamicSpace<SystemComponent> sp = spaces.get(inSpace);
+//		if (sp!=null)
+//			return sp.locationOf(item);
+//		return null;
+//	}
 
 	public DynamicSpace<SystemComponent> space(String name) {
 		return spaces.get(name);

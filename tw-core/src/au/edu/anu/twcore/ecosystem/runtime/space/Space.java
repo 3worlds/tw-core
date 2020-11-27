@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
 
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
@@ -90,15 +91,15 @@ public interface Space<T extends Locatable> {
 	 * @param focal the system to add
 	 *
 	 */
-	public Location locate(T focal);
+	public void locate(T focal);
 
-	/**
-	 * Finds the location of an item in this space
-	 *
-	 * @param focal
-	 * @return
-	 */
-	public Location locationOf(T focal);
+//	/**
+//	 * Finds the location of an item in this space
+//	 *
+//	 * @param focal
+//	 * @return
+//	 */
+//	public Location locationOf(T focal);
 
 	/**
 	 * Removes the system component focal from this space.
@@ -169,27 +170,36 @@ public interface Space<T extends Locatable> {
 	 */
 	public void clear();
 
-	/**
-	 * return a location from x coordinates
-	 * @param x
-	 * @return
-	 */
-	public Location makeLocation(double...x);
+//	/**
+//	 * return a location from x coordinates
+//	 * @param x
+//	 * @return
+//	 */
+//	public Location makeLocation(double...x);
+
+//	/**
+//	 * return a location from a point
+//	 * @param point
+//	 * @return
+//	 */
+//	public Location makeLocation(Point point);
 
 	/**
-	 * return a location from a point
-	 * @param point
-	 * @return
-	 */
-	public Location makeLocation(Point point);
-
-	/**
-	 * A method to check that a series of numbers matches an (usually already existing) location
+	 * A method to check that a series of numbers matches an (usually already existing) location.
+	 * Locations are consider equal if their coordinates only differ by space precision.
+	 *
 	 * @param reference the reference location to compare to
 	 * @param candidate the candidate coordinates to compare to the reference
 	 * @return true if candidate coordinates are not different from reference location coordinates
 	 */
-	public boolean equalLocation(Location reference, double[] candidate);
+	public default boolean equalLocation(double[] reference, double[] candidate) {
+		if (reference.length!=candidate.length)
+			throw new TwcoreException("Attempt to compare locations of different dimensions");
+		for (int i=0; i<reference.length; i++)
+			if (Math.abs(reference[i]-candidate[i])>precision())
+				return false;
+		return true;
+	}
 
 	/**
 	 * check and fix location of proposed point as per edge effect correction

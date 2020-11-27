@@ -100,6 +100,8 @@ public abstract class SpaceAdapter
 	private Set<SystemComponent> toInsert = new HashSet<>();
 	/** list of SystemComponents to delete later */
 	private Set<SystemComponent> toDelete = new HashSet<>();
+	/** list of SystemComponents to move later */
+	private Set<SystemComponent> toMove = new HashSet<>();
 	/** list of initial SystemComponents */
 	private Set<SystemComponent> initialComponents = new HashSet<>();
 	/** mapping of cloned item to their initial components */
@@ -219,10 +221,18 @@ public abstract class SpaceAdapter
 		toDelete.add(item);
 	}
 
+	// DynamicSpace
+
+	@Override
+	public void moveItem(SystemComponent item) {
+		toMove.add(item);
+	}
+
 	// ResettableContainer
 
 	@SafeVarargs
 	@Override
+	// Remember that this is called AFTER state update, so that currentState() now contains the new locations
 	public final void effectChanges(Collection<SystemComponent>... changedLists) {
 		for (SystemComponent sc:toDelete)
 			unlocate(sc);
@@ -231,6 +241,9 @@ public abstract class SpaceAdapter
 		for (SystemComponent lsc:toInsert)
 			locate(lsc);
 		toInsert.clear();
+		for (SystemComponent sc:toMove)
+			relocate(sc);
+		toMove.clear();
 		changed = false;
 	}
 

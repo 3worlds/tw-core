@@ -35,7 +35,6 @@ import java.util.Map;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
@@ -59,25 +58,25 @@ public class FlatSurface extends SpaceAdapter {
 	private static final int ndim = SpaceType.continuousFlatSurface.dimensions();
 
 	// Locations for this space - just a 2D Point
-	private class flatSurfaceLocation implements Location {
-		protected Point loc;
-		protected flatSurfaceLocation(double...xyloc) {
-			super();
-			loc = Point.newPoint(xyloc);
-		}
-		protected flatSurfaceLocation(Point p) {
-			super();
-			loc = p;
-		}
-		@Override
-		public Point asPoint() {
-			return loc;
-		}
-		@Override
-		public boolean equals(Object obj) {
-			throw new TwcoreException("equals() disabled for locations. use Space.equalLocation() to compare locations.");
-		}
-	}
+//	private class flatSurfaceLocation implements Location {
+//		protected Point loc;
+//		protected flatSurfaceLocation(double...xyloc) {
+//			super();
+//			loc = Point.newPoint(xyloc);
+//		}
+//		protected flatSurfaceLocation(Point p) {
+//			super();
+//			loc = p;
+//		}
+//		@Override
+//		public Point asPoint() {
+//			return loc;
+//		}
+//		@Override
+//		public boolean equals(Object obj) {
+//			throw new TwcoreException("equals() disabled for locations. use Space.equalLocation() to compare locations.");
+//		}
+//	}
 
 	private Map<SystemComponent,Point> locatedItems = new HashMap<>();
 
@@ -110,11 +109,10 @@ public class FlatSurface extends SpaceAdapter {
 	}
 
 	@Override
-	public Location locate(SystemComponent focal) {
+	public void locate(SystemComponent focal) {
 		Point at = Point.newPoint(focal.locationData().coordinates());
 		locatedItems.put(focal,at);
 		indexer.insert(focal,at);
-		return makeLocation(at);
 	}
 
 	@Override
@@ -137,16 +135,16 @@ public class FlatSurface extends SpaceAdapter {
 		return indexer.getItemsWithin(itemSphere);
 	}
 
-	@Override
-	public Location locationOf(SystemComponent focal) {
-		return makeLocation(locatedItems.get(focal));
-	}
+//	@Override
+//	public Location locationOf(SystemComponent focal) {
+//		return makeLocation(locatedItems.get(focal));
+//	}
 
 	@Override
 	public void unlocate(Collection<SystemComponent> items) {
 		for (SystemComponent sc:items) {
-			Point loc = locationOf(sc).asPoint();
-			if (loc!=null)
+//			Point loc = locationOf(sc).asPoint();
+//			if (loc!=null)
 				indexer.remove(sc);
 		}
 		locatedItems.keySet().removeAll(items);
@@ -166,28 +164,28 @@ public class FlatSurface extends SpaceAdapter {
 		locatedItems.clear();
 	}
 
-	@Override
-	public Location makeLocation(double... x) {
-		return new flatSurfaceLocation(x);
-	}
+//	@Override
+//	public Location makeLocation(double... x) {
+//		return new flatSurfaceLocation(x);
+//	}
+//
+//	@Override
+//	public Location makeLocation(Point point) {
+//		return new flatSurfaceLocation(point);
+//	}
 
-	@Override
-	public Location makeLocation(Point point) {
-		return new flatSurfaceLocation(point);
-	}
-
-	@Override
-	public boolean equalLocation(Location reference, double[] candidate) {
-		if (reference.asPoint().dim()==candidate.length)
-			if (reference instanceof flatSurfaceLocation) {
-				flatSurfaceLocation refloc = (flatSurfaceLocation) reference;
-				for (int i=0; i<refloc.loc.dim(); i++)
-					if (Math.abs(refloc.loc.coordinate(i)-candidate[i])>precision())
-						return false;
-				return true;
-		}
-		return false;
-	}
+//	@Override
+//	public boolean equalLocation(double[] reference, double[] candidate) {
+//		if (reference.asPoint().dim()==candidate.length)
+//			if (reference instanceof flatSurfaceLocation) {
+//				flatSurfaceLocation refloc = (flatSurfaceLocation) reference;
+//				for (int i=0; i<refloc.loc.dim(); i++)
+//					if (Math.abs(refloc.loc.coordinate(i)-candidate[i])>precision())
+//						return false;
+//				return true;
+//		}
+//		return false;
+//	}
 
 	// NOTICE that now the full limit of the underlying space indexer is not reachable
 	// only the required limits set at creation are accessible.
@@ -220,10 +218,12 @@ public class FlatSurface extends SpaceAdapter {
 			return super.boundingBox();
 	}
 
+	// when this is called, location has been copied from nextState to currentState
 	@Override
 	public void relocate(SystemComponent item) {
 		if (item.mobile()) {
-			Point newLoc = Point.newPoint(item.nextLocationData().coordinates());
+//			Point newLoc = Point.newPoint(item.nextLocationData().coordinates());
+			Point newLoc = Point.newPoint(item.locationData().coordinates());
 			indexer.remove(item);
 			indexer.insert(item, newLoc);
 			locatedItems.put(item,newLoc);

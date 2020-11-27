@@ -164,13 +164,13 @@ public abstract class AbstractProcess
 				sc.container().removeItem(sc);
 			}
 			// 2 the component didnt move - nothing to do
-			else if (oldLoc.equals(newLoc)) {
+			else if (space.equalLocation(oldLoc,newLoc)) {
 				// DO NOTHING
 			}
 			// the component did move
 			else {
 				sc.nextLocationData().setCoordinates(newLoc);
-				space.relocate(sc);
+				space.moveItem(sc);
 				if (space.dataTracker()!=null)
 					space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
 			}
@@ -192,14 +192,10 @@ public abstract class AbstractProcess
 		else
 			oldLoc = sc.locationData().coordinates(); 		// always non null
 		newLoc = space.fixLocation(oldLoc);					// may be null
-		// 1 the component jumped out of space - it must go
+		// 1 the component jumped out of space - it must go before it's even born
 		if (newLoc==null)
 			cont.removeItem(sc);
-		// 2 the component didnt move - nothing to do
-		else if (oldLoc.equals(newLoc)) {
-			// DO NOTHING
-		}
-		// 3 the component location was corrected to another location
+		// 2 the component is created and placed into space
 		else {
 			if (sc.mobile())
 				sc.nextLocationData().setCoordinates(newLoc);

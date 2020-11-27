@@ -63,10 +63,18 @@ public interface DynamicSpace<T extends Locatable>
 	}
 
 	/**
-	 * relocate an item already present in space to another location. Item must be a mobile Locatable
+	 * relocate an item already present in space to another location. Item must be a
+	 * mobile Locatable. This method can only be called from effectChanges()
 	 *
 	 * @param item the relocated item
 	 */
 	public void relocate(T item);
+
+	/**
+	 * Tag an item that has changed location for later relocation by relocate(...)
+	 *
+	 * @param item
+	 */
+	public void moveItem(T item);
 
 }

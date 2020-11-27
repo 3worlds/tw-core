@@ -141,11 +141,10 @@ public class SquareGrid extends SpaceAdapter {
 
 
 	@Override
-	public Location locate(SystemComponent focal) {
+	public void locate(SystemComponent focal) {
 		squareGridLocation at = new squareGridLocation(focal.locationData().coordinates());
 		locatedItems.put(focal,at);
 		grid[at.loc[0]][at.loc[1]].add(focal);
-		return at;
 	}
 
 	@Override
@@ -206,10 +205,10 @@ public class SquareGrid extends SpaceAdapter {
 		return result;
 	}
 
-	@Override
-	public Location locationOf(SystemComponent focal) {
-		return locatedItems.get(focal);
-	}
+//	@Override
+//	public Location locationOf(SystemComponent focal) {
+//		return locatedItems.get(focal);
+//	}
 
 	@Override
 	public void unlocate(Collection<SystemComponent> items) {
@@ -238,33 +237,33 @@ public class SquareGrid extends SpaceAdapter {
 		return sb.toString();
 	}
 
-	@Override
-	public Location makeLocation(double... x) {
-		return new squareGridLocation(x);
-	}
+//	@Override
+//	public Location makeLocation(double... x) {
+//		return new squareGridLocation(x);
+//	}
 
-	@Override
-	public Location makeLocation(Point point) {
-		double[] d = new double[point.dim()];
-		for (int i=0; i< d.length; i++)
-			d[i] = point.coordinate(i);
-		return new squareGridLocation(d);
-	}
+//	@Override
+//	public Location makeLocation(Point point) {
+//		double[] d = new double[point.dim()];
+//		for (int i=0; i< d.length; i++)
+//			d[i] = point.coordinate(i);
+//		return new squareGridLocation(d);
+//	}
 
-	@Override
-	public boolean equalLocation(Location reference, double[] candidate) {
-		if (reference.asPoint().dim()==candidate.length)
-			if (reference instanceof squareGridLocation) {
-				squareGridLocation refloc = (squareGridLocation) reference;
-				for (int i=0; i<refloc.loc.length; i++) {
-					double dif = candidate[i]-refloc.ploc.coordinate(i);
-					if ((dif<0.0)||(dif>=cellSize))
-						return false;
-				}
-				return true;
-		}
-		return false;
-	}
+//	@Override
+//	public boolean equalLocation(double[] reference, double[] candidate) {
+//		if (reference.asPoint().dim()==candidate.length)
+//			if (reference instanceof squareGridLocation) {
+//				squareGridLocation refloc = (squareGridLocation) reference;
+//				for (int i=0; i<refloc.loc.length; i++) {
+//					double dif = candidate[i]-refloc.ploc.coordinate(i);
+//					if ((dif<0.0)||(dif>=cellSize))
+//						return false;
+//				}
+//				return true;
+//		}
+//		return false;
+//	}
 
 	@Override
 	public void relocate(SystemComponent item) {
