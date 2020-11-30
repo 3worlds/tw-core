@@ -190,7 +190,7 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 				}
 				else if (cc instanceof ArenaComponent)
 					arena = cc;
-				item.initialiser().setInitialState(arena, lifeCycle, group, item, null, null);
+				item.initialiser().setInitialState(arena, lifeCycle, group, item, null);
 				if (item.constants()!=null)
 					item.constants().writeDisable();
 				if (item.currentState()!=null)

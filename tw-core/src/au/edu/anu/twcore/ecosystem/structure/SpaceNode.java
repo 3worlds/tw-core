@@ -196,7 +196,7 @@ public class SpaceNode extends InitialisableNode
 			int ny = nx;
 			if (properties().hasProperty("ny"))
 				ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
-			result = new SquareGrid(cellSize, nx, ny, precision, units, borders, obsWindow, guardWidth, dt, id());
+			result = new SquareGrid(cellSize, nx, ny, units, borders, obsWindow, guardWidth, dt, id());
 			break;
 		case topographicSurface:
 			break;

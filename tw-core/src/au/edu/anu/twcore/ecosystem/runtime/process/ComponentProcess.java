@@ -151,10 +151,7 @@ public class ComponentProcess
 
 		// change state of this SystemComponent - easy
 		for (ChangeStateFunction function : CSfunctions) {
-			double[] newLoc = null;
-			if (space!=null)
-				newLoc = new double[space.ndim()];
-			function.changeState(t,dt,arena,null,focalGroup,focal,space,newLoc);
+			function.changeState(t,dt,arena,null,focalGroup,focal,space);
 			if (space!=null)
 				relocate((SystemComponent)focal);
 		}
@@ -181,12 +178,9 @@ public class ComponentProcess
 					SystemComponent other = (SystemComponent) to.endNode();
 					otherGroup = null; // TODO: find it!
 					// FLAW? here how does code generation know about the categories ?
-					double[] newLoc = null;
-					if (space!=null)
-						newLoc = new double[space.ndim()];
 					consequence.changeOtherState(t, dt,
 						arena, null, focalGroup, focal,
-						null, otherGroup, other, space, newLoc);
+						null, otherGroup, other, space);
 					if (space!=null)
 						relocate((SystemComponent)other);
 				}
@@ -230,9 +224,6 @@ public class ComponentProcess
 					SystemComponent newBorn = nbs.factory.newInstance();
 					for (SetOtherInitialStateFunction func : function.getConsequences()) {
 						// TODO workout multiple category sets for descendants
-						double[] newLoc = null;
-						if (space!=null)
-							newLoc = new double[space.ndim()];
 						// TODO: this is temporary as it is only valid when no lifecycle is present
 						if (lifeCycle==null)
 							otherGroup = focalGroup;
@@ -243,7 +234,7 @@ public class ComponentProcess
 						// NB lifecycle must be the same for parent and child.
 						func.setOtherInitialState(t, dt,
 							arena, null, focalGroup, focal,
-							null, otherGroup, newBorn, space, newLoc);
+							null, otherGroup, newBorn, space);
 						if (space!=null) {
 							locate(newBorn,nbs.container);
 						}

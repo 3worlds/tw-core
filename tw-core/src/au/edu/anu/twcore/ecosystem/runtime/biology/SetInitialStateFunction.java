@@ -73,6 +73,5 @@ public abstract class SetInitialStateFunction extends TwFunctionAdapter {
 		CategorizedComponent lifeCycle,
 		CategorizedComponent group,
 		CategorizedComponent focal,
-		DynamicSpace<SystemComponent> space,
-		double[] nextFocalLoc);
+		DynamicSpace<SystemComponent> space);
 }

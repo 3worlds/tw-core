@@ -355,12 +355,9 @@ public class RelationProcess extends AbstractRelationProcess {
 	        	other.currentState().writeDisable();
 	        	other.nextState().writeEnable();
         	}
-			double[] newLoc = null;
-			if (space!=null)
-				newLoc = new double[space.ndim()];
         	function.changeOtherState(t,dt,
         		arena, focalLifeCycle, focalGroup, focal,
-        		otherLifeCycle, otherGroup, other, space,newLoc);
+        		otherLifeCycle, otherGroup, other, space);
 			if (space!=null) {
 				relocate((SystemComponent)other);
 			}
@@ -399,14 +396,8 @@ public class RelationProcess extends AbstractRelationProcess {
         		focal.currentState().writeDisable();
         		focal.nextState().writeEnable();
         	}
-			double[] newFocalLoc = null;
-			double[] newOtherLoc = null;
-			if (space!=null) {
-				newFocalLoc = new double[space.ndim()];
-				newOtherLoc = new double[space.ndim()];
-			}
         	function.changeRelationState(t, dt, arena, /*lifeCycle*/null, focalGroup, focal,
-        			/*otherLifeCycle*/null, otherGroup, other, space, newFocalLoc, newOtherLoc);
+        			/*otherLifeCycle*/null, otherGroup, other, space);
 			if (space!=null) {
 				relocate((SystemComponent)focal);
 				relocate((SystemComponent)other);
