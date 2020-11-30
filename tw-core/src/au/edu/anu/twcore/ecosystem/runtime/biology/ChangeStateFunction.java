@@ -66,7 +66,6 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 		CategorizedComponent lifeCycle,
 		CategorizedComponent group,
 		CategorizedComponent focal,
-		DynamicSpace<SystemComponent> space,
-		double[] nextFocalLoc);
+		DynamicSpace<SystemComponent> space);
 
 }

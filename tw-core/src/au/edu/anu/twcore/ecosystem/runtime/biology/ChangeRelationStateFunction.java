@@ -74,9 +74,7 @@ public abstract class ChangeRelationStateFunction extends TwFunctionAdapter {
 		CategorizedComponent otherLifeCycle,
 		CategorizedComponent otherGroup,
 		CategorizedComponent other,
-		DynamicSpace<SystemComponent> space,
-		double[] nextFocalLoc,
-		double[] nextOtherLoc
+		DynamicSpace<SystemComponent> space
 	);
 
 

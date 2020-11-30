@@ -72,8 +72,7 @@ public abstract class SetOtherInitialStateFunction extends TwFunctionAdapter {
 		CategorizedComponent otherLifeCycle,
 		CategorizedComponent otherGroup,
 		CategorizedComponent other,
-		DynamicSpace<SystemComponent> space,
-		double[] nextOtherLoc);
+		DynamicSpace<SystemComponent> space);
 
 
 }

@@ -1162,23 +1162,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				method.addArgument(limits.name(), simpleType(limits.type()), limits.description());
 				headerComment.append("@param ").append(limits.name()).append(' ').append(limits.description()).append('\n');
 				replicateNames.add(limits.name());
-//			if (ftype.innerVars().contains("focalLoc"))
-//				method.addArgument(focalLoc.name(), simpleType(focalLoc.type()), focalLoc.description());
-//				headerComment.append("@param ").append(focalLoc.name()).append(' ').append(focalLoc.description()).append('\n');
-//				replicateNames.add(focalLoc.name());
-//			if (ftype.innerVars().contains("otherLoc"))
-//				method.addArgument(otherLoc.name(), simpleType(otherLoc.type()), otherLoc.description());
-//				headerComment.append("@param ").append(otherLoc.name()).append(' ').append(otherLoc.description()).append('\n');
-//				replicateNames.add(otherLoc.name());
-			// writeable arguments
-//			if (ftype.writeableArguments().contains(nextFocalLoc))
-//				method.addArgument(nextFocalLoc.name(), simpleType(nextFocalLoc.type()), nextFocalLoc.description());
-//				headerComment.append("@param ").append(nextFocalLoc.name()).append(' ').append(nextFocalLoc.description()).append('\n');
-//				replicateNames.add(nextFocalLoc.name());
-//			if (ftype.writeableArguments().contains(nextOtherLoc))
-//				method.addArgument(nextOtherLoc.name(), simpleType(nextOtherLoc.type()), nextOtherLoc.description());
-//				headerComment.append("@param ").append(nextOtherLoc.name()).append(' ').append(nextOtherLoc.description()).append('\n');
-//				replicateNames.add(nextOtherLoc.name());
 		}
 
 		// random, decide,
