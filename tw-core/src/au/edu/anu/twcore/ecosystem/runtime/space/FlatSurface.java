@@ -58,26 +58,6 @@ public class FlatSurface extends SpaceAdapter {
 	private static final int ndim = SpaceType.continuousFlatSurface.dimensions();
 
 	// Locations for this space - just a 2D Point
-//	private class flatSurfaceLocation implements Location {
-//		protected Point loc;
-//		protected flatSurfaceLocation(double...xyloc) {
-//			super();
-//			loc = Point.newPoint(xyloc);
-//		}
-//		protected flatSurfaceLocation(Point p) {
-//			super();
-//			loc = p;
-//		}
-//		@Override
-//		public Point asPoint() {
-//			return loc;
-//		}
-//		@Override
-//		public boolean equals(Object obj) {
-//			throw new TwcoreException("equals() disabled for locations. use Space.equalLocation() to compare locations.");
-//		}
-//	}
-
 	private Map<SystemComponent,Point> locatedItems = new HashMap<>();
 
 	private LimitedPrecisionIndexingTree<SystemComponent> indexer;
