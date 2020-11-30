@@ -106,9 +106,9 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 				case multipleLocal:
 					deployer = new ParallelDeployer();
 					// actually we do not have to setup these right now - we may defer this to the
-					// design node, who is able to comput how many simulators will be needed
+					// design node, who is able to compute how many simulators will be needed
 					// remember that number of threads is independent of number of simulators.
-					for (int i = 0; i < workOutNumberOfSimulators(); i++)
+					for (int i = 0; i < nLocalSimulators(); i++)
 						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
 					break;
 				case singleLocal:
@@ -143,8 +143,9 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	}
 
 	// TODO for Ian: implement something clever here
-	private int workOutNumberOfSimulators() {
-		return 2;
+	private int nLocalSimulators() {
+		return Runtime.getRuntime().availableProcessors();
+//		return 2;
 	}
 
 	@Override

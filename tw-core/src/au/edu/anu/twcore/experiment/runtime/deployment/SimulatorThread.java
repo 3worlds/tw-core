@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
+import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
 
 /**
@@ -39,11 +40,14 @@ import au.edu.anu.twcore.experiment.runtime.Deployer;
  */
 public class SimulatorThread implements Runnable {
 
-	private Deployer dep = null;
+	//private Deployer dep = null;
+	private final Simulator sim;
+	private final Deployer dep;
 
-	public SimulatorThread(Deployer dep) {
+	public SimulatorThread(Deployer dep,Simulator sim) {
 		super();
-		this.dep = dep;
+		this.sim = sim;
+		this.dep=dep;
 	}
 
 	// code found there:
@@ -54,6 +58,7 @@ public class SimulatorThread implements Runnable {
 
 	@Override
 	public void run() {
+		System.out.println("Sim thread up: "+Thread.currentThread().getId());
 		while (running) {
 			synchronized (pauseLock) {
 				if (!running) {
@@ -84,7 +89,13 @@ public class SimulatorThread implements Runnable {
 			} // end of pause lock
 
 			/** NB sim.step() is synchronized */
-			dep.stepSimulators();
+//			dep.stepSimulators();// the "JOB/WORK" needs to be run from this thread! But we can't know when to send the finished msg
+			if (sim.stop()) {
+				paused = true;
+				dep.ended(sim);
+			}
+			else
+				sim.step();
 
 		}
 	}

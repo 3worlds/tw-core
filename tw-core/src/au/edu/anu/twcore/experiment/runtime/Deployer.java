@@ -63,6 +63,8 @@ public abstract class Deployer extends StateMachineEngine<StateMachineController
 
 	public abstract void detachSimulator(Simulator sim);
 
-	public abstract void stepSimulators();
+//	public abstract void stepSimulators();
+
+	public abstract void ended(Simulator sim);
 
 }

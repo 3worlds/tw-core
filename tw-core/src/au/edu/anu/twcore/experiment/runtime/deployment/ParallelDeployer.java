@@ -30,12 +30,9 @@ package au.edu.anu.twcore.experiment.runtime.deployment;
 
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.finalise;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
@@ -54,28 +51,36 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
  *         reset. meaning the executor will be empty when all threads are
  *         finished.
  * 
+ *         BUT this is not a thread - it contains a pool of threads (IDD)
+ * 
  *         So Simulator thread would loop while (!quit) and quit becomes true
- *         when finished or reset from paused block.
- *         !quit = running = threadAlive or whatever name
- *         Therefore the deployer must keep a list of sims for resubmitting 
+ *         when finished or reset from paused block. !quit = running =
+ *         threadAlive or whatever name Therefore the deployer must keep a list
+ *         of sims for resubmitting
+ * 
+ *         This deployer can only run and reset
  */
 public class ParallelDeployer extends Deployer {
 	final ThreadPoolExecutor executor;
 //	final List<Future<SimulatorThread>> futures;
-	final Map<Simulator, SimulatorThread> simThreads;
+	final Map<Simulator, SimulatorThread> availableSims;
+
+	final Map<Simulator, SimulatorThread> finishedSims;
 
 	// what is the clean way to call the runnable
 	public ParallelDeployer() {
+		// We need a policy to pool and release threads some how
 		executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 //		futures = new LinkedList<>();
-		simThreads = new ConcurrentHashMap<>();
+		availableSims = new ConcurrentHashMap<>();
+		finishedSims = new ConcurrentHashMap<>();
 	}
 
 	@Override
 	public void attachSimulator(Simulator sim) {
 		// Maybe we need a CallBack r
-		SimulatorThread runnable = new SimulatorThread(this);
-		simThreads.put(sim, runnable);
+		SimulatorThread runnable = new SimulatorThread(this, sim);
+		availableSims.put(sim, runnable);
 //		futures.add((Future<SimulatorThread>) executor.submit(runnable));
 		executor.submit(runnable);
 	}
@@ -83,83 +88,104 @@ public class ParallelDeployer extends Deployer {
 	@Override
 	public void detachSimulator(Simulator sim) {
 		synchronized (this) {
-			simThreads.get(sim).stop();
-			simThreads.remove(sim);
+			availableSims.get(sim).stop();
+			availableSims.remove(sim);
 		}
 	}
 
 	@Override
 	public void runProc() {
-		System.out.println("waitProc() called");
-		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
+		System.out.println("runProc() called");
+		for (Map.Entry<Simulator, SimulatorThread> entry : availableSims.entrySet())
 			entry.getValue().resume();
 	}
 
 	@Override
 	public void waitProc() {
 		System.out.println("waitProc() called");
-		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
+		for (Map.Entry<Simulator, SimulatorThread> entry : availableSims.entrySet())
 			entry.getKey().preProcess();
 	}
 
 	@Override
 	public void stepProc() {
-		System.out.println("stepProc() not supported");
-//		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet()) 
-//			synchronized (this) {
-//				SimulatorThread t = entry.getValue();
-//				t.resume();
-//				t.pause();
-//			}
+		System.out.println("stepProc()");
+		for (Map.Entry<Simulator, SimulatorThread> entry : availableSims.entrySet()) {
+			synchronized (this) {
+				entry.getValue().resume();
+				entry.getValue().pause();
+			}
+		}
 	}
 
 	@Override
 	public void finishProc() {
-		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
-			entry.getValue().pause();
-	}
-
-	@Override
-	public void pauseProc() {
-		System.out.println("pauseProc() not supported");
-
-//		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
+//		for (Map.Entry<Simulator, SimulatorThread> entry : availableSims.entrySet())
 //			entry.getValue().pause();
 	}
 
 	@Override
+	public void pauseProc() {
+		System.out.println("pauseProc() ");
+		for (Map.Entry<Simulator, SimulatorThread> entry : availableSims.entrySet())
+			entry.getValue().pause();
+	}
+
+	@Override
 	public void quitProc() {
-		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
+		for (Map.Entry<Simulator, SimulatorThread> entry : availableSims.entrySet())
 			entry.getKey().stop();
 		executor.shutdown();
 	}
 
 	@Override
 	public void resetProc() {
-		System.out.println("resetProc() not supported");
-//		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet())
-//			entry.getKey().postProcess();
+		System.out.println("resetProc()");
+		if (!finishedSims.isEmpty())
+			System.out.println("RESET before Finished - shouldn't happen!");
+		for (Map.Entry<Simulator, SimulatorThread> entry : availableSims.entrySet())
+			entry.getKey().postProcess();
 	}
 
-	@Override
-	public void stepSimulators() {
-		int nStop = 0;
-		for (Map.Entry<Simulator, SimulatorThread> entry : simThreads.entrySet()) {
-			Simulator sim = entry.getKey();
-			if (sim.stop())
-				nStop++;
-			if (!sim.isFinished()) {
-				sim.step();
-				if (sim.stop()) {
-					nStop++;
-				}
-			}
-		}
-		if (nStop == simThreads.size()) {
-			System.out.println("All stopped: finialise event sent");
+//	@Override
+//	public void stepSimulators() {
+//		// THis is complete shit. We are not multi-tasking!!!!
+//		for (Map.Entry<Simulator, SimulatorThread> entry : availableSims.entrySet()) {
+//			Simulator sim = entry.getKey();
+//			System.out.println("Finished: " + finishedSims.size());
+//			if (!finishedSims.containsKey(sim)) {
+//				if (sim.stop()) {
+//					System.out.println("Stopped");
+//					finishedSims.put(sim, entry.getValue());
+//				} else
+//					sim.step();
+////				if (!sim.isFinished()) {
+////					sim.step();
+////					if (sim.stop()) {
+////						finishedSims.put(sim, entry.getValue());
+////						System.out.println("Stopped 2");
+////					}
+////				}
+//			}
+//		}
+//
+//		if (finishedSims.size() == availableSims.size()) {
+//			finishedSims.clear();
+//			System.out.println("All stopped: finialise event sent");
+//			RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
+//			callRendezvous(message);
+//		}
+//	}
 
+	@Override
+	public void ended(Simulator sim) {
+		finishedSims.put(sim, availableSims.get(sim));
+		if (finishedSims.size() == availableSims.size()) {
+			finishedSims.clear();
+			System.out.println("All stopped: finialise event sent");
 			RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
 			callRendezvous(message);
 		}
+
 	}
 }

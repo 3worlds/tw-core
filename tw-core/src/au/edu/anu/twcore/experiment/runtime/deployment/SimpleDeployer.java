@@ -44,7 +44,7 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 public class SimpleDeployer extends Deployer {
 
 	private Simulator sim = null;
-	private final SimulatorThread runnable;// final so must be constructed
+	private SimulatorThread runnable;
 
 	/**
 	 * NB: It's bad practice to start a thread in a constructor. Therefore, start()
@@ -54,7 +54,6 @@ public class SimpleDeployer extends Deployer {
 	 */
 	public SimpleDeployer() {
 		super();
-		runnable = new SimulatorThread(this);
 	}
 
 	// This happens immediately after construction (above). Therefore, sim can never
@@ -62,6 +61,7 @@ public class SimpleDeployer extends Deployer {
 	@Override
 	public void attachSimulator(Simulator sim) {
 		this.sim = sim;
+		runnable = new SimulatorThread(this,sim);
 		Thread runningStateThread = new Thread(runnable);
 		// NB: Starts in Paused state
 		runningStateThread.start();
@@ -97,7 +97,7 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void finishProc() {
-		runnable.pause();
+//		runnable.pause();no longer required
 	}
 
 	@Override
@@ -113,24 +113,30 @@ public class SimpleDeployer extends Deployer {
 	}
 
 
-	@Override
-	public void stepSimulators() {
-		if (sim != null) {
-			if (sim.stop()) {
-				// this sends a message to itself to switch to the finished state
-				RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
-				callRendezvous(message);
-			}
-			if (!sim.isFinished()) {
-				sim.step();
-				if (sim.stop()) {
-					// this sends a message to itself to switch to the finished state
-					RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
-					callRendezvous(message);
+//	@Override
+//	public void stepSimulators() {
+//		if (sim != null) {
+//			if (sim.stop()) {
+//				// this sends a message to itself to switch to the finished state
+//				RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
+//				callRendezvous(message);
+//			}
+//			if (!sim.isFinished()) {
+//				sim.step();
+//				if (sim.stop()) {
+//					// this sends a message to itself to switch to the finished state
+//					RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
+//					callRendezvous(message);
+//
+//				}
+//			}
+//		}
+//	}
 
-				}
-			}
-		}
+	@Override
+	public void ended(Simulator sim) {
+		RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
+		callRendezvous(message);	
 	}
 
 }
