@@ -40,25 +40,26 @@ import au.edu.anu.twcore.experiment.runtime.Deployer;
  */
 public class SimulatorThread implements Runnable {
 
-	//private Deployer dep = null;
-	private final Simulator sim;
-	private final Deployer dep;
+	private final Simulator sim; // to call step() and stop()
+	private final Deployer dep;// to inform the deployer that this sim has finished
+	/**
+	 * cf:
+	 * https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
+	 */
+	private volatile boolean running = true;
+	// Start in paused state to avoid double initial step bug (IDD)
+	private volatile boolean paused = true;
+	private final Object pauseLock = new Object();
 
-	public SimulatorThread(Deployer dep,Simulator sim) {
+	public SimulatorThread(Deployer dep, Simulator sim) {
 		super();
 		this.sim = sim;
-		this.dep=dep;
+		this.dep = dep;
 	}
-
-	// code found there:
-	// https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
-	private volatile boolean running = true;
-	private volatile boolean paused = true; // Now starts in Paused state - seems much simplier: IDD
-	private final Object pauseLock = new Object();
 
 	@Override
 	public void run() {
-		System.out.println("Sim thread up: "+Thread.currentThread().getId());
+//		System.out.println("Sim thread up: " + Thread.currentThread().getId());
 		while (running) {
 			synchronized (pauseLock) {
 				if (!running) {
@@ -88,25 +89,24 @@ public class SimulatorThread implements Runnable {
 				}
 			} // end of pause lock
 
-			/** NB sim.step() is synchronized */
-//			dep.stepSimulators();// the "JOB/WORK" needs to be run from this thread! But we can't know when to send the finished msg
 			if (sim.stop()) {
 				paused = true;
+//				inform deployer to send Finished msg to controller if appropriate
 				dep.ended(sim);
-			}
-			else
+			} else
+//				do the work of this thread
 				sim.step();
 
 		}
 	}
 
 	public void stop() {
-		// I don't understand this but anyway I don't think its ever called
 		running = false;
-		// you might also want to interrupt() the Thread that is
-		// running this Runnable, too, or perhaps call:
+		/**
+		 * Thread may be in paused state so call this to unblock and allow it to run and
+		 * exit
+		 */
 		resume();
-		// to unblock
 	}
 
 	public void pause() {
