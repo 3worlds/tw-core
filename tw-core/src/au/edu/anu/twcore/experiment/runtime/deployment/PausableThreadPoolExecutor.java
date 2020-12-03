@@ -37,16 +37,23 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A ThreadPool to run multiple simulators in one deployment
- * code found there: https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html
+ * A ThreadPool to run multiple simulators in one deployment code found there:
+ * https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html
  * 
  * TODO: complete implementation
  * 
  * @author Jacques Gignoux - 3 sept. 2019
  *
  */
+/*
+ * I suspect this pauses threads any time. I prefer a sim to pause
+ * before/after a  step(). We also should follow the work-stealing policy to
+ * allow any number of  threads to be submitted regardless of machine
+ * resources. Not sure if that is consistent with this class.
+ */
+@Deprecated
 public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
-	
+
 	private boolean isPaused;
 	private ReentrantLock pauseLock = new ReentrantLock();
 	private Condition unpaused = pauseLock.newCondition();
@@ -79,14 +86,15 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 		super.beforeExecute(t, r);
 		pauseLock.lock();
 		try {
-			while (isPaused) unpaused.await();
+			while (isPaused)
+				unpaused.await();
 		} catch (InterruptedException ie) {
 			t.interrupt();
 		} finally {
 			pauseLock.unlock();
 		}
 	}
-	
+
 	public void pause() {
 		pauseLock.lock();
 		try {
@@ -95,7 +103,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 			pauseLock.unlock();
 		}
 	}
-	
+
 	public void resume() {
 		pauseLock.lock();
 		try {

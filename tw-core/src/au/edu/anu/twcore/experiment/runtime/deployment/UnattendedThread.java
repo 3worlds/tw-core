@@ -32,26 +32,23 @@ import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
 
 /**
- * The thread in which a (single) simulator is running
+ * @author Ian Davies
  *
- * @author Jacques Gignoux - 30 août 2019 - copied from Shayne's
- *         Simulator$RunningStateThread
- *
+ * @date 1 Dec. 2020
  */
-public class SimulatorThread implements Runnable {
 
-	private final Simulator sim; // to call step() and stop()
-	private final Deployer dep;// to inform the deployer that this sim has finished
-	/**
-	 * cf:
-	 * https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
-	 */
-	private volatile boolean threadUp = true;
-	// Start in paused state to avoid double initial step bug (IDD)
-	private volatile boolean paused = true;
-	private final Object pauseLock = new Object();
+/**
+ * A simulation thread for unattended simulations i.e. one using headless
+ * widgets only. Intendend use is a system such as openMole but can be used
+ * anywhere. There is nothing that specifies local/remote usage.
+ */
+@Deprecated  // keep until sure it's not needed.
+public class UnattendedThread implements Runnable {
 
-	public SimulatorThread(Deployer dep, Simulator sim) {
+	private final Simulator sim; 
+	private final Deployer dep;
+
+	public UnattendedThread(Deployer dep, Simulator sim) {
 		super();
 		this.sim = sim;
 		this.dep = dep;
@@ -59,65 +56,11 @@ public class SimulatorThread implements Runnable {
 
 	@Override
 	public void run() {
-//		System.out.println("Sim thread up: " + Thread.currentThread().getId());
-		while (threadUp) {
-			synchronized (pauseLock) {
-				if (!threadUp) {
-					/**
-					 * may have changed while waiting to synchronize on pauseLock
-					 */
-					break;
-				}
-				if (paused) {
-					try {
-						synchronized (pauseLock) {
-							pauseLock.wait();
-							/**
-							 * wait will cause this thread to block until another thread calls
-							 * pauseLock.notifyAll(). Note that calling wait() will relinquish the
-							 * synchronized lock that this thread holds on pauseLock so another thread can
-							 * acquire the lock to call notifyAll() (link with explanation below this code)
-							 */
-						}
-					} catch (InterruptedException ex) {
-						break;
-					}
-					if (!threadUp) {
-						/** running might have changed since we paused */
-						break;
-					}
-				}
-			} // end of pause lock
-
-			if (sim.stop()) {
-				paused = true;
-				// inform deployer to send Finished msg to controller if appropriate
-				dep.ended(sim);
-			} else
-				//do the work of this thread
-				sim.step();
-
-		}
+		sim.preProcess();
+		while (!sim.stop())
+			sim.step();
+		sim.postProcess();
+		dep.ended(sim);
 	}
 
-	public void stop() {
-		threadUp = false;
-		/**
-		 * Thread may be paused so call resume() to unblock and allow it to run and
-		 * exit.
-		 */
-		resume();
-	}
-
-	public void pause() {
-		paused = true;
-	}
-
-	public void resume() {
-		synchronized (pauseLock) {
-			paused = false;
-			/** Unblocks thread */
-			pauseLock.notifyAll(); //
-		}
-	}
 }

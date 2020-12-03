@@ -41,7 +41,8 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  * @author Jacques Gignoux - 30 août 2019
  *
  */
-public class SimpleDeployer extends Deployer {
+@Deprecated
+public class SingleDeployer extends Deployer {
 
 	private Simulator sim = null;
 	private SimulatorThread runnable;
@@ -52,12 +53,13 @@ public class SimpleDeployer extends Deployer {
 	 * 
 	 * May be this thread should be created and destroyed on finish or reset.
 	 */
-	public SimpleDeployer() {
+	public SingleDeployer() {
 		super();
 	}
 
 	@Override
 	public void attachSimulator(Simulator sim) {
+		System.out.println("Attach");
 		this.sim = sim;
 		runnable = new SimulatorThread(this,sim);
 		Thread runningStateThread = new Thread(runnable);
@@ -67,6 +69,7 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void detachSimulator(Simulator sim) {
+		System.out.println("Detached");
 		// never used
 		quitProc();
 		this.sim = null;
@@ -74,38 +77,46 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void runProc() {
+		System.out.println("runProc()");
 		runnable.resume();
 	}
 
 	@Override
 	public void waitProc() {
+		System.out.println("waitProc()");
 		sim.preProcess();
 	}
 	
 	@Override
 	public void resetProc() {
+		System.out.println("resetProc()");
 		sim.postProcess();
 	}
 
 	@Override
 	public void stepProc() {
+		System.out.println("stepProc()");
+
 		runnable.resume();
 		runnable.pause();
 	}
 
 	@Override
 	public void finishProc() {
+		System.out.println("finishedProc()");
 //		runnable.pause();no longer required??
 	}
 
 	@Override
 	public void pauseProc() {
+		System.out.println("pauseProc()");
 		runnable.pause();
 	}
 
 	@Override
 	public void quitProc() {
-		// unused - maybe never will be used
+		System.out.println("quitProc()");
+	// unused - maybe never will be used
 		runnable.stop();
 		
 	}
@@ -113,6 +124,7 @@ public class SimpleDeployer extends Deployer {
 
 	@Override
 	public void ended(Simulator sim) {
+		System.out.println("ended");
 		RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
 		callRendezvous(message);	
 	}

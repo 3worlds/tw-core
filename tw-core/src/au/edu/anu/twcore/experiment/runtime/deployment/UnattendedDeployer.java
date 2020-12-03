@@ -28,96 +28,87 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
+import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.finalise;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
+import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 
 /**
- * The thread in which a (single) simulator is running
+ * @author Ian Davies
  *
- * @author Jacques Gignoux - 30 août 2019 - copied from Shayne's
- *         Simulator$RunningStateThread
- *
+ * @date 2 Dec. 2020
  */
-public class SimulatorThread implements Runnable {
 
-	private final Simulator sim; // to call step() and stop()
-	private final Deployer dep;// to inform the deployer that this sim has finished
-	/**
-	 * cf:
-	 * https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
-	 */
-	private volatile boolean threadUp = true;
-	// Start in paused state to avoid double initial step bug (IDD)
-	private volatile boolean paused = true;
-	private final Object pauseLock = new Object();
+/**
+ * Deploy unattended simulators without user control or intervention. It uses
+ * the {@linkplain UnattendedThread} to independently run any number of
+ * simulations using the work-stealing pool algorithm.
+ * 
+ * Any experiment design should be able to use this
+ */
+@Deprecated // keep until sure it's not needed. The DeployerImpl does all this except for
+			// the use of the "UnattendedThread".
+public class UnattendedDeployer extends Deployer {
+	final ThreadPoolExecutor executor;
+	private int count;
 
-	public SimulatorThread(Deployer dep, Simulator sim) {
-		super();
-		this.sim = sim;
-		this.dep = dep;
+	public UnattendedDeployer() {
+		executor = (ThreadPoolExecutor) Executors.newWorkStealingPool();
+		count = 0;
 	}
 
 	@Override
-	public void run() {
-//		System.out.println("Sim thread up: " + Thread.currentThread().getId());
-		while (threadUp) {
-			synchronized (pauseLock) {
-				if (!threadUp) {
-					/**
-					 * may have changed while waiting to synchronize on pauseLock
-					 */
-					break;
-				}
-				if (paused) {
-					try {
-						synchronized (pauseLock) {
-							pauseLock.wait();
-							/**
-							 * wait will cause this thread to block until another thread calls
-							 * pauseLock.notifyAll(). Note that calling wait() will relinquish the
-							 * synchronized lock that this thread holds on pauseLock so another thread can
-							 * acquire the lock to call notifyAll() (link with explanation below this code)
-							 */
-						}
-					} catch (InterruptedException ex) {
-						break;
-					}
-					if (!threadUp) {
-						/** running might have changed since we paused */
-						break;
-					}
-				}
-			} // end of pause lock
+	public void attachSimulator(Simulator sim) {
+		UnattendedThread runnable = new UnattendedThread(this, sim);
+		count++;
+		executor.submit(runnable);
+	}
 
-			if (sim.stop()) {
-				paused = true;
-				// inform deployer to send Finished msg to controller if appropriate
-				dep.ended(sim);
-			} else
-				//do the work of this thread
-				sim.step();
+	@Override
+	public void quitProc() {
+		executor.shutdown();
+	}
 
+	@Override
+	public synchronized void ended(Simulator sim) {
+		count--;
+		if (count <= 0) {
+			RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
+			callRendezvous(message);
 		}
 	}
 
-	public void stop() {
-		threadUp = false;
-		/**
-		 * Thread may be paused so call resume() to unblock and allow it to run and
-		 * exit.
-		 */
-		resume();
+	@Override
+	public void detachSimulator(Simulator sim) {
+		// ???
 	}
 
-	public void pause() {
-		paused = true;
+	@Override
+	public void runProc() {
 	}
 
-	public void resume() {
-		synchronized (pauseLock) {
-			paused = false;
-			/** Unblocks thread */
-			pauseLock.notifyAll(); //
-		}
+	@Override
+	public void waitProc() {
 	}
+
+	@Override
+	public void stepProc() {
+	}
+
+	@Override
+	public void pauseProc() {
+	}
+
+	@Override
+	public void resetProc() {
+	}
+
+	@Override
+	public void finishProc() {
+	}
+
 }

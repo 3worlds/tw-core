@@ -9,10 +9,17 @@ hasNode experimentSpec
 		multiplicity = IntegerRange("0..1") // Used to find the associated simulatorNode. Not required if only one system:
 	mustSatisfyQuery baselineQuery
 		className = String("au.edu.anu.twcore.archetype.tw.BaselineQuery")
-	hasProperty experimentDeploymentType
-		hasName = String("deployment")
-		type = String("DeploymentType")
+//	hasProperty experimentDeploymentType
+//		hasName = String("deployment")
+//		type = String("DeploymentType")
+//		multiplicity = IntegerRange("0..1")
+	hasProperty experimentReplication
+		hasName = String("nReplicates")
+		type = String("Integer")
 		multiplicity = IntegerRange("0..1")
+		mustSatisfyQuery repsIsInRangeQuerySpec
+			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+			interval = IntTable(([2]1,2147483647))
 
 hasNode designSpec
 	isOfClass = String("design")
@@ -31,15 +38,6 @@ hasNode designSpec
 	mustSatisfyQuery dimIsInRangeQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
 		proplist = StringTable(([2]file,type))
-
-//	hasProperty designReplicatesPropertySpec
-//		hasName = String("replicates")
-//		type = String("Integer")
-//		multiplicity = IntegerRange("0..1")
-
-//	mustSatisfyQuery RealNumberTablePrecSpecCondition
-//		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
-//		conditions = StringTable(([3]"replicates","type","singleRun"))
 
 
 hasNode treatmentSpec

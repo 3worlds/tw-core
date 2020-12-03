@@ -35,6 +35,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
 import fr.cnrs.iees.twcore.constants.DeploymentType;
+import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 import fr.ens.biologie.generic.utils.Logging;
@@ -46,8 +47,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
-import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
-import au.edu.anu.twcore.experiment.runtime.deployment.SimpleDeployer;
+import au.edu.anu.twcore.experiment.runtime.deployment.DeployerImpl;
+import au.edu.anu.twcore.experiment.runtime.deployment.SingleDeployer;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -84,38 +85,71 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
-			Design d = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
 
-			SimulatorNode sim = null;
-			if (d.properties().hasProperty(P_DESIGN_TYPE.key())) {
+			SimulatorNode baselineSimulator = null;
+			Design dsgn = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
+			if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key())) {
 				if (get(edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_BASELINE.label()))) != null) {
 					// multiple systems
-					sim = (SimulatorNode) get(edges(Direction.OUT), selectOne(hasTheLabel(E_BASELINE.label())),
-							endNode(), children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
+					baselineSimulator = (SimulatorNode) get(edges(Direction.OUT),
+							selectOne(hasTheLabel(E_BASELINE.label())), endNode(), children(),
+							selectOne(hasTheLabel(N_DYNAMICS.label())));
 				} else {
 					// single system -NB baseline is now [0..1]
-					sim = (SimulatorNode) get(getParent().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())),
-							children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
+					baselineSimulator = (SimulatorNode) get(getParent().getChildren(),
+							selectOne(hasTheLabel(N_SYSTEM.label())), children(),
+							selectOne(hasTheLabel(N_DYNAMICS.label())));
 				}
-				DeploymentType deptype = DeploymentType.defaultValue(); // local deployer
-				if (properties().hasProperty(P_EXP_DEPLOYMENT.key()))
-					deptype = (DeploymentType) properties().getPropertyValue(P_EXP_DEPLOYMENT.key());
-				switch (deptype) {
-				case multipleRemote:
-					log.warning(()->"Multiple remote deployment not yet implemented - moving to multiple local deployment");
-				case multipleLocal:
-					deployer = new ParallelDeployer();
-					// actually we do not have to setup these right now - we may defer this to the
-					// design node, who is able to compute how many simulators will be needed
-					// remember that number of threads is independent of number of simulators.
-					for (int i = 0; i < nLocalSimulators(); i++)
-						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-					break;
-				case singleLocal:
-					deployer = new SimpleDeployer();
-					deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-					break;
+//				DeploymentType deptype = DeploymentType.defaultValue(); // local deployer
+//				if (properties().hasProperty(P_EXP_DEPLOYMENT.key()))
+//					deptype = (DeploymentType) properties().getPropertyValue(P_EXP_DEPLOYMENT.key());
+
+				int nReps = 1;
+				if (properties().hasProperty(P_EXP_NREPLICATES.key()))
+					nReps = (Integer) properties().getPropertyValue(P_EXP_NREPLICATES.key());
+				ExperimentDesignType expDesignType = null;
+				if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key()))
+					expDesignType = (ExperimentDesignType) dsgn.properties().getPropertyValue(P_DESIGN_TYPE.key());
+				deployer = new DeployerImpl();
+				controller = new StateMachineController(deployer);
+				if (expDesignType != null)
+					switch (expDesignType) {
+					case singleRun: {
+						for (int i = 0; i < nReps; i++)
+							deployer.attachSimulator(baselineSimulator.getInstance(N_SIMULATORS++));
+						break;
+					}
+					case crossFactorial: {
+						log.warning(() -> "crossFactorial deployment not yet implemented");
+						break;
+					}
+					default: {
+						log.warning(() -> "undefined deployment type");
+
+					}
+					}
+				else {
+					log.warning(() -> "file defined deployment not yet implemented");
 				}
+//				switch (deptype) {
+//				case multipleRemote:
+//					log.warning(
+//							() -> "Multiple remote deployment not yet implemented - moving to multiple local deployment");
+//				case multipleLocal:
+//					deployer = new DeployerImpl();
+//					// actually we do not have to setup these right now - we may defer this to the
+//					// design node, who is able to compute how many simulators will be needed
+//					// remember that number of threads is independent of number of simulators.
+//					for (int i = 0; i < nLocalSimulators(); i++)
+//						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
+//					break;
+//				case singleLocal:
+//					deployer = new DeployerImpl();
+////					deployer = new SingleDeployer();
+//					deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
+//					controller = new StateMachineController(deployer);
+//					break;
+//				}
 //				// single run experiment
 //				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
 //					int nSims = 1;
@@ -134,19 +168,20 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 //				// file, factorial etc  etc design
 //				// multiple simulators, remote
 //				// TODO
-				controller = new StateMachineController(deployer);
+//				controller = new StateMachineController(deployer);
 				// this puts the deployer in "waiting" state
 				// controller.sendEvent(initialise.event());
 			}
 			sealed = true;
 		}
+
 	}
 
 	// TODO for Ian: implement something clever here
-	private int nLocalSimulators() {
-		return Runtime.getRuntime().availableProcessors();
-//		return 2;
-	}
+//	private int nLocalSimulators() {
+//		return Runtime.getRuntime().availableProcessors();
+////		return 2;
+//	}
 
 	@Override
 	public int initRank() {

@@ -128,6 +128,7 @@ public enum ConfigurationPropertyNames {
 	P_WIDGET_MAXAXES			("maxAxes"),
 	P_WIDGET_BUFFERSIZE			("bufferSize"),
 	P_EXP_DEPLOYMENT			("deployment"),
+	P_EXP_NREPLICATES			("nReplicates"),
 	;
 
 	private final String pname;
