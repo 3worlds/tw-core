@@ -76,37 +76,51 @@ public class DeployerImpl extends Deployer {
 	final Map<Simulator, SimulatorThread> runningSims;
 
 	public DeployerImpl() {
-		// Test if its necessary to leave some processors free??
-		int nProcessors = (int) Math.round(Runtime.getRuntime().availableProcessors() * 0.8);
-		nProcessors = Math.max(nProcessors, 1);
 		/* Executor with work-stealing policy */
-		executor = Executors.newWorkStealingPool(nProcessors);
+		// default is all available processors at runtime
+		executor = Executors.newWorkStealingPool();
+
+//		we could limit this if necessary.
+//		executor = Executors.newWorkStealingPool(nProcessors);
+
 		runningSims = new ConcurrentHashMap<>();
 		attachedSims = new ArrayList<>();
 	}
 
 	@Override
 	public void attachSimulator(Simulator sim) {
-//		System.out.println("Attach");
 		attachedSims.add(sim);
 	}
 
-	/*
-	 * Assumes the sim is has already been removed from runningSims. You can't
-	 * detach a running simulator
-	 */
+	/* Remove sim even if running. */
 	@Override
 	public void detachSimulator(Simulator sim) {
-//		System.out.println("Detached");
-		attachedSims.remove(sim);
+		synchronized (this) {
+			SimulatorThread t = runningSims.get(sim);
+			if (t != null) {
+				t.stop();
+				runningSims.remove(sim);
+			}
+			attachedSims.remove(sim);
+		}
 	}
 
 	/* Create thread for all currently attached simulators. */
 	@Override
 	public void waitProc() {
-//		System.out.println("waitProc()");
-		// create and (re)sumbit threads for all attached simulators
+		System.out.println("waitProc()");
+		/*
+		 * This proc may be called after a paused state. Therefore, any remaining
+		 * threads must be stopped so the executor will release them from its queue.
+		 */
+
+		System.out.println("stop\t#" + runningSims.size());
+		runningSims.forEach((s, t) -> {
+			t.stop();
+		});
 		runningSims.clear();
+		// create and (re)submit threads for all attached simulators
+		System.out.println("preProcess and submit\t#" + attachedSims.size());
 		for (Simulator sim : attachedSims) {
 			sim.preProcess();
 			SimulatorThread runnable = new SimulatorThread(this, sim);
@@ -115,6 +129,9 @@ public class DeployerImpl extends Deployer {
 		}
 	}
 
+	private static long startTime;
+	private static long endTime;
+	
 	/* If simulator has reached stopping condition it's thread is shut down */
 	@Override
 	public synchronized void ended(Simulator sim) {
@@ -122,59 +139,72 @@ public class DeployerImpl extends Deployer {
 		runningSims.get(sim).stop();
 		// remove from our list
 		runningSims.remove(sim);
+//		System.out.println("ending:\t" + sim.id());
 		// if last sim finished send finalise msg
 		if (runningSims.isEmpty()) {
+			endTime = System.currentTimeMillis();
+			System.out.println("Exp time: "+(endTime-startTime));
 			// something in the exp design must catch this to know a suite of parallel sims
 			// has finished - not sure yet
+			System.out.println("All sims finished: Finalise msg");
 			RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
 			callRendezvous(message);
 		}
-
 	}
 
 	@Override
 	public void runProc() {
-//		System.out.println("runProc()");
-		for (Map.Entry<Simulator, SimulatorThread> entry : runningSims.entrySet())
-			entry.getValue().resume();
+		System.out.println("runProc()");
+		System.out.println("resume\t#" + runningSims.size());
+		startTime = System.currentTimeMillis();
+		runningSims.forEach((s, t) -> {
+			t.resume();
+		});
 	}
 
 	@Override
 	public void stepProc() {
-//		System.out.println("stepProc()");
-		for (Map.Entry<Simulator, SimulatorThread> entry : runningSims.entrySet()) {
+		System.out.println("stepProc()");
+		System.out.println("resume/pause\t#" + runningSims.size());
+		runningSims.forEach((s, t) -> {
 			synchronized (this) {
-				entry.getValue().resume();
-				entry.getValue().pause();
+				t.resume();
+				t.pause();
 			}
-		}
+		});
 	}
 
 	@Override
 	public void pauseProc() {
-//		System.out.println("pauseProc()");
-		for (Map.Entry<Simulator, SimulatorThread> entry : runningSims.entrySet())
-			entry.getValue().pause();
+		System.out.println("pauseProc()");
+		System.out.println("pausing\t#" + runningSims.size());
+		runningSims.forEach((s, t) -> {
+			t.pause();
+		});
 	}
 
 	@Override
 	public void quitProc() {
-//		System.out.println("quitProc()");
-		for (Map.Entry<Simulator, SimulatorThread> entry : runningSims.entrySet())
-			entry.getKey().stop();
+		System.out.println("quitProc()");
+		System.out.println("stop\t#" + runningSims.size());
+		runningSims.forEach((s, t) -> {
+			t.stop();
+		});
 		executor.shutdown();
 	}
 
 	@Override
 	public void resetProc() {
-//		System.out.println("resetProc()");
-		for (Map.Entry<Simulator, SimulatorThread> entry : runningSims.entrySet())
-			entry.getKey().postProcess();
+		System.out.println("resetProc()");
+		System.out.println("postProcess\t#" + attachedSims.size());
+		attachedSims.forEach((s) -> {
+			s.postProcess();
+		});
 	}
 
 	@Override
 	public void finishProc() {
-//		System.out.println("finishedProc()");
+		System.out.println("finishedProc() - does nothing!");
 //		runnable.pause();no longer required??
 	}
 
