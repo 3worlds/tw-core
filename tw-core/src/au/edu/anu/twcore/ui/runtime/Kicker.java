@@ -31,5 +31,6 @@ package au.edu.anu.twcore.ui.runtime;
 
 public interface Kicker {
 	public boolean start();
+	public boolean ended();
 
 }
