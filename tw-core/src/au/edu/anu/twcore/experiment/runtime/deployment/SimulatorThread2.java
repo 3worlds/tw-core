@@ -36,19 +36,22 @@ import au.edu.anu.twcore.experiment.runtime.Deployer;
  *
  * @date 1 Dec. 2020
  */
-
 /**
- * A simulation thread for unattended simulations i.e. one using headless
- * widgets only. Intendend use is a system such as openMole but can be used
- * anywhere. There is nothing that specifies local/remote usage.
+ * A sim thread could be as simple as this if we find a way to use a thread pool
+ * that pauses/resumes its self. So far I have not been able to make cf work:
+ * 
+ * https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html
+ * 
+ * The current system of pausing/resuming at the thread level seems to work well
+ * if used by a work-stealing service (1,000,000 sim tested)
  */
-@Deprecated  // keep until sure it's not needed.
-public class UnattendedThread implements Runnable {
+@Deprecated
+public class SimulatorThread2 implements Runnable {
 
-	private final Simulator sim; 
+	private final Simulator sim;
 	private final Deployer dep;
 
-	public UnattendedThread(Deployer dep, Simulator sim) {
+	public SimulatorThread2(Deployer dep, Simulator sim) {
 		super();
 		this.sim = sim;
 		this.dep = dep;
@@ -56,11 +59,13 @@ public class UnattendedThread implements Runnable {
 
 	@Override
 	public void run() {
-		sim.preProcess();
 		while (!sim.stop())
 			sim.step();
-		sim.postProcess();
 		dep.ended(sim);
+	}
+
+	public int id() {
+		return sim.id();
 	}
 
 }

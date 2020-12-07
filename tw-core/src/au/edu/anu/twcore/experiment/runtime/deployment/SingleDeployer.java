@@ -41,7 +41,7 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  * @author Jacques Gignoux - 30 août 2019
  *
  */
-@Deprecated
+@Deprecated // It seems this in no longer required as DeployerImpl does everything
 public class SingleDeployer extends Deployer {
 
 	private Simulator sim = null;

@@ -127,6 +127,7 @@ public enum ConfigurationPropertyNames {
 	P_WIDGET_SENDER				("sender"),
 	P_WIDGET_MAXAXES			("maxAxes"),
 	P_WIDGET_BUFFERSIZE			("bufferSize"),
+	P_WIDGET_REFRESHRATE		("refreshRate"),
 	P_EXP_DEPLOYMENT			("deployment"),
 	P_EXP_NREPLICATES			("nReplicates"),
 	;
