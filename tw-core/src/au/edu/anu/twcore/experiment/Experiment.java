@@ -47,6 +47,8 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
 import au.edu.anu.twcore.experiment.runtime.deployment.DeployerImpl;
+import au.edu.anu.twcore.rngFactory.RngFactory;
+
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import java.util.logging.Logger;
@@ -128,6 +130,9 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 				else {
 					log.warning(() -> "file defined deployment not yet implemented");
 				}
+				
+				RngFactory.resetExperiment();
+
 //				switch (deptype) {
 //				case multipleRemote:
 //					log.warning(

@@ -101,16 +101,22 @@ public class RngFactory {
 			rng.setSeed(seed);
 		}
 
-		public void resetRun() {
-			if (resetType == RngResetType.onRunStart)
-				reset();
-		}
-
-		public void resetExperiment() {
-			if (resetType == RngResetType.onExperimentStart)
-				reset();
-		}
-
+//		// not needed
+//		public void resetRun() {
+//			if (resetType == RngResetType.onRunStart) {
+//				log.info("reset on run start '" + id + "'.");
+//				reset();
+//			}
+//		}
+//
+//		// not needed
+//		public void resetExperiment() {
+//			if (resetType == RngResetType.onExperimentStart) {
+//				log.info("reset on exp start '" + id + "'.");
+//				reset();
+//			}
+//		}
+//
 		/** for saving to an initial state file */
 		public long getState() {
 			long state = rng.nextLong();
@@ -137,9 +143,9 @@ public class RngFactory {
 			StringBuilder sb = new StringBuilder();
 			sb.append("[class: ");
 			sb.append(rng.getClass().getSimpleName());
-			sb.append("id: ");
+			sb.append("; id: '");
 			sb.append(id);
-			sb.append("; Seed: ");
+			sb.append("'; Seed: ");
 			sb.append(seed);
 			sb.append("; Reset: ");
 			sb.append(resetType.name());
@@ -210,7 +216,7 @@ public class RngFactory {
 			seed = 1L; // NB Cannot be set to zero!
 		else
 			seed = 0L;
-		log.info("Creating random stream [" + name + "; Seed: " + seed);
+//		log.info("Creating random stream [" + name + "; Seed: " + seed);
 		Generator rng = new Generator(name, seed, resetType, rns);
 		rngs.put(name, rng);
 		return rng;
@@ -220,39 +226,21 @@ public class RngFactory {
 		return rngs.get(name);
 	}
 
-//	public static Random getRandom(String name) {
-//		try {
-//			return rngs.get(name).rng;
-//		} catch (NullPointerException e) {
-//			throw new TwcoreException("Random number stream not found: " + name);
-//		}
-//	}
-//
-//	public static void resetRun() {
-//		reset(RngResetType.onRunStart);
-//	}
-//
-//	public static void resetExperiment() {
-//		reset(RngResetType.onExperimentStart);
-//	}
+	public static void resetRun() {
+		rngs.forEach((n, r) -> {
+			if (r.resetType == RngResetType.onRunStart) {
+				log.info("reset on run start '" + r.id + "'.");
+				r.reset();
+			}
+		});
+	}
 
-	/**
-	 * A little check method to call before calling makeRandom(...) or
-	 * getRandom(...)
-	 * 
-	 * @param key
-	 * @return
-	 */
-//	public static boolean exists(String key) {
-//		return rngs.containsKey(key);
-//	}
-
-//	private static void reset(RngResetType type) {
-//		rngs.entrySet().forEach(entry -> {
-//			Generator rng = entry.getValue();
-//			if (rng.resetType.equals(type))
-//				rng.reset();
-//		});
-//	}
-
+	public static void resetExperiment() {
+		rngs.forEach((n, r) -> {
+			if (r.resetType == RngResetType.onExperimentStart) {
+				log.info("reset on experiment start '" + r.id + "'.");
+				r.reset();
+			}
+		});
+	}
 }

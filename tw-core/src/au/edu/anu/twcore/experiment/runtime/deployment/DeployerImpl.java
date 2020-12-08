@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployer;
+import au.edu.anu.twcore.rngFactory.RngFactory;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 
 /**
@@ -121,6 +122,9 @@ public class DeployerImpl extends Deployer {
 		runningSims.clear();
 		// create and (re)submit threads for all attached simulators
 		System.out.println("preProcess and submit\t#" + attachedSims.size());
+		// reset all relevant seeds
+		RngFactory.resetRun();
+
 		for (Simulator sim : attachedSims) {
 			sim.preProcess();
 			SimulatorThread runnable = new SimulatorThread(this, sim);

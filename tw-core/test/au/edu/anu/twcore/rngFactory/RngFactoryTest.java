@@ -80,15 +80,18 @@ class RngFactoryTest {
 		Random xsRandom = rngXSRandom.getRandom();
 		Random pcgRandom = rngPCG.getRandom();
 
-		rngJava.resetRun();
-		rngXSRandom.resetRun();
-		rngPCG.resetRun();
+//		rngJava.resetRun();
+//		rngXSRandom.resetRun();
+//		rngPCG.resetRun();
+		RngFactory.resetRun();
 		double v1 = random.nextDouble();
 		double v2 = xsRandom.nextDouble();
 		double v3 = pcgRandom.nextDouble();
-		rngJava.resetRun();
-		rngXSRandom.resetRun();
-		rngPCG.resetRun();
+		
+		RngFactory.resetRun();
+//		rngJava.resetRun();
+//		rngXSRandom.resetRun();
+//		rngPCG.resetRun();
 		assertEquals(v1, random.nextDouble());
 		assertEquals(v2, xsRandom.nextDouble());
 		assertEquals(v3, pcgRandom.nextDouble());
@@ -100,9 +103,10 @@ class RngFactoryTest {
 		System.out.println("Range check PCGRandom");
 		checkRange(pcgRandom);
 
-		rngJava.resetRun();
-		rngXSRandom.resetRun();
-		rngPCG.resetRun();
+//		rngJava.resetRun();
+//		rngXSRandom.resetRun();
+//		rngPCG.resetRun();
+		RngFactory.resetRun();
 
 		System.out.println("Time trial Random");
 		double t1 = timing(random);
