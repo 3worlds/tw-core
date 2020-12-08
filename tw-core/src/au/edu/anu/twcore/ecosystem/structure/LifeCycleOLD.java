@@ -26,7 +26,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.dynamics;
+package au.edu.anu.twcore.ecosystem.structure;
 
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -57,7 +57,6 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
-import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
@@ -95,11 +94,12 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  * @author Jacques Gignoux - 7 juin 2019
  *
  */
-public class LifeCycle
+@Deprecated
+public class LifeCycleOLD
 		extends InitialisableNode
 		implements Categorized<SystemComponent>, Sealable {
 
-	private static Logger log = Logging.getLogger(LifeCycle.class);
+	private static Logger log = Logging.getLogger(LifeCycleOLD.class);
 
 	private boolean sealed = false;
 	private SortedSet<Category> categories = new TreeSet<>();
@@ -116,12 +116,12 @@ public class LifeCycle
 	private Map<Integer,Map<String,ComponentContainer>> containers = new HashMap<>();
 
 	// default constructor
-	public LifeCycle(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public LifeCycleOLD(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
 	// constructor with no properties
-	public LifeCycle(Identity id, GraphFactory gfactory) {
+	public LifeCycleOLD(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 

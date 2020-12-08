@@ -39,8 +39,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import au.edu.anu.twcore.data.runtime.Metadata;
-//import au.edu.anu.twcore.ecosystem.Ecosystem;
-import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -56,6 +54,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -92,7 +91,7 @@ public class ComponentProcess
 	private GroupComponent focalGroup = null;
 	private GroupComponent otherGroup = null;
 	// lifecycle
-	private LifeCycle lifeCycle = null;
+	private LifeCycleComponent lifeCycle = null;
 
 	/**
 	 * Constructor

@@ -64,7 +64,6 @@ import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
-import au.edu.anu.twcore.ecosystem.dynamics.LifeCycle;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
@@ -79,6 +78,7 @@ import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -686,7 +686,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	public boolean hasLifeCycle(Set<Category> cats) {
 		for (Category cat : cats) {
 			CategorySet cs = (CategorySet) cat.getParent();
-			LifeCycle lc = (LifeCycle) get(cs.edges(Direction.IN), selectZeroOrOne(hasTheLabel(N_LIFECYCLE.label())),
+			LifeCycleType lc = (LifeCycleType) get(cs.edges(Direction.IN), selectZeroOrOne(hasTheLabel(N_LIFECYCLE.label())),
 					startNode());
 			if (lc != null)
 				return true;
