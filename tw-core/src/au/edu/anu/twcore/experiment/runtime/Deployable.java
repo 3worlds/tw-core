@@ -50,9 +50,9 @@ import fr.cnrs.iees.rvgrid.statemachine.Transition;
  * @author Jacques Gignoux - 29 août 2019
  *
  */
-public abstract class Deployer extends StateMachineEngine<StateMachineController> implements DeployerProcedures {
+public abstract class Deployable extends StateMachineEngine<StateMachineController> implements DeployerProcedures {
 
-	public Deployer() {
+	public Deployable() {
 		super(new Transition(waiting.state(), initialise.event()), stateList());
 	}
 

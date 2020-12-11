@@ -45,8 +45,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
-import au.edu.anu.twcore.experiment.runtime.Deployer;
-import au.edu.anu.twcore.experiment.runtime.deployment.DeployerImpl;
+import au.edu.anu.twcore.experiment.runtime.Deployable;
+import au.edu.anu.twcore.experiment.runtime.deployment.Deployer;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -66,7 +66,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 	private boolean sealed = false;
 	private StateMachineController controller = null;
-	private Deployer deployer = null;
+	private Deployable deployer = null;
 	/** class constant = number of simulators in this running session */
 	private static int N_SIMULATORS = 0;
 
@@ -109,7 +109,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 				ExperimentDesignType expDesignType = null;
 				if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key()))
 					expDesignType = (ExperimentDesignType) dsgn.properties().getPropertyValue(P_DESIGN_TYPE.key());
-				deployer = new DeployerImpl();
+				deployer = new Deployer();
 				controller = new StateMachineController(deployer);
 				if (expDesignType != null)
 					switch (expDesignType) {

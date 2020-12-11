@@ -36,10 +36,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
-import au.edu.anu.twcore.experiment.runtime.Deployer;
+import au.edu.anu.twcore.experiment.runtime.Deployable;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
  *
@@ -69,14 +72,16 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
  *
  * @date 3 Dec. 2020
  */
-public class DeployerImpl extends Deployer {
-	final ExecutorService executor;
+public class Deployer extends Deployable {
+	private final ExecutorService executor;
 	/* Simply list of simulators */
-	final List<Simulator> attachedSims;
+	private final List<Simulator> attachedSims;
 	/* Mapping simulator to running 'AttendedThread' */
 	final Map<Simulator, SimulatorThread> runningSims;
+	
+	private static final Logger log = Logging.getLogger(Deployer.class);
 
-	public DeployerImpl() {
+	public Deployer() {
 		/* Executor with work-stealing policy */
 		// default is all available processors at runtime
 		executor = Executors.newWorkStealingPool();
@@ -109,19 +114,18 @@ public class DeployerImpl extends Deployer {
 	/* Create thread for all currently attached simulators. */
 	@Override
 	public void waitProc() {
-		System.out.println("waitProc()");
+		log.info(()->"stop #" + runningSims.size()+" thread(s).");
 		/*
 		 * This proc may be called after a paused state. Therefore, any remaining
 		 * threads must be stopped so the executor will release them from its queue.
 		 */
 
-		System.out.println("stop\t#" + runningSims.size());
 		runningSims.forEach((s, t) -> {
 			t.stop();
 		});
 		runningSims.clear();
 		// create and (re)submit threads for all attached simulators
-		System.out.println("preProcess and submit\t#" + attachedSims.size());
+		log.info(()->"preProcess and submit #" + attachedSims.size()+" simulator(s).");
 		// reset all relevant seeds
 		RngFactory.resetRun();
 
@@ -133,8 +137,6 @@ public class DeployerImpl extends Deployer {
 		}
 	}
 
-	private static long startTime;
-	private static long endTime;
 	
 	/* If simulator has reached stopping condition it's thread is shut down */
 	@Override
@@ -143,14 +145,9 @@ public class DeployerImpl extends Deployer {
 		runningSims.get(sim).stop();
 		// remove from our list
 		runningSims.remove(sim);
-//		System.out.println("ending:\t" + sim.id());
 		// if last sim finished send finalise msg
 		if (runningSims.isEmpty()) {
-			endTime = System.currentTimeMillis();
-			System.out.println("Exp time: "+(endTime-startTime));
-			// something in the exp design must catch this to know a suite of parallel sims
-			// has finished - not sure yet
-			System.out.println("All sims finished: Finalise msg");
+			log.info(()->"Finialise");
 			RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
 			callRendezvous(message);
 		}
@@ -158,9 +155,7 @@ public class DeployerImpl extends Deployer {
 
 	@Override
 	public void runProc() {
-		System.out.println("runProc()");
-		System.out.println("resume\t#" + runningSims.size());
-		startTime = System.currentTimeMillis();
+		log.info(()->"resume #" + runningSims.size()+" thread(s).");
 		runningSims.forEach((s, t) -> {
 			t.resume();
 		});
@@ -168,8 +163,7 @@ public class DeployerImpl extends Deployer {
 
 	@Override
 	public void stepProc() {
-		System.out.println("stepProc()");
-		System.out.println("resume/pause\t#" + runningSims.size());
+		log.info(()->"resume/pause #" + runningSims.size()+" thread(s).");
 		runningSims.forEach((s, t) -> {
 			synchronized (this) {
 				t.resume();
@@ -180,8 +174,7 @@ public class DeployerImpl extends Deployer {
 
 	@Override
 	public void pauseProc() {
-		System.out.println("pauseProc()");
-		System.out.println("pausing\t#" + runningSims.size());
+		log.info(()->"pause #" + runningSims.size()+" thread(s).");
 		runningSims.forEach((s, t) -> {
 			t.pause();
 		});
@@ -189,8 +182,7 @@ public class DeployerImpl extends Deployer {
 
 	@Override
 	public void quitProc() {
-		System.out.println("quitProc()");
-		System.out.println("stop\t#" + runningSims.size());
+		log.info(()->"stop and shutdown #" + runningSims.size()+" thread(s).");
 		runningSims.forEach((s, t) -> {
 			t.stop();
 		});
@@ -199,8 +191,7 @@ public class DeployerImpl extends Deployer {
 
 	@Override
 	public void resetProc() {
-		System.out.println("resetProc()");
-		System.out.println("postProcess\t#" + attachedSims.size());
+		log.info(()->"postProcess #" + attachedSims.size()+" simulator(s).");
 		attachedSims.forEach((s) -> {
 			s.postProcess();
 		});
@@ -208,8 +199,7 @@ public class DeployerImpl extends Deployer {
 
 	@Override
 	public void finishProc() {
-		System.out.println("finishedProc() - does nothing!");
-//		runnable.pause();no longer required??
+		log.info(()->"-does nothing!-");
 	}
 
 }

@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
-import au.edu.anu.twcore.experiment.runtime.Deployer;
+import au.edu.anu.twcore.experiment.runtime.Deployable;
 
 /**
  * @author Ian Davies
@@ -49,9 +49,9 @@ import au.edu.anu.twcore.experiment.runtime.Deployer;
 public class SimulatorThread2 implements Runnable {
 
 	private final Simulator sim;
-	private final Deployer dep;
+	private final Deployable dep;
 
-	public SimulatorThread2(Deployer dep, Simulator sim) {
+	public SimulatorThread2(Deployable dep, Simulator sim) {
 		super();
 		this.sim = sim;
 		this.dep = dep;

@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
-import au.edu.anu.twcore.experiment.runtime.Deployer;
+import au.edu.anu.twcore.experiment.runtime.Deployable;
 
 /**
  * The thread in which a (single) simulator is running
@@ -41,7 +41,7 @@ import au.edu.anu.twcore.experiment.runtime.Deployer;
 public class SimulatorThread implements Runnable {
 
 	private final Simulator sim; // to call step() and stop()
-	private final Deployer dep;// to inform the deployer that this sim has finished
+	private final Deployable dep;// to inform the deployer that this sim has finished
 	/**
 	 * cf:
 	 * https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
@@ -51,7 +51,7 @@ public class SimulatorThread implements Runnable {
 	private volatile boolean paused = true;
 	private final Object pauseLock = new Object();
 
-	public SimulatorThread(Deployer dep, Simulator sim) {
+	public SimulatorThread(Deployable dep, Simulator sim) {
 		super();
 		this.sim = sim;
 		this.dep = dep;

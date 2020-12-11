@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
-import au.edu.anu.twcore.experiment.runtime.Deployer;
+import au.edu.anu.twcore.experiment.runtime.Deployable;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
@@ -42,7 +42,7 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  *
  */
 @Deprecated // It seems this in no longer required as DeployerImpl does everything
-public class SingleDeployer extends Deployer {
+public class SingleDeployer extends Deployable {
 
 	private Simulator sim = null;
 	private SimulatorThread runnable;
