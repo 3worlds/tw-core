@@ -22,7 +22,7 @@ archetype 3wSA-MeanTimeWidget1
 				interval = IntTable(([2]250,60000))
 		hasEdge MeanTimeWidget1ToSimSpec
 			isOfClass = String("trackTime")
-			toNode = String("dynamics")
+			toNode = String("dynamics:")
 			multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery MeanTimeWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")

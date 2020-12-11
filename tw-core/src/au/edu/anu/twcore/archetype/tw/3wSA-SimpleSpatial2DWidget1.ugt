@@ -15,7 +15,7 @@ archetype 3wSA-SimpleSpatial2DWidget1
 		multiplicity = IntegerRange("0..*")
 //		hasEdge SimpleSpatial2DWidget1ToSimSpec
 //			isOfClass = String("trackTime")
-//			toNode = String("dynamics")
+//			toNode = String("dynamics:")
 //			multiplicity = IntegerRange("1..1")
 		hasProperty SimpleSpatial2DWidget1SenderProperty
 			hasName = String("sender")

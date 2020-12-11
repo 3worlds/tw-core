@@ -15,7 +15,7 @@ archetype 3wSA-SimpleTimeWidget
 		multiplicity = IntegerRange("0..*")
 		hasEdge SimpleTimeWidgetToSimSpec
 			isOfClass = String("trackTime")
-			toNode = String("dynamics")
+			toNode = String("dynamics:")
 			multiplicity = IntegerRange("1..1")
 		hasProperty TestwidgetSenderProperty
 			hasName = String("sender")
