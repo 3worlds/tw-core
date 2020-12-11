@@ -4,6 +4,9 @@ import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.ChangeState;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.SetInitialState;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_LIFECYCLETYPE;
 
+import au.edu.anu.twcore.ecosystem.ArenaType;
+import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -27,14 +30,28 @@ public class LifeCycleType extends ElementType<LifeCycleFactory,LifeCycleCompone
 	}
 
 	@Override
+	public void initialise() {
+		super.initialise();
+		// containerData initialised in LifeCycleFactory
+	}
+
+	@Override
 	public int initRank() {
 		return N_LIFECYCLETYPE.initRank();
 	}
 
 	@Override
 	protected LifeCycleFactory makeTemplate(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		ArenaType system = (ArenaType) getParent().getParent();
+		ComponentContainer superContainer = (ComponentContainer) system.getInstance(id).getInstance().content();
+		if (setinit!=null)
+			return new LifeCycleFactory(categories,
+				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
+				(SetInitialStateFunction)setinit.getInstance(id),id(),superContainer);
+		else
+			return new LifeCycleFactory(categories,
+				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
+				null,id(),superContainer);
 	}
 
 	/**

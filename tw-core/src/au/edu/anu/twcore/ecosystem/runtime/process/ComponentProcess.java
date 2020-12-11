@@ -91,7 +91,7 @@ public class ComponentProcess
 	private GroupComponent focalGroup = null;
 	private GroupComponent otherGroup = null;
 	// lifecycle
-	private LifeCycleComponent lifeCycle = null;
+	private LifeCycleComponent focalLifeCycle = null;
 
 	/**
 	 * Constructor
@@ -119,10 +119,13 @@ public class ComponentProcess
 			// set contextual information
 			if (component instanceof ArenaComponent) {
 				arena = (ArenaComponent) component;
-				lifeCycle =null;
+				focalLifeCycle =null;
 				focalGroup = null;
 			}
-			// lifecycle
+			else if(component instanceof LifeCycleComponent) {
+				focalLifeCycle = (LifeCycleComponent) component;
+				focalGroup = null;
+			}
 			else if (component instanceof GroupComponent)
 				focalGroup = (GroupComponent) component;
 			// execute function on contained items, if any, and of proper categories
@@ -139,7 +142,6 @@ public class ComponentProcess
 			}
 		}
 	}
-
 
 	private void executeFunctions(double t, double dt, CategorizedComponent focal) {
 		// normally in here arena, focalGroup and focalLifeCYcle should be uptodate if needed
@@ -190,7 +192,7 @@ public class ComponentProcess
 		for (CreateOtherDecisionFunction function : COfunctions) {
 			// if there is a life cycle, then it will return the next stage(s)
 			List<newBornSettings> newBornSpecs = new ArrayList<>();
-			if (lifeCycle!=null ) {
+			if (focalLifeCycle!=null ) {
 				// TODO: search for category signatures of produce targets from life cycle
 //				for (String catSignature:lifeCycle.produceTo(focal.membership()))
 //					for (CategorizedContainer<SystemComponent> subc:
@@ -224,7 +226,7 @@ public class ComponentProcess
 					for (SetOtherInitialStateFunction func : function.getConsequences()) {
 						// TODO workout multiple category sets for descendants
 						// TODO: this is temporary as it is only valid when no lifecycle is present
-						if (lifeCycle==null)
+						if (focalLifeCycle==null)
 							otherGroup = focalGroup;
 						else {
 

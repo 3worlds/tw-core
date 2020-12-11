@@ -198,8 +198,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label()))));
 		cpt.addAll((List<TreeGraphDataNode>) get(systemNode.subTree(),
 			selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label()))));
-//		cpt.addAll((List<TreeGraphDataNode>) get(systemNode.subTree(),
-//			selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label()))));
+		cpt.addAll((List<TreeGraphDataNode>) get(systemNode.subTree(),
+			selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label()))));
 //		if (cpt == null)
 //			cpt = new ArrayList<TreeGraphDataNode>();
 		cpt.add(systemNode);
@@ -529,10 +529,12 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			Set<GroupType> selectedGroups = new HashSet<>();
 			TreeGraphDataNode sys = getSystemNode(function);
 			// get all the groups in the system
-			Collection<GroupType> grps = (Collection<GroupType>) get(sys.getChildren(),
-				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())),
-				children(),
+			Collection<GroupType> grps = (Collection<GroupType>) get(sys.subTree(),
 				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+//			Collection<GroupType> grps = (Collection<GroupType>) get(sys.getChildren(),
+//				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())),
+//				children(),
+//				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
 			Set<Category> allGroupCats = new HashSet<>();
 			// now find which group is above the current component type....
 			if (grps!=null)
