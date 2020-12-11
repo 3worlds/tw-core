@@ -49,6 +49,7 @@ import fr.cnrs.iees.graph.TreeNode;
  * @author Jacques Gignoux - 10 janv. 2020
  *
  */
+@Deprecated
 public class LifeCycleNoComponentsQuery extends Query {
 
 	public LifeCycleNoComponentsQuery() { }

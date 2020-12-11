@@ -124,7 +124,7 @@ hasNode componentSpec
 //-------------------------------------------------------------------------------------------
 hasNode groupTypeSpec
 	isOfClass = String("groupType")
-	hasParent = StringTable(([1]"structure:"))
+	hasParent = StringTable(([2]"structure:","lifeCycleType:"))
 	multiplicity = IntegerRange("0..*")
 	//
 	// required predefined categories - a group type must belong to all of these
@@ -190,8 +190,9 @@ hasNode groupSpec
 //		nodeLabel2 = String("lifeCycle")
 	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
 		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
-	mustSatisfyQuery lifeCycleMustHaveNoComponents
-		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleNoComponentsQuery")
+// deprecated:
+//	mustSatisfyQuery lifeCycleMustHaveNoComponents
+//		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleNoComponentsQuery")
 
 //-------------------------------------------------------------------------------------------
 // LIFE CYCLE TYPE: defined by categories
@@ -255,14 +256,17 @@ hasNode lifeCycleTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
 		labels = StringTable(([2]"recruit","produce"))
 //-------------------------------------------------------------------------------------------
-
+// LIFE CYCLE TYPE: definition of recruitment transitions
+// recruitment = when a SYSTEM COMPONENT changes categories while retaining its identity
+//-------------------------------------------------------------------------------------------
 hasNode recruitSpec
 	isOfClass = String("recruit")
 	hasParent = StringTable(([1]"lifeCycleType:"))
 	multiplicity = IntegerRange("0..*")
 	hasEdge recruitProcessSpec
 		isOfClass = String("effectedBy")
-		toNode = String("process:")
+//		toNode = String("process:/function:")
+		toNode = String("function:")
 		multiplicity = IntegerRange("1..1")
 	hasEdge recruitToCategorySpec
 		isOfClass = String("toCategory")
@@ -274,16 +278,21 @@ hasNode recruitSpec
 		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery recruitCategoryInLifeCycleSet
 		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
-	mustSatisfyQuery validRecruitProcess
+	mustSatisfyQuery validRecruitFunction
 		className = String("au.edu.anu.twcore.archetype.tw.ValidLifeCycleProcessQuery")
-
+//-------------------------------------------------------------------------------------------
+// LIFE CYCLE TYPE: definition of production transitions
+// production = when a SYSTEM COMPONENT creates new components with a different category
+// signature from the parent
+//-------------------------------------------------------------------------------------------
 hasNode produceSpec
 	isOfClass = String("produce")
 	hasParent = StringTable(([1]"lifeCycleType:"))
 	multiplicity = IntegerRange("0..*")
 	hasEdge productionProcessSpec
 		isOfClass = String("effectedBy")
-		toNode = String("process:")
+//		toNode = String("process:/function:")
+		toNode = String("function:")
 		multiplicity = IntegerRange("1..1")
 	hasEdge produceToCategorySpec
 		isOfClass = String("toCategory")
@@ -295,10 +304,22 @@ hasNode produceSpec
 		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery produceCategoryInLifeCycleSet
 		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
-	mustSatisfyQuery validProduceProcess
+	mustSatisfyQuery validProduceFunction
 		className = String("au.edu.anu.twcore.archetype.tw.ValidLifeCycleProcessQuery")
+//-------------------------------------------------------------------------------------------
+
 
 //-------------------------------------------------------------------------------------------
+// LIFE CYCLE: specifies instances of LIFE CYCLE TYPE to create at system initialisation
+//-------------------------------------------------------------------------------------------
+hasNode lifeCycleSpec
+	isOfClass = String("lifeCycle")
+	hasParent = StringTable(([1]"lifeCycleType:"))
+	multiplicity = IntegerRange("0..*")
+	hasEdge lifeCycleToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource:")
+		multiplicity = IntegerRange("0..*")
 
 // initialisation functions
 hasNode initFunctionSpec

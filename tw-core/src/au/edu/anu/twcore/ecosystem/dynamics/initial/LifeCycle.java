@@ -5,6 +5,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 
@@ -19,7 +20,10 @@ public class LifeCycle
 
 	public LifeCycle(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
-		// TODO Auto-generated constructor stub
+	}
+
+	public LifeCycle(Identity id, GraphFactory gfactory) {
+		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
 	@Override

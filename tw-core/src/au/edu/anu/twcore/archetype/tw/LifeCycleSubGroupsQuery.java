@@ -32,66 +32,72 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
-import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
+import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.TreeNode;
 
 
 /**
- * In InitialState, a group attached to a life cycle must have subgroups attached to each of
- * the categories contained in its categorySet. This Query checks this constraint.
+ * chechs that the lifecycle referred to by a group is compatible with its groupType.
  *
- * @author Jacques Gignoux - 10 janv. 2020
+ * @author Jacques Gignoux - 10 janv. 2020 refactored 11 dec. 2020
  *
  */
 public class LifeCycleSubGroupsQuery extends Query {
 
 	public LifeCycleSubGroupsQuery() { }
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Query process(Object input) { // input is a Group Node with an out edge to a life cycle
 		defaultProcess(input);
 		Group localItem = (Group) input;
-		LifeCycleType lc = (LifeCycleType) get(localItem.edges(Direction.OUT),
+		LifeCycle lc = (LifeCycle) get(localItem.edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
 			endNode());
 		if (lc==null)
 			satisfied = true;
 		else {
-			// categories of the life cycle
-			Collection<Category> lccats = (Collection<Category>) get(lc.edges(Direction.OUT),
-				selectOne(hasTheLabel(E_APPLIESTO.label())),
-				endNode(),
-				children());
-			int ncats = lccats.size();
-			Set<Category> foundcats = new HashSet<>();
-			// categories of the input node's children, which should be only groups
-			for (TreeNode n:localItem.getChildren()) {
-				if (n instanceof Group) {
-					Group g = (Group) n;
-					Collection<Category> sgcats = (Collection<Category>) get(g.edges(Direction.OUT),
-						selectOne(hasTheLabel(E_GROUPOF.label())),
-						endNode(),
-						outEdges(),
-						selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
-						edgeListEndNodes());
-					// checks that at least one group category is found in the life cycle's categories
-					for (Category cg:sgcats) {
-						if (lccats.contains(cg))
-							foundcats.add(cg);
-					}
-				}
-			}
-			satisfied = (foundcats.size()==ncats);
+			LifeCycleType lct = (LifeCycleType) lc.getParent();
+			GroupType gt = (GroupType) localItem.getParent();
+			if (gt.getParent()!=null)
+				if (gt.getParent().equals(lct))
+					satisfied = true;
 		}
+//		LifeCycleType lc = (LifeCycleType) get(localItem.edges(Direction.OUT),
+//			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
+//			endNode());
+//		if (lc==null)
+//			satisfied = true;
+//		else {
+//			// categories of the life cycle
+//			Collection<Category> lccats = (Collection<Category>) get(lc.edges(Direction.OUT),
+//				selectOne(hasTheLabel(E_APPLIESTO.label())),
+//				endNode(),
+//				children());
+//			int ncats = lccats.size();
+//			Set<Category> foundcats = new HashSet<>();
+//			// categories of the input node's children, which should be only groups
+//			for (TreeNode n:localItem.getChildren()) {
+//				if (n instanceof Group) {
+//					Group g = (Group) n;
+//					Collection<Category> sgcats = (Collection<Category>) get(g.edges(Direction.OUT),
+//						selectOne(hasTheLabel(E_GROUPOF.label())),
+//						endNode(),
+//						outEdges(),
+//						selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+//						edgeListEndNodes());
+//					// checks that at least one group category is found in the life cycle's categories
+//					for (Category cg:sgcats) {
+//						if (lccats.contains(cg))
+//							foundcats.add(cg);
+//					}
+//				}
+//			}
+//			satisfied = (foundcats.size()==ncats);
+//		}
 		return this;
 	}
 

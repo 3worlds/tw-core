@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -42,21 +42,21 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import java.util.List;
 
 /**
  * checks that a process associated to a produce or recruit node (in a life cycle) is valid, ie
- * acts on the required categories and has a function of the createOtherDecisionFunction 
+ * acts on the required categories and has a function of the createOtherDecisionFunction
  * or changeCategoryDecisionFunction class
- * 
+ *
  * @author Jacques Gignoux - 11 sept. 2019
  *
  */
 // checked ok 24/9/2019
+// refactored 11/12/2020 to point to functions rather than processes
 public class ValidLifeCycleProcessQuery extends Query {
-	
+
 	private String message = null;
 
 	public ValidLifeCycleProcessQuery() {
@@ -78,9 +78,13 @@ public class ValidLifeCycleProcessQuery extends Query {
 			s = "recruit";
 		}
 		TreeGraphNode pnode = (TreeGraphNode) input;
-		ProcessNode proc = (ProcessNode) get(pnode.edges(Direction.OUT),
+//		ProcessNode proc = (ProcessNode) get(pnode.edges(Direction.OUT),
+//			selectOne(hasTheLabel(E_EFFECTEDBY.label())),
+//			endNode());
+		FunctionNode func = (FunctionNode) get(pnode.edges(Direction.OUT),
 			selectOne(hasTheLabel(E_EFFECTEDBY.label())),
 			endNode());
+		ProcessNode proc = (ProcessNode) func.getParent();
 		// 1 make sure the process categories contain the produce node one
 		List<Node> apps = (List<Node>) get(proc.edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
@@ -93,15 +97,17 @@ public class ValidLifeCycleProcessQuery extends Query {
 		else
 			message = s+ " node fromCategory '"+fromprod.id()+"' not found in process '"+proc.id()+"'";
 		// 2 make sure the process has a function of the proper type
-		List<FunctionNode> funcs = (List<FunctionNode>) get(proc.getChildren(),
-			selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
-		for (FunctionNode func:funcs)
-			if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key())
-				.equals(requiredFunc)) {
-				satisfied &= true;
-				break;
-		}
-		if ((message==null) && (!satisfied)) // means we didnt fall into the previous trap 
+		if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key()).equals(requiredFunc))
+			satisfied &= true;
+//		List<FunctionNode> funcs = (List<FunctionNode>) get(proc.getChildren(),
+//			selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
+//		for (FunctionNode func:funcs)
+//			if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key())
+//				.equals(requiredFunc)) {
+//				satisfied &= true;
+//				break;
+//		}
+		if ((message==null) && (!satisfied)) // means we didnt fall into the previous trap
 			message = "missing '"+requiredFunc+"' function type in process '"+proc.id()+"'";
 		if (message==null)
 			message = "checking "+s+" node category and function type";
