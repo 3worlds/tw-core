@@ -12,31 +12,31 @@ archetype 3wSA-RangeTimeSeriesWidget1
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
-		
+
 		hasProperty RangeTimeSeriesWidget1LowerSenderProperty
 			hasName = String("senderLower")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
-			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery
+			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery1
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]0,2147483647))
-			
+
 		hasProperty RangeTimeSeriesWidget1RangeSenderProperty
 			hasName = String("senderRange")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
-			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery
+			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery2
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]0,2147483647))
-		
+
 		hasProperty RangeTimeSeriesWidget1maxAxesProperty
 			hasName = String("maxAxes")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
-			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery
+			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery3
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]1,10))
-		
+
 		hasProperty RangeTimeSeriesWidget1BufferSizeProperty
 			hasName = String("bufferSize")
 			type = String("Integer")
@@ -44,7 +44,7 @@ archetype 3wSA-RangeTimeSeriesWidget1
 			mustSatisfyQuery SimpleTimeWidgetBufferSizeInRangeQuery
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]10,10000))
-		
+
 		mustSatisfyQuery RangeTimeSeriesWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab","container"))
@@ -53,5 +53,5 @@ archetype 3wSA-RangeTimeSeriesWidget1
 			isOfClass = String("trackSeries")
 			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
-			
+
 
