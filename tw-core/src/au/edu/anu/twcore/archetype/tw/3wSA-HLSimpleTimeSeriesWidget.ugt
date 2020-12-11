@@ -12,16 +12,16 @@ archetype 3wSA-HLSimpleTimeSeriesWidget
 		isOfClass = String("widget")
 		hasParent = StringTable(([1]"headless:"))
 		multiplicity = IntegerRange("0..*")
-		hasProperty SimpleTimeSeriesWidgetSenderProperty
+		hasProperty HLSimpleTimeSeriesWidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
-			multiplicity = IntegerRange("1..1")
-		hasEdge SimpleTimeSeriesWidgetDataTrackerEdgeSpec
+			multiplicity = IntegerRange("0..1")
+		hasEdge HLSimpleTimeSeriesWidgetDataTrackerEdgeSpec
 			isOfClass = String("trackSeries")
 			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
-		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
+		mustSatisfyQuery HLSimpleTimeWidgetParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
-			parentLabels = StringTable(([1]"theadless"))
+			parentLabels = StringTable(([1]"headless"))
 			
 			

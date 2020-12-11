@@ -15,7 +15,7 @@ archetype 3wSA-SimpleXYPlotWidget
 		hasProperty SimpleXYPlotWidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery SimpleXYPlotWidgetParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))

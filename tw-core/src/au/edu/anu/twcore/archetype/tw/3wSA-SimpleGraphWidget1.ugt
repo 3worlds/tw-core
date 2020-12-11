@@ -15,7 +15,7 @@ archetype 3wSA-SimpleGraphWidget
 		hasProperty SimpleGraphWidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab","container"))

@@ -16,7 +16,7 @@ archetype 3wSA-RangeTimeSeriesWidget1
 		hasProperty RangeTimeSeriesWidget1LowerSenderProperty
 			hasName = String("senderLower")
 			type = String("Integer")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]0,2147483647))
@@ -24,7 +24,7 @@ archetype 3wSA-RangeTimeSeriesWidget1
 		hasProperty RangeTimeSeriesWidget1RangeSenderProperty
 			hasName = String("senderRange")
 			type = String("Integer")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]0,2147483647))
