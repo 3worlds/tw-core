@@ -31,9 +31,9 @@ package au.edu.anu.twcore.experiment.runtime.deployment;
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.finalise;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -45,60 +45,68 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
- *
- *         A class to deploy any number [0..inf] of simulators using a
- *         work-stealing pool policy.
- * 
- *         Note that sims without a stopping condition will hog the threads.
- * 
- *         Also not that the thread is "up" during the simulation even if
- *         paused. It's not until a sim is finished that it is removed from the
- *         pool allowing waiting sims to run.
- * 
- *         This deployer does not care how many, and when sims are attached. It
- *         does not care whether or not the exists a ui.
- * 
- *         To run on a unattended system (OpenMole) use a Headless controller
- *         (to start the experiment) and headless widgets to produce data (to
- *         disk I presume).
- * 
- *         At the moment, I think this deployer is all that is required to
- *         service any experiment design.
- * 
- * 
- */
-/**
  * @author Ian Davies
  *
  * @date 3 Dec. 2020
  */
+
+/**
+ *
+ * A class to deploy any number [0..inf] of simulators using a work-stealing
+ * pool policy.
+ * 
+ * Note that sims without a stopping condition will hog the threads. This is
+ * because threads are "up" during the simulation even if paused. It's not until
+ * a sim is finished that it is removed from the pool allowing waiting
+ * sims/threads to run.
+ * 
+ * This deployer does not care how many, and when sims are attached. Nor does it
+ * care whether or not a GUI exists and so the concept of local/remote does not
+ * arise.
+ * 
+ * To run on a unattended system (OpenMole), use a Headless controller (to start
+ * the experiment) and headless widgets to produce data (to disk I presume).
+ * 
+ * At the moment, I think this deployer is all that is required to service any
+ * experiment design.
+ * 
+ * Deployer is yet to be tested with an experimental design that uses a mix of
+ * parallel and sequential sims.
+ * 
+ * Note that the finishProc() is unused. I've left it here in case it becomes
+ * useful for submitting additional simulations that can only be attached after
+ * a first set of simulations has completed.
+ */
+
 public class Deployer extends Deployable {
 	private final ExecutorService executor;
 	/* Simply list of simulators */
 	private final List<Simulator> attachedSims;
 	/* Mapping simulator to running 'AttendedThread' */
 	final Map<Simulator, SimulatorThread> runningSims;
-	
+
 	private static final Logger log = Logging.getLogger(Deployer.class);
 
 	public Deployer() {
 		/* Executor with work-stealing policy */
 		// default is all available processors at runtime
 		executor = Executors.newWorkStealingPool();
-
-//		we could limit this if necessary.
-//		executor = Executors.newWorkStealingPool(nProcessors);
-
-		runningSims = new ConcurrentHashMap<>();
+//		runningSims = new ConcurrentHashMap<>();
+		runningSims = new HashMap<>();
 		attachedSims = new ArrayList<>();
 	}
 
+	/**
+	 * Add a simulator to the list of currently managed simulators.
+	 */
 	@Override
 	public void attachSimulator(Simulator sim) {
 		attachedSims.add(sim);
 	}
 
-	/* Remove sim even if running. */
+	/**
+	 * Remove simulator even if running. This is untested.
+	 */
 	@Override
 	public void detachSimulator(Simulator sim) {
 		synchronized (this) {
@@ -111,22 +119,31 @@ public class Deployer extends Deployable {
 		}
 	}
 
-	/* Create thread for all currently attached simulators. */
+	/**
+	 * Call preProcess for all attached simulators then create and submit a thread
+	 * for each to the pool executor.
+	 * 
+	 * This method may be called after a paused state. Therefore, any remaining
+	 * threads must be stopped first so the executor will release them from its
+	 * queue.
+	 * 
+	 * Before doing this, the relevant random number generators are reset.
+	 * 
+	 */
 	@Override
 	public void waitProc() {
-		log.info(()->"stop #" + runningSims.size()+" thread(s).");
-		/*
-		 * This proc may be called after a paused state. Therefore, any remaining
-		 * threads must be stopped so the executor will release them from its queue.
-		 */
+		log.info(() -> "stop #" + runningSims.size() + " thread(s).");
 
 		runningSims.forEach((s, t) -> {
 			t.stop();
 		});
 		runningSims.clear();
 		// create and (re)submit threads for all attached simulators
-		log.info(()->"preProcess and submit #" + attachedSims.size()+" simulator(s).");
-		// reset all relevant seeds
+		log.info(() -> "preProcess and submit #" + attachedSims.size() + " simulator(s).");
+
+		// reset all rngs that require resetting at the start of each run of a
+		// simulation
+		log.info(() -> "reset any 'onRunStart' rngs");
 		RngFactory.resetRun();
 
 		for (Simulator sim : attachedSims) {
@@ -137,8 +154,12 @@ public class Deployer extends Deployable {
 		}
 	}
 
-	
-	/* If simulator has reached stopping condition it's thread is shut down */
+	/**
+	 * The method is called from the simulator thread after it has reached its
+	 * stopping condition (if any). Therefore it must be a thread-safe call. The
+	 * reference to the thread is removed from a thread list. When this list is
+	 * empty, a <em>finalise</em> event is sent to any listeners.
+	 */
 	@Override
 	public synchronized void ended(Simulator sim) {
 		// quit the thread to allow executor to dump it.
@@ -147,59 +168,85 @@ public class Deployer extends Deployable {
 		runningSims.remove(sim);
 		// if last sim finished send finalise msg
 		if (runningSims.isEmpty()) {
-			log.info(()->"Finialise");
+			log.info(() -> "Finialise");
 			RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
 			callRendezvous(message);
 		}
 	}
 
+	/**
+	 * Resumes each simulator thread from a paused state.
+	 */
 	@Override
 	public void runProc() {
-		log.info(()->"resume #" + runningSims.size()+" thread(s).");
+		log.info(() -> "resume #" + runningSims.size() + " thread(s).");
 		runningSims.forEach((s, t) -> {
 			t.resume();
 		});
 	}
 
+	/**
+	 * Resumes and then immediately pauses each simulator thread.
+	 */
 	@Override
 	public void stepProc() {
-		log.info(()->"resume/pause #" + runningSims.size()+" thread(s).");
+		log.info(() -> "resume/pause #" + runningSims.size() + " thread(s).");
 		runningSims.forEach((s, t) -> {
-			synchronized (this) {
-				t.resume();
-				t.pause();
-			}
+//			synchronized (this) { 
+			t.resume();
+			t.pause();
+//			}
 		});
 	}
 
+	/**
+	 * Pauses each simulator thread from a running state.
+	 */
 	@Override
 	public void pauseProc() {
-		log.info(()->"pause #" + runningSims.size()+" thread(s).");
+		log.info(() -> "pause #" + runningSims.size() + " thread(s).");
 		runningSims.forEach((s, t) -> {
 			t.pause();
 		});
 	}
 
+	/**
+	 * Shuts down the thread pool executor having first stopping any running
+	 * simulations.
+	 * 
+	 * This method is currently only called when running unattended experiments.
+	 */
 	@Override
 	public void quitProc() {
-		log.info(()->"stop and shutdown #" + runningSims.size()+" thread(s).");
+		log.info(() -> "stop #" + runningSims.size() + " thread(s).");
 		runningSims.forEach((s, t) -> {
 			t.stop();
 		});
+
+		runningSims.clear();
+
+		log.info(() -> "shutdown the executor.");
 		executor.shutdown();
 	}
 
+	/**
+	 * Calls postProcess for each attached simulator.
+	 */
 	@Override
 	public void resetProc() {
-		log.info(()->"postProcess #" + attachedSims.size()+" simulator(s).");
+		log.info(() -> "postProcess #" + attachedSims.size() + " simulator(s).");
 		attachedSims.forEach((s) -> {
 			s.postProcess();
 		});
 	}
 
+	/**
+	 * Currently unused. May be required for experiments required a mix of
+	 * parallel/sequential simulations.
+	 */
 	@Override
 	public void finishProc() {
-		log.info(()->"-does nothing!-");
+		log.info(() -> "-does nothing!-");
 	}
 
 }

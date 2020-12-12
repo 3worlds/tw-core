@@ -99,9 +99,6 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 							selectOne(hasTheLabel(N_SYSTEM.label())), children(),
 							selectOne(hasTheLabel(N_DYNAMICS.label())));
 				}
-//				DeploymentType deptype = DeploymentType.defaultValue(); // local deployer
-//				if (properties().hasProperty(P_EXP_DEPLOYMENT.key()))
-//					deptype = (DeploymentType) properties().getPropertyValue(P_EXP_DEPLOYMENT.key());
 
 				int nReps = 1;
 				if (properties().hasProperty(P_EXP_NREPLICATES.key()))
@@ -124,55 +121,15 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 					}
 					default: {
 						log.warning(() -> "undefined deployment type");
-
 					}
 					}
 				else {
 					log.warning(() -> "file defined deployment not yet implemented");
 				}
-				
+
+				log.info(() -> "reset any 'onExperimentStart' rngs.");
 				RngFactory.resetExperiment();
 
-//				switch (deptype) {
-//				case multipleRemote:
-//					log.warning(
-//							() -> "Multiple remote deployment not yet implemented - moving to multiple local deployment");
-//				case multipleLocal:
-//					deployer = new DeployerImpl();
-//					// actually we do not have to setup these right now - we may defer this to the
-//					// design node, who is able to compute how many simulators will be needed
-//					// remember that number of threads is independent of number of simulators.
-//					for (int i = 0; i < nLocalSimulators(); i++)
-//						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-//					break;
-//				case singleLocal:
-//					deployer = new DeployerImpl();
-////					deployer = new SingleDeployer();
-//					deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-//					controller = new StateMachineController(deployer);
-//					break;
-//				}
-//				// single run experiment
-//				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
-//					int nSims = 1;
-//						int nReps = (Integer) d.properties().getPropertyValue(P_TREATMENT_REPLICATES.key());
-//						nSims += nReps;
-//					if (nSims == 1) {
-//						deployer = new SimpleDeployer();
-//						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-//					} else {
-//						deployer = new ParallelDeployer();
-//						for (int i = 0; i < nSims; i++)
-//							deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-//					}
-//
-//				}
-//				// file, factorial etc  etc design
-//				// multiple simulators, remote
-//				// TODO
-//				controller = new StateMachineController(deployer);
-				// this puts the deployer in "waiting" state
-				// controller.sendEvent(initialise.event());
 			}
 			sealed = true;
 		}
