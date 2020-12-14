@@ -39,6 +39,7 @@ import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -77,6 +78,19 @@ public interface Categorized<T extends Identity> {
 		return categories().containsAll(cs);
 	}
 
+	/** checks if candidate signature belongs to reference */
+	public static boolean belongsTo(String candidate, String reference) {
+		if ((reference==null)||reference.isBlank())
+			return false;
+		String sep =  Character.toString(CATEGORY_SEPARATOR);
+		String[] cands = candidate.split(sep);
+		for (int i=0; i<cands.length; i++)
+			if (!reference.contains(cands[i]))
+				return false;
+		return true;
+	}
+
+
 	/** returns the category stamp of this instance for easy comparison */
 	public Set<Category> categories();
 
@@ -85,16 +99,7 @@ public interface Categorized<T extends Identity> {
 
 	/** utility to work out a signature from a category list */
 	public default String buildCategorySignature() {
-		StringBuilder sb = new StringBuilder();
-		Set<Category> set = categories();
-		int i=0;
-		for (Category c:set) {
-			sb.append(c.name());
-			if (i<set.size()-1)
-				sb.append(CATEGORY_SEPARATOR);
-			i++;
-		}
-		return sb.toString();
+		return Categorized._signature(categories());
 	}
 
 	/** if data structures are associated to the categories, return them based on a
@@ -274,6 +279,22 @@ public interface Categorized<T extends Identity> {
 			e.printStackTrace();
 		}
 		return newData;
+	}
+
+	public static String signature(SortedSet<Category> set) {
+		return _signature(set);
+	}
+
+	private static String _signature(Set<Category> set) {
+		StringBuilder sb = new StringBuilder();
+		int i=0;
+		for (Category c:set) {
+			sb.append(c.name());
+			if (i<set.size()-1)
+				sb.append(CATEGORY_SEPARATOR);
+			i++;
+		}
+		return sb.toString();
 	}
 
 }

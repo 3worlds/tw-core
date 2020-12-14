@@ -1,12 +1,16 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.ecosystem.runtime.biology.ChangeCategoryDecisionFunction;
+import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
@@ -21,14 +25,20 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 	private String lifeCycleName = null;
 	private ComponentContainer parent = null;
 	private String lifeCycleTypeName = null;
+	private Map<CreateOtherDecisionFunction,Duple<String,String>> produceNodes;
+	private Map<ChangeCategoryDecisionFunction,Duple<String,String>> recruitNodes;
 
 	public LifeCycleFactory(Set<Category> categories,
 			TwData auto, TwData drv, TwData dec, TwData ltc,
 			SetInitialStateFunction setinit,
-			String name, ComponentContainer parent) {
+			String name, ComponentContainer parent,
+			Map<CreateOtherDecisionFunction,Duple<String,String>> produceNodes,
+			Map<ChangeCategoryDecisionFunction,Duple<String,String>> recruitNodes) {
 		super(categories, auto, drv, dec, ltc, setinit, true);
 		this.parent = parent;
 		lifeCycleTypeName = name;
+		this.produceNodes = produceNodes;
+		this.recruitNodes = recruitNodes;
 	}
 
 	/**
@@ -65,5 +75,22 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 		lifeCycle.setContent(container);
 		return lifeCycle;
 	}
+
+	protected String fromCategories(CreateOtherDecisionFunction func) {
+		return produceNodes.get(func).getFirst();
+	}
+
+	protected String toCategories(CreateOtherDecisionFunction func) {
+		return produceNodes.get(func).getSecond();
+	}
+
+	protected String fromCategories(ChangeCategoryDecisionFunction func) {
+		return recruitNodes.get(func).getFirst();
+	}
+
+	protected String toCategories(ChangeCategoryDecisionFunction func) {
+		return recruitNodes.get(func).getSecond();
+	}
+
 
 }

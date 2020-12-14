@@ -160,6 +160,7 @@ public class Component
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<SystemComponent> getInstance(int id) {
 		if (!sealed)
 			initialise();
@@ -184,7 +185,6 @@ public class Component
 				TreeNode struc = this;
 				while (!(struc instanceof Structure))
 					struc = struc.getParent();
-				@SuppressWarnings("unchecked")
 				Collection<SpaceNode> spaces = (Collection<SpaceNode>) get(struc,
 					children(),
 					selectZeroOrMany(hasTheLabel(N_SPACE.label())));
@@ -226,7 +226,8 @@ public class Component
 							Set<Category>cats = generatedGroupCats();
 							GroupFactory gfac = new GroupFactory(cats,
 								null,null,null,null,null,
-								containerId,parentContainer);
+								containerId);
+							gfac.setParentContainer(parentContainer);
 							GroupComponent gComp = gfac.newInstance();
 							container = (ComponentContainer)gComp.content();
 						}

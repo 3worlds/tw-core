@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -47,17 +47,22 @@ import fr.ens.biologie.generic.utils.Logging;
 public class GroupFactory extends ElementFactory<GroupComponent> {
 
 	private static Logger log = Logging.getLogger(GroupFactory.class);
-	
+
 	private String groupName = null;
 	private String groupTypeName = null;
 	private ComponentContainer parent = null;
 
-	public GroupFactory(Set<Category> categories, /*String categoryId,*/ 
+	public GroupFactory(Set<Category> categories, /*String categoryId,*/
 			TwData auto, TwData drv, TwData dec, TwData ltc,
-			SetInitialStateFunction setinit, String name, ComponentContainer parent) {
+			SetInitialStateFunction setinit, String name) {
 		super(categories, /*categoryId,*/ auto, drv, dec, ltc, setinit,true);
-		this.parent = parent;
 		groupTypeName = name;
+	}
+
+	// TO be called BEFORE newInstance() with a proper parent container
+	public void setParentContainer(ComponentContainer parent) {
+		if (this.parent==null)
+			this.parent = parent;
 	}
 
 	/**
@@ -74,7 +79,7 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 		GroupComponent group = null;
 		ComponentContainer container = null;
 		if (groupName!=null) {
-			if (!ComponentContainer.containerScope.contains(groupName)) 
+			if (!ComponentContainer.containerScope.contains(groupName))
 				container = new ComponentContainer(groupName,parent,null);
 			else { // groupName already in use
 				container = new ComponentContainer(groupTypeName,parent,null);

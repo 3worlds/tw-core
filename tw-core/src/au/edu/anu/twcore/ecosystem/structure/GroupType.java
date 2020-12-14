@@ -31,9 +31,7 @@ package au.edu.anu.twcore.ecosystem.structure;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
-import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -79,24 +77,24 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 
 	@Override
 	protected GroupFactory makeTemplate(int id) {
-		ComponentContainer superContainer = null;
-		if (getParent() instanceof Structure) {
-			ArenaType system = (ArenaType) getParent().getParent();
-			superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
-		}
-		else if (getParent() instanceof LifeCycleType){
-			LifeCycleType lct = (LifeCycleType) getParent();
-			// TODO: This is probably wrong.
-			superContainer = (ComponentContainer) lct.getInstance(id).newInstance().content();
-		}
+//		ComponentContainer superContainer = null;
+//		if (getParent() instanceof Structure) {
+//			ArenaType system = (ArenaType) getParent().getParent();
+//			superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
+//		}
+//		else if (getParent() instanceof LifeCycleType){
+//			LifeCycleType lct = (LifeCycleType) getParent();
+//			// TODO: This is probably wrong.
+//			superContainer = (ComponentContainer) lct.getInstance(id).newInstance().content();
+//		}
 		if (setinit!=null)
 			return new GroupFactory(categories,/*categoryId(),*/
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-				(SetInitialStateFunction)setinit.getInstance(id),id(),superContainer);
+				(SetInitialStateFunction)setinit.getInstance(id),id());
 		else
 			return new GroupFactory(categories,/*categoryId(),*/
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-				null,id(),superContainer);
+				null,id());
 	}
 
 	/**

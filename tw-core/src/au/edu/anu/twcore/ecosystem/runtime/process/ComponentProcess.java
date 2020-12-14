@@ -59,6 +59,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+import fr.ens.biologie.generic.utils.Duple;
 
 /**
  * A TwProcess that loops on a list of SystemComponents and executes methods on
@@ -193,18 +194,11 @@ public class ComponentProcess
 			// if there is a life cycle, then it will return the next stage(s)
 			List<newBornSettings> newBornSpecs = new ArrayList<>();
 			if (focalLifeCycle!=null ) {
-				// TODO: search for category signatures of produce targets from life cycle
-//				for (String catSignature:lifeCycle.produceTo(focal.membership()))
-//					for (CategorizedContainer<SystemComponent> subc:
-//						lifeCycleContainer.subContainers())
-//					// since lifeCycle stages only have one category this test should do
-//					if (subc.categoryInfo().categoryId().contains(catSignature)) {
-//						newBornSettings nbs = new newBornSettings();
-//						nbs.name = subc.categoryInfo().categoryId();
-//						nbs.factory = (SystemFactory) subc.categoryInfo();
-//						nbs.container = (ComponentContainer) subc;
-//						newBornSpecs.add(nbs);
-//				}
+				newBornSettings nbs = new newBornSettings();
+				GroupComponent toGroup = focalLifeCycle.produceGroup(function);
+				nbs.factory = (ComponentFactory) toGroup.content().itemCategorized();
+				nbs.container = (ComponentContainer) toGroup.content();
+				newBornSpecs.add(nbs);
 			}
 			// without a life cycle, only objects of the same type can be created
 			else {
@@ -224,15 +218,10 @@ public class ComponentProcess
 				for (int i = 0; i < n; i++) {
 					SystemComponent newBorn = nbs.factory.newInstance();
 					for (SetOtherInitialStateFunction func : function.getConsequences()) {
-						// TODO workout multiple category sets for descendants
-						// TODO: this is temporary as it is only valid when no lifecycle is present
 						if (focalLifeCycle==null)
 							otherGroup = focalGroup;
-						else {
-
-						}
-						// TODO: finish this call (missing lifecycle, etc)
-						// NB lifecycle must be the same for parent and child.
+						else
+							otherGroup = (GroupComponent) nbs.container.descriptors();
 						func.setOtherInitialState(t, dt,
 							arena, null, focalGroup, focal,
 							null, otherGroup, newBorn, space);

@@ -306,6 +306,7 @@ hasNode produceSpec
 		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
 	mustSatisfyQuery validProduceFunction
 		className = String("au.edu.anu.twcore.archetype.tw.ValidLifeCycleProcessQuery")
+		// TODO: constraint to add: 1..1 relation between produce and function within a LifeCycleType
 //-------------------------------------------------------------------------------------------
 
 
@@ -320,6 +321,9 @@ hasNode lifeCycleSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
+// TODO: same constraint as life cycle types, all groups must belong to categories of the same set.
+// one at most per category
+// TODO: all groups which groupType is under a lifeCycle must have a cycle edge
 
 // initialisation functions
 hasNode initFunctionSpec

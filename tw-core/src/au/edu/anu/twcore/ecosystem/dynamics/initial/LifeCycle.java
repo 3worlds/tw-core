@@ -1,6 +1,7 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -11,8 +12,9 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_LIFECYCLE;
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +29,7 @@ public class LifeCycle
 	private boolean sealed = false;
 	private LifeCycleType lifeCycleType = null;
 	private Map<Integer,LifeCycleComponent> lifeCycles = new HashMap<>();
+	private List<GroupComponent> groups = new ArrayList<>();
 
 	public LifeCycle(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -60,13 +63,20 @@ public class LifeCycle
 		return sealed;
 	}
 
+//	@SuppressWarnings("unchecked")
 	@Override
 	public LifeCycleComponent getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!lifeCycles.containsKey(id)) {
+//			Collection<Group> lgn = (Collection<Group>) get(edges(Direction.IN),
+//				selectZeroOrMany(hasTheLabel(E_CYCLE.label())),
+//				edgeListStartNodes());
+//			for (Group g:lgn)
+//				groups.add(g.getInstance(id));
 			lifeCycleType.getInstance(id).setName(id());
 			LifeCycleComponent lcc = lifeCycleType.getInstance(id).newInstance();
+//			lcc.setGroups(groups);
 			for (TreeNode tn:getChildren())
 				if (tn instanceof VariableValues)
 					((VariableValues)tn).fill(lcc.currentState());
