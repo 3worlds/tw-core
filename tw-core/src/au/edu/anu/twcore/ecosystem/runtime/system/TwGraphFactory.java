@@ -47,12 +47,12 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  */
 public class TwGraphFactory extends ALGraphFactory {
 
-	public TwGraphFactory() {
-		super(new IntegerScope("3w"));
+	public TwGraphFactory(int simulatorId) {
+		super(new IntegerScope("3w-"+simulatorId));
 	}
 
-	public TwGraphFactory(IdentityScope scope, Map<String, String> labels) {
-		super(new IntegerScope("3w"), labels);
+	public TwGraphFactory(IdentityScope scope, Map<String, String> labels,int simulatorId) {
+		super(new IntegerScope("3w-"+simulatorId), labels);
 	}
 
 	// NodeFactory

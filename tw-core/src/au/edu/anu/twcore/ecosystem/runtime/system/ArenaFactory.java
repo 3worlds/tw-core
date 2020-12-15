@@ -54,9 +54,10 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 
 	private GraphDataTracker dataTracker;
 
-	public ArenaFactory(Set<Category> categories, /* String categoryId, */ TwData auto, TwData drv, TwData dec,
-			TwData ltc, SetInitialStateFunction setinit, boolean makeContainer, String name, GraphDataTracker dt) {
-		super(categories, /* categoryId, */ auto, drv, dec, ltc, setinit,true);
+	public ArenaFactory(Set<Category> categories, TwData auto, TwData drv, TwData dec,
+			TwData ltc, SetInitialStateFunction setinit, boolean makeContainer,
+			String name, GraphDataTracker dt, int simulatorId) {
+		super(categories, /* categoryId, */ auto, drv, dec, ltc, setinit,true,simulatorId);
 		this.makeContainer = makeContainer;
 		this.name = name;
 		this.dataTracker = dt;
@@ -75,7 +76,7 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 			}
 			SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate, driverTemplate,
 					decoratorTemplate, lifetimeConstantTemplate, 2, propertyMap);
-			arena = (ArenaComponent) SCfactory.makeNode(ArenaComponent.class, name, props);
+			arena = (ArenaComponent) SCfactory.get(simId).makeNode(ArenaComponent.class, name, props);
 			arena.setCategorized(this);
 			arena.setDataTracker(dataTracker); // probably inaccessable under its runtime type
 			if (makeContainer) {

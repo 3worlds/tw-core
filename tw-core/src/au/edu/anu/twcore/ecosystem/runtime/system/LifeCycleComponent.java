@@ -1,7 +1,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import au.edu.anu.twcore.ecosystem.runtime.biology.ChangeCategoryDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
@@ -18,7 +17,7 @@ public class LifeCycleComponent extends HierarchicalComponent {
 
 	// the list of groups linked by this life cycle.
 	// key is a category signature
-	private Map<String,GroupComponent> groups = null;
+	private Map<String,GroupComponent> groups = new HashMap<>();
 
 	public LifeCycleComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -36,13 +35,17 @@ public class LifeCycleComponent extends HierarchicalComponent {
 	// to be called only once just after construction
 	// The reverse mapping of groups by categories is only possible because all groups of a
 	// life cycle MUST be of different categories
-	public void setGroups(List<GroupComponent> grps) {
-		if (groups==null) {
-			groups = new HashMap<>();
-			for (GroupComponent gc:grps)
-				groups.put(gc.content().itemCategorized().categoryId(),gc);
-		}
+//	public void setGroups(List<GroupComponent> grps) {
+//		if (groups==null) {
+//			groups = new HashMap<>();
+//			for (GroupComponent gc:grps)
+//				groups.put(gc.content().itemCategorized().categoryId(),gc);
+//		}
+//	}
+	protected void addGroup(GroupComponent group) {
+		groups.put(group.content().itemCategorized().categoryId(),group);
 	}
+
 
 	public GroupComponent produceGroup (CreateOtherDecisionFunction function) {
 		String toCat = elementFactory().toCategories(function);

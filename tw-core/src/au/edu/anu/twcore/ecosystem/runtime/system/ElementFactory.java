@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import au.edu.anu.twcore.data.runtime.TwData;
@@ -60,7 +61,8 @@ public abstract class ElementFactory<T extends DataElement>
 		implements Factory<T>, Categorized<T>, Singleton<T> {
 
 	// the factory for SystemComponents and SystemRelations
-	protected static GraphFactory SCfactory = new TwGraphFactory();
+	protected static Map<Integer,GraphFactory> SCfactory = new TreeMap<>();
+	protected Integer simId;
 
 	/** Categorized */
 	private SortedSet<Category> categories = new TreeSet<>();
@@ -84,8 +86,11 @@ public abstract class ElementFactory<T extends DataElement>
 	 */
 	public ElementFactory(Set<Category> categories,
 			TwData auto, TwData drv, TwData dec, TwData ltc,
-			SetInitialStateFunction setinit, boolean permanent) {
+			SetInitialStateFunction setinit, boolean permanent,int simulatorId) {
 		super();
+		simId = simulatorId;
+		if (SCfactory.get(simId)==null)
+			SCfactory.put(simId,new TwGraphFactory(simId));
 		this.categories.addAll(categories);
 //		this.categoryId = categoryId;
 		this.categoryId = buildCategorySignature();
@@ -145,7 +150,7 @@ public abstract class ElementFactory<T extends DataElement>
 	public final SetInitialStateFunction initialiser() {
 		return setinit;
 	}
-	
+
 	public final boolean isPermanent() {
 		return isPermanent;
 	}

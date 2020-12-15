@@ -33,8 +33,9 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 			SetInitialStateFunction setinit,
 			String name, ComponentContainer parent,
 			Map<CreateOtherDecisionFunction,Duple<String,String>> produceNodes,
-			Map<ChangeCategoryDecisionFunction,Duple<String,String>> recruitNodes) {
-		super(categories, auto, drv, dec, ltc, setinit, true);
+			Map<ChangeCategoryDecisionFunction,Duple<String,String>> recruitNodes,
+			int simulatorId) {
+		super(categories, auto, drv, dec, ltc, setinit, true, simulatorId);
 		this.parent = parent;
 		lifeCycleTypeName = name;
 		this.produceNodes = produceNodes;
@@ -69,10 +70,11 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 		autoVarTemplate = new ContainerData(container);
 		SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
 		driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);
-		lifeCycle = (LifeCycleComponent) SCfactory.makeNode(LifeCycleComponent.class,container.id(),props);
+		lifeCycle = (LifeCycleComponent) SCfactory.get(simId).makeNode(LifeCycleComponent.class,container.id(),props);
 		lifeCycle.setCategorized(this);
 		container.setData(lifeCycle);
 		lifeCycle.setContent(container);
+		lifeCycle.connectParent(parent.descriptors());
 		return lifeCycle;
 	}
 

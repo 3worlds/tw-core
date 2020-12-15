@@ -54,8 +54,8 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 
 	public GroupFactory(Set<Category> categories, /*String categoryId,*/
 			TwData auto, TwData drv, TwData dec, TwData ltc,
-			SetInitialStateFunction setinit, String name) {
-		super(categories, /*categoryId,*/ auto, drv, dec, ltc, setinit,true);
+			SetInitialStateFunction setinit, String name, int simulatorId) {
+		super(categories, /*categoryId,*/ auto, drv, dec, ltc, setinit,true,simulatorId);
 		groupTypeName = name;
 	}
 
@@ -93,7 +93,7 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 		autoVarTemplate = new ContainerData(container);
 		SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
 		driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);
-		group = (GroupComponent) SCfactory.makeNode(GroupComponent.class,container.id(),props);
+		group = (GroupComponent) SCfactory.get(simId).makeNode(GroupComponent.class,container.id(),props);
 		group.setCategorized(this);
 		container.setData(group);
 		group.setContent(container);

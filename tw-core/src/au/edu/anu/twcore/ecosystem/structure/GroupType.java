@@ -90,11 +90,11 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 		if (setinit!=null)
 			return new GroupFactory(categories,/*categoryId(),*/
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-				(SetInitialStateFunction)setinit.getInstance(id),id());
+				(SetInitialStateFunction)setinit.getInstance(id),id(),id);
 		else
 			return new GroupFactory(categories,/*categoryId(),*/
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-				null,id());
+				null,id(),id);
 	}
 
 	/**

@@ -121,13 +121,13 @@ public class LifeCycleType extends ElementType<LifeCycleFactory,LifeCycleCompone
 			return new LifeCycleFactory(categories,
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 				(SetInitialStateFunction)setinit.getInstance(id),id(),superContainer,
-				prMap,rcMap);
+				prMap,rcMap,id);
 		}
 		else {
 			return new LifeCycleFactory(categories,
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 				null,id(),superContainer,
-				prMap,rcMap);
+				prMap,rcMap,id);
 		}
 	}
 

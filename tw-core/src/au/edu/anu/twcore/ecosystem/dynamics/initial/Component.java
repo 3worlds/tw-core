@@ -208,13 +208,17 @@ public class Component
 				ComponentContainer container = null;
 				// 1st case: there is a group
 				if (group!=null) {
-					container = (ComponentContainer)group.getInstance(id).content();
+					GroupComponent grp = group.getInstance(id);
+					container = (ComponentContainer)grp.content();
+					container.setCategorized(componentType.getInstance(id));
+					grp.addGroupIntoLifeCycle();
 				}
-				// 2nd case: there is no group
+				// 2nd case: there is no group (and no life cycle)
 				else if (arena!=null) { // is this really needed? must never be null!
 					// if there is only one component type, then the arena must be the container
-					if (nComponentTypes==1)
+					if (nComponentTypes==1) {
 						container = (ComponentContainer)arena.getInstance(id).getInstance().content();
+					}
 					// otherwise, a default group container per componentType is created, with no data
 					else { // group container must be created and inserted under arena
 						ComponentContainer parentContainer = (ComponentContainer)arena.getInstance(id).getInstance().content();
@@ -226,14 +230,14 @@ public class Component
 							Set<Category>cats = generatedGroupCats();
 							GroupFactory gfac = new GroupFactory(cats,
 								null,null,null,null,null,
-								containerId);
+								containerId,id);
 							gfac.setParentContainer(parentContainer);
 							GroupComponent gComp = gfac.newInstance();
 							container = (ComponentContainer)gComp.content();
 						}
 					}
+					container.setCategorized(componentType.getInstance(id));
 				}
-				container.setCategorized(componentType.getInstance(id));
 				container.addInitialItem(sc);
 				sc.setContainer((ComponentContainer)container);
 				// add component instance into list of new instances

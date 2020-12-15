@@ -33,6 +33,7 @@ import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -124,16 +125,23 @@ public class Group
 			GroupFactory gf = groupType.getInstance(id);
 			// put group into container hierarchy
 			ComponentContainer superContainer = null;
+			LifeCycleComponent lcc = null;
+			TreeNode parent = null;
 			// 1st case: there is a lifeCycle
-			if (lifeCycle!=null)
-				superContainer = (ComponentContainer) lifeCycle.getInstance(id).content();
+			if (lifeCycle!=null) {
+				lcc = lifeCycle.getInstance(id);
+				superContainer = (ComponentContainer) lcc.content();
+				parent = lcc;
+			}
 			// 2nd case: there is no lifeCycle
 			else {							// groupType	structure	system
 				ArenaType system = (ArenaType) getParent().getParent().getParent();
 				superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
+				parent = system;
 			}
 			gf.setParentContainer(superContainer);
 			GroupComponent gc = gf.newInstance();
+			gc.connectParent(parent);
 			// fill group with initial values
 			for (TreeNode tn:getChildren())
 				if (tn instanceof VariableValues)

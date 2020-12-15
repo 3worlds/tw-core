@@ -1,7 +1,6 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -11,10 +10,8 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_LIFECYCLE;
-import java.util.ArrayList;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,7 +26,6 @@ public class LifeCycle
 	private boolean sealed = false;
 	private LifeCycleType lifeCycleType = null;
 	private Map<Integer,LifeCycleComponent> lifeCycles = new HashMap<>();
-	private List<GroupComponent> groups = new ArrayList<>();
 
 	public LifeCycle(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);

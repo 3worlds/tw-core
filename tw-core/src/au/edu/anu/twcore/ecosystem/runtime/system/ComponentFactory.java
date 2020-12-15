@@ -54,8 +54,9 @@ public class ComponentFactory extends ElementFactory<SystemComponent> {
 	public ComponentFactory(Set<Category> categories,
 			Collection<DynamicSpace<SystemComponent>> spaces,
 			TwData auto, TwData drv,
-			TwData dec, TwData ltc, SetInitialStateFunction setinit, boolean permanent) {
-		super(categories, auto, drv, dec, ltc, setinit, permanent);
+			TwData dec, TwData ltc, SetInitialStateFunction setinit,
+			boolean permanent,int simulatorId) {
+		super(categories, auto, drv, dec, ltc, setinit, permanent, simulatorId);
 		this.spaces.addAll(spaces);
 	}
 
@@ -68,7 +69,7 @@ public class ComponentFactory extends ElementFactory<SystemComponent> {
 			2,
 			propertyMap);
 		SystemComponent result = (SystemComponent)
-			SCfactory.makeNode(SystemComponent.class,"C0",props);
+			SCfactory.get(simId).makeNode(SystemComponent.class,"C0",props);
 		result.setCategorized(this);
 		return result;
 	}
