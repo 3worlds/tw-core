@@ -82,30 +82,16 @@ import fr.ens.biologie.generic.Sealable;
  */
 // Tested OK with version 0.1.3 on 1/7/2019
 public abstract class CategorizedContainer<T extends Identity>
-//		extends AbstractPopulationContainer<T>
 		implements NestedContainer<T>, NestedDynamicContainer<T>, ResettableContainer<T>,
 		SimpleContainer<T>,
 		Resettable, Sealable {
 
-//	static {
-//		props.add(TCOUNT.shortName());
-//		props.add(TNADDED.shortName());
-//		props.add(TNREMOVED.shortName());
-//		propsPK = new PropertyKeys(props);
-//	}
-
 	private Identity id = null;
 	private String[] fullId = null;
 	int depth = -1;
+	private scopes scope = new scopes();
 
 	private boolean sealed = false;
-	// category info (shared)
-//	private Categorized<T> categoryInfo = null;
-	// parameters (unique, owned)
-//	private TwData parameters = null;
-	// variables (unique, owned)
-//	private TwData variables = null;
-	// replace with:
 
 	// items contained at this level (owned)
 	protected Map<String, T> items = new HashMap<>();
@@ -123,46 +109,24 @@ public abstract class CategorizedContainer<T extends Identity>
 	private boolean changed = false;
 	private Categorized<T> itemCategories = null;
 
-	// Population data
-//	private class popData2 extends popData {
-//		@Override
-//		public Object getPropertyValue(String key) {
-//			Object result = super.getPropertyValue(key);
-//			if (result==null) {
-//				if (key.equals(TCOUNT.shortName()))
-//					return totalCount();
-//				else if (key.equals(TNADDED.shortName()))
-//					return totalAdded();
-//				else if (key.equals(TNREMOVED.shortName()))
-//					return totalRemoved();
-//			}
-//			return result;
-//		}
-//		@Override
-//		public ReadOnlyPropertyList clone() {
-//			SimplePropertyList pl = new SharedPropertyListImpl(propsPK);
-//			pl.setProperties(this);
-//			return pl;
-//		}
-//	}
-
-	// temporary - to keep the code running
-//	protected ContainerData populationData;
-
-	public CategorizedContainer(// Categorized<T> cats,
-			String proposedId,
-			CategorizedContainer<T> parent) {
-//			TwData parameters, TwData variables) {
+	public CategorizedContainer(String proposedId,
+			CategorizedContainer<T> parent,
+			int simulatorId) {
 		super();
+		scope = new scopes();
+		scope.setSimId(simulatorId);
+		if (scope.getContainerScope(simulatorId)==null)
+			scope.setContainerScope(simulatorId, new ResettableLocalScope(containerScopeName+"-"+simulatorId));
 		id = scope().newId(true,proposedId);
-//		populationData = new NestedContainerData(this);
-//		categoryInfo = cats;
-//		this.parameters = data.constants(); // will be those of the HierarchicalComponent
-//		this.variables = variables;
 		if (parent != null) {
 			superContainer = parent;
 			superContainer.subContainers.put(id(), this);
 		}
+	}
+
+	@Override
+	public ResettableLocalScope scope() {
+		return scope.getContainerScope(scope.getSimId());
 	}
 
 	/**
@@ -173,7 +137,7 @@ public abstract class CategorizedContainer<T extends Identity>
 			itemCategories = cats;
 	}
 
-	// four ways to add items to the initialItems list
+	// three ways to add items to the initialItems list
 	@SuppressWarnings("unchecked")
 	public void setInitialItems(T... items) {
 		initialItems.clear();
@@ -185,12 +149,6 @@ public abstract class CategorizedContainer<T extends Identity>
 		initialItems.clear();
 		initialItems.addAll(items);
 	}
-
-//	public void setInitialItems(Iterable<T> items) {
-//		initialItems.clear();
-//		for (T item : items)
-//			initialItems.add(item);
-//	}
 
 	public void addInitialItem(T item) {
 		initialItems.add(item);
@@ -220,34 +178,6 @@ public abstract class CategorizedContainer<T extends Identity>
 	public Categorized<T> itemCategorized() {
 		return itemCategories;
 	}
-
-
-//	/**
-//	 * Returns the parameter set associated to this container. It is specified by
-//	 * the categories associated to the container, accessible through the
-//	 * {@code categoryInfo()} method.
-//	 *
-//	 * @return the parameter set - may be {@code null}
-//	 */
-//	public TwData parameters() {
-//		if (avatar!=null)
-//			return avatar.constants();
-//		return null;
-//	}
-
-	/**
-	 * Returns the {@linkplain Population} data associated to this container.
-	 * Population data are automatic variables added to any container (they include
-	 * such things as number of items, number of newly created and deleted items).
-	 * Population data are computed internally depending on the dynamics of the
-	 * items stored in the container.
-	 *
-	 * @return the population data as a read-only property list
-	 */
-//	public TwData populationData() {
-//		if (avatar!=null)
-//			return avatar.autoVar();
-//	}
 
 	/**
 	 * Tag an item for addition into this container's item list. The item will be
@@ -449,28 +379,11 @@ public abstract class CategorizedContainer<T extends Identity>
 //			((ContainerData)avatar.autoVar()).resetCounters();
 	}
 
-	// Resettable methods
-
-	// NB: Recursive on sub-containers
-//	@Override
-//	public void reset() {
-//		items.clear();
-//		itemsToRemove.clear();
-//		itemsToAdd.clear();
-//		itemsToInitials.clear();
-//		for (T item : initialItems) {
-//			T c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
-//			items.put(c.id(), c);
-//			itemsToInitials.put(c.id(), item);
-//		}
-//		resetCounters();
-//		for (CategorizedContainer<T> sc : subContainers.values())
-//			sc.reset();
-//	}
-
 	// NB: Recursive on sub-containers
 	@Override
 	public void preProcess() {
+
+		SimpleContainer.super.preProcess();
 		for (T item : initialItems) {
 			T c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
 			items.put(c.id(), c);
@@ -496,9 +409,10 @@ public abstract class CategorizedContainer<T extends Identity>
 		for (CategorizedContainer<T> sc : subContainers.values())
 			sc.postProcess();
 		resetCounters();
-		((ResettableLocalScope)scope()).postProcess();
+//		((ResettableLocalScope)scope()).postProcess();
 		fullId = null;
 		depth = -1;
+		SimpleContainer.super.postProcess();
 	}
 
 	@SuppressWarnings("unchecked")

@@ -64,9 +64,9 @@ public class FlatSurface extends SpaceAdapter {
 
 	public FlatSurface(double xmin, double xmax, double ymin, double ymax,
 			double prec, String units, BorderType[][] bt, Box guard, double guardWidth,
-			SpaceDataTracker dt,String proposedId) {
+			SpaceDataTracker dt,String proposedId,int simulatorId) {
 		super(Box.boundingBox(Point.newPoint(xmin,ymin),Point.newPoint(xmax,ymax)),prec,units,
-			bt,guard,guardWidth,dt,proposedId);
+			bt,guard,guardWidth,dt,proposedId,simulatorId);
 		if ((upperBorderTypes[0]==BorderType.infinite)||
 			(upperBorderTypes[1]==BorderType.infinite)||
 			(lowerBorderTypes[0]==BorderType.infinite)||

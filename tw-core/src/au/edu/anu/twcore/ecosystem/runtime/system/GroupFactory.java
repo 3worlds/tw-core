@@ -29,13 +29,10 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Set;
-import java.util.logging.Logger;
-
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.ens.biologie.generic.utils.Logging;
 
 /**
  * A factory to instantiate {@code GroupComponent}s, ie the variables and constants attached to a group.
@@ -46,7 +43,7 @@ import fr.ens.biologie.generic.utils.Logging;
  */
 public class GroupFactory extends ElementFactory<GroupComponent> {
 
-	private static Logger log = Logging.getLogger(GroupFactory.class);
+//	private static Logger log = Logging.getLogger(GroupFactory.class);
 
 	private String groupName = null;
 	private String groupTypeName = null;
@@ -79,17 +76,18 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 		GroupComponent group = null;
 		ComponentContainer container = null;
 		if (groupName!=null) {
-			if (!ComponentContainer.containerScope.contains(groupName))
-				container = new ComponentContainer(groupName,parent,null);
-			else { // groupName already in use
-				container = new ComponentContainer(groupTypeName,parent,null);
-				String s = container.id();
-				log.warning(()->"Group container couldnt be created with name '"+groupName
-					+"' - name '" + s + "' used instead.");
-			}
+			container = new ComponentContainer(groupName,parent,null,simId);
+//			if (!ComponentContainer.scope().contains(groupName))
+//				container = new ComponentContainer(groupName,parent,null,simId);
+//			else { // groupName already in use
+//				container = new ComponentContainer(groupTypeName,parent,null,simId);
+//				String s = container.id();
+//				log.warning(()->"Group container couldnt be created with name '"+groupName
+//					+"' - name '" + s + "' used instead.");
+//			}
 		}
 		else
-			container = new ComponentContainer(groupTypeName,parent,null);
+			container = new ComponentContainer(groupTypeName,parent,null,simId);
 		autoVarTemplate = new ContainerData(container);
 		SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
 		driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);

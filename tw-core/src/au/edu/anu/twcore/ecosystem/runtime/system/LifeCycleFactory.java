@@ -2,8 +2,6 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
-
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.ChangeCategoryDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
@@ -11,7 +9,6 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.utils.Duple;
-import fr.ens.biologie.generic.utils.Logging;
 
 /**
  *
@@ -20,7 +17,7 @@ import fr.ens.biologie.generic.utils.Logging;
  */
 public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 
-	private static Logger log = Logging.getLogger(LifeCycleFactory.class);
+//	private static Logger log = Logging.getLogger(LifeCycleFactory.class);
 
 	private String lifeCycleName = null;
 	private ComponentContainer parent = null;
@@ -56,17 +53,18 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 		LifeCycleComponent lifeCycle = null;
 		ComponentContainer container = null;
 		if (lifeCycleName!=null) {
-			if (!ComponentContainer.containerScope.contains(lifeCycleName))
-				container = new ComponentContainer(lifeCycleName,parent,null);
-			else { // groupName already in use
-				container = new ComponentContainer(lifeCycleTypeName,parent,null);
-				String s = container.id();
-				log.warning(()->"LifeCycle container couldnt be created with name '"+lifeCycleName
-					+"' - name '" + s + "' used instead.");
-			}
+			container = new ComponentContainer(lifeCycleName,parent,null,simId);
+//			if (!ComponentContainer.containerScope.contains(lifeCycleName))
+//				container = new ComponentContainer(lifeCycleName,parent,null,simId);
+//			else { // groupName already in use
+//				container = new ComponentContainer(lifeCycleTypeName,parent,null,simId);
+//				String s = container.id();
+//				log.warning(()->"LifeCycle container couldnt be created with name '"+lifeCycleName
+//					+"' - name '" + s + "' used instead.");
+//			}
 		}
 		else
-			container = new ComponentContainer(lifeCycleTypeName,parent,null);
+			container = new ComponentContainer(lifeCycleTypeName,parent,null,simId);
 		autoVarTemplate = new ContainerData(container);
 		SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
 		driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);

@@ -40,12 +40,11 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  */
 public class ComponentContainer extends DescribedContainer<SystemComponent> {
 
-
-//CategorizedContainer<SystemComponent> {
-
 	public ComponentContainer(String proposedId,
-			ComponentContainer parent, HierarchicalComponent data) {
-		super(proposedId, parent, data);
+			ComponentContainer parent,
+			HierarchicalComponent data,
+			int simulatorId) {
+		super(proposedId, parent, data, simulatorId);
 	}
 
 	@Override

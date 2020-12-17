@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -28,8 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.containers;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.ens.biologie.generic.Resettable;
 
@@ -45,16 +47,37 @@ import fr.ens.biologie.generic.Resettable;
  */
 public interface Container extends Identity, Resettable {
 
-	public static ResettableLocalScope containerScope = new ResettableLocalScope("3w-containers");
+	// as in ElementFactory: scopes may be indexed by simulator instance id, hence this
+	// complicated multi-singleton implementation
+	public class scopes {
+		private Integer simId;
+		private static Map<Integer,ResettableLocalScope> containerScopes = new TreeMap<>();
+		public Integer getSimId() {
+			return simId;
+		}
+		public void setSimId(Integer simId) {
+			this.simId = simId;
+		}
+		public ResettableLocalScope getContainerScope(Integer i) {
+			return containerScopes.get(i);
+		}
+		public void setContainerScope( Integer i, ResettableLocalScope containerScope) {
+			containerScopes.put(i,containerScope);
+		}
+	}
+	public static String containerScopeName = "3w-containers";
 
 	@Override
 	default void preProcess() {
-		containerScope.preProcess();
+		scope().preProcess();
 	}
 
 	@Override
-	default IdentityScope scope() {
-		return containerScope;
+	public ResettableLocalScope scope();
+
+	@Override
+	default void postProcess() {
+		scope().postProcess();
 	}
 
 }

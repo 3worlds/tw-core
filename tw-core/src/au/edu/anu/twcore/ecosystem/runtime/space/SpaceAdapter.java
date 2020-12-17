@@ -65,6 +65,7 @@ public abstract class SpaceAdapter
 
 	private static Logger log = Logging.getLogger(SpaceAdapter.class);
 	private static final String jitterRNGName = "SpaceJitterRNG";
+	private scopes scope = new scopes();
 
 	private Identity id = null;
 	/**
@@ -116,8 +117,13 @@ public abstract class SpaceAdapter
 			Box obsWindow,
 			double guardWidth,
 			SpaceDataTracker dt,
-			String proposedId) {
+			String proposedId,
+			int simulatorId) {
 		super();
+		scope = new scopes();
+		scope.setSimId(simulatorId);
+		if (scope.getContainerScope(simulatorId)==null)
+			scope.setContainerScope(simulatorId, new ResettableLocalScope(containerScopeName+"-"+simulatorId));
 		if (RngFactory.find(jitterRNGName)==null)
 			RngFactory.newInstance(jitterRNGName, 0, RngResetType.never,RngSeedSourceType.secure,RngAlgType.Pcg32);
 		jitterRNG = RngFactory.find(jitterRNGName).getRandom();
@@ -142,6 +148,11 @@ public abstract class SpaceAdapter
 	}
 
 	// Space<T>
+
+	@Override
+	public ResettableLocalScope scope() {
+		return scope.getContainerScope(scope.getSimId());
+	}
 
 	@Override
 	public Box boundingBox() {

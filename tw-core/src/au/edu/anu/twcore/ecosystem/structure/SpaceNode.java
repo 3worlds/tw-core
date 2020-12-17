@@ -186,7 +186,7 @@ public class SpaceNode extends InitialisableNode
 			Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
 			Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
 			result = new FlatSurface(xlim.inf(), xlim.sup(), ylim.inf(), ylim.sup(), precision, units, borders,
-					obsWindow, guardWidth, dt, id());
+					obsWindow, guardWidth, dt, id(),id);
 			break;
 		case linearNetwork:
 			break;
@@ -196,7 +196,7 @@ public class SpaceNode extends InitialisableNode
 			int ny = nx;
 			if (properties().hasProperty("ny"))
 				ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
-			result = new SquareGrid(cellSize, nx, ny, units, borders, obsWindow, guardWidth, dt, id());
+			result = new SquareGrid(cellSize, nx, ny, units, borders, obsWindow, guardWidth, dt, id(),id);
 			break;
 		case topographicSurface:
 			break;

@@ -75,9 +75,9 @@ public class SquareGrid extends SpaceAdapter {
 	@SuppressWarnings("unchecked")
 	public SquareGrid(double cellSize, int nx, int ny, String units,
 			BorderType[][] bt, Box guard, double guardWidth,
-			SpaceDataTracker dt,String proposedId) {
+			SpaceDataTracker dt,String proposedId,int simulatorId) {
 		super(Box.boundingBox(Point.newPoint(0.0,0.0),Point.newPoint(nx*cellSize,ny*cellSize)),
-			cellSize, units, bt, guard, guardWidth, dt,proposedId);
+			cellSize, units, bt, guard, guardWidth, dt,proposedId,simulatorId);
 		this.cellSize = cellSize;
 		this.nx = nx;
 		this.ny = ny;

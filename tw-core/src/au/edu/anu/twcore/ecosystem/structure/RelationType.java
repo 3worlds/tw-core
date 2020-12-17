@@ -167,7 +167,7 @@ public class RelationType
 		if (!sealed)
 			initialise();
 		if (!relconts.containsKey(id))
-			relconts.put(id, new RelationContainer(this));
+			relconts.put(id, new RelationContainer(this,id));
 		return relconts.get(id);
 	}
 

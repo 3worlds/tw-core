@@ -68,7 +68,7 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 		if (arena == null) {
 			ComponentContainer community = null;
 			if (makeContainer) {
-				community = new ComponentContainer(name, null, null);
+				community = new ComponentContainer(name, null, null, simId);
 				autoVarTemplate = new ContainerData(community);
 				// this is bad design... but it has to work.
 				for (String autoName : autoVarTemplate.getKeysAsSet())

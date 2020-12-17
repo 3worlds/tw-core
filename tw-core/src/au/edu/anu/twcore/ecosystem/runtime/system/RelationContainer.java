@@ -64,6 +64,7 @@ public class RelationContainer
 
 	private static Logger log = Logging.getLogger(RelationContainer.class);
 	private Identity id = null;
+	private scopes scope = new scopes();
 	//
 	private RelationType relationType = null;
 	// the list of system component pairs to later relate
@@ -73,8 +74,12 @@ public class RelationContainer
 	private boolean changed = false;
 	private boolean permanent = false;
 
-	public RelationContainer(RelationType rel) {
+	public RelationContainer(RelationType rel, int simulatorId) {
 		super(); // since they are different local scopes it may work...
+		scope = new scopes();
+		scope.setSimId(simulatorId);
+		if (scope.getContainerScope(simulatorId)==null)
+			scope.setContainerScope(simulatorId, new ResettableLocalScope(containerScopeName+"-"+simulatorId));
 		relationType = rel;
 		id = scope().newId(true,rel.id()); // not the same scope, should work ?
 		if (rel.properties().hasProperty(P_RELATION_LIFESPAN.key()))
@@ -190,5 +195,10 @@ public class RelationContainer
 				dts.closeTimeStep();
 			}
 		}
+	}
+
+	@Override
+	public ResettableLocalScope scope() {
+		return scope.getContainerScope(scope.getSimId());
 	}
 }
