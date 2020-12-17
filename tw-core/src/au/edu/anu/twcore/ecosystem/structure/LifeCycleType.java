@@ -44,6 +44,7 @@ public class LifeCycleType extends ElementType<LifeCycleFactory,LifeCycleCompone
 	private Map<FunctionNode,Duple<String,String>>
 		produceNodes = new HashMap<>(),
 		recruitNodes = new HashMap<>();
+	private SortedSet<Category> stageCategories = new TreeSet<>();
 
 	public LifeCycleType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -57,6 +58,13 @@ public class LifeCycleType extends ElementType<LifeCycleFactory,LifeCycleCompone
 	@Override
 	public void initialise() {
 		super.initialise();
+		// collect the list of categories acted on by this life cycle type
+		Collection<Category> lccats = (Collection<Category>) get(edges(Direction.OUT),
+			selectOne(hasTheLabel(E_APPLIESTO.label())),
+			endNode(), // this is the categoryset
+			children(),
+			selectOneOrMany(hasTheLabel(N_CATEGORY.label())));
+		stageCategories.addAll(lccats);
 		// collect produce nodes information for factory
 		Collection<Category> lcat = null;
 		Collection<TreeGraphNode> lprod = (Collection<TreeGraphNode>) get(getChildren(),
@@ -96,7 +104,7 @@ public class LifeCycleType extends ElementType<LifeCycleFactory,LifeCycleCompone
 				selectOne(hasTheLabel(E_EFFECTEDBY.label())),
 				endNode());
 			recruitNodes.put(fnode,new Duple<>(Categorized.signature(fromRecruitCat),
-					Categorized.signature(toRecruitCat)));
+				Categorized.signature(toRecruitCat)));
 		}
 	}
 
@@ -121,13 +129,13 @@ public class LifeCycleType extends ElementType<LifeCycleFactory,LifeCycleCompone
 			return new LifeCycleFactory(categories,
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 				(SetInitialStateFunction)setinit.getInstance(id),id(),superContainer,
-				prMap,rcMap,id);
+				prMap,rcMap,id,stageCategories);
 		}
 		else {
 			return new LifeCycleFactory(categories,
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 				null,id(),superContainer,
-				prMap,rcMap,id);
+				prMap,rcMap,id,stageCategories);
 		}
 	}
 

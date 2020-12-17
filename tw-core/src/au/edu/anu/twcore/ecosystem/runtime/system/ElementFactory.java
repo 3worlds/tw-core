@@ -155,4 +155,9 @@ public abstract class ElementFactory<T extends DataElement>
 		return isPermanent;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName()+simId+"for "+categoryId;
+	}
+
 }

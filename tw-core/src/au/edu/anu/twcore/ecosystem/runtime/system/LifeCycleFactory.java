@@ -2,6 +2,8 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.ChangeCategoryDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
@@ -24,6 +26,7 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 	private String lifeCycleTypeName = null;
 	private Map<CreateOtherDecisionFunction,Duple<String,String>> produceNodes;
 	private Map<ChangeCategoryDecisionFunction,Duple<String,String>> recruitNodes;
+	private SortedSet<Category> stageCategories = null;
 
 	public LifeCycleFactory(Set<Category> categories,
 			TwData auto, TwData drv, TwData dec, TwData ltc,
@@ -31,12 +34,13 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 			String name, ComponentContainer parent,
 			Map<CreateOtherDecisionFunction,Duple<String,String>> produceNodes,
 			Map<ChangeCategoryDecisionFunction,Duple<String,String>> recruitNodes,
-			int simulatorId) {
+			int simulatorId,SortedSet<Category> stageCategories) {
 		super(categories, auto, drv, dec, ltc, setinit, true, simulatorId);
 		this.parent = parent;
 		lifeCycleTypeName = name;
 		this.produceNodes = produceNodes;
 		this.recruitNodes = recruitNodes;
+		this.stageCategories = stageCategories;
 	}
 
 	/**
@@ -92,5 +96,7 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 		return recruitNodes.get(func).getSecond();
 	}
 
-
+	protected Set<Category> stageCategories() {
+		return stageCategories;
+	}
 }

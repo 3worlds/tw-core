@@ -59,7 +59,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
-import fr.ens.biologie.generic.utils.Duple;
 
 /**
  * A TwProcess that loops on a list of SystemComponents and executes methods on
@@ -199,6 +198,7 @@ public class ComponentProcess
 				nbs.factory = (ComponentFactory) toGroup.content().itemCategorized();
 				nbs.container = (ComponentContainer) toGroup.content();
 				newBornSpecs.add(nbs);
+//				System.out.println(focalGroup.name()+" to "+toGroup.name());
 			}
 			// without a life cycle, only objects of the same type can be created
 			else {

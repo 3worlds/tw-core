@@ -196,5 +196,4 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
 
-
 }
