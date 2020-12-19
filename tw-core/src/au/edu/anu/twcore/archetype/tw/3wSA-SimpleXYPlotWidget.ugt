@@ -12,6 +12,8 @@ archetype 3wSA-SimpleXYPlotWidget
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery SenderInRangeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 		hasProperty SimpleXYPlotWidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")

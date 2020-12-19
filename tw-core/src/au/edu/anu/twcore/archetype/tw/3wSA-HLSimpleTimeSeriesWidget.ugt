@@ -12,6 +12,8 @@ archetype 3wSA-HLSimpleTimeSeriesWidget
 		isOfClass = String("widget")
 		hasParent = StringTable(([1]"headless:"))
 		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery SenderInRangeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 		hasProperty HLSimpleTimeSeriesWidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")

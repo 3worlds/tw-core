@@ -13,6 +13,8 @@ archetype 3wSA-SimpleTimeWidget
 		// TODO this should override parent when checking
 		hasParent = StringTable(([2]"top:","bottom:"))
 		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery SenderInRangeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 		hasEdge SimpleTimeWidgetToSimSpec
 			isOfClass = String("trackTime")
 			toNode = String("dynamics:")
