@@ -48,12 +48,14 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import au.edu.anu.twcore.ecosystem.structure.Structure;
+import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -74,13 +76,8 @@ public class Component
 		implements Sealable, LimitedEdition<List<SystemComponent>>, DefaultStrings {
 
 	private boolean sealed = false;
-//	private TwData variables = null;
 	private ComponentType componentType = null;
-	// This is FLAWED: assumes only ONE component per simulator ???, no, its fine, different components
-	// have different Component nodes
 	private Map<Integer,List<SystemComponent>> individuals = new HashMap<>();
-
-//	private Map<SpaceNode,double[]> coordinates = new HashMap<>();
 	// the container in which new components should be placeds
 	private ArenaType arena = null;
 	// the group instance this component is instance of
@@ -110,14 +107,19 @@ public class Component
 			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
 		if (nInstances==0)
 			nInstances=1;
-		nComponentTypes = ((Collection<?>)get(getParent().getParent().getChildren(),
-			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())))).size();
+		TreeNode struc = (TreeNode) get(this,parent(isClass(Structure.class)));
+		nComponentTypes = ((Collection<?>) get(struc,
+			childTree(),
+			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label()))) ).size();
+//		nComponentTypes = ((Collection<?>)get(getParent().getParent().getChildren(),
+//			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())))).size();
 		componentType = (ComponentType) getParent();
 		// this edge, if present, points to a Group node
 		Edge instof = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
-		if (instof==null)	   // system > structure >	componentType > component
-			arena = (ArenaType) getParent().getParent().getParent();
+		if (instof==null)
+//			arena = (ArenaType) getParent().getParent().getParent();
+			arena = (ArenaType) get(this,parent(isClass(ArenaType.class)));
 		else
 			group = (Group) instof.endNode();
 		sealed = true;
@@ -142,8 +144,9 @@ public class Component
 	@SuppressWarnings("unchecked")
 	private Set<Category> generatedGroupCats() {
 		Set<Category>result = new TreeSet<>();
-		 				// 3Worlds > 	system > 	structure >	componentType > component
-		TreeNode root3w =  getParent().getParent().getParent().getParent();
+		TreeNode root3w =  (TreeNode) get(this,parent(isClass(World.class)));
+//		 				// 3Worlds > 	system > 	structure >	componentType > component
+//		TreeNode root3w =  getParent().getParent().getParent().getParent();
 		TreeNode predef = (TreeNode) get(root3w.getChildren(),
 			selectOne(hasTheLabel(N_PREDEFINED.label())));
 		List<TreeNode> l = (List<TreeNode>) get(predef.getChildren(),
@@ -165,10 +168,21 @@ public class Component
 		if (!sealed)
 			initialise();
 		if (!individuals.containsKey(id)) {
+			// the factory for components of this category
+			ComponentFactory factory = componentType.getInstance(id);
+			// the spaces in this model
+			TreeNode struc = (TreeNode) get(this,parent(isClass(Structure.class)));
+//			TreeNode struc = this;
+//			while (!(struc instanceof Structure))
+//				struc = struc.getParent();
+			Collection<SpaceNode> spaces = (Collection<SpaceNode>) get(struc,
+				children(),
+				selectZeroOrMany(hasTheLabel(N_SPACE.label())));
 			List<SystemComponent> result = new ArrayList<>(nInstances);
+			// for as many instances as requested:
 			for (int i=0; i<nInstances; i++) {
 				// instantiate component
-				SystemComponent sc = componentType.getInstance(id).newInstance();
+				SystemComponent sc = factory.newInstance();
 				// fill component with initial values (including coordinates)
 				for (TreeNode tn:getChildren()) {
 					if (tn instanceof VariableValues) {
@@ -181,13 +195,7 @@ public class Component
 						((ConstantValues) tn).fill(sc.constants());
 					}
 				}
-				// get all spaces in this model
-				TreeNode struc = this;
-				while (!(struc instanceof Structure))
-					struc = struc.getParent();
-				Collection<SpaceNode> spaces = (Collection<SpaceNode>) get(struc,
-					children(),
-					selectZeroOrMany(hasTheLabel(N_SPACE.label())));
+				// place component into spaces, if any
 				for (SpaceNode space:spaces) {
 					DynamicSpace<SystemComponent> sp = space.getInstance(id);
 					// locate component in all spaces
@@ -199,26 +207,24 @@ public class Component
 						sc.locationData().setCoordinates(initLoc);
 						sp.addInitialItem(sc);
 					}
-					else {
-						// use coordinates found in children nodes
+					else // use coordinates found in children nodes
 						sp.addInitialItem(sc);
-					}
 				}
-				// insert component into container
+				// insert component into its container
 				ComponentContainer container = null;
-				// 1st case: there is a group
+				// find the proper container
+				// 1st case: there is a group and possibly a life cycle
 				if (group!=null) {
 					GroupComponent grp = group.getInstance(id);
 					container = (ComponentContainer)grp.content();
-					container.setCategorized(componentType.getInstance(id));
+					container.setCategorized(factory);
 					grp.addGroupIntoLifeCycle();
 				}
 				// 2nd case: there is no group (and no life cycle)
-				else if (arena!=null) { // is this really needed? must never be null!
+				else if (arena!=null) {
 					// if there is only one component type, then the arena must be the container
-					if (nComponentTypes==1) {
+					if (nComponentTypes==1)		// ArenaType	ArenaFactory	ArenaComponent	Container
 						container = (ComponentContainer)arena.getInstance(id).getInstance().content();
-					}
 					// otherwise, a default group container per componentType is created, with no data
 					else { // group container must be created and inserted under arena
 						ComponentContainer parentContainer = (ComponentContainer)arena.getInstance(id).getInstance().content();
@@ -231,12 +237,11 @@ public class Component
 							GroupFactory gfac = new GroupFactory(cats,
 								null,null,null,null,null,
 								containerId,id);
-							gfac.setParentContainer(parentContainer);
-							GroupComponent gComp = gfac.newInstance();
+							GroupComponent gComp = gfac.newInstance(parentContainer);
 							container = (ComponentContainer)gComp.content();
 						}
 					}
-					container.setCategorized(componentType.getInstance(id));
+					container.setCategorized(factory);
 				}
 				container.addInitialItem(sc);
 				sc.setContainer((ComponentContainer)container);

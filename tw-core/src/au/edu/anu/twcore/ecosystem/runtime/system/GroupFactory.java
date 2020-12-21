@@ -47,20 +47,19 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 
 	private String groupName = null;
 	private String groupTypeName = null;
-	private ComponentContainer parent = null;
 
-	public GroupFactory(Set<Category> categories, /*String categoryId,*/
+	public GroupFactory(Set<Category> categories,
 			TwData auto, TwData drv, TwData dec, TwData ltc,
 			SetInitialStateFunction setinit, String name, int simulatorId) {
-		super(categories, /*categoryId,*/ auto, drv, dec, ltc, setinit,true,simulatorId);
+		super(categories, auto, drv, dec, ltc, setinit,true,simulatorId);
 		groupTypeName = name;
 	}
 
-	// TO be called BEFORE newInstance() with a proper parent container
-	public void setParentContainer(ComponentContainer parent) {
-		if (this.parent==null)
-			this.parent = parent;
-	}
+//	// TO be called BEFORE newInstance() with a proper parent container
+//	public void setParentContainer(ComponentContainer parent) {
+//		if (this.parent==null)
+//			this.parent = parent;
+//	}
 
 	/**
 	 * This MUST be called before newInstance() in order for the correct name to be used.
@@ -76,7 +75,7 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 		GroupComponent group = null;
 		ComponentContainer container = null;
 		if (groupName!=null) {
-			container = new ComponentContainer(groupName,parent,null,simId);
+			container = new ComponentContainer(groupName,parentContainer,null,simId);
 //			if (!ComponentContainer.scope().contains(groupName))
 //				container = new ComponentContainer(groupName,parent,null,simId);
 //			else { // groupName already in use
@@ -87,7 +86,7 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 //			}
 		}
 		else
-			container = new ComponentContainer(groupTypeName,parent,null,simId);
+			container = new ComponentContainer(groupTypeName,parentContainer,null,simId);
 		autoVarTemplate = new ContainerData(container);
 		SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
 		driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);

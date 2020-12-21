@@ -46,6 +46,8 @@ import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.isClass;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.parent;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrOne;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_CYCLE;
@@ -135,12 +137,12 @@ public class Group
 			}
 			// 2nd case: there is no lifeCycle
 			else {							// groupType	structure	system
-				ArenaType system = (ArenaType) getParent().getParent().getParent();
+//				ArenaType system = (ArenaType) getParent().getParent().getParent();
+				ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
 				superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
 				parent = system;
 			}
-			gf.setParentContainer(superContainer);
-			GroupComponent gc = gf.newInstance();
+			GroupComponent gc = gf.newInstance(superContainer);
 			gc.connectParent(parent);
 			// fill group with initial values
 			for (TreeNode tn:getChildren())

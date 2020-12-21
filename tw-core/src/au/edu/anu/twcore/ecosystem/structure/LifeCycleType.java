@@ -115,7 +115,7 @@ public class LifeCycleType extends ElementType<LifeCycleFactory,LifeCycleCompone
 
 	@Override
 	protected LifeCycleFactory makeTemplate(int id) {
-		ArenaType system = (ArenaType) getParent().getParent();
+		ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
 		ComponentContainer superContainer = (ComponentContainer) system.getInstance(id).getInstance().content();
 		Map<CreateOtherDecisionFunction,Duple<String,String>>
 			prMap = new HashMap<>();

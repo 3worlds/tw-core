@@ -22,7 +22,6 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 //	private static Logger log = Logging.getLogger(LifeCycleFactory.class);
 
 	private String lifeCycleName = null;
-	private ComponentContainer parent = null;
 	private String lifeCycleTypeName = null;
 	private Map<CreateOtherDecisionFunction,Duple<String,String>> produceNodes;
 	private Map<ChangeCategoryDecisionFunction,Duple<String,String>> recruitNodes;
@@ -36,7 +35,7 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 			Map<ChangeCategoryDecisionFunction,Duple<String,String>> recruitNodes,
 			int simulatorId,SortedSet<Category> stageCategories) {
 		super(categories, auto, drv, dec, ltc, setinit, true, simulatorId);
-		this.parent = parent;
+		this.parentContainer = parent;
 		lifeCycleTypeName = name;
 		this.produceNodes = produceNodes;
 		this.recruitNodes = recruitNodes;
@@ -57,7 +56,7 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 		LifeCycleComponent lifeCycle = null;
 		ComponentContainer container = null;
 		if (lifeCycleName!=null) {
-			container = new ComponentContainer(lifeCycleName,parent,null,simId);
+			container = new ComponentContainer(lifeCycleName,parentContainer,null,simId);
 //			if (!ComponentContainer.containerScope.contains(lifeCycleName))
 //				container = new ComponentContainer(lifeCycleName,parent,null,simId);
 //			else { // groupName already in use
@@ -68,7 +67,7 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 //			}
 		}
 		else
-			container = new ComponentContainer(lifeCycleTypeName,parent,null,simId);
+			container = new ComponentContainer(lifeCycleTypeName,parentContainer,null,simId);
 		autoVarTemplate = new ContainerData(container);
 		SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
 		driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);
@@ -76,8 +75,13 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 		lifeCycle.setCategorized(this);
 		container.setData(lifeCycle);
 		lifeCycle.setContent(container);
-		lifeCycle.connectParent(parent.descriptors());
+		lifeCycle.connectParent(parentContainer.descriptors());
 		return lifeCycle;
+	}
+
+	@Override
+	public LifeCycleComponent newInstance(ComponentContainer parentContainer) {
+		return newInstance();
 	}
 
 	protected String fromCategories(CreateOtherDecisionFunction func) {

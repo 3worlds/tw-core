@@ -54,6 +54,11 @@ import fr.ens.biologie.generic.Singleton;
 /**
  * A factory for any system element type - ancestor to SystemFactory, LifeCycle factory, GroupFactory etc.
  *
+ * <p>CAUTION: an element factory is conceptually 1..1 with an element type. When components must
+ * be instantiated, they are often associated with a container which has a 1..1 relation with
+ * an element type instance node (Group, LifeCycle, COmponent)., which have a 1..* relation
+ * with element type. </p>
+ *
  * @author J. Gignoux - 23 avr. 2020
  *
  */
@@ -78,6 +83,9 @@ public abstract class ElementFactory<T extends DataElement>
 
 	SetInitialStateFunction setinit;
 	protected boolean isPermanent = true;
+
+	// temporary variables
+	protected ComponentContainer parentContainer = null;
 
 	/**
 	 * basic constructor
@@ -133,6 +141,11 @@ public abstract class ElementFactory<T extends DataElement>
 	@Override
 	public T newInstance() {
 		throw new TwcoreException("This method should never be called");
+	}
+
+	public T newInstance(ComponentContainer parentContainer) {
+		this.parentContainer = parentContainer;
+		return newInstance();
 	}
 
 	// Categorized

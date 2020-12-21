@@ -77,22 +77,12 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 
 	@Override
 	protected GroupFactory makeTemplate(int id) {
-//		ComponentContainer superContainer = null;
-//		if (getParent() instanceof Structure) {
-//			ArenaType system = (ArenaType) getParent().getParent();
-//			superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
-//		}
-//		else if (getParent() instanceof LifeCycleType){
-//			LifeCycleType lct = (LifeCycleType) getParent();
-//			// TODO: This is probably wrong.
-//			superContainer = (ComponentContainer) lct.getInstance(id).newInstance().content();
-//		}
 		if (setinit!=null)
-			return new GroupFactory(categories,/*categoryId(),*/
+			return new GroupFactory(categories,
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 				(SetInitialStateFunction)setinit.getInstance(id),id(),id);
 		else
-			return new GroupFactory(categories,/*categoryId(),*/
+			return new GroupFactory(categories,
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
 				null,id(),id);
 	}
