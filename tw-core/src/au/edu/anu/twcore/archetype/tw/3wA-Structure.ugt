@@ -172,6 +172,9 @@ hasNode groupSpec
 	isOfClass = String("group")
 	hasParent = StringTable(([1]"groupType:"))
 	multiplicity = IntegerRange("0..*")
+	//
+	// if the groupType is under a LifeCycleType, then the Group must refer to a matching LifeCycle
+	//
 	hasEdge groupToLifeCycleSpec
 		isOfClass = String("cycle")
 		toNode = String("lifeCycle:")
@@ -184,6 +187,18 @@ hasNode groupSpec
 		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
 	mustSatisfyQuery groupRequiresCycleEdge
 		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleInstanceRequirementQuery")
+	//
+	// if there is no Component belonging to this group, then the Group must point to
+	// a ComponentType in order to know in which container components of this group are to
+	// be stored
+	//
+	hasEdge groupToComponentSpec
+		isOfClass = String("groupOf")
+		toNode = String("componentType:")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery groupRequiresGroupOfEdge
+		className = String("au.edu.anu.twcore.archetype.tw.GroupComponentRequirementQuery")
+
 
 //-------------------------------------------------------------------------------------------
 // LIFE CYCLE TYPE: defined by categories

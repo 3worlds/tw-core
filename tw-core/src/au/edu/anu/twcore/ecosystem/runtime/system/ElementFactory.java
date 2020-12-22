@@ -170,7 +170,7 @@ public abstract class ElementFactory<T extends DataElement>
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName()+simId+"for "+categoryId;
+		return getClass().getSimpleName()+simId+" for "+categoryId;
 	}
 
 }
