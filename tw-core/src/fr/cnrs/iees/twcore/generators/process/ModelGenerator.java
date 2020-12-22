@@ -571,6 +571,32 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return cats;
 	}
 
+	@SuppressWarnings("unchecked")
+	protected SortedSet<Category> findLifeCycleCategories(TreeGraphDataNode function,
+			Set<Category> componentCats, // the categories of the process acting on the component
+			TwFunctionArguments arg) {
+		SortedSet<Category> cats = new TreeSet<>();
+		if ((arg==lifeCycle)||(arg==otherLifeCycle)) {
+			TreeGraphDataNode sys = getSystemNode(function);
+			// get all lifecycletypes in the system
+			Collection<LifeCycleType> lcts = (Collection<LifeCycleType>) get(sys.subTree(),
+				selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label())));
+
+
+			// TODO here:
+
+			// find life cycle categories
+
+			// for functions mediating the produce and recruit transitions,
+			// use the to and from categories to generate the proper arguments to the function
+
+
+
+		}
+		return cats;
+	}
+
+
 	/** finds the categories of a focal component */
 	// Possible FLAW here: what about the category hierarchy?
 	@SuppressWarnings("unchecked")
