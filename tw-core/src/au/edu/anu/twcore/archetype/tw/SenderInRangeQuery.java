@@ -92,6 +92,7 @@ public class SenderInRangeQuery extends Query {
 			return this;
 		}
 
+		nReps = 1;
 		if (exp.properties().hasProperty(P_EXP_NREPLICATES.key()))
 			nReps = (Integer) exp.properties().getPropertyValue(P_EXP_NREPLICATES.key());
 		// Depends on widget policy
@@ -108,8 +109,7 @@ public class SenderInRangeQuery extends Query {
 		}
 		listenerRange = new IntegerRange(firstSender, firstSender + (nSenders - 1));
 		IntegerRange simRange = new IntegerRange(0, nReps - 1);
-		// TODO: if (simRange.contains(listenerRange)
-		if (simRange.inRange(firstSender) && simRange.inRange(firstSender + (nSenders - 1))) {
+		if (simRange.contains(listenerRange)) {
 			satisfied = true;
 			return this;
 		}
