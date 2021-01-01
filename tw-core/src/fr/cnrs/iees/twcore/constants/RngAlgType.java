@@ -37,17 +37,17 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
  */
 public enum RngAlgType {
 	/* speed: poor; quality: poor */
-	java, //
+	JAVA, //
 
 	/* speed: good; quality: very good */
-	Pcg32, //
+	PCG32, //
 
 	/* speed: very good; quality: good */
-	XSRandom,//
+	XSRANDOM,//
 	;
 
 	public static RngAlgType defaultValue() {
-		return Pcg32;
+		return PCG32;
 	}
 
 	static {

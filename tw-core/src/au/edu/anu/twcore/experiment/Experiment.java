@@ -47,8 +47,6 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.runtime.Deployable;
 import au.edu.anu.twcore.experiment.runtime.deployment.Deployer;
-import au.edu.anu.twcore.rngFactory.RngFactory;
-
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import java.util.logging.Logger;
@@ -127,8 +125,8 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 					log.warning(() -> "file defined deployment not yet implemented");
 				}
 
-				log.info(() -> "reset any 'onExperimentStart' rngs.");
-				RngFactory.resetExperiment();
+//				log.info(() -> "reset any 'onExperimentStart' rngs.");
+//				RngFactory.resetExperiment(); not needed. MR begins each exp when instanced
 
 			}
 			sealed = true;

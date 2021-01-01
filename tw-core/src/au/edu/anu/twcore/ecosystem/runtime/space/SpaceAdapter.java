@@ -125,7 +125,7 @@ public abstract class SpaceAdapter
 		if (scope.getContainerScope(simulatorId)==null)
 			scope.setContainerScope(simulatorId, new ResettableLocalScope(containerScopeName+"-"+simulatorId));
 		if (RngFactory.find(jitterRNGName)==null)
-			RngFactory.newInstance(jitterRNGName, 0, RngResetType.never,RngSeedSourceType.secure,RngAlgType.Pcg32);
+			RngFactory.newInstance(jitterRNGName, 0, RngResetType.NEVER,RngSeedSourceType.PSEUDO,RngAlgType.XSRANDOM);
 		jitterRNG = RngFactory.find(jitterRNGName).getRandom();
 		limits = box;
 		if (obsWindow==null)

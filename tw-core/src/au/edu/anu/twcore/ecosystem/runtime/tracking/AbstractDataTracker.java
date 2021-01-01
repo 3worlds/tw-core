@@ -77,7 +77,7 @@ public abstract class AbstractDataTracker<T, M>
 		// TODO: check this is ok for a RNG - do we want other settings?
 		Generator gen = RngFactory.find(rngName);
 		if (gen == null) {
-			gen = RngFactory.newInstance(rngName, 0, RngResetType.never, RngSeedSourceType.secure, RngAlgType.Pcg32);
+			gen = RngFactory.newInstance(rngName, 0, RngResetType.NEVER, RngSeedSourceType.PSEUDO, RngAlgType.PCG32);
 			rng = gen.getRandom();
 		} else
 			rng = gen.getRandom();

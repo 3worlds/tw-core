@@ -58,8 +58,8 @@ public interface RngHolder {
 		if (gen != null)
 			return gen.getRandom();
 		else {
-			gen = RngFactory.newInstance(defRngName+":"+index, 0, RngResetType.never, 
-				RngSeedSourceType.secure,RngAlgType.Pcg32);
+			gen = RngFactory.newInstance(defRngName+":"+index, 0, RngResetType.NEVER, 
+				RngSeedSourceType.PSEUDO,RngAlgType.PCG32);
 			return gen.getRandom();
 		}
 	}
