@@ -103,7 +103,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		Collection<Category> nl = (Collection<Category>) get(edges(Direction.OUT),
 			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
 			edgeListEndNodes());
-		categories.addAll(getSuperCategories(nl));
+		categories.addAll(Categorized.getSuperCategories(nl));
 		categoryNames = new ArrayList<>(categories.size());
 		for (Category c:categories)
 			categoryNames.add(c.id()); // order is maintained

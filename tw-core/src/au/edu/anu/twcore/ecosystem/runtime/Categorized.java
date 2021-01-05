@@ -135,7 +135,7 @@ public interface Categorized<T extends Identity> {
 	 * @param cats the initial category list
 	 * @return the final category list, including all nesting super-categories
 	 */
-	public default Collection<Category> getSuperCategories(Collection<Category> cats) {
+	public static Collection<Category> getSuperCategories(Collection<Category> cats) {
 		Collection<Category> result = new LinkedList<Category>();
 		result.addAll(cats);
 		for (Category cat:cats)

@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -44,10 +44,10 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 /**
  * Checks that an out edge has either of two (sets of) labels.
- * 
+ *
  * @author Jacques Gignoux - 14 Novembre 2019
- * 
- * 
+ *
+ *
  */
 public class OutEdgeXorQuery extends Query {
 
@@ -90,18 +90,6 @@ public class OutEdgeXorQuery extends Query {
 		defaultProcess(input);
 		Node localItem = (Node) input;
 		Duple<List<Edge>,List<Edge>> lstEdges = getEdgeLists(localItem,edgeLabel1,edgeLabel2);
-
-//		Query[] q = new Query[edgeLabel1.length];
-//		for (int i = 0; i < edgeLabel1.length; i++)
-//			q[i] = hasTheLabel(edgeLabel1[i]);
-//		OrQuery orq1 = new OrQuery(q);
-//		q = new Query[edgeLabel2.length];
-//		for (int i = 0; i < edgeLabel2.length; i++)
-//			q[i] = hasTheLabel(edgeLabel2[i]);
-//		OrQuery orq2 = new OrQuery(q);
-//		List<Edge> el1 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq1));
-//		List<Edge> el2 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq2));
-//		satisfied = (el1.size() > 0) ^ (el2.size() > 0);
 		satisfied = (lstEdges.getFirst().size() > 0) ^ (lstEdges.getSecond().size() > 0);
 		return this;
 	}

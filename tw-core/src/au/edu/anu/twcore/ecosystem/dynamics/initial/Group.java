@@ -34,6 +34,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -45,13 +46,11 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.isClass;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.parent;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrOne;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_CYCLE;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,6 +69,7 @@ public class Group
 	private static final int baseInitRank = N_GROUP.initRank();
 	private GroupType groupType = null;
 	private LifeCycle lifeCycle = null;
+	private ComponentType groupOf = null;
 
 	// default constructor
 	public Group(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -90,6 +90,9 @@ public class Group
 			selectZeroOrOne(hasTheLabel(E_CYCLE.label())));
 		if (cycle!=null)
 			lifeCycle = (LifeCycle) cycle.endNode();
+		groupOf = (ComponentType) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+			endNode());
 		sealed = true;
 	}
 
@@ -150,6 +153,12 @@ public class Group
 					((VariableValues)tn).fill(gc.currentState());
 				else if (tn instanceof ConstantValues)
 					((ConstantValues) tn).fill(gc.constants());
+			// if no components, then some more inits must be done
+			if (groupOf!=null) {
+				// set itemCategories
+				gc.content().setCategorized(groupOf.getInstance(id));
+				gc.addGroupIntoLifeCycle();
+			}
 			groups.put(id,gc);
 		}
 		return groups.get(id);

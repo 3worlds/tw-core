@@ -59,6 +59,7 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
@@ -206,23 +207,26 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 		TreeGraphNode struc = (TreeGraphNode) get(getParent(), children(),
 			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		if (struc != null)
-			for (TreeNode c : struc.getChildren()) {
+//			for (TreeNode c : struc.getChildren()) {
+//				if (c instanceof ElementType<?, ?>)
+//					for (TreeNode cc : c.subTree())
+//						if (cc instanceof Component) {
+//							// this instantiates the SystemComponent and puts it into the right container
+//							((Component) cc).getInstance(index);
+//						}
+//			}
+			for (TreeNode c : struc.subTree()) {
 				if (c instanceof ElementType<?, ?>)
-					for (TreeNode cc : c.subTree())
-						if (cc instanceof Component) {
+					for (TreeNode cc : c.getChildren()) {
+						if (cc instanceof Component)
 							// this instantiates the SystemComponent and puts it into the right container
 							((Component) cc).getInstance(index);
+						// this in case a group doesnt have initial components
+						if (cc instanceof Group) {
+							((Group) cc).getInstance(index);
 						}
+					}
 			}
-//		if (init != null) {
-//			List<Component> li = (List<Component>) get(init.getChildren(),
-//					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-//			for (Component i : li)
-//				i.getInstance(index);
-//			List<Group> lg = (List<Group>) get(init.getChildren(), selectZeroOrMany(hasTheLabel(N_GROUP.label())));
-//			for (Group g : lg)
-//				scanSubGroups(g, index);
-//		}
 	}
 
 	@Override

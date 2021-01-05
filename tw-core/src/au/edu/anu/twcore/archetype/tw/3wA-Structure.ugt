@@ -172,10 +172,9 @@ hasNode groupSpec
 	isOfClass = String("group")
 	hasParent = StringTable(([1]"groupType:"))
 	multiplicity = IntegerRange("0..*")
-//	hasEdge groupToSystemSpec
-//		isOfClass = String("groupOf")
-//		toNode = String("componentType:")
-//		multiplicity = IntegerRange("0..1")
+	//
+	// if the groupType is under a LifeCycleType, then the Group must refer to a matching LifeCycle
+	//
 	hasEdge groupToLifeCycleSpec
 		isOfClass = String("cycle")
 		toNode = String("lifeCycle:")
@@ -184,15 +183,22 @@ hasNode groupSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
-//	mustSatisfyQuery groupObjectSpec
-//		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
-//		nodeLabel1 = String("componentType")
-//		nodeLabel2 = String("lifeCycle")
 	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
 		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
-// deprecated:
-//	mustSatisfyQuery lifeCycleMustHaveNoComponents
-//		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleNoComponentsQuery")
+	mustSatisfyQuery groupRequiresCycleEdge
+		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleInstanceRequirementQuery")
+	//
+	// if there is no Component belonging to this group, then the Group must point to
+	// a ComponentType in order to know in which container components of this group are to
+	// be stored
+	//
+	hasEdge groupToComponentSpec
+		isOfClass = String("groupOf")
+		toNode = String("componentType:")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery groupRequiresGroupOfEdge
+		className = String("au.edu.anu.twcore.archetype.tw.GroupComponentRequirementQuery")
+
 
 //-------------------------------------------------------------------------------------------
 // LIFE CYCLE TYPE: defined by categories
@@ -321,9 +327,8 @@ hasNode lifeCycleSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
-// TODO: same constraint as life cycle types, all groups must belong to categories of the same set.
-// one at most per category
-// TODO: all groups which groupType is under a lifeCycle must have a cycle edge
+	mustSatisfyQuery lifeCycleRequiresAllGroups
+		className = String("au.edu.anu.twcore.archetype.tw.GroupInstanceRequirementQuery")
 
 // initialisation functions
 hasNode initFunctionSpec

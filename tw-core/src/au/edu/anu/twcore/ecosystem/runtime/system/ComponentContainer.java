@@ -170,7 +170,6 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 //		boolean yet = false;
 		for (SystemComponent item:items.values())
 			if (item.initialiser()!=null) {
-				// TODO: search hierarchicalyy for the proper group information!
 				if (item.constants()!=null)
 					item.constants().writeEnable();
 				if (item.currentState()!=null)
@@ -182,10 +181,21 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 				if (cc instanceof GroupComponent) {
 					group = cc;
 					cc = ((DescribedContainer<?>)((GroupComponent)cc).content().superContainer).descriptors();
-					// TODO: life cycle
-					if (cc instanceof ArenaComponent) {
+					if (cc instanceof LifeCycleComponent) {
+						lifeCycle = cc;
+						cc = ((DescribedContainer<?>)((LifeCycleComponent)cc).content().superContainer).descriptors();
+						if (cc instanceof ArenaComponent)
+							arena = cc;
+					}
+					else if (cc instanceof ArenaComponent) {
 						arena = cc;
 					}
+				}
+				else if (cc instanceof LifeCycleComponent) {
+					lifeCycle = cc;
+					cc = ((DescribedContainer<?>)((LifeCycleComponent)cc).content().superContainer).descriptors();
+					if (cc instanceof ArenaComponent)
+						arena = cc;
 				}
 				else if (cc instanceof ArenaComponent)
 					arena = cc;
