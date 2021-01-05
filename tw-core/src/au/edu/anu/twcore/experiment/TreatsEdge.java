@@ -26,34 +26,30 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package fr.cnrs.iees.twcore.constants;
+package au.edu.anu.twcore.experiment;
 
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.graph.EdgeFactory;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.impl.ALDataEdge;
+import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 
 /**
  * @author Ian Davies
  *
- * @date 13 Dec 2019
+ * @date 3 Jan. 2021
  */
-public enum RngSeedSourceType {
-	/* seed source from table by give index [0..999] */
-	NATURAL, //
-	/* seed produced by a call to unique instance of Random() */
-	PSEUDO, //
-	/* seed set to a simple constant (0 or 1 depending on alg used */
-	CONSTANT,//
-	/*
-	 * we could also have an option to create seed by system time but it serves no
-	 * purpose as far as I can see.
-	 */
-	;
 
-	public static RngSeedSourceType defaultValue() {
-		return PSEUDO;
+/** Edge for linking Treatment to fields and tables */
+public class TreatsEdge extends ALDataEdge {
+
+	public TreatsEdge(Identity id, Node start, Node end, EdgeFactory graph) {
+		super(id, start, end, new ExtendablePropertyListImpl(), graph);
 	}
 
-	static {
-		ValidPropertyTypes.recordPropertyType(RngSeedSourceType.class.getSimpleName(),
-				RngSeedSourceType.class.getName(), defaultValue());
+	public TreatsEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
+		super(id, start, end, props, graph);
 	}
+
 }
