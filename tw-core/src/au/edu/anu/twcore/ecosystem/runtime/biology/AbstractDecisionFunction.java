@@ -34,7 +34,8 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
  * @author Jacques Gignoux - 18 sept. 2019
  *
  */
-public abstract class AbstractDecisionFunction extends TwFunctionAdapter implements DecisionFunction {
+public abstract class AbstractDecisionFunction extends TwFunctionAdapter
+	implements DecisionFunction, SelectionFunction {
 
 	/**
 	 * constructor defining its own randm number stream
@@ -43,34 +44,23 @@ public abstract class AbstractDecisionFunction extends TwFunctionAdapter impleme
 		super();
 	}
 
-	/**
-	 * A function to make a decision based on a probablility. It draws a random number
-	 * and returns true if the number is smaller than the proba argument, false otherwise.
-	 * It may be used by end-users in their code, e.g.:
-	 *
-	 * @param proba the probability of the decision
-	 * @return true with probability = proba
-	 */
 	public final boolean decide(Double proba) {
 		return (rng.nextDouble()<proba);
 	}
-	
-//	// multinomial decision making
-//	public final int decide(double...weights) {
-//		double totalWeight = 0.0;
-//		for (int i=0; i<weights.length; i++)
-//			totalWeight += weights[i];
-//		double bounds[] = new double[weights.length];
-//		bounds[0] = weights[0]/totalWeight;
-//		for (int i=1; i<weights.length; i++)
-//			bounds[i] = bounds[i-1]+weights[i]/totalWeight;
-//		// last cell is always 1.0 normally
-//		int result=0;
-//		double proba = rng.nextDouble();
-//		while (proba>=bounds[result])
-//			result++;
-//		// proba==1 is always possible and would return out of range index hence protection
-//		return Math.min(result,weights.length-1); 	
-//	}
+
+	@Override
+	public int select(double... weights) {
+		double bounds[] = new double[weights.length];
+		bounds[0] = weights[0];
+		for (int i=1; i<weights.length; i++)
+			bounds[i] = bounds[i-1]+weights[i];
+		double totalWeight = bounds[bounds.length-1];
+		int result=0;
+		double proba = rng.nextDouble()*totalWeight;
+		while (proba>=bounds[result])
+			result++;
+		// proba==1 is always possible and would return out of range index hence protection
+		return Math.min(result,weights.length-1);
+	}
 
 }

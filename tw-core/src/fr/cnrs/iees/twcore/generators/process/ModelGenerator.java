@@ -71,7 +71,6 @@ import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
@@ -79,6 +78,7 @@ import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
+import au.edu.anu.twcore.ecosystem.structure.Produce;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -249,7 +249,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				}
 			// this because ComponentType is unsealed at that time
 			SortedSet<Category> categories = new TreeSet<>(); // caution: sorted set !
-			categories.addAll(((Categorized<SystemComponent>) tn).getSuperCategories(ccats));
+			categories.addAll(Categorized.getSuperCategories(ccats));
+//			categories.addAll(((Categorized<SystemComponent>) tn).getSuperCategories(ccats));
 			dataClassNames.put(categories, cl);
 			elementTypeCategories.put(tn, categories);
 		}
@@ -408,31 +409,29 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return ss[ss.length - 1];
 	}
 
-	// helper classes to gather all the required information
+	// helper classes to gather all the required information about data structures
+	// this describes a field or table
 	class memberInfo implements Comparable<memberInfo> {
 		String name = null;
 		String type;
 		String fullType;
 		String comment;
 		boolean isTable;
-
 		@Override
 		public int compareTo(memberInfo m) {
 			return name.compareTo(m.name);
 		}
-
 		@Override
 		public String toString() {
 			String s = "[" + name + ":" + type + "(" + fullType + ")]";
 			return s;
 		}
 	}
-
+	// this describes a record
 	class recInfo {
 		String name = null;
 		String klass;
 		Collection<memberInfo> members = null;
-
 		@Override
 		public String toString() {
 			String s = "[" + name + ":" + klass;
@@ -450,7 +449,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	// A Map of all data structure information required by all methods
 	private Map<String, EnumMap<TwFunctionArguments, List<recInfo>>> dataStructures = new HashMap<>();
 
-	// gets all the fields and tables of a give category set. Returns them in always
+	// gets all the fields and tables of a given category set. Returns them in always
 	// the same order
 	protected Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> getAllMembers(Collection<Category> cats) {
 		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> result = new HashMap<>();
@@ -513,6 +512,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return result;
 	}
 
+	// find the system node from any of its children nodes
 	private TreeGraphDataNode getSystemNode(TreeGraphDataNode fp) {
 		while ((fp!=null) & !(fp instanceof ArenaType))
 			fp = (TreeGraphDataNode) fp.getParent();
@@ -531,10 +531,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			// get all the groups in the system
 			Collection<GroupType> grps = (Collection<GroupType>) get(sys.subTree(),
 				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
-//			Collection<GroupType> grps = (Collection<GroupType>) get(sys.getChildren(),
-//				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())),
-//				children(),
-//				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
 			Set<Category> allGroupCats = new HashSet<>();
 			// now find which group is above the current component type....
 			if (grps!=null)
@@ -574,6 +570,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	@SuppressWarnings("unchecked")
 	protected SortedSet<Category> findLifeCycleCategories(TreeGraphDataNode function,
 			Set<Category> componentCats, // the categories of the process acting on the component
+			// (contains the lifecycle>Prod or Rec>from category)
+			// this process is a ComponentProcess
 			TwFunctionArguments arg) {
 		SortedSet<Category> cats = new TreeSet<>();
 		if ((arg==lifeCycle)||(arg==otherLifeCycle)) {
@@ -581,17 +579,26 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			// get all lifecycletypes in the system
 			Collection<LifeCycleType> lcts = (Collection<LifeCycleType>) get(sys.subTree(),
 				selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label())));
-
-
-			// TODO here:
-
-			// find life cycle categories
-
-			// for functions mediating the produce and recruit transitions,
-			// use the to and from categories to generate the proper arguments to the function
-
-
-
+			if (lcts!=null)
+				for (LifeCycleType lct:lcts) {
+					// Find the lifeCycle categories
+					Collection<Category> lctcats = (Collection<Category>) get(lct.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+						edgeListEndNodes());
+					// find the stage categories (cats of the CategorySet) of this lifeCycle
+					Collection<Category> stageCats = (Collection<Category>) get(lct.edges(Direction.OUT),
+						selectOne(hasTheLabel(E_APPLIESTO.label())),
+						endNode(), // categorySet
+						children());
+					// check that one of the stage categories is found in the componentCategories
+					for (Category cat:stageCats) {
+						if (componentCats.contains(cat)) {
+							// select this life cycle categories as arguments to the function
+							cats.addAll(lctcats);
+							// CAUTION: there should only be one match here
+						}
+					}
+			}
 		}
 		return cats;
 	}
@@ -616,9 +623,11 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				// use findGroupCategories instead
 			}
 			if ((arg == lifeCycle) || (arg == group)) {
-				// TODO: get the component type matching process categories, then get the
-				// grouptype
-				// and lifecycle type to get their categories
+				// it should be a mistake to reach here
+				// use findLifeCycleCategories instead
+//				// TODO: get the component type matching process categories, then get the
+//				// grouptype
+//				// and lifecycle type to get their categories
 				System.out.println("TODO: missing code here! [ModelGenerator.findCategories(...)]");
 			}
 			if (arg == focal)
@@ -663,18 +672,35 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				ProcessNode pn = (ProcessNode) fp.getParent();
 				if (arg == arena)
 					arenaNode = getSystemNode(fp);
-				List<TreeGraphDataNode> lcs = (List<TreeGraphDataNode>) get(pn.edges(Direction.IN),
-					edgeListStartNodes(),
-					selectZeroOrMany(hasTheLabel(N_LIFECYCLE.label())));
-				if (!lcs.isEmpty()) {
-					// TODO: get categories from life cycle information
-				}
-				// if no life cycle:
-				// + same categories as focal if no life cycle
-				else if ((arg==focal) || (arg==other)) {
+//				List<TreeGraphDataNode> lcs = (List<TreeGraphDataNode>) get(pn.edges(Direction.IN),
+//					edgeListStartNodes(),
+//					selectZeroOrMany(hasTheLabel(N_LIFECYCLE.label())));
+				if (arg==focal) {
 					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
 						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
 						edgeListEndNodes()));
+					return cats;
+				}
+				if (arg==other) {
+					// if there is a lifecycle there is a produce node:
+					Produce prod = (Produce) get(fp.edges(Direction.IN),
+						selectZeroOrOne(hasTheLabel(E_EFFECTEDBY.label())),
+						startNode());
+					if (prod!=null) {
+						Category targetCat = (Category) get(prod.edges(Direction.OUT),
+							selectOne(hasTheLabel(E_TOCATEGORY.label())),
+							endNode());
+						cats.add(targetCat);
+						cats.addAll(Categorized.getSuperCategories(cats));
+						//method to get other categories: nest the stage categorySet within
+						// another category whose variables are all taken here
+					}
+					// not involved in a life cycle:
+					// + same categories as focal if no life cycle
+					else
+						cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
+							selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+							edgeListEndNodes()));
 					return cats;
 				}
 				break;
@@ -853,7 +879,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			for (TwFunctionArguments a : ftype.readOnlyArguments())
 				if ((a != t) & (a != dt)) {
 				newDS.put(a, new LinkedList<recInfo>());
-				// TODO: make sure all categories are searched for all the context classes
+				// make sure all categories are searched for all the context classes
 				// ie goup, life cycle, arena etc.
 				SortedSet<Category> cats = null;
 				if (a.equals(focal))
@@ -864,7 +890,11 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					cats = findGroupCategories(functions.get(method),focalCats,a);
 				else if (a.equals(otherGroup))
 					cats = findGroupCategories(functions.get(method),otherCats,a);
-				else
+				else if (a.equals(lifeCycle))
+					cats = findLifeCycleCategories(functions.get(method),focalCats,a);
+				else if (a.equals(otherLifeCycle))
+					cats = findLifeCycleCategories(functions.get(method),otherCats,a);
+				else // we should NEVER reach here!
 					cats = findCategories(functions.get(method), a);
 				Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> fields = getAllMembers(cats);
 				for (ConfigurationEdgeLabels el : EnumSet.of(E_AUTOVAR, E_CONSTANTS, E_DECORATORS, E_DRIVERS)) {
@@ -912,7 +942,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		TwFunctionTypes ftype = (TwFunctionTypes) funk.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		TreeGraphDataNode catNode = (TreeGraphDataNode) funk.getParent();
 		List<Category> cats = null;
-		// 1st ca se: parent is an ElementType, so has categories
+		// 1st case: parent is an ElementType, so has categories
 		if (catNode instanceof ElementType) {
 			cats = (List<Category>) get(catNode.edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
@@ -922,7 +952,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					if (excludedFocalArguments.keySet().contains(c.id()))
 						focalLevel = c.id();
 		}
-		// 2nd case: parent is a function
+		// 2nd case: parent is a function, hence this is a consequence.
 		if (catNode instanceof FunctionNode) {
 			TwFunctionTypes fftype = (TwFunctionTypes) catNode.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 			switch (fftype) {
@@ -932,10 +962,12 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				otherLevel = Category.component;
 				break;
 			case CreateOtherDecision:
-				// TODO: search the LifeCycle for the correct categories
-				// if no life cycle:
+				// in all cases:
 				otherLevel = Category.component;
+				// the creator may be a Group or the Arena
 				// if no life cycle search the Process for the parent level
+				// NB: this should always work as the process must mach the lifecycle
+				// requirements...
 				cats = null;
 				ProcessNode cpn = (ProcessNode) catNode.getParent();
 				cats = (List<Category>) get(cpn.edges(Direction.OUT),
