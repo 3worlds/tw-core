@@ -44,14 +44,31 @@ hasNode treatmentSpec
 	isOfClass = String("treatment")
 	hasParent =  StringTable(([1]"experiment:"))
 	multiplicity = IntegerRange("0..*")
-	hasProperty treatmentReplicatesPropertySpec
-		hasName = String("replicates")
-		type = String("Integer")
-		multiplicity = IntegerRange("1..1")
-	hasEdge modelSetupEdgeSpec
-		isOfClass = String("modelSetup")
-		toNode = String("system:")
-		multiplicity = IntegerRange("0..1")
+	hasEdge  fieldEdgeSpec
+		isOfClass = String("treats")
+		toNode = String("field:")
+		multiplicity = IntegerRange("1..*")
+		hasProperty edgeTreatmentRankSpec
+			hasName = String("rank")
+			type = String("Integer")
+			multiplicity = IntegerRange("1..1")
+		hasProperty edgeTreatmentValuesSpec
+			hasName = String("valuesxxx")
+			type = String("StringTable")
+			multiplicity = IntegerRange("1..1")
+
+//hasNode treatmentSpec
+//	isOfClass = String("treatment")
+//	hasParent =  StringTable(([1]"experiment:"))
+//	multiplicity = IntegerRange("0..*")
+//	hasProperty treatmentReplicatesPropertySpec
+//		hasName = String("replicates")
+//		type = String("Integer")
+//		multiplicity = IntegerRange("1..1")
+//	hasEdge modelSetupEdgeSpec
+//		isOfClass = String("modelSetup")
+//		toNode = String("system:")
+//		multiplicity = IntegerRange("0..1")
 
 hasNode modelChangeSpec
 	isOfClass = String("modelChange")
