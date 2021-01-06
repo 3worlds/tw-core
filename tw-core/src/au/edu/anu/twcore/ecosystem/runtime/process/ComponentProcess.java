@@ -92,6 +92,7 @@ public class ComponentProcess
 	private GroupComponent otherGroup = null;
 	// lifecycle
 	private LifeCycleComponent focalLifeCycle = null;
+	private LifeCycleComponent otherLifeCycle = null;
 
 	/**
 	 * Constructor
@@ -209,7 +210,7 @@ public class ComponentProcess
 				newBornSpecs.add(nbs);
 			}
 			for (newBornSettings nbs:newBornSpecs) {
-				double result = function.nNew(t, dt, arena, null, focalGroup, focal, space);
+				double result = function.nNew(t, dt, arena, focalLifeCycle, focalGroup, focal, space);
 				// compute effective number of newBorns (taking the decimal part as a probability)
 				double proba = function.rng().nextDouble();
 				long n = (long) Math.floor(result);
@@ -222,9 +223,11 @@ public class ComponentProcess
 							otherGroup = focalGroup;
 						else
 							otherGroup = (GroupComponent) nbs.container.descriptors();
+						// by construction, offspring and parent belong to the same life cycle
+						otherLifeCycle = focalLifeCycle;
 						func.setOtherInitialState(t, dt,
-							arena, null, focalGroup, focal,
-							null, otherGroup, newBorn, space);
+							arena, focalLifeCycle, focalGroup, focal,
+							otherLifeCycle, otherGroup, newBorn, space);
 						if (space!=null) {
 							locate(newBorn,nbs.container);
 						}
