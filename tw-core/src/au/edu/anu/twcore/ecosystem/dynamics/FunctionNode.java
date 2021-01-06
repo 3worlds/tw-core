@@ -31,8 +31,11 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.RngNode;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
+import au.edu.anu.twcore.ecosystem.runtime.biology.ChangeCategoryDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueWriteable;
+import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.Recruit;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -52,6 +55,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -126,6 +130,7 @@ public class FunctionNode
 		return sealed;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected TwFunction makeFunction(int index) {
 		TwFunction result = null;
 		try {
@@ -140,12 +145,23 @@ public class FunctionNode
 				result.setEventQueue((EventQueueWriteable)tn.getInstance(index),tn.id());
 			// add the consequences of the function, if any
 			for (TreeNode n:getChildren())
-				if (n instanceof FunctionNode){
+				if (n instanceof FunctionNode) {
 					FunctionNode csq = (FunctionNode) n;
 					result.addConsequence(csq.getInstance(index));
+			}
 			if (result instanceof CreateOtherDecisionFunction)
 				((CreateOtherDecisionFunction)result).setRelateToOther(
 					(boolean)properties().getPropertyValue(P_RELATEPRODUCT.key()));
+			if (result instanceof ChangeCategoryDecisionFunction) {
+				Collection<Recruit> recruits = (Collection<Recruit>) get(edges(Direction.IN),
+					selectOneOrMany(hasTheLabel(E_EFFECTEDBY.label())),
+					edgeListStartNodes());
+				Collection<Category> toCats = new HashSet<>();
+				for (Recruit rec:recruits)
+					toCats.add((Category)get(rec.edges(Direction.OUT),
+						selectOne(hasTheLabel(E_TOCATEGORY.label())),
+						endNode()));
+				((ChangeCategoryDecisionFunction)result).setTransitions(toCats);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

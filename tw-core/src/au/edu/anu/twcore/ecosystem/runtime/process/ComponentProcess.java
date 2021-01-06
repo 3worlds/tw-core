@@ -50,6 +50,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
@@ -58,6 +59,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
@@ -150,7 +153,7 @@ public class ComponentProcess
 			focal.currentState().writeDisable(); // we dont care anymore about that, except for tables...
 			focal.nextState().writeEnable();
 		}
-
+		//-----------------------------------------------------------------------------------
 		// change state of this SystemComponent - easy
 		for (ChangeStateFunction function : CSfunctions) {
 			function.changeState(t,dt,arena,null,focalGroup,focal,space);
@@ -159,12 +162,11 @@ public class ComponentProcess
 		}
 		if (focal.currentState() != null)
 			focal.nextState().writeDisable();
-
+		//-----------------------------------------------------------------------------------
 		// delete decision function (NB: only applicable to SystemComponents)
 		if (focal instanceof SystemComponent)
 			for (DeleteDecisionFunction function : Dfunctions)
 				if (function.delete(t, dt, arena, null,focalGroup, focal, space)) {
-		//-----------------------------------------------------------------------------------
 			((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
 			if (space!=null)
@@ -187,8 +189,8 @@ public class ComponentProcess
 						relocate((SystemComponent)other);
 				}
 			}
-		} //-------------------------------------------------------------------------
-
+		}
+		//-----------------------------------------------------------------------------------
 		// creation of other SystemComponents
 		for (CreateOtherDecisionFunction function : COfunctions) {
 			// if there is a life cycle, then it will return the next stage(s)
@@ -199,7 +201,6 @@ public class ComponentProcess
 				nbs.factory = (ComponentFactory) toGroup.content().itemCategorized();
 				nbs.container = (ComponentContainer) toGroup.content();
 				newBornSpecs.add(nbs);
-//				System.out.println(focalGroup.name()+" to "+toGroup.name());
 			}
 			// without a life cycle, only objects of the same type can be created
 			else {
@@ -228,27 +229,96 @@ public class ComponentProcess
 						func.setOtherInitialState(t, dt,
 							arena, focalLifeCycle, focalGroup, focal,
 							otherLifeCycle, otherGroup, newBorn, space);
-						if (space!=null) {
-							locate(newBorn,nbs.container);
-						}
 					}
+					if (space!=null)
+						locate(newBorn,nbs.container);
 					// CAUTION: this relation cannot have a matching RelationType
-					if (function.relateToOther())
+					if (function.relateToOther()) {
 						focal.relateTo(newBorn,parentTo.key()); // delayed addition
+						if (space!=null)
+							if (space.dataTracker()!=null)
+								space.dataTracker().createLine(((SystemComponent)focal).container().itemId(focal.id()),
+									nbs.container.itemId(newBorn.id()));
+					}
 					// Reminder: this is just a list for delayed addition in ecosystem.effectChanges()
 					// before this, the newBorn container field is null
 					nbs.container.addItem(newBorn);
 				}
 			}
 		}
-
+		//-----------------------------------------------------------------------------------
+		// recruit to other component type ("change category")
+		// NB: only applicable to SystemComponents that are part of a LifeCycle
+		if (focal instanceof SystemComponent)
+			for (ChangeCategoryDecisionFunction function : CCfunctions) {
+				String newCat = function.changeCategory(t, dt, arena,
+					focalLifeCycle,focalGroup,focal,space);
+				if (newCat != null) {
+					otherGroup = focalLifeCycle.recruitGroup(newCat);
+					ComponentContainer recruitContainer = (ComponentContainer)otherGroup.content();
+					ComponentFactory recruitFactory = (ComponentFactory) otherGroup.content().itemCategorized();
+					SystemComponent newRecruit = recruitFactory.newInstance();
+					// carry over former ID as name
+					ComponentData newRecruitAutoVar = (ComponentData) newRecruit.autoVar();
+					ComponentData focalAutoVar = (ComponentData) focal.autoVar();
+					newRecruitAutoVar.writeEnable();
+					if (focalAutoVar.name().isBlank())
+						newRecruitAutoVar.name(focal.id());
+					else
+						newRecruitAutoVar.name(focalAutoVar.name());
+					// carry over age and birthdate
+					newRecruitAutoVar.age(focalAutoVar.age());
+					newRecruitAutoVar.birthDate(focalAutoVar.birthDate());
+					newRecruitAutoVar.writeDisable();
+					// apply consequences, if any
+					otherLifeCycle = focalLifeCycle;
+					for (SetOtherInitialStateFunction func : function.getConsequences()) {
+						func.setOtherInitialState(t, dt, arena,
+							focalLifeCycle, focalGroup, focal,
+							otherLifeCycle, otherGroup, newRecruit,
+							space);
+					}
+					// replacement of old component by new one.
+					((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
+					recruitContainer.addItem(newRecruit);
+					// CAUTION: this makes sure the new object takes the place of
+					// the former one in any graph it is part of.
+					// THIS WILL NOT WORK if there are edges to SystemFactory etc.
+					// It is of tremendous importance that edges are only to
+					// other SystemComponents.
+					newRecruit.replace(focal);
+					// manage space & data trackers
+					if (space!=null) {
+						unlocate((SystemComponent)focal);
+						locate(newRecruit,recruitContainer);
+						if (space.dataTracker()!=null) {
+							for (Edge e:newRecruit.edges(Direction.OUT)) {
+								SystemComponent sc = (SystemComponent)e.endNode();
+								space.dataTracker().createLine(recruitContainer.itemId(newRecruit.id()),
+									sc.container().itemId(sc.id()));
+							}
+							for (Edge e:newRecruit.edges(Direction.IN)) {
+								SystemComponent sc = (SystemComponent)e.startNode();
+								space.dataTracker().createLine(sc.container().itemId(sc.id()),
+									recruitContainer.itemId(newRecruit.id()));
+							}
+						}
+					}
+					// remove from tracklist - safe, data sending has already been made
+					for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
+						if (tracker.isTracked(focal))
+							tracker.removeFromSample(focal);
+				}
+				// else: no recruitment
+			}
+ 		//-----------------------------------------------------------------------------------
 		// call data trackers AFTER computations so that decorators are different from zero
 		for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 			if (tracker.isTracked(focal)) {
 				tracker.recordItem(focal.hierarchicalId());
 				tracker.record(currentStatus,focal.currentState(),focal.decorators(),focal.autoVar());
 		}
-
+		//-----------------------------------------------------------------------------------
 	}
 
 	// single loop on a container which matches the process categories

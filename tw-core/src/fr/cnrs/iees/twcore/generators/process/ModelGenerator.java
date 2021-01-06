@@ -79,6 +79,7 @@ import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.ecosystem.structure.Produce;
+import au.edu.anu.twcore.ecosystem.structure.Recruit;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -250,7 +251,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			// this because ComponentType is unsealed at that time
 			SortedSet<Category> categories = new TreeSet<>(); // caution: sorted set !
 			categories.addAll(Categorized.getSuperCategories(ccats));
-//			categories.addAll(((Categorized<SystemComponent>) tn).getSuperCategories(ccats));
 			dataClassNames.put(categories, cl);
 			elementTypeCategories.put(tn, categories);
 		}
@@ -455,8 +455,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> result = new HashMap<>();
 		for (Category cat : cats)
 			for (ConfigurationEdgeLabels cel : EnumSet.of(E_AUTOVAR, E_CONSTANTS, E_DECORATORS, E_DRIVERS)) {
-				Record rec = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(cel.label())),
-						endNode());
+				Record rec = (Record) get(cat.edges(Direction.OUT),
+					selectZeroOrOne(hasTheLabel(cel.label())),
+					endNode());
 				if (rec != null) {
 					for (TreeNode tn : rec.getChildren()) {
 						memberInfo mb = new memberInfo();
@@ -465,7 +466,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 							mb.isTable = false;
 							mb.name = validJavaName(wordUpperCaseName(f.id()));
 							mb.comment = argComment(f, P_FIELD_DESCRIPTION, P_FIELD_UNITS, P_FIELD_PREC,
-									P_FIELD_INTERVAL, P_FIELD_RANGE);
+								P_FIELD_INTERVAL, P_FIELD_RANGE);
 							mb.type = f.properties().getPropertyValue(P_FIELD_TYPE.key()).toString();
 							mb.fullType = ValidPropertyTypes.getJavaClassName(mb.type);
 							if (ValidPropertyTypes.isPrimitiveType(mb.type)) {
@@ -477,12 +478,13 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 									mb.type = mb.type.substring(0, 1).toLowerCase() + mb.type.substring(1);
 								}
 							}
-						} else if (tn instanceof TableNode) {
+						}
+						else if (tn instanceof TableNode) {
 							TableNode t = (TableNode) tn;
 							mb.isTable = true;
 							mb.name = validJavaName(wordUpperCaseName(t.id()));
 							mb.comment = argComment(t, P_TABLE_DESCRIPTION, P_TABLE_UNITS, P_TABLE_PREC,
-									P_TABLE_INTERVAL, P_TABLE_RANGE);
+								P_TABLE_INTERVAL, P_TABLE_RANGE);
 							// Add table dimensions to comment
 							// table of primitive types
 							if (t.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
@@ -500,7 +502,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 								mb.type = validJavaName(initialUpperCase(wordUpperCaseName(t.id())));
 								mb.fullType = null;
 							}
-
 						}
 						if (result.get(cel) == null)
 							result.put(cel, new TreeSet<>());
@@ -625,9 +626,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			if ((arg == lifeCycle) || (arg == group)) {
 				// it should be a mistake to reach here
 				// use findLifeCycleCategories instead
-//				// TODO: get the component type matching process categories, then get the
-//				// grouptype
-//				// and lifecycle type to get their categories
 				System.out.println("TODO: missing code here! [ModelGenerator.findCategories(...)]");
 			}
 			if (arg == focal)
@@ -638,7 +636,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 							selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
 							edgeListEndNodes()));
 						return cats;
-					}
+			}
 			// relation process
 			for (TwFunctionTypes tft : AbstractRelationProcess.compatibleFunctionTypes)
 				if (tft.equals(ftype)) {
@@ -658,23 +656,42 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					} else if ((arg == otherLifeCycle) || (arg == otherGroup)) {
 						// TODO
 					}
-				}
+			}
 		}
 		// 2 parent is a functionNode, means we are dealing with a consequence
 		else if (fp instanceof FunctionNode) {
 			TwFunctionTypes pftype = (TwFunctionTypes) fp.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+			ProcessNode pn = (ProcessNode) fp.getParent();
 			switch (pftype) {
 			case ChangeCategoryDecision:
-				// TODO: search the LifeCycle for the correct categories
+				if (arg==focal) {
+					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+						edgeListEndNodes()));
+					return cats;
+				}
+				if (arg==other) {
+					// if there is a lifecycle there is at least one recruit node:
+					// but there may be more than one
+					Collection<Recruit> recs = (Collection<Recruit>) get(fp.edges(Direction.IN),
+						selectZeroOrMany(hasTheLabel(E_EFFECTEDBY.label())),
+						edgeListStartNodes());
+					for (Recruit rec:recs) {
+						Category targetCat = (Category) get(rec.edges(Direction.OUT),
+							selectOne(hasTheLabel(E_TOCATEGORY.label())),
+							endNode());
+						cats.add(targetCat);
+						cats.addAll(Categorized.getSuperCategories(cats));
+						//method to get other categories: nest the stage categorySet within
+						// another category whose variables are all taken here
+					}
+					// it would be a mistake to have no life cycle here
+					return cats;
+				}
 				break;
 			case CreateOtherDecision:
-				// search for a life cycle
-				ProcessNode pn = (ProcessNode) fp.getParent();
 				if (arg == arena)
 					arenaNode = getSystemNode(fp);
-//				List<TreeGraphDataNode> lcs = (List<TreeGraphDataNode>) get(pn.edges(Direction.IN),
-//					edgeListStartNodes(),
-//					selectZeroOrMany(hasTheLabel(N_LIFECYCLE.label())));
 				if (arg==focal) {
 					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
 						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),

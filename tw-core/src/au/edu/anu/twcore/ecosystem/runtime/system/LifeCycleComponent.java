@@ -9,7 +9,6 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.runtime.biology.ChangeCategoryDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -60,8 +59,7 @@ public class LifeCycleComponent extends HierarchicalComponent {
 		return groups.get(toCat);
 	}
 
-	public GroupComponent recruitGroup(ChangeCategoryDecisionFunction function) {
-		String toCat = elementFactory().toCategories(function);
+	public GroupComponent recruitGroup(String toCat) {
 		return groups.get(toCat);
 	}
 
