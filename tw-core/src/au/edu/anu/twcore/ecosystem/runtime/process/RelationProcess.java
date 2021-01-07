@@ -52,12 +52,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
  */
 public class RelationProcess extends AbstractRelationProcess {
 
-    private List<ChangeOtherCategoryDecisionFunction> COCfunctions =
-    	new LinkedList<ChangeOtherCategoryDecisionFunction>();
     private List<ChangeOtherStateFunction> COSfunctions =
     	new LinkedList<ChangeOtherStateFunction>();
-    private List<DeleteOtherDecisionFunction> DOfunctions =
-    	new LinkedList<DeleteOtherDecisionFunction>();
     private List<MaintainRelationDecisionFunction> MRfunctions =
     	new LinkedList<MaintainRelationDecisionFunction>();
     private List<ChangeRelationStateFunction> CRfunctions =
@@ -332,14 +328,10 @@ public class RelationProcess extends AbstractRelationProcess {
 	@Override
 	public void addFunction(TwFunction function) {
 		if (!isSealed()) {
-			if (function instanceof ChangeOtherCategoryDecisionFunction)
-				COCfunctions.add((ChangeOtherCategoryDecisionFunction) function);
-			else if (function instanceof ChangeOtherStateFunction)
+			if (function instanceof ChangeOtherStateFunction)
 				COSfunctions.add((ChangeOtherStateFunction) function);
 			else if (function instanceof ChangeRelationStateFunction)
 				CRfunctions.add((ChangeRelationStateFunction) function);
-			else if (function instanceof DeleteOtherDecisionFunction)
-				DOfunctions.add((DeleteOtherDecisionFunction) function);
 			else if (function instanceof MaintainRelationDecisionFunction)
 				MRfunctions.add((MaintainRelationDecisionFunction) function);
 		}

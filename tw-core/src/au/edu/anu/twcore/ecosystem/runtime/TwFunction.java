@@ -85,8 +85,6 @@ public interface TwFunction extends RngHolder {
 			ftypes.put(CreateOtherDecision,EnumSet.of(SetOtherInitialState));
 			ftypes.put(DeleteDecision,EnumSet.of(ChangeOtherState));
 			ftypes.put(ChangeOtherState, EnumSet.noneOf(TwFunctionTypes.class));
-			ftypes.put(ChangeOtherCategoryDecision,EnumSet.of(SetOtherInitialState));
-			ftypes.put(DeleteOtherDecision,EnumSet.of(ChangeOtherState));
 			ftypes.put(RelateToDecision, EnumSet.noneOf(TwFunctionTypes.class));
 			ftypes.put(MaintainRelationDecision, EnumSet.noneOf(TwFunctionTypes.class));
 			ftypes.put(ChangeRelationState, EnumSet.noneOf(TwFunctionTypes.class));

@@ -49,12 +49,11 @@ import java.util.TreeSet;
  * result is a decision index (based on dsl, will chose which transformation to apply to focal)
  *
  */
-public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFunction {
+public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFunction
+		implements RecruitFunction {
 
 	private List<SetOtherInitialStateFunction> consequences = new LinkedList<SetOtherInitialStateFunction>();
 	// the list of transitions - by convention transitionTo[0] means no transition
-	// TODO: it could actually be a pointer to the proper life cycle
-	// since this funtino always has a effectedBy edge to a recruit.
 	private String[] transitionTo = null;
 
 	public ChangeCategoryDecisionFunction() {
@@ -110,14 +109,16 @@ public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFun
 		transitionTo[0] = null;
 		int i=0;
 		for (Category cat:set)
-			transitionTo[i++] = cat.id();
+			transitionTo[++i] = cat.id();
 	}
 
-	protected String transition(int i) {
+	@Override
+	public final String transition(int i) {
 		return transitionTo[i];
 	}
 
-	protected String transition(boolean change) {
+	@Override
+	public final String transition(boolean change) {
 		return transitionTo[change?1:0];
 	}
 

@@ -97,9 +97,7 @@ public abstract class AbstractRelationProcess
 	}
 
 	public static TwFunctionTypes[] compatibleFunctionTypes = {
-		ChangeOtherCategoryDecision,
 		ChangeOtherState,
-		DeleteOtherDecision,
 		ChangeRelationState,
 		MaintainRelationDecision,
 		RelateToDecision,

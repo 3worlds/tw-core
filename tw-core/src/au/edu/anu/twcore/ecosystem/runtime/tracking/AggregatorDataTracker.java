@@ -16,11 +16,9 @@ import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
-import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregates;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
@@ -43,6 +41,7 @@ public abstract class AggregatorDataTracker<T>
 			P_DATATRACKER_TRACK.key(), 
 			P_DATATRACKER_SAMPLESIZE.key(),
 			"sample",
+			"nChannels",
 			Output0DMetadata.TSMETA };
 	// metadata for numeric fields, ie min max units etc.
 	protected ReadOnlyPropertyList fieldMetadata = null;
@@ -53,6 +52,8 @@ public abstract class AggregatorDataTracker<T>
 	private Map<StatisticalAggregates,DataLabel> statChannels = new HashMap<>();
 	// the part of the data channel label describing the variable/constant tracked
 	private Map<CategorizedComponent,DataLabel> itemChannels = new HashMap<>();
+	// the mapping of tracked item to display channels
+	private Map<DataLabel,Integer> channelIndex = new HashMap<>();
 	private DataLabel containerLabel = null;
 	private Metadata singletonMD = null;
 	protected int metadataType = -1;
@@ -101,13 +102,17 @@ public abstract class AggregatorDataTracker<T>
 		}
 		// container label
 		makeItemLabels();
-		if (permanentComponents) {
-			StringTable itemIds = new StringTable(new Dimensioner(itemChannels.size()));
-			int i=0;
-			for (DataLabel dl:itemChannels.values())
-				itemIds.setWithFlatIndex(dl.toString(),i++);
-			metaprops.setProperty("sample",itemIds);
-		}
+		if (permanentComponents)
+			metaprops.setProperty("nChannels",itemChannels.size());
+		else
+			metaprops.setProperty("nChannels",statChannels.size());
+//		if (permanentComponents) {
+//			StringTable itemIds = new StringTable(new Dimensioner(itemChannels.size()));
+//			int i=0;
+//			for (DataLabel dl:itemChannels.values())
+//				itemIds.setWithFlatIndex(dl.toString(),i++);
+//			metaprops.setProperty("sample",itemIds);
+//		}
 	}
 	
 	protected void resetStatistics() {
