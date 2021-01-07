@@ -46,7 +46,9 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.runtime.Deployable;
-import au.edu.anu.twcore.experiment.runtime.deployment.Deployer;
+import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
+import au.edu.anu.twcore.experiment.runtime.deployment.SingleDeployer;
+
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import java.util.logging.Logger;
@@ -104,17 +106,20 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 				ExperimentDesignType expDesignType = null;
 				if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key()))
 					expDesignType = (ExperimentDesignType) dsgn.properties().getPropertyValue(P_DESIGN_TYPE.key());
-				deployer = new Deployer();
-				controller = new StateMachineController(deployer);
 				if (expDesignType != null)
 					switch (expDesignType) {
 					case singleRun: {
+						if (nReps==1)
+							deployer = new SingleDeployer();
+						else
+							deployer = new ParallelDeployer();
 						for (int i = 0; i < nReps; i++)
 							deployer.attachSimulator(baselineSimulator.getInstance(N_SIMULATORS++));
 						break;
 					}
 					case crossFactorial: {
-						log.warning(() -> "crossFactorial deployment not yet implemented");
+						deployer = new ParallelDeployer();
+						System.out.println("crossFactorial deployment not yet implemented");
 						break;
 					}
 					default: {
@@ -124,6 +129,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 				else {
 					log.warning(() -> "file defined deployment not yet implemented");
 				}
+				controller = new StateMachineController(deployer);
 
 //				log.info(() -> "reset any 'onExperimentStart' rngs.");
 //				RngFactory.resetExperiment(); not needed. MR begins each exp when instanced

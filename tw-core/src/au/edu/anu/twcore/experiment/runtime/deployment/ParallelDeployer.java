@@ -78,20 +78,30 @@ import fr.ens.biologie.generic.utils.Logging;
  * a first set of simulations has completed.
  */
 
-public class Deployer extends Deployable {
+/**
+ * NB: If / when we figure out how to remove exception suppression, we can just
+ * use this deployer.
+ * 
+ * We will want to do that so we can debug cross-factorial experiments. Until
+ * then, the SingleDeployer is used if the required number of simulators =1
+ * 
+ * cf:
+ * https://stackoverflow.com/questions/2248131/handling-exceptions-from-java-executorservice-tasks
+ */
+
+public class ParallelDeployer extends Deployable {
 	private final ExecutorService executor;
 	/* Simply list of simulators */
 	private final List<Simulator> attachedSims;
 	/* Mapping simulator to running 'AttendedThread' */
 	final Map<Simulator, SimulatorThread> runningSims;
 
-	private static final Logger log = Logging.getLogger(Deployer.class);
+	private static final Logger log = Logging.getLogger(ParallelDeployer.class);
 
-	public Deployer() {
+	public ParallelDeployer() {
 		/* Executor with work-stealing policy */
 		// default is all available processors at runtime
 		executor = Executors.newWorkStealingPool();
-//		runningSims = new ConcurrentHashMap<>();
 		runningSims = new HashMap<>();
 		attachedSims = new ArrayList<>();
 	}

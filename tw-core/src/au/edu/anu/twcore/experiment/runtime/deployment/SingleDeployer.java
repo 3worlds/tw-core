@@ -31,7 +31,9 @@ package au.edu.anu.twcore.experiment.runtime.deployment;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployable;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
+import fr.ens.biologie.generic.utils.Logging;
 
+import java.util.logging.Logger;
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
 
 /**
@@ -41,25 +43,18 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  * @author Jacques Gignoux - 30 août 2019
  *
  */
-@Deprecated // It seems this in no longer required as DeployerImpl does everything
-public class SingleDeployer extends Deployable {
 
+public class SingleDeployer extends Deployable {
+	private static final Logger log = Logging.getLogger(SingleDeployer.class);
 	private Simulator sim = null;
 	private SimulatorThread runnable;
-
-	/**
-	 * NB: It's bad practice to start a thread in a constructor. Therefore, start()
-	 * is called (now with thread in paused state) when the sim is attached.
-	 * 
-	 * May be this thread should be created and destroyed on finish or reset.
-	 */
 	public SingleDeployer() {
 		super();
 	}
 
 	@Override
 	public void attachSimulator(Simulator sim) {
-		System.out.println("Attach");
+		log.info(()->"Attach");
 		this.sim = sim;
 		runnable = new SimulatorThread(this,sim);
 		Thread runningStateThread = new Thread(runnable);
@@ -69,7 +64,7 @@ public class SingleDeployer extends Deployable {
 
 	@Override
 	public void detachSimulator(Simulator sim) {
-		System.out.println("Detached");
+		log.info(()->"Detached");
 		// never used
 		quitProc();
 		this.sim = null;
@@ -77,25 +72,25 @@ public class SingleDeployer extends Deployable {
 
 	@Override
 	public void runProc() {
-		System.out.println("runProc()");
+		log.info(()->"runProc()");
 		runnable.resume();
 	}
 
 	@Override
 	public void waitProc() {
-		System.out.println("waitProc()");
+		log.info(()->"waitProc()");
 		sim.preProcess();
 	}
 	
 	@Override
 	public void resetProc() {
-		System.out.println("resetProc()");
+		log.info(()->"resetProc()");
 		sim.postProcess();
 	}
 
 	@Override
 	public void stepProc() {
-		System.out.println("stepProc()");
+		log.info(()->"stepProc()");
 
 		runnable.resume();
 		runnable.pause();
@@ -103,28 +98,25 @@ public class SingleDeployer extends Deployable {
 
 	@Override
 	public void finishProc() {
-		System.out.println("finishedProc()");
-//		runnable.pause();no longer required??
+		log.info(()->"finishedProc() -no longer required??");
 	}
 
 	@Override
 	public void pauseProc() {
-		System.out.println("pauseProc()");
+		log.info(()->"pauseProc()");
 		runnable.pause();
 	}
 
 	@Override
 	public void quitProc() {
-		System.out.println("quitProc()");
-	// unused - maybe never will be used
+		log.info(()->"quitProc()");
 		runnable.stop();
-		
 	}
 
 
 	@Override
 	public void ended(Simulator sim) {
-		System.out.println("ended");
+		log.info(()->"ended");
 		RVMessage message = new RVMessage(finalise.event().getMessageType(), null, this, this);
 		callRendezvous(message);	
 	}
