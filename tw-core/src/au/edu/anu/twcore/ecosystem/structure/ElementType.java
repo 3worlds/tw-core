@@ -26,7 +26,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.structure.newapi;
+package au.edu.anu.twcore.ecosystem.structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +54,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
 import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
-import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -104,7 +103,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		Collection<Category> nl = (Collection<Category>) get(edges(Direction.OUT),
 			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
 			edgeListEndNodes());
-		categories.addAll(getSuperCategories(nl));
+		categories.addAll(Categorized.getSuperCategories(nl));
 		categoryNames = new ArrayList<>(categories.size());
 		for (Category c:categories)
 			categoryNames.add(c.id()); // order is maintained
@@ -189,10 +188,12 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
 	}
-	
-	public final boolean isPermanent() {
-		return isPermanent;
-	}
 
+	public final boolean isPermanent() {
+		if (sealed)
+			return isPermanent;
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
+	}
 
 }

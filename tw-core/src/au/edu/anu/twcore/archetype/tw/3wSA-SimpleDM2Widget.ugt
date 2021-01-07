@@ -12,10 +12,12 @@ archetype 3wSA-SimpleDM2Widget
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery SenderInRangeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 		hasProperty SimpleDM2WidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery SimpleDM2ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))

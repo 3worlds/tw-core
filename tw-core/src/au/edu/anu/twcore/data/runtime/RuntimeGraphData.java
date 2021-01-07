@@ -45,6 +45,7 @@ public class RuntimeGraphData extends LabelledItemData {
 	private EcosystemGraph ecosystem;
 
 	public void setTree(EcosystemGraph ecosystem) {
+		// TODO: must derive info here not just take a reference.
 		this.ecosystem = ecosystem;
 	}
 

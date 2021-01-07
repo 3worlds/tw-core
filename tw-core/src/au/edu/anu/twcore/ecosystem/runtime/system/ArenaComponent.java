@@ -70,14 +70,14 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 				constants().writeEnable();
 			if (currentState() != null)
 				currentState().writeEnable();
-			initialiser().setInitialState(null, null, null, this, null, null);
+			initialiser().setInitialState(null, null, null, this, null);
 			if (constants() != null)
 				constants().writeDisable();
 			if (currentState() != null)
 				currentState().writeDisable();
 //			initialiser().startEventQueues();
 		}
-		
+
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 	public GraphDataTracker getDataTracker() {
 		return dataTracker;
 	}
-	
+
 	public String name() {
 		return elementFactory().name;
 	}

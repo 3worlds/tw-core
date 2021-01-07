@@ -72,23 +72,30 @@ class RngFactoryTest {
 	@Test
 	void test() {
 
-		Generator rngJava = RngFactory.newInstance("Random", 0, RngResetType.onRunStart, RngSeedSourceType.constant, RngAlgType.java);
-		Generator rngXSRandom = RngFactory.newInstance("XSRandom", 0, RngResetType.onRunStart, RngSeedSourceType.constant, RngAlgType.XSRandom);
-		Generator rngPCG = RngFactory.newInstance("PCGRandom", 0, RngResetType.onRunStart, RngSeedSourceType.constant,RngAlgType.Pcg32);
+		Generator rngJava = RngFactory.newInstance("Random", 0, RngResetType.ONRUNSTART, RngSeedSourceType.CONSTANT, RngAlgType.JAVA);
+		Generator rngXSRandom = RngFactory.newInstance("XSRandom", 0, RngResetType.ONRUNSTART, RngSeedSourceType.CONSTANT, RngAlgType.XSRANDOM);
+		Generator rngPCG = RngFactory.newInstance("PCGRandom", 0, RngResetType.ONRUNSTART, RngSeedSourceType.CONSTANT,RngAlgType.PCG32);
+		
+		Generator crap = RngFactory.newInstance("CRAP", 0, RngResetType.NEVER, RngSeedSourceType.PSEUDO, RngAlgType.JAVA);
+		System.out.println(crap.getRandom().nextDouble());
+				
 
 		Random random = rngJava.getRandom();
 		Random xsRandom = rngXSRandom.getRandom();
 		Random pcgRandom = rngPCG.getRandom();
 
-		rngJava.resetRun();
-		rngXSRandom.resetRun();
-		rngPCG.resetRun();
+//		rngJava.resetRun();
+//		rngXSRandom.resetRun();
+//		rngPCG.resetRun();
+		RngFactory.resetRun();
 		double v1 = random.nextDouble();
 		double v2 = xsRandom.nextDouble();
 		double v3 = pcgRandom.nextDouble();
-		rngJava.resetRun();
-		rngXSRandom.resetRun();
-		rngPCG.resetRun();
+		
+		RngFactory.resetRun();
+//		rngJava.resetRun();
+//		rngXSRandom.resetRun();
+//		rngPCG.resetRun();
 		assertEquals(v1, random.nextDouble());
 		assertEquals(v2, xsRandom.nextDouble());
 		assertEquals(v3, pcgRandom.nextDouble());
@@ -100,9 +107,10 @@ class RngFactoryTest {
 		System.out.println("Range check PCGRandom");
 		checkRange(pcgRandom);
 
-		rngJava.resetRun();
-		rngXSRandom.resetRun();
-		rngPCG.resetRun();
+//		rngJava.resetRun();
+//		rngXSRandom.resetRun();
+//		rngPCG.resetRun();
+		RngFactory.resetRun();
 
 		System.out.println("Time trial Random");
 		double t1 = timing(random);

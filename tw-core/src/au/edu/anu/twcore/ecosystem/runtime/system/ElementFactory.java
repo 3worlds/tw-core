@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import au.edu.anu.twcore.data.runtime.TwData;
@@ -53,6 +54,11 @@ import fr.ens.biologie.generic.Singleton;
 /**
  * A factory for any system element type - ancestor to SystemFactory, LifeCycle factory, GroupFactory etc.
  *
+ * <p>CAUTION: an element factory is conceptually 1..1 with an element type. When components must
+ * be instantiated, they are often associated with a container which has a 1..1 relation with
+ * an element type instance node (Group, LifeCycle, COmponent)., which have a 1..* relation
+ * with element type. </p>
+ *
  * @author J. Gignoux - 23 avr. 2020
  *
  */
@@ -60,7 +66,8 @@ public abstract class ElementFactory<T extends DataElement>
 		implements Factory<T>, Categorized<T>, Singleton<T> {
 
 	// the factory for SystemComponents and SystemRelations
-	protected static GraphFactory SCfactory = new TwGraphFactory();
+	protected static Map<Integer,GraphFactory> SCfactory = new TreeMap<>();
+	protected Integer simId;
 
 	/** Categorized */
 	private SortedSet<Category> categories = new TreeSet<>();
@@ -77,6 +84,9 @@ public abstract class ElementFactory<T extends DataElement>
 	SetInitialStateFunction setinit;
 	protected boolean isPermanent = true;
 
+	// temporary variables
+	protected ComponentContainer parentContainer = null;
+
 	/**
 	 * basic constructor
 	 * @param categories
@@ -84,8 +94,11 @@ public abstract class ElementFactory<T extends DataElement>
 	 */
 	public ElementFactory(Set<Category> categories,
 			TwData auto, TwData drv, TwData dec, TwData ltc,
-			SetInitialStateFunction setinit, boolean permanent) {
+			SetInitialStateFunction setinit, boolean permanent,int simulatorId) {
 		super();
+		simId = simulatorId;
+		if (SCfactory.get(simId)==null)
+			SCfactory.put(simId,new TwGraphFactory(simId));
 		this.categories.addAll(categories);
 //		this.categoryId = categoryId;
 		this.categoryId = buildCategorySignature();
@@ -130,6 +143,11 @@ public abstract class ElementFactory<T extends DataElement>
 		throw new TwcoreException("This method should never be called");
 	}
 
+	public T newInstance(ComponentContainer parentContainer) {
+		this.parentContainer = parentContainer;
+		return newInstance();
+	}
+
 	// Categorized
 
 	@Override
@@ -145,9 +163,14 @@ public abstract class ElementFactory<T extends DataElement>
 	public final SetInitialStateFunction initialiser() {
 		return setinit;
 	}
-	
+
 	public final boolean isPermanent() {
 		return isPermanent;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName()+simId+" for "+categoryId;
 	}
 
 }

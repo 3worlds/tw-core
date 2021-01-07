@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -60,10 +61,11 @@ import fr.ens.biologie.generic.utils.Logging;
  *
  */
 public abstract class SpaceAdapter
-		implements DynamicSpace<SystemComponent,LocatedSystemComponent> {
+		implements DynamicSpace<SystemComponent> {
 
 	private static Logger log = Logging.getLogger(SpaceAdapter.class);
 	private static final String jitterRNGName = "SpaceJitterRNG";
+	private scopes scope = new scopes();
 
 	private Identity id = null;
 	/**
@@ -96,13 +98,15 @@ public abstract class SpaceAdapter
 	 /** A RNG available to descendants to create jitter around locations if needed */
 	protected Random jitterRNG = null;
 	/** list of SystemComponents to insert later */
-	private Set<LocatedSystemComponent> toInsert = new HashSet<>();
+	private Set<SystemComponent> toInsert = new HashSet<>();
 	/** list of SystemComponents to delete later */
 	private Set<SystemComponent> toDelete = new HashSet<>();
+	/** list of SystemComponents to move later */
+	private Set<SystemComponent> toMove = new HashSet<>();
 	/** list of initial SystemComponents */
-	private Set<LocatedSystemComponent> initialComponents = new HashSet<>();
+	private Set<SystemComponent> initialComponents = new HashSet<>();
 	/** mapping of cloned item to their initial components */
-	private Map<String, LocatedSystemComponent> itemsToInitials = new HashMap<>();
+	private Map<String,SystemComponent> itemsToInitials = new HashMap<>();
 	private boolean changed = false;
 
 
@@ -113,10 +117,15 @@ public abstract class SpaceAdapter
 			Box obsWindow,
 			double guardWidth,
 			SpaceDataTracker dt,
-			String proposedId) {
+			String proposedId,
+			int simulatorId) {
 		super();
+		scope = new scopes();
+		scope.setSimId(simulatorId);
+		if (scope.getContainerScope(simulatorId)==null)
+			scope.setContainerScope(simulatorId, new ResettableLocalScope(containerScopeName+"-"+simulatorId));
 		if (RngFactory.find(jitterRNGName)==null)
-			RngFactory.newInstance(jitterRNGName, 0, RngResetType.never,RngSeedSourceType.secure,RngAlgType.Pcg32);
+			RngFactory.newInstance(jitterRNGName, 0, RngResetType.NEVER,RngSeedSourceType.PSEUDO,RngAlgType.XSRANDOM);
 		jitterRNG = RngFactory.find(jitterRNGName).getRandom();
 		limits = box;
 		if (obsWindow==null)
@@ -141,6 +150,11 @@ public abstract class SpaceAdapter
 	// Space<T>
 
 	@Override
+	public ResettableLocalScope scope() {
+		return scope.getContainerScope(scope.getSimId());
+	}
+
+	@Override
 	public Box boundingBox() {
 		return limits;
 	}
@@ -153,16 +167,6 @@ public abstract class SpaceAdapter
 	@Override
 	public final String units() {
 		return units;
-	}
-
-	@Override
-	public Location locate(SystemComponent focal, Point location) {
-		return locate(focal,location.asArray());
-	}
-
-	@Override
-	public Location locate(SystemComponent focal, Location location) {
-		return locate(focal,location.asPoint());
 	}
 
 	// RngHolder
@@ -218,75 +222,70 @@ public abstract class SpaceAdapter
 	// DynamicContainer<T>
 
 	@Override
-	public final void addItem(LocatedSystemComponent item) {
+	public final void addItem(SystemComponent item) {
 		// CAUTION: what happens if the system is to be deleted in containers after relocation?
 		toInsert.add(item);
 	}
-	
-	@Override
-	public final void add(SystemComponent item, Location loc) {
-		addItem(new LocatedSystemComponent(item,loc));
-	}
 
 	@Override
-	public final void removeItem(LocatedSystemComponent item) {
-		toDelete.add(item.item());
-	}
-
-	@Override
-	public final void remove(SystemComponent item) {
+	public final void removeItem(SystemComponent item) {
 		toDelete.add(item);
 	}
-	
-	// This is called after all graph changes (structure and state)
+
+	// DynamicSpace
+
 	@Override
-	public final void effectChanges() {
-		for (SystemComponent sc:toDelete)
-			unlocate(sc);
-		toDelete.clear();
-		// CAUTION: what happens if the system is to be deleted in containers after relocation?
-		for (LocatedSystemComponent lsc:toInsert)
-			locate(lsc.item(),lsc.location());
-		toInsert.clear();
-		changed = false;
+	public void moveItem(SystemComponent item) {
+		toMove.add(item);
 	}
 
 	// ResettableContainer
 
+	@SafeVarargs
 	@Override
-	public final void setInitialItems(LocatedSystemComponent... items) {
-		for (LocatedSystemComponent lsc:items)
+	// Remember that this is called AFTER state update, so that currentState() now contains the new locations
+	public final void effectChanges(Collection<SystemComponent>... changedLists) {
+		for (SystemComponent sc:toDelete)
+			unlocate(sc);
+		toDelete.clear();
+		// CAUTION: what happens if the system is to be deleted in containers after relocation?
+		for (SystemComponent lsc:toInsert)
+			locate(lsc);
+		toInsert.clear();
+		for (SystemComponent sc:toMove)
+			relocate(sc);
+		toMove.clear();
+		changed = false;
+	}
+
+	@Override
+	public final void setInitialItems(SystemComponent... items) {
+		for (SystemComponent lsc:items)
 			initialComponents.add(lsc);
 	}
 
 	@Override
-	public final void setInitialItems(Collection<LocatedSystemComponent> items) {
+	public final void setInitialItems(Collection<SystemComponent> items) {
 		initialComponents.addAll(items);
 	}
 
-//	@Override
-//	public final void setInitialItems(Iterable<LocatedSystemComponent> items) {
-//		for (LocatedSystemComponent lsc:items)
-//			initialComponents.add(lsc);
-//	}
-
 	@Override
-	public final void addInitialItem(LocatedSystemComponent item) {
+	public final void addInitialItem(SystemComponent item) {
 		initialComponents.add(item);
 	}
 
 	@Override
-	public final Set<LocatedSystemComponent> getInitialItems() {
-		return initialComponents;
+	public final Set<SystemComponent> getInitialItems() {
+		return Collections.unmodifiableSet(initialComponents);
 	}
 
 	@Override
-	public final boolean containsInitialItem(LocatedSystemComponent item) {
+	public final boolean containsInitialItem(SystemComponent item) {
 		return initialComponents.contains(item);
 	}
 
 	@Override
-	public final LocatedSystemComponent initialForItem(String id) {
+	public final SystemComponent initialForItem(String id) {
 		return itemsToInitials.get(id);
 	}
 
@@ -442,7 +441,7 @@ public abstract class SpaceAdapter
 	public final Box observationWindow() {
 		return obsWindow;
 	}
-	
+
 	@Override
 	public double[] randomLocation() {
 		double[] result = new double[limits.dim()];

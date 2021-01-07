@@ -29,8 +29,15 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.ArenaType;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
-import au.edu.anu.twcore.ecosystem.structure.newapi.GroupType;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
@@ -38,7 +45,12 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +68,8 @@ public class Group
 	private Map<Integer,GroupComponent> groups = new HashMap<>();
 	private static final int baseInitRank = N_GROUP.initRank();
 	private GroupType groupType = null;
+	private LifeCycle lifeCycle = null;
+	private ComponentType groupOf = null;
 
 	// default constructor
 	public Group(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -72,6 +86,13 @@ public class Group
 		super.initialise();
 		sealed = false;
 		groupType = (GroupType) getParent();
+		Edge cycle = (Edge) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_CYCLE.label())));
+		if (cycle!=null)
+			lifeCycle = (LifeCycle) cycle.endNode();
+		groupOf = (ComponentType) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+			endNode());
 		sealed = true;
 	}
 
@@ -106,13 +127,38 @@ public class Group
 			// instantiate GroupComponent (with container, and super container)
 			// with this group's id as name
 			groupType.getInstance(id).setName(id());
-			GroupComponent gc = groupType.getInstance(id).newInstance();
+			GroupFactory gf = groupType.getInstance(id);
+			// put group into container hierarchy
+			ComponentContainer superContainer = null;
+			LifeCycleComponent lcc = null;
+			TreeNode parent = null;
+			// 1st case: there is a lifeCycle
+			if (lifeCycle!=null) {
+				lcc = lifeCycle.getInstance(id);
+				superContainer = (ComponentContainer) lcc.content();
+				parent = lcc;
+			}
+			// 2nd case: there is no lifeCycle
+			else {							// groupType	structure	system
+//				ArenaType system = (ArenaType) getParent().getParent().getParent();
+				ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
+				superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
+				parent = system;
+			}
+			GroupComponent gc = gf.newInstance(superContainer);
+			gc.connectParent(parent);
 			// fill group with initial values
 			for (TreeNode tn:getChildren())
 				if (tn instanceof VariableValues)
 					((VariableValues)tn).fill(gc.currentState());
 				else if (tn instanceof ConstantValues)
 					((ConstantValues) tn).fill(gc.constants());
+			// if no components, then some more inits must be done
+			if (groupOf!=null) {
+				// set itemCategories
+				gc.content().setCategorized(groupOf.getInstance(id));
+				gc.addGroupIntoLifeCycle();
+			}
 			groups.put(id,gc);
 		}
 		return groups.get(id);

@@ -12,15 +12,18 @@ archetype 3wSA-HLSimpleTimeSeriesWidget
 		isOfClass = String("widget")
 		hasParent = StringTable(([1]"headless:"))
 		multiplicity = IntegerRange("0..*")
-		hasProperty SimpleTimeSeriesWidgetSenderProperty
+		mustSatisfyQuery SenderInRangeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
+		hasProperty HLSimpleTimeSeriesWidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
-			multiplicity = IntegerRange("1..1")
-		hasEdge SimpleTimeSeriesWidgetDataTrackerEdgeSpec
+			multiplicity = IntegerRange("0..1")
+		hasEdge HLSimpleTimeSeriesWidgetDataTrackerEdgeSpec
 			isOfClass = String("trackSeries")
 			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
-		// TODO: must check that the edge end node has property subclass== 
-		// au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker
+		mustSatisfyQuery HLSimpleTimeWidgetParentClassQuery
+			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
+			parentLabels = StringTable(([1]"headless"))
 			
 			

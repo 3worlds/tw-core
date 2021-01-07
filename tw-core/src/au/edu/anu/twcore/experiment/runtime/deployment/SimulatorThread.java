@@ -28,7 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment.runtime.deployment;
 
-import au.edu.anu.twcore.experiment.runtime.Deployer;
+import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
+import au.edu.anu.twcore.experiment.runtime.Deployable;
 
 /**
  * The thread in which a (single) simulator is running
@@ -39,24 +40,29 @@ import au.edu.anu.twcore.experiment.runtime.Deployer;
  */
 public class SimulatorThread implements Runnable {
 
-	private Deployer dep = null;
+	private final Simulator sim; // to call step() and stop()
+	private final Deployable dep;// to inform the deployer that this sim has finished
+	/**
+	 * cf:
+	 * https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
+	 */
+	private volatile boolean threadUp = true;
+	// Start in paused state to avoid double initial step bug (IDD)
+	private volatile boolean paused = true;
+	private final Object pauseLock = new Object();
 
-	public SimulatorThread(Deployer dep) {
+	public SimulatorThread(Deployable dep, Simulator sim) {
 		super();
+		this.sim = sim;
 		this.dep = dep;
 	}
 
-	// code found there:
-	// https://stackoverflow.com/questions/16758346/how-pause-and-then-resume-a-thread
-	private volatile boolean running = true;
-	private volatile boolean paused = true; // Now starts in Paused state - seems much simplier: IDD
-	private final Object pauseLock = new Object();
-
 	@Override
 	public void run() {
-		while (running) {
+//		System.out.println("Sim thread up: " + Thread.currentThread().getId());
+		while (threadUp) {
 			synchronized (pauseLock) {
-				if (!running) {
+				if (!threadUp) {
 					/**
 					 * may have changed while waiting to synchronize on pauseLock
 					 */
@@ -76,26 +82,31 @@ public class SimulatorThread implements Runnable {
 					} catch (InterruptedException ex) {
 						break;
 					}
-					if (!running) {
+					if (!threadUp) {
 						/** running might have changed since we paused */
 						break;
 					}
 				}
 			} // end of pause lock
 
-			/** NB sim.step() is synchronized */
-			dep.stepSimulators();
+			if (sim.stop()) {
+				paused = true;
+				// inform deployer to send Finished msg to controller if appropriate
+				dep.ended(sim);
+			} else
+				//do the work of this thread
+				sim.step();
 
 		}
 	}
 
 	public void stop() {
-		// I don't understand this but anyway I don't think its ever called
-		running = false;
-		// you might also want to interrupt() the Thread that is
-		// running this Runnable, too, or perhaps call:
+		threadUp = false;
+		/**
+		 * Thread may be paused so call resume() to unblock and allow it to run and
+		 * exit.
+		 */
 		resume();
-		// to unblock
 	}
 
 	public void pause() {

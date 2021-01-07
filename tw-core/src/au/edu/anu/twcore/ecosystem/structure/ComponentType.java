@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,16 +19,14 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.structure.newapi;
-
-
+package au.edu.anu.twcore.ecosystem.structure;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -41,12 +39,9 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -64,7 +59,7 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
  *
  */
 public class ComponentType extends ElementType<ComponentFactory, SystemComponent> {
-	
+
 	private Set<SpaceNode> spaces = new HashSet<>();
 
 	public ComponentType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -74,7 +69,7 @@ public class ComponentType extends ElementType<ComponentFactory, SystemComponent
 	public ComponentType(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
-	
+
 	// This to handle spaces as ComponentFactory is the only one linked to spaces
 	@SuppressWarnings("unchecked")
 	@Override
@@ -83,7 +78,7 @@ public class ComponentType extends ElementType<ComponentFactory, SystemComponent
 		// get all categories it belongs to
 		List<Category> lc = (List<Category>) get(edges(Direction.OUT),
 			selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
-			edgeListEndNodes(), 
+			edgeListEndNodes(),
 			selectOneOrMany(hasTheLabel(N_CATEGORY.label())));
 		// get all the processes affecting these categories
 		Set<ProcessNode> lp = new HashSet<>();
@@ -123,18 +118,18 @@ public class ComponentType extends ElementType<ComponentFactory, SystemComponent
 
 	@Override
 	protected ComponentFactory makeTemplate(int id) {
-		List<DynamicSpace<SystemComponent,LocatedSystemComponent>> sps = new LinkedList<>();
+		List<DynamicSpace<SystemComponent>> sps = new LinkedList<>();
 		for (SpaceNode sn:spaces)
 			sps.add(sn.getInstance(id));
 		if (setinit!=null)
 			return new ComponentFactory(categories,sps,
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,
-				(SetInitialStateFunction)setinit.getInstance(id),isPermanent);
+				(SetInitialStateFunction)setinit.getInstance(id),isPermanent,id);
 		else
 			return new ComponentFactory(categories,sps,
-				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,null,isPermanent);
+				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,null,isPermanent,id);
 	}
-	
+
 	@Override
 	public int initRank() {
 		return N_COMPONENTTYPE.initRank();
@@ -143,6 +138,6 @@ public class ComponentType extends ElementType<ComponentFactory, SystemComponent
 	/**
 	 * The list of function types that are compatible with a ComponentType (all of them)
 	 */
-	public static TwFunctionTypes[] compatibleFunctionTypes = TwFunctionTypes.values(); 
+	public static TwFunctionTypes[] compatibleFunctionTypes = TwFunctionTypes.values();
 
 }

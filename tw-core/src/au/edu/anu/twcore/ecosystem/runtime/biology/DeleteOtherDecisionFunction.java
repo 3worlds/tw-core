@@ -33,7 +33,6 @@ import java.util.List;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
@@ -84,7 +83,7 @@ public abstract class DeleteOtherDecisionFunction extends AbstractDecisionFuncti
 		CategorizedComponent otherLifeCycle,
 		CategorizedComponent otherGroup,
 		CategorizedComponent other,
-		DynamicSpace<SystemComponent,LocatedSystemComponent> space);
+		DynamicSpace<SystemComponent> space);
 
 	@Override
 	public final void addConsequence(TwFunction function) {

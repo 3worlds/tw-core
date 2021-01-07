@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -47,7 +47,7 @@ import fr.ens.biologie.generic.Sealable;
 public class SpaceOrganiser implements Sealable, Dimensioned {
 
 	/** all spaces in a simulation, sorted by name (id) */
-	private Map<String,DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces = new HashMap<>();
+	private Map<String,DynamicSpace<SystemComponent>> spaces = new HashMap<>();
 	private boolean sealed = false;
 	/** The fixed points used to position spaces relative to each other */
 	/** All spaces must also keep the coordinates of these points in their own coordinate system */
@@ -79,7 +79,7 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 	 * for fixed points - the space bounding box points are used as fixed points.
 	 * @param space
 	 */
-	public SpaceOrganiser(DynamicSpace<SystemComponent, LocatedSystemComponent> space) {
+	public SpaceOrganiser(DynamicSpace<SystemComponent> space) {
 		super();
 		this.spaces.put(space.id(),space);
 		// only one space present: fxed points = bounding box
@@ -93,7 +93,7 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 	 * Use this in conjunction with first constructor to add spaces once the fixed points have been set.
 	 * @param sp
 	 */
-	public void addSpace(DynamicSpace<SystemComponent, LocatedSystemComponent> sp) {
+	public void addSpace(DynamicSpace<SystemComponent> sp) {
 		if (!sealed) {
 			spaces.put(sp.id(),sp);
 			//build geometric transformation from fixedPoints
@@ -111,21 +111,21 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 		return sealed;
 	}
 
-	/**
-	 * Finds a SystemComponent in the named space, returns null if not found.
-	 *
-	 * @param item
-	 * @param inSpace
-	 * @return
-	 */
-	public Location whereIs(SystemComponent item, String inSpace) {
-		DynamicSpace<SystemComponent, LocatedSystemComponent> sp = spaces.get(inSpace);
-		if (sp!=null)
-			return sp.locationOf(item);
-		return null;
-	}
+//	/**
+//	 * Finds a SystemComponent in the named space, returns null if not found.
+//	 *
+//	 * @param item
+//	 * @param inSpace
+//	 * @return
+//	 */
+//	public Location whereIs(SystemComponent item, String inSpace) {
+//		DynamicSpace<SystemComponent> sp = spaces.get(inSpace);
+//		if (sp!=null)
+//			return sp.locationOf(item);
+//		return null;
+//	}
 
-	public DynamicSpace<SystemComponent, LocatedSystemComponent> space(String name) {
+	public DynamicSpace<SystemComponent> space(String name) {
 		return spaces.get(name);
 	}
 
@@ -142,7 +142,7 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 		return fixedPoints.length;
 	}
 
-	public Collection<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces() {
+	public Collection<DynamicSpace<SystemComponent>> spaces() {
 		return spaces.values();
 	}
 

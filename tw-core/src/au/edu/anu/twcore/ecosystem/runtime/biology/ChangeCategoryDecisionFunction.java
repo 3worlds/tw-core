@@ -30,13 +30,16 @@ package au.edu.anu.twcore.ecosystem.runtime.biology;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Jacques Gignoux - 4/8/2014
@@ -49,6 +52,10 @@ import java.util.List;
 public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFunction {
 
 	private List<SetOtherInitialStateFunction> consequences = new LinkedList<SetOtherInitialStateFunction>();
+	// the list of transitions - by convention transitionTo[0] means no transition
+	// TODO: it could actually be a pointer to the proper life cycle
+	// since this funtino always has a effectedBy edge to a recruit.
+	private String[] transitionTo = null;
 
 	public ChangeCategoryDecisionFunction() {
 		super();
@@ -69,12 +76,17 @@ public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFun
 	 * @param space the space attached to the parent process, if any
 	 * @return
 	 */
+	// typical use in the code:
+//
+//		return transition(decide(proba));
+//		return transition(select(wt1,wt2,wt3));
+//
 	public abstract String changeCategory(double t, double dt,
 			CategorizedComponent arena,
 			CategorizedComponent lifeCycle,
 			CategorizedComponent group,
 			CategorizedComponent focal,
-			DynamicSpace<SystemComponent,LocatedSystemComponent> space);
+			DynamicSpace<SystemComponent> space);
 
 	@Override
 	public void addConsequence(TwFunction function) {
@@ -84,6 +96,29 @@ public abstract class ChangeCategoryDecisionFunction extends AbstractDecisionFun
 	@Override
 	public Iterable<SetOtherInitialStateFunction> getConsequences() {
 		return consequences;
+	}
+
+	/**
+	 * record the list of transitions according to the lifecycle
+	 *
+	 * @param transitions
+	 */
+	public void setTransitions(Collection<Category> transitions) {
+		SortedSet<Category> set = new TreeSet<>();
+		set.addAll(transitions);
+		transitionTo = new String[set.size()+1];
+		transitionTo[0] = null;
+		int i=0;
+		for (Category cat:set)
+			transitionTo[i++] = cat.id();
+	}
+
+	protected String transition(int i) {
+		return transitionTo[i];
+	}
+
+	protected String transition(boolean change) {
+		return transitionTo[change?1:0];
 	}
 
 }

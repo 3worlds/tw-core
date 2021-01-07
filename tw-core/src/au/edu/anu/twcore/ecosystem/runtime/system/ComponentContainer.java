@@ -28,6 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.Collection;
+
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
@@ -38,12 +40,11 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  */
 public class ComponentContainer extends DescribedContainer<SystemComponent> {
 
-
-//CategorizedContainer<SystemComponent> {
-
 	public ComponentContainer(String proposedId,
-			ComponentContainer parent, HierarchicalComponent data) {
-		super(proposedId, parent, data);
+			ComponentContainer parent,
+			HierarchicalComponent data,
+			int simulatorId) {
+		super(proposedId, parent, data, simulatorId);
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 
 
 	@Override
-	public void removeItem(SystemComponent item) {		
+	public void removeItem(SystemComponent item) {
 		super.removeItem(item);
 		for (SystemRelation sr:item.getRelations()) {
 			sr.container().removeItem(sr);
@@ -134,19 +135,18 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 		for (SystemComponent item : parentContainer.items())
 			parentContainer.removeItem(item);
 		// effectAllChanges() is recursive so don't use here.
-		parentContainer.effectChanges();// counters are handled here
+		parentContainer.effectChanges((Collection<SystemComponent>[])null);// counters are handled here
 		parentContainer.clearVariables();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void effectChanges() {
+	public void effectChanges(Collection<SystemComponent>...changedLists) {
 		resetCounters(); // Pb: values are actually delayed by 1 time step doing this ???
 		for (String id : itemsToRemove) {
 			SystemComponent sc = items.remove(id);
 			((SystemComponent)sc).detachFromContainer();
 			if (sc != null) {
-//				populationData.count--;
-//				populationData.nRemoved++;
 				itemsToInitials.remove(id);
 				sc.disconnect();
 			}
@@ -154,10 +154,13 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 		itemsToRemove.clear();
 		for (SystemComponent item : itemsToAdd)
 			if (items.put(item.id(), item) == null) {
-//				populationData.count++;
-//				populationData.nAdded++;
 				((SystemComponent)item).setContainer(this);
-			}
+		}
+		// this to return all newly created items
+		if (!itemsToAdd.isEmpty())
+			if (changedLists!=null)
+				if (changedLists.length>0)
+					changedLists[0].addAll(itemsToAdd);
 		itemsToAdd.clear();
 		super.effectChanges();
 	}
@@ -167,26 +170,36 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 //		boolean yet = false;
 		for (SystemComponent item:items.values())
 			if (item.initialiser()!=null) {
-				// TODO: search hierarchicalyy for the proper group information!
 				if (item.constants()!=null)
 					item.constants().writeEnable();
 				if (item.currentState()!=null)
 					item.currentState().writeEnable();
 				CategorizedComponent group = null;
 				CategorizedComponent lifeCycle = null;
-				CategorizedComponent arena = null; 
+				CategorizedComponent arena = null;
 				CategorizedComponent cc = descriptors();
 				if (cc instanceof GroupComponent) {
 					group = cc;
 					cc = ((DescribedContainer<?>)((GroupComponent)cc).content().superContainer).descriptors();
-					// TODO: life cycle
-					if (cc instanceof ArenaComponent) {
+					if (cc instanceof LifeCycleComponent) {
+						lifeCycle = cc;
+						cc = ((DescribedContainer<?>)((LifeCycleComponent)cc).content().superContainer).descriptors();
+						if (cc instanceof ArenaComponent)
+							arena = cc;
+					}
+					else if (cc instanceof ArenaComponent) {
 						arena = cc;
 					}
 				}
+				else if (cc instanceof LifeCycleComponent) {
+					lifeCycle = cc;
+					cc = ((DescribedContainer<?>)((LifeCycleComponent)cc).content().superContainer).descriptors();
+					if (cc instanceof ArenaComponent)
+						arena = cc;
+				}
 				else if (cc instanceof ArenaComponent)
 					arena = cc;
-				item.initialiser().setInitialState(arena, lifeCycle, group, item, null, null);
+				item.initialiser().setInitialState(arena, lifeCycle, group, item, null);
 				if (item.constants()!=null)
 					item.constants().writeDisable();
 				if (item.currentState()!=null)

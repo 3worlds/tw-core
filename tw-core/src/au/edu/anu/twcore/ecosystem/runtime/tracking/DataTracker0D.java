@@ -196,13 +196,16 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 					aggregateData(tmp.getStringValues()[i],metadata.stringNames().get(i));
 				// if the item sample is the last for this sample, then send the aggregated message
 				if (nAggregated()==sample.size()) { // CAUTION: wont work if trackAll ? yes because sample.size() and not trackSampleSize
-					Output0DData tsd = new Output0DData(status, senderId, metadataType, aggregatedMetadata);
+//					Output0DData tsd = new Output0DData(status, senderId, metadataType, aggregatedMetadata);
 					for (StatisticalAggregates sag:statisticsRequired()) {
+						Output0DData tsd = new Output0DData(status, senderId, metadataType, aggregatedMetadata);
 						for (DataLabel lab:variableChannels())
 							tsd.setValue(lab, aggregatedValue(lab,sag));
 						tsd.setTime(currentTime);
 						tsd.setItemLabel(itemName(sag));
+						// NB: must not alter msg contents after sending.
 						sendData(tsd); // 1 message per statistical aggregate, ie mean, cv, etc.
+						// tsd = null;
 					}
 				}
 			}
@@ -219,7 +222,9 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 						getRecValue(0, data, lab, tsd);
 				}
 				tsd.setItemLabel(currentItem);
+				// NB: must not alter msg contents after sending.
 				sendData(tsd);
+				// tsd = null;
 			}
 		}
 	}

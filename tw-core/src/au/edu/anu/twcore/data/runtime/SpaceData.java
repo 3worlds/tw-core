@@ -38,74 +38,93 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.utils.Duple;
 
 /**
- * This class is used to send spatial information to widgets. It contains the coordinates of
- * a single item (usually a SystemComponent) and its DataLabel.
- * NB may also contain a line.
- * NB now replaced by a series of changes (all changes occurring during one time step)
+ * This class is used to send spatial information to widgets. It contains the
+ * coordinates of a single item (usually a SystemComponent) and its DataLabel.
+ * NB may also contain a line. NB now replaced by a series of changes (all
+ * changes occurring during one time step)
  * 
- * It is meant to be used as a message to sent everytime a new item is located / unlocated by the space
- * (for economy: only changes are sent)
+ * It is meant to be used as a message to send every time a new item is located /
+ * unlocated by the space (for economy: only changes are sent)
  * 
- *  
+ * 
  * @author Jacques Gignoux - 14 févr. 2020
  *
  */
-public class SpaceData extends TimeData {
-	
+public class SpaceData extends TimeData /**implements Cloneable*/ {
+
 	/** List of points to definitely remove because their Component is gone */
 	private Set<DataLabel> pointsToDelete = new HashSet<>();
 	/** List of lines to definitely remove because their Edge is gone */
-	private Set<Duple<DataLabel,DataLabel>> linesToDelete = new HashSet<>();
-	/** List of new points to  draw from scratch */
-	private Map<DataLabel,double[]> pointsToCreate = new HashMap<>();
-	/** List of new lines to  draw from scratch */
-	private Set<Duple<DataLabel,DataLabel>> linesToCreate = new HashSet<>();
-	/** List of points to move, i.e. they are first erased, then redrawn*/
-	private Map<DataLabel,double[]> pointsToMove = new HashMap<>();
+	private Set<Duple<DataLabel, DataLabel>> linesToDelete = new HashSet<>();
+	/** List of new points to draw from scratch */
+	private Map<DataLabel, double[]> pointsToCreate = new HashMap<>();
+	/** List of new lines to draw from scratch */
+	private Set<Duple<DataLabel, DataLabel>> linesToCreate = new HashSet<>();
+	/** List of points to move, i.e. they are first erased, then redrawn */
+	private Map<DataLabel, double[]> pointsToMove = new HashMap<>();
 
 	public SpaceData(SimulatorStatus status, int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
 	}
-	
-	public void createPoint(DataLabel label, double...coord) {
-		pointsToCreate.put(label,coord.clone());
+
+	public void createPoint(DataLabel label, double... coord) {
+		pointsToCreate.put(label, coord.clone());
 	}
 
 	public void deletePoint(DataLabel label) {
 		pointsToDelete.add(label);
 	}
-	
+
 	public void movePoint(DataLabel label, double[] newCoord) {
-		pointsToMove.put(label,newCoord);
+		pointsToMove.put(label, newCoord);
 	}
-	
+
 	public void createLine(DataLabel startLabel, DataLabel endLabel) {
-		linesToCreate.add(new Duple<>(startLabel,endLabel));
+		linesToCreate.add(new Duple<>(startLabel, endLabel));
 	}
 
 	public void deleteLine(DataLabel startLabel, DataLabel endLabel) {
-		linesToDelete.add(new Duple<>(startLabel,endLabel));
+		linesToDelete.add(new Duple<>(startLabel, endLabel));
 	}
-	
+
 	public Collection<DataLabel> pointsToDelete() {
 		return pointsToDelete;
 	}
-	
-	public Map<DataLabel,double[]> pointsToCreate() {
+
+	public Map<DataLabel, double[]> pointsToCreate() {
 		return pointsToCreate;
 	}
-	
-	public Map<DataLabel,double[]> pointsToMove() {
+
+	public Map<DataLabel, double[]> pointsToMove() {
 		return pointsToMove;
 	}
-	
-	public Collection<Duple<DataLabel,DataLabel>> linesToCreate() {
+
+	public Collection<Duple<DataLabel, DataLabel>> linesToCreate() {
 		return linesToCreate;
 	}
-	
-	public Collection<Duple<DataLabel,DataLabel>> linesToDelete() {
+
+	public Collection<Duple<DataLabel, DataLabel>> linesToDelete() {
 		return linesToDelete;
 	}
+
+//	/** This was used for debugging but is probably not needed. (IDD)*/
+//	@Override
+//	public SpaceData clone() {
+//		// Cloning for recipients
+//		SpaceData result = new SpaceData(status(), sender(), type());
+//		result.setTime(time());
+//		result.linesToCreate.addAll(linesToCreate);
+//		result.linesToDelete.addAll(linesToDelete);
+//		result.pointsToDelete.addAll(pointsToDelete);
+//		pointsToMove.forEach((k, v) -> {
+//			result.pointsToMove().put(k, v);
+//		});
+//		pointsToCreate.forEach((k, v) -> {
+//			result.pointsToCreate.put(k, v);
+//		});
+//		return result;
+//
+//	}
 
 	@Override
 	public String toString() {
@@ -123,5 +142,5 @@ public class SpaceData extends TimeData {
 			sb.append("deleted lines ").append(linesToDelete.toString()).append("; ");
 		return sb.toString();
 	}
-	
+
 }

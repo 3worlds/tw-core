@@ -16,7 +16,7 @@ archetype 3wSA-MultipleStoppingCondition
 // former system - flawed		
 //		hasEdge componentStoppingConditionsSpec
 //			isOfClass = String("condition")
-//			toNode = String("stoppingCondition")
+//			toNode = String("stoppingCondition:")
 //			multiplicity = IntegerRange("1..*")
 			
 	hasNode SubConditionSpec

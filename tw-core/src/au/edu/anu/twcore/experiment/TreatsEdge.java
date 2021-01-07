@@ -26,23 +26,30 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.structure;
+package au.edu.anu.twcore.experiment;
 
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 
 /**
- * Edge for linking category to parameters record
- * 
- * @author Jacques Gignoux - 31 mai 2019
+ * @author Ian Davies
  *
+ * @date 3 Jan. 2021
  */
-public class ParameterEdge extends ALEdge {
 
-	public ParameterEdge(Identity id, Node start, Node end, EdgeFactory graph) {
-		super(id, start, end, graph);
+/** Edge for linking Treatment to fields and tables */
+public class TreatsEdge extends ALDataEdge {
+
+	public TreatsEdge(Identity id, Node start, Node end, EdgeFactory graph) {
+		super(id, start, end, new ExtendablePropertyListImpl(), graph);
+	}
+
+	public TreatsEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
+		super(id, start, end, props, graph);
 	}
 
 }

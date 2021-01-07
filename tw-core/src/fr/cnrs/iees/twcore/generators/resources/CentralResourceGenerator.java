@@ -622,16 +622,16 @@ public class CentralResourceGenerator {
 			// these are "Node" sheets, i.e. their content describes a list of properties
 			// applying to a node
 			List<Table> sheets = odf.getTableList();
-			System.out.println("coucou 1");
+//			System.out.println("coucou 1");
 			for (Table sheet: sheets) {
 				if (!sheet.getTableName().equals("Instructions")) // ignore instructions sheet
 					if (sheet.getTableName().indexOf('.') < 0) {
 						getExtraCode(sheet, extraCode);
-						System.out.println("coucou 2");
+//						System.out.println("coucou 2");
 						getExtraImports(sheet, extraImports);
-						System.out.println("coucou 3");
+//						System.out.println("coucou 3");
 						generateNodeDoc(sheet);
-						System.out.println("coucou 4");
+//						System.out.println("coucou 4");
 //						generateNodeArchetype(sheet);
 					}
 			}

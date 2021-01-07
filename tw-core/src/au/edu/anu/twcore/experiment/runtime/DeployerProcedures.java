@@ -38,7 +38,7 @@ public interface DeployerProcedures {
 	public void runProc();
 	public void waitProc();
 	public void stepProc();
-	public void finishProc();
+	public void finishProc();// no longer required cf SimulatorThread (IDD)
 	public void pauseProc();
 	public void quitProc();
 	public void resetProc();

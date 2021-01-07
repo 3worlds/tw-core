@@ -37,11 +37,11 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
  */
 public enum RngSeedSourceType {
 	/* seed source from table by give index [0..999] */
-	table, //
-	/* seed produced by a call to SecureRandom - i.e 'never' replicated. */
-	secure, //
+	NATURAL, //
+	/* seed produced by a call to unique instance of Random() */
+	PSEUDO, //
 	/* seed set to a simple constant (0 or 1 depending on alg used */
-	constant,//
+	CONSTANT,//
 	/*
 	 * we could also have an option to create seed by system time but it serves no
 	 * purpose as far as I can see.
@@ -49,7 +49,7 @@ public enum RngSeedSourceType {
 	;
 
 	public static RngSeedSourceType defaultValue() {
-		return secure;
+		return PSEUDO;
 	}
 
 	static {

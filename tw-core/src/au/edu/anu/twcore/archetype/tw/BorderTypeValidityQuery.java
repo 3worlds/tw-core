@@ -73,20 +73,24 @@ public class BorderTypeValidityQuery extends Query {
 		SpaceNode spnode = (SpaceNode) input;
 		SpaceType stype = (SpaceType) spnode.properties().getPropertyValue(P_SPACETYPE.key());
 		int spdim = stype.dimensions();
-		BorderListType borderTypes = (BorderListType) spnode.properties()
-				.getPropertyValue(P_SPACE_BORDERTYPE.key());
-		if (spdim!=borderTypes.size()/2) {
-			message = "Space of type "+stype+"' must have define "+(spdim*2)+" borders.";
+		BorderListType borderTypes = (BorderListType) spnode.properties().getPropertyValue(P_SPACE_BORDERTYPE.key());
+		if (spdim != borderTypes.size() / 2) {
+			message = "Space of type " + stype + "' must have define " + (spdim * 2) + " borders.";
 			return this;
-		} else {
-			int i = BorderListType.getUnpairedWrapIndex(borderTypes);
-			if (i>=0) {
-				message = "Wrap-around in dimension "+i+ " is unpaired.";
-				return this;
-			}
 		}
+		int i = BorderListType.getUnpairedWrapIndex(borderTypes);
+		if (i >= 0) {
+			message = "Wrap-around in dimension " + i + " is unpaired.";
+			return this;
+		}
+
+		if (BorderListType.isWrongTubularOrientation(borderTypes)) {
+			message = "Tubular wrap-around is only supported in the x-dimension.";
+			return this;
+		}
+
 		satisfied = true;
-		
+
 //		if (spnode.properties().hasProperty(P_SPACE_EDGEEFFECTS.key())) {
 //			EdgeEffectCorrection eec = (EdgeEffectCorrection) spnode.properties()
 //					.getPropertyValue(P_SPACE_EDGEEFFECTS.key());
@@ -132,6 +136,7 @@ public class BorderTypeValidityQuery extends Query {
 //		} else
 //			message = "missing 'edgeEffectCorrection' property";
 		return this;
+
 	}
 
 	@Override

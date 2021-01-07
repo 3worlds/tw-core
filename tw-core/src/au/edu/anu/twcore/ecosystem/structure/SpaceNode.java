@@ -41,7 +41,6 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.FlatSurface;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.space.SquareGrid;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
@@ -77,10 +76,10 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  *
  */
 public class SpaceNode extends InitialisableNode
-		implements LimitedEdition<DynamicSpace<SystemComponent, LocatedSystemComponent>>, Sealable {
+		implements LimitedEdition<DynamicSpace<SystemComponent>>, Sealable {
 
 	private boolean sealed = false;
-	private Map<Integer, DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces = new HashMap<>();
+	private Map<Integer, DynamicSpace<SystemComponent>> spaces = new HashMap<>();
 	private SpaceType stype = null;
 	private EdgeEffectCorrection eecorr = null;
 	private StringTable borderList = null;// Order x,y,(z)... pairs : left,right, bottom, top
@@ -123,10 +122,10 @@ public class SpaceNode extends InitialisableNode
 			guardWidth = (double) properties().getPropertyValue(P_SPACE_GUARDAREA.key());
 		if (properties().hasProperty(P_SPACE_OBSWINDOW.key()))
 			obsWindow = (Box) properties().getPropertyValue(P_SPACE_OBSWINDOW.key());
-		rngNode = (RngNode) get(edges(Direction.OUT), 
+		rngNode = (RngNode) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_USERNG.label())), endNode());
 		// if at least one widget is listening to this space, add a datatracker to space
-		List<Edge> l = (List<Edge>) get(edges(Direction.IN), 
+		List<Edge> l = (List<Edge>) get(edges(Direction.IN),
 			selectZeroOrMany(hasTheLabel(E_TRACKSPACE.label())));
 		attachDataTrackerToSpace = !l.isEmpty();
 		seal();
@@ -165,8 +164,8 @@ public class SpaceNode extends InitialisableNode
 		return result;
 	}
 
-	private DynamicSpace<SystemComponent, LocatedSystemComponent> makeSpace(int id) {
-		DynamicSpace<SystemComponent, LocatedSystemComponent> result = null;
+	private DynamicSpace<SystemComponent> makeSpace(int id) {
+		DynamicSpace<SystemComponent> result = null;
 		SpaceDataTracker dt = null;
 		if (attachDataTrackerToSpace) {
 			// weird: bug fix: attach time metadata to data tracker ???
@@ -187,7 +186,7 @@ public class SpaceNode extends InitialisableNode
 			Interval xlim = (Interval) properties().getPropertyValue(P_SPACE_XLIM.key());
 			Interval ylim = (Interval) properties().getPropertyValue(P_SPACE_YLIM.key());
 			result = new FlatSurface(xlim.inf(), xlim.sup(), ylim.inf(), ylim.sup(), precision, units, borders,
-					obsWindow, guardWidth, dt, id());
+					obsWindow, guardWidth, dt, id(),id);
 			break;
 		case linearNetwork:
 			break;
@@ -197,7 +196,7 @@ public class SpaceNode extends InitialisableNode
 			int ny = nx;
 			if (properties().hasProperty("ny"))
 				ny = (int) properties().getPropertyValue(P_SPACE_NY.key());
-			result = new SquareGrid(cellSize, nx, ny, precision, units, borders, obsWindow, guardWidth, dt, id());
+			result = new SquareGrid(cellSize, nx, ny, units, borders, obsWindow, guardWidth, dt, id(),id);
 			break;
 		case topographicSurface:
 			break;
@@ -212,7 +211,7 @@ public class SpaceNode extends InitialisableNode
 	}
 
 	@Override
-	public DynamicSpace<SystemComponent, LocatedSystemComponent> getInstance(int id) {
+	public DynamicSpace<SystemComponent> getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!spaces.containsKey(id))
@@ -238,7 +237,7 @@ public class SpaceNode extends InitialisableNode
 	}
 
 	public void attachSpaceWidget(DataReceiver<SpaceData, Metadata> widget) {
-		for (DynamicSpace<SystemComponent, LocatedSystemComponent> sp : spaces.values())
+		for (DynamicSpace<SystemComponent> sp : spaces.values())
 			if (sp instanceof SingleDataTrackerHolder) {
 				SpaceDataTracker dts = sp.dataTracker();
 				if (dts != null) {

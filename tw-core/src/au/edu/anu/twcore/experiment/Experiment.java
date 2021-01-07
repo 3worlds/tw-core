@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -34,8 +34,10 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
+import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
+import fr.ens.biologie.generic.utils.Logging;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
@@ -43,26 +45,26 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
-import au.edu.anu.twcore.experiment.runtime.Deployer;
-import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
-import au.edu.anu.twcore.experiment.runtime.deployment.SimpleDeployer;
-
+import au.edu.anu.twcore.experiment.runtime.Deployable;
+import au.edu.anu.twcore.experiment.runtime.deployment.Deployer;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ExperimentDesignType.*;
+import java.util.logging.Logger;
 
 /**
  * Class matching the "experiment" node label in the 3Worlds configuration tree.
  * Has no properties. Returns a controller to communicate with simulators
- * 
+ *
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
 public class Experiment extends InitialisableNode implements Singleton<StateMachineController>, Sealable {
 
+	private static Logger log = Logging.getLogger(Experiment.class);
+
 	private boolean sealed = false;
 	private StateMachineController controller = null;
-	private Deployer deployer = null;
+	private Deployable deployer = null;
 	/** class constant = number of simulators in this running session */
 	private static int N_SIMULATORS = 0;
 
@@ -80,41 +82,63 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
-			Design d = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
 
-			SimulatorNode sim = null;
-			if (d.properties().hasProperty(P_DESIGN_TYPE.key())) {
+			SimulatorNode baselineSimulator = null;
+			Design dsgn = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
+			if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key())) {
 				if (get(edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_BASELINE.label()))) != null) {
 					// multiple systems
-					sim = (SimulatorNode) get(edges(Direction.OUT), selectOne(hasTheLabel(E_BASELINE.label())),
-							endNode(), children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
+					baselineSimulator = (SimulatorNode) get(edges(Direction.OUT),
+							selectOne(hasTheLabel(E_BASELINE.label())), endNode(), children(),
+							selectOne(hasTheLabel(N_DYNAMICS.label())));
 				} else {
 					// single system -NB baseline is now [0..1]
-					sim = (SimulatorNode) get(getParent().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())),
-							children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
+					baselineSimulator = (SimulatorNode) get(getParent().getChildren(),
+							selectOne(hasTheLabel(N_SYSTEM.label())), children(),
+							selectOne(hasTheLabel(N_DYNAMICS.label())));
 				}
 
-				// single run experiment
-				if (d.properties().getPropertyValue(P_DESIGN_TYPE.key()).equals(singleRun)) {
-					deployer = new SimpleDeployer();
-					deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-				}
-				// multiple simulators, local
-				else { // TODO: there should be a condition here
-					deployer = new ParallelDeployer();
-					// TODO: fix this - it's only fake code
-					for (int i = 0; i < 10; i++)
-						deployer.attachSimulator(sim.getInstance(N_SIMULATORS++));
-				}
-				// multiple simulators, remote
-				// TODO
+				int nReps = 1;
+				if (properties().hasProperty(P_EXP_NREPLICATES.key()))
+					nReps = (Integer) properties().getPropertyValue(P_EXP_NREPLICATES.key());
+				ExperimentDesignType expDesignType = null;
+				if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key()))
+					expDesignType = (ExperimentDesignType) dsgn.properties().getPropertyValue(P_DESIGN_TYPE.key());
+				deployer = new Deployer();
 				controller = new StateMachineController(deployer);
-				// this puts the deployer in "waiting" state
-				// controller.sendEvent(initialise.event());
+				if (expDesignType != null)
+					switch (expDesignType) {
+					case singleRun: {
+						for (int i = 0; i < nReps; i++)
+							deployer.attachSimulator(baselineSimulator.getInstance(N_SIMULATORS++));
+						break;
+					}
+					case crossFactorial: {
+						log.warning(() -> "crossFactorial deployment not yet implemented");
+						break;
+					}
+					default: {
+						log.warning(() -> "undefined deployment type");
+					}
+					}
+				else {
+					log.warning(() -> "file defined deployment not yet implemented");
+				}
+
+//				log.info(() -> "reset any 'onExperimentStart' rngs.");
+//				RngFactory.resetExperiment(); not needed. MR begins each exp when instanced
+
 			}
 			sealed = true;
 		}
+
 	}
+
+	// TODO for Ian: implement something clever here
+//	private int nLocalSimulators() {
+//		return Runtime.getRuntime().availableProcessors();
+////		return 2;
+//	}
 
 	@Override
 	public int initRank() {

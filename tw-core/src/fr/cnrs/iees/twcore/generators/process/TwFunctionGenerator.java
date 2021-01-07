@@ -58,7 +58,6 @@ import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -181,7 +180,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		packageName = ProjectPaths.CODE.replace(File.separator,".")+"."+ctmodel;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(false, model, ""));
-		ClassGenerator generator = new ClassGenerator(packageName, comment, name, ancestorClassName);
+		ClassGenerator generator = new ClassGenerator(packageName, comment, name, null, ancestorClassName);
 
 		// imports in the TwFunction descendant
 //		generator.setImport(Table.class.getPackageName()+".*"); // not needed anymore, I think.
@@ -194,13 +193,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //						argClasses.add(ComponentContainer.class.getName());
 					if (arggrp.type().contains("DynamicSpace")) {
 						argClasses.add(SystemComponent.class.getName());
-						argClasses.add(LocatedSystemComponent.class.getName());
 					}
 				}
-		for (TwFunctionArguments arggrp:type.writeableArguments())
-			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
-				if (!arggrp.type().equals("double[]"))
-					argClasses.add(arggrp.type());
+//		for (TwFunctionArguments arggrp:type.writeableArguments())
+//			if (!ValidPropertyTypes.isPrimitiveType(arggrp.type()))
+//				if (!arggrp.type().equals("double[]"))
+//					argClasses.add(arggrp.type());
 //		if (!eventTimerNames.isEmpty())
 //			argClasses.add(EventQueue.class.getName()); // not needed!
 		for (String s:argClasses)
@@ -221,7 +219,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			//argument list
 			Set<TwFunctionArguments> argSet = new TreeSet<>();
 			argSet.addAll(type.readOnlyArguments());
-			argSet.addAll(type.writeableArguments());
+//			argSet.addAll(type.writeableArguments());
 			// argument names
 			String[] argNames = new String[argSet.size()];
 			int i=0;
@@ -240,7 +238,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //				if (argTypes[j].contains("CategorizedComponent"))
 //					argTypes[j] += "<ComponentContainer>";
 				if (argTypes[j].contains("DynamicSpace"))
-					argTypes[j] += "<SystemComponent,LocatedSystemComponent>";
+					argTypes[j] += "<SystemComponent>";
 //				mmg.setArgument(argNames[j], argTypes[j], "");
 				mg.setArgumentName(j,argNames[j]);
 				mg.setArgumentType(j, argTypes[j]);
@@ -429,10 +427,10 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				callStatement += indent+indent+indent+ "space.fixOtherLocation(focalLoc,otherLoc),\n";
 			}
 			// writeable arguments
-			if (type.writeableArguments().contains(nextFocalLoc))
-				callStatement += indent+indent+indent+ "nextFocalLoc,\n";
-			if (type.writeableArguments().contains(nextOtherLoc))
-				callStatement += indent+indent+indent+ "nextOtherLoc,\n";
+//			if (type.writeableArguments().contains(nextFocalLoc))
+//				callStatement += indent+indent+indent+ "nextFocalLoc,\n";
+//			if (type.writeableArguments().contains(nextOtherLoc))
+//				callStatement += indent+indent+indent+ "nextOtherLoc,\n";
 		}
 //		else
 //			callStatement += indent+indent+indent+ "null,\n";

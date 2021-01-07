@@ -105,6 +105,9 @@ hasNode processSpec
 		className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
 		nodeLabel1 = String("category")
 		nodeLabel2 = String("relationType")
+	mustSatisfyQuery lifespanFunctionCompatibility
+		className = String("au.edu.anu.twcore.archetype.tw.LifespanFunctionCompatibilityQuery")
+
 	hasEdge dependsOnSpec
 		isOfClass = String("dependsOn")
 		toNode = String("process:")
@@ -198,7 +201,7 @@ hasNode snippet
 		hasName = String("javaCode")
 		type = String("StringTable")
 		multiplicity = IntegerRange("1..1")
-	
+
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")
 	hasParent = StringTable(([1]"process:"))
@@ -229,7 +232,7 @@ hasNode dataTrackerSpec
 	hasProperty sampleSizeSpec
 		hasName = String("sampleSize")
 		type = String("String") // valid values: any >0 number, or "ALL" - defaults to 1
-		multiplicity = IntegerRange("1..1") 
+		multiplicity = IntegerRange("1..1")
 
 	// tracking of data fields
 	hasEdge trackFieldEdgeSpec
@@ -289,70 +292,6 @@ hasNode dataTrackerSpec
 		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
 		edgeLabel1 = String("trackComponent")
 		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
-
-hasNode lifeCycleSpec
-	isOfClass = String("lifeCycle")
-	hasParent = StringTable(([1]"dynamics:"))
-	multiplicity = IntegerRange("0..*")
-	hasProperty lifeCycleParameterSpec
-		hasName = String("parameterClass")
-		type =  String("String")
-		multiplicity = IntegerRange("0..1")
-	hasEdge lifeCycleToCategorySetSpec
-		isOfClass = String("appliesTo")
-		toNode = String("categorySet:")
-		multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery lifeCycleHasRecruitOrProduceChildQuery
-		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
-		labels = StringTable(([2]"recruit","produce"))
-	// TODO: check this category is not used by Systems, ie lifeCycle categories and system
-	// categories should be completely separate
-	hasEdge lifeCycleCategoryBelongsToSpec
-		isOfClass = String("belongsTo")
-		toNode = String("category:")
-		multiplicity = IntegerRange("0..*")
-
-hasNode recruitSpec
-	isOfClass = String("recruit")
-	hasParent = StringTable(([1]"lifeCycle:"))
-	multiplicity = IntegerRange("0..*")
-	hasEdge recruitProcessSpec
-		isOfClass = String("effectedBy")
-		toNode = String("process:")
-		multiplicity = IntegerRange("1..1")
-	hasEdge recruitToCategorySpec
-		isOfClass = String("toCategory")
-		toNode = String("category:")
-		multiplicity = IntegerRange("1..1")
-	hasEdge recruitFromCategorySpec
-		isOfClass = String("fromCategory")
-		toNode = String("category:")
-		multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery recruitCategoryInLifeCycleSet
-		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
-	mustSatisfyQuery validRecruitProcess
-		className = String("au.edu.anu.twcore.archetype.tw.ValidLifeCycleProcessQuery")
-
-hasNode produceSpec
-	isOfClass = String("produce")
-	hasParent = StringTable(([1]"lifeCycle:"))
-	multiplicity = IntegerRange("0..*")
-	hasEdge productionProcessSpec
-		isOfClass = String("effectedBy")
-		toNode = String("process:")
-		multiplicity = IntegerRange("1..1")
-	hasEdge produceToCategorySpec
-		isOfClass = String("toCategory")
-		toNode = String("category:")
-		multiplicity = IntegerRange("1..1")
-	hasEdge produceFromCategorySpec
-		isOfClass = String("fromCategory")
-		toNode = String("category:")
-		multiplicity = IntegerRange("1..1")
-	mustSatisfyQuery produceCategoryInLifeCycleSet
-		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
-	mustSatisfyQuery validProduceProcess
-		className = String("au.edu.anu.twcore.archetype.tw.ValidLifeCycleProcessQuery")
 
 hasNode stoppingConditionSpec
 	isOfClass = String("stoppingCondition")

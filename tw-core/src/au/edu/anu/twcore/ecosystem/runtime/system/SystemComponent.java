@@ -34,6 +34,8 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
+import au.edu.anu.twcore.ecosystem.runtime.space.Locatable;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALDataNode;
 import fr.cnrs.iees.identity.Identity;
@@ -49,14 +51,22 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  */
 public class SystemComponent
 		extends ALDataNode
-		implements CategorizedComponent, Contained<DescribedContainer<SystemComponent>> {
+		implements CategorizedComponent, Contained<DescribedContainer<SystemComponent>>, Locatable {
 
 	private Categorized<SystemComponent> categories = null;
 	/** container */
 	private ComponentContainer container = null;
 
+	private LocationData constantLocation = null;
+	private boolean dynamicLocation = false;
+
 	public SystemComponent(Identity id, SimplePropertyList props, GraphFactory factory) {
 		super(id, props, factory);
+		if ((constants()!=null) && (((LocationData)constants()).coordinates()!=null))
+			constantLocation = (LocationData)constants(); // this never changes over life time
+		else
+			if ((currentState()!=null) && (((LocationData)currentState()).coordinates()!=null))
+				dynamicLocation = true; // the exact record changes every time step
 	}
 
 	// used only once at init time
@@ -86,11 +96,6 @@ public class SystemComponent
 	public SetInitialStateFunction initialiser() {
 		return elementFactory().setinit;
 	}
-
-
-//	public TwData parameters() {
-//		return container.parameters();
-//	}
 
 	@Override
 	public SystemComponent clone() {
@@ -170,7 +175,28 @@ public class SystemComponent
 	public boolean isPermanent() {
 		return ((ComponentFactory) categories).isPermanent();
 	}
-	
-	
+
+	@Override
+	public LocationData locationData() {
+		if (constantLocation!=null)
+			return constantLocation;
+		else
+			if (dynamicLocation)
+				return (LocationData) currentState();
+		return null;
+	}
+
+	@Override
+	public LocationData nextLocationData() {
+		if (dynamicLocation)
+			return (LocationData) nextState();
+		return null;
+	}
+
+
+	@Override
+	public boolean mobile() {
+		return (dynamicLocation);
+	}
 
 }

@@ -30,15 +30,13 @@ package au.edu.anu.twcore.ecosystem.runtime.containers;
 
 import java.util.Collection;
 
-import fr.cnrs.iees.identity.Identity;
-
 /**
  * A container for 3Worlds runtime items
  *
  * @author Jacques Gignoux - 16 janv. 2020
  *
  */
-public interface SimpleContainer<T extends Identity> extends Container {
+public interface SimpleContainer<T> extends Container {
 
 	/**
 	 * Gets the item matching the id passed as argument. Only searches this

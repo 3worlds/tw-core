@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          * 
+ *       shayne.flint@anu.edu.au                                          *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -34,7 +34,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
+import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -106,7 +106,7 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 
 		List<Edge> listeners = (List<Edge>) get(edges(Direction.IN),
 			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())));
-		
+
 		if (!listeners.isEmpty()) {
 			// attach time metadata to data tracker - we will need a time from the simulator
 			// for each update. The units will be the finest.
@@ -121,17 +121,17 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 		if (setinit != null)
 			return new ArenaFactory(categories, /* categoryId(), */
 				autoVarTemplate, driverTemplate, decoratorTemplate, lifetimeConstantTemplate,
-				(SetInitialStateFunction) setinit.getInstance(id), makeContainer, id(), dataTracker);
+				(SetInitialStateFunction) setinit.getInstance(id), makeContainer, id(), dataTracker,id);
 		else
 			return new ArenaFactory(categories, /* categoryId(), */
 				autoVarTemplate, driverTemplate, decoratorTemplate, lifetimeConstantTemplate, null, makeContainer,
-				id(), dataTracker);
+				id(), dataTracker,id);
 	}
-	
+
 	public  GraphDataTracker getDataTracker() {
 		return dataTracker;
 	}
-	
+
 	public void attachGraphWidget(DataReceiver<RuntimeGraphData,Metadata> widget) {
 		if (dataTracker!=null) {
 			dataTracker.addObserver(widget);
@@ -146,7 +146,7 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 		ChangeState,				// arena may change its drivers
 		CreateOtherDecision,		// arena may create new items of its ComponentType
 		SetInitialState,			// arena may set its constants at creation time
-// THESE are not possible because relations are only between SystemComponents		
+// THESE are not possible because relations are only between SystemComponents
 //		ChangeOtherCategoryDecision,// arena may change the category of a component
 //		ChangeOtherState,			// arena change the state of a component
 //		DeleteOtherDecision,		// arena may delete another component

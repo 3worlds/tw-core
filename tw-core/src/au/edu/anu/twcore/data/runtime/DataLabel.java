@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import au.edu.anu.rscs.aot.util.StringUtils;
+
 import static fr.ens.biologie.generic.SaveableAsText.*;
 
 /**
@@ -41,75 +43,85 @@ import static fr.ens.biologie.generic.SaveableAsText.*;
  *
  */
 public class DataLabel implements Comparable<DataLabel>, Cloneable {
-
 	private static final int HIERARCHYix = 3;
-	public static final String HIERARCHY_DOWN = 
-		Character.toString(BLOCK_DELIMITERS[HIERARCHYix][BLOCK_CLOSE]);
-	public static final String HIERARCHY_UP = 
-		Character.toString(BLOCK_DELIMITERS[HIERARCHYix][BLOCK_OPEN]);
-	protected List<String> label = new ArrayList<String>(); 
-	
+	public static final String HIERARCHY_DOWN = Character.toString(BLOCK_DELIMITERS[HIERARCHYix][BLOCK_CLOSE]);
+	public static final String HIERARCHY_UP = Character.toString(BLOCK_DELIMITERS[HIERARCHYix][BLOCK_OPEN]);
+	protected List<String> label = new ArrayList<String>();
+
 	public DataLabel() {
 		super();
 	}
-	
+
 	public DataLabel(String... labelParts) {
 		super();
-		for (String lab:labelParts)
+		for (String lab : labelParts)
 			label.add(lab);
 	}
-	
+
 	public DataLabel(Collection<String> labelParts) {
 		super();
-		for (String lab:labelParts)
+		for (String lab : labelParts)
 			label.add(lab);
 	}
-	
+
 	public void append(Collection<String> labelParts) {
 		label.addAll(labelParts);
 	}
-	
+
 	public void append(String... labelParts) {
-		for (String lab:labelParts)
+		for (String lab : labelParts)
 			label.add(lab);
 	}
-	
+
 	public int size() {
 		return label.size();
 	}
-	
+
 	public String get(int i) {
-		if ((i>=0) && (i<label.size()))
+		if ((i >= 0) && (i < label.size()))
 			return label.get(i);
 		return null;
 	}
-	
+
 	public void stripEnd() {
-		label.remove(label.size()-1);
+		label.remove(label.size() - 1);
 	}
-		
+
 	public String getEnd() {
-		return label.get(label.size()-1);
+		return label.get(label.size() - 1);
 	}
-	
+
 	public String toStringSkipRoot() {
 		StringBuilder sb = new StringBuilder();
-		if (label.size()==1)
+		if (label.size() == 1)
 			return label.get(0);
-		for (int i=1; i<label.size(); i++) {
+		for (int i = 1; i < label.size(); i++) {
 			sb.append(label.get(i));
-			if (i<label.size()-1)
+			if (i < label.size() - 1)
 				sb.append(HIERARCHY_DOWN);
 		}
 		return sb.toString();
-	}	
+	}
+
+	/** Replace all parts of the label with length>1 with ellipsis.
+	 * e.g. if l = 2  abc = ab... where the ellipsis is one char*/
+	public String toAbbreviatedString(int l) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < label.size(); i++) {
+			sb.append(StringUtils.abbreviate(label.get(i), l));
+			if (i < label.size() - 1)
+				if (i < label.size() - 1)
+					sb.append(HIERARCHY_DOWN);
+		}
+		return sb.toString();
+	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i=0; i<label.size(); i++) {
+		for (int i = 0; i < label.size(); i++) {
 			sb.append(label.get(i));
-			if (i<label.size()-1)
+			if (i < label.size() - 1)
 				sb.append(HIERARCHY_DOWN);
 		}
 		return sb.toString();
@@ -117,20 +129,21 @@ public class DataLabel implements Comparable<DataLabel>, Cloneable {
 
 	// slow ?
 	@Override
-	public int compareTo(DataLabel o) {		
+	public int compareTo(DataLabel o) {
 		return toString().compareTo(o.toString());
 	}
 
 	/**
-	 * Returns a data label formed from a 'hierarchical description' String 
+	 * Returns a data label formed from a 'hierarchical description' String
 	 * 
-	 * @param text the hierarchical String, i.e. containing '>' separating String items
+	 * @param text the hierarchical String, i.e. containing '>' separating String
+	 *             items
 	 * @return the matching DataLabel
 	 */
 	public static DataLabel valueOf(String text) {
 		return new DataLabel(text.split(HIERARCHY_DOWN));
 	}
-	
+
 	@Override
 	public DataLabel clone() {
 		return new DataLabel(label);
@@ -143,23 +156,22 @@ public class DataLabel implements Comparable<DataLabel>, Cloneable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj==null)
+		if (obj == null)
 			return false;
 		if (obj instanceof DataLabel) {
 			DataLabel dl = (DataLabel) obj;
-			if (label.size()!=dl.label.size())
+			if (label.size() != dl.label.size())
 				return false;
 			boolean result = true;
-			for (int i=0; i<label.size(); i++) {
-				if (label.get(i)==null) {
-					if (dl.label.get(i)==null)
+			for (int i = 0; i < label.size(); i++) {
+				if (label.get(i) == null) {
+					if (dl.label.get(i) == null)
 						result &= true;
 					else
 						return false;
-				}
-				else {
+				} else {
 					if (label.get(i).equals(dl.label.get(i)))
-						result &=true;
+						result &= true;
 					else
 						return false;
 				}
@@ -168,7 +180,5 @@ public class DataLabel implements Comparable<DataLabel>, Cloneable {
 		}
 		return false;
 	}
-	
-	
-	
+
 }

@@ -17,10 +17,10 @@ archetype 3wSA-SimpleControlWidget1
 			parentLabels = StringTable(([2]"top", "bottom"))
 		hasEdge SimpleTimeWidget1ToSimSpec
 			isOfClass = String("trackTime")
-			toNode = String("dynamics")
+			toNode = String("dynamics:")
 			multiplicity = IntegerRange("1..1")
 		hasProperty SimpleTimeWidget1SenderProperty
 			hasName = String("sender")
 			type = String("Integer")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
 			

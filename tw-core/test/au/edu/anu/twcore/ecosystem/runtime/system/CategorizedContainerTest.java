@@ -78,7 +78,7 @@ class CategorizedContainerTest {
 	private class icontainer extends CategorizedContainer<Identity> {
 		private icontainer(Categorized<Identity> cats, String proposedId,
 				CategorizedContainer<Identity> parent) {
-			super(proposedId,parent);
+			super(proposedId,parent,0);
 		}
 		@Override
 		public Identity cloneItem(Identity item) {
@@ -93,7 +93,8 @@ class CategorizedContainerTest {
 		public void clearVariables() {
 		}
 		@Override
-		public void effectChanges() {
+		@SafeVarargs
+		public final void effectChanges(Collection<Identity>... changedLists) {
 		}
 		@Override
 		public String id() {
@@ -108,6 +109,7 @@ class CategorizedContainerTest {
 	private CategorizedContainer<Identity> cc, cc2;
 	private IdentityScope scope;
 
+	@SuppressWarnings("unchecked")
 	@BeforeEach
 	private void init() {
 		TreeGraphFactory f = new TreeGraphFactory();
@@ -139,12 +141,12 @@ class CategorizedContainerTest {
 		cc.effectChanges();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void init2(String proposedId) {
 		cc2 = new icontainer(ca2,proposedId,cc);
 		for (int i=0; i<4; i++)
 			cc2.addItem(scope.newId(true,"bw_"+i));
 		cc2.effectChanges();
-
 	}
 
 	private void show(String method,String text) {

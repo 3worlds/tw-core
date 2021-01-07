@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.containers;
 
-import fr.cnrs.iees.identity.Identity;
+import java.util.Collection;
 
 /**
  * An interface for containers which must delay addition and deletion of items up to
@@ -38,7 +38,7 @@ import fr.cnrs.iees.identity.Identity;
  *
  * @param <T>
  */
-public interface DynamicContainer<T extends Identity> extends Container {
+public interface DynamicContainer<T> extends Container {
 
 	/**
 	 * Tag an item for addition into this container's item list. The item will be
@@ -65,8 +65,10 @@ public interface DynamicContainer<T extends Identity> extends Container {
 	 * call to this method, they are just stored into {@code itemsToRemove} and
 	 * {@code itemsToAdd}). NB: to recursively effect changes for all
 	 * sub-containers, use {@code effectAllChanges()}.
+	 * The arguments are here in case a return list of items is needed - depends on context of course
 	 */
-	public void effectChanges();
+	@SuppressWarnings("unchecked")
+	public void effectChanges(Collection<T>...changedLists);
 
 	/**
 	 * Flag used to signal if the container has been changed during a computation step

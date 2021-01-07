@@ -50,8 +50,8 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 
 public abstract class HierarchicalComponent
 		extends TreeGraphDataNode
-		implements CategorizedComponent, 
-			Containing<DescribedContainer<SystemComponent>>, 
+		implements CategorizedComponent,
+			Containing<DescribedContainer<SystemComponent>>,
 			Contained<DescribedContainer<SystemComponent>> {
 
 	protected Categorized<? extends CategorizedComponent> categories = null;
@@ -73,7 +73,7 @@ public abstract class HierarchicalComponent
 	@Override
 	public void detachFromContainer() {
 	}
-	
+
 	@Override
 	public Categorized<? extends CategorizedComponent> membership() {
 		return categories;

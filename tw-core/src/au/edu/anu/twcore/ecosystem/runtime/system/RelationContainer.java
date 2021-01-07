@@ -28,20 +28,28 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.containers.DynamicContainer;
+import au.edu.anu.twcore.ecosystem.runtime.space.Space;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.twcore.constants.LifespanType;
+import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Duple;
+import fr.ens.biologie.generic.utils.Logging;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATION_LIFESPAN;
 
 /**
@@ -54,7 +62,9 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIO
 public class RelationContainer
 		implements DynamicContainer<SystemRelation>, Resettable, Related<CategorizedComponent>  {
 
+	private static Logger log = Logging.getLogger(RelationContainer.class);
 	private Identity id = null;
+	private scopes scope = new scopes();
 	//
 	private RelationType relationType = null;
 	// the list of system component pairs to later relate
@@ -64,8 +74,12 @@ public class RelationContainer
 	private boolean changed = false;
 	private boolean permanent = false;
 
-	public RelationContainer(RelationType rel) {
+	public RelationContainer(RelationType rel, int simulatorId) {
 		super(); // since they are different local scopes it may work...
+		scope = new scopes();
+		scope.setSimId(simulatorId);
+		if (scope.getContainerScope(simulatorId)==null)
+			scope.setContainerScope(simulatorId, new ResettableLocalScope(containerScopeName+"-"+simulatorId));
 		relationType = rel;
 		id = scope().newId(true,rel.id()); // not the same scope, should work ?
 		if (rel.properties().hasProperty(P_RELATION_LIFESPAN.key()))
@@ -95,12 +109,24 @@ public class RelationContainer
 		relationsToRemove.add(relation);
 	}
 
+	@SafeVarargs
 	@Override
-	public void effectChanges() {
+	public final void effectChanges(Collection<SystemRelation>...changedLists) {
 		// delete all old relations
 		for (SystemRelation sr:relationsToRemove) {
-			sr.startNode().disconnectFrom(Direction.OUT,sr.endNode()); // Do NOT use sr.disconnect() --> ConcurrentModificationException
-			sr.detachFromContainer();
+			// if a relation is in both deletion and addition sets, remove it from
+			// sets and do nothing (this is possible with ephemeral relations)
+			Duple<CategorizedComponent,CategorizedComponent> ends =
+				new Duple<CategorizedComponent,CategorizedComponent>
+					((CategorizedComponent)sr.startNode(),(CategorizedComponent)sr.endNode());
+			if (relationsToAdd.contains(ends))
+				relationsToAdd.remove(ends);
+			else {
+				// Do NOT use sr.disconnect() --> ConcurrentModificationException
+				log.info(()->"Removing relation "+sr.toShortString());
+				sr.startNode().disconnectFrom(Direction.OUT,sr.endNode());
+				sr.detachFromContainer();
+			}
 		}
 		relationsToRemove.clear();
 		// establish all new relations
@@ -108,6 +134,10 @@ public class RelationContainer
 			SystemRelation sr = item.getFirst().relateTo(item.getSecond(),relationType.id());
 			sr.setContainer(this);
 			sr.setRelated(relationType);
+			log.info(()->"Creating relation "+sr.toShortString());
+			// if autodelete is true, then tag all the new relations to be deleted next time step
+			if (relationType.autoDelete())
+				relationsToRemove.add(sr);
 		}
 		relationsToAdd.clear();
 		changed = false;
@@ -146,6 +176,29 @@ public class RelationContainer
 		return permanent;
 	}
 
+	public boolean autoDelete() {
+		return relationType.autoDelete();
+	}
 
+	public void sendDataForAutoDeletedRelations(Space<SystemComponent> sp,
+			long time,
+			SimulatorStatus status) {
+		if (sp instanceof SingleDataTrackerHolder) {
+			SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<?>) sp).dataTracker();
+			if (!relationsToRemove.isEmpty()) {
+				dts.recordTime(status, time);
+				for (SystemRelation sr:relationsToRemove) {
+					SystemComponent sn = (SystemComponent)sr.startNode();
+					SystemComponent en = (SystemComponent) sr.endNode();
+					dts.deleteLine(sn.container().itemId(sn.id()),en.container().itemId(en.id()));
+				}
+				dts.closeTimeStep();
+			}
+		}
+	}
 
+	@Override
+	public ResettableLocalScope scope() {
+		return scope.getContainerScope(scope.getSimId());
+	}
 }

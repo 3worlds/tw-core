@@ -36,13 +36,13 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
  * @date 13 Dec 2019
  */
 public enum RngResetType {
-	never, //
-	onRunStart, //
-	onExperimentStart,//
+	NEVER, //
+	ONRUNSTART, //
+//	onExperimentStart,//
 	;
 
 	public static RngResetType defaultValue() {
-		return never;
+		return NEVER;
 	}
 
 	static{

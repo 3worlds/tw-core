@@ -12,10 +12,12 @@ archetype 3wSA-SimpleGraphWidget
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery SenderInRangeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 		hasProperty SimpleGraphWidgetSenderProperty
 			hasName = String("sender")
 			type = String("Integer")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab","container"))

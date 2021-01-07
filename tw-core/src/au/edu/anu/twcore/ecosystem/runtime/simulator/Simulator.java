@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
 import static fr.cnrs.iees.twcore.constants.SimulatorStatus.*;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,12 +46,12 @@ import au.edu.anu.twcore.ecosystem.runtime.Sampler;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
+import au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
-import au.edu.anu.twcore.ecosystem.runtime.space.Location;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
+import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
@@ -67,7 +68,6 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -86,18 +86,11 @@ public class Simulator implements Resettable {
 		private TimeTracker() {
 			super(DataMessageTypes.TIME,id);
 		}
-
 		// returns quickly if there are no observers - no point building a TimeData
 		void sendData(long time) {
 			if (hasObservers()) {
 				TimeData output = new TimeData(status, id, metadata.type());
-//				output.setTime(lastTime);
-				output.setTime(time);// used the passed in parameter to avoid side effects.
-//				output.setCommunity(ecosystem.community());
-//				if (mainSpace!=null)
-//					output.setSpaces(mainSpace.spaces());
-//				else
-//					output.setSpaces(null);
+				output.setTime(time);
 				sendData(output);
 			}
 		}
@@ -164,7 +157,7 @@ public class Simulator implements Resettable {
 	 * @param timeModelMasks
 	 * @param processCallingOrder
 	 * @param ecosystem
-	 * @param haveStoppingConditions 
+	 * @param haveStoppingConditions
 	 */
 	@SuppressWarnings("unchecked")
 	public Simulator(int id,
@@ -177,8 +170,8 @@ public class Simulator implements Resettable {
 			SpaceOrganiser space,
 			EcosystemGraph ecosystem, boolean noStoppingConditions) {
 		super();
-		log.info("START Simulator " + id + " instantiated");
 		this.id = id;
+		log.info(()->"START Simulator " + this.id + " instantiated");
 		this.stoppingCondition = stoppingCondition;
 //		this.refTimer = refTimer;
 		this.timerList = timers;
@@ -192,14 +185,14 @@ public class Simulator implements Resettable {
 		timetracker = new TimeTracker();
 //		timetracker.setSender(id);
 		metadata = new Metadata(id, refTimer.properties());
-		
+
 		String scDesc = stoppingCondition.toString();
 		if (noStoppingConditions)//i.e. not the default stopping condition
 			scDesc = "(never)";
-		
+
 		// Add the description of the stopping condition for display by widgets if required
 		metadata.addProperty("StoppingDesc", scDesc);
-		
+
 		trackers.put(timetracker, metadata);
 		for (List<List<TwProcess>> llp : processCallingOrder.values())
 			for (List<TwProcess> lp : llp)
@@ -222,10 +215,10 @@ public class Simulator implements Resettable {
 //					}
 		}
 		// add system (arena) GraphDataTracker
-		GraphDataTracker gdt = ecosystem.arena().getDataTracker();		
+		GraphDataTracker gdt = ecosystem.arena().getDataTracker();
 		if (gdt!=null)
 			trackers.put(gdt,gdt.getInstance());
-		
+
 		// add space data trackers to datatracker list
 		if (mainSpace!=null)
 			for (Space<SystemComponent> sp : mainSpace.spaces())
@@ -234,7 +227,7 @@ public class Simulator implements Resettable {
 			if (dts != null)
 				trackers.put(dts, dts.getInstance());
 		}
-		log.info("END Simulator " + id + " instantiated");
+		log.info(()->"END Simulator " + this.id + " instantiated");
 	}
 
 	public int id() {
@@ -258,11 +251,10 @@ public class Simulator implements Resettable {
 	}
 
 	// run one simulation step
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unused", "unchecked" })
 	public synchronized void step() {
 		status = SimulatorStatus.Active;
-		log.info("Time = " + lastTime);
-//		timetracker.sendData(lastTime);
+		log.info(()->"START Simulator " + id +" stepping time = " + lastTime);
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;
@@ -276,6 +268,12 @@ public class Simulator implements Resettable {
 			status = SimulatorStatus.Final;
 		else {
 			long step = nexttime - lastTime;
+			// send drawing data for deleted ephemeral relations (dirty fix, but needed)
+			if (mainSpace!=null)
+				for (RelationContainer rc: ecosystem.relations())
+					if (rc.autoDelete())
+						for (DynamicSpace<SystemComponent> sp:mainSpace.spaces())
+							rc.sendDataForAutoDeletedRelations(sp,nexttime,status);
 			// send the time as supplied to the processes in this step
 			timetracker.sendData(nexttime);
 			lastTime = nexttime;
@@ -322,14 +320,38 @@ public class Simulator implements Resettable {
 						au.writeDisable();
 			}
 			// apply all changes to community
-			ecosystem.effectChanges();
+			Collection<SystemComponent> newComp = ecosystem.effectChanges();
+			// apply changes to spaces, including data tracking
 			if (mainSpace!=null)
-				for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
+				for (DynamicSpace<SystemComponent> space : mainSpace.spaces())
 					space.effectChanges();
+			// set permanent relation for newly created (and located) systems
+			setPermanentRelations(newComp,nexttime);
+			for (RelationContainer rc:ecosystem.relations())
+				if (rc.isPermanent())
+					rc.effectChanges();
+			// resample community for data trackers who need it
 			for (DataTracker<?, Metadata> tracker : trackers.keySet())
 				if (tracker instanceof Sampler)
 					((Sampler<?>)tracker).updateSample();
 		}
+		log.info(()->"END Simulator " + id +" stepping time = " + lastTime);
+	}
+
+	// establish permanent relations at creation of SystemComponents
+	private void setPermanentRelations(Collection<SystemComponent> comps,long time) {
+		for (List<List<TwProcess>> llp:processCallingOrder.values())
+			for (List<TwProcess> lp:llp)
+				for (TwProcess p:lp)
+					if (p instanceof SearchProcess) {
+						SearchProcess proc = (SearchProcess) p;
+						if (proc.space()!=null)
+							proc.space().dataTracker().recordTime(status,time); // creates the message
+						if (proc.isPermanent())
+							proc.setPermanentRelations(comps,ecosystem.community());
+						if (proc.space()!=null)
+							proc.space().dataTracker().closeTimeStep(); // sends the message
+					}
 	}
 
 	/**
@@ -338,33 +360,28 @@ public class Simulator implements Resettable {
 	 */
 	private void computeInitialCoordinates(CategorizedContainer<SystemComponent> container) {
 		for (SystemComponent sc : container.items()) {
-			Iterable<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces =
+			Iterable<DynamicSpace<SystemComponent>> spaces =
 				((ComponentFactory) sc.membership()).spaces();
-			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : spaces) {
-				// get the initial item matching this
-				SystemComponent isc = container.initialForItem(sc.id());
-//				if (isc!=null) // must always be non null, normally
+			// get the initial item matching this
+			SystemComponent isc = container.initialForItem(sc.id());
+			for (DynamicSpace<SystemComponent> space : spaces) {
 				// get the location of this initial item
 				if (space.dataTracker() != null) {
 					space.dataTracker().setInitialTime();
 					space.dataTracker().recordTime(status,startTime);
 				}
-				for (LocatedSystemComponent lisc : space.getInitialItems())
-					if (lisc.item() == isc) {
-						// locate the initial item clone at the location of the initial item
-						Location initLoc;
-						if (!space.boundingBox().contains(lisc.location().asPoint())) {
-							initLoc = space.locate(sc, Point.newPoint(space.defaultLocation()));
-						}
-						else
-							initLoc = space.locate(sc, lisc.location());
-						// send coordinates to data tracker if needed
-						if (space.dataTracker() != null) {
-							double x[] = new double[initLoc.asPoint().dim()];
-							for (int i = 0; i < initLoc.asPoint().dim(); i++)
-								x[i] = initLoc.asPoint().coordinate(i);
-							space.dataTracker().createPoint(x, container.itemId(sc.id()));
-						}
+				if (space.getInitialItems().contains(isc)) {
+					if (!space.boundingBox().contains(isc.locationData().asPoint())) {
+						sc.locationData().setCoordinates(space.defaultLocation());
+						space.locate(sc);
+					}
+					else {
+						sc.locationData().setCoordinates(isc.locationData().coordinates());
+						space.locate(sc);
+					}
+					// send coordinates to data tracker if needed
+					if (space.dataTracker() != null)
+						space.dataTracker().createPoint(sc.locationData().coordinates(),container.itemId(sc.id()));
 				}
 				if (space.dataTracker() != null)
 					space.dataTracker().closeTimeStep();
@@ -378,6 +395,7 @@ public class Simulator implements Resettable {
 	@Override
 	public synchronized void preProcess() {
 		status = Initial;
+		log.info(()->"START Simulator " + id + " reset/pre");
 		stoppingCondition.preProcess();
 		for (Timer t : timerList)
 			t.preProcess();
@@ -387,14 +405,19 @@ public class Simulator implements Resettable {
 		// computes coordinates of items just added before
 		if (ecosystem.community()!=null)
 			computeInitialCoordinates(ecosystem.community());
+		if (ecosystem.community()!=null)
+			setPermanentRelations(ecosystem.community().allItems(),0L);
+		// new community
 		// reset data tracker sample lists, ie replace initial items by runtime items
 		for (DataTracker<?, Metadata> tracker:trackers.keySet())
 			tracker.preProcess();
+		log.info(()->"END Simulator " + id + " reset/pre");
 	}
 
 	@Override
 	public synchronized void postProcess() {
 		status = Final;
+		log.info(()->"START Simulator " + id + " reset/post");
 		lastTime = startTime;
 		stoppingCondition.postProcess();
 		for (Timer t : timerList)
@@ -403,8 +426,9 @@ public class Simulator implements Resettable {
 		ecosystem.postProcess();
 		// remove all items from spaces
 		if (mainSpace!=null)
-			for (DynamicSpace<SystemComponent, LocatedSystemComponent> space : mainSpace.spaces())
+			for (DynamicSpace<SystemComponent> space : mainSpace.spaces())
 				space.postProcess();
+		log.info(()->"END Simulator " + id + " reset/post");
 	}
 
 	// returns true if stopping condition is met

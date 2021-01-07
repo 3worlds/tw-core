@@ -6,21 +6,24 @@ import au.edu.anu.twcore.ecosystem.runtime.containers.Described;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 
 /**
- * 
+ *
  * @author gignoux 28 sept. 2020
  *
  * @param <T>
  * @param <U>
  */
-public class DescribedContainer<T extends CategorizedComponent> 
-		extends CategorizedContainer<T> 
+public class DescribedContainer<T extends CategorizedComponent>
+		extends CategorizedContainer<T>
 		implements Described<HierarchicalComponent> {
-	
+
 	// descriptors for this container
 	private HierarchicalComponent avatar = null;
 
-	public DescribedContainer(String proposedId, CategorizedContainer<T> parent, HierarchicalComponent data) {
-		super(proposedId, parent);
+	public DescribedContainer(String proposedId,
+			CategorizedContainer<T> parent,
+			HierarchicalComponent data,
+			int simulatorId) {
+		super(proposedId, parent,simulatorId);
 		avatar = data;
 	}
 
@@ -34,7 +37,7 @@ public class DescribedContainer<T extends CategorizedComponent>
 	public Categorized<?> containerCategorized() {
 		return avatar.membership();
 	}
-	
+
 	/**
 	 * Returns the parameter set associated to this container. It is specified by
 	 * the categories associated to the container, accessible through the
@@ -58,17 +61,17 @@ public class DescribedContainer<T extends CategorizedComponent>
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	protected void setData(HierarchicalComponent data) {
 		if (avatar==null)
 			avatar = data;
 	}
-	
+
 	@Override
 	public HierarchicalComponent descriptors() {
 		return avatar;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

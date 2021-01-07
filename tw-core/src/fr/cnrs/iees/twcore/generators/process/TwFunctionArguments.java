@@ -29,7 +29,6 @@
 package fr.cnrs.iees.twcore.generators.process;
 
 import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
 
 /**
  * Arguments used in TwFunction descendants
@@ -53,11 +52,11 @@ public enum TwFunctionArguments {
 	// space
 	space			("au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace", "space "),
 	limits			(Box.class.getCanonicalName(), "limits "),
-	focalLoc		(Point.class.getCanonicalName(), "focal component location "),
-	otherLoc		(Point.class.getCanonicalName(), "other component location "),
+//	focalLoc		(Point.class.getCanonicalName(), "focal component location "),
+//	otherLoc		(Point.class.getCanonicalName(), "other component location "),
 	// writeable arguments
-	nextFocalLoc	("double[]", "focal component new location"),
-	nextOtherLoc	("double[]", "other component new location"),
+//	nextFocalLoc	("double[]", "focal component new location"),
+//	nextOtherLoc	("double[]", "other component new location"),
 	// utilities (local to TwFunction)
 	random			("java.util.Random", "random number generator"),
 	decider			("au.edu.anu.twcore.ecosystem.runtime.biology.DecisionFunction", "decision function"),

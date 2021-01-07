@@ -40,7 +40,7 @@ import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
-import au.edu.anu.twcore.ecosystem.structure.newapi.ElementType;
+import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.SimplePropertyList;

@@ -37,8 +37,11 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -51,7 +54,9 @@ import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
@@ -93,7 +98,7 @@ public abstract class HierarchicalDataGenerator
 
 	private boolean hadErrors = false;
 
-	protected abstract ClassGenerator getRecordClassGenerator(String className,String comment);
+	protected abstract ClassGenerator getRecordClassGenerator(String className,String comment,Set<String> locatedMethods);
 
 	protected abstract ClassGenerator getTableClassGenerator(String className, String contentType,String comment);
 
@@ -114,8 +119,6 @@ public abstract class HierarchicalDataGenerator
 		cn = validJavaName(initialUpperCase(wordUpperCaseName(cn)));
 		log.info("Generating data class '"+cn+"'");
 		String comment = comment(general,classComment(cn),generatedCode(false,modelName, ""));
-		ClassGenerator cg = getRecordClassGenerator(cn,comment);
-		headerCode(cg,cn);
 		Iterable<TreeNode> childrenList = null;
 		// CAUTION: now specs are defined either with child nodes or with specific edges
 		if (spec.hasChildren())
@@ -124,22 +127,58 @@ public abstract class HierarchicalDataGenerator
 			childrenList = (Iterable<TreeNode>) get(spec.edges(Direction.OUT),
 				selectZeroOrMany(hasProperty("type","forCodeGeneration")),
 				edgeListEndNodes());
+		// get the fields that are used as space coordinates
+		List<ALDataEdge> coordEdges = (List<ALDataEdge>) get(childrenList,
+			selectZeroOrMany(hasTheLabel(N_FIELD.label())),
+			nodeListInEdges(),
+			selectZeroOrMany(hasTheLabel(E_COORDMAPPING.label())));
+		SortedMap<Integer,Node> rankedCoordFields = new TreeMap<>();
+		for (ALDataEdge ce:coordEdges)
+			rankedCoordFields.put((Integer)ce.properties().getPropertyValue(P_SPACE_COORD_RANK.key()),
+				ce.endNode());
+		List<Node> coordinateFields = new ArrayList<>();
+		// all this to make sure coordinates come in the proper order and are numbered 0,1,2,3 etc.
+		for (Node n:rankedCoordFields.values())
+			coordinateFields.add(n);
+		// instantiate class generator
+		Set<String> locatedMethods = null;
+		if (!coordinateFields.isEmpty()) {
+			locatedMethods = new HashSet<>();
+			// TODO: this is brittle - consider getting those names using reflection from the Located interface
+			locatedMethods.add("coordinates");
+			locatedMethods.add("coordinate");
+			locatedMethods.add("asPoint");
+			locatedMethods.add("setCoordinates");
+		}
+		ClassGenerator cg = getRecordClassGenerator(cn,comment,locatedMethods);
+		// generate imports and inherited methods
+		headerCode(cg,cn);
+		// generate field code
 		for (TreeNode ff:childrenList) {
 			TreeGraphDataNode f = (TreeGraphDataNode) ff;
 			String fname = validJavaName(wordUpperCaseName(f.id()));
 			String ftype = null;
 			if (f.properties().hasProperty(P_FIELD_TYPE.key())) {
 				DataElementType det = (DataElementType)f.properties().getPropertyValue(P_FIELD_TYPE.key());
-				ftype = det.name();
+				if (det.asPrimitive()==null)
+					ftype = det.name();
+				else
+					ftype = det.asPrimitive();
 			}
+			// generate field code specific to table types
 			if (f.classId().equals(N_TABLE.label())) {
 				ftype = generateTableCode((TreeGraphDataNode) f,cg);
 				tableFieldCode(cg,fname,ftype);
 			}
-			else {
-				primitiveFieldCode(cg,fname,ftype);
-			}
-			fieldCode(cg,fname,ftype);
+			// generate field code for other ("plain") types
+			else
+				primitiveFieldCode(cg,fname,ftype,coordinateFields.indexOf(f)+1,coordinateFields.size());
+			// generate specific accessors for fields used as spatial coordinates
+			if (coordinateFields.contains(f))
+				fieldCode(cg,fname,ftype,coordinateFields.indexOf(f)+1,coordinateFields.size());
+			// generate common field-specific methods and code
+			else
+				fieldCode(cg,fname,ftype,-1,-1);
 		}
 		finalCode(cg);
 		log.info("    generating file "+cn+".java ...");
@@ -151,9 +190,18 @@ public abstract class HierarchicalDataGenerator
 	}
 
 	protected abstract void headerCode(ClassGenerator cg, String className);
-	protected abstract void fieldCode(ClassGenerator cg,String fname,String ftype);
+	/**
+	 * This method generates the code for data fields that is common to all data field types.
+	 *
+	 * @param cg the class generator instance
+	 * @param fname the field name
+	 * @param ftype the field type (as a member of the {@linkplain DataElementType} enum)
+	 * @param coordRank the space coordinate rank of this field (-1 if this field is not used as a coordinate)
+	 * @param coordSize the space dimension (-1 if no space)
+	 */
+	protected abstract void fieldCode(ClassGenerator cg,String fname,String ftype, int coordRank,int coordSize);
 	protected abstract void tableFieldCode(ClassGenerator cg,String fname,String ftype);
-	protected abstract void primitiveFieldCode(ClassGenerator cg,String fname,String ftype);
+	protected abstract void primitiveFieldCode(ClassGenerator cg,String fname,String ftype, int coordRank,int coordSize);
 	protected abstract void finalCode(ClassGenerator cg);
 
 	/**

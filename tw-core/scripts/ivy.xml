@@ -1,10 +1,10 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-core> version 0.3.26 (Tue Oct 13 11:40:40 CEST 2020)
+ ant and ivy scripts for project <tw-core> version 0.3.27 (Mon Nov 30 15:42:13 CET 2020)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
  If you need to change this file, edit ../version/Setup.java appropriately and run it.
- This will re-generate this file and manage version numbers properly. 
+ This will re-generate this file and manage version numbers properly.
 ===================================================================================-->
 <ivy-module version="2.0"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -13,7 +13,7 @@
 
 	<info	organisation="fr.cnrs.iees.tw-core"
 			module="tw-core"
-			revision="0.3.26"
+			revision="0.3.27"
 			status="integration">
 		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
 		<description>This module brings together all components required for 3Worlds including archetype</description>
@@ -32,7 +32,7 @@
 	<dependencies>
 		<dependency org="fr.ens.biologie" name="generics" rev="[0.2.2,)"/>
 		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="[0.4.0,)"/>
-		<dependency org="au.edu.anu.rscs.aot" name="qgraph" rev="[0.1.3,)"/>
+		<dependency org="au.edu.anu.rscs.aot" name="qgraph" rev="[0.1.4,)"/>
 		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="[0.1.8,)"/>
 		<dependency org="fr.cnrs.iees.rvgrid" name="rvgrid" rev="[0.0.4,)"/>
 		<dependency org="fr.cnrs.iees.uit" name="uit" rev="[0.3.0,)"/>

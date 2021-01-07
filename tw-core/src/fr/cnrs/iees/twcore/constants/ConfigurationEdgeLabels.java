@@ -34,17 +34,18 @@ import au.edu.anu.twcore.data.SizedByEdge;
 import au.edu.anu.twcore.experiment.BaseLineEdge;
 import au.edu.anu.twcore.experiment.ModelSetupEdge;
 import au.edu.anu.twcore.experiment.StopOnEdge;
+import au.edu.anu.twcore.experiment.TreatsEdge;
 import au.edu.anu.twcore.experiment.SourceEdge;
 
 import au.edu.anu.twcore.ecosystem.structure.AutoVarEdge;
 import au.edu.anu.twcore.ecosystem.structure.DriverEdge;
 import au.edu.anu.twcore.ecosystem.structure.DecoratorEdge;
-import au.edu.anu.twcore.ecosystem.structure.ParameterEdge;
 import au.edu.anu.twcore.ecosystem.structure.ConstantsEdge;
 import au.edu.anu.twcore.ecosystem.structure.BelongsToEdge;
 import au.edu.anu.twcore.ecosystem.structure.InitialisedByEdge;
 import au.edu.anu.twcore.ecosystem.structure.ToCategoryEdge;
 import au.edu.anu.twcore.ecosystem.structure.FromCategoryEdge;
+import au.edu.anu.twcore.ecosystem.structure.CoordinateMappingEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.AppliesToEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.DependsOnEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.EffectedByEdge;
@@ -52,7 +53,6 @@ import au.edu.anu.twcore.ecosystem.dynamics.StopSystemEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.ConditionEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.UseRNGEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
-import au.edu.anu.twcore.ecosystem.dynamics.LocationEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.FedByEdge;
 
 import au.edu.anu.twcore.ecosystem.dynamics.initial.GroupOfEdge;
@@ -62,6 +62,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.LoadFromEdge;
 
 import au.edu.anu.twcore.ui.TrackTimeEdge;
 import au.edu.anu.twcore.ui.TrackTimeSeriesEdge;
+import fr.cnrs.iees.graph.Edge;
 import au.edu.anu.twcore.ui.TrackFieldEdge;
 import au.edu.anu.twcore.ui.TrackTableEdge;
 import au.edu.anu.twcore.ui.TrackComponentEdge;
@@ -83,17 +84,18 @@ public enum ConfigurationEdgeLabels {
 	E_MODELSETUP	("modelSetup",		"moSu1",		ModelSetupEdge.class),
 	E_STOPON		("stopOn",			"stpOn1",		StopOnEdge.class),
 	E_SOURCE		("source",			"src1",			SourceEdge.class),
+	E_TREATS		("treats",			"trts",			TreatsEdge.class),
 	// ecosystem / structure
 	E_AUTOVAR		("autoVar",			"auto1",		AutoVarEdge.class),
 	E_DRIVERS		("drivers",			"drvs1",		DriverEdge.class),
 	E_DECORATORS	("decorators",		"decs1",		DecoratorEdge.class),
 	E_CONSTANTS		("constants",		"cnsts1",		ConstantsEdge.class),
-	E_PARAMETERS	("parameters",		"pars1",		ParameterEdge.class), // should be deprecated
+//	E_PARAMETERS	("parameters",		"pars1",		ParameterEdge.class), // should be deprecated
 	E_BELONGSTO		("belongsTo",		"bt1",			BelongsToEdge.class),
-	E_INITIALISEDBY	("initialisedBy",	"ib1",		InitialisedByEdge.class),
+	E_INITIALISEDBY	("initialisedBy",	"ib1",			InitialisedByEdge.class),
 	E_TOCATEGORY	("toCategory",		"to1",			ToCategoryEdge.class),
 	E_FROMCATEGORY	("fromCategory",	"from1",		FromCategoryEdge.class),
-	// ecosystem / dynamics
+	E_COORDMAPPING	("coordinate",		"crdmp",		CoordinateMappingEdge.class),	// ecosystem / dynamics
 	E_APPLIESTO		("appliesTo",		"aplyTo1",		AppliesToEdge.class),
 	E_DEPENDSON		("dependsOn",		"depsOn1",		DependsOnEdge.class),
 	E_EFFECTEDBY	("effectedBy",		"effdBy1",		EffectedByEdge.class),
@@ -105,7 +107,7 @@ public enum ConfigurationEdgeLabels {
 	E_LOADFROM		("loadFrom",		"ldFrom1",		LoadFromEdge.class),
 	E_USERNG		("useRNG",			"uses1",		UseRNGEdge.class),
 	E_SPACE			("inSpace",			"in1",			ProcessSpaceEdge.class),
-	E_LOCATION		("location",		"loc1",			LocationEdge.class),
+//	E_LOCATION		("location",		"loc1",			LocationEdge.class),
 	E_FEDBY			("fedBy",			"fedBy1",		FedByEdge.class),// edge from function to EventQueue
 	// user interface
 	E_TRACKTIME		("trackTime",		"trks1",		TrackTimeEdge.class),
@@ -116,6 +118,8 @@ public enum ConfigurationEdgeLabels {
 	E_TRACKCOMPONENT("trackComponent",	"trks1",		TrackComponentEdge.class),
 	E_TRACKSPACE	("trackSpace",		"trks1",		TrackSpaceEdge.class),
 //	E_TRACKSYSTEM	("trackSystem",		"trks1",		TrackSystemEdge.class)
+	// Utility - in some cases one may save a child node as an out node with a specific label
+	E_CHILD			("_CHILD",			"child",				Edge.class)
 	;
 	//=========================================================================
 	private final String label;

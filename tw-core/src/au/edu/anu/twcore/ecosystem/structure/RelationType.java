@@ -33,17 +33,19 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.LifespanType;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOneOrMany;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -51,6 +53,8 @@ import java.util.TreeSet;
 
 import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
+import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
@@ -66,6 +70,7 @@ public class RelationType
 		implements LimitedEdition<RelationContainer>,
 			Related<CategorizedComponent>, Sealable, DefaultStrings {
 
+	// INNER CLASSES
 	// predefined values for the type property of SystemRelation
 	public enum predefinedRelationTypes {
 		parentTo	(defaultPrefix+"parentTo"), 	// start if the parent of end
@@ -99,13 +104,16 @@ public class RelationType
 			return categoryId;
 		}
 	}
+
+	// FIELDS
 	private boolean sealed = false;
 	// from and to category lists
 	private cat fromCat, toCat;
-
 	private Map<Integer,RelationContainer> relconts = new HashMap<>();
+	// if true, means ephemeral relations must be deleted at the end of time step
+	private boolean autoDelete = false;
 
-
+	// CONSTRUCTORS
 	public RelationType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
@@ -113,6 +121,8 @@ public class RelationType
 	public RelationType(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
+
+	// METHODS
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -128,6 +138,22 @@ public class RelationType
 				edgeListEndNodes());
 			fromCat = new cat(fromcats);
 			sealed = true;
+			// ephemeral properties must be cleared at each time step if they have no maintainRelationFunction
+			if (properties().hasProperty(P_RELATION_LIFESPAN.key()))
+				if (properties().getPropertyValue(P_RELATION_LIFESPAN.key()).equals(LifespanType.ephemeral)) {
+					List<ProcessNode> procs = (List<ProcessNode>) get(edges(Direction.IN),
+						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
+						edgeListStartNodes());
+					// when there is no MaintainRelationFunction in processes pointing to me,
+					// ephemeral relations must be cleared at each time step
+					autoDelete = true;
+					for (ProcessNode proc:procs) {
+						List<FunctionNode> fnl = (List<FunctionNode>) get(proc,children(),
+							selectZeroOrMany(hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.MaintainRelationDecision)));
+						if (!fnl.isEmpty())
+							autoDelete = false;
+					}
+			}
 		}
 	}
 
@@ -141,7 +167,7 @@ public class RelationType
 		if (!sealed)
 			initialise();
 		if (!relconts.containsKey(id))
-			relconts.put(id, new RelationContainer(this));
+			relconts.put(id, new RelationContainer(this,id));
 		return relconts.get(id);
 	}
 
@@ -168,6 +194,10 @@ public class RelationType
 	@Override
 	public boolean isSealed() {
 		return sealed;
+	}
+
+	public boolean autoDelete() {
+		return autoDelete;
 	}
 
 }

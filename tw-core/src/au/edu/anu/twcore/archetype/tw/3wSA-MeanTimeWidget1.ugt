@@ -1,0 +1,30 @@
+tree
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-MeanTimeWidget1
+
+	hasNode MeanTimeWidget1Spec
+		isOfClass = String("widget")
+		// TODO this should override parent when checking
+		hasParent = StringTable(([2]"top:","bottom:"))
+		multiplicity = IntegerRange("0..*")
+		hasProperty MeanTimeWidget1RefreshRatePropertySpec
+			hasName = String("refreshRate")
+			type = String("Long")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery MeanTimeWidget1RefreshRateIsInRangeQuerySpec
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]250,60000))
+		hasEdge MeanTimeWidget1ToSimSpec
+			isOfClass = String("trackTime")
+			toNode = String("dynamics:")
+			multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery MeanTimeWidget1ParentClassQuery
+			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
+			parentLabels = StringTable(([2]"top", "bottom"))
+			

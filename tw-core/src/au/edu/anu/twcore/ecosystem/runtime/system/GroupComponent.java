@@ -39,7 +39,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  */
 public class GroupComponent
 		extends HierarchicalComponent {
-	
+
 	public GroupComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
@@ -48,9 +48,14 @@ public class GroupComponent
 	public GroupFactory elementFactory() {
 		return (GroupFactory) membership();
 	}
-	
+
 	public String name() {
 		return content().id();
+	}
+
+	public void addGroupIntoLifeCycle() {
+		if (getParent() instanceof LifeCycleComponent)
+			((LifeCycleComponent)getParent()).addGroup(this);
 	}
 
 }

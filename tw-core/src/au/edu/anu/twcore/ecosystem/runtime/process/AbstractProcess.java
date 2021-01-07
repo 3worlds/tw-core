@@ -39,11 +39,9 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocatedSystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
@@ -64,24 +62,21 @@ import fr.ens.biologie.generic.Sealable;
  */
 public abstract class AbstractProcess
 		implements TwProcess, Sealable, MultipleDataTrackerHolder<Metadata>,
-			Spatialized<DynamicSpace<SystemComponent,LocatedSystemComponent>> {
+			Spatialized<DynamicSpace<SystemComponent>> {
 
 	private boolean sealed = false;
 	protected SimulatorStatus currentStatus = SimulatorStatus.Initial;
     private ArenaComponent ecosystem = null;
-    // dataTrackers - common to all process types
-    // NB: space data trackers are contained into spaces
-//	protected List<DataTracker0D> tsTrackers = new LinkedList<DataTracker0D>();
-//	protected List<DataTracker2D> mapTrackers = new LinkedList<DataTracker2D>();
 	protected Timer timer = null;
-	protected DynamicSpace<SystemComponent,LocatedSystemComponent> space = null;
+	protected DynamicSpace<SystemComponent> space = null;
 	protected double searchRadius = 0.0;
 	protected double currentTime = 0.0;
-
+    // dataTrackers - common to all process types
+    // NB: space data trackers are contained into spaces
 	protected List<SamplerDataTracker<CategorizedComponent,?,Metadata>> trackers = new ArrayList<>();
 
 	public AbstractProcess(ArenaComponent world, Timer timer,
-			DynamicSpace<SystemComponent,LocatedSystemComponent> space,
+			DynamicSpace<SystemComponent> space,
     		double searchR) {
     	super();
     	ecosystem = world;
@@ -102,7 +97,7 @@ public abstract class AbstractProcess
 	}
 
 	@Override
-	public DynamicSpace<SystemComponent,LocatedSystemComponent> space() {
+	public DynamicSpace<SystemComponent> space() {
 		return space;
 	}
 
@@ -113,16 +108,6 @@ public abstract class AbstractProcess
 	public final ArenaComponent ecosystem() {
 		return ecosystem;
 	}
-
-//	public void setSender(int id) {
-//		for (DataTracker<?,Metadata> tracker:trackers)
-//			if (tracker instanceof AbstractDataTracker)
-//				((AbstractDataTracker<?, Metadata>)tracker).setSender(id);
-////		for (DataTracker0D tracker:tsTrackers)
-////			tracker.setSender(id);
-////		for (DataTracker2D tracker:mapTrackers)
-////			tracker.setSender(id);
-//	}
 
 	public void addDataTracker(SamplerDataTracker<CategorizedComponent,?,Metadata> tracker) {
 		if (!isSealed())
@@ -142,126 +127,108 @@ public abstract class AbstractProcess
 	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
 		currentTime = timer.userTime(t);
-//		for (DataTracker0D tracker:tsTrackers)
 		for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 			tracker.recordTime(t);
 		if (space!=null)
 			if (space.dataTracker()!=null)
 				space.dataTracker().recordTime(status,t);
-		
+
 		GraphDataTracker gdt = ecosystem.getDataTracker();
 		if (gdt!=null)
 			gdt.recordTime(t);
-		
+
 		loop(currentTime,timer.userTime(dt),ecosystem());
-		if (space!=null)
-			if (space.dataTracker()!=null)
+		if (space != null)
+			if (space.dataTracker() != null)
 				space.dataTracker().closeTimeStep(); // this sends the message to the widget
 	}
-	
-	// for descendants
-	protected void relocate(SystemComponent sc, double[] newLoc) {
-		newLoc = space.fixLocation(newLoc);
-		if (newLoc==null) {
-			// new location is outside the space - other should be deleted:
-			// huh? maybe not if it's present in other spaces ???
-			// Possible flaw here!
-			unlocate(sc);
-			sc.container().removeItem(sc);
-		}
-		else {
-			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
-			space.removeItem(new LocatedSystemComponent(sc,space.locationOf(sc)));
-			space.addItem(newLocSc);
-			if (space.dataTracker()!=null)
-				space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
+
+	/**
+	 * For use in descendant Process classes. This method fixes the user-computed coordinates
+	 * according to space edge effect corrections and relocates a formerly located point
+	 * to its new location
+	 *
+	 * @param sc the SystemComponent to relocate
+	 */
+	protected void relocate(SystemComponent sc) {
+		if (sc.mobile()) { // doesnt make sense for fixed items
+			double[] oldLoc = sc.locationData().coordinates(); 	// always non null
+			double[] newLoc = sc.nextLocationData().coordinates();
+			newLoc = space.fixLocation(newLoc); 		// may be null
+			// 1 the component jumped out of space - it must go - well, unsure.
+			if (newLoc==null) {
+				// new location is outside the space - sc should be deleted:
+				// huh? maybe not if it's present in other spaces ???
+				// Possible flaw here!
+				unlocate(sc);
+				sc.container().removeItem(sc);
+			}
+			// 2 the component didnt move - nothing to do
+			else if (space.equalLocation(oldLoc,newLoc)) {
+				// DO NOTHING
+			}
+			// the component did move
+			else {
+				sc.nextLocationData().setCoordinates(newLoc);
+				space.moveItem(sc);
+				if (space.dataTracker()!=null)
+					space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
+			}
 		}
 	}
-	
-	// for descendants
-	protected void locate(SystemComponent sc, ComponentContainer cont, double[] newLoc) {
-		newLoc = space.fixLocation(newLoc);
+
+	/**
+	 * For use in descendant Process classes. This method the user-computed coordinates
+	 * according to space edge effect corrections. This method is called at creation of
+	 * a SystemComponent only, so coordinates may be constants or driver values.
+	 *
+	 * @param sc the SystemComponent to locate
+	 * @param cont the component container, to compute its label
+	 */
+	protected void locate(SystemComponent sc, ComponentContainer cont) {
+		double[] oldLoc, newLoc;
+		if (sc.mobile())
+			oldLoc = sc.nextLocationData().coordinates(); 	// always non null
+		else
+			oldLoc = sc.locationData().coordinates(); 		// always non null
+		newLoc = space.fixLocation(oldLoc);					// may be null
+		// 1 the component jumped out of space - it must go before it's even born
 		if (newLoc==null)
 			cont.removeItem(sc);
+		// 2 the component is created and placed into space
 		else {
-			LocatedSystemComponent newLocSc = new LocatedSystemComponent(sc,space.makeLocation(newLoc));
-			space.addItem(newLocSc);
+			if (sc.mobile())
+				sc.nextLocationData().setCoordinates(newLoc);
+			else
+				sc.locationData().setCoordinates(newLoc);
+			space.addItem(sc);
 			if (space.dataTracker()!=null)
 				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
-		}	
+		}
 	}
-	
+
 	// for descendants
 	// NB: removes a SC from ALL spaces, not only from this one
 	protected void unlocate(SystemComponent sc) {
-		for (DynamicSpace<SystemComponent,LocatedSystemComponent> space:
+		for (DynamicSpace<SystemComponent> space:
 			((ComponentFactory)sc.membership()).spaces()) {
-			space.remove(sc);
+			space.removeItem(sc);
 			if (space.dataTracker()!=null) {
 				String[] sclab = sc.container().itemId(sc.id());
 				// lines must be cleared before points
 				for (Edge r:sc.edges(Direction.OUT)) {
 					SystemComponent end = (SystemComponent)r.endNode();
-					String[] endlab = end.container().itemId(end.id()); 
+					String[] endlab = end.container().itemId(end.id());
 					space.dataTracker().deleteLine(sclab,endlab);
 				}
 				for (Edge r:sc.edges(Direction.IN)) {
 					SystemComponent start = (SystemComponent)r.startNode();
-					String[] startlab = start.container().itemId(start.id()); 
+					String[] startlab = start.container().itemId(start.id());
 					space.dataTracker().deleteLine(startlab,sclab);
 				}
 				space.dataTracker().deletePoint(sclab);
 			}
 		}
-	}
-	
-	/**
-	 * Utility for descendants. Fills a hierarchical context from container information
-	 *
-	 * @param context the context to fill
-	 * @param container the container which information is to add to the context
-	 */
-	protected void setContext(HierarchicalContext context,
-			CategorizedContainer<SystemComponent> container) {
-//		if (container.containerCategorized() instanceof Ecosystem) {
-//			context.ecosystemParameters = container.parameters();
-////			context.ecosystemVariables = container.variables();
-////			context.ecosystemPopulationData = container.populationData();
-//			context.ecosystemName = container.id();
-//		}
-//		else if (container.containerCategorized() instanceof LifeCycle) {
-//			context.lifeCycleParameters = container.parameters();
-////			context.lifeCycleVariables = container.variables();
-////			context.lifeCyclePopulationData = container.populationData();
-//			context.lifeCycleName = container.id();
-//		}
-//		else if (container.containerCategorized() instanceof SystemFactory)  {
-//			context.groupParameters = container.parameters();
-////			context.groupVariables = container.variables();
-////			context.groupPopulationData = container.populationData();
-//			context.groupName = container.id();
-//		}
-	}
-
-	/**
-	 * Utility for descendants. Instantiates and fills a hierarchical context from
-	 * component information.
-	 *
-	 * @param component the component to extract container information from
-	 * @return the new instance of the context
-	 */
-	protected HierarchicalContext getContext(SystemComponent component) {
-		HierarchicalContext context = new HierarchicalContext();
-		// group or ecosystem
-		setContext(context,component.container());
-		// lifecycle or ecosystem
-		if (component.container().parentContainer()!=null) {
-			setContext(context,component.container());
-			// ecosystem
-			if (component.container().parentContainer().parentContainer()!=null)
-				setContext(context,component.container().parentContainer().parentContainer());
-		}
-		return context;
 	}
 
 	public abstract void addFunction(TwFunction function);

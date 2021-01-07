@@ -29,7 +29,6 @@
 package fr.cnrs.iees.twcore.constants;
 
 import au.edu.anu.twcore.data.*;
-import au.edu.anu.twcore.ecosystem.structure.newapi.*;
 import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
@@ -73,11 +72,9 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_PROCESS 		("process",			"p1",			ProcessNode.class,			TIMEBASE+30),	// after TimeModel, Function & EventQueue
 				N_FUNCTION 		("function",		"F1",			FunctionNode.class,			0), // ***
 				N_DATATRACKER 	("dataTracker",		"trk1",			DataTrackerNode.class,			0),//
-				N_LIFECYCLE 	("lifeCycle",		"lfcy1",		LifeCycle.class,			ECOBASE+10),	// after Ecosystem
-				N_RECRUIT 		("recruit",			"rct1",			Recruit.class,				0),//
-				N_PRODUCE 		("produce",			"prd1",			Produce.class,				0),//
 				N_STOPPINGCONDITION("stoppingCondition","stCd1",	StoppingConditionNode.class,SIMBASE), // before Simulator
 				N_INITFUNCTION 	("initFunction",	"init1",		InitFunctionNode.class,		CATEGORYBASE+20), // after relation
+				N_LIFECYCLE 	("lifeCycle",		"lfcy1",		LifeCycle.class,			ECOBASE+10),	// after Ecosystem
 				N_GROUP 		("group",			"grp1",			Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
 				N_COMPONENT 	("component",		"cmp1",			Component.class,			CATEGORYBASE+30), // after Group
 				N_CONSTANTVALUES("constantValues",	"initCnts1",	ConstantValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
@@ -89,7 +86,10 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_CATEGORY 		("category",		"cat1",			Category.class,				CATEGORYBASE),
 				N_TEMPLATE 		("template",		"tpl1",			ElementFactory.class,		CATEGORYBASE+10),
 				N_COMPONENTTYPE ("componentType",	"compTyp1",		ComponentType.class,		CATEGORYBASE+10), // after category and categorySet
-				N_GROUPTYPE 	("groupType",		"grpTyp1",		GroupType.class,			CATEGORYBASE+10), // after category and categorySet				
+				N_GROUPTYPE 	("groupType",		"grpTyp1",		GroupType.class,			CATEGORYBASE+10), // after category and categorySet
+				N_LIFECYCLETYPE	("lifeCycleType",	"lfcyTyp1",		LifeCycleType.class,			ECOBASE+10),	// after Ecosystem
+				N_RECRUIT 		("recruit",			"rct1",			Recruit.class,				0),//
+				N_PRODUCE 		("produce",			"prd1",			Produce.class,				0),//
 				N_RELATIONTYPE 	("relationType",	"relTyp1",		RelationType.class,			CATEGORYBASE+10), // after category
 				N_SPACE 		("space",			"space1",		SpaceNode.class,			CATEGORYBASE),
 		N_EXPERIMENT 			("experiment",		"expt",			Experiment.class,			SIMBASE+20),	// after fully iinitialised simulator
