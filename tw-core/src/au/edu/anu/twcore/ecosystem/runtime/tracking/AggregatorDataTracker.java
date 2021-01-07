@@ -16,11 +16,9 @@ import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
-import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
-import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregates;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
@@ -43,6 +41,7 @@ public abstract class AggregatorDataTracker<T>
 			P_DATATRACKER_TRACK.key(), 
 			P_DATATRACKER_SAMPLESIZE.key(),
 			"sample",
+			"nChannels",
 			Output0DMetadata.TSMETA };
 	// metadata for numeric fields, ie min max units etc.
 	protected ReadOnlyPropertyList fieldMetadata = null;
