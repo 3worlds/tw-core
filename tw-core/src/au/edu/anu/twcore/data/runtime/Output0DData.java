@@ -47,12 +47,14 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 public class Output0DData extends LabelledItemData {
 	
 	private Output0DMetadata meta;
+	// this tells the widget on which dispayChannel to put the data
+	private int displayChannel;
 	// this table is used to send byte,int,short,long and boolean values
 	private long intValues[];
 	// this table is used to send float and double values
 	private double doubleValues[];
 	// this table is used to send String values
-	private String stringValues[];
+	private String stringValues[];	
 
 	public Output0DData(SimulatorStatus status, 
 			int senderId, 
@@ -124,6 +126,14 @@ public class Output0DData extends LabelledItemData {
 	
 	public String[] getStringValues() {
 		return stringValues;
+	}
+
+	public int getDisplayChannel() {
+		return displayChannel;
+	}
+
+	public void setDisplayChannel(int displayChannel) {
+		this.displayChannel = displayChannel;
 	}
 
 	@Override

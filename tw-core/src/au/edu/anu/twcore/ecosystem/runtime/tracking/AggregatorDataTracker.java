@@ -53,6 +53,8 @@ public abstract class AggregatorDataTracker<T>
 	private Map<StatisticalAggregates,DataLabel> statChannels = new HashMap<>();
 	// the part of the data channel label describing the variable/constant tracked
 	private Map<CategorizedComponent,DataLabel> itemChannels = new HashMap<>();
+	// the mapping of tracked item to display channels
+	private Map<DataLabel,Integer> channelIndex = new HashMap<>();
 	private DataLabel containerLabel = null;
 	private Metadata singletonMD = null;
 	protected int metadataType = -1;
@@ -101,13 +103,17 @@ public abstract class AggregatorDataTracker<T>
 		}
 		// container label
 		makeItemLabels();
-		if (permanentComponents) {
-			StringTable itemIds = new StringTable(new Dimensioner(itemChannels.size()));
-			int i=0;
-			for (DataLabel dl:itemChannels.values())
-				itemIds.setWithFlatIndex(dl.toString(),i++);
-			metaprops.setProperty("sample",itemIds);
-		}
+		if (permanentComponents)
+			metaprops.setProperty("nChannels",itemChannels.size());
+		else
+			metaprops.setProperty("nChannels",statChannels.size());
+//		if (permanentComponents) {
+//			StringTable itemIds = new StringTable(new Dimensioner(itemChannels.size()));
+//			int i=0;
+//			for (DataLabel dl:itemChannels.values())
+//				itemIds.setWithFlatIndex(dl.toString(),i++);
+//			metaprops.setProperty("sample",itemIds);
+//		}
 	}
 	
 	protected void resetStatistics() {
