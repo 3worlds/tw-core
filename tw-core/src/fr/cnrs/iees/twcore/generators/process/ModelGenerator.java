@@ -325,7 +325,18 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		sb.append("<li><strong>Do not</strong> alter the code insertion markers. They are used to avoid \n losing your code when managing this file.</li>\n");
 		sb.append("<li>For convenience, all the static methods of the {@link Math} and\n {@link Distance} classes are directly accessible here</li>\n");
 		sb.append("<li>The particular random number stream attached to each {@link TwFunction} is \npassed as the <em>random</em> argument.</li>\n");
-		sb.append("<li>For all <em>Decision-</em> functions, a <em>decider</em> argument is provided \nto help make decisions out of probabilities</li></ol>\n");
+		sb.append("<li>For all <em>Decision-</em> functions, a <em>decider</em> argument is provided ")
+			.append("to help make decisions out of probabilities. <strong>decider.decide(double)</strong> returns true with probability ")
+			.append("equal to the argument.</li>\n");
+		sb.append("<li>For <em>ChangeCategoryDecision</em> functions, a <em>selector</em> argument is provided to select among different possible outcomes. ")
+			.append("<strong>selector.select(double...)</strong> returns an integer between 0 and <em>n</em> (the number of arguments) using the arguments ")
+			.append("as weights for probabilities (ie the argument do not need to sum to 1).</li>\n");
+		sb.append("<li>For <em>ChangeCategoryDecision</em> functions, a <em>recruit</em> argument is provided that must be used to return the proper ")
+			.append("category name as a String. <strong>recruit.transition(boolean)</strong> will return the category to recruit to if the argument is ")
+			.append("true, triggering the change in category of the focal SystemComponent. <strong>recruit.transition(int)</strong> will return the category ")
+			.append("name matching the index using alphabetical order, 0 index meaning no change in category. For example, if the decision may ")
+			.append("result in category \"young\" or \"juvenile\", 0 will map to no change, 1 to change to juvenile and 2 to change to young.</li> ")
+			.append("</ol>\n");
 
 		// String cs = WordUtils.wrap(sb.toString(), 80,"\n",false);
 		classComment = javaDocComment("", sb.toString().split("\\n"));
@@ -722,7 +733,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				}
 				break;
 			case DeleteDecision:
-				// TODO: a relation must have been set in some way ???
+				// TODO: a relation must have been set in )some way ???
 				break;
 			default:
 				// all other cases should not exist
@@ -872,7 +883,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				if (EnumSet.of(CreateOtherDecision).contains(functype))
 					sb.append("<p>- called just after <em>").append(func.id())
 							.append("</em> when it results in new component creation.</p>\n");
-				if (EnumSet.of(DeleteDecision, DeleteOtherDecision, ChangeCategoryDecision, ChangeOtherCategoryDecision)
+				if (EnumSet.of(DeleteDecision, ChangeCategoryDecision)
 						.contains(functype))
 					sb.append("<p>- called just after <em>").append(func.id())
 							.append("</em> when it returns <strong>true</strong>.</p>\n");
@@ -1076,7 +1087,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		else
 			return false;
 	}
-
+	
 	/**
 	 * This method generates the code for all user-defined functions. It (1) create a static method header
 	 * and body in the model source file, and (2) passes to the to-be-generated TwFunction descendant
@@ -1241,9 +1252,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				replicateNames.add(limits.name());
 		}
 
-		// random, decide,
+		// random, decide, select, recruit
 		for (TwFunctionArguments arg : ftype.localArguments())
-			if ((arg==random) || (arg==decider)) {
+			if ((arg==random) || (arg==decider) || (arg==selector) || (arg==recruit)) {
 				imports.add(arg.type());
 				method.addArgument(arg.name(), simpleType(arg.type()), arg.description());
 				headerComment.append("@param ").append(arg.name()).append(' ').append(arg.description()).append('\n');

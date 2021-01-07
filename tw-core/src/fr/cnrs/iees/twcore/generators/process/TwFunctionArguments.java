@@ -60,6 +60,8 @@ public enum TwFunctionArguments {
 	// utilities (local to TwFunction)
 	random			("java.util.Random", "random number generator"),
 	decider			("au.edu.anu.twcore.ecosystem.runtime.biology.DecisionFunction", "decision function"),
+	selector		("au.edu.anu.twcore.ecosystem.runtime.biology.SelectionFunction", "selection function"),
+	recruit			("au.edu.anu.twcore.ecosystem.runtime.biology.RecruitFunction", "recruitment function"),
 	timer			("au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue", "event timers fed by this method"),
 	;
 	private final String type;

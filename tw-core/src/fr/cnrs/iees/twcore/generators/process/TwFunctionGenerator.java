@@ -435,12 +435,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //		else
 //			callStatement += indent+indent+indent+ "null,\n";
 
-		// random, decide
+		// random, decide, select, recruit
 		for (TwFunctionArguments arg:type.localArguments()) {
 			String callArg = null;
 			if (arg==random)
 				callArg = "rng()";
-			else if (arg==decider)
+			else if ((arg==decider) || (arg==selector) || (arg==recruit))
 				callArg = "this";
 			if (callArg!=null)
 				callStatement += indent+indent+indent+ callArg + ",\n";
