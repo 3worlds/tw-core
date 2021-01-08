@@ -1170,7 +1170,10 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			method = new ModelMethodGenerator(methodScope, ftype.returnType(), mname);
 			methods.put(fname, method);
 			if (!ftype.returnType().equals("void")) {
-				method.setReturnStatement("return " + zero(ftype.returnType()));
+				if (ftype.returnType().equals("String"))
+					method.setReturnStatement("return null");
+				else
+					method.setReturnStatement("return " + zero(ftype.returnType()));
 				returnComment = ftype.returnJavaDoc();
 			}
 			method.clearArguments();
