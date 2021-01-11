@@ -156,7 +156,7 @@ public class ComponentProcess
 		//-----------------------------------------------------------------------------------
 		// change state of this SystemComponent - easy
 		for (ChangeStateFunction function : CSfunctions) {
-			function.changeState(t,dt,arena,null,focalGroup,focal,space);
+			function.changeState(t,dt,arena,focalLifeCycle,focalGroup,focal,space);
 			if (space!=null)
 				relocate((SystemComponent)focal);
 		}
@@ -166,7 +166,7 @@ public class ComponentProcess
 		// delete decision function (NB: only applicable to SystemComponents)
 		if (focal instanceof SystemComponent)
 			for (DeleteDecisionFunction function : Dfunctions)
-				if (function.delete(t, dt, arena, null,focalGroup, focal, space)) {
+				if (function.delete(t, dt, arena, focalLifeCycle,focalGroup, focal, space)) {
 			((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
 			if (space!=null)
