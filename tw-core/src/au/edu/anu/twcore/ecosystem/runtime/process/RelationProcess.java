@@ -43,6 +43,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 
 /**
  * A TwProcess that loops on established relations and executes methods on them or on their
@@ -52,6 +53,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
  */
 public class RelationProcess extends AbstractRelationProcess {
 
+	// functions
     private List<ChangeOtherStateFunction> COSfunctions =
     	new LinkedList<ChangeOtherStateFunction>();
     private List<MaintainRelationDecisionFunction> MRfunctions =
@@ -60,12 +62,6 @@ public class RelationProcess extends AbstractRelationProcess {
     	new LinkedList<ChangeRelationStateFunction>();
 
 	// local variables for looping
-    // actually all the proper looping code is in SearchProcess and could be moved up to AbstractRelationProcess
-//	private HierarchicalContext focalContext = new HierarchicalContext();
-//	private HierarchicalContext otherContext = new HierarchicalContext();
-//	private ComponentContainer ecosystemContainer = null;
-//	private ComponentContainer lifeCycleContainer = null;
-	//new API
 	private ArenaComponent arena = null;
 	private CategorizedComponent focalLifeCycle = null;
 	private CategorizedComponent otherLifeCycle = null;
@@ -341,7 +337,7 @@ public class RelationProcess extends AbstractRelationProcess {
 			CategorizedComponent focal,
 			CategorizedComponent other,
 			SystemRelation rel) {
-		// ChangeOtherStateFunction
+		// ChangeOtherStateFunction-----------------------------------------------------------
         for (ChangeOtherStateFunction function:COSfunctions) {
         	if (other.currentState()!=null) {
 	        	other.currentState().writeDisable();
@@ -356,14 +352,13 @@ public class RelationProcess extends AbstractRelationProcess {
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
         }
-
-        // MaintainRelationDecisionFunction for ephemeral relations
+        // MaintainRelationDecisionFunction for ephemeral relations----------------------------
         if (!rel.container().isPermanent()) {
 	        // MaintainRelationDecision
 	        for (MaintainRelationDecisionFunction function:MRfunctions) {
 	        	if (!function.maintainRelation(t, dt, arena,
-	        		/*lifeCycle*/null, focalGroup, focal,
-	        		/*otherLifeCycle*/null, otherGroup, other, space)) {
+	        		focalLifeCycle, focalGroup, focal,
+	        		otherLifeCycle, otherGroup, other, space)) {
 	        		rel.container().removeItem(rel);
 		        	if (space!=null)
 		        		if (space.dataTracker()!=null)
@@ -377,8 +372,7 @@ public class RelationProcess extends AbstractRelationProcess {
 	        if (MRfunctions.isEmpty())
 	        	rel.container().removeItem(rel);
         }
-
-        // ChangeRelationStateFunction
+        // ChangeRelationStateFunction---------------------------------------------------------
         for (ChangeRelationStateFunction function:CRfunctions) {
         	if (other.currentState()!=null) {
 	        	other.currentState().writeDisable();
@@ -388,8 +382,8 @@ public class RelationProcess extends AbstractRelationProcess {
         		focal.currentState().writeDisable();
         		focal.nextState().writeEnable();
         	}
-        	function.changeRelationState(t, dt, arena, /*lifeCycle*/null, focalGroup, focal,
-        			/*otherLifeCycle*/null, otherGroup, other, space);
+        	function.changeRelationState(t, dt, arena, focalLifeCycle, focalGroup, focal,
+    			otherLifeCycle, otherGroup, other, space);
 			if (space!=null) {
 				relocate((SystemComponent)focal);
 				relocate((SystemComponent)other);
@@ -405,12 +399,25 @@ public class RelationProcess extends AbstractRelationProcess {
 	// NB: two possible optimisations here
 	// * process both ends of a relation in one single pass - changeOtherState enables it
 	// * replace edge list by a map indexed by edge labels -> faster access to the proper edges
-	private void loopOnOthers(double t, double dt, CategorizedComponent focal) {
+	private void loopOnOthers(double t, double dt, SystemComponent focal) {
 		for (SystemRelation sr:focal.getRelations()) {
 			if (sr.membership().to().equals(to())) {
-				CategorizedComponent other = (CategorizedComponent) sr.endNode();
-				((SystemComponent) other).container().change();
-				otherGroup = ((SystemComponent) other).container().descriptors();
+				SystemComponent other = (SystemComponent) sr.endNode();
+				HierarchicalComponent hc = other.container().descriptors();
+				if (hc instanceof ArenaComponent) {
+					// arena is already set
+					otherLifeCycle = null;
+					otherGroup = null;
+				}
+				else if (hc instanceof GroupComponent) {
+					// arena is already set
+					otherGroup = hc;
+					if (hc.getParent() instanceof LifeCycleComponent)					
+						otherLifeCycle = (LifeCycleComponent) hc.getParent();
+					else
+						otherLifeCycle = null;
+				}
+				other.container().change();
 				// TODO: fix this:
 				executeFunctions(t,dt,focal,other,sr);
 			}
@@ -422,17 +429,24 @@ public class RelationProcess extends AbstractRelationProcess {
 	// manages the looping over focals
 	@Override
 	protected void loop(double t, double dt, HierarchicalComponent component) {
-		if (component.membership().belongsTo(focalCategories)) {
-			loopOnOthers(t,dt,component);
-			component.content().change();
-		}
-		else if (component.content()!=null) {
+		// IN THEORY THIS IS NOT POSSIBLE
+		// as only SystemComponents can have relations to other SystemComponents
+		// HierarchicalComponents CANNOT be involved in relations!
+//		if (component.membership().belongsTo(focalCategories)) {
+//			loopOnOthers(t,dt,component);
+//			component.content().change();
+//		}
+//		else 
+		if (component.content()!=null) {
 			if (component instanceof ArenaComponent) {
 				arena = (ArenaComponent) component;
 				focalLifeCycle = null;
 				focalGroup = null;
 			}
-			// TODO: lifecycle
+			else if(component instanceof LifeCycleComponent) {
+				focalLifeCycle = (LifeCycleComponent) component;
+				focalGroup = null;
+			}
 			else if (component instanceof GroupComponent) {
 				focalGroup = component;
 			}

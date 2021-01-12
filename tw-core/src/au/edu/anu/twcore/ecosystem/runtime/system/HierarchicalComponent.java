@@ -67,7 +67,7 @@ public abstract class HierarchicalComponent
 
 	@Override
 	public DescribedContainer<SystemComponent> container() {
-		return null;
+		return (DescribedContainer<SystemComponent>) content.superContainer;
 	}
 
 	@Override

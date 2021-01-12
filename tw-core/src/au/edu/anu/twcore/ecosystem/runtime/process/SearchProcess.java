@@ -45,6 +45,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 
 /**
  * Processes for searching the SystemComponent lists to establish relations between them.
@@ -231,20 +232,35 @@ public class SearchProcess
 			}
 		}
 	}
-
+	
 	private void executeFunctions(double t, double dt, SystemComponent focal, SystemComponent other) {
 		// group container
 		HierarchicalComponent hc = focal.container().descriptors();
 		focal.container().change();
-		if (hc!=null)
-			if (hc instanceof GroupComponent)
+		if (hc!=null) {
+			if (hc instanceof GroupComponent) {
 				focalGroup = hc;
+				if (hc.getParent() instanceof LifeCycleComponent)					
+					focalLifeCycle = (LifeCycleComponent) hc.getParent();
+				else
+					focalLifeCycle = null;
+			}
+			else
+				focalGroup = null;
+		}
 		hc = other.container().descriptors();
 		other.container().change();
-		if (hc!=null)
-			if (hc instanceof GroupComponent)
+		if (hc!=null) {
+			if (hc instanceof GroupComponent) {
 				otherGroup = hc;
-		// TODO: lifeCycle
+				if (hc.getParent() instanceof LifeCycleComponent)					
+					otherLifeCycle = (LifeCycleComponent) hc.getParent();
+				else
+					otherLifeCycle = null;
+			}
+			else
+				otherGroup = null;
+		}
 		for (RelateToDecisionFunction function: RTfunctions) {
 //			double[] focalLoc = null;
 //			double[] otherLoc = null;
