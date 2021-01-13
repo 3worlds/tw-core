@@ -40,6 +40,7 @@ import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
@@ -217,14 +218,16 @@ public abstract class AbstractProcess
 				String[] sclab = sc.container().itemId(sc.id());
 				// lines must be cleared before points
 				for (Edge r:sc.edges(Direction.OUT)) {
+					SystemRelation sr = (SystemRelation) r;
 					SystemComponent end = (SystemComponent)r.endNode();
 					String[] endlab = end.container().itemId(end.id());
-					space.dataTracker().deleteLine(sclab,endlab);
+					space.dataTracker().deleteLine(sclab,endlab,sr.type());
 				}
 				for (Edge r:sc.edges(Direction.IN)) {
+					SystemRelation sr = (SystemRelation) r;
 					SystemComponent start = (SystemComponent)r.startNode();
 					String[] startlab = start.container().itemId(start.id());
-					space.dataTracker().deleteLine(startlab,sclab);
+					space.dataTracker().deleteLine(startlab,sclab,sr.type());
 				}
 				space.dataTracker().deletePoint(sclab);
 			}

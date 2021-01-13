@@ -80,5 +80,9 @@ public class SystemRelation extends ALDataEdge implements Contained<RelationCont
 	public void detachFromContainer() {
 		container = null;
 	}
+	
+	public String type() {
+		return (String) properties().getPropertyValue(P_RELATIONTYPE.key());
+	}
 
 }

@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.ens.biologie.generic.utils.Duple;
+import fr.ens.biologie.generic.utils.Tuple;
 
 /**
  * This class is used to send spatial information to widgets. It contains the
@@ -55,11 +55,11 @@ public class SpaceData extends TimeData /**implements Cloneable*/ {
 	/** List of points to definitely remove because their Component is gone */
 	private Set<DataLabel> pointsToDelete = new HashSet<>();
 	/** List of lines to definitely remove because their Edge is gone */
-	private Set<Duple<DataLabel, DataLabel>> linesToDelete = new HashSet<>();
+	private Set<Tuple<DataLabel, DataLabel, String>> linesToDelete = new HashSet<>();
 	/** List of new points to draw from scratch */
 	private Map<DataLabel, double[]> pointsToCreate = new HashMap<>();
 	/** List of new lines to draw from scratch */
-	private Set<Duple<DataLabel, DataLabel>> linesToCreate = new HashSet<>();
+	private Set<Tuple<DataLabel, DataLabel, String>> linesToCreate = new HashSet<>();
 	/** List of points to move, i.e. they are first erased, then redrawn */
 	private Map<DataLabel, double[]> pointsToMove = new HashMap<>();
 
@@ -79,12 +79,12 @@ public class SpaceData extends TimeData /**implements Cloneable*/ {
 		pointsToMove.put(label, newCoord);
 	}
 
-	public void createLine(DataLabel startLabel, DataLabel endLabel) {
-		linesToCreate.add(new Duple<>(startLabel, endLabel));
+	public void createLine(DataLabel startLabel, DataLabel endLabel, String type) {
+		linesToCreate.add(new Tuple<>(startLabel, endLabel, type));
 	}
 
-	public void deleteLine(DataLabel startLabel, DataLabel endLabel) {
-		linesToDelete.add(new Duple<>(startLabel, endLabel));
+	public void deleteLine(DataLabel startLabel, DataLabel endLabel, String type) {
+		linesToDelete.add(new Tuple<>(startLabel, endLabel, type));
 	}
 
 	public Collection<DataLabel> pointsToDelete() {
@@ -99,11 +99,11 @@ public class SpaceData extends TimeData /**implements Cloneable*/ {
 		return pointsToMove;
 	}
 
-	public Collection<Duple<DataLabel, DataLabel>> linesToCreate() {
+	public Collection<Tuple<DataLabel, DataLabel, String>> linesToCreate() {
 		return linesToCreate;
 	}
 
-	public Collection<Duple<DataLabel, DataLabel>> linesToDelete() {
+	public Collection<Tuple<DataLabel, DataLabel, String>> linesToDelete() {
 		return linesToDelete;
 	}
 

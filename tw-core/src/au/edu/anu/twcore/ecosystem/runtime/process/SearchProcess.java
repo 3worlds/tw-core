@@ -276,7 +276,8 @@ public class SearchProcess
 				if (space!=null)
 					if (space.dataTracker()!=null)
 						space.dataTracker().createLine(focal.container().itemId(focal.id()),
-							other.container().itemId(other.id()));
+							other.container().itemId(other.id()),
+							relContainer.type().id());
 			}
 		}
 	}

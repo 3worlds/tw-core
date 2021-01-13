@@ -238,7 +238,8 @@ public class ComponentProcess
 						if (space!=null)
 							if (space.dataTracker()!=null)
 								space.dataTracker().createLine(((SystemComponent)focal).container().itemId(focal.id()),
-									nbs.container.itemId(newBorn.id()));
+									nbs.container.itemId(newBorn.id()),
+									parentTo.key());
 					}
 					// Reminder: this is just a list for delayed addition in ecosystem.effectChanges()
 					// before this, the newBorn container field is null
@@ -293,14 +294,16 @@ public class ComponentProcess
 						locate(newRecruit,recruitContainer);
 						if (space.dataTracker()!=null) {
 							for (Edge e:newRecruit.edges(Direction.OUT)) {
+								SystemRelation sr = (SystemRelation) e;
 								SystemComponent sc = (SystemComponent)e.endNode();
 								space.dataTracker().createLine(recruitContainer.itemId(newRecruit.id()),
-									sc.container().itemId(sc.id()));
+									sc.container().itemId(sc.id()),sr.type());
 							}
 							for (Edge e:newRecruit.edges(Direction.IN)) {
+								SystemRelation sr = (SystemRelation) e;
 								SystemComponent sc = (SystemComponent)e.startNode();
 								space.dataTracker().createLine(sc.container().itemId(sc.id()),
-									recruitContainer.itemId(newRecruit.id()));
+									recruitContainer.itemId(newRecruit.id()),sr.type());
 							}
 						}
 					}

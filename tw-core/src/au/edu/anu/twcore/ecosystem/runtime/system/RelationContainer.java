@@ -190,7 +190,9 @@ public class RelationContainer
 				for (SystemRelation sr:relationsToRemove) {
 					SystemComponent sn = (SystemComponent)sr.startNode();
 					SystemComponent en = (SystemComponent) sr.endNode();
-					dts.deleteLine(sn.container().itemId(sn.id()),en.container().itemId(en.id()));
+					dts.deleteLine(sn.container().itemId(sn.id()),
+						en.container().itemId(en.id()),
+						sr.type());
 				}
 				dts.closeTimeStep();
 			}

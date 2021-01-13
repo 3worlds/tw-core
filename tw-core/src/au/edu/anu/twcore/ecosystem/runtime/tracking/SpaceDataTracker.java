@@ -90,12 +90,12 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 		ctMessage.deletePoint(new DataLabel(labels));
 	}
 
-	public void createLine(String[] startLabels, String[] endLabels) {
-		ctMessage.createLine(new DataLabel(startLabels), new DataLabel(endLabels));
+	public void createLine(String[] startLabels, String[] endLabels, String type) {
+		ctMessage.createLine(new DataLabel(startLabels), new DataLabel(endLabels), type);
 	}
 
-	public void deleteLine(String[] startLabels, String[] endLabels) {
-		ctMessage.deleteLine(new DataLabel(startLabels), new DataLabel(endLabels));
+	public void deleteLine(String[] startLabels, String[] endLabels, String type) {
+		ctMessage.deleteLine(new DataLabel(startLabels), new DataLabel(endLabels), type);
 	}
 
 	public void closeTimeStep() {

@@ -363,7 +363,8 @@ public class RelationProcess extends AbstractRelationProcess {
 		        	if (space!=null)
 		        		if (space.dataTracker()!=null)
 		        			space.dataTracker().deleteLine(((SystemComponent)focal).container().itemId(focal.id()),
-		        				((SystemComponent)other).container().itemId(other.id()));
+		        				((SystemComponent)other).container().itemId(other.id()),
+		        				rel.type());
 	        	}
 	        }
 	        // if there is no maintainrelation function, the relation only lasts for 1 time step
