@@ -83,7 +83,7 @@ public class VersionSettings {
 	 */
 	protected static String[][] DEPS = {
 			{"fr.ens.biologie", "generics", "[0.2.2,)", null},
-			{"au.edu.anu.rscs.aot", "omugi", "[0.4.0,)", null},
+			{"au.edu.anu.rscs.aot", "omugi", "[0.4.1,)", null},
 			{"au.edu.anu.rscs.aot", "qgraph", "[0.1.4,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.1.8,)", null},
 			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.0.4,)", null},

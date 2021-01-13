@@ -5,6 +5,8 @@ import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.SetInitialState;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -24,10 +26,18 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.Graphable;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.ALGraph;
+import fr.cnrs.iees.graph.impl.ALGraphFactory;
+import fr.cnrs.iees.graph.impl.ALNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ReadOnlyPropertyListImpl;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.ens.biologie.generic.utils.Duple;
 
@@ -36,7 +46,9 @@ import fr.ens.biologie.generic.utils.Duple;
  * @author J. Gignoux - 8 déc. 2020
  *
  */
-public class LifeCycleType extends ElementType<LifeCycleFactory,LifeCycleComponent> {
+public class LifeCycleType 
+		extends ElementType<LifeCycleFactory,LifeCycleComponent> 
+		implements Graphable<ALNode,ALEdge> {
 
 	// maps of to- and from-categories matching recruit and produce nodes identified
 	// by their function node (1..1 relation between produce/recruit and function through
@@ -155,5 +167,32 @@ public class LifeCycleType extends ElementType<LifeCycleFactory,LifeCycleCompone
 //		RelateToDecision,			// a group may relate to a new component (ALWAYS unindexed search)
 //		SetOtherInitialState		// a group may set the initial state of another component ???
 	};
+
+	@Override
+	public Graph<ALNode,ALEdge> asGraph() {
+		ALGraphFactory factory = new ALGraphFactory("LifeCycle");
+		Graph<ALNode,ALEdge> graph = new ALGraph<ALNode,ALEdge>(factory);
+		for (Category c:stageCategories)
+			factory.makeNode(c.id());
+		List<String> keys = new LinkedList<>();
+		keys.add("function");
+		for (FunctionNode fn:produceNodes.keySet()) {
+			ALNode start = graph.findNode(produceNodes.get(fn).getFirst());
+			ALNode end = graph.findNode(produceNodes.get(fn).getSecond());
+			List<Object> values = new LinkedList<>();
+			values.add(fn.id());			
+			ReadOnlyPropertyList ropl = new ReadOnlyPropertyListImpl(keys,values);
+			factory.makeEdge(start, end, "produce", ropl);
+		}
+		for (FunctionNode fn:recruitNodes.keySet()) {
+			ALNode start = graph.findNode(recruitNodes.get(fn).getFirst());
+			ALNode end = graph.findNode(recruitNodes.get(fn).getSecond());
+			List<Object> values = new LinkedList<>();
+			values.add(fn.id());			
+			ReadOnlyPropertyList ropl = new ReadOnlyPropertyListImpl(keys,values);
+			factory.makeEdge(start, end, "recruit", ropl);
+		}
+		return graph;
+	}
 
 }
