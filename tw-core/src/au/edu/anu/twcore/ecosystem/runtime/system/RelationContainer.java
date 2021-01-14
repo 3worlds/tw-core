@@ -51,6 +51,7 @@ import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATION_LIFESPAN;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATION_DIRECTIONAL;
 
 /**
  * Management of relations (ie delayed addition and removal). this is NOT a container, i.e. relations
@@ -72,7 +73,10 @@ public class RelationContainer
 	// the list of system relations to remove
 	private Set<SystemRelation> relationsToRemove = new HashSet<>();
 	private boolean changed = false;
+	// set to true if relation instances are permanent
 	private boolean permanent = false;
+	// set to true if relation instances are directional
+	private boolean directional = true;
 
 	public RelationContainer(RelationType rel, int simulatorId) {
 		super(); // since they are different local scopes it may work...
@@ -84,6 +88,8 @@ public class RelationContainer
 		id = scope().newId(true,rel.id()); // not the same scope, should work ?
 		if (rel.properties().hasProperty(P_RELATION_LIFESPAN.key()))
 			permanent =  rel.properties().getPropertyValue(P_RELATION_LIFESPAN.key()).equals(LifespanType.permanent);
+		if (rel.properties().hasProperty(P_RELATION_DIRECTIONAL.key()))
+			directional = (boolean) rel.properties().getPropertyValue(P_RELATION_DIRECTIONAL.key());
 	}
 
 	@Override
@@ -174,6 +180,10 @@ public class RelationContainer
 
 	public boolean isPermanent() {
 		return permanent;
+	}
+	
+	public boolean isDirectional() {
+		return directional;
 	}
 
 	public boolean autoDelete() {

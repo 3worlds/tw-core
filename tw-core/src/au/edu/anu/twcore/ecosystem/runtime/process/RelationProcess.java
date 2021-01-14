@@ -367,11 +367,11 @@ public class RelationProcess extends AbstractRelationProcess {
 		        				rel.type());
 	        	}
 	        }
-	        // if there is no maintainrelation function, the relation only lasts for 1 time step
-	        // FLAW: this is only goign to work if there is a relationProcess for another reason
-	        // + it may happen after an attempt to set the relation again.
-	        if (MRfunctions.isEmpty())
-	        	rel.container().removeItem(rel);
+//	        // if there is no maintainrelation function, the relation only lasts for 1 time step
+//	        // FLAW: this is only goign to work if there is a relationProcess for another reason
+//	        // + it may happen after an attempt to set the relation again.
+//	        if (MRfunctions.isEmpty())
+//	        	rel.container().removeItem(rel);
         }
         // ChangeRelationStateFunction---------------------------------------------------------
         for (ChangeRelationStateFunction function:CRfunctions) {

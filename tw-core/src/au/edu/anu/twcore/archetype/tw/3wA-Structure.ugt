@@ -371,6 +371,10 @@ hasNode relationTypeSpec
 		hasName = String("lifeSpan")
 		type = String("LifespanType")
 		multiplicity = IntegerRange("1..1")
+	hasProperty relationDirectionPropertySpec
+		hasName = String("directional")
+		type = String("Boolean")
+		multiplicity = IntegerRange("0..1")
 
 hasNode spaceSpec
 	isOfClass = String("space")
