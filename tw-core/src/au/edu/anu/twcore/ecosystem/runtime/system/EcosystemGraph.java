@@ -180,6 +180,10 @@ public class EcosystemGraph
 		return Collections.unmodifiableCollection(relations.values());
 	}
 
+	/**
+	 *
+	 * @return the list of newly created components
+	 */
 	public Collection<SystemComponent> effectChanges() {
 		// First, graph structural changes
 		// remove and create all relations
