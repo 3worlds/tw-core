@@ -31,6 +31,7 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 import java.util.Collection;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.graph.Direction;
 
 /**
  * A container for SystemComponents
@@ -77,6 +78,9 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 	public void removeItem(SystemComponent item) {
 		super.removeItem(item);
 		for (SystemRelation sr:item.getRelations()) {
+			// BUG HERE: sometimes container() == null ??? in neighbourhood relation
+			// due to searchprocess
+//			if (sr.container()!=null) // this fix is probably a wrong idea. IT IS!
 			sr.container().removeItem(sr);
 		}
 	}
