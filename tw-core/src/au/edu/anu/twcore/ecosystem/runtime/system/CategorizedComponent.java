@@ -173,8 +173,18 @@ public interface CategorizedComponent
 	// TODO: These three methods could be optimized y storing the edges in a Map sorted by labels
 
 	@SuppressWarnings("unchecked")
-	public default Collection<SystemRelation> getRelations() {
+	public default Collection<SystemRelation> getOutRelations() {
 		return Collections.unmodifiableCollection((Collection<SystemRelation>) edges(Direction.OUT));
+	}
+
+	@SuppressWarnings("unchecked")
+	public default Collection<SystemRelation> getInRelations() {
+		return Collections.unmodifiableCollection((Collection<SystemRelation>) edges(Direction.IN));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public default Collection<SystemRelation> getRelations() {
+		return Collections.unmodifiableCollection((Collection<SystemRelation>) edges());
 	}
 
 	@SuppressWarnings("unchecked")

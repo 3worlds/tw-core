@@ -434,30 +434,11 @@ public abstract class CategorizedContainer<T extends Identity>
 		sb.append("container:");
 		sb.append(id().toString());
 		sb.append('[');
-//		if (containerCategorized().categories() != null) {
-//			if (first)
-//				first = false;
-//			else
-//				sb.append(' ');
-//			sb.append("categories:");
-//			sb.append(containerCategorized().categories().toString());
-//		}
-//		if (avatar.constants() != null) {
-//			if (first)
-//				first = false;
-//			else
-//				sb.append(' ');
-//			sb.append("constants:(");
-//			sb.append(avatar.constants().toString());
-//			sb.append(')');
-//		}
 		if (first)
 			first = false;
 		else
 			sb.append(' ');
 		sb.append("variables:(");
-//		if (avatar.autoVar() != null)
-//			sb.append(avatar.autoVar().toString());
 		sb.append(')');
 		// TODO: adapt this !
 		if (!initialItems.isEmpty()) {

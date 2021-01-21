@@ -167,6 +167,16 @@ public class ComponentProcess
 		if (focal instanceof SystemComponent)
 			for (DeleteDecisionFunction function : Dfunctions)
 				if (function.delete(t, dt, arena, focalLifeCycle,focalGroup, focal, space)) {
+					
+System.out.print("DELETE "+focal.id()+ ":{");
+for (SystemRelation sr:(Collection<SystemRelation>)focal.edges()) {
+	if (sr.container()==null)
+		System.out.print("***");
+	System.out.print(sr.id()+",");
+}
+System.out.println("}");
+					
+					
 			((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
 			// also remove from space !!!
 			if (space!=null)
@@ -234,7 +244,10 @@ public class ComponentProcess
 						locate(newBorn,nbs.container);
 					// CAUTION: this relation cannot have a matching RelationType
 					if (function.relateToOther()) {
-						focal.relateTo(newBorn,parentTo.key()); // delayed addition
+						// This is probably badly wrong - all other relations are delayed additions
+						// need a 'neutral' relationType + container for this relation
+						// ie with no test on categories or whatsoever
+						focal.relateTo(newBorn,parentTo.key()); // delayed addition NO! THIS IS NOT delayed!
 						if (space!=null)
 							if (space.dataTracker()!=null)
 								space.dataTracker().createLine(((SystemComponent)focal).container().itemId(focal.id()),

@@ -401,7 +401,7 @@ public class RelationProcess extends AbstractRelationProcess {
 	// * process both ends of a relation in one single pass - changeOtherState enables it
 	// * replace edge list by a map indexed by edge labels -> faster access to the proper edges
 	private void loopOnOthers(double t, double dt, SystemComponent focal) {
-		for (SystemRelation sr:focal.getRelations()) {
+		for (SystemRelation sr:focal.getOutRelations()) {
 			if (sr.membership().to().equals(to())) {
 				SystemComponent other = (SystemComponent) sr.endNode();
 				HierarchicalComponent hc = other.container().descriptors();

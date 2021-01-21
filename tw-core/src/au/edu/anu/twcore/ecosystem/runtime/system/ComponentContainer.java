@@ -77,12 +77,13 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 	@Override
 	public void removeItem(SystemComponent item) {
 		super.removeItem(item);
-		for (SystemRelation sr:item.getRelations()) {
-			// BUG HERE: sometimes container() == null ??? in neighbourhood relation
-			// due to searchprocess
-//			if (sr.container()!=null) // this fix is probably a wrong idea. IT IS!
-			sr.container().removeItem(sr);
-		}
+		// Is this needed at all? effectChanges will remove all the relations anyway...
+//		for (SystemRelation sr:item.getRelations()) {
+//			// BUG HERE: sometimes container() == null ??? in neighbourhood relation
+//			// due to searchprocess
+////			if (sr.container()!=null) // this fix is probably a wrong idea. IT IS!
+//			sr.container().removeItem(sr);
+//		}
 	}
 
 	/**
