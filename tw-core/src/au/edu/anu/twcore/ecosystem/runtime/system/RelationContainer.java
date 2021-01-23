@@ -213,4 +213,24 @@ public class RelationContainer
 	public ResettableLocalScope scope() {
 		return scope.getContainerScope(scope.getSimId());
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("container for ");
+		sb.append(permanent ? "permanent" : "ephemeral");
+		sb.append(" relation ")
+			.append(relationType.id())
+			.append(":");
+		sb.append(id().toString());
+		sb.append("[to create = { ");
+		for (Duple<CategorizedComponent,CategorizedComponent> item : relationsToAdd)
+			sb.append(item.toString()).append(' ');
+		sb.append("}; to delete = { ");
+		for (SystemRelation item : relationsToRemove)
+			sb.append(item.toString()).append(' ');
+		sb.append("}]");
+		return sb.toString();
+	}
+
 }

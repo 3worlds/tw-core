@@ -53,6 +53,7 @@ import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
@@ -255,6 +256,9 @@ public class Simulator implements Resettable {
 	public synchronized void step() {
 		status = SimulatorStatus.Active;
 		log.info(()->"START Simulator " + id +" stepping time = " + lastTime);
+
+System.out.println("t = "+lastTime);
+		
 		// 1 find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;
@@ -319,6 +323,10 @@ public class Simulator implements Resettable {
 						au.age(nexttime - au.birthDate());
 						au.writeDisable();
 			}
+			
+for (RelationContainer rc:ecosystem.relations())
+	System.out.println(rc.toString());
+			
 			// apply all changes to community
 			Collection<SystemComponent> newComp = ecosystem.effectChanges();
 			// apply changes to spaces, including data tracking
@@ -335,6 +343,11 @@ public class Simulator implements Resettable {
 				if (tracker instanceof Sampler)
 					((Sampler<?>)tracker).updateSample();
 		}
+		
+for (SystemRelation sr:ecosystem.edges())
+	System.out.println(sr.toString());	
+System.out.println();
+		
 		log.info(()->"END Simulator " + id +" stepping time = " + lastTime);
 	}
 
