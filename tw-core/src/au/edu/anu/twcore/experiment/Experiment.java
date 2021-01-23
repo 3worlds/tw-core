@@ -109,8 +109,9 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 				if (expDesignType != null)
 					switch (expDesignType) {
 					case singleRun: {
-						if (nReps==1)
-							deployer = new SingleDeployer();
+						if (nReps == 1)
+							// deployer = new SingleDeployer();
+							deployer = new ParallelDeployer();
 						else
 							deployer = new ParallelDeployer();
 						for (int i = 0; i < nReps; i++)

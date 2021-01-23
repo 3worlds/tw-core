@@ -43,7 +43,7 @@ import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;
  * @author Jacques Gignoux - 30 août 2019
  *
  */
-
+@Deprecated
 public class SingleDeployer extends Deployable {
 	private static final Logger log = Logging.getLogger(SingleDeployer.class);
 	private Simulator sim = null;

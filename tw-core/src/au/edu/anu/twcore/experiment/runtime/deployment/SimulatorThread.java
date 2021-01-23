@@ -59,7 +59,8 @@ public class SimulatorThread implements Runnable {
 
 	@Override
 	public void run() {
-//		System.out.println("Sim thread up: " + Thread.currentThread().getId());
+		Throwable thrown = null;
+		try {
 		while (threadUp) {
 			synchronized (pauseLock) {
 				if (!threadUp) {
@@ -98,6 +99,15 @@ public class SimulatorThread implements Runnable {
 				sim.step();
 
 		}
+		}catch (Throwable e) {
+			thrown = e;
+		} finally {
+			threadExited(this,thrown);
+		}
+	}
+
+	private void threadExited(SimulatorThread simulatorThread, Throwable thrown) {
+		thrown.printStackTrace();
 	}
 
 	public void stop() {
