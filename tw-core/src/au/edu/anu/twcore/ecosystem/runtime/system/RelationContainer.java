@@ -214,15 +214,14 @@ public class RelationContainer
 		return scope.getContainerScope(scope.getSimId());
 	}
 	
+	// NB relationType has the same id as RelationContainer - different scopes.
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("container for ");
 		sb.append(permanent ? "permanent" : "ephemeral");
 		sb.append(" relation ")
-			.append(relationType.id())
-			.append(":");
-		sb.append(id().toString());
+			.append(relationType.id());
 		sb.append("[to create = { ");
 		for (Duple<CategorizedComponent,CategorizedComponent> item : relationsToAdd)
 			sb.append(item.toString()).append(' ');

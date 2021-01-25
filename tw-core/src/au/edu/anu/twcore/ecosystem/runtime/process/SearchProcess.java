@@ -235,6 +235,9 @@ public class SearchProcess
 						if (focal.membership().belongsTo(focalCategories))
 							indexedLoop(0.0,0.0,focal);
 			}
+			
+			// FLAW HERE ?
+			
 			// 2. loop on old components as focals to relate them to newly created components
 			if (space==null) {
 				// unindexed search

@@ -247,6 +247,8 @@ System.out.println("}");
 						// This is probably badly wrong - all other relations are delayed additions
 						// need a 'neutral' relationType + container for this relation
 						// ie with no test on categories or whatsoever
+						// It's possible to make a default relation type for these by 
+						// making a *component* -> *component* relation...
 						focal.relateTo(newBorn,parentTo.key()); // delayed addition NO! THIS IS NOT delayed!
 						if (space!=null)
 							if (space.dataTracker()!=null)

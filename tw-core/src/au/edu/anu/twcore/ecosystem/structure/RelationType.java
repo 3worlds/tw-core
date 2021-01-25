@@ -138,7 +138,7 @@ public class RelationType
 				edgeListEndNodes());
 			fromCat = new cat(fromcats);
 			sealed = true;
-			// ephemeral properties must be cleared at each time step if they have no maintainRelationFunction
+			// ephemeral relations must be cleared at each time step if they have no maintainRelationFunction
 			if (properties().hasProperty(P_RELATION_LIFESPAN.key()))
 				if (properties().getPropertyValue(P_RELATION_LIFESPAN.key()).equals(LifespanType.ephemeral)) {
 					List<ProcessNode> procs = (List<ProcessNode>) get(edges(Direction.IN),
