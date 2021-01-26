@@ -140,6 +140,7 @@ public interface Space<T extends Locatable> {
 	/**
 	 * gets all the items located at the shortest distance from the focal item, excluding itself.
 	 * It allows for items having the same location.
+	 * contract: always return a non-null (possibly empty) list
 	 *
 	 * @param item
 	 * @return
@@ -148,6 +149,7 @@ public interface Space<T extends Locatable> {
 
 	/**
 	 * gets all items within a distance of the focal item.
+	 * contract: always return a non-null (possibly empty) list
 	 *
 	 * @param item
 	 * @param distance

@@ -210,57 +210,48 @@ public class SearchProcess
 	 * Establish permanent relations between SystemComponents at their creation time.
 	 * Caution: the list of new SystemComponents passed as an argument may contain components
 	 * of any category set, not necessarily compatible with this searchProcess (hence the late
-	 * test for categories, ie at each SystemComponent level)
+	 * test for categories, ie at each SystemComponent level).
+	 * The comm arguments contains all SystemComponents found in newComps.
 	 *
-	 * @param comps	a list of newly created components
+	 * @param newComps	a list of newly created components
 	 * @param comm	the arena container, which contains all already present components
 	 *
 	 */
-	public void setPermanentRelations(Collection<SystemComponent> comps,ComponentContainer comm) {
+	public void setPermanentRelations(Collection<SystemComponent> newComps,ComponentContainer comm) {
 		if (relContainer.isPermanent()) {
 			arena = (ArenaComponent) comm.descriptors();
 			// 1. loop on new components as focals to relate them to existing components
-			if (space==null) {
-				// unindexed search
-				if (comm!=null) {
-					for (SystemComponent focal:comps)
+			if (comm!=null) {
+				if (space==null) { // unindexed search
+					for (SystemComponent focal:newComps)
 						if (focal.membership().belongsTo(focalCategories))
 							crudeLoop(focal,comm);
 				}
-			}
-			else {
-				// indexed search
-				if (comm!=null)
-					for (SystemComponent focal:comps)
+				else { // indexed search
+					for (SystemComponent focal:newComps)
 						if (focal.membership().belongsTo(focalCategories))
 							indexedLoop(0.0,0.0,focal);
+				}
 			}
-			
-			// FLAW HERE ?
-			
 			// 2. loop on old components as focals to relate them to newly created components
-			if (space==null) {
-				// unindexed search
-				if (!comps.isEmpty())
-					if (arena.content()!=null) {
-						Collection<SystemComponent> focs = arena.content().allItems(focalCategories);
-						for (SystemComponent focal:focs)
-							for (SystemComponent sc: comps)
-								if (focal!=sc) {
-									if (sc.membership().belongsTo(otherCategories))
-										if (!((focalCategories==otherCategories)
-											&&(focs.contains(sc))))
-											// NB focal cannot yet be related to other as other is new
-											// but other may be in the same list as focal if they
-											// belong to the same categories
-										executeFunctions(0.0,0.0,focal,sc);
-								}
-					}
-			}
-			else if (!comps.isEmpty()) {
-				// indexed search
+			if (!newComps.isEmpty()) {
+				Collection<SystemComponent> focs=null;
 				if (arena.content()!=null)
-					for (SystemComponent focal:arena.content().allItems(focalCategories)) {
+					focs = arena.content().allItems(focalCategories);
+				if (space==null) { // unindexed search
+					for (SystemComponent focal:focs)
+						for (SystemComponent other: newComps)
+							if (focal!=other)
+								if (other.membership().belongsTo(otherCategories))
+									// NB focal cannot yet be related to other as other is new
+									// but other may be in the same list as focal if they
+									// belong to the same categories
+									if (!((focalCategories==otherCategories) && (focs.contains(other))))
+										executeFunctions(0.0,0.0,focal,other);
+				}
+				else  {
+					// indexed search
+					for (SystemComponent focal:focs) {
 						Iterable<SystemComponent> lsc;
 						// search radius positive, means we only search until this distance
 						if (searchRadius>space.precision())
@@ -268,34 +259,23 @@ public class SearchProcess
 						// search radius null, means we search for the nearest neighbours only
 						else
 							lsc = space.getNearestItems(focal);
-						if (lsc!=null)
-							for (SystemComponent other:lsc) {
-								// only relate to if other is in the new component list
-								// and is of the proper category for this relation
-								if (other.membership().belongsTo(otherCategories))
-									if (comps.contains(other))
-										if (other!=focal)
-											if (!other.container().containsInitialItem(other))
-												executeFunctions(0.0,0.0,focal,other);
-							}
+						for (SystemComponent other:lsc) {
+							// only relate to if other is in the new component list
+							// and is of the proper category for this relation
+							if (other.membership().belongsTo(otherCategories))
+								if (newComps.contains(other))
+									if (other!=focal)
+										if (!other.container().containsInitialItem(other))
+											executeFunctions(0.0,0.0,focal,other);
+						}
 					}
+				}
 			}
 		}
 	}
-
-	/**
-	 * Call user defined function on (focal,other); sets (focalGroup,otherGroup,focalLifeCycle,
-	 * otherLifeCycle).
-	 * Called by crudeLoop(...) and indexedLoop(...)
-	 * Assumes that only SystemComponents can establish relations (ie no higher-level components)
-	 *
-	 * @param t		current time in this process Timer units
-	 * @param dt	current time step in this process Timer units
-	 * @param focal	the SystemComponent of interest
-	 * @param other the SystemComponent candidate for establishing a relation with focal
-	 */
-	private void executeFunctions(double t, double dt, SystemComponent focal, SystemComponent other) {
-		// group container
+	
+	// set the context information, ie group, othergroup, lifecycle, otherlifecycle
+	private void setContext(SystemComponent focal, SystemComponent other) {
 		HierarchicalComponent hc = focal.container().descriptors();
 		focal.container().change();
 		if (hc!=null) {
@@ -322,6 +302,21 @@ public class SearchProcess
 			else
 				otherGroup = null;
 		}
+	}
+
+	/**
+	 * Call user defined function on (focal,other); sets (focalGroup,otherGroup,focalLifeCycle,
+	 * otherLifeCycle).
+	 * Called by crudeLoop(...) and indexedLoop(...)
+	 * Assumes that only SystemComponents can establish relations (ie no higher-level components)
+	 *
+	 * @param t		current time in this process Timer units
+	 * @param dt	current time step in this process Timer units
+	 * @param focal	the SystemComponent of interest
+	 * @param other the SystemComponent candidate for establishing a relation with focal
+	 */
+	private void executeFunctions(double t, double dt, SystemComponent focal, SystemComponent other) {
+		setContext(focal,other);
 		for (RelateToDecisionFunction function: RTfunctions) {
 			if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
 				otherLifeCycle,otherGroup,other,space)) {
