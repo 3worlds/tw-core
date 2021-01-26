@@ -73,9 +73,9 @@ public class RelationType
 	// INNER CLASSES
 	// predefined values for the type property of SystemRelation
 	public enum predefinedRelationTypes {
-		parentTo	(defaultPrefix+"parentTo"), 	// start if the parent of end
-		returnsTo	(defaultPrefix+"returnsTo"),	// start changes state of end
-		comprises	(defaultPrefix+"comprises"),	// start is made of end
+		parentTo	("*parentTo*"), 	// start if the parent of end
+		returnsTo	("*returnsTo*"),	// start changes state of end
+		comprises	("*comprises*"),	// start is made of end
 		;
 		private final String key;
 		private predefinedRelationTypes(String string) {

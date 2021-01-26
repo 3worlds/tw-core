@@ -169,4 +169,18 @@ hasNode fieldAVEphemeralBirthDateSpec
 	hasParent = StringTable(([1]"record:AVEphemeral"))
 	multiplicity = IntegerRange("1..1")
 
+// predefined RelationTypes
+hasNode parentRelation
+	isOfClass = String("relationType")
+	hasId = String("*parentTo*")
+	hasParent = StringTable(([1]"predefined:"))
+	multiplicity = IntegerRange("0..1")
+	hasEdge parentRelationToComponentCategoryEdgeSpec
+		isOfClass = String("toCategory")
+		toNode = String("category:*component*")
+		multiplicity = IntegerRange("1..1")
+	hasEdge parentRelationFromComponentCategoryEdgeSpec
+		isOfClass = String("fromCategory")
+		toNode = String("category:*component*")
+		multiplicity = IntegerRange("1..1")
 
