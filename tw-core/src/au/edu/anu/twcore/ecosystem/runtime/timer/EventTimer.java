@@ -144,7 +144,13 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 
 	@Override
 	public double userTime(long t) {
+		// TODO: This is badly wrong!
 		return t;
+	}
+	@Override
+	public long twTime(double t) {
+		// TODO : This is badly wrong!
+		return Math.round(t);
 	}
 
 	@Override
@@ -170,5 +176,6 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 			sb.append(" Ø");
 		return sb.toString();
 	}
+
 
 }

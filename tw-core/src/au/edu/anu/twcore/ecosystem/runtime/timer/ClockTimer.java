@@ -126,4 +126,10 @@ public class ClockTimer extends AbstractTimer {
 		return timeUnit;
 	}
 
+	@Override
+	public long twTime(double t) {
+		// cf caution above in userTime
+		return Math.round(t*grainsPerBaseUnit);
+	}
+
 }

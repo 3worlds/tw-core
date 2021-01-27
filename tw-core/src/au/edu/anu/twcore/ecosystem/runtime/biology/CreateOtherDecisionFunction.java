@@ -34,6 +34,7 @@ import java.util.List;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
@@ -49,7 +50,8 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
     private List<SetOtherInitialStateFunction> SOISfunctions =
         	new LinkedList<SetOtherInitialStateFunction>();
 
-    private boolean relateToOther = false;
+//    private boolean relateToOther = false;
+    private RelationContainer relateToOtherContainer = null;
 
     public CreateOtherDecisionFunction() {
 		super();
@@ -88,12 +90,21 @@ public abstract class CreateOtherDecisionFunction extends AbstractDecisionFuncti
 		return SOISfunctions;
 	}
 
-	public final boolean relateToOther() {
-		return relateToOther;
+//	public final boolean relateToOther() {
+//		return relateToOtherContainer!=null;
+//	}
+	
+	public final RelationContainer relateToOtherContainer() {
+		return relateToOtherContainer;
 	}
 
-	public final void setRelateToOther(boolean ro) {
-		relateToOther = ro;
+	
+//	public final void setRelateToOther(boolean ro) {
+//		relateToOther = ro;
+//	}
+	public final void setRelateToOtherContainer(RelationContainer rc) {
+		relateToOtherContainer = rc;
 	}
+
 
 }

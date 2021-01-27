@@ -174,7 +174,7 @@ hasNode parentRelation
 	isOfClass = String("relationType")
 	hasId = String("*parentTo*")
 	hasParent = StringTable(([1]"predefined:"))
-	multiplicity = IntegerRange("0..1")
+	multiplicity = IntegerRange("0..*")
 	hasEdge parentRelationToComponentCategoryEdgeSpec
 		isOfClass = String("toCategory")
 		toNode = String("category:*component*")
@@ -184,3 +184,17 @@ hasNode parentRelation
 		toNode = String("category:*component*")
 		multiplicity = IntegerRange("1..1")
 
+hasNode returnsToRelation
+	isOfClass = String("relationType")
+	hasId = String("*returnsTo*")
+	hasParent = StringTable(([1]"predefined:"))
+	multiplicity = IntegerRange("0..*")
+	hasEdge returnsToRelationToComponentCategoryEdgeSpec
+		isOfClass = String("toCategory")
+		toNode = String("category:*component*")
+		multiplicity = IntegerRange("1..1")
+	hasEdge returnsToRelationFromComponentCategoryEdgeSpec
+		isOfClass = String("fromCategory")
+		toNode = String("category:*component*")
+		multiplicity = IntegerRange("1..1")
+		

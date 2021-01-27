@@ -64,5 +64,12 @@ public class World extends InitialisableNode {
 	public int initRank() {
 		return N_ROOT.initRank();
 	}
+	
+	public static final InitialisableNode getRoot(InitialisableNode from) {
+		InitialisableNode result = from;
+		while (result.getParent()!=null)
+			result = (InitialisableNode)result.getParent();
+		return result;
+	}
 
 }

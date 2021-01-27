@@ -36,6 +36,8 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueWriteable;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.Recruit;
+import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -51,6 +53,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static au.edu.anu.twcore.ecosystem.structure.RelationType.predefinedRelationTypes.*;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
@@ -149,9 +152,18 @@ public class FunctionNode
 					FunctionNode csq = (FunctionNode) n;
 					result.addConsequence(csq.getInstance(index));
 			}
-			if (result instanceof CreateOtherDecisionFunction)
-				((CreateOtherDecisionFunction)result).setRelateToOther(
-					(boolean)properties().getPropertyValue(P_RELATEPRODUCT.key()));
+			if (result instanceof CreateOtherDecisionFunction) {
+				if ((boolean)properties().getPropertyValue(P_RELATEPRODUCT.key())) {
+					TreeNode rootNode = World.getRoot(this);
+					RelationType rlt = (RelationType) get(rootNode.getChildren(),
+						selectOne(hasTheLabel(N_PREDEFINED.label())),
+						children(),
+						selectOne(andQuery(
+							hasTheLabel(N_RELATIONTYPE.label()),
+							hasTheName(parentTo.key()))));
+					((CreateOtherDecisionFunction)result).setRelateToOtherContainer(rlt.getInstance(index));
+				}			
+			}
 			if (result instanceof ChangeCategoryDecisionFunction) {
 				Collection<Recruit> recruits = (Collection<Recruit>) get(edges(Direction.IN),
 					selectOneOrMany(hasTheLabel(E_EFFECTEDBY.label())),

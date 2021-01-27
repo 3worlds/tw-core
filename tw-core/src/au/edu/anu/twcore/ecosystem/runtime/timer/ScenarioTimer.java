@@ -67,4 +67,10 @@ public class ScenarioTimer extends AbstractTimer {
 		return null;
 	}
 
+	@Override
+	public long twTime(double t) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

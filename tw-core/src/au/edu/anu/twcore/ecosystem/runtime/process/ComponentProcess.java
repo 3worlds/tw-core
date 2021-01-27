@@ -59,8 +59,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
@@ -219,6 +217,10 @@ public class ComponentProcess
 					n += 1;
 				for (int i = 0; i < n; i++) {
 					SystemComponent newBorn = nbs.factory.newInstance();
+					ComponentData nbcd = (ComponentData)newBorn.autoVar();
+					nbcd.writeEnable();
+					nbcd.birthDate(timer.twTime(t));
+					nbcd.writeDisable();
 					for (SetOtherInitialStateFunction func : function.getConsequences()) {
 						if (focalLifeCycle==null)
 							otherGroup = focalGroup;
@@ -232,19 +234,14 @@ public class ComponentProcess
 					}
 					if (space!=null)
 						locate(newBorn,nbs.container);
-					// CAUTION: this relation cannot have a matching RelationType
-					if (function.relateToOther()) {
-						// This is probably badly wrong - all other relations are delayed additions
-						// need a 'neutral' relationType + container for this relation
-						// ie with no test on categories or whatsoever
-						// It's possible to make a default relation type for these by 
-						// making a *component* -> *component* relation...
-						focal.relateTo(newBorn,parentTo.key()); // delayed addition NO! THIS IS NOT delayed!
+					// establish a parentTo relation if needed
+					if (function.relateToOtherContainer()!=null) {
+						function.relateToOtherContainer().addItem(focal,newBorn); // delayed addition
 						if (space!=null)
 							if (space.dataTracker()!=null)
 								space.dataTracker().createLine(((SystemComponent)focal).container().itemId(focal.id()),
 									nbs.container.itemId(newBorn.id()),
-									parentTo.key());
+									function.relateToOtherContainer().id());
 					}
 					// Reminder: this is just a list for delayed addition in ecosystem.effectChanges()
 					// before this, the newBorn container field is null
@@ -287,33 +284,31 @@ public class ComponentProcess
 					// replacement of old component by new one.
 					((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
 					recruitContainer.addItem(newRecruit); // safe: delayed addition
-					// if the recruit categories are compatible with the relations of the
-					// focal, maintain them, otherwise discard (already done just before)
-					for (SystemRelation sr:focal.getOutRelations())
-						if (newRecruit.membership().belongsTo(sr.membership().from().categories()))
-							sr.container().addItem(newRecruit,(SystemComponent)sr.endNode());
-					for (SystemRelation sr:focal.getInRelations())
-						if (newRecruit.membership().belongsTo(sr.membership().to().categories()))
-							sr.container().addItem((SystemComponent)sr.startNode(),newRecruit);
-					// manage space & data trackers
+					// manage space
 					if (space!=null) {
 						unlocate((SystemComponent)focal);
 						locate(newRecruit,recruitContainer);
-						if (space.dataTracker()!=null) {
-							for (Edge e:newRecruit.edges(Direction.OUT)) {
-								SystemRelation sr = (SystemRelation) e;
-								SystemComponent sc = (SystemComponent)e.endNode();
-								space.dataTracker().createLine(recruitContainer.itemId(newRecruit.id()),
-									sc.container().itemId(sc.id()),sr.type());
-							}
-							for (Edge e:newRecruit.edges(Direction.IN)) {
-								SystemRelation sr = (SystemRelation) e;
-								SystemComponent sc = (SystemComponent)e.startNode();
-								space.dataTracker().createLine(sc.container().itemId(sc.id()),
-									recruitContainer.itemId(newRecruit.id()),sr.type());
-							}
-						}
 					}
+					// if the recruit categories are compatible with the relations of the
+					// focal, maintain them, otherwise discard (already done just before)
+					for (SystemRelation sr:focal.getOutRelations())
+						if (newRecruit.membership().belongsTo(sr.membership().from().categories())) {
+							SystemComponent to = (SystemComponent)sr.endNode();
+							sr.container().addItem(newRecruit,to);
+							// manage space
+							if (space.dataTracker()!=null)
+								space.dataTracker().createLine(recruitContainer.itemId(newRecruit.id()),
+									to.container().itemId(to.id()),sr.type());
+					}
+					for (SystemRelation sr:focal.getInRelations())
+						if (newRecruit.membership().belongsTo(sr.membership().to().categories())) {
+							SystemComponent from = (SystemComponent)sr.startNode();
+							sr.container().addItem(from,newRecruit);
+							// manage space
+							if (space.dataTracker()!=null)
+								space.dataTracker().createLine(from.container().itemId(from.id()),
+									recruitContainer.itemId(newRecruit.id()),sr.type());
+						}
 					// remove from tracklist - safe, data sending has already been made
 					for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 						if (tracker.isTracked(focal))

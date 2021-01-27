@@ -58,7 +58,21 @@ public interface Timer extends Resettable {
 
 	public long nextTime(long t);
 
+	/**
+	 * Converts the 3worlds internal time tick in longs into user-defined time in doubles
+	 * 
+	 * @param t
+	 * @return
+	 */
 	public double userTime(long t);
+	
+	/**
+	 * Converts the user-defined time in doubles into the 3worlds internal time tick in longs
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public long twTime(double t);
 
 	public TimeUnits timeUnit();
 

@@ -75,7 +75,7 @@ public class RelationType
 	public enum predefinedRelationTypes {
 		parentTo	("*parentTo*"), 	// start if the parent of end
 		returnsTo	("*returnsTo*"),	// start changes state of end
-		comprises	("*comprises*"),	// start is made of end
+//		comprises	("*comprises*"),	// start is made of end
 		;
 		private final String key;
 		private predefinedRelationTypes(String string) {
