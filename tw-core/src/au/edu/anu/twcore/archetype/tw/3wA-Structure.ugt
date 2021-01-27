@@ -441,7 +441,7 @@ hasNode spaceSpec
 	hasProperty spaceGuardAreaSpec
 		hasName = String("observationWindow")
 		type = String("Box")
-		multiplicity = IntegerRange("1..1")
+		multiplicity = IntegerRange("0..1")
 		// space bounding box (NB: replace with true limits in the future)
 	mustSatisfyQuery boxDimensionQuery
 		className = String("au.edu.anu.twcore.archetype.tw.BoxInSpaceDimensionQuery")
