@@ -432,13 +432,13 @@ hasNode spaceSpec
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
 	// guard areaor observation window
-	hasProperty spaceGuardStripWidthSpec
+	hasProperty spaceGuardAreaWidthSpec
 		hasName = String("guardAreaWidth")
 		type = String("Double")
 		multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery guardAreaMaxWidthQuery
 		className = String("au.edu.anu.twcore.archetype.tw.GuardAreaMaxWidthQuery")
-	hasProperty spaceGuardAreaSpec
+	hasProperty spaceObservationWindowSpec
 		hasName = String("observationWindow")
 		type = String("Box")
 		multiplicity = IntegerRange("0..1")
