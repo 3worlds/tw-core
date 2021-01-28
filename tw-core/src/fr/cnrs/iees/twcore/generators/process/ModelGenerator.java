@@ -1220,7 +1220,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
 							prefix+mb.name, mb.type,
 							arg.description() + rec.name + " " + mb.comment);
-						headerComment.append("@param ").append(mb.name).append(' ')
+						headerComment.append("@param ").append(prefix).append(mb.name).append(' ')
 							.append(arg.description()).append(rec.name).append(' ').append(mb.comment)
 							.append('\n');
 						replicateNames.add(mb.name);
