@@ -309,7 +309,9 @@ public class Simulator implements Resettable {
 					tm.advanceTime(lastTime);
 				i++;
 			}
-			// 5 advance age of ALL SystemComponents, including the not update ones.
+			// 5 apply all changes to community (structure and state)
+			Collection<SystemComponent> newComp = ecosystem.effectChanges();
+			// 6 advance age of ALL SystemComponents, including the not update ones.
 			if (ecosystem.community()!=null) // TODO improve this treatment
 				for (SystemComponent sc : ecosystem.community().allItems())
 				if (sc.autoVar()!=null)
@@ -319,8 +321,6 @@ public class Simulator implements Resettable {
 						au.age(nexttime - au.birthDate());
 						au.writeDisable();
 			}
-			// apply all changes to community
-			Collection<SystemComponent> newComp = ecosystem.effectChanges();
 			// apply changes to spaces, including data tracking
 			if (mainSpace!=null)
 				for (DynamicSpace<SystemComponent> space : mainSpace.spaces())
@@ -333,7 +333,7 @@ public class Simulator implements Resettable {
 			// resample community for data trackers who need it
 			for (DataTracker<?, Metadata> tracker : trackers.keySet())
 				if (tracker instanceof Sampler)
-					((Sampler<?>)tracker).updateSample();
+					((Sampler<?>)tracker).updateSample();			
 		}
 		log.info(()->"END Simulator " + id +" stepping time = " + lastTime);
 	}

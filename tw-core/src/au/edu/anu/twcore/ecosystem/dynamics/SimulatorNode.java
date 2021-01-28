@@ -68,9 +68,12 @@ import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
+import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.structure.ElementType;
+import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.ecosystem.structure.Structure;
+import au.edu.anu.twcore.root.World;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
@@ -176,8 +179,19 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 		Structure str = (Structure) get(getParent(), children(), selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		EcosystemGraph ecosystem = null;
 		SpaceOrganiser spo = null;// presume can be null for non-spatial models?
+		Map<String,RelationContainer> relconts = new HashMap<>();
+		// add predefined relation containers
+		Collection<RelationType> predefrels = (Collection<RelationType>) get(World.getRoot(this),
+			children(),
+			selectOne(hasTheLabel(N_PREDEFINED.label())),
+			children(),
+			selectZeroOrMany(hasTheLabel(N_RELATIONTYPE.label())));
+		for (RelationType reltype:predefrels)
+			relconts.put(reltype.id(),reltype.getInstance(index));
+		// add user defined relation containers
 		if (str != null) {
-			ecosystem = new EcosystemGraph(arena, str.relationContainers.getInstance(index));
+			relconts.putAll(str.relationContainers.getInstance(index));
+			ecosystem = new EcosystemGraph(arena,relconts);
 			// *** spaceOrganiser
 			spo = str.spaceOrganiser.getInstance(index);
 		} else {
