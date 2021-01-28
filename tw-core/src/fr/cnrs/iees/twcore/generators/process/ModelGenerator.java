@@ -675,6 +675,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			ProcessNode pn = (ProcessNode) fp.getParent();
 			switch (pftype) {
 			case ChangeCategoryDecision:
+				if (arg == arena)
+					arenaNode = getSystemNode(fp);
 				if (arg==focal) {
 					cats.addAll((Collection<Category>) get(pn.edges(Direction.OUT),
 						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
@@ -790,7 +792,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// functions independent from timers
 		if (EnumSet.of(SetInitialState, SetOtherInitialState).contains(ftype)) {
 			return "<p>- called once for every component, at creation time</p>\n";
-		} else {
+		} 
+		else {
 			// timer followed by the function
 			ProcessNode proc = null;
 			if (function.getParent() instanceof ProcessNode)
@@ -832,7 +835,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private String dependComment(TreeGraphDataNode function, TwFunctionTypes ftype) {
 		if (EnumSet.of(SetInitialState, SetOtherInitialState).contains(ftype)) {
 			return null; // dependsOn only applies to processes
-		} else {
+		} 
+		else {
 			StringBuilder sb = new StringBuilder();
 			// process function
 			if (function.getParent() instanceof ProcessNode) {
