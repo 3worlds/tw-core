@@ -43,72 +43,84 @@ public enum TwFunctionTypes {
 	ChangeState ("change the state, ie the values of internal variables, of a system component",
 		"changeState",
 		"void",
-		""),
+		"",
+		null),
 
 // ChangeCategoryDecision: change category of a system component according to life cycle (has no effect if no life cycle is specified)
 	ChangeCategoryDecision ("change category of a system component according to life cycle (has no effect if no life cycle is specified)",
 		"changeCategory",
 		"String",
-		"the new category of the recruited <em>focal</em> system component"),
+		"the new category of the recruited <em>focal</em> system component"
+		,new String[] { "" }),// what to do here?
 
 // CreateOtherDecision: create another system component, of the same categories if no life cycle is present, otherwise as specified by the life cycle
 	CreateOtherDecision ("create another system component, of the same categories if no life cycle is present, otherwise as specified by the life cycle",
 		"nNew",
 		"double",
-		"the number of new system components to create. The integral part is used as a number of new components, the decimal part as a probability to create an extra component."),
+		"the number of new system components to create. The integral part is used as a number of new components, the decimal part as a probability to create an extra component."
+		,new String[] { "\t\treturn 0.0;" }),
 
 // DeleteDecision: delete self
 	DeleteDecision ("delete self",
 		"delete",
 		"boolean",
-		"true if the current <em>focal</em> system component is to be deleted."),
+		"true if the current <em>focal</em> system component is to be deleted.",
+		new String[] { "\t\treturn false;" }),
 
 // ChangeOtherState: _focal_ changes the state of _other_
 	ChangeOtherState ("_focal_ changes the state of _other_",
 		"changeOtherState",
 		"void",
-		""),
+		"",
+		null),
 
 // RelateToDecision: _focal_ establishes a new relation to _other_
 	RelateToDecision ("_focal_ establishes a new relation to _other_",
 		"relateTo",
 		"boolean",
-		"true if a new relation is to be set between <em>focal</em> and  <em>other</em>"),
+		"true if a new relation is to be set between <em>focal</em> and  <em>other</em>",
+		new String[] { "\t\treturn false;" }),
 
 // MaintainRelationDecision: decision to maintain or remove an existing relation
 	MaintainRelationDecision ("decision to maintain or remove an existing relation",
 		"maintainRelation",
 		"boolean",
-		"true if the existing relation between <em>focal</em> and <em>other</em> is to be kept"),
+		"true if the existing relation between <em>focal</em> and <em>other</em> is to be kept",
+		new String[] { "\t\treturn false;" }),
 
 // ChangeRelationState: change the state of a relation, i.e. possibly both the state of focal and other at the same time
 	ChangeRelationState ("change the state of a relation, i.e. possibly both the state of focal and other at the same time",
 		"changeRelationState",
 		"void",
-		""),
+		"",
+		null),
 
 // SetInitialState: sets the initial state of a newly created SystemComponent
 	SetInitialState ("sets the initial state of a newly created SystemComponent",
 		"setInitialState",
 		"void",
-		""),
+		"",
+		null),
 
 // SetOtherInitialState: sets the initial state of a newly created SystemComponent given a parent component
 	SetOtherInitialState ("sets the initial state of a newly created SystemComponent given a parent component",
 		"setOtherInitialState",
 		"void",
-		"");
+		"",
+		null);
 	
 	private final String description;
 	private final String method;
 	private final String returnType;
 	private final String returnJavaDoc;
+	private final String[] defCode;
 
-	private TwFunctionTypes(String description, String method, String returnType, String returnJavaDoc) {
+	private TwFunctionTypes(String description, String method, String returnType, String returnJavaDoc,String[] defCode) {
 		this.description = description;
 		this.method = method;
 		this.returnType = returnType;
 		this.returnJavaDoc = returnJavaDoc;
+		this.defCode=defCode;
 	}
 
 	public String description() {
@@ -127,6 +139,9 @@ public enum TwFunctionTypes {
 		return returnJavaDoc;
 	}
 
+	public String[] defCode() {
+		return defCode;
+	}
 	public static String[] toStrings() {
 		String[] result = new String[TwFunctionTypes.values().length];
 		for (TwFunctionTypes s: TwFunctionTypes.values())
