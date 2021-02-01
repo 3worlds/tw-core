@@ -412,20 +412,23 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			// read-only argument read from space
 			if (type.innerVars().contains("limits"))
 				callStatement += indent+indent+indent+ "space.boundingBox(),\n";
-			if (type.innerVars().contains("focalLoc")) {
-				dataClassesToImport.add(Point.class.getCanonicalName());
-				List<String> innerVarInitialisation = new LinkedList<>();
-				innerVarInitialisation.add("Point focalLoc = space.locationOf((SystemComponent)focal).asPoint()");
-				innerVarInit.put("focalLoc",innerVarInitialisation);
-				callStatement += indent+indent+indent+ "focalLoc,\n";
-			}
-			if (type.innerVars().contains("otherLoc")) {
-				dataClassesToImport.add(Point.class.getCanonicalName());
-				List<String> innerVarInitialisation = new LinkedList<>();
-				innerVarInitialisation.add("Point otherLoc = space.locationOf((SystemComponent)other).asPoint()");
-				innerVarInit.put("otherLoc",innerVarInitialisation);
-				callStatement += indent+indent+indent+ "space.fixOtherLocation(focalLoc,otherLoc),\n";
-			}
+			if (type.localArguments().contains(searchRadius))
+				callStatement += indent+indent+indent+ "process().searchRadius(),\n";
+			
+//			if (type.innerVars().contains("focalLoc")) {
+//				dataClassesToImport.add(Point.class.getCanonicalName());
+//				List<String> innerVarInitialisation = new LinkedList<>();
+//				innerVarInitialisation.add("Point focalLoc = space.locationOf((SystemComponent)focal).asPoint()");
+//				innerVarInit.put("focalLoc",innerVarInitialisation);
+//				callStatement += indent+indent+indent+ "focalLoc,\n";
+//			}
+//			if (type.innerVars().contains("otherLoc")) {
+//				dataClassesToImport.add(Point.class.getCanonicalName());
+//				List<String> innerVarInitialisation = new LinkedList<>();
+//				innerVarInitialisation.add("Point otherLoc = space.locationOf((SystemComponent)other).asPoint()");
+//				innerVarInit.put("otherLoc",innerVarInitialisation);
+//				callStatement += indent+indent+indent+ "space.fixOtherLocation(focalLoc,otherLoc),\n";
+//			}
 			// writeable arguments
 //			if (type.writeableArguments().contains(nextFocalLoc))
 //				callStatement += indent+indent+indent+ "nextFocalLoc,\n";

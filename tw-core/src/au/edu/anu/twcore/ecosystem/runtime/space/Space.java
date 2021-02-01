@@ -219,6 +219,5 @@ public interface Space<T extends Locatable> {
 	 * @return
 	 */
 	public Point fixOtherLocation(Point focal, Point other);
-
-
+	
 }

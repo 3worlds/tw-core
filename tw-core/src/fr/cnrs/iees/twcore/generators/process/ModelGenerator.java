@@ -1253,10 +1253,16 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// space, including return values
 		if (hasSpace) {
 			// read-only argument read from space
-			if (ftype.innerVars().contains("limits"))
+			if (ftype.innerVars().contains("limits")) {
 				method.addArgument(limits.name(), simpleType(limits.type()), limits.description());
 				headerComment.append("@param ").append(limits.name()).append(' ').append(limits.description()).append('\n');
 				replicateNames.add(limits.name());
+			}
+			if (ftype.localArguments().contains(searchRadius)) {
+				method.addArgument(searchRadius.name(), simpleType(searchRadius.type()), searchRadius.description());
+				headerComment.append("@param ").append(searchRadius.name()).append(' ').append(searchRadius.description()).append('\n');
+				replicateNames.add(searchRadius.name());
+			}
 		}
 
 		// random, decide, select, recruit

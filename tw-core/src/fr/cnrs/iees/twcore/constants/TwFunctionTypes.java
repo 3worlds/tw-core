@@ -203,15 +203,17 @@ public enum TwFunctionTypes {
         return EnumSet.of(random,decider,selector,recruit);
         case DeleteDecision:
         case CreateOtherDecision:
+            return EnumSet.of(random,decider);
         case MaintainRelationDecision:
         case RelateToDecision:
-            return EnumSet.of(random,decider);
+            return EnumSet.of(searchRadius,random,decider);
         case ChangeState:
         case SetInitialState:
+        case SetOtherInitialState:
+        	return EnumSet.of(random);
         case ChangeOtherState:
         case ChangeRelationState:
-        case SetOtherInitialState:
-            return EnumSet.of(random);
+            return EnumSet.of(searchRadius,random);
         default:
             return EnumSet.noneOf(TwFunctionArguments.class);
         }

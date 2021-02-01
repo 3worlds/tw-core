@@ -118,6 +118,10 @@ public abstract class AbstractProcess
 	public final double time() {
 		return currentTime;
 	}
+	
+	public double searchRadius() {
+		return searchRadius;
+	}
 
 	@Override
 	public Collection<SamplerDataTracker<CategorizedComponent,?,Metadata>> dataTrackers() {
