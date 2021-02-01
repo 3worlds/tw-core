@@ -63,14 +63,14 @@ public class TwDataGenerator
 
 	@Override
 	protected ClassGenerator getRecordClassGenerator(String className,String comment,Set<String> locatedMethods) {
-		return new ClassGenerator(packageName, comment, className, locatedMethods,
+		return new ClassGenerator(packageName, comment, className, false, locatedMethods, 
 			TwData.class.getCanonicalName(),
 			LocationData.class.getCanonicalName());
 	}
 
 	@Override
 	protected ClassGenerator getTableClassGenerator(String className, String contentType, String comment) {
-		return new ClassGenerator(packageName, comment, className,null,
+		return new ClassGenerator(packageName, comment, className, false, null,
 			ObjectTable.class.getPackageName()+".ObjectTable<"+contentType+">");
 	}
 	public File getFile() {
@@ -115,7 +115,7 @@ public class TwDataGenerator
 			cg.getConstructor("constructor1").setStatement("coords = new double["+coordSize+"]");
 		}
 		// specific getters
-		MethodGenerator m = new MethodGenerator("public",ftype,fname);
+		MethodGenerator m = new MethodGenerator("public",false,ftype,fname);
 		m.setReturnStatement("return "+fname);
 		cg.setMethod("get"+fname, m);
 		// additional code if this field is used as a spacecoordinate (the coord getters)
@@ -166,7 +166,7 @@ public class TwDataGenerator
 			cg.getMethod("setProperty").
 				setStatement("if (v0.equals(\""+fname+"\")) "+fname+"(("+ftype+")v1)");
 			// the usual setter
-			MethodGenerator m = new MethodGenerator("public","void",fname,ftype);
+			MethodGenerator m = new MethodGenerator("public",false,"void",fname,ftype);
 			m.setStatement("if (!isReadOnly()) {\n\t\t\t"
 				+fname+" = v0;\n"
 				+"\t\t\tcoords["+(coordRank-1)+"] = (double) v0;\n"
@@ -194,7 +194,7 @@ public class TwDataGenerator
 		}
 		else {
 			cg.getMethod("setProperty").setStatement("if (v0.equals(\""+fname+"\")) "+fname+" = ("+ftype+") v1");
-			MethodGenerator m = new MethodGenerator("public","void",fname,ftype);
+			MethodGenerator m = new MethodGenerator("public",false,"void",fname,ftype);
 			m.setStatement("if (!isReadOnly()) "+fname+" = v0");
 			cg.setMethod("set"+fname, m);
 		}
@@ -257,19 +257,19 @@ public class TwDataGenerator
 		s = "for (int i=0; i<flatSize; i++)\n\t\t\tsetWithFlatIndex(new "+contentType+"(),i)";
 		cg.getConstructor("constructor1").setStatement(s);
 		// since clone() is not abstract in ancestor, we must redeclare it here
-		MethodGenerator m = new MethodGenerator("public",ftype,"clone");
+		MethodGenerator m = new MethodGenerator("public",false,ftype,"clone");
 		cg.setMethod("clone", m);
 		cg.getMethod("clone").setReturnType(ftype);
 		cg.getMethod("clone").setStatement(ftype+" result = cloneStructure()");
 		cg.getMethod("clone").setStatement("for (int i=0; i<flatSize; i++)\n\t\t\tresult.setWithFlatIndex(getWithFlatIndex(i),i)");
 		cg.getMethod("clone").setReturnStatement("return result");
 		// since cloneStructure() is not abstract in ancestor, we must redeclare it here
-		m = new MethodGenerator("public",ftype,"cloneStructure");
+		m = new MethodGenerator("public",false,ftype,"cloneStructure");
 		cg.setMethod("cloneStructure", m);
 		cg.getMethod("cloneStructure").setReturnType(ftype);
 		cg.getMethod("cloneStructure").setReturnStatement("return new "+ftype+"()");
 		// since clear() is not abstract in ancestor, we must redeclare it here
-		m = new MethodGenerator("public",ftype,"clear");
+		m = new MethodGenerator("public",false,ftype,"clear");
 		cg.setMethod("clear",m);
 		cg.getMethod("clear").setReturnType(ftype);
 		cg.getMethod("clear").setReturnStatement("return this");

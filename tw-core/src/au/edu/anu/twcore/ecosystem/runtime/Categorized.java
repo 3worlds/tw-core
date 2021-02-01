@@ -272,9 +272,11 @@ public interface Categorized<T extends Identity> {
 		Class<? extends TwData> dataClass;
 		try {
 			dataClass = (Class<? extends TwData>) Class.forName(className, true, classLoader);
-			Constructor<? extends TwData> dataConstructor = dataClass.getDeclaredConstructor();
-			newData = dataConstructor.newInstance();
-			newData.clear();
+//			if (!dataClass.isInterface()) {
+				Constructor<? extends TwData> dataConstructor = dataClass.getDeclaredConstructor();
+				newData = dataConstructor.newInstance();
+				newData.clear();
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

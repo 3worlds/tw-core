@@ -71,6 +71,7 @@ import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
+import fr.cnrs.iees.twcore.generators.data.TwDataInterfaceGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
 import fr.ens.biologie.generic.utils.Logging;
@@ -125,6 +126,13 @@ public class CodeGenerator {
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(systemNode.getChildren(),
 				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 
+			// generate data interfaces (matching categories)
+			//NB predefined categories only have auto variables, not considered here
+			Collection<TreeGraphDataNode> categories = (Collection<TreeGraphDataNode>) get(systemNode.subTree(),
+				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+			for (TreeGraphDataNode cat:categories)
+				generateDataInterfaceCode(cat,systemNode.id());
+			
 			// generate data classes
 			if (structure != null) {
 				// for ComponentTypes
@@ -138,11 +146,11 @@ public class CodeGenerator {
 					selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
 				for (TreeGraphDataNode groupType : groupTypes)
 					generateDataCode(groupType, systemNode.id());
-				// TODO: for LifeCycleTypes
-//				List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(dynamics, N_LIFECYCLE.label());
-//				for (TreeGraphDataNode lifeCycle : lifeCycles) {
-//					generateDataCode(lifeCycle, systemNode.id());
-//				}
+				// for LifeCycleTypes
+				List<TreeGraphDataNode> lifeCycles = getChildrenLabelled(dynamics, N_LIFECYCLETYPE.label());
+				for (TreeGraphDataNode lifeCycle : lifeCycles) {
+					generateDataCode(lifeCycle, systemNode.id());
+				}
 				// ...
 			}
 			// for Arena
@@ -195,6 +203,17 @@ public class CodeGenerator {
 			UserProjectLink.pushCompiledTree(localCodeRoot, modelgen.getFile());
 		}
 		return !ErrorList.haveErrors();
+	}
+	
+	/**
+	 * Generates a data-interface code for all category records. use this to typecast ComponentType
+	 * records to higher-level data
+	 * 
+	 * @param categories
+	 */
+	private void generateDataInterfaceCode(TreeGraphDataNode category,String modelName) {
+		TwDataInterfaceGenerator ig = new TwDataInterfaceGenerator(modelName,category);
+		ig.generateCode();
 	}
 
 	// Q&D testing

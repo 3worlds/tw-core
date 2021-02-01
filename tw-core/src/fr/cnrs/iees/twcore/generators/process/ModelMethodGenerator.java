@@ -61,7 +61,7 @@ public class ModelMethodGenerator extends MethodGenerator {
 	}
 
 	public ModelMethodGenerator(String scope, String returnType, String name, String... argTypes) {
-		super(scope, returnType, name, argTypes);
+		super(scope, false, returnType, name, argTypes);
 		insertCodeInsertionComment = true;
 		argComments = new String[argTypes.length];
 		for (int i=0; i<argComments.length; i++)

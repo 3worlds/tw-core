@@ -50,8 +50,6 @@ import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.exceptions.TwcoreException;
-import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
@@ -59,7 +57,6 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
-import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.generic.utils.Logging;
@@ -82,19 +79,12 @@ import fr.ens.biologie.generic.utils.Logging;
 // works, because javac manages the dependencies of all classes in the directory
 // ALL the java compiling code has been moved to CodeGenerator.generate()
 public abstract class HierarchicalDataGenerator
-	extends TwCodeGenerator
-	implements ProjectPaths {
+	extends DataClassGenerator {
 
 	private static Logger log = Logging.getLogger(HierarchicalDataGenerator.class);
 
 	/** the name of the class to generate */
 	protected String className = null;
-	/** the name of the package in which the class will be generated (ie with "." as separators) */
-	protected String packageName = null;
-	/** the directory name matching package name */
-	protected String packagePath = null;
-	/** the model name (matching the ecology node name */
-	protected String modelName = null;
 
 	private boolean hadErrors = false;
 
@@ -103,10 +93,7 @@ public abstract class HierarchicalDataGenerator
 	protected abstract ClassGenerator getTableClassGenerator(String className, String contentType,String comment);
 
 	protected HierarchicalDataGenerator(String modelName,TreeGraphDataNode spec) {
-		super(spec);
-		this.modelName = modelName;
-		packageName =CODE+"."+ validJavaName(wordUpperCaseName(modelName));
-		packagePath = Project.makeFile(LOCALJAVACODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+		super(modelName,spec);
 	}
 
 	@SuppressWarnings("unchecked")
