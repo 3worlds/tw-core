@@ -108,9 +108,11 @@ public abstract class HierarchicalDataGenerator
 		String comment = comment(general,classComment(cn),generatedCode(false,modelName, ""));
 		Iterable<TreeNode> childrenList = null;
 		// CAUTION: now specs are defined either with child nodes or with specific edges
+		//JG: Is this still true?
 		if (spec.hasChildren())
 			childrenList = (Iterable<TreeNode>) spec.getChildren();
 		else
+			//JG: is this case ever reached?
 			childrenList = (Iterable<TreeNode>) get(spec.edges(Direction.OUT),
 				selectZeroOrMany(hasProperty("type","forCodeGeneration")),
 				edgeListEndNodes());

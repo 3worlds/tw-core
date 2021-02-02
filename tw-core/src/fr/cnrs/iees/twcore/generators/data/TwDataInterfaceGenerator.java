@@ -2,6 +2,7 @@ package fr.cnrs.iees.twcore.generators.data;
 
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
@@ -67,8 +68,24 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 	
 	@Override
 	public boolean generateCode() {
+		boolean result = false;
 		String classComment = "";
 		String className = "";
+		// prepare Category node to receive names for generated classes
+		ExtendablePropertyList catProps = (ExtendablePropertyList) spec.properties();
+		if (!catProps.hasProperty(P_DRIVERCLASS.key())) {
+			catProps.addProperty(P_DRIVERCLASS.key(),null);
+			result = true;
+		}
+		if (!catProps.hasProperty(P_DECORATORCLASS.key())) {
+			catProps.addProperty(P_DECORATORCLASS.key(),null);
+			result = true;
+		}
+		if (!catProps.hasProperty(P_CONSTANTCLASS.key())) {
+			catProps.addProperty(P_CONSTANTCLASS.key(),null);
+			result = true;
+		}
+//		GraphState.setChanged();
 		TreeGraphDataNode recSpec = (TreeGraphDataNode) get(spec.edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
 			endNode());
@@ -76,6 +93,10 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) + drivers;
 			classComment = "Data interface for "+E_DRIVERS.label()+" of category "+spec.id();
 			generateInterface(recSpec,className,classComment);
+			if (!className.equals(catProps.getPropertyValue(P_DRIVERCLASS.key()))) {
+				catProps.setProperty(P_DRIVERCLASS.key(),className);
+				result = true;
+			}
 		}
 		recSpec = (TreeGraphDataNode) get(spec.edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
@@ -84,6 +105,10 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) + decorators;
 			classComment = "Data interface for "+E_DECORATORS.label()+" of category "+spec.id();
 			generateInterface(recSpec,className,classComment);
+			if (!className.equals(catProps.getPropertyValue(P_DECORATORCLASS.key()))) {
+				catProps.setProperty(P_DECORATORCLASS.key(),className);
+				result = true;
+			}
 		}
 		recSpec = (TreeGraphDataNode) get(spec.edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())),
@@ -92,10 +117,14 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) + constants;
 			classComment = "Data interface for "+E_CONSTANTS.label()+" of category "+spec.id();
 			generateInterface(recSpec,className,classComment);
+			if (!className.equals(catProps.getPropertyValue(P_CONSTANTCLASS.key()))) {
+				catProps.setProperty(P_CONSTANTCLASS.key(),className);
+				result = true;
+			}
 		}
 		
 		// TODO: complete code (ignore tables for the moment)
-		return false;
+		return result;
 	}
 
 }

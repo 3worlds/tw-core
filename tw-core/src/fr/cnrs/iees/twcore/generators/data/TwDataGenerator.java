@@ -66,6 +66,7 @@ public class TwDataGenerator
 		return new ClassGenerator(packageName, comment, className, false, locatedMethods, 
 			TwData.class.getCanonicalName(),
 			LocationData.class.getCanonicalName());
+		// NB: this is where to get the category interfaces
 	}
 
 	@Override

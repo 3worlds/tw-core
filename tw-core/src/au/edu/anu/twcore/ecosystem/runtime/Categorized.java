@@ -152,39 +152,13 @@ public interface Categorized<T extends Identity> {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Collection<Category> getSuperCategories(TreeGraphDataNode node) {
-		// there was a bug here caused by selectOneOrMany because lifeCycle may have no belongsTo edge
 		Collection<Category> cats = (Collection<Category>) get(node.edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
 			edgeListEndNodes());
-//		Collection<Category> result = new HashSet<Category>();
 		Collection<Category> result = new TreeSet<Category>();
 		result.addAll(cats);
 		for (Category cat:cats)
 			getSuperCategories(cat,result);
-		// sort categories by hierarchical order
-		// BUT WHY ??? why not use a SortedSet?
-		// Anyway this is bugged - doesnt work with multiple category trees
-//		if (!result.isEmpty()) {
-//			List<Category> l = new LinkedList<>();
-//			l.addAll(result);
-//			SortedMap<Integer,Category> sortedres = new TreeMap<>();
-//			sortedres.put(0,l.get(0));
-//			while (sortedres.size()<result.size()) {
-//				for (Category c:result)
-//					for (int i:sortedres.keySet())
-//						if (sortedres.get(i)!=c) {
-//							if (c.getParent().getParent() instanceof Structure) {
-//								sortedres.put(-result.size(), c);
-//								break;
-//							}
-//							else if (c.getParent().getParent().equals(sortedres.get(i))) {
-//								sortedres.put(i+1,c);
-//								break;
-//							}
-//					}
-//			}
-//			return sortedres.values();
-//		}
 		return result;
 	}
 

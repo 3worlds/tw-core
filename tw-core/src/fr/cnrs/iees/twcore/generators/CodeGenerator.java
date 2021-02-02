@@ -127,11 +127,12 @@ public class CodeGenerator {
 				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 
 			// generate data interfaces (matching categories)
-			//NB predefined categories only have auto variables, not considered here
+			// NB predefined categories only have auto variables, not considered here
 			Collection<TreeGraphDataNode> categories = (Collection<TreeGraphDataNode>) get(systemNode.subTree(),
 				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
 			for (TreeGraphDataNode cat:categories)
-				generateDataInterfaceCode(cat,systemNode.id());
+				if (generateDataInterfaceCode(cat,systemNode.id()))
+					GraphState.setChanged();
 			
 			// generate data classes
 			if (structure != null) {
@@ -151,7 +152,6 @@ public class CodeGenerator {
 				for (TreeGraphDataNode lifeCycle : lifeCycles) {
 					generateDataCode(lifeCycle, systemNode.id());
 				}
-				// ...
 			}
 			// for Arena
 			Collection<Category> cats = (Collection<Category>) get(systemNode.edges(Direction.OUT),
@@ -211,9 +211,9 @@ public class CodeGenerator {
 	 * 
 	 * @param categories
 	 */
-	private void generateDataInterfaceCode(TreeGraphDataNode category,String modelName) {
+	private boolean generateDataInterfaceCode(TreeGraphDataNode category,String modelName) {
 		TwDataInterfaceGenerator ig = new TwDataInterfaceGenerator(modelName,category);
-		ig.generateCode();
+		return ig.generateCode();
 	}
 
 	// Q&D testing
@@ -241,7 +241,6 @@ public class CodeGenerator {
 		try {
 			stdFileManager.close();
 		} catch (IOException e1) {
-
 			e1.printStackTrace();
 		}
 		return result;
@@ -320,20 +319,25 @@ public class CodeGenerator {
 //		return false;
 //	}
 
-	private void generateDataCode(TreeGraphDataNode system, String modelName) {
-		// 1. Automatic variables
+	/**
+	 * Called for every ComponentType/GroupType/LifeCycleType found in the structure sub-tree.
+	 * Uses system node id as model name.
+	 * 
+	 * @param elementType the [...]Type node
+	 * @param modelName the system node id, or model name
+	 */
+	private void generateDataCode(TreeGraphDataNode elementType, String modelName) {
+		// 1. automatic variables
 		// NO CODE GENERATION for automatic variables!
 		// 2. drivers
-		TreeGraphDataNode spec = Categorized.buildUniqueDataList(system, E_DRIVERS.label(), log);
-		generateDataCode(spec, system, modelName, P_DRIVERCLASS.key());
+		TreeGraphDataNode spec = Categorized.buildUniqueDataList(elementType, E_DRIVERS.label(), log);
+		generateDataCode(spec, elementType, modelName, P_DRIVERCLASS.key());
 		// 3. decorators
-		spec = Categorized.buildUniqueDataList(system, E_DECORATORS.label(), log);
-		generateDataCode(spec, system, modelName, P_DECORATORCLASS.key());
+		spec = Categorized.buildUniqueDataList(elementType, E_DECORATORS.label(), log);
+		generateDataCode(spec, elementType, modelName, P_DECORATORCLASS.key());
 		// 4. lifetime constants
-		spec = Categorized.buildUniqueDataList(system, E_CONSTANTS.label(), log);
-		generateDataCode(spec, system, modelName, P_CONSTANTCLASS.key());
-		// add space coordinates for every space in which this component type will go
-		// (immobile components)
+		spec = Categorized.buildUniqueDataList(elementType, E_CONSTANTS.label(), log);
+		generateDataCode(spec, elementType, modelName, P_CONSTANTCLASS.key());
 	}
 
 
@@ -354,41 +358,30 @@ public class CodeGenerator {
 		}
 
 		// this code is now useless
-		// 3 if the process has a space, then a relocatefunction is always generated
-		// CAUTION: relocate functions are only attached to category processes, so if
-		// the space applies to a relation process, two relocate functions are
-		// generated,
-		// attached to each category set of the relation.
-		// This poses no problem at execution since the relocate functions will only be
-		// called at SystemComponent creation, ie after a call to a
-		// CreateOtherDecisionFunction.nNew(...)
 		ProcessSpaceEdge spaceEdge = (ProcessSpaceEdge) get(process.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_SPACE.label())));
+			selectZeroOrOne(hasTheLabel(E_SPACE.label())));
 		if (spaceEdge != null) {
 			List<TreeGraphDataNode> ltgn = (List<TreeGraphDataNode>) get(process.edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
+				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
 			// RelationProcess
 			if (ltgn.get(0) instanceof RelationType) {
 				Set<TreeGraphDataNode> cptypes = new HashSet<>();
 				List<TreeGraphDataNode> fromcats = (List<TreeGraphDataNode>) get(ltgn.get(0).edges(Direction.OUT),
-						selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
+					selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
 				for (TreeGraphDataNode cat : fromcats) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 				List<TreeGraphDataNode> tocats = (List<TreeGraphDataNode>) get(ltgn.get(0).edges(Direction.OUT),
-						selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
+					selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
 				for (TreeGraphDataNode cat : tocats) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
-				// generate functions
-//				for (TreeGraphDataNode comp : cptypes)
-//					generateRelocateFunction(comp, spaceEdge.endNode().id(), modelName);
 			}
 			// CategoryProcess:
 			// a function is generated for every ComponentType depending on the categories
@@ -397,13 +390,10 @@ public class CodeGenerator {
 				Set<TreeGraphDataNode> cptypes = new HashSet<>();
 				for (TreeGraphDataNode cat : ltgn) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
-				// generate functions
-//				for (TreeGraphDataNode comp : cptypes)
-//					generateRelocateFunction(comp, spaceEdge.endNode().id(), modelName);
 			}
 		}
 	}
