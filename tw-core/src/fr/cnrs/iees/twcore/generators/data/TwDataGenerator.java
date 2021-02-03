@@ -29,13 +29,17 @@
 package fr.cnrs.iees.twcore.generators.data;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.rscs.aot.collections.tables.TableAdapter;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
+import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.uit.space.Point;
@@ -56,23 +60,50 @@ public class TwDataGenerator
 
 	private static final String[] predefinedTableTypes = {"BooleanTable", "ByteTable", "CharTable",
 		"DoubleTable", "FloatTable", "IntTable", "LongTable", "ShortTable", "StringTable"};
+	
+	private Collection<Category> categories = null;
+	private String dataGroup;
 
-	public TwDataGenerator(String modelName,TreeGraphDataNode spec) {
+	public TwDataGenerator(String modelName,
+			TreeGraphDataNode spec,
+			Collection<Category> cats,
+			String dataGroup) {
 		super(modelName,spec);
+		categories = cats;
+		this.dataGroup = dataGroup;
 	}
 
 	@Override
-	protected ClassGenerator getRecordClassGenerator(String className,String comment,Set<String> locatedMethods) {
-		return new ClassGenerator(packageName, comment, className, false, locatedMethods, 
-			TwData.class.getCanonicalName(),
-			LocationData.class.getCanonicalName());
-		// NB: this is where to get the category interfaces
+	protected ClassGenerator getRecordClassGenerator(String className,
+			String comment,
+			Set<String> locatedMethods) {
+		if (categories.size()>1) {
+			List<String> ifs = new ArrayList<>();
+			for (Category cat:categories) {
+				String s = (String) cat.properties().getPropertyValue(dataGroup);
+				if (s!=null)
+					ifs.add(s);
+			}
+			ifs.add(LocationData.class.getCanonicalName());
+			String[] interfaces = new String[ifs.size()];
+			int i=0;
+			for (String s:ifs)
+				interfaces[i++] = s;
+			categories.clear(); // this to make sure this is done only for the root record
+			return new ClassGenerator(packageName, comment, className, false, locatedMethods, 
+				TwData.class.getCanonicalName(),
+				interfaces);
+		}
+		else
+			return new ClassGenerator(packageName, comment, className, false, locatedMethods, 
+				TwData.class.getCanonicalName(),
+				LocationData.class.getCanonicalName());
 	}
 
 	@Override
 	protected ClassGenerator getTableClassGenerator(String className, String contentType, String comment) {
 		return new ClassGenerator(packageName, comment, className, false, null,
-			ObjectTable.class.getPackageName()+".ObjectTable<"+contentType+">");
+			TableAdapter.class.getCanonicalName());
 	}
 	public File getFile() {
 		String name = className.replace(this.packageName+".", "");

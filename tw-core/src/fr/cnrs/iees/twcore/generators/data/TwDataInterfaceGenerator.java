@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
+import static au.edu.anu.twcore.DefaultStrings.*;
 
 /**
  * 
@@ -37,7 +38,7 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 	public TwDataInterfaceGenerator(String modelName,TreeGraphDataNode spec) {
 		super(modelName,spec);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private void generateInterface(TreeGraphDataNode recSpec, String className, String classComment) {
 		String[] comment = new String[1];
@@ -90,7 +91,8 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
 			endNode());
 		if (recSpec!=null) {
-			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) + drivers;
+			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) 
+				+ defaultPrefix + drivers;
 			classComment = "Data interface for "+E_DRIVERS.label()+" of category "+spec.id();
 			generateInterface(recSpec,className,classComment);
 			if (!className.equals(catProps.getPropertyValue(P_DRIVERCLASS.key()))) {
@@ -102,7 +104,8 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
 			endNode());
 		if (recSpec!=null) {
-			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) + decorators;
+			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) 
+				+ defaultPrefix + decorators;
 			classComment = "Data interface for "+E_DECORATORS.label()+" of category "+spec.id();
 			generateInterface(recSpec,className,classComment);
 			if (!className.equals(catProps.getPropertyValue(P_DECORATORCLASS.key()))) {
@@ -114,7 +117,8 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())),
 			endNode());
 		if (recSpec!=null) {
-			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) + constants;
+			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) 
+				+ defaultPrefix + constants;
 			classComment = "Data interface for "+E_CONSTANTS.label()+" of category "+spec.id();
 			generateInterface(recSpec,className,classComment);
 			if (!className.equals(catProps.getPropertyValue(P_CONSTANTCLASS.key()))) {

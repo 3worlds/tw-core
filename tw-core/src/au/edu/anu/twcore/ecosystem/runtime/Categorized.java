@@ -172,20 +172,23 @@ public interface Categorized<T extends Identity> {
 	 * its components in.
 	 * </p>
 	 *
-	 * @param system
-	 *            the system for which the data merging is made
-	 * @param categoryList
-	 *            the list of categories to merge
+	 * @param node
+	 *            the (ElementType) node for which the data merging is made
 	 * @param dataGroup
 	 *            "drivers", "parameters" or "decorators" to specify which data
 	 *            structure is built
-	 * @return
+	 * @param log
+	 *            a valid logger
+	 * @return a specification node either matching a single record in case a single category
+	 * is set, otherwise merging the fields of all category records into one record. May be <strong>null</strong>
+	 * if no record was associated to categories
 	 */
 	public static TreeGraphDataNode buildUniqueDataList(TreeGraphDataNode node,
 			String dataGroup,Logger log) {
 		log.info("Building unique data list from categories for "+node.toShortString());
 		TreeGraphDataNode mergedRoot = null;
 		DynamicList<TreeGraphDataNode> roots = new DynamicList<TreeGraphDataNode>();
+		// find all categories above those the node belongs to
 		Collection<Category> cats = getSuperCategories(node);
 		// put them in roots in category hierarchy order !
 		for (Category cat:cats) {
@@ -196,12 +199,14 @@ public interface Categorized<T extends Identity> {
 				roots.add(n);
 		}
 		NodeFactory factory = null;
+		// use the first root id as the generated class name by default
 		if (roots.size() >= 1) {
 			mergedRoot = roots.iterator().next();
 			factory = mergedRoot.factory();
 			((ExtendablePropertyList)mergedRoot.properties()).addProperty(
 				new Property("generatedClassName",mergedRoot.id()) );
 		}
+		// if more than one root present, generate new name and merge all record fields into one record
 		if (roots.size() > 1) {
 			// work out merged root name
 			StringBuilder mergedRootName = new StringBuilder();
@@ -213,20 +218,19 @@ public interface Categorized<T extends Identity> {
 			((ExtendablePropertyList)mergedRoot.properties()).addProperty(
 				new Property("generatedClassName",mergedRootName.toString())) ;
 			for (TreeGraphDataNode n:roots)
+				// root content is a record
 				if (n.classId().equals(N_RECORD.label())) {
 					for (TreeNode c:n.getChildren()) {
 						SimplePropertyList pl = new SimplePropertyListImpl("type");
 						pl.setProperty("type", "forCodeGeneration");
 						mergedRoot.connectTo(Direction.OUT,c, pl);
 					}
-//					// caution: this changes the graph
-//					// and this is a very bad idea ! causes crashes !
-//					mergedRoot.connectChildren(n.getChildren());
-				} else {
+				} 
+			// root content is a table
+				else {
 					SimplePropertyList pl = new SimplePropertyListImpl("type");
 					pl.setProperty("type", "forCodeGeneration");
 					mergedRoot.connectTo(Direction.OUT,n, pl);
-//					mergedRoot.connectChild(n);
 				}
 			((ExtendablePropertyList)mergedRoot.properties()).addProperty("generated", true);
 		}

@@ -232,7 +232,7 @@ public class CodeGenerator {
 		options.add(System.getProperty("java.class.path"));
 		options.add("-Xlint:-processing"); // due to a strange error with DataContainer (usually a warning, actually ??)
 		// prevent initial processing of annotations (until run time?)
-		//options.add("-nowarn");// TODO: TMP: switching off warnings
+		// options.add("-nowarn");// TODO: TMP: switching off warnings
 		StringWriter errors = new StringWriter();
 		javax.tools.JavaCompiler.CompilationTask task = compiler.getTask(errors, null, null, options, null,
 				compilationUnits);
@@ -246,25 +246,28 @@ public class CodeGenerator {
 		return result;
 	}
 
-	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode system, String modelName,
+	private void generateDataCode(TreeGraphDataNode spec, 
+			TreeGraphDataNode elementType, 
+			String modelName,
 			String dataGroup) {
 		if (spec != null) {
 			// generate the new class
-			TwDataGenerator gen = new TwDataGenerator(modelName, spec);
+			Collection<Category> cats = Categorized.getSuperCategories(elementType);
+			TwDataGenerator gen = new TwDataGenerator(modelName, spec, cats, dataGroup);
 			gen.generateCode();
 			// keep the graph in sync with the newly generated class
 			// check the new generated class name replaces the old one in properties driverClass, constantClass, etc.
-			if (system.properties().hasProperty(dataGroup)) {
-				String oldValue = (String) system.properties().getPropertyValue(dataGroup);
+			if (elementType.properties().hasProperty(dataGroup)) {
+				String oldValue = (String) elementType.properties().getPropertyValue(dataGroup);
 				String newValue = gen.generatedClassName();
 				if (!newValue.equals(oldValue)) {
-					system.properties().setProperty(dataGroup, newValue);
+					elementType.properties().setProperty(dataGroup, newValue);
 					GraphState.setChanged(); // Seems to be secret French business so we won't look
  											 // rhaa! it's jsut telling the graph the property value has changed!
 				}
 			} else {
 			// set the properties driverClass, constantClass, etc. if they didnt exist
-				((ResizeablePropertyList) system.properties()).addProperty(dataGroup, gen.generatedClassName());
+				((ResizeablePropertyList) elementType.properties()).addProperty(dataGroup, gen.generatedClassName());
 				GraphState.setChanged();
 			}
 			// if the spec node itsef was generated, delete it
@@ -273,51 +276,13 @@ public class CodeGenerator {
 					spec.disconnect();
 					graph.removeNode(spec);
 				}
-		} else if (system.properties().hasProperty(dataGroup)) {
+		} else if (elementType.properties().hasProperty(dataGroup)) {
 			// if the spec was deleted from a previous version, remove the property refering to the former
 			// class name in the graph
-			((ResizeablePropertyList) system.properties()).removeProperty(dataGroup);
+			((ResizeablePropertyList) elementType.properties()).removeProperty(dataGroup);
 			GraphState.setChanged();
 		}
 	}
-
-	// kept for recycling wherever it could be useful
-//	@SuppressWarnings("unchecked")
-//	private boolean isComponentInSpace(TreeGraphDataNode compType, TreeGraphDataNode space) {
-//		Collection<Category> superC = Categorized.getSuperCategories(compType);
-//		for (Category cat:superC) {
-//			// 1 one of my super categories is involved in a CategoryProcess pointing to space
-//			List<ProcessNode> procs = (List<ProcessNode>) get(cat.edges(Direction.IN),
-//				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
-//				edgeListStartNodes());
-//			for (ProcessNode pn:procs) {
-//				TreeGraphDataNode procSpace = (TreeGraphDataNode) get(pn.edges(Direction.OUT),
-//					selectZeroOrOne(hasTheLabel(E_SPACE.label())),
-//					endNode());
-//				if (procSpace!=null)
-//					if (procSpace.equals(space))
-//						return true;
-//			}
-//			// 2 one of my super categories is involved in a RelationProcess pointing to space
-//			List<RelationType> rels = (List<RelationType>) get(cat.edges(Direction.IN),
-//				selectZeroOrMany(orQuery(hasTheLabel(E_TOCATEGORY.label()),hasTheLabel(E_FROMCATEGORY.label()))),
-//				edgeListStartNodes());
-//			for (RelationType rel:rels) {
-//				ProcessNode pn = (ProcessNode) get(rel.edges(Direction.IN),
-//					selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
-//					startNode());
-//				if (pn!=null) {
-//					TreeGraphDataNode procSpace = (TreeGraphDataNode) get(pn.edges(Direction.OUT),
-//						selectZeroOrOne(hasTheLabel(E_SPACE.label())),
-//						endNode());
-//					if (procSpace!=null)
-//						if (procSpace.equals(space))
-//							return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
 
 	/**
 	 * Called for every ComponentType/GroupType/LifeCycleType found in the structure sub-tree.
