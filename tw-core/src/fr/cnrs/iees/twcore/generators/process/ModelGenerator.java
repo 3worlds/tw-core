@@ -443,6 +443,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		String name = null;
 		String klass;
 		Collection<memberInfo> members = null;
+		Collection<Category> categories = null;
 		@Override
 		public String toString() {
 			String s = "[" + name + ":" + klass;
@@ -926,13 +927,14 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					cats = findLifeCycleCategories(functions.get(method),focalCats,a);
 				else if (a.equals(otherLifeCycle))
 					cats = findLifeCycleCategories(functions.get(method),otherCats,a);
-				else // we should NEVER reach here!
+				else // we should NEVER reach here! - yes we do, for arena!
 					cats = findCategories(functions.get(method), a);
 				Map<ConfigurationEdgeLabels, SortedSet<memberInfo>> fields = getAllMembers(cats);
 				for (ConfigurationEdgeLabels el : EnumSet.of(E_AUTOVAR, E_CONSTANTS, E_DECORATORS, E_DRIVERS)) {
 					recInfo ri = new recInfo();
 					ri.name = dataAccessors.get(el);
 					ri.klass = null;
+					ri.categories = cats;
 					newDS.get(a).add(ri);
 					if (fields.get(el) != null)
 						for (memberInfo mi : fields.get(el)) {
@@ -1147,7 +1149,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				.append(simpleCatSignature(focalCats)).append("</em>}</p>\n\n");
 		else
 			headerComment.append("<p>- applies to relation <em>")
-				.append(relationType).append(": {")
+				.append(relationType).append(": {") // TODO: predefined relations
 				.append(simpleCatSignature(focalCats)).append("} → {")
 				.append(simpleCatSignature(otherCats)).append("}</em></p>\n\n");
 		headerComment.append(timerComment(function, ftype)).append('\n');

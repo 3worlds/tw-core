@@ -31,11 +31,10 @@ package fr.cnrs.iees.twcore.generators.process;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListStartNodes;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_FEDBY;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 import java.io.File;
@@ -54,6 +53,7 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 
+
 //import org.bouncycastle.util.Strings; something goes wrong with this library when running from jar (security??)
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
@@ -70,7 +70,6 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator.memberInfo;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator.recInfo;
-import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
@@ -97,6 +96,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private String packagePath;
 	private List<String> inBodyCode = null;
 	private SortedSet<String> eventTimerNames = new TreeSet<>();
+	private Set<TreeGraphDataNode> functionFocalCategories = new TreeSet<>();
+	private Set<TreeGraphDataNode> functionOtherCategories = new TreeSet<>();
 //	private List<String> inClassCode = null;
 
 	@SuppressWarnings("unchecked")
@@ -107,6 +108,41 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		type = (TwFunctionTypes) spec.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		model = modelName;
 		packagePath = Project.makeFile(LOCALJAVACODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+		// get the focal categories - spec is a FunctionNode
+		TreeGraphDataNode proc = (TreeGraphDataNode) spec.getParent();
+		if (proc.classId().equals(N_FUNCTION.label()))
+			proc = (TreeGraphDataNode) proc.getParent(); // consequence function
+		if (proc.classId().equals(N_PROCESS.label())) {
+			Collection<TreeGraphDataNode> appliances;
+			appliances = (Collection<TreeGraphDataNode>) get(proc.edges(Direction.OUT), 
+				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
+				edgeListEndNodes());
+			TreeGraphDataNode first = appliances.iterator().next();
+			if (first.classId().equals(N_RELATIONTYPE.label())) {
+				appliances = (Collection<TreeGraphDataNode>) get(first.edges(Direction.OUT), 
+					selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), 
+					edgeListEndNodes());
+				functionFocalCategories.addAll(appliances);
+				appliances = (Collection<TreeGraphDataNode>) get(first.edges(Direction.OUT), 
+					selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), 
+					edgeListEndNodes());
+				functionOtherCategories.addAll(appliances);
+			}
+			else {
+				functionFocalCategories.addAll(appliances);
+				if (type.equals(TwFunctionTypes.CreateOtherDecision))
+					// TODO: get the other categories
+					;
+				if (type.equals(TwFunctionTypes.ChangeCategoryDecision))
+					// TODO: get the other categories
+					;
+			}
+		}
+		else {
+			// TODO: init functions, parent is a ElementType or Arena
+		}
+		
+		
 // OLD CODE - dealing with snippet files.
 		// maybe useful in model generator though
 //		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), edgeListEndNodes(),
@@ -151,25 +187,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			for (TimerNode q:queues)
 				eventTimerNames.add(q.id());
 	}
-
-// OLD CODE - dealing with snippet files.
-// maybe useful in model generator though
-//	private List<String> snippetCode(TreeGraphDataNode snippet) {
-//		List<String> code = new LinkedList<String>();
-//		// File f =
-//		// Project.makeFile(PROJECT_MODEL_GRAPHS,(String)((File)snippet.getPropertyValue("file")).getName());
-//		FileType ft = (FileType) snippet.properties().getPropertyValue("file");
-//		File f = ft.getFile();
-//		if (!f.isDirectory() & f.exists()) {
-//			try {
-//				code = Files.readAllLines(f.toPath());
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		} else
-//			return null;
-//		return code;
-//	}
 
 	@Override
 	public boolean generateCode() {
@@ -271,12 +288,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		writeFile(generator, file, name);
 		generatedClassName = packageName + "." + name;
 		log.info("  done.");
-
-//		JavaCompiler compiler = new JavaCompiler();
-//		String result =  compiler.compileCode(file,Project.makeFile());
-//		if (result!=null)
-//			ComplianceManager.add(new CompileErr(file, result));
-		return true; //result==null;
+		return true; 
 	}
 
 	public String generatedClassName() {
@@ -320,8 +332,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		String classToCall = gen.className();
 		String indent = "\t";
 		callStatement = classToCall+"."+
-				name.substring(0,1).toLowerCase()+
-				name.substring(1)+"(\n";
+			name.substring(0,1).toLowerCase()+
+			name.substring(1)+"(\n";
 		innerClassDecl.clear();
 		innerVarInit.clear();
 		innerVarCopy.clear();
@@ -332,11 +344,9 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			callStatement += indent+indent+indent+ arg.name() + ",\n";
 		// arena, lifeCycle, group, space focal, other, otherGroup, otherLifeCycle
 		// including return values
-//		SortedSet<Category> focalCats = gen.findCategories(spec,focal);
 		for (TwFunctionArguments arg:gen.dataStructure(name).keySet()) {
 			List<recInfo> comp = gen.dataStructure(name).get(arg);
 			// generation of inner classes for return values
-//			if (!(arg.equals(arena) & gen.skipArena(focalCats)))
 			if (!gen.excludeArgument(arg, (FunctionNode) spec))
 				for (recInfo rec:comp)
 					if (rec!=null)
@@ -350,30 +360,42 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 							(innerVar.contains(arg.name())))  {
 								String innerClass = initialUpperCase(innerVar);
 								List<String> innerClassDeclaration = new LinkedList<>();
-								// e.g.: public class FocalDrv {
+								// workout inner class declaration first line
+								// e.g.: "public class FocalDrv {"
 								innerClassDeclaration.add(indent+"public class "+innerClass+" {");
 								innerClassDecl.put(innerVar,innerClassDeclaration);
-								List<String> innerVarInitialisation = new LinkedList<>();
+								// workout instantiation of inner class as a local variable
 								// e.g.: FocalDrv _focalDrv = new FocalDrv();
+								List<String> innerVarInitialisation = new LinkedList<>();
 								innerVarInitialisation.add(innerClass+" _"+innerVar+" = new "+innerClass+"()");
 								innerVarInit.put(innerVar,innerVarInitialisation);
+								// workout copy of user-code-modified values back into SystemComponent data structures
+								// (NB different treatment for dynamic variables, ie drivers, and others)
+								// e.g.: Vars focalDrv = (Vars)focal.nextState();
 								List<String> innerVarBackCopy = new LinkedList<>();
 								innerVarCopy.put(innerVar,innerVarBackCopy);
-								// e.g.: Vars focalDrv = (Vars)focal.nextState();
+								
+								// HERE: that's where the typecasting must be adapted	
+//								spec; --> function categories
+//								rec.categories; --> data categories
 								if ((rec.name.equals("currentState")) & !(type==TwFunctionTypes.SetInitialState))
 									innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+".nextState()");
 								else
 									innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+"."+rec.name+"()");
-					}
+						}
 				}
-				// special case for automatic variables
+				// special case for automatic variables (age, birthdate, population size etc)
 				if (rec.klass.equals(ComponentData.class.getName()) || rec.klass.equals(ContainerData.class.getName()))
 					dataClassesToImport.add(rec.klass);
 				// generating record members arguments
 				for (memberInfo field:rec.members) {
 					// generate calls to inner methods to write as arguments to user method
 					String callArg = null;
-					// ((Vars)focal.currentState()).y()),
+					// workout typecasting of SystemComponent data structures to user-generated TwData
+					// e.g. ((Vars)focal.currentState()).y()),
+					
+					// HERE: that's where the typecasting must be adapted
+					
 					callArg = "((" + classShortName(rec.klass)+ ")"+arg.toString()+"."+rec.name+"())."+field.name+"()";
 					if (callArg!=null)
 						callStatement += indent+indent+indent+ callArg + ",\n";
@@ -386,10 +408,13 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 						// imports needed for non primitive field classes
 						if (field.fullType!=null)
 							dataClassesToImport.add(field.fullType);
+						// workout inner class field declarations
 						// e.g.: double y;
 						innerClassDecl.get(innerVar).add(indent+indent+field.type+" "+field.name+";");
+						// workout local variable initialisation from SystemComponent data structures
 						// e.g.: _focalDrv.y = focalDrv.y();
 						innerVarInit.get(innerVar).add("_"+innerVar+"."+field.name+" = "+innerVar+"."+field.name+"()");
+						// workout back copy of user-code function output into SystemComponent data structures
 						// e.g.: focalDrv.y(_focalDrv.y);
 						if (field.isTable)
 							; // nothing to do with tables since they can be directly modified.
@@ -402,7 +427,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 						if (recToInnerVar.get(rec.name)!=null)
 							if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
 								(innerVar.contains(arg.name())))
-//						if (innerVar.contains("Drv"))
 						// e.g.:_focalDrv // next value
 								callStatement += indent+indent+indent+"_"+innerVar+ ",\n";
 			}
@@ -414,29 +438,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				callStatement += indent+indent+indent+ "space.boundingBox(),\n";
 			if (type.localArguments().contains(searchRadius))
 				callStatement += indent+indent+indent+ "process().searchRadius(),\n";
-			
-//			if (type.innerVars().contains("focalLoc")) {
-//				dataClassesToImport.add(Point.class.getCanonicalName());
-//				List<String> innerVarInitialisation = new LinkedList<>();
-//				innerVarInitialisation.add("Point focalLoc = space.locationOf((SystemComponent)focal).asPoint()");
-//				innerVarInit.put("focalLoc",innerVarInitialisation);
-//				callStatement += indent+indent+indent+ "focalLoc,\n";
-//			}
-//			if (type.innerVars().contains("otherLoc")) {
-//				dataClassesToImport.add(Point.class.getCanonicalName());
-//				List<String> innerVarInitialisation = new LinkedList<>();
-//				innerVarInitialisation.add("Point otherLoc = space.locationOf((SystemComponent)other).asPoint()");
-//				innerVarInit.put("otherLoc",innerVarInitialisation);
-//				callStatement += indent+indent+indent+ "space.fixOtherLocation(focalLoc,otherLoc),\n";
-//			}
-			// writeable arguments
-//			if (type.writeableArguments().contains(nextFocalLoc))
-//				callStatement += indent+indent+indent+ "nextFocalLoc,\n";
-//			if (type.writeableArguments().contains(nextOtherLoc))
-//				callStatement += indent+indent+indent+ "nextOtherLoc,\n";
 		}
-//		else
-//			callStatement += indent+indent+indent+ "null,\n";
 
 		// random, decide, select, recruit
 		for (TwFunctionArguments arg:type.localArguments()) {
@@ -453,7 +455,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		Collection<TimerNode> queues = (Collection<TimerNode>) get(spec.edges(Direction.IN),
 			selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
 			edgeListStartNodes());
-//		if (type!=SetInitialState)
 			if (!queues.isEmpty() ) {
 				SortedSet<String> queueNames = new TreeSet<>();
 				for (TimerNode q:queues)
