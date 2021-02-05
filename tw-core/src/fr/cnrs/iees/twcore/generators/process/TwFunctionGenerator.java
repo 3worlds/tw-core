@@ -38,7 +38,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -57,10 +56,12 @@ import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 //import org.bouncycastle.util.Strings; something goes wrong with this library when running from jar (security??)
 
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
+import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.TwFunctionAdapter;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
@@ -94,7 +95,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private String generatedClassName = null;
 	private String packageName=null;
 	private String packagePath;
-	private List<String> inBodyCode = null;
+//	private List<String> inBodyCode = null;
 	private SortedSet<String> eventTimerNames = new TreeSet<>();
 	private Set<TreeGraphDataNode> functionFocalCategories = new TreeSet<>();
 	private Set<TreeGraphDataNode> functionOtherCategories = new TreeSet<>();
@@ -110,8 +111,11 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		packagePath = Project.makeFile(LOCALJAVACODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 		// get the focal categories - spec is a FunctionNode
 		TreeGraphDataNode proc = (TreeGraphDataNode) spec.getParent();
-		if (proc.classId().equals(N_FUNCTION.label()))
+		TreeGraphDataNode parentFunc = null;
+		if (proc.classId().equals(N_FUNCTION.label())) {
+			parentFunc = proc;
 			proc = (TreeGraphDataNode) proc.getParent(); // consequence function
+		}
 		if (proc.classId().equals(N_PROCESS.label())) {
 			Collection<TreeGraphDataNode> appliances;
 			appliances = (Collection<TreeGraphDataNode>) get(proc.edges(Direction.OUT), 
@@ -119,6 +123,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				edgeListEndNodes());
 			TreeGraphDataNode first = appliances.iterator().next();
 			if (first.classId().equals(N_RELATIONTYPE.label())) {
+				// relation process
 				appliances = (Collection<TreeGraphDataNode>) get(first.edges(Direction.OUT), 
 					selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), 
 					edgeListEndNodes());
@@ -129,56 +134,60 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 				functionOtherCategories.addAll(appliances);
 			}
 			else {
+				// category process
 				functionFocalCategories.addAll(appliances);
-				if (type.equals(TwFunctionTypes.CreateOtherDecision))
-					// TODO: get the other categories
-					;
-				if (type.equals(TwFunctionTypes.ChangeCategoryDecision))
-					// TODO: get the other categories
-					;
+				// consequence functions
+				if (parentFunc!=null) {
+					TwFunctionTypes ptype = (TwFunctionTypes) parentFunc.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+					if (ptype.equals(TwFunctionTypes.CreateOtherDecision)) {
+						Collection<TreeGraphDataNode> products = (Collection<TreeGraphDataNode>) get(parentFunc.edges(Direction.IN),
+							selectZeroOrMany(hasTheLabel(E_EFFECTEDBY.label())),
+							edgeListStartNodes());
+						if (products.isEmpty()) // no life cycle: offspring categories = parent categories
+							functionOtherCategories.addAll(functionFocalCategories);
+						else // as per life cycle
+							for (TreeGraphDataNode prod:products) 
+								functionOtherCategories.add((Category)get(prod.edges(Direction.OUT),
+									selectOne(hasTheLabel(E_TOCATEGORY.label())),
+									endNode()));
+					}
+					if (ptype.equals(TwFunctionTypes.ChangeCategoryDecision)) {
+						Collection<TreeGraphDataNode> recruits = (Collection<TreeGraphDataNode>) get(parentFunc.edges(Direction.IN),
+							selectOneOrMany(hasTheLabel(E_EFFECTEDBY.label())),
+							edgeListStartNodes());
+						for (TreeGraphDataNode rec:recruits)
+							functionOtherCategories.add((Category)get(rec.edges(Direction.OUT),
+								selectOne(hasTheLabel(E_TOCATEGORY.label())),
+								endNode()));
+					}
+				}
 			}
 		}
-		else {
-			// TODO: init functions, parent is a ElementType or Arena
+		else { // init function: proc is an ElementType, ie has belongsto categories
+			Collection<TreeGraphDataNode> cats = (Collection<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+				edgeListEndNodes());
+			functionFocalCategories.addAll(cats);
 		}
-		
-		
-// OLD CODE - dealing with snippet files.
-		// maybe useful in model generator though
-//		Collection<TreeGraphDataNode> snippets = (Collection<TreeGraphDataNode>) get(spec.edges(Direction.OUT), edgeListEndNodes(),
-//			selectZeroOrMany(hasTheLabel("snippet")));
-//		for (TreeGraphDataNode snip : snippets) {
-//			/*
-//			 * (Ian) dont report error here if file is missing. Actually, this can't work
-//			 * because these files are relative to PROJECT_MODEL_GRAPH dir There is no way
-//			 * to independently know the project root of a File object. Therefore the
-//			 * property editor for File class can never work! For file handling in 3w we
-//			 * actually need a class that allows the class to select a file, if not in
-//			 * fileRoot then import it to file root But then where do these properities come
-//			 * from? Bit of a mess. We need a different class for each project sub dir
-//			 * (graphs,jars files etc??).
-//			 *
-//			 *
-//			 */
-//			if (!snip.properties().hasProperty("file"))
-//				// file: java.io.File("local/models/snippet-main-t3.txt")
-//				continue;
-//			FileType ft = (FileType) snip.properties().getPropertyValue("file");
-//			if (!ft.getFile().exists())
-//				continue;
-//			SnippetLocation insert = (SnippetLocation) snip.properties().getPropertyValue("insertion");
-//			if (insert.equals(SnippetLocation.inClassBody));
-////				inClassCode = snippetCode(snip);
-//			else
-//				inBodyCode = snippetCode(snip);
+		// ad superCategories to focal and other category sets
+		Collection<Category> foccats = new TreeSet<>();
+		for (TreeGraphDataNode cat:functionFocalCategories)
+			foccats.add((Category) cat);
+		functionFocalCategories.clear();
+		functionFocalCategories.addAll(Categorized.getSuperCategories(foccats));
+		Collection<Category> othcats = new TreeSet<>();
+		for (TreeGraphDataNode cat:functionOtherCategories)
+			othcats.add((Category) cat);
+		functionOtherCategories.clear();
+		functionOtherCategories.addAll(Categorized.getSuperCategories(othcats));
+		// snippet code ?
+//		if (inBodyCode==null) {
+//			inBodyCode = new ArrayList<String>();
+//			// TODO: this is useful for debugging only, should be replaced by some
+//			// logging in the final version
+//			String defLine = "System.out.println(getClass().getSimpleName()+\"\tTime\t\"+t)";
+//			inBodyCode.add(defLine);
 //		}
-		if (inBodyCode==null) {
-			inBodyCode = new ArrayList<String>();
-			// TODO: this is useful for debugging only, should be replaced by some
-			// logging in the final version
-			String defLine = "System.out.println(getClass().getSimpleName()+\"\tTime\t\"+t)";
-			inBodyCode.add(defLine);
-		}
 		// name of event timer queues fed by this function
 		Collection<TimerNode> queues = (Collection<TimerNode>) get(spec.edges(Direction.IN),
 			selectZeroOrMany(hasTheLabel(E_FEDBY.label())),
@@ -375,13 +384,15 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 								List<String> innerVarBackCopy = new LinkedList<>();
 								innerVarCopy.put(innerVar,innerVarBackCopy);
 								
-								// HERE: that's where the typecasting must be adapted	
-//								spec; --> function categories
-//								rec.categories; --> data categories
+								// HERE: that's where the typecasting must be adapted
+								// NO - that should be ok here
+								String typeCast = classShortName(rec.klass);
 								if ((rec.name.equals("currentState")) & !(type==TwFunctionTypes.SetInitialState))
-									innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+".nextState()");
+									innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("
+										+ typeCast +")"+arg.toString()+".nextState()");
 								else
-									innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("+classShortName(rec.klass)+")"+arg.toString()+"."+rec.name+"()");
+									innerVarInit.get(innerVar).add(classShortName(rec.klass)+" "+innerVar+" = ("
+										+ typeCast +")"+arg.toString()+"."+rec.name+"()");
 						}
 				}
 				// special case for automatic variables (age, birthdate, population size etc)
@@ -395,8 +406,22 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					// e.g. ((Vars)focal.currentState()).y()),
 					
 					// HERE: that's where the typecasting must be adapted
-					
-					callArg = "((" + classShortName(rec.klass)+ ")"+arg.toString()+"."+rec.name+"())."+field.name+"()";
+//					functionFocalCategories;
+//					spec.; --> function categories
+//					rec.categories; --> data categories
+					String typeCast = classShortName(rec.klass);
+//					if (arg==focal) {
+//						for (TreeGraphDataNode cat:functionFocalCategories) {
+//							Record recc = (Record) get(cat.edges(Direction.OUT), 
+//								selectZeroOrOne(hasTheLabel()), 
+//								endNode());
+////							field.name;
+//						}
+//					}
+//					else if (arg==other) {
+//						
+//					}
+					callArg = "((" + typeCast + ")"+arg.toString()+"."+rec.name+"())."+field.name+"()";
 					if (callArg!=null)
 						callStatement += indent+indent+indent+ callArg + ",\n";
 					// for returned values, generate inner class and proper calls
