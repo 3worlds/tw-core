@@ -28,13 +28,22 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.structure;
 
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.Record;
 
 /**
  * Class matching the "category" node label in the 3Worlds configuration tree.
@@ -93,6 +102,18 @@ public class Category extends InitialisableNode implements Comparable<Category> 
 	@Override
 	public int compareTo(Category other) {
 		return this.id().compareTo(other.id());
+	}
+	
+	// SLOW! only for init time
+	public Collection<String> fields(String datagroup) {
+		List<String> list = new LinkedList<>();
+		Record rec = (Record) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(datagroup)),
+			endNode());
+		if (rec!=null)
+			for (TreeNode tn:rec.getChildren())
+				list.add(tn.id());
+		return Collections.unmodifiableCollection(list);
 	}
 
 }
