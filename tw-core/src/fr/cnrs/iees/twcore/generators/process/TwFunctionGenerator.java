@@ -149,18 +149,18 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 							functionOtherCategories.addAll(functionFocalCategories);
 						else // as per life cycle
 							for (TreeGraphDataNode prod:products) 
-								functionOtherCategories.add((Category)get(prod.edges(Direction.OUT),
-									selectOne(hasTheLabel(E_TOCATEGORY.label())),
-									endNode()));
+								functionOtherCategories.addAll((Collection<Category>)get(prod.edges(Direction.OUT),
+									selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+									edgeListEndNodes()));
 					}
 					if (ptype.equals(TwFunctionTypes.ChangeCategoryDecision)) {
 						Collection<TreeGraphDataNode> recruits = (Collection<TreeGraphDataNode>) get(parentFunc.edges(Direction.IN),
 							selectOneOrMany(hasTheLabel(E_EFFECTEDBY.label())),
 							edgeListStartNodes());
 						for (TreeGraphDataNode rec:recruits)
-							functionOtherCategories.add((Category)get(rec.edges(Direction.OUT),
-								selectOne(hasTheLabel(E_TOCATEGORY.label())),
-								endNode()));
+							functionOtherCategories.addAll((Collection<Category>)get(rec.edges(Direction.OUT),
+								selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+								edgeListEndNodes()));
 					}
 				}
 			}

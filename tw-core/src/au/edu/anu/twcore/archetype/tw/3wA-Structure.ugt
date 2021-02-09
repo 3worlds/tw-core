@@ -272,16 +272,15 @@ hasNode recruitSpec
 	hasEdge recruitProcessSpec
 		isOfClass = String("effectedBy")
 		toNode = String("process:/function:")
-//		toNode = String("function:")
 		multiplicity = IntegerRange("1..1")
 	hasEdge recruitToCategorySpec
 		isOfClass = String("toCategory")
 		toNode = String("category:")
-		multiplicity = IntegerRange("1..1")
+		multiplicity = IntegerRange("1..*")
 	hasEdge recruitFromCategorySpec
 		isOfClass = String("fromCategory")
 		toNode = String("category:")
-		multiplicity = IntegerRange("1..1")
+		multiplicity = IntegerRange("1..*")
 	mustSatisfyQuery recruitCategoryInLifeCycleSet
 		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
 	mustSatisfyQuery validRecruitFunction
@@ -298,16 +297,15 @@ hasNode produceSpec
 	hasEdge productionProcessSpec
 		isOfClass = String("effectedBy")
 		toNode = String("process:/function:")
-//		toNode = String("function:")
 		multiplicity = IntegerRange("1..1")
 	hasEdge produceToCategorySpec
 		isOfClass = String("toCategory")
 		toNode = String("category:")
-		multiplicity = IntegerRange("1..1")
+		multiplicity = IntegerRange("1..*")
 	hasEdge produceFromCategorySpec
 		isOfClass = String("fromCategory")
 		toNode = String("category:")
-		multiplicity = IntegerRange("1..1")
+		multiplicity = IntegerRange("1..*")
 	mustSatisfyQuery produceCategoryInLifeCycleSet
 		className = String("au.edu.anu.twcore.archetype.tw.IsInLifeCycleCategorySetQuery")
 	mustSatisfyQuery validProduceFunction

@@ -169,10 +169,19 @@ public class FunctionNode
 					selectOneOrMany(hasTheLabel(E_EFFECTEDBY.label())),
 					edgeListStartNodes());
 				Collection<Category> toCats = new HashSet<>();
-				for (Recruit rec:recruits)
-					toCats.add((Category)get(rec.edges(Direction.OUT),
-						selectOne(hasTheLabel(E_TOCATEGORY.label())),
-						endNode()));
+				for (Recruit rec:recruits) {
+					Collection<Category> recCats = (Collection<Category>) get(rec.edges(Direction.OUT),
+						selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+						edgeListEndNodes());
+					Collection<Category> lcCats = (Collection<Category>) get(rec.getParent(),
+						outEdges(), // out edges of the LifeCycleType node
+						selectOne(hasTheLabel(E_APPLIESTO.label())),
+						endNode(),  // the CategorySet of the life cycle
+						children()); // its children = the categories of the life cycle
+					for (Category rc:recCats)
+						if (lcCats.contains(rc))
+							toCats.add(rc);
+				}
 				((ChangeCategoryDecisionFunction)result).setTransitions(toCats);
 			}
 		} catch (Exception e) {

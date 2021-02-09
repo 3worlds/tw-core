@@ -37,6 +37,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -49,6 +50,7 @@ import java.util.logging.Logger;
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -133,11 +135,12 @@ public abstract class HierarchicalDataGenerator
 		Set<String> locatedMethods = null;
 		if (!coordinateFields.isEmpty()) {
 			locatedMethods = new HashSet<>();
-			// TODO: this is brittle - consider getting those names using reflection from the Located interface
-			locatedMethods.add("coordinates");
-			locatedMethods.add("coordinate");
-			locatedMethods.add("asPoint");
-			locatedMethods.add("setCoordinates");
+			for (Method m:LocationData.class.getMethods())
+				locatedMethods.add(m.getName());
+//			locatedMethods.add("coordinates");
+//			locatedMethods.add("coordinate");
+//			locatedMethods.add("asPoint");
+//			locatedMethods.add("setCoordinates");
 		}
 		ClassGenerator cg = getRecordClassGenerator(cn,comment,locatedMethods);
 		// generate imports and inherited methods

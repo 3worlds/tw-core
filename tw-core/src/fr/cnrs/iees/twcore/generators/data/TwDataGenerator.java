@@ -34,9 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
-import au.edu.anu.rscs.aot.collections.tables.Table;
-import au.edu.anu.rscs.aot.collections.tables.TableAdapter;
+import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -58,8 +56,15 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 public class TwDataGenerator
 	extends HierarchicalDataGenerator {
 
-	private static final String[] predefinedTableTypes = {"BooleanTable", "ByteTable", "CharTable",
-		"DoubleTable", "FloatTable", "IntTable", "LongTable", "ShortTable", "StringTable"};
+	private static final String[] predefinedTableTypes = {BooleanTable.class.getSimpleName(), 
+			ByteTable.class.getSimpleName(), 
+			CharTable.class.getSimpleName(),
+			DoubleTable.class.getSimpleName(), 
+			FloatTable.class.getSimpleName(), 
+			IntTable.class.getSimpleName(), 
+			LongTable.class.getSimpleName(), 
+			ShortTable.class.getSimpleName(), 
+			StringTable.class.getSimpleName()};
 	
 	private Collection<Category> categories = null;
 	private String dataGroup;

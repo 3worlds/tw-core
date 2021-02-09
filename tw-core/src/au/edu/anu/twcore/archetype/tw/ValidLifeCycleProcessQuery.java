@@ -55,6 +55,7 @@ import java.util.List;
  */
 // checked ok 24/9/2019
 // refactored 11/12/2020 to point to functions rather than processes
+// refactored 9/2/2021 to allow for multiple from or to categories
 public class ValidLifeCycleProcessQuery extends Query {
 
 	private String message = null;
@@ -78,35 +79,28 @@ public class ValidLifeCycleProcessQuery extends Query {
 			s = "recruit";
 		}
 		TreeGraphNode pnode = (TreeGraphNode) input;
-//		ProcessNode proc = (ProcessNode) get(pnode.edges(Direction.OUT),
-//			selectOne(hasTheLabel(E_EFFECTEDBY.label())),
-//			endNode());
 		FunctionNode func = (FunctionNode) get(pnode.edges(Direction.OUT),
 			selectOne(hasTheLabel(E_EFFECTEDBY.label())),
 			endNode());
 		ProcessNode proc = (ProcessNode) func.getParent();
-		// 1 make sure the process categories contain the produce node one
+		// 1 make sure the process categories contain the produce node ones
 		List<Node> apps = (List<Node>) get(proc.edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
 			edgeListEndNodes());
-		Category fromprod = (Category) get(pnode.edges(Direction.OUT),
-			selectOne(hasTheLabel(E_FROMCATEGORY.label())),
-			endNode());
-		if (apps.contains(fromprod))
+		List<Category> fromprod = (List<Category>) get(pnode.edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+			edgeListEndNodes());
+		if (apps.containsAll(fromprod))
 			satisfied = true;
-		else
-			message = s+ " node fromCategory '"+fromprod.id()+"' not found in process '"+proc.id()+"'";
+		else {
+			String cats = " ";
+			for (Category c:fromprod)
+				cats += c.id()+" ";
+			message = s+ " node fromCategories {"+cats+"} not all found in process '"+proc.id()+"'";
+		}
 		// 2 make sure the process has a function of the proper type
 		if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key()).equals(requiredFunc))
 			satisfied &= true;
-//		List<FunctionNode> funcs = (List<FunctionNode>) get(proc.getChildren(),
-//			selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
-//		for (FunctionNode func:funcs)
-//			if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key())
-//				.equals(requiredFunc)) {
-//				satisfied &= true;
-//				break;
-//		}
 		if ((message==null) && (!satisfied)) // means we didnt fall into the previous trap
 			message = "missing '"+requiredFunc+"' function type in process '"+proc.id()+"'";
 		if (message==null)

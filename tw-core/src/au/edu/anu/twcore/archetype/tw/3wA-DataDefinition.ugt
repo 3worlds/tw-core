@@ -46,8 +46,9 @@ hasNode recordRootSpec
 	mustSatisfyQuery recordRootNodeAtLeastOneChildLabelOfQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
 		childLabel = StringTable(([2]"field", "table"))
-//	mustSatisfyQuery  recordRootNodeNameWithUppercaseQuery
-//		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
+	mustSatisfyQuery recordRootNodeUsedByAtMostOneCategoryQuery
+		className = String("au.edu.anu.twcore.archetype.tw.RecordUsedByAtMostOneCategoryQuery")
+		childLabel = StringTable(([4]"autoVar", "drivers","decorators","constants"))		
 
 hasNode recordTableSpec
 	isOfClass = String("record")

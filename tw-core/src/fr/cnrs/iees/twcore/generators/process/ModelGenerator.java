@@ -691,10 +691,10 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						selectZeroOrMany(hasTheLabel(E_EFFECTEDBY.label())),
 						edgeListStartNodes());
 					for (Recruit rec:recs) {
-						Category targetCat = (Category) get(rec.edges(Direction.OUT),
-							selectOne(hasTheLabel(E_TOCATEGORY.label())),
-							endNode());
-						cats.add(targetCat);
+						cats.addAll((Collection<Category>) get(rec.edges(Direction.OUT),
+							selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+							edgeListEndNodes()));
+//						cats.add(targetCat);
 						cats.addAll(Categorized.getSuperCategories(cats));
 						//method to get other categories: nest the stage categorySet within
 						// another category whose variables are all taken here
@@ -718,10 +718,10 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						selectZeroOrOne(hasTheLabel(E_EFFECTEDBY.label())),
 						startNode());
 					if (prod!=null) {
-						Category targetCat = (Category) get(prod.edges(Direction.OUT),
-							selectOne(hasTheLabel(E_TOCATEGORY.label())),
-							endNode());
-						cats.add(targetCat);
+						cats.addAll((Collection<Category>) get(prod.edges(Direction.OUT),
+							selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())),
+							edgeListEndNodes()));
+//						cats.add(targetCat);
 						cats.addAll(Categorized.getSuperCategories(cats));
 						//method to get other categories: nest the stage categorySet within
 						// another category whose variables are all taken here

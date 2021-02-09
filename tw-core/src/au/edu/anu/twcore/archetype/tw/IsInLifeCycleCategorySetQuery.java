@@ -49,9 +49,10 @@ import java.util.List;
  *
  */
 // tested, works ok. 11/9/2019
+// refactored and tested 9/2/2021
 public class IsInLifeCycleCategorySetQuery extends Query {
 
-	private String failedCat = "";
+	private String message = "";
 
 	public IsInLifeCycleCategorySetQuery() {
 		super();
@@ -65,31 +66,38 @@ public class IsInLifeCycleCategorySetQuery extends Query {
 		CategorySet catset =  (CategorySet) get(parent.edges(Direction.OUT),
 			selectOne(hasTheLabel(E_APPLIESTO.label())),
 			endNode());
-		List<Category> cats = (List<Category>) get(catset.getChildren(),
+		List<Category> lifeCycleCats = (List<Category>) get(catset.getChildren(),
 			selectOneOrMany(hasTheLabel(N_CATEGORY.label())));
-		Category toCat = (Category) get(node.edges(Direction.OUT),
-			selectOne(hasTheLabel(E_TOCATEGORY.label())),
-			endNode());
-		Category fromCat = (Category) get(node.edges(Direction.OUT),
-			selectOne(hasTheLabel(E_FROMCATEGORY.label())),
-			endNode());
-		satisfied = cats.contains(fromCat);
-		if (!satisfied)
-			failedCat = fromCat.id();
-		else {
-			satisfied &= cats.contains(toCat);
-			if (!satisfied)
-				if (failedCat.isEmpty())
-					failedCat = toCat.id();
-				else
-					failedCat += ","+toCat.id();
-		}
+		List<Category> toCats = (List<Category>) get(node.edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_TOCATEGORY.label())),
+			edgeListEndNodes());
+		List<Category> fromCats = (List<Category>) get(node.edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+			edgeListEndNodes());
+		int nLCCats = 0;
+		for (Category c:fromCats)
+			if (lifeCycleCats.contains(c))
+				nLCCats++;
+		satisfied = (nLCCats==1);
+		if (nLCCats==0)
+			message = " Missing life cycle category for the 'from' link.";
+		else if (nLCCats>1)
+			message = " Too many life cycle categories for the 'from' link.";
+		nLCCats = 0;
+		for (Category c:toCats)
+			if (lifeCycleCats.contains(c))
+				nLCCats++;
+		if (nLCCats==0)
+			message = " Missing life cycle category for the 'to' link.";
+		else if (nLCCats>1)
+			message = " Too many life cycle categories for the 'to' link.";
+		satisfied &= (nLCCats==1);
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "[" + stateString() + "'"+ failedCat +"' must be in the life cycle category set.]";
+		return "[" + stateString() +":"+ message + "]";
 	}
 
 }
