@@ -18,6 +18,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import au.edu.anu.rscs.aot.collections.tables.IntTable;
+import au.edu.anu.rscs.aot.collections.tables.Table;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
@@ -60,11 +63,45 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			// the usual setter
 			m = new MethodGenerator("public",true,"void",fname,ftype);
 			cg.setMethod("set"+fname, m);
-			log.info("    generating file "+className+".java ...");
-			File file = new File(packagePath+File.separator+className+".java");
-			writeFile(cg,file,className);
-			log.info("  ...done.");
 		}
+		Collection<TreeGraphDataNode> tables = (Collection<TreeGraphDataNode>) get(recSpec.getChildren(), 
+			selectZeroOrMany(hasTheLabel(N_TABLE.label())));
+		for (TreeGraphDataNode table:tables) {
+			String tname = table.id();
+			String ttype = null;
+			String tpack = null;
+			if (table.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
+				DataElementType det = (DataElementType) table.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
+				String t = det.name();
+				if (t.equals("Integer")) {
+					ttype = IntTable.class.getSimpleName();
+					tpack = IntTable.class.getCanonicalName();
+				}
+				else {
+					ttype = t+"Table";
+					tpack = Table.class.getPackageName()+"."+ttype;
+				}
+			}
+			else {
+//				TreeGraphDataNode childRec = (TreeGraphDataNode) get(table,
+//					children(),
+//					selectOne(hasTheLabel(N_RECORD.label())));
+//				ttype = validJavaName(initialUpperCase(wordUpperCaseName(childRec.id())));
+				// TODO: improve this
+				ttype = Table.class.getSimpleName();
+				tpack = Table.class.getCanonicalName();
+			}
+			// specific getter
+			MethodGenerator m = new MethodGenerator("public",true,ttype,tname);
+			cg.setMethod("get"+tname, m);
+			// no setter
+			// import for the table class
+			cg.setImport(tpack);
+		}
+		log.info("    generating file "+className+".java ...");
+		File file = new File(packagePath+File.separator+className+".java");
+		writeFile(cg,file,className);
+		log.info("  ...done.");
 	}
 	
 	@Override
@@ -73,6 +110,10 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 		String classComment = "";
 		String className = "";
 		// prepare Category node to receive names for generated classes
+		
+		// FLAW IN HERE: if the saved graph contains wrong values from previous runs, they
+		// are not reset and may yield unexpected errors.
+		
 		ExtendablePropertyList catProps = (ExtendablePropertyList) spec.properties();
 		if (!catProps.hasProperty(P_DRIVERCLASS.key())) {
 			catProps.addProperty(P_DRIVERCLASS.key(),null);
@@ -86,7 +127,6 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			catProps.addProperty(P_CONSTANTCLASS.key(),null);
 			result = true;
 		}
-//		GraphState.setChanged();
 		TreeGraphDataNode recSpec = (TreeGraphDataNode) get(spec.edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
 			endNode());
@@ -126,8 +166,10 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 				result = true;
 			}
 		}
-		
-		// TODO: complete code (ignore tables for the moment)
+
+// DEBUG		
+System.out.println(result);
+//
 		return result;
 	}
 
