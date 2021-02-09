@@ -178,6 +178,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		className = validJavaName(wordUpperCaseName(initialUpperCase(root3w.id())));
 		modelName = modelDir;
 		packageName = ProjectPaths.CODE.replace(File.separator, ".") + "." + modelDir;
+		generatedClassName = packageName + "." + className;
 		// package comment - standard
 		packageComment = comment(general, license, separatingLine);
 		// class comment - with authorship etc.
@@ -187,6 +188,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 
 		packagePath = Project.makeFile(LOCALJAVACODE, validJavaName(wordUpperCaseName(modelDir))).getAbsolutePath();
 		imports.add("static java.lang.Math.*");
+		imports.add(packageName+"."+GENERATED+".*");
 		// get all nodes susceptible to require generated data:
 		// system/arena, lifecycle, group, component, space
 		// NB these nodes may also have setInitialState functions
@@ -1306,7 +1308,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		ctGeneratedCodeDir.mkdirs();
 		File file = Project.makeFile(LOCALJAVACODE, modelName, className + ".java");
 		writeFile(this, file, className);
-		generatedClassName = packageName + "." + className;
+//		generatedClassName = packageName + "." + className;
 		log.info("  done.");
 		return true;
 	}

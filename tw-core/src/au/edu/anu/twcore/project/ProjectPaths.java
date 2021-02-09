@@ -68,5 +68,8 @@ public interface ProjectPaths {
 	 */
 	public static String RUNTIME /*             */ = LOCAL + File.separator + "runTime";
 
-	public static String LOGS /*                  */=LOCAL + File.separator + "Logs";
+	public static String LOGS /*                  */=LOCAL + File.separator + "logs";
+	
+	// for generated 'glue' code, ie the one the user doesnt want to know about
+	public static String GENERATED = "generated";
 }

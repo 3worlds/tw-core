@@ -35,7 +35,7 @@ import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.ens.biologie.generic.JavaGenerator;
-import fr.ens.biologie.generic.utils.NameUtils;
+import static fr.ens.biologie.generic.utils.NameUtils.*;
 
 
 /**
@@ -65,6 +65,20 @@ import fr.ens.biologie.generic.utils.NameUtils;
  * 
  * I THINK THE ABOVE IS ALL CRAP NOW -IDD
  * 
+ * YES! Current setting (9/2/2021):
+ * 
+ * .3w
+ * --project_[name]_[uid] 
+ * ----local					ProjectPaths.LOCAL
+ * ------java					ProjectPaths.LOCALJAVA
+ * --------code					ProjectPaths.LOCALJAVACODE
+ * ----------[model name]
+ * ------------generated
+ * --------lib					ProjectPaths.LOCALJAVALIB
+ * --------res					ProjectPaths.LOCALJAVARES
+ * ------runTime				ProjectPaths.RUNTIME
+ * ------logs					ProjectPaths.LOGS
+ * 
  * <p>3Worlds: component threeWorlds</p>
  * @author Jacques Gignoux - 23 nov. 2016
  *
@@ -80,15 +94,20 @@ public abstract class TwCodeGenerator
 	}
 	
 	protected String makeModelJavaName(String modelName) {
-		return NameUtils.wordUpperCaseName(modelName);
+		return validJavaName(wordUpperCaseName(modelName));
 	}
 	
 	protected File getModelCodeDir(String modelRoot) {
-		File result = Project.makeFile(ProjectPaths.LOCALJAVACODE,makeModelJavaName(modelRoot));
+		File result = Project.makeFile(LOCALJAVACODE,makeModelJavaName(modelRoot));
 		return result;
 	}
 
+	protected File getModelGlueCodeDir(String modelRoot) {
+		File result = Project.makeFile(LOCALJAVACODE,makeModelJavaName(modelRoot),GENERATED);
+		return result;
+	}
+	
 	protected File getModelDataDir(String modelRoot) {
-		return Project.makeFile(ProjectPaths.LOCALJAVARES,makeModelJavaName(modelRoot));
+		return Project.makeFile(LOCALJAVARES,makeModelJavaName(modelRoot));
 	}
 }

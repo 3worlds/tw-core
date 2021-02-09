@@ -97,6 +97,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	private String generatedClassName = null;
 	private String packageName=null;
 	private String packagePath;
+	private String modelCodeClassName = null;
 //	private List<String> inBodyCode = null;
 	private SortedSet<String> eventTimerNames = new TreeSet<>();
 	private Set<TreeGraphDataNode> functionFocalCategories = new TreeSet<>();
@@ -110,7 +111,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		// type = (String)spec.getPropertyValue("type");
 		type = (TwFunctionTypes) spec.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 		model = modelName;
-		packagePath = Project.makeFile(LOCALJAVACODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+//		packagePath = Project.makeFile(LOCALJAVACODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
+		packagePath = getModelGlueCodeDir(modelName).getAbsolutePath();
 		// get the focal categories - spec is a FunctionNode
 		TreeGraphDataNode proc = (TreeGraphDataNode) spec.getParent();
 		TreeGraphDataNode parentFunc = null;
@@ -202,10 +204,12 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	@Override
 	public boolean generateCode() {
 		log.info("    generating file " + name + ".java ...");
-		File ctGeneratedCodeDir = getModelCodeDir(model);
+//		File ctGeneratedCodeDir = getModelCodeDir(model);
+		File ctGeneratedCodeDir = getModelGlueCodeDir(model);
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
-		packageName = ProjectPaths.CODE.replace(File.separator,".")+"."+ctmodel;
+//		packageName = ProjectPaths.CODE.replace(File.separator,".")+"."+ctmodel;
+		packageName = ProjectPaths.CODE.replace(File.separator,".")+"."+ctmodel+"."+ProjectPaths.GENERATED;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(false, model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, false, null, ancestorClassName);
@@ -233,6 +237,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 			generator.setImport(s);
 		for (String s:dataClassesToImport)
 			generator.setImport(s);
+		generator.setImport(modelCodeClassName);
 
 		// inner classes for returned values
 		List<String> innerClasses = new LinkedList<>();
@@ -295,7 +300,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //					mg.setStatement(s);
 		}
 //		generator.setRawMethodCode(inClassCode);
-		File file = Project.makeFile(LOCALJAVACODE,ctmodel, name + ".java");
+		File file = Project.makeFile(LOCALJAVACODE,ctmodel,GENERATED, name + ".java");
 		writeFile(generator, file, name);
 		generatedClassName = packageName + "." + name;
 		log.info("  done.");
@@ -341,6 +346,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		recToInnerVar.put("decorators","Dec");
 		recToInnerVar.put("currentState","Drv");
 		String classToCall = gen.className();
+		modelCodeClassName = gen.generatedClassName();
 		String indent = "\t";
 		callStatement = classToCall+"."+
 			name.substring(0,1).toLowerCase()+
@@ -440,7 +446,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 							dataClassesToImport.add(field.fullType);
 						// workout inner class field declarations
 						// e.g.: double y;
-						innerClassDecl.get(innerVar).add(indent+indent+field.type+" "+field.name+";");
+						innerClassDecl.get(innerVar).add(indent+indent+"public "+field.type+" "+field.name+";");
 						// workout local variable initialisation from SystemComponent data structures
 						// e.g.: _focalDec.y = ((DecVar)focalDec).y();
 						innerVarInit.get(innerVar).add("_"+innerVar+"."+field.name
