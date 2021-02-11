@@ -16,6 +16,8 @@ import static fr.ens.biologie.generic.utils.NameUtils.*;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.IntTable;
@@ -34,9 +36,16 @@ import static au.edu.anu.twcore.DefaultStrings.*;
 public class TwDataInterfaceGenerator extends DataClassGenerator {
 	
 	private static Logger log = Logging.getLogger(TwDataInterfaceGenerator.class);
-	private static String constants =  "Cnt";
-	private static String decorators = "Dec";
-	private static String drivers =  "Drv";
+	private static Map<String,String> edgeLabels = new HashMap<>();
+	private static Map<String,String> prefixes = new HashMap<>();
+	static {
+		edgeLabels.put(P_DRIVERCLASS.key(), E_DRIVERS.label());
+		edgeLabels.put(P_DECORATORCLASS.key(), E_DECORATORS.label());
+		edgeLabels.put(P_CONSTANTCLASS.key(), E_CONSTANTS.label());
+		prefixes.put(P_DRIVERCLASS.key(), "Drv");
+		prefixes.put(P_DECORATORCLASS.key(), "Dec");
+		prefixes.put(P_CONSTANTCLASS.key(), "Cnt");
+	}
 
 	public TwDataInterfaceGenerator(String modelName,TreeGraphDataNode spec) {
 		super(modelName,spec);
@@ -104,73 +113,44 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 		log.info("  ...done.");
 	}
 	
+	// helper method for below
+	private boolean setDataClassName(ExtendablePropertyList catProps, String dataGroup) {
+		boolean changed = false;
+		if (!catProps.hasProperty(dataGroup)) {
+			catProps.addProperty(dataGroup,null);
+			changed = true;
+		}
+		String oldClassName = (String) catProps.getPropertyValue(dataGroup);
+		String newClassName = null;
+		TreeGraphDataNode recSpec = (TreeGraphDataNode) get(spec.edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(edgeLabels.get(dataGroup))),
+			endNode());
+		if (recSpec!=null) {
+			newClassName = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) 
+				+ defaultPrefix + prefixes.get(dataGroup);
+			String classComment = "Data interface for "+edgeLabels.get(dataGroup)+" of category "+spec.id();
+			generateInterface(recSpec,newClassName,classComment);
+		}
+		if (oldClassName!=null) {
+			if (!oldClassName.equals(newClassName)) {
+				catProps.setProperty(dataGroup, newClassName);
+				changed = true;
+			}
+		}
+		else if (newClassName!=null)
+			if (!newClassName.equals(oldClassName)) {
+				catProps.setProperty(dataGroup, newClassName);
+				changed=true;
+			}
+		return changed;
+	}
+	
 	@Override
 	public boolean generateCode() {
-		boolean result = false;
-		String classComment = "";
-		String className = "";
-		// prepare Category node to receive names for generated classes
-		
-		// FLAW IN HERE: if the saved graph contains wrong values from previous runs, they
-		// are not reset and may yield unexpected errors.
-		
 		ExtendablePropertyList catProps = (ExtendablePropertyList) spec.properties();
-		if (!catProps.hasProperty(P_DRIVERCLASS.key())) {
-			catProps.addProperty(P_DRIVERCLASS.key(),null);
-			result = true;
-		}
-		if (!catProps.hasProperty(P_DECORATORCLASS.key())) {
-			catProps.addProperty(P_DECORATORCLASS.key(),null);
-			result = true;
-		}
-		if (!catProps.hasProperty(P_CONSTANTCLASS.key())) {
-			catProps.addProperty(P_CONSTANTCLASS.key(),null);
-			result = true;
-		}
-		TreeGraphDataNode recSpec = (TreeGraphDataNode) get(spec.edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
-			endNode());
-		if (recSpec!=null) {
-			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) 
-				+ defaultPrefix + drivers;
-			classComment = "Data interface for "+E_DRIVERS.label()+" of category "+spec.id();
-			generateInterface(recSpec,className,classComment);
-			if (!className.equals(catProps.getPropertyValue(P_DRIVERCLASS.key()))) {
-				catProps.setProperty(P_DRIVERCLASS.key(),className);
-				result = true;
-			}
-		}
-		recSpec = (TreeGraphDataNode) get(spec.edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
-			endNode());
-		if (recSpec!=null) {
-			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) 
-				+ defaultPrefix + decorators;
-			classComment = "Data interface for "+E_DECORATORS.label()+" of category "+spec.id();
-			generateInterface(recSpec,className,classComment);
-			if (!className.equals(catProps.getPropertyValue(P_DECORATORCLASS.key()))) {
-				catProps.setProperty(P_DECORATORCLASS.key(),className);
-				result = true;
-			}
-		}
-		recSpec = (TreeGraphDataNode) get(spec.edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())),
-			endNode());
-		if (recSpec!=null) {
-			className = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) 
-				+ defaultPrefix + constants;
-			classComment = "Data interface for "+E_CONSTANTS.label()+" of category "+spec.id();
-			generateInterface(recSpec,className,classComment);
-			if (!className.equals(catProps.getPropertyValue(P_CONSTANTCLASS.key()))) {
-				catProps.setProperty(P_CONSTANTCLASS.key(),className);
-				result = true;
-			}
-		}
-
-// DEBUG		
-System.out.println(result);
-//
-		return result;
+		return setDataClassName(catProps,P_DRIVERCLASS.key()) ||
+			setDataClassName(catProps,P_DECORATORCLASS.key()) ||
+			setDataClassName(catProps,P_CONSTANTCLASS.key());
 	}
 
 }
