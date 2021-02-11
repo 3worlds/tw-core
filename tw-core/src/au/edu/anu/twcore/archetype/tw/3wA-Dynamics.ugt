@@ -107,6 +107,8 @@ hasNode processSpec
 		nodeLabel2 = String("relationType")
 	mustSatisfyQuery lifespanFunctionCompatibility
 		className = String("au.edu.anu.twcore.archetype.tw.LifespanFunctionCompatibilityQuery")
+	mustSatisfyQuery CategoryConsistencySpec
+		className = String("au.edu.anu.twcore.archetype.tw.CategoryConsistencyQuery")
 
 	hasEdge dependsOnSpec
 		isOfClass = String("dependsOn")
@@ -120,6 +122,7 @@ hasNode processSpec
 			hasName = String("searchRadius")
 			type = String("Double")
 			multiplicity = IntegerRange("1..1")
+			// TODO: relax this constraint - radius can be null but then a mx number of neighbours must be given
 			mustSatisfyQuery searchRadiusMustBeNonNullConstraint
 				className = String("au.edu.anu.twcore.archetype.tw.IsInIntervalQuery")
 				range = Interval(]0.0,+Inf[)
