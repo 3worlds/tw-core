@@ -46,7 +46,6 @@ public class CategoryConsistencyQuery extends Query {
 	public Query process(Object input) { // input is a ProcessNode
 		defaultProcess(input);
 		ProcessNode proc = (ProcessNode) input;
-		// CAUTION! relationProcess!
 		List<TreeGraphDataNode> ltgn =  (List<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
 			edgeListEndNodes());
