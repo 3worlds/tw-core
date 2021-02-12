@@ -331,7 +331,7 @@ hasNode lifeCycleSpec
 // initialisation functions
 hasNode initFunctionSpec
 	isOfClass = String("initFunction")
-	hasParent = StringTable(([2]"system:","componentType")) //also add lifecycle, group etc. later
+	hasParent = StringTable(([4]"system:","componentType:","groupType:","lifeCycleType:"))
 	multiplicity = IntegerRange("0..1")
 	mustSatisfyQuery initFunctionNameWithUppercaseQuery
 		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")

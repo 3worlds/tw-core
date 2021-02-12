@@ -49,11 +49,11 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 		super(id, props, gfactory);
 	}
 
-	// not very clean, but that's where the info is
-	@Override
-	public SetInitialStateFunction initialiser() {
-		return ((ArenaFactory) membership()).setinit;
-	}
+//	// not very clean, but that's where the info is
+//	@Override
+//	public SetInitialStateFunction initialiser() {
+//		return ((ArenaFactory) membership()).setinit;
+//	}
 
 	// Particular to arena as it is a singleton instance
 	@Override

@@ -177,8 +177,8 @@ public class CodeGenerator {
 			// initialiser function code here
 			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(systemNode.subTree(),
 				selectZeroOrMany(orQuery(
-					hasTheLabel(N_LIFECYCLE.label()),
-					hasTheLabel(N_GROUP.label()),
+					hasTheLabel(N_LIFECYCLETYPE.label()),
+					hasTheLabel(N_GROUPTYPE.label()),
 //					hasTheLabel(N_SPACE.label()),
 					hasTheLabel(N_COMPONENTTYPE.label()) )));
 			if (initables == null)
