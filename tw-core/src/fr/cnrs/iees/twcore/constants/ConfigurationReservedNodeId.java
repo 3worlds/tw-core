@@ -38,6 +38,8 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
  * @date 20 May 2020
  */
 public enum ConfigurationReservedNodeId {
+	parentTo("*parentTo*"),//
+	returnsTo("*returnsTo*"),//
 	categories("*categories*"), //
 	AVEphemeral("AVEphemeral"), //
 	AVPopulation("AVPopulation"), //
