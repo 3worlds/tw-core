@@ -52,7 +52,7 @@ hasNode categorySpec
 hasNode componentTypeSpec
 	isOfClass = String("componentType")
 	hasParent = StringTable(([2]"structure:","groupType:"))
-	multiplicity = IntegerRange("0..*")
+	multiplicity = IntegerRange("0..1")
 	//
 	// NB this property is not required at the moment
 	//
