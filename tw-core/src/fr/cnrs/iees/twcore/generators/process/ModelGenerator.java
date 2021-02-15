@@ -548,6 +548,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
 			Set<Category> allGroupCats = new HashSet<>();
 			// now find which group is above the current component type....
+			// NB: now that there is a 1-1 relation betw. group and ComponentType, this should be simplified
 			if (grps!=null)
 				for (GroupType gt:grps) {
 					// collect all categories of all groupTypes for later intersection
@@ -570,13 +571,17 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			}
 			// if there is more than one GroupType, only categories common to all of them
 			// are used in the generated code.
-			for (GroupType gt:selectedGroups) {
-				Set<Category> gtCats = new HashSet<>();
-				gtCats.addAll((Collection<Category>) get(gt.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
-					edgeListEndNodes()));
-				allGroupCats = Sets.intersection(gtCats,allGroupCats);
+			if (!selectedGroups.isEmpty()) {
+				for (GroupType gt:selectedGroups) {
+					Set<Category> gtCats = new HashSet<>();
+					gtCats.addAll((Collection<Category>) get(gt.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+						edgeListEndNodes()));
+					allGroupCats = Sets.intersection(gtCats,allGroupCats);
+				}
 			}
+			else
+				allGroupCats.clear();
 			cats.addAll(allGroupCats);
 		}
 		return cats;
