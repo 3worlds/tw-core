@@ -54,13 +54,18 @@ public class LifeCycleComponent extends HierarchicalComponent {
 
 
 	public GroupComponent produceGroup (CreateOtherDecisionFunction function) {
-//		System.out.println(groups.toString());
 		String toCat = elementFactory().toCategories(function);
-		return groups.get(toCat);
+		for (String gc:groups.keySet())
+			if (toCat.contains(gc))
+				return groups.get(gc);
+		return null;
 	}
 
 	public GroupComponent recruitGroup(String toCat) {
-		return groups.get(toCat);
+		for (String gc:groups.keySet())
+			if (toCat.contains(gc))
+				return groups.get(gc);
+		return null;
 	}
 
 
