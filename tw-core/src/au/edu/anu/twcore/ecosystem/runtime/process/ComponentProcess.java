@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import au.edu.anu.twcore.data.runtime.Metadata;
+import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -153,6 +154,16 @@ public class ComponentProcess
 		}
 		//-----------------------------------------------------------------------------------
 		// change state of this SystemComponent - easy
+//		// if there are no changeState functions, then just copy currentState to nextState
+//		if (CSfunctions.isEmpty()) {
+//			TwData next = focal.nextState();
+//			TwData current = focal.currentState();
+//			for (String key:next.getKeysAsSet())
+//				// TODO: what about tables ?????
+//				// need a specific function or do it in generated code - that makes sense
+//				next.setProperty(key, current.getPropertyValue(key));
+//		}
+		// if there are changeState functions, they take care of 
 		for (ChangeStateFunction function : CSfunctions) {
 			function.changeState(t,dt,arena,focalLifeCycle,focalGroup,focal,space);
 			if (space!=null)

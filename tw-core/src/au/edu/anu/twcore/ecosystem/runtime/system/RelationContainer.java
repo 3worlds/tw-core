@@ -202,7 +202,7 @@ public class RelationContainer
 					SystemComponent en = (SystemComponent) sr.endNode();
 					// BUG HERE due to container sometimes set to null
 					// DIRTY FIX:
-					if ((sn.container()!=null)&&(en.container()!=null)) // maybe completely wrong
+//					if ((sn.container()!=null)&&(en.container()!=null)) // maybe completely wrong
 					dts.deleteLine(sn.container().itemId(sn.id()),
 						en.container().itemId(en.id()),
 						sr.type());
