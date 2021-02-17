@@ -55,12 +55,6 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 		groupTypeName = name;
 	}
 
-//	// TO be called BEFORE newInstance() with a proper parent container
-//	public void setParentContainer(ComponentContainer parent) {
-//		if (this.parent==null)
-//			this.parent = parent;
-//	}
-
 	/**
 	 * This MUST be called before newInstance() in order for the correct name to be used.
 	 * Otherwise the GroupType name is used to generate a group
@@ -74,17 +68,8 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 	public GroupComponent newInstance() {
 		GroupComponent group = null;
 		ComponentContainer container = null;
-		if (groupName!=null) {
+		if (groupName!=null)
 			container = new ComponentContainer(groupName,parentContainer,null,simId);
-//			if (!ComponentContainer.scope().contains(groupName))
-//				container = new ComponentContainer(groupName,parent,null,simId);
-//			else { // groupName already in use
-//				container = new ComponentContainer(groupTypeName,parent,null,simId);
-//				String s = container.id();
-//				log.warning(()->"Group container couldnt be created with name '"+groupName
-//					+"' - name '" + s + "' used instead.");
-//			}
-		}
 		else
 			container = new ComponentContainer(groupTypeName,parentContainer,null,simId);
 		autoVarTemplate = new ContainerData(container);

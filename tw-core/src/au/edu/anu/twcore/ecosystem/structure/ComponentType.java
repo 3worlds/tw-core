@@ -53,7 +53,7 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
- * replacement for ComponentType
+ * Specification node for SystemComponents
  *
  * @author J. Gignoux - 23 avr. 2020
  *

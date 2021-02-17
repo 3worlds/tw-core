@@ -54,7 +54,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
-import au.edu.anu.twcore.ecosystem.structure.Structure;
 import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -107,20 +106,25 @@ public class Component
 			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
 		if (nInstances==0)
 			nInstances=1;
-		TreeNode struc = (TreeNode) get(this,parent(isClass(Structure.class)));
-		nComponentTypes = ((Collection<?>) get(struc,
-			childTree(),
+		// get total number of ComponentTypes declared in the structure subTree
+		// NB there may be no structure node, but in this case there will be no component node either
+		// so if we are here, struc!=null
+		arena = (ArenaType) get(this,parent(isClass(ArenaType.class)));
+		TreeNode struc = (TreeNode) get(arena.getChildren(),
+			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label()))); 
+//		TreeNode struc = (TreeNode) get(this,parent(isClass(Structure.class)));
+		nComponentTypes = ((Collection<?>) get(struc, childTree(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label()))) ).size();
-//		nComponentTypes = ((Collection<?>)get(getParent().getParent().getChildren(),
-//			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())))).size();
 		componentType = (ComponentType) getParent();
 		// this edge, if present, points to a Group node
 		Edge instof = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
-		if (instof==null)
-//			arena = (ArenaType) getParent().getParent().getParent();
-			arena = (ArenaType) get(this,parent(isClass(ArenaType.class)));
-		else
+		// CAUTION: we may have no instof Group if no GroupType was defined
+		// in this case the group will be the self generated one.
+//		if (instof==null)
+//			arena = (ArenaType) get(this,parent(isClass(ArenaType.class)));
+//		else
+		if (instof!=null)
 			group = (Group) instof.endNode();
 		sealed = true;
 	}
@@ -144,10 +148,7 @@ public class Component
 	@SuppressWarnings("unchecked")
 	private Set<Category> generatedGroupCats() {
 		Set<Category>result = new TreeSet<>();
-		TreeNode root3w =  (TreeNode) get(this,parent(isClass(World.class)));
-//		 				// 3Worlds > 	system > 	structure >	componentType > component
-//		TreeNode root3w =  getParent().getParent().getParent().getParent();
-		TreeNode predef = (TreeNode) get(root3w.getChildren(),
+		TreeNode predef = (TreeNode) get(World.getRoot(this).getChildren(),
 			selectOne(hasTheLabel(N_PREDEFINED.label())));
 		List<TreeNode> l = (List<TreeNode>) get(predef.getChildren(),
 			selectZeroOrMany(hasTheLabel(N_CATEGORYSET.label())));
@@ -171,10 +172,9 @@ public class Component
 			// the factory for components of this category
 			ComponentFactory factory = componentType.getInstance(id);
 			// the spaces in this model
-			TreeNode struc = (TreeNode) get(this,parent(isClass(Structure.class)));
-//			TreeNode struc = this;
-//			while (!(struc instanceof Structure))
-//				struc = struc.getParent();
+			TreeNode struc = (TreeNode) get(arena.getChildren(),
+				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label()))); 
+//			TreeNode struc = (TreeNode) get(this,parent(isClass(Structure.class)));
 			Collection<SpaceNode> spaces = (Collection<SpaceNode>) get(struc,
 				children(),
 				selectZeroOrMany(hasTheLabel(N_SPACE.label())));
@@ -218,20 +218,27 @@ public class Component
 					GroupComponent grp = group.getInstance(id);
 					container = (ComponentContainer)grp.content();
 					container.setCategorized(factory);
+					// this will add into lifeCycle only if it exists. otherwise does nothing
 					grp.addGroupIntoLifeCycle();
 				}
 				// 2nd case: there is no group (and no life cycle)
-				else if (arena!=null) {
+				else {
+					ComponentContainer parentContainer =
+									// ArenaType	ArenaFactory	ArenaComponent	Container
+						(ComponentContainer)arena.getInstance(id).getInstance().content();
 					// if there is only one component type, then the arena must be the container
-					if (nComponentTypes==1)		// ArenaType	ArenaFactory	ArenaComponent	Container
-						container = (ComponentContainer)arena.getInstance(id).getInstance().content();
+					if (nComponentTypes==1)		
+						container = parentContainer;
 					// otherwise, a default group container per componentType is created, with no data
 					else { // group container must be created and inserted under arena
-						ComponentContainer parentContainer = (ComponentContainer)arena.getInstance(id).getInstance().content();
-						String containerId = componentType.categoryId(); // check this is ok - IT's NOT!!!
-//						String containerId = "group";
+						// JG 17/2/2021
+						// TODO (?): Alternative solution here is to use component id() as the
+						// group containerId. This way different containers can be generated for the
+						// same componentType - let's discuss this
+						String containerId = componentType.categoryId(); 
 						container = (ComponentContainer) parentContainer.subContainer(containerId);
 						// POSSIBLE FLAW HERE: there is no Group node matching this group factory
+						// That's fine - we dont need the group node as long as the factory and matching container are here
 						if (container==null) {
 							Set<Category>cats = generatedGroupCats();
 							GroupFactory gfac = new GroupFactory(cats,

@@ -93,6 +93,8 @@ public class Group
 		groupOf = (ComponentType) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
 			endNode());
+		// TODO (?): implement the possibility for groups to be nested within groups.
+		// PB: what do do with lifeCycles in this case ?
 		sealed = true;
 	}
 
@@ -139,8 +141,7 @@ public class Group
 				parent = lcc;
 			}
 			// 2nd case: there is no lifeCycle
-			else {							// groupType	structure	system
-//				ArenaType system = (ArenaType) getParent().getParent().getParent();
+			else {
 				ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
 				superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
 				parent = system;
