@@ -29,10 +29,10 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
-import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import fr.cnrs.iees.uit.space.Dimensioned;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.Sealable;
@@ -47,7 +47,7 @@ import fr.ens.biologie.generic.Sealable;
 public class SpaceOrganiser implements Sealable, Dimensioned {
 
 	/** all spaces in a simulation, sorted by name (id) */
-	private Map<String,DynamicSpace<SystemComponent>> spaces = new HashMap<>();
+	private Map<String,ObserverDynamicSpace> spaces = new HashMap<>();
 	private boolean sealed = false;
 	/** The fixed points used to position spaces relative to each other */
 	/** All spaces must also keep the coordinates of these points in their own coordinate system */
@@ -79,7 +79,7 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 	 * for fixed points - the space bounding box points are used as fixed points.
 	 * @param space
 	 */
-	public SpaceOrganiser(DynamicSpace<SystemComponent> space) {
+	public SpaceOrganiser(ObserverDynamicSpace space) {
 		super();
 		this.spaces.put(space.id(),space);
 		// only one space present: fxed points = bounding box
@@ -93,7 +93,7 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 	 * Use this in conjunction with first constructor to add spaces once the fixed points have been set.
 	 * @param sp
 	 */
-	public void addSpace(DynamicSpace<SystemComponent> sp) {
+	public void addSpace(ObserverDynamicSpace sp) {
 		if (!sealed) {
 			spaces.put(sp.id(),sp);
 			//build geometric transformation from fixedPoints
@@ -125,7 +125,7 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 //		return null;
 //	}
 
-	public DynamicSpace<SystemComponent> space(String name) {
+	public ObserverDynamicSpace space(String name) {
 		return spaces.get(name);
 	}
 
@@ -142,8 +142,8 @@ public class SpaceOrganiser implements Sealable, Dimensioned {
 		return fixedPoints.length;
 	}
 
-	public Collection<DynamicSpace<SystemComponent>> spaces() {
-		return spaces.values();
+	public Collection<ObserverDynamicSpace> spaces() {
+		return Collections.unmodifiableCollection(spaces.values());
 	}
 
 }

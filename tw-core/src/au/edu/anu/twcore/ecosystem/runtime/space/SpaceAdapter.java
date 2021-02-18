@@ -61,7 +61,7 @@ import fr.ens.biologie.generic.utils.Logging;
  *
  */
 public abstract class SpaceAdapter
-		implements DynamicSpace<SystemComponent> {
+		implements ObserverDynamicSpace {
 
 	private static Logger log = Logging.getLogger(SpaceAdapter.class);
 	private static final String jitterRNGName = "SpaceJitterRNG";
@@ -143,7 +143,7 @@ public abstract class SpaceAdapter
 		precision = Math.max(prec,minimalPrecision);
 		this.units = units;
 		dataTracker = dt;
-		DynamicSpace.super.preProcess(); // to set the scope if not set
+		ObserverDynamicSpace.super.preProcess(); // to set the scope if not set
 		id = scope().newId(true,proposedId);
 	}
 

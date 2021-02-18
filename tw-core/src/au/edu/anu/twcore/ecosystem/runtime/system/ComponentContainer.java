@@ -29,6 +29,9 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
@@ -38,7 +41,12 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
-public class ComponentContainer extends DescribedContainer<SystemComponent> {
+public class ComponentContainer
+		extends DescribedContainer<SystemComponent>
+		implements ObservableDynamicGraph<SystemComponent,SystemRelation> {
+
+	/** things which track changes in this container, eg spaces */
+	private Set<DynamicGraphObserver<SystemComponent,SystemRelation>> observers = new HashSet<>();
 
 	public ComponentContainer(String proposedId,
 			ComponentContainer parent,
@@ -58,8 +66,12 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 	 * Advances state of all SystemComponents contained in this container only.
 	 */
 	public void step() {
-		for (SystemComponent sc : items())
+		for (SystemComponent sc : items()) {
+			for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
+				// constants do not change, decorators are forgotten.
+				o.onPropertiesChanged(sc.nextState());
 			sc.stepForward();
+		}
 	}
 
 	/**
@@ -149,9 +161,14 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 		resetCounters(); // Pb: values are actually delayed by 1 time step doing this ???
 		for (String id : itemsToRemove) {
 			SystemComponent sc = items.remove(id);
-			((SystemComponent)sc).detachFromContainer();
 			if (sc != null) {
+				((SystemComponent)sc).detachFromContainer();
 				itemsToInitials.remove(id);
+				for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers) {
+					o.onEdgesRemoved(sc.getOutRelations());
+					o.onEdgesRemoved(sc.getInRelations());
+					o.onNodeRemoved(sc);
+				}
 				sc.disconnect();
 			}
 		}
@@ -161,10 +178,13 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 				((SystemComponent)item).setContainer(this);
 		}
 		// this to return all newly created items
+		// WHAT FOR, again ???
 		if (!itemsToAdd.isEmpty())
 			if (changedLists!=null)
 				if (changedLists.length>0)
 					changedLists[0].addAll(itemsToAdd);
+		for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
+			o.onNodesAdded(itemsToAdd);
 		itemsToAdd.clear();
 		super.effectChanges();
 	}
@@ -219,6 +239,31 @@ public class ComponentContainer extends DescribedContainer<SystemComponent> {
 			}
 		for (CategorizedContainer<SystemComponent> sc : subContainers())
 			sc.setInitialState();
+	}
+
+	// ObservableDynamicGraph
+
+	@Override
+	public void addObserver(DynamicGraphObserver<SystemComponent, SystemRelation> listener) {
+		observers.add(listener);
+		for (CategorizedContainer<SystemComponent> cc:subContainers()) {
+			ComponentContainer ccc = (ComponentContainer) cc;
+			ccc.addObserver(listener);
+		}
+	}
+
+	@Override
+	public void removeObserver(DynamicGraphObserver<SystemComponent, SystemRelation> listener) {
+		observers.remove(listener);
+		for (CategorizedContainer<SystemComponent> cc:subContainers()) {
+			ComponentContainer ccc = (ComponentContainer) cc;
+			ccc.removeObserver(listener);
+		}
+	}
+
+	@Override
+	public Collection<DynamicGraphObserver<SystemComponent, SystemRelation>> observers() {
+		return Collections.unmodifiableCollection(observers);
 	}
 
 }

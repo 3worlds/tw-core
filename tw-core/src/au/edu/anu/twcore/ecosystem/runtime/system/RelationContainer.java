@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -61,11 +62,17 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIO
  *
  */
 public class RelationContainer
-		implements DynamicContainer<SystemRelation>, Resettable, Related<CategorizedComponent>  {
+		implements DynamicContainer<SystemRelation>,
+			Resettable,
+			Related<CategorizedComponent>,
+			ObservableDynamicGraph<SystemComponent,SystemRelation> {
 
 	private static Logger log = Logging.getLogger(RelationContainer.class);
 	private Identity id = null;
 	private scopes scope = new scopes();
+	/** things which track changes in this container, eg spaces */
+	private Set<DynamicGraphObserver<SystemComponent,SystemRelation>> observers = new HashSet<>();
+
 	//
 	private RelationType relationType = null;
 	// the list of system component pairs to later relate
@@ -134,6 +141,8 @@ public class RelationContainer
 				sr.detachFromContainer();
 			}
 		}
+		for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
+			o.onEdgesRemoved(relationsToRemove);
 		relationsToRemove.clear();
 		// establish all new relations
 		for (Duple<CategorizedComponent,CategorizedComponent> item : relationsToAdd) {
@@ -142,8 +151,10 @@ public class RelationContainer
 			sr.setRelated(relationType);
 			log.info(()->"Creating relation "+sr.toShortString());
 			// if autodelete is true, then tag all the new relations to be deleted next time step
-			if (relationType.autoDelete())
-				relationsToRemove.add(sr);
+//			if (relationType.autoDelete())
+//				relationsToRemove.add(sr);
+			for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
+				o.onEdgeAdded(sr);
 		}
 		relationsToAdd.clear();
 		changed = false;
@@ -181,7 +192,7 @@ public class RelationContainer
 	public boolean isPermanent() {
 		return permanent;
 	}
-	
+
 	public boolean isDirectional() {
 		return directional;
 	}
@@ -216,7 +227,7 @@ public class RelationContainer
 	public ResettableLocalScope scope() {
 		return scope.getContainerScope(scope.getSimId());
 	}
-	
+
 	// NB relationType has the same id as RelationContainer - different scopes.
 	@Override
 	public String toString() {
@@ -233,6 +244,23 @@ public class RelationContainer
 			sb.append(item.toString()).append(' ');
 		sb.append("}]");
 		return sb.toString();
+	}
+
+	// ObservableDynamicGraph
+
+	@Override
+	public void addObserver(DynamicGraphObserver<SystemComponent, SystemRelation> listener) {
+		observers.add(listener);
+	}
+
+	@Override
+	public void removeObserver(DynamicGraphObserver<SystemComponent, SystemRelation> listener) {
+		observers.remove(listener);
+	}
+
+	@Override
+	public Collection<DynamicGraphObserver<SystemComponent, SystemRelation>> observers() {
+		return Collections.unmodifiableCollection(observers);
 	}
 
 }

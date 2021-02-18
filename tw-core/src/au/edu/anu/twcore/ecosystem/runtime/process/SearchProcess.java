@@ -346,9 +346,6 @@ public class SearchProcess
 			else
 				focalGroup = null;
 		}
-		if (other.container()==null)
-			System.out.println("coucou");
-
 		hc = other.container().descriptors();
 		other.container().change();
 		if (hc!=null) {

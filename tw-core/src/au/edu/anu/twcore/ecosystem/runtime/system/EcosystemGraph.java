@@ -32,8 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
@@ -52,7 +54,9 @@ import fr.ens.biologie.generic.Resettable;
  *
  */
 public class EcosystemGraph
-		implements Graph<SystemComponent,SystemRelation>, Resettable {
+		implements Graph<SystemComponent,SystemRelation>,
+			Resettable,
+			ObservableDynamicGraph<SystemComponent,SystemRelation> {
 
 	/** "nodes" */
 	private ComponentContainer components = null;
@@ -60,6 +64,9 @@ public class EcosystemGraph
 	private Map<String,RelationContainer> relations = null;
 
 	private ArenaComponent arena = null;
+
+	/** things which track changes in this graph, eg spaces */
+	private Set<DynamicGraphObserver<SystemComponent,SystemRelation>> observers = new HashSet<>();
 
 	public EcosystemGraph(ArenaComponent arena, Map<String,RelationContainer> relations) {
 		super();
@@ -225,6 +232,29 @@ public class EcosystemGraph
 			components.postProcess();
 		for (RelationContainer rc: relations.values())
 			rc.postProcess();
+	}
+
+	// ObservableDynamicGraph
+
+	@Override
+	public void addObserver(DynamicGraphObserver<SystemComponent, SystemRelation> listener) {
+		observers.add(listener);
+		for (RelationContainer rc:relations.values())
+			rc.addObserver(listener);
+		components.addObserver(listener);
+	}
+
+	@Override
+	public void removeObserver(DynamicGraphObserver<SystemComponent, SystemRelation> listener) {
+		observers.remove(listener);
+		for (RelationContainer rc:relations.values())
+			rc.removeObserver(listener);
+		components.removeObserver(listener);
+	}
+
+	@Override
+	public Collection<DynamicGraphObserver<SystemComponent, SystemRelation>> observers() {
+		return Collections.unmodifiableCollection(observers);
 	}
 
 }

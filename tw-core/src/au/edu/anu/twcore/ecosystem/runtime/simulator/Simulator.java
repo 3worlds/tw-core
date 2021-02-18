@@ -48,6 +48,7 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
@@ -314,12 +315,12 @@ public class Simulator implements Resettable {
 			// 6 advance age of ALL SystemComponents, including the not update ones.
 			if (ecosystem.community()!=null) // TODO improve this treatment
 				for (SystemComponent sc : ecosystem.community().allItems())
-				if (sc.autoVar()!=null)
-					if (sc.autoVar() instanceof ComponentData){
-						ComponentData au = (ComponentData) sc.autoVar();
-						au.writeEnable();
-						au.age(nexttime - au.birthDate());
-						au.writeDisable();
+					if (sc.autoVar()!=null)
+						if (sc.autoVar() instanceof ComponentData) {
+							ComponentData au = (ComponentData) sc.autoVar();
+							au.writeEnable();
+							au.age(nexttime - au.birthDate());
+							au.writeDisable();
 			}
 			// apply changes to spaces, including data tracking
 			if (mainSpace!=null)
@@ -400,6 +401,10 @@ public class Simulator implements Resettable {
 		for (Timer t : timerList)
 			t.preProcess();
 		timetracker.sendData(startTime);
+		// make spaces listen to changes in ecosystem
+		if (mainSpace!=null)
+			for (ObserverDynamicSpace space:mainSpace.spaces())
+				ecosystem.addObserver(space);
 		// clones initial items to ecosystem objects
 		ecosystem.preProcess();
 		// computes coordinates of items just added before
@@ -424,10 +429,12 @@ public class Simulator implements Resettable {
 			t.postProcess();
 		// remove all items from containers
 		ecosystem.postProcess();
-		// remove all items from spaces
+		// remove all items from spaces and stop observing ecosystem
 		if (mainSpace!=null)
-			for (DynamicSpace<SystemComponent> space : mainSpace.spaces())
+			for (ObserverDynamicSpace space : mainSpace.spaces()) {
 				space.postProcess();
+				ecosystem.removeObserver(space);
+		}
 		log.info(()->"END Simulator " + id + " reset/post");
 	}
 

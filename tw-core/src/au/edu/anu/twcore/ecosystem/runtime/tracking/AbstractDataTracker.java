@@ -125,10 +125,10 @@ public abstract class AbstractDataTracker<T, M>
 	public final boolean hasObservers() {
 		return !observers.isEmpty();
 	}
-	
+
 	//@Overrride
 	public final Collection<DataReceiver<T, M>> observers() {
 		return Collections.unmodifiableCollection(observers);
 	}
-	
+
 }
