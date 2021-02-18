@@ -187,7 +187,7 @@ public class ComponentProcess
 			// if present, spreads some values to other components
 			// (e.g. "decomposition", or "erosion")
 			for (ChangeOtherStateFunction consequence:function.getConsequences()) {
-				for (SystemRelation to:focal.getRelations(returnsTo.key())) {
+				for (SystemRelation to:focal.getOutRelations(returnsTo.key())) {
 					SystemComponent other = (SystemComponent) to.endNode();
 					otherGroup = null; // TODO: find it!
 					// FLAW? here how does code generation know about the categories ?

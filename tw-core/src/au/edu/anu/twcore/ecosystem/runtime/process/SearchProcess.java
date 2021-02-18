@@ -38,6 +38,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.RelateToDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
@@ -84,6 +85,7 @@ public class SearchProcess
 	 * brute force inefficient (O(n²)) search for other SystemComponents to relate to.
 	 * This version is only used for ephemeral relations.
 	 * No need to set group or lifecycle here, done in executeFunctions
+	 * Recursive.
 	 *
 	 * @param t			current time in this process Timer units
 	 * @param dt		current time step in this process Timer units
@@ -93,16 +95,44 @@ public class SearchProcess
 	private void crudeLoop(double t, double dt,
 		HierarchicalComponent focal,
 		DescribedContainer<SystemComponent> others) {
+			// if others contains SCs of the proper categories
 			if ((others.itemCategorized()!=null) &&
 				(others.itemCategorized().belongsTo(otherCategories)) ) {
+					// loop on all SCs contained in focal's container (focal is the avatar/descriptors)
+					// check on focal categories has already been done before entering this method
 					for (SystemComponent fc:focal.content().items()) {
-						Collection<SystemComponent> fcOthers = fc.getRelatives(relContainer.type().id());
+//						Collection<SystemComponent> fcOthers = fc.getRelatives(relContainer.type().id());
+//						for (SystemComponent sc: others.items())
+//							if (sc!=fc) {
+//								if (!fcOthers.contains(sc))
+//									executeFunctions(t,dt,fc,sc);
+//						}
+						Collection<SystemComponent> fcOthers = fc.getOutRelatives(relContainer.type().id());
+						// loop on candidates for an ephemeral relation, excluding focal component (no self relations)
 						for (SystemComponent sc: others.items())
-							if (sc!=fc)
-								if (!fcOthers.contains(sc))
-									executeFunctions(t,dt,fc,sc);
+							if (fc!=sc) {
+//								if (!sc.container().containsInitialItem(sc)) {
+									// if other and sc are not yet related, check they can be
+									if (!fcOthers.contains(sc))
+										executeFunctions(t,dt,fc,sc);
+									// if other and sc are already related AND autodelete is true,
+									// check if they stay related or if relation is deleted
+									else if (relContainer.autoDelete()) {
+										// this could be optimised according to relation lifespan
+										// by having two lists of items in space, one for just added items,
+										// one for items added for at least 1 time step
+										Collection<SystemRelation> fcRelations = fc.getOutRelations(relContainer.type().id());
+										// find relation between focal and other and check it
+										for (SystemRelation rel:fcRelations)
+											if (rel.endNode()==sc) {
+												executeFunctions(t,dt,fc,sc,rel);
+												break;
+										}
+									}
+						}
 					}
 			}
+			// if others doesnt contain SCs of the proper categories: loop on others' subcontainers
 			else
 				for (CategorizedContainer<SystemComponent> subc: others.subContainers())
 					crudeLoop(t,dt,focal,(DescribedContainer<SystemComponent>) subc);
@@ -111,9 +141,9 @@ public class SearchProcess
 	/**
 	 * Efficient (O(log(n))) search for other SystemComponents to relate to, based on space indexers (e.g.
 	 * quad trees).
-	 * This version is only used for permanent relations.
 	 * NB. this looping method only works for SystemComponents
 	 * No need to set group or lifecycle here, done in executeFunctions
+	 * not recursive
 	 *
 	 * @param t		current time in this process Timer units
 	 * @param dt	current time step in this process Timer units
@@ -122,29 +152,55 @@ public class SearchProcess
 	private void indexedLoop(double t, double dt,
 			SystemComponent focal) {
 		Iterable<SystemComponent> lsc;
+		// Get candidates for a relation in a restricted area of space
 		// search radius positive, means we only search until this distance
 		if (searchRadius>space.precision())
 			 lsc = space.getItemsWithin(focal,searchRadius);
 		// search radius null, means we search for the nearest neighbours only
 		else
 			lsc = space.getNearestItems(focal);
+		// if any candidate found, proceed
 		if (lsc!=null) {
 			// search for items already related through this particular relation
-			Collection<SystemComponent> others = focal.getRelatives(relContainer.type().id());
-			for (SystemComponent other:lsc) {
+			Collection<SystemComponent> others = focal.getOutRelatives(relContainer.type().id());
+			for (SystemComponent other:lsc)
 				// focal cannot relate to itself
 				if (other!=focal)
-					// do no check already related components [should be done before]
-					// this could be optimised according to relation lifespan
-					// by having two lists of items in space, one for just added items,
-					// one for items added for at least 1 time step
-					if (other.membership().belongsTo(otherCategories))
-						if (!other.container().containsInitialItem(other))
-							// dont search if item already related ! (NB: might be more efficient with set intersection ?)
-							if (!others.contains(other)) {
-								executeFunctions(t,dt,focal,other);
-					}
+					if (other.membership().belongsTo(otherCategories)) {
+//						if (!other.container().containsInitialItem(other)) {
+						// dont search if item already related ! (NB: might be more efficient with set intersection ?)
+						if (!others.contains(other))
+							executeFunctions(t,dt,focal,other);
+						else if (relContainer.autoDelete()) {
+							// this could be optimised according to relation lifespan
+							// by having two lists of items in space, one for just added items,
+							// one for items added for at least 1 time step
+							Collection<SystemRelation> fcRelations = focal.getOutRelations(relContainer.type().id());
+							// find relation between focal and other and check it
+							for (SystemRelation rel:fcRelations)
+								if (rel.endNode()==other) {
+									executeFunctions(t,dt,focal,other,rel);
+									break;
+								}
+						}
 			}
+//			for (SystemComponent other:lsc) {
+//				// focal cannot relate to itself
+//				if (other!=focal)
+//					// do no check already related components [should be done before]
+//					// this could be optimised according to relation lifespan
+//					// by having two lists of items in space, one for just added items,
+//					// one for items added for at least 1 time step
+//					if (other.membership().belongsTo(otherCategories))
+
+			// WHAT WAS THIS FOR???
+//						if (!other.container().containsInitialItem(other))
+
+//							// dont search if item already related ! (NB: might be more efficient with set intersection ?)
+//							if (!others.contains(other)) {
+//								executeFunctions(t,dt,focal,other);
+//					}
+//			}
 		}
 	}
 
@@ -186,6 +242,7 @@ public class SearchProcess
 	 * brute force inefficient (O(n²)) search for other SystemComponents to relate to.
 	 * This version is only used for permanent relations.
 	 * No need to set group or lifecycle here, done in executeFunctions
+	 * Recursive
 	 *
 	 * @param focal		the SystemComponent of interest
 	 * @param others	the list of candidate SystemComponents for establishing a relation to
@@ -194,7 +251,7 @@ public class SearchProcess
 		DescribedContainer<SystemComponent> others) {
 		if ((others.itemCategorized()!=null) &&
 			(others.itemCategorized().belongsTo(otherCategories)) ) {
-				Collection<SystemComponent> fcOthers = focal.getRelatives(relContainer.type().id());
+				Collection<SystemComponent> fcOthers = focal.getOutRelatives(relContainer.type().id());
 				for (SystemComponent sc: others.items())
 					if (focal!=sc)
 						if (!fcOthers.contains(sc))
@@ -273,7 +330,7 @@ public class SearchProcess
 			}
 		}
 	}
-	
+
 	// set the context information, ie group, othergroup, lifecycle, otherlifecycle
 	private void setContext(SystemComponent focal, SystemComponent other) {
 		HierarchicalComponent hc = focal.container().descriptors();
@@ -289,6 +346,9 @@ public class SearchProcess
 			else
 				focalGroup = null;
 		}
+		if (other.container()==null)
+			System.out.println("coucou");
+
 		hc = other.container().descriptors();
 		other.container().change();
 		if (hc!=null) {
@@ -305,6 +365,35 @@ public class SearchProcess
 	}
 
 	/**
+	 * For permanent and NON-AUTODELETE ephemeral relations
+	 * @param focal
+	 * @param other
+	 */
+	private void establishRelation(SystemComponent focal,SystemComponent other) {
+		relContainer.addItem(focal,other);
+		if (space!=null)
+			if (space.dataTracker()!=null)
+				space.dataTracker().createLine(focal.container().itemId(focal.id()),
+					other.container().itemId(other.id()),
+					relContainer.type().id());
+	}
+
+	/**
+	 * Only for AUTODELETE EPHEMERAL relations
+	 */
+	private void deleteRelation(SystemComponent focal,
+			SystemComponent other,
+			SystemRelation rel) {
+		relContainer.removeItem(rel);
+    	if (space!=null)
+    		if (space.dataTracker()!=null)
+    			space.dataTracker().deleteLine(((SystemComponent)focal).container().itemId(focal.id()),
+    				((SystemComponent)other).container().itemId(other.id()),
+    				rel.type());
+	}
+
+
+	/**
 	 * Call user defined function on (focal,other); sets (focalGroup,otherGroup,focalLifeCycle,
 	 * otherLifeCycle).
 	 * Called by crudeLoop(...) and indexedLoop(...)
@@ -315,20 +404,36 @@ public class SearchProcess
 	 * @param focal	the SystemComponent of interest
 	 * @param other the SystemComponent candidate for establishing a relation with focal
 	 */
-	private void executeFunctions(double t, double dt, SystemComponent focal, SystemComponent other) {
+	private void executeFunctions(double t, double dt,
+			SystemComponent focal,
+			SystemComponent other) {
 		setContext(focal,other);
-		for (RelateToDecisionFunction function: RTfunctions) {
+		// FLAW: this wont work if there are multiple relateTo functions in the same process
+		for (RelateToDecisionFunction function: RTfunctions)
 			if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
-				otherLifeCycle,otherGroup,other,space)) {
-				relContainer.addItem(focal,other);
-				if (space!=null)
-					if (space.dataTracker()!=null)
-						space.dataTracker().createLine(focal.container().itemId(focal.id()),
-							other.container().itemId(other.id()),
-							relContainer.type().id());
-			}
-		}
+				otherLifeCycle,otherGroup,other,space))
+					establishRelation(focal,other);
 	}
+	/**
+	 * Only for AUTODELETE EPHEMERAL relations.
+	 *
+	 * @param t
+	 * @param dt
+	 * @param focal
+	 * @param other
+	 */
+	private void executeFunctions(double t, double dt,
+			SystemComponent focal,
+			SystemComponent other,
+			SystemRelation rel) {
+		setContext(focal,other);
+		// FLAW: this wont work if there are multiple relateTo functions in the same process
+		for (RelateToDecisionFunction function: RTfunctions)
+			if (!function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
+				otherLifeCycle,otherGroup,other,space))
+				deleteRelation(focal,other,rel);
+	}
+
 
 	@Override
 	public String toString() {

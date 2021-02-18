@@ -268,12 +268,12 @@ public class Simulator implements Resettable {
 			status = SimulatorStatus.Final;
 		else {
 			long step = nexttime - lastTime;
-			// send drawing data for deleted ephemeral relations (dirty fix, but needed)
-			if (mainSpace!=null)
-				for (RelationContainer rc: ecosystem.relations())
-					if (rc.autoDelete())
-						for (DynamicSpace<SystemComponent> sp:mainSpace.spaces())
-							rc.sendDataForAutoDeletedRelations(sp,nexttime,status);
+//			 send drawing data for deleted ephemeral relations (dirty fix, but needed)
+//			if (mainSpace!=null)
+//				for (RelationContainer rc: ecosystem.relations())
+//					if (rc.autoDelete())
+//						for (DynamicSpace<SystemComponent> sp:mainSpace.spaces())
+//							rc.sendDataForAutoDeletedRelations(sp,nexttime,status);
 			// send the time as supplied to the processes in this step
 			timetracker.sendData(nexttime);
 			lastTime = nexttime;
@@ -333,7 +333,7 @@ public class Simulator implements Resettable {
 			// resample community for data trackers who need it
 			for (DataTracker<?, Metadata> tracker : trackers.keySet())
 				if (tracker instanceof Sampler)
-					((Sampler<?>)tracker).updateSample();			
+					((Sampler<?>)tracker).updateSample();
 		}
 		log.info(()->"END Simulator " + id +" stepping time = " + lastTime);
 	}

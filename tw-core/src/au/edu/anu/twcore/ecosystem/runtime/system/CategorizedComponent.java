@@ -181,31 +181,31 @@ public interface CategorizedComponent
 	public default Collection<SystemRelation> getInRelations() {
 		return Collections.unmodifiableCollection((Collection<SystemRelation>) edges(Direction.IN));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public default Collection<SystemRelation> getRelations() {
 		return Collections.unmodifiableCollection((Collection<SystemRelation>) edges());
 	}
 
 	@SuppressWarnings("unchecked")
-	public default Collection<SystemRelation> getRelations(String relationType) {
+	public default Collection<SystemRelation> getOutRelations(String relationType) {
 		List<SystemRelation> list = (List<SystemRelation>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)));
 		return list;
 	}
 
 	@SuppressWarnings("unchecked")
-	public default Collection<SystemComponent> getRelatives(String relationType) {
+	public default Collection<SystemComponent> getOutRelatives(String relationType) {
 		List<SystemComponent> list = (List<SystemComponent>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasProperty(P_RELATIONTYPE.key(),relationType)),
 			edgeListEndNodes());
 		return list;
 	}
-	
+
 	public default String[] hierarchicalId() {
 		return null;
 	}
-	
+
 	public default String name() {
 		return id();
 	}
