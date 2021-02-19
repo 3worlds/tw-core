@@ -29,7 +29,6 @@
 package au.edu.anu.twcore.ecosystem.runtime;
 
 import au.edu.anu.twcore.data.runtime.TwData;
-import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * An interface for objects that record data from 3worlds objects (ie data trackers)
@@ -39,10 +38,18 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  */
 public interface DataRecorder {
 
-	public void recordTime(long time);
-
+	/**
+	 * Record a labelled item (usually a SystemComponent or a SystemRelation)
+	 * 
+	 * @param labels
+	 */
 	public void recordItem(String... labels);
-
-	public void record(SimulatorStatus status, TwData... props);
+	
+	/**
+	 * Record data from a labelled item
+	 * 
+	 * @param props
+	 */
+	public void record(TwData... props);
 	
 }

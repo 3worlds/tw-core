@@ -28,6 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.runtime.containers.DynamicContainer;
 import au.edu.anu.twcore.ecosystem.runtime.containers.ResettableContainer;
@@ -76,5 +79,16 @@ public interface DynamicSpace<T extends Locatable>
 	 * @param item
 	 */
 	public void moveItem(T item);
+	
+	/**
+	 * If items can change position in space, they may sometimes jump out of space.
+	 * in this case they can be stored into this list (eg if it's not the responsability of the
+	 * space to destroy them).
+	 * 
+	 * @return
+	 */
+	public default Collection<T> outOfSpaceItems() {
+		return Collections.emptyList();
+	}
 
 }

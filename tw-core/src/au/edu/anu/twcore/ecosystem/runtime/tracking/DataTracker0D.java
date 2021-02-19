@@ -61,6 +61,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 	// current properties  
 	private long currentTime = Long.MIN_VALUE;
 	private DataLabel currentItem = null;
+	private SimulatorStatus currentStatus = null;
 	
 	public DataTracker0D(int simulatorId,
 			StatisticalAggregatesSet statistics,
@@ -94,8 +95,9 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 	}
 
 	@Override
-	public void recordTime(long time) {
+	public void openTimeRecord(SimulatorStatus status, long time) {
 		currentTime = time;
+		currentStatus = status;
 		resetStatistics();
 	}
 
@@ -171,13 +173,13 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 	
 	// use this for SystemComponent TwData variables
 	@Override
-	public void record(SimulatorStatus status, TwData... props) {
+	public void record(TwData... props) {
 		if (hasObservers()) {
 			// this to handle statistics
 			if (isAggregating()) {
 				// read all data into a (dummy) message because finding the precise data in 
 				// the TwData hierarchy is difficult otherwise
-				Output0DData tmp = new Output0DData(status, senderId, metadataType, metadata);
+				Output0DData tmp = new Output0DData(currentStatus, senderId, metadataType, metadata);
 				for (TwData data:props)
 					if (data!=null) {
 						for (DataLabel lab : metadata.intNames())
@@ -198,7 +200,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 				if (nAggregated()==sample.size()) { // CAUTION: wont work if trackAll ? yes because sample.size() and not trackSampleSize
 //					Output0DData tsd = new Output0DData(status, senderId, metadataType, aggregatedMetadata);
 					for (StatisticalAggregates sag:statisticsRequired()) {
-						Output0DData tsd = new Output0DData(status, senderId, metadataType, aggregatedMetadata);
+						Output0DData tsd = new Output0DData(currentStatus, senderId, metadataType, aggregatedMetadata);
 						for (DataLabel lab:variableChannels())
 							tsd.setValue(lab, aggregatedValue(lab,sag));
 						tsd.setTime(currentTime);
@@ -210,7 +212,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 				}
 			}
 			else {
-				Output0DData tsd = new Output0DData(status, senderId, metadataType, metadata);
+				Output0DData tsd = new Output0DData(currentStatus, senderId, metadataType, metadata);
 				tsd.setTime(currentTime);
 				for (TwData data:props)
 					if (data!=null) {
@@ -223,10 +225,17 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 				}
 				tsd.setItemLabel(currentItem);
 				// NB: must not alter msg contents after sending.
+				
 				sendData(tsd);
 				// tsd = null;
 			}
 		}
+	}
+
+	@Override
+	public void closeTimeRecord() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -69,4 +69,16 @@ public class GraphDataTracker extends AbstractDataTracker<RuntimeGraphData, Meta
 		currentTime = dtt.getDateTime();
 	}
 
+	@Override
+	public void openTimeRecord(SimulatorStatus status, long time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeTimeRecord() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

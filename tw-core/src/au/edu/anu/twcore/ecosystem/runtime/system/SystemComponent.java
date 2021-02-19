@@ -59,6 +59,8 @@ public class SystemComponent
 
 	private LocationData constantLocation = null;
 	private boolean dynamicLocation = false;
+	// the complete id of this component, includin all its containers
+	private String[] hierarchicalId = null;
 
 	public SystemComponent(Identity id, SimplePropertyList props, GraphFactory factory) {
 		super(id, props, factory);
@@ -150,8 +152,11 @@ public class SystemComponent
 
 	@Override
 	public void setContainer(DescribedContainer<SystemComponent> container) {
-		if (this.container==null)
+		if (this.container==null) {
 			this.container = (ComponentContainer) container;
+			hierarchicalId = Arrays.copyOf(container.fullId(),container.fullId().length+1);
+			hierarchicalId[hierarchicalId.length-1] = id();
+		}
 	}
 
 	@Override
@@ -166,9 +171,10 @@ public class SystemComponent
 
 	@Override
 	public String[] hierarchicalId() {
-		String[] s = Arrays.copyOf(container.fullId(),container.fullId().length+1);
-		s[s.length-1] = id();
-		return s;
+//		String[] s = Arrays.copyOf(container.fullId(),container.fullId().length+1);
+//		s[s.length-1] = id();
+//		return s;		
+		return hierarchicalId;
 	}
 
 	@Override

@@ -54,6 +54,7 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 
 	private CategorizedComponent trackedComponent = null;
 	private long currentTime = 0L;
+	private SimulatorStatus currentStatus = null;
 	private DataLabel currentItem = null;
 	private Metadata metadata = null;
 	// TODO: replace these with data labels for diving into the TwData tree
@@ -91,8 +92,9 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 	}
 
 	@Override
-	public void recordTime(long time) {
+	public void openTimeRecord(SimulatorStatus status, long time) {
 		currentTime = time;
+		currentStatus = status;
 	}
 
 	@Override
@@ -150,9 +152,9 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 	}
 
 	@Override
-	public void record(SimulatorStatus status, TwData... props) {
+	public void record(TwData... props) {
 		if (hasObservers()) {
-			OutputXYData xyd = new OutputXYData(status,senderId,metadata.type());
+			OutputXYData xyd = new OutputXYData(currentStatus,senderId,metadata.type());
 			xyd.setTime(currentTime);
 			xyd.setItemLabel(currentItem);
 			for (TwData data:props)
@@ -212,6 +214,12 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 	@Override
 	public Metadata getInstance() {
 		return metadata;
+	}
+
+	@Override
+	public void closeTimeRecord() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

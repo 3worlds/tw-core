@@ -30,32 +30,45 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMELINE_TIMEORIGIN;
 
+import java.util.logging.Logger;
+
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+import fr.ens.biologie.generic.utils.Logging;
 
 /**
- * A data tracker for spatial data of SystemComponents (no edges at the moment).
+ * <p>A data tracker for spatial data. It sends change data to whoever is listening (usually a 
+ * {@link Widget} understanding {@link SpaceData} messages). Messages consist in a time stamp and a list
+ * of changes to the previous state of the space (deletion/creation/move of points and lines).</p>
  *
- * The metadata are the space properties, namely: type (SpaceType), edgeEffects
- * (EdgeEffects), precision (double), units (String), plus the
- * descendant-specific properties:
+ * <p>The metadata are the space properties, namely:</p> 
+ * <ul><li>type (SpaceType),</li> 
+ * <li>edgeEffects (EdgeEffects),</li> 
+ * <li>precision (double),</li> 
+ * <li>units (String),</li></ul> 
+ * <p>plus the descendant-specific properties:</p>
  *
- * for FlatSurface: x-limits 'Interval) and y-limits (Interval) for SquareGrid:
- * cellSize(double), x-nCells (int), y-nCells (int) (optional, if absent =
- * x-nCells)
- *
- * This DataTracker is not instantiated by a DataTrackerNode, but by the
- * SpaceNode it points to.
+ * <ul><li>for FlatSurface:
+ * 		<ul><li>x-limits (Interval) and</li><li> y-limits (Interval)</li></ul>
+ * </li> 
+ * <li>for SquareGrid:<ul>
+ * <li>cellSize(double),</li><li>x-nCells (int),</li><li>y-nCells (int) (optional, if absent =
+ * x-nCells)</li></ul></li>
+ *</ul>
+ * <p>This DataTracker is not instantiated by a {@link DataTrackerNode}, but by the
+ * {@link SpaceNode} it points to.</p>
  *
  * @author Jacques Gignoux - 14 févr. 2020
  *
  */
 public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 
+	private static Logger log = Logging.getLogger(SpaceDataTracker.class);
+	
 	private long currentTime;
 	private Metadata metadata = null;
 	private SpaceData ctMessage = null;
@@ -72,41 +85,62 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 		currentTime = dtt.getDateTime();
 	}
 
-	public void recordTime(SimulatorStatus status, long time) {
+	@Override
+	public void openTimeRecord(SimulatorStatus status, long time) {
 		currentTime = time;
 		ctMessage = new SpaceData(status, senderId, metadata.type());
 		ctMessage.setTime(currentTime);
 	}
 
 	public void createPoint(double[] coord, String... labels) {
-		ctMessage.createPoint(new DataLabel(labels), coord);
+		if (ctMessage!=null)
+			ctMessage.createPoint(new DataLabel(labels), coord);
+		else
+			log.warning(()->"Attempt to write data to uninitialised SpaceData message.");
 	}
 
 	public void movePoint(double[] newCoord, String... labels) {
-		ctMessage.movePoint(new DataLabel(labels), newCoord);
+		if (ctMessage!=null)
+			ctMessage.movePoint(new DataLabel(labels), newCoord);
+		else
+			log.warning(()->"Attempt to write data to uninitialised SpaceData message.");
 	}
 
 	public void deletePoint(String... labels) {
-		ctMessage.deletePoint(new DataLabel(labels));
+		if (ctMessage!=null)
+			ctMessage.deletePoint(new DataLabel(labels));
+		else
+			log.warning(()->"Attempt to write data to uninitialised SpaceData message.");
 	}
 
 	public void createLine(String[] startLabels, String[] endLabels, String type) {
-		ctMessage.createLine(new DataLabel(startLabels), new DataLabel(endLabels), type);
+		if (ctMessage!=null) {
+//			if ((startLabels==null)||(endLabels==null))
+//				System.out.println(startLabels+" "+endLabels+" "+type);
+			ctMessage.createLine(new DataLabel(startLabels), new DataLabel(endLabels), type);
+		}
+		else
+			log.warning(()->"Attempt to write data to uninitialised SpaceData message.");
 	}
 
 	public void deleteLine(String[] startLabels, String[] endLabels, String type) {
-		ctMessage.deleteLine(new DataLabel(startLabels), new DataLabel(endLabels), type);
+		if (ctMessage!=null)
+			ctMessage.deleteLine(new DataLabel(startLabels), new DataLabel(endLabels), type);
+		else
+			log.warning(()->"Attempt to write data to uninitialised SpaceData message.");
 	}
 
-	public void closeTimeStep() {
+	public void closeTimeRecord() {
 		/**
 		 * This data continues to be written to by other processes AFTER sending.
 		 * Therefore, to avoid concurrentModification exceptions, it must be cloned by
 		 * the recipient IN THIS THREAD. This is a bit expensive so a redesign to avoid
 		 * this would be preferable.
 		 */
-		/// FIXED!
-		sendData(ctMessage);
+		if (ctMessage!=null)
+			sendData(ctMessage);
+		else
+			log.warning(()->"Attempt to close uninitialised SpaceData message.");
 		ctMessage = null;
 	}
 

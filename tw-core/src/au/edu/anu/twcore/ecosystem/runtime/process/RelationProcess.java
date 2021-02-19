@@ -346,9 +346,9 @@ public class RelationProcess extends AbstractRelationProcess {
         	function.changeOtherState(t,dt,
         		arena, focalLifeCycle, focalGroup, focal,
         		otherLifeCycle, otherGroup, other, space);
-			if (space!=null) {
-				relocate((SystemComponent)other);
-			}
+//			if (space!=null) {
+//				relocate((SystemComponent)other);
+//			}
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
         }
@@ -360,11 +360,11 @@ public class RelationProcess extends AbstractRelationProcess {
 	        		focalLifeCycle, focalGroup, focal,
 	        		otherLifeCycle, otherGroup, other, space)) {
 	        		rel.container().removeItem(rel);
-		        	if (space!=null)
-		        		if (space.dataTracker()!=null)
-		        			space.dataTracker().deleteLine(((SystemComponent)focal).container().itemId(focal.id()),
-		        				((SystemComponent)other).container().itemId(other.id()),
-		        				rel.type());
+//		        	if (space!=null)
+//		        		if (space.dataTracker()!=null)
+//		        			space.dataTracker().deleteLine(((SystemComponent)focal).container().itemId(focal.id()),
+//		        				((SystemComponent)other).container().itemId(other.id()),
+//		        				rel.type());
 	        	}
 	        }
 //	        // if there is no maintainrelation function, the relation only lasts for 1 time step
@@ -385,10 +385,10 @@ public class RelationProcess extends AbstractRelationProcess {
         	}
         	function.changeRelationState(t, dt, arena, focalLifeCycle, focalGroup, focal,
     			otherLifeCycle, otherGroup, other, space);
-			if (space!=null) {
-				relocate((SystemComponent)focal);
-				relocate((SystemComponent)other);
-			}
+//			if (space!=null) {
+//				relocate((SystemComponent)focal);
+//				relocate((SystemComponent)other);
+//			}
         	if (other.currentState()!=null)
         		other.nextState().writeDisable();
         	if (focal.currentState()!=null)

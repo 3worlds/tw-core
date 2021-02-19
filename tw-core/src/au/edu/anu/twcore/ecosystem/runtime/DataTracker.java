@@ -59,7 +59,7 @@ import fr.ens.biologie.generic.Singleton;
  *
  */
 public interface DataTracker<T, M>
-		extends Observable<DataReceiver<T, M>>, Singleton<M>, Resettable {
+		extends Observable<DataReceiver<T, M>>, Singleton<M>, Resettable, SimulationTracker {
 
 	/**
 	 * Removes an observer from this data tracker's list

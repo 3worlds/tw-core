@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.rvgrid.observer.Observer;
 
 /**
@@ -16,25 +15,40 @@ public interface DynamicGraphObserver<N extends Node,E extends Edge>
 		extends Observer {
 
 	public default void onEdgeAdded(E e) {}
-	public default void onEdgesAdded(Collection<E> es) {}
+	
+	public default void onEdgesAdded(Collection<E> es) {
+		for (E e:es) onEdgeAdded(e);
+	}	
+	
 	public default void onEdgeRemoved(E e) {}
-	public default void onEdgesRemoved(Collection<E> es) {}
+	
+	public default void onEdgesRemoved(Collection<E> es) {
+		for (E e:es) onEdgeRemoved(e);
+	}
+	
+	public default void onEdgeChanged(E e) {}
+	
+	public default void onEdgesChanged(Collection<E> es) {
+		for (E e:es) onEdgeChanged(e);
+	}
 
+	
 	public default void onNodeAdded(N n) {}
-	public default void onNodesAdded(Collection<N> ns) {}
+	
+	public default void onNodesAdded(Collection<N> ns) {
+		for (N n:ns) onNodeAdded(n);
+	}
+	
 	public default void onNodeRemoved(N n) {}
-	public default void onNodesRemoved(Collection<N> ns) {}
-
-	public default void onPropertyChanged(String key, Object value) {}
-	public default void onPropertyChanged(String key, double value) {}
-	public default void onPropertyChanged(String key, float value) {}
-	public default void onPropertyChanged(String key, long value) {}
-	public default void onPropertyChanged(String key, int value) {}
-	public default void onPropertyChanged(String key, short value) {}
-	public default void onPropertyChanged(String key, byte value) {}
-	public default void onPropertyChanged(String key, boolean value) {}
-	public default void onPropertyChanged(String key, String value) {}
-
-	public default void onPropertiesChanged(ReadOnlyPropertyList properties) {}
+	
+	public default void onNodesRemoved(Collection<N> ns) {
+		for (N n:ns) onNodeRemoved(n);
+	}
+	
+	public default void onNodeChanged(N n) {}
+	
+	public default void onNodesChanged(Collection<N> ns) {
+		for (N n:ns) onNodeChanged(n);
+	}
 
 }

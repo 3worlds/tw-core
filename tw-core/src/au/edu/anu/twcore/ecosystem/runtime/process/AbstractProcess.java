@@ -132,20 +132,21 @@ public abstract class AbstractProcess
 	public final void execute(SimulatorStatus status, long t, long dt) {
 		currentStatus = status;
 		currentTime = timer.userTime(t);
-		for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
-			tracker.recordTime(t);
-		if (space!=null)
-			if (space.dataTracker()!=null)
-				space.dataTracker().recordTime(status,t);
-
-		GraphDataTracker gdt = ecosystem.getDataTracker();
-		if (gdt!=null)
-			gdt.recordTime(t);
+//		for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
+//			tracker.recordTime(t);
+//		
+//		if (space!=null)
+//			if (space.dataTracker()!=null)
+//				space.dataTracker().openTimeRecord(status,t);
+//
+//		GraphDataTracker gdt = ecosystem.getDataTracker();
+//		if (gdt!=null)
+//			gdt.recordTime(t);
 
 		loop(currentTime,timer.userTime(dt),ecosystem());
-		if (space != null)
-			if (space.dataTracker() != null)
-				space.dataTracker().closeTimeStep(); // this sends the message to the widget
+//		if (space != null)
+//			if (space.dataTracker() != null)
+//				space.dataTracker().closeTimeRecord(); // this sends the message to the widget
 	}
 
 	/**
@@ -155,32 +156,32 @@ public abstract class AbstractProcess
 	 *
 	 * @param sc the SystemComponent to relocate
 	 */
-	protected void relocate(SystemComponent sc) {
-		if (sc.mobile()) { // doesnt make sense for fixed items
-			double[] oldLoc = sc.locationData().coordinates(); 	// always non null
-			double[] newLoc = sc.nextLocationData().coordinates();
-			newLoc = space.fixLocation(newLoc); 		// may be null
-			// 1 the component jumped out of space - it must go - well, unsure.
-			if (newLoc==null) {
-				// new location is outside the space - sc should be deleted:
-				// huh? maybe not if it's present in other spaces ???
-				// Possible flaw here!
-				unlocate(sc);
-				sc.container().removeItem(sc);
-			}
-			// 2 the component didnt move - nothing to do
-			else if (space.equalLocation(oldLoc,newLoc)) {
-				// DO NOTHING
-			}
-			// the component did move
-			else {
-				sc.nextLocationData().setCoordinates(newLoc);
-				space.moveItem(sc);
-				if (space.dataTracker()!=null)
-					space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
-			}
-		}
-	}
+//	protected void relocate(SystemComponent sc) {
+//		if (sc.mobile()) { // doesnt make sense for fixed items
+//			double[] oldLoc = sc.locationData().coordinates(); 	// always non null
+//			double[] newLoc = sc.nextLocationData().coordinates();
+//			newLoc = space.fixLocation(newLoc); 		// may be null
+//			// 1 the component jumped out of space - it must go - well, unsure.
+//			if (newLoc==null) {
+//				// new location is outside the space - sc should be deleted:
+//				// huh? maybe not if it's present in other spaces ???
+//				// Possible flaw here!
+//				unlocate(sc);
+//				sc.container().removeItem(sc);
+//			}
+//			// 2 the component didnt move - nothing to do
+//			else if (space.equalLocation(oldLoc,newLoc)) {
+//				// DO NOTHING
+//			}
+//			// the component did move
+//			else {
+//				sc.nextLocationData().setCoordinates(newLoc);
+//				space.moveItem(sc);
+//				if (space.dataTracker()!=null)
+//					space.dataTracker().movePoint(newLoc,sc.container().itemId(sc.id()));
+//			}
+//		}
+//	}
 
 	/**
 	 * For use in descendant Process classes. This method the user-computed coordinates
@@ -190,53 +191,53 @@ public abstract class AbstractProcess
 	 * @param sc the SystemComponent to locate
 	 * @param cont the component container, to compute its label
 	 */
-	protected void locate(SystemComponent sc, ComponentContainer cont) {
-		double[] oldLoc, newLoc;
-		if (sc.mobile())
-			oldLoc = sc.nextLocationData().coordinates(); 	// always non null
-		else
-			oldLoc = sc.locationData().coordinates(); 		// always non null
-		newLoc = space.fixLocation(oldLoc);					// may be null
-		// 1 the component jumped out of space - it must go before it's even born
-		if (newLoc==null)
-			cont.removeItem(sc);
-		// 2 the component is created and placed into space
-		else {
-			if (sc.mobile())
-				sc.nextLocationData().setCoordinates(newLoc);
-			else
-				sc.locationData().setCoordinates(newLoc);
-			space.addItem(sc);
-			if (space.dataTracker()!=null)
-				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
-		}
-	}
+//	protected void locate(SystemComponent sc, ComponentContainer cont) {
+//		double[] oldLoc, newLoc;
+//		if (sc.mobile())
+//			oldLoc = sc.nextLocationData().coordinates(); 	// always non null
+//		else
+//			oldLoc = sc.locationData().coordinates(); 		// always non null
+//		newLoc = space.fixLocation(oldLoc);					// may be null
+//		// 1 the component jumped out of space - it must go before it's even born
+//		if (newLoc==null)
+//			cont.removeItem(sc);
+//		// 2 the component is created and placed into space
+//		else {
+//			if (sc.mobile())
+//				sc.nextLocationData().setCoordinates(newLoc);
+//			else
+//				sc.locationData().setCoordinates(newLoc);
+//			space.addItem(sc);
+//			if (space.dataTracker()!=null)
+//				space.dataTracker().createPoint(newLoc, cont.itemId(sc.id()));
+//		}
+//	}
 
 	// for descendants
 	// NB: removes a SC from ALL spaces, not only from this one
-	protected void unlocate(SystemComponent sc) {
-		for (DynamicSpace<SystemComponent> space:
-			((ComponentFactory)sc.membership()).spaces()) {
-			space.removeItem(sc);
-			if (space.dataTracker()!=null) {
-				String[] sclab = sc.container().itemId(sc.id());
-				// lines must be cleared before points
-				for (Edge r:sc.edges(Direction.OUT)) {
-					SystemRelation sr = (SystemRelation) r;
-					SystemComponent end = (SystemComponent)r.endNode();
-					String[] endlab = end.container().itemId(end.id());
-					space.dataTracker().deleteLine(sclab,endlab,sr.type());
-				}
-				for (Edge r:sc.edges(Direction.IN)) {
-					SystemRelation sr = (SystemRelation) r;
-					SystemComponent start = (SystemComponent)r.startNode();
-					String[] startlab = start.container().itemId(start.id());
-					space.dataTracker().deleteLine(startlab,sclab,sr.type());
-				}
-				space.dataTracker().deletePoint(sclab);
-			}
-		}
-	}
+//	protected void unlocate(SystemComponent sc) {
+//		for (DynamicSpace<SystemComponent> space:
+//			((ComponentFactory)sc.membership()).spaces()) {
+//			space.removeItem(sc);
+//			if (space.dataTracker()!=null) {
+//				String[] sclab = sc.container().itemId(sc.id());
+//				// lines must be cleared before points
+//				for (Edge r:sc.edges(Direction.OUT)) {
+//					SystemRelation sr = (SystemRelation) r;
+//					SystemComponent end = (SystemComponent)r.endNode();
+//					String[] endlab = end.container().itemId(end.id());
+//					space.dataTracker().deleteLine(sclab,endlab,sr.type());
+//				}
+//				for (Edge r:sc.edges(Direction.IN)) {
+//					SystemRelation sr = (SystemRelation) r;
+//					SystemComponent start = (SystemComponent)r.startNode();
+//					String[] startlab = start.container().itemId(start.id());
+//					space.dataTracker().deleteLine(startlab,sclab,sr.type());
+//				}
+//				space.dataTracker().deletePoint(sclab);
+//			}
+//		}
+//	}
 
 	public abstract void addFunction(TwFunction function);
 

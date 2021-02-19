@@ -115,18 +115,10 @@ public class FlatSurface extends SpaceAdapter {
 		return indexer.getItemsWithin(itemSphere);
 	}
 
-//	@Override
-//	public Location locationOf(SystemComponent focal) {
-//		return makeLocation(locatedItems.get(focal));
-//	}
-
 	@Override
 	public void unlocate(Collection<SystemComponent> items) {
-		for (SystemComponent sc:items) {
-//			Point loc = locationOf(sc).asPoint();
-//			if (loc!=null)
-				indexer.remove(sc);
-		}
+		for (SystemComponent sc:items)
+			indexer.remove(sc);
 		locatedItems.keySet().removeAll(items);
 	}
 

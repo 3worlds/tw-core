@@ -368,11 +368,11 @@ public class SearchProcess
 	 */
 	private void establishRelation(SystemComponent focal,SystemComponent other) {
 		relContainer.addItem(focal,other);
-		if (space!=null)
-			if (space.dataTracker()!=null)
-				space.dataTracker().createLine(focal.container().itemId(focal.id()),
-					other.container().itemId(other.id()),
-					relContainer.type().id());
+//		if (space!=null)
+//			if (space.dataTracker()!=null)
+//				space.dataTracker().createLine(focal.container().itemId(focal.id()),
+//					other.container().itemId(other.id()),
+//					relContainer.type().id());
 	}
 
 	/**
@@ -382,18 +382,18 @@ public class SearchProcess
 			SystemComponent other,
 			SystemRelation rel) {
 		relContainer.removeItem(rel);
-    	if (space!=null)
-    		if (space.dataTracker()!=null)
-    			space.dataTracker().deleteLine(((SystemComponent)focal).container().itemId(focal.id()),
-    				((SystemComponent)other).container().itemId(other.id()),
-    				rel.type());
+//    	if (space!=null)
+//    		if (space.dataTracker()!=null)
+//    			space.dataTracker().deleteLine(((SystemComponent)focal).container().itemId(focal.id()),
+//    				((SystemComponent)other).container().itemId(other.id()),
+//    				rel.type());
 	}
 
 
 	/**
 	 * Call user defined function on (focal,other); sets (focalGroup,otherGroup,focalLifeCycle,
 	 * otherLifeCycle).
-	 * Called by crudeLoop(...) and indexedLoop(...)
+	 * Called by crudeLoop(...) and indexedLoop(...) and setPermanentRelations(...)
 	 * Assumes that only SystemComponents can establish relations (ie no higher-level components)
 	 *
 	 * @param t		current time in this process Timer units

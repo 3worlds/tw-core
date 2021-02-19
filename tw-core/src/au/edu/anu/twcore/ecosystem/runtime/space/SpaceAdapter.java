@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
@@ -108,6 +109,7 @@ public abstract class SpaceAdapter
 	/** mapping of cloned item to their initial components */
 	private Map<String,SystemComponent> itemsToInitials = new HashMap<>();
 	private boolean changed = false;
+	private Set<SystemComponent> outOfSpace = new HashSet<>();
 
 
 	public SpaceAdapter(Box box,
@@ -249,6 +251,8 @@ public abstract class SpaceAdapter
 			unlocate(sc);
 		toDelete.clear();
 		// CAUTION: what happens if the system is to be deleted in containers after relocation?
+		// IDEA: have an 'outofSpace' list of items that are off this space? so they are not
+		// deleted here
 		for (SystemComponent lsc:toInsert)
 			locate(lsc);
 		toInsert.clear();
@@ -453,6 +457,86 @@ public abstract class SpaceAdapter
 	@Override
 	public final TwShape asShape() {
 		return shape;
+	}
+	
+	// DynamicGraphObserver
+
+	@Override
+	public void onEdgeAdded(SystemRelation sr) {
+		// we only care about relations if we want to draw them
+		if (dataTracker!=null)
+			dataTracker.createLine(((SystemComponent)sr.startNode()).hierarchicalId(),
+				((SystemComponent)sr.endNode()).hierarchicalId(),sr.type());
+	}
+
+	@Override
+	public void onEdgeRemoved(SystemRelation sr) {
+		// we only care about relations if we want to draw them
+		if (dataTracker!=null)
+			dataTracker.deleteLine(((SystemComponent)sr.startNode()).hierarchicalId(),
+				((SystemComponent)sr.endNode()).hierarchicalId(),sr.type());
+	}
+	
+	/**
+	 * Apply edge-effect corrections to raw component spatial coordinates
+	 * @param sc
+	 * @return fixed coordinates OR null if component jumped out of space
+	 */
+	private double[] checkCoordinates(SystemComponent sc) {
+		double[] oldLoc, newLoc;
+		// get the coordinates - depends if the component is mobile
+		if (sc.mobile())
+			oldLoc = sc.nextLocationData().coordinates(); 	// always non null
+		else
+			oldLoc = sc.locationData().coordinates(); 		// always non null
+		// apply edge effect correction
+		newLoc = fixLocation(oldLoc);					// may be null
+		// a null new location means the component jumped out of space
+		if (newLoc!=null) { 
+			// replace its coordinate with the new ones
+			if (sc.mobile())
+				sc.nextLocationData().setCoordinates(newLoc);
+			else
+				sc.locationData().setCoordinates(newLoc);
+			// add component into the new component list for delayed insertion
+		}
+		return newLoc;
+	}
+
+	@Override
+	public final void onNodeAdded(SystemComponent sc) {
+		double[] loc = checkCoordinates(sc);
+		if (loc!=null) {
+			addItem(sc);
+			if (dataTracker!=null)
+				dataTracker.createPoint(loc,sc.hierarchicalId());
+		}
+		else
+			outOfSpace.add(sc);
+	}
+
+	@Override
+	public void onNodeChanged(SystemComponent sc) {
+		double[] loc = checkCoordinates(sc);
+		if (loc!=null) {
+			moveItem(sc);
+			if (dataTracker!=null)
+				dataTracker.movePoint(loc,sc.hierarchicalId());
+		}
+		else {
+			removeItem(sc);
+			if (dataTracker!=null)
+				dataTracker.deletePoint(sc.hierarchicalId());
+			outOfSpace.add(sc);
+		}
+	}
+
+	@Override
+	public final void onNodeRemoved(SystemComponent sc) {
+		// Assumes the SC has been properly disconnected before this call
+		removeItem(sc);
+		if (dataTracker!=null)
+			dataTracker().deletePoint(sc.hierarchicalId());
 	}
 
 }

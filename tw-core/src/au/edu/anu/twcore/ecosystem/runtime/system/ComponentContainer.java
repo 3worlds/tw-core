@@ -68,8 +68,7 @@ public class ComponentContainer
 	public void step() {
 		for (SystemComponent sc : items()) {
 			for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
-				// constants do not change, decorators are forgotten.
-				o.onPropertiesChanged(sc.nextState());
+				o.onNodeChanged(sc);
 			sc.stepForward();
 		}
 	}
@@ -98,23 +97,19 @@ public class ComponentContainer
 	}
 
 	/**
-	 * clears decorators and population counters for next time step,
+	 * clears decorators for next time step,
 	 * only if was changed
 	 */
 	public void prepareStep() {
 		HierarchicalComponent hv = descriptors();
 		if (hv.decorators()!=null) {
-//			hv.decorators().writeEnable();
 			hv.decorators().clear();
-//			hv.decorators().writeDisable();
 		}
 		if (changed()) {
 			resetCounters();
 			for (SystemComponent item:items()) {
 				if (item.decorators()!=null) {
-//					item.decorators().writeEnable();
 					item.decorators().clear();
-//					item.decorators().writeDisable();
 				}
 				else
 					break; // since all items in a SystemContainer have the same categories

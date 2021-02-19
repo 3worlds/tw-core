@@ -37,16 +37,12 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.containers.DynamicContainer;
-import au.edu.anu.twcore.ecosystem.runtime.space.Space;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.twcore.constants.LifespanType;
-import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
@@ -201,27 +197,27 @@ public class RelationContainer
 		return relationType.autoDelete();
 	}
 
-	public void sendDataForAutoDeletedRelations(Space<SystemComponent> sp,
-			long time,
-			SimulatorStatus status) {
-		if (sp instanceof SingleDataTrackerHolder) {
-			SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<?>) sp).dataTracker();
-			if (!relationsToRemove.isEmpty()) {
-				dts.recordTime(status, time);
-				for (SystemRelation sr:relationsToRemove) {
-					SystemComponent sn = (SystemComponent)sr.startNode();
-					SystemComponent en = (SystemComponent) sr.endNode();
-					// BUG HERE due to container sometimes set to null
-					// DIRTY FIX:
-//					if ((sn.container()!=null)&&(en.container()!=null)) // maybe completely wrong
-					dts.deleteLine(sn.container().itemId(sn.id()),
-						en.container().itemId(en.id()),
-						sr.type());
-				}
-				dts.closeTimeStep();
-			}
-		}
-	}
+//	public void sendDataForAutoDeletedRelations(Space<SystemComponent> sp,
+//			long time,
+//			SimulatorStatus status) {
+//		if (sp instanceof SingleDataTrackerHolder) {
+//			SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<?>) sp).dataTracker();
+//			if (!relationsToRemove.isEmpty()) {
+//				dts.openTimeRecord(status, time);
+//				for (SystemRelation sr:relationsToRemove) {
+//					SystemComponent sn = (SystemComponent)sr.startNode();
+//					SystemComponent en = (SystemComponent) sr.endNode();
+//					// BUG HERE due to container sometimes set to null
+//					// DIRTY FIX:
+////					if ((sn.container()!=null)&&(en.container()!=null)) // maybe completely wrong
+//					dts.deleteLine(sn.container().itemId(sn.id()),
+//						en.container().itemId(en.id()),
+//						sr.type());
+//				}
+//				dts.closeTimeRecord();
+//			}
+//		}
+//	}
 
 	@Override
 	public ResettableLocalScope scope() {

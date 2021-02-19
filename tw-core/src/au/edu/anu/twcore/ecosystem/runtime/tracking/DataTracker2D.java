@@ -57,19 +57,7 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Outpu
 	}
 
 	@Override
-	public void recordTime(long time) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void recordItem(String... labels) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void record(SimulatorStatus status, TwData... props) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -78,6 +66,24 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Outpu
 	public Metadata getInstance() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void record(TwData... props) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void openTimeRecord(SimulatorStatus status, long time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeTimeRecord() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

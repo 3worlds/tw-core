@@ -87,8 +87,13 @@ public class Simulator implements Resettable {
 		private TimeTracker() {
 			super(DataMessageTypes.TIME,id);
 		}
+		@Override
+		public Metadata getInstance() {
+			return null;
+		}
 		// returns quickly if there are no observers - no point building a TimeData
-		void sendData(long time) {
+		@Override
+		public void openTimeRecord(SimulatorStatus status, long time) {
 			if (hasObservers()) {
 				TimeData output = new TimeData(status, id, metadata.type());
 				output.setTime(time);
@@ -96,9 +101,7 @@ public class Simulator implements Resettable {
 			}
 		}
 		@Override
-		public Metadata getInstance() {
-			return null;
-		}
+		public void closeTimeRecord() {}
 	}
 
 	// FIELDS
@@ -275,8 +278,10 @@ public class Simulator implements Resettable {
 //					if (rc.autoDelete())
 //						for (DynamicSpace<SystemComponent> sp:mainSpace.spaces())
 //							rc.sendDataForAutoDeletedRelations(sp,nexttime,status);
-			// send the time as supplied to the processes in this step
-			timetracker.sendData(nexttime);
+			// start recording data for this time step in all data trackers
+			for (DataTracker<?, Metadata> tracker : trackers.keySet())
+				tracker.openTimeRecord(status, nexttime);
+//			timetracker.sendData(nexttime);
 			lastTime = nexttime;
 			// 2 find all timeModels which must execute now - using bitmasks for
 			// searches
@@ -289,7 +294,6 @@ public class Simulator implements Resettable {
 				i++;
 			}
 			// 3 execute all the processes depending on these time models
-			// NB sending data to datatrackers is performed in this loop
 			List<List<TwProcess>> currentProcesses = processCallingOrder.get(ctmask);
 			// loop on dependency rank
 			for (int j = 0; j < currentProcesses.size(); j++) {
@@ -322,7 +326,7 @@ public class Simulator implements Resettable {
 							au.age(nexttime - au.birthDate());
 							au.writeDisable();
 			}
-			// apply changes to spaces, including data tracking
+			// apply changes to spaces
 			if (mainSpace!=null)
 				for (DynamicSpace<SystemComponent> space : mainSpace.spaces())
 					space.effectChanges();
@@ -331,10 +335,13 @@ public class Simulator implements Resettable {
 			for (RelationContainer rc:ecosystem.relations())
 				if (rc.isPermanent())
 					rc.effectChanges();
-			// resample community for data trackers who need it
-			for (DataTracker<?, Metadata> tracker : trackers.keySet())
+			for (DataTracker<?, Metadata> tracker : trackers.keySet()) {
+				// stop recording data in all data trackers
+				tracker.closeTimeRecord();
+				// resample community for data trackers who need it
 				if (tracker instanceof Sampler)
 					((Sampler<?>)tracker).updateSample();
+			}
 		}
 		log.info(()->"END Simulator " + id +" stepping time = " + lastTime);
 	}
@@ -346,18 +353,18 @@ public class Simulator implements Resettable {
 				for (TwProcess p:lp)
 					if (p instanceof SearchProcess) {
 						SearchProcess proc = (SearchProcess) p;
-						if (proc.space()!=null)
-							proc.space().dataTracker().recordTime(status,time); // creates the message
+//						if (proc.space()!=null)
+//							proc.space().dataTracker().openTimeRecord(status,time); // creates the message
 						if (proc.isPermanent())
 							proc.setPermanentRelations(comps,ecosystem.community());
-						if (proc.space()!=null)
-							proc.space().dataTracker().closeTimeStep(); // sends the message
+//						if (proc.space()!=null)
+//							proc.space().dataTracker().closeTimeRecord(); // sends the message
 					}
 	}
 
 	/**
 	 * recomputes the coordinates of systemComponents after copied from initial
-	 * systems recursive.
+	 * systems recursive. Doesnt use the Observer system (but works ok, so...)
 	 */
 	private void computeInitialCoordinates(CategorizedContainer<SystemComponent> container) {
 		for (SystemComponent sc : container.items()) {
@@ -366,11 +373,12 @@ public class Simulator implements Resettable {
 			// get the initial item matching this
 			SystemComponent isc = container.initialForItem(sc.id());
 			for (DynamicSpace<SystemComponent> space : spaces) {
-				// get the location of this initial item
+				// make space dataTracker ready to receive data
 				if (space.dataTracker() != null) {
 					space.dataTracker().setInitialTime();
-					space.dataTracker().recordTime(status,startTime);
+					space.dataTracker().openTimeRecord(status,startTime);
 				}
+				// get the location of this initial item
 				if (space.getInitialItems().contains(isc)) {
 					if (!space.boundingBox().contains(isc.locationData().asPoint())) {
 						sc.locationData().setCoordinates(space.defaultLocation());
@@ -384,8 +392,9 @@ public class Simulator implements Resettable {
 					if (space.dataTracker() != null)
 						space.dataTracker().createPoint(sc.locationData().coordinates(),container.itemId(sc.id()));
 				}
+				// close and send dataTracker message
 				if (space.dataTracker() != null)
-					space.dataTracker().closeTimeStep();
+					space.dataTracker().closeTimeRecord();
 			}
 		}
 		for (CategorizedContainer<SystemComponent> cc : container.subContainers())
@@ -400,7 +409,8 @@ public class Simulator implements Resettable {
 		stoppingCondition.preProcess();
 		for (Timer t : timerList)
 			t.preProcess();
-		timetracker.sendData(startTime);
+		timetracker.openTimeRecord(status,startTime);
+		timetracker.closeTimeRecord(); // does nothing but for code consistency
 		// make spaces listen to changes in ecosystem
 		if (mainSpace!=null)
 			for (ObserverDynamicSpace space:mainSpace.spaces())
