@@ -184,6 +184,32 @@ public class ComponentContainer
 		super.effectChanges();
 	}
 
+	// helper for below
+	private void setInitialState(CategorizedComponent arena, 
+			CategorizedComponent lifeCycle, 
+			CategorizedComponent group, 
+			CategorizedComponent item) {
+		if (item.initialiser()!=null) {
+			if (item.constants()!=null)
+				item.constants().writeEnable();
+			if (item.currentState()!=null) {
+				item.currentState().writeEnable();
+				item.nextState().writeEnable();
+			}
+			item.initialiser().setInitialState(arena, lifeCycle, group, item, null);
+			if (item.constants()!=null)
+				item.constants().writeDisable();
+			if (item.currentState()!=null) {
+				// initialiser methods return values in currentState, so copy them
+				// to nextState in order for stepForward() to work properly
+				item.nextState().setProperties(item.currentState());
+				item.currentState().writeDisable();
+				item.nextState().writeDisable();
+			}
+		}
+	}
+	
+	// RECURSIVE
 	@Override
 	protected void setInitialState() {
 //		boolean yet = false;
@@ -198,8 +224,9 @@ public class ComponentContainer
 			cc = ((DescribedContainer<?>)((LifeCycleComponent)cc).content().superContainer).descriptors();
 			if (cc instanceof ArenaComponent)
 				arena = cc;
-			if (lifeCycle.initialiser()!=null)
-				lifeCycle.initialiser().setInitialState(null, null, null, lifeCycle, null);
+			setInitialState(null,null,null,lifeCycle);
+//			if (lifeCycle.initialiser()!=null)
+//				lifeCycle.initialiser().setInitialState(null, null, null, lifeCycle, null);
 		}
 		else if (cc instanceof GroupComponent) {
 			group = cc;
@@ -213,25 +240,34 @@ public class ComponentContainer
 			else if (cc instanceof ArenaComponent) {
 				arena = cc;
 			}
-			if (group.initialiser()!=null)
-				group.initialiser().setInitialState(null, null, null, group, null);
+			setInitialState(null,null,null,group);
+//			if (group.initialiser()!=null)
+//				group.initialiser().setInitialState(null, null, null, group, null);
 		}
 		for (SystemComponent item:items.values())
-			if (item.initialiser()!=null) {
-				if (item.constants()!=null)
-					item.constants().writeEnable();
-				if (item.currentState()!=null)
-					item.currentState().writeEnable();
-				item.initialiser().setInitialState(arena, lifeCycle, group, item, null);
-				if (item.constants()!=null)
-					item.constants().writeDisable();
-				if (item.currentState()!=null)
-					item.currentState().writeDisable();
+			setInitialState(arena,lifeCycle,group,item);
+//			if (item.initialiser()!=null) {
+//				if (item.constants()!=null)
+//					item.constants().writeEnable();
+//				if (item.currentState()!=null) {
+//					item.currentState().writeEnable();
+//					item.nextState().writeEnable();
+//				}
+//				item.initialiser().setInitialState(arena, lifeCycle, group, item, null);
+//				if (item.constants()!=null)
+//					item.constants().writeDisable();
+//				if (item.currentState()!=null) {
+//					// initialiser methods return values in currentState, so copy them
+//					// to nextState in order for stepForward() to work properly
+//					item.nextState().setProperties(item.currentState());
+//					item.currentState().writeDisable();
+//					item.nextState().writeDisable();
+//				}
 //				if (!yet) {
 //					item.initialiser().startEventQueues();
 //					yet=true;
 //				}
-			}
+//			}
 		for (CategorizedContainer<SystemComponent> sc : subContainers())
 			sc.setInitialState();
 	}

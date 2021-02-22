@@ -163,8 +163,11 @@ public class ComponentProcess
 //				next.setProperty(key, current.getPropertyValue(key));
 //		}
 		// if there are changeState functions, they take care of 
+		if (CSfunctions.isEmpty())
+			focal.setStateUnchanged(focal.stateUnchanged() & true);
 		for (ChangeStateFunction function : CSfunctions) {
 			function.changeState(t,dt,arena,focalLifeCycle,focalGroup,focal,space);
+			focal.setStateUnchanged(false);
 //			if (space!=null)
 //				relocate((SystemComponent)focal);
 		}
@@ -241,6 +244,13 @@ public class ComponentProcess
 						func.setOtherInitialState(t, dt,
 							arena, focalLifeCycle, focalGroup, focal,
 							otherLifeCycle, otherGroup, newBorn, space);
+						// variables are set into nextState, so copy them to current
+						// in order for SystemComponent.stepForward() to work properly
+						if (newBorn.currentState()!=null) {
+							newBorn.currentState().writeEnable();
+							newBorn.currentState().setProperties(newBorn.nextState());
+							newBorn.currentState().writeDisable();
+						}
 					}
 //					if (space!=null)
 //						locate(newBorn,nbs.container);
@@ -292,6 +302,13 @@ public class ComponentProcess
 							focalLifeCycle, focalGroup, focal,
 							otherLifeCycle, otherGroup, newRecruit,
 							space);
+						// variables are set into nextState, so copy them to current
+						// in order for SystemComponent.stepForward() to work properly
+						if (newRecruit.currentState()!=null) {
+							newRecruit.currentState().writeEnable();
+							newRecruit.currentState().setProperties(newRecruit.nextState());
+							newRecruit.currentState().writeDisable();
+						}
 					}
 					// replacement of old component by new one.
 					((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
