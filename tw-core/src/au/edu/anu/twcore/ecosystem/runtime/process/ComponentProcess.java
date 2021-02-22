@@ -295,6 +295,8 @@ public class ComponentProcess
 					}
 					// replacement of old component by new one.
 					((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
+					// this to make sure the newRecruit can return a valid hierarcicalId before a line is drawn
+					newRecruit.setContainer(recruitContainer);
 					recruitContainer.addItem(newRecruit); // safe: delayed addition
 //					// manage space
 //					if (space!=null) {

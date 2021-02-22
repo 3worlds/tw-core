@@ -115,8 +115,6 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 
 	public void createLine(String[] startLabels, String[] endLabels, String type) {
 		if (ctMessage!=null) {
-//			if ((startLabels==null)||(endLabels==null))
-//				System.out.println(startLabels+" "+endLabels+" "+type);
 			ctMessage.createLine(new DataLabel(startLabels), new DataLabel(endLabels), type);
 		}
 		else
