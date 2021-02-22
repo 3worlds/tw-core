@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import au.edu.anu.twcore.ecosystem.runtime.containers.SimpleContainer;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
@@ -138,6 +139,24 @@ public class ComponentContainer
 	public void clearState() {
 		clearState(this);
 	}
+	
+	
+	// NB: Recursive on sub-containers
+	@Override
+	public void preProcess() {
+		super.preProcess();
+		for (SystemComponent item : initialItems) {
+			SystemComponent c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
+			items.put(c.id(), c);
+			itemsToInitials.put(c.id(), item);
+		}
+		for (CategorizedContainer<SystemComponent> sc : subContainers.values())
+			sc.preProcess();
+		resetCounters();
+		setInitialState();
+	}
+
+	
 
 	// best if static to avoid errors
 	private static void clearState(CategorizedContainer<SystemComponent> parentContainer) {
@@ -244,8 +263,11 @@ public class ComponentContainer
 //			if (group.initialiser()!=null)
 //				group.initialiser().setInitialState(null, null, null, group, null);
 		}
-		for (SystemComponent item:items.values())
+		for (SystemComponent item:items.values()) {
 			setInitialState(arena,lifeCycle,group,item);
+//			for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
+//				o.onNodeAdded(item);
+		}
 //			if (item.initialiser()!=null) {
 //				if (item.constants()!=null)
 //					item.constants().writeEnable();

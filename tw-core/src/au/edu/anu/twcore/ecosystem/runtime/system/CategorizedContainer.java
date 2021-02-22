@@ -382,10 +382,9 @@ public abstract class CategorizedContainer<T extends Identity>
 	// NB: Recursive on sub-containers
 	@Override
 	public void preProcess() {
-
 		SimpleContainer.super.preProcess();
 		for (T item : initialItems) {
-			T c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
+			T c = cloneItem(item);
 			items.put(c.id(), c);
 			itemsToInitials.put(c.id(), item);
 		}

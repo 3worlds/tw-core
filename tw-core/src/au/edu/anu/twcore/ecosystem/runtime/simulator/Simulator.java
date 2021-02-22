@@ -385,6 +385,7 @@ public class Simulator implements Resettable {
 	}
 
 	// postProcess() + preProcess() = reset a simulation at its initial state
+	@SuppressWarnings("unchecked")
 	@Override
 	public synchronized void preProcess() {
 		status = Initial;
@@ -400,6 +401,10 @@ public class Simulator implements Resettable {
 				ecosystem.addObserver(space);
 		// clones initial items to ecosystem objects
 		ecosystem.preProcess();
+		// update spaces too
+//		if (mainSpace!=null)
+//			for (ObserverDynamicSpace space : mainSpace.spaces())
+//				space.effectChanges();
 		// computes coordinates of items just added before
 		if (ecosystem.community()!=null)
 			computeInitialCoordinates(ecosystem.community());
