@@ -211,12 +211,6 @@ public class Simulator implements Resettable {
 						meta.addProperties(timerProps);
 					trackers.put(dt, meta);
 			}
-//					if (p instanceof Spatialized<?>) {
-//						DynamicSpace<SystemComponent, LocatedSystemComponent> sp = ((Spatialized<DynamicSpace<SystemComponent, LocatedSystemComponent>>) p)
-//								.space();
-//						if (sp != null)
-//							spaces.add(sp);
-//					}
 		}
 		// add system (arena) GraphDataTracker
 		GraphDataTracker gdt = ecosystem.arena().getDataTracker();
@@ -272,16 +266,9 @@ public class Simulator implements Resettable {
 			status = SimulatorStatus.Final;
 		else {
 			long step = nexttime - lastTime;
-//			 send drawing data for deleted ephemeral relations (dirty fix, but needed)
-//			if (mainSpace!=null)
-//				for (RelationContainer rc: ecosystem.relations())
-//					if (rc.autoDelete())
-//						for (DynamicSpace<SystemComponent> sp:mainSpace.spaces())
-//							rc.sendDataForAutoDeletedRelations(sp,nexttime,status);
 			// start recording data for this time step in all data trackers
 			for (DataTracker<?, Metadata> tracker : trackers.keySet())
 				tracker.openTimeRecord(status, nexttime);
-//			timetracker.sendData(nexttime);
 			lastTime = nexttime;
 			// 2 find all timeModels which must execute now - using bitmasks for
 			// searches
@@ -353,12 +340,8 @@ public class Simulator implements Resettable {
 				for (TwProcess p:lp)
 					if (p instanceof SearchProcess) {
 						SearchProcess proc = (SearchProcess) p;
-//						if (proc.space()!=null)
-//							proc.space().dataTracker().openTimeRecord(status,time); // creates the message
 						if (proc.isPermanent())
 							proc.setPermanentRelations(comps,ecosystem.community());
-//						if (proc.space()!=null)
-//							proc.space().dataTracker().closeTimeRecord(); // sends the message
 					}
 	}
 

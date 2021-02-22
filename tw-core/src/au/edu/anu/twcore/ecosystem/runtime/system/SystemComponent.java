@@ -57,8 +57,6 @@ public class SystemComponent
 	/** container */
 	private ComponentContainer container = null;
 
-	private boolean stateUnchanged = true;
-
 	private LocationData constantLocation = null;
 	private boolean dynamicLocation = false;
 	// the complete id of this component, includin all its containers
@@ -79,16 +77,6 @@ public class SystemComponent
 	public void setCategorized(Categorized<? extends CategorizedComponent> cat) {
 		if (categories==null)
 			categories = (Categorized<SystemComponent>) cat;
-	}
-
-	@Override
-	public boolean stateUnchanged() {
-		return stateUnchanged;
-	}
-
-	@Override
-	public void setStateUnchanged(boolean changed) {
-		stateUnchanged = changed;
 	}
 
 	/**

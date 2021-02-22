@@ -70,19 +70,4 @@ public interface DynamicSystem {
      */
     public void interpolateState(long time);
     
-    /**
-     * 
-     * 
-     * @return true if dynamic system was changed, false otherwise
-     */
-	public boolean stateUnchanged();
-	
-	/**
-	 * tag a dynamic system as changed.
-	 * 
-	 * @param changed true if system is changed, false if unchanged
-	 */
-	public void setStateUnchanged(boolean changed);
-
-
 }

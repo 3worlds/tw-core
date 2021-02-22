@@ -54,18 +54,6 @@ public abstract class HierarchicalComponent
 		implements CategorizedComponent,
 			Containing<DescribedContainer<SystemComponent>>,
 			Contained<DescribedContainer<SystemComponent>> {
-	
-	private boolean stateChanged = false;
-
-	@Override
-	public boolean stateUnchanged() {
-		return stateChanged;
-	}
-
-	@Override
-	public void setStateUnchanged(boolean changed) {
-		stateChanged = changed;
-	}
 
 	protected Categorized<? extends CategorizedComponent> categories = null;
 	private DescribedContainer<SystemComponent> content = null;

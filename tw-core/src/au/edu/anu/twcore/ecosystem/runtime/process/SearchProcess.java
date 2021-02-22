@@ -98,39 +98,32 @@ public class SearchProcess
 			// if others contains SCs of the proper categories
 			if ((others.itemCategorized()!=null) &&
 				(others.itemCategorized().belongsTo(otherCategories)) ) {
-					// loop on all SCs contained in focal's container (focal is the avatar/descriptors)
-					// check on focal categories has already been done before entering this method
-					for (SystemComponent fc:focal.content().items()) {
-//						Collection<SystemComponent> fcOthers = fc.getRelatives(relContainer.type().id());
-//						for (SystemComponent sc: others.items())
-//							if (sc!=fc) {
-//								if (!fcOthers.contains(sc))
-//									executeFunctions(t,dt,fc,sc);
-//						}
-						Collection<SystemComponent> fcOthers = fc.getOutRelatives(relContainer.type().id());
-						// loop on candidates for an ephemeral relation, excluding focal component (no self relations)
-						for (SystemComponent sc: others.items())
-							if (fc!=sc) {
-//								if (!sc.container().containsInitialItem(sc)) {
-									// if other and sc are not yet related, check they can be
-									if (!fcOthers.contains(sc))
-										executeFunctions(t,dt,fc,sc);
-									// if other and sc are already related AND autodelete is true,
-									// check if they stay related or if relation is deleted
-									else if (relContainer.autoDelete()) {
-										// this could be optimised according to relation lifespan
-										// by having two lists of items in space, one for just added items,
-										// one for items added for at least 1 time step
-										Collection<SystemRelation> fcRelations = fc.getOutRelations(relContainer.type().id());
-										// find relation between focal and other and check it
-										for (SystemRelation rel:fcRelations)
-											if (rel.endNode()==sc) {
-												executeFunctions(t,dt,fc,sc,rel);
-												break;
-										}
-									}
+				// loop on all SCs contained in focal's container (focal is the avatar/descriptors)
+				// check on focal categories has already been done before entering this method
+				for (SystemComponent fc:focal.content().items()) {
+					Collection<SystemComponent> fcOthers = fc.getOutRelatives(relContainer.type().id());
+					// loop on candidates for an ephemeral relation, excluding focal component (no self relations)
+					for (SystemComponent sc: others.items())
+						if (fc!=sc) {
+						// if other and sc are not yet related, check they can be
+						if (!fcOthers.contains(sc))
+							executeFunctions(t,dt,fc,sc);
+						// if other and sc are already related AND autodelete is true,
+						// check if they stay related or if relation is deleted
+						else if (relContainer.autoDelete()) {
+							// this could be optimised according to relation lifespan
+							// by having two lists of items in space, one for just added items,
+							// one for items added for at least 1 time step
+							Collection<SystemRelation> fcRelations = fc.getOutRelations(relContainer.type().id());
+							// find relation between focal and other and check it
+							for (SystemRelation rel:fcRelations)
+								if (rel.endNode()==sc) {
+									executeFunctions(t,dt,fc,sc,rel);
+									break;
+							}
 						}
 					}
+				}
 			}
 			// if others doesnt contain SCs of the proper categories: loop on others' subcontainers
 			else
@@ -167,7 +160,6 @@ public class SearchProcess
 				// focal cannot relate to itself
 				if (other!=focal)
 					if (other.membership().belongsTo(otherCategories)) {
-//						if (!other.container().containsInitialItem(other)) {
 						// dont search if item already related ! (NB: might be more efficient with set intersection ?)
 						if (!others.contains(other))
 							executeFunctions(t,dt,focal,other);
@@ -181,26 +173,9 @@ public class SearchProcess
 								if (rel.endNode()==other) {
 									executeFunctions(t,dt,focal,other,rel);
 									break;
-								}
+							}
 						}
-			}
-//			for (SystemComponent other:lsc) {
-//				// focal cannot relate to itself
-//				if (other!=focal)
-//					// do no check already related components [should be done before]
-//					// this could be optimised according to relation lifespan
-//					// by having two lists of items in space, one for just added items,
-//					// one for items added for at least 1 time step
-//					if (other.membership().belongsTo(otherCategories))
-
-			// WHAT WAS THIS FOR???
-//						if (!other.container().containsInitialItem(other))
-
-//							// dont search if item already related ! (NB: might be more efficient with set intersection ?)
-//							if (!others.contains(other)) {
-//								executeFunctions(t,dt,focal,other);
-//					}
-//			}
+					}
 		}
 	}
 
@@ -361,33 +336,23 @@ public class SearchProcess
 		}
 	}
 
-	/**
-	 * For permanent and NON-AUTODELETE ephemeral relations
-	 * @param focal
-	 * @param other
-	 */
-	private void establishRelation(SystemComponent focal,SystemComponent other) {
-		relContainer.addItem(focal,other);
-//		if (space!=null)
-//			if (space.dataTracker()!=null)
-//				space.dataTracker().createLine(focal.container().itemId(focal.id()),
-//					other.container().itemId(other.id()),
-//					relContainer.type().id());
-	}
-
-	/**
-	 * Only for AUTODELETE EPHEMERAL relations
-	 */
-	private void deleteRelation(SystemComponent focal,
-			SystemComponent other,
-			SystemRelation rel) {
-		relContainer.removeItem(rel);
-//    	if (space!=null)
-//    		if (space.dataTracker()!=null)
-//    			space.dataTracker().deleteLine(((SystemComponent)focal).container().itemId(focal.id()),
-//    				((SystemComponent)other).container().itemId(other.id()),
-//    				rel.type());
-	}
+//	/**
+//	 * For permanent and NON-AUTODELETE ephemeral relations
+//	 * @param focal
+//	 * @param other
+//	 */
+////	private void establishRelation(SystemComponent focal,SystemComponent other) {
+////		relContainer.addItem(focal,other);
+////	}
+//
+//	/**
+//	 * Only for AUTODELETE EPHEMERAL relations
+//	 */
+////	private void deleteRelation(SystemComponent focal,
+////			SystemComponent other,
+////			SystemRelation rel) {
+////		relContainer.removeItem(rel);
+////	}
 
 
 	/**
@@ -409,7 +374,7 @@ public class SearchProcess
 		for (RelateToDecisionFunction function: RTfunctions)
 			if (function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
 				otherLifeCycle,otherGroup,other,space))
-					establishRelation(focal,other);
+					relContainer.addItem(focal,other);
 	}
 	/**
 	 * Only for AUTODELETE EPHEMERAL relations.
@@ -428,7 +393,7 @@ public class SearchProcess
 		for (RelateToDecisionFunction function: RTfunctions)
 			if (!function.relate(t,dt,arena,focalLifeCycle,focalGroup,focal,
 				otherLifeCycle,otherGroup,other,space))
-				deleteRelation(focal,other,rel);
+					relContainer.removeItem(rel);
 	}
 
 

@@ -153,24 +153,8 @@ public class ComponentProcess
 		}
 		//-----------------------------------------------------------------------------------
 		// change state of this SystemComponent - easy
-//		// if there are no changeState functions, then just copy currentState to nextState
-//		if (CSfunctions.isEmpty()) {
-//			TwData next = focal.nextState();
-//			TwData current = focal.currentState();
-//			for (String key:next.getKeysAsSet())
-//				// TODO: what about tables ?????
-//				// need a specific function or do it in generated code - that makes sense
-//				next.setProperty(key, current.getPropertyValue(key));
-//		}
-		// if there are changeState functions, they take care of 
-		if (CSfunctions.isEmpty())
-			focal.setStateUnchanged(focal.stateUnchanged() & true);
-		for (ChangeStateFunction function : CSfunctions) {
+		for (ChangeStateFunction function : CSfunctions)
 			function.changeState(t,dt,arena,focalLifeCycle,focalGroup,focal,space);
-			focal.setStateUnchanged(false);
-//			if (space!=null)
-//				relocate((SystemComponent)focal);
-		}
 		if (focal.currentState() != null)
 			focal.nextState().writeDisable();
 		//-----------------------------------------------------------------------------------
@@ -179,9 +163,6 @@ public class ComponentProcess
 			for (DeleteDecisionFunction function : Dfunctions)
 				if (function.delete(t, dt, arena, focalLifeCycle,focalGroup, focal, space)) {
 			((SystemComponent)focal).container().removeItem((SystemComponent) focal); // safe - delayed removal
-			// also remove from space !!!
-//			if (space!=null)
-//				unlocate((SystemComponent)focal);
 			// remove from tracklist if dead - safe, data sending has already been made
 			for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)
 				if (tracker.isTracked(focal))
@@ -196,8 +177,6 @@ public class ComponentProcess
 					consequence.changeOtherState(t, dt,
 						arena, null, focalGroup, focal,
 						null, otherGroup, other, space);
-//					if (space!=null)
-//						relocate((SystemComponent)other);
 				}
 			}
 		}
@@ -217,7 +196,6 @@ public class ComponentProcess
 			else {
 				newBornSettings nbs = new newBornSettings();
 				nbs.factory = (ComponentFactory) focal.elementFactory();
-//				nbs.name = focal.membership().categoryId();
 				nbs.container = (ComponentContainer) ((SystemComponent)focal).container();
 				newBornSpecs.add(nbs);
 			}
@@ -252,18 +230,11 @@ public class ComponentProcess
 							newBorn.currentState().writeDisable();
 						}
 					}
-//					if (space!=null)
-//						locate(newBorn,nbs.container);
 					// establish a parentTo relation if needed
 					if (function.relateToOtherContainer()!=null) {
 						// this to make sure the newBorn can return a valid hierarcicalId before a line is drawn
 						newBorn.setContainer(nbs.container);
 						function.relateToOtherContainer().addItem(focal,newBorn); // delayed addition
-//						if (space!=null)
-//							if (space.dataTracker()!=null)
-//								space.dataTracker().createLine(((SystemComponent)focal).container().itemId(focal.id()),
-//									nbs.container.itemId(newBorn.id()),
-//									function.relateToOtherContainer().id());
 					}
 					// Reminder: this is just a list for delayed addition in ecosystem.effectChanges()
 					// before this, the newBorn container field is null
@@ -315,30 +286,17 @@ public class ComponentProcess
 					// this to make sure the newRecruit can return a valid hierarcicalId before a line is drawn
 					newRecruit.setContainer(recruitContainer);
 					recruitContainer.addItem(newRecruit); // safe: delayed addition
-//					// manage space
-//					if (space!=null) {
-//						unlocate((SystemComponent)focal);
-//						locate(newRecruit,recruitContainer);
-//					}
 					// if the recruit categories are compatible with the relations of the
 					// focal, maintain them, otherwise discard (already done just before)
 					for (SystemRelation sr:focal.getOutRelations())
 						if (newRecruit.membership().belongsTo(sr.membership().from().categories())) {
 							SystemComponent to = (SystemComponent)sr.endNode();
 							sr.container().addItem(newRecruit,to);
-//							// manage space
-//							if (space.dataTracker()!=null)
-//								space.dataTracker().createLine(recruitContainer.itemId(newRecruit.id()),
-//									to.container().itemId(to.id()),sr.type());
 					}
 					for (SystemRelation sr:focal.getInRelations())
 						if (newRecruit.membership().belongsTo(sr.membership().to().categories())) {
 							SystemComponent from = (SystemComponent)sr.startNode();
 							sr.container().addItem(from,newRecruit);
-//							// manage space
-//							if (space.dataTracker()!=null)
-//								space.dataTracker().createLine(from.container().itemId(from.id()),
-//									recruitContainer.itemId(newRecruit.id()),sr.type());
 						}
 					// remove from tracklist - safe, data sending has already been made
 					for (SamplerDataTracker<CategorizedComponent,?,Metadata> tracker:trackers)

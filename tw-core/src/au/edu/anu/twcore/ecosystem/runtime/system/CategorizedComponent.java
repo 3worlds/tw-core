@@ -129,29 +129,20 @@ public interface CategorizedComponent
 	@Override
 	public default void stepForward() {
 		TwData[] state = ((SystemComponentPropertyListImpl)properties()).drivers();
-		if (state != null) {
+		if (state != null)
 			if (nextState()!=null) {
-//				// in case there was no changeState function applied to this component,
-//				// carry over current to next
-//				if (stateUnchanged())
-//					nextState().setProperties(currentState());
-//				// otherwise: rotate driver records
-//				else {
-					// circular buffer
-					TwData last = state[state.length - 1]; // this is the last
-					last.writeEnable();
-					for (int i = state.length - 1; i > 0; i--)
-						state[i] = state[i - 1];
-					state[0] = last;
-					// copy back current values into next
-					if (last != null)
-						last.setProperties(state[CURRENT]);
-					((SystemComponentPropertyListImpl) properties()).rotateDriverProperties(state[CURRENT]);
-					last.writeDisable();
-//				}
-			}
+				// circular buffer
+				TwData last = state[state.length - 1]; // this is the last
+				last.writeEnable();
+				for (int i = state.length - 1; i > 0; i--)
+					state[i] = state[i - 1];
+				state[0] = last;
+				// copy back current values into next
+				if (last != null)
+					last.setProperties(state[CURRENT]);
+				((SystemComponentPropertyListImpl) properties()).rotateDriverProperties(state[CURRENT]);
+				last.writeDisable();
 		}
-		setStateUnchanged(true);
 	}
 
 	public default SystemRelation relateTo(CategorizedComponent toComponent, String relationType) {
