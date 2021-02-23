@@ -164,20 +164,21 @@ public class Component
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	public List<SystemComponent> getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!individuals.containsKey(id)) {
 			// the factory for components of this category
 			ComponentFactory factory = componentType.getInstance(id);
-			// the spaces in this model
-			TreeNode struc = (TreeNode) get(arena.getChildren(),
-				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label()))); 
-//			TreeNode struc = (TreeNode) get(this,parent(isClass(Structure.class)));
-			Collection<SpaceNode> spaces = (Collection<SpaceNode>) get(struc,
-				children(),
-				selectZeroOrMany(hasTheLabel(N_SPACE.label())));
+
+//			// the spaces in this model
+//			TreeNode struc = (TreeNode) get(arena.getChildren(),
+//				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label()))); 
+//			Collection<SpaceNode> spaces = (Collection<SpaceNode>) get(struc,
+//				children(),
+//				selectZeroOrMany(hasTheLabel(N_SPACE.label())));
+			
 			List<SystemComponent> result = new ArrayList<>(nInstances);
 			// for as many instances as requested:
 			for (int i=0; i<nInstances; i++) {
@@ -196,20 +197,26 @@ public class Component
 					}
 				}
 				// place component into spaces, if any
-				for (SpaceNode space:spaces) {
-					DynamicSpace<SystemComponent> sp = space.getInstance(id);
-					// locate component in all spaces
-					// Rule: if n instances >1 or no constantValue or variableValue node,
-					// then generate random locations - otherwise use provided locations
-					if ((getChildren().isEmpty())||(nInstances>1)) { // no coordinates were passed in init
-						// generate random coordinates
-						double[] initLoc = sp.randomLocation();
-						sc.locationData().setCoordinates(initLoc);
-						sp.addInitialItem(sc);
-					}
-					else // use coordinates found in children nodes
-						sp.addInitialItem(sc);
-				}
+				
+				// FLAW: this wont work with multiple spaces because locationData() needs a
+				// reference to the space
+				// unless all spaces use the same location data ?
+
+//				for (SpaceNode space:spaces) {
+//					DynamicSpace<SystemComponent> sp = space.getInstance(id);
+//					// locate component in all spaces
+//					// Rule: if n instances >1 or no constantValue or variableValue node,
+//					// then generate random locations - otherwise use provided locations
+//					if ((getChildren().isEmpty())||(nInstances>1)) { // no coordinates were passed in init
+//						// generate random coordinates
+//						double[] initLoc = sp.randomLocation();
+//						sc.locationData().setCoordinates(initLoc);
+//						sp.addInitialItem(sc);
+//					}
+//					else // use coordinates found in children nodes
+//						sp.addInitialItem(sc);
+//				}
+				
 				// insert component into its container
 				ComponentContainer container = null;
 				// find the proper container

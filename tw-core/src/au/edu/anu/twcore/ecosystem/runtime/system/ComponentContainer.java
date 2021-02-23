@@ -141,20 +141,20 @@ public class ComponentContainer
 	}
 	
 	
-	// NB: Recursive on sub-containers
-	@Override
-	public void preProcess() {
-		super.preProcess();
-		for (SystemComponent item : initialItems) {
-			SystemComponent c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
-			items.put(c.id(), c);
-			itemsToInitials.put(c.id(), item);
-		}
-		for (CategorizedContainer<SystemComponent> sc : subContainers.values())
-			sc.preProcess();
-		resetCounters();
-		setInitialState();
-	}
+//	// NB: Recursive on sub-containers
+//	@Override
+//	public void preProcess() {
+//		super.preProcess();
+//		for (SystemComponent item : initialItems) {
+//			SystemComponent c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
+//			items.put(c.id(), c);
+//			itemsToInitials.put(c.id(), item);
+//		}
+//		for (CategorizedContainer<SystemComponent> sc : subContainers.values())
+//			sc.preProcess();
+//		resetCounters();
+//		setInitialState();
+//	}
 
 	
 
@@ -265,8 +265,8 @@ public class ComponentContainer
 		}
 		for (SystemComponent item:items.values()) {
 			setInitialState(arena,lifeCycle,group,item);
-//			for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
-//				o.onNodeAdded(item);
+			for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
+				o.onNodeAdded(item);
 		}
 //			if (item.initialiser()!=null) {
 //				if (item.constants()!=null)

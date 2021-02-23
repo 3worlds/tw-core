@@ -105,9 +105,9 @@ public abstract class SpaceAdapter
 	/** list of SystemComponents to move later */
 	private Set<SystemComponent> toMove = new HashSet<>();
 	/** list of initial SystemComponents */
-	private Set<SystemComponent> initialComponents = new HashSet<>();
+//	private Set<SystemComponent> initialComponents = new HashSet<>();
 	/** mapping of cloned item to their initial components */
-	private Map<String,SystemComponent> itemsToInitials = new HashMap<>();
+//	private Map<String,SystemComponent> itemsToInitials = new HashMap<>();
 	private boolean changed = false;
 	private Set<SystemComponent> outOfSpace = new HashSet<>();
 
@@ -262,36 +262,45 @@ public abstract class SpaceAdapter
 		changed = false;
 	}
 
-	@Override
-	public final void setInitialItems(SystemComponent... items) {
-		for (SystemComponent lsc:items)
-			initialComponents.add(lsc);
-	}
-
-	@Override
-	public final void setInitialItems(Collection<SystemComponent> items) {
-		initialComponents.addAll(items);
-	}
-
-	@Override
-	public final void addInitialItem(SystemComponent item) {
-		initialComponents.add(item);
-	}
-
-	@Override
-	public final Set<SystemComponent> getInitialItems() {
-		return Collections.unmodifiableSet(initialComponents);
-	}
-
-	@Override
-	public final boolean containsInitialItem(SystemComponent item) {
-		return initialComponents.contains(item);
-	}
-
-	@Override
-	public final SystemComponent initialForItem(String id) {
-		return itemsToInitials.get(id);
-	}
+//	@Override
+//	@Deprecated
+//	public final void setInitialItems(SystemComponent... items) {
+////		for (SystemComponent lsc:items)
+////			initialComponents.add(lsc);
+//	}
+//
+//	@Override
+//	@Deprecated
+//	public final void setInitialItems(Collection<SystemComponent> items) {
+////		initialComponents.addAll(items);
+//	}
+//
+//	@Override
+//	@Deprecated
+//	public final void addInitialItem(SystemComponent item) {
+////		initialComponents.add(item);
+//	}
+//
+//	@Override
+//	@Deprecated
+//	public final Set<SystemComponent> getInitialItems() {
+////		return Collections.unmodifiableSet(initialComponents);
+//		return null;
+//	}
+//
+//	@Override
+//	@Deprecated
+//	public final boolean containsInitialItem(SystemComponent item) {
+////		return initialComponents.contains(item);
+//		return false;
+//	}
+//
+//	@Override
+//	@Deprecated
+//	public final SystemComponent initialForItem(String id) {
+////		return itemsToInitials.get(id);
+//		return null;
+//	}
 
 	// Resettable
 
@@ -305,7 +314,7 @@ public abstract class SpaceAdapter
 		clear();
 		toDelete.clear();
 		toInsert.clear();
-		itemsToInitials.clear();
+//		itemsToInitials.clear();
 		((ResettableLocalScope)scope()).postProcess();
 	}
 

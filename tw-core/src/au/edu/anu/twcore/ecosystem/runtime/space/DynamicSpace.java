@@ -48,7 +48,6 @@ import fr.ens.biologie.generic.Resettable;
 public interface DynamicSpace<T extends Locatable>
 	extends Space<T>,
 			DynamicContainer<T>,
-			ResettableContainer<T>,
 			RngHolder,
 			SingleDataTrackerHolder<Metadata>,
 			Resettable {

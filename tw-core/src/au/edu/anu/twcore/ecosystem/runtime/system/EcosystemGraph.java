@@ -214,8 +214,10 @@ public class EcosystemGraph
 
 	@Override
 	public void preProcess() {
-		if (components!=null)
+		if (components!=null) {
 			components.preProcess();
+			components.setInitialState();
+		}
 		for (RelationContainer rc: relations.values())
 			rc.preProcess();
 		// reinitialise state variables and constants

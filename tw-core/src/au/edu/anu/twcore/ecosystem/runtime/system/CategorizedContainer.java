@@ -391,7 +391,7 @@ public abstract class CategorizedContainer<T extends Identity>
 		for (CategorizedContainer<T> sc : subContainers.values())
 			sc.preProcess();
 		resetCounters();
-		setInitialState();
+//		setInitialState();
 	}
 
 	protected void setInitialState() {
