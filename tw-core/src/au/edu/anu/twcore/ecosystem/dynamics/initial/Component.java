@@ -46,14 +46,12 @@ import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.ArenaType;
-import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
-import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -112,18 +110,12 @@ public class Component
 		arena = (ArenaType) get(this,parent(isClass(ArenaType.class)));
 		TreeNode struc = (TreeNode) get(arena.getChildren(),
 			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label()))); 
-//		TreeNode struc = (TreeNode) get(this,parent(isClass(Structure.class)));
 		nComponentTypes = ((Collection<?>) get(struc, childTree(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label()))) ).size();
 		componentType = (ComponentType) getParent();
 		// this edge, if present, points to a Group node
 		Edge instof = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
-		// CAUTION: we may have no instof Group if no GroupType was defined
-		// in this case the group will be the self generated one.
-//		if (instof==null)
-//			arena = (ArenaType) get(this,parent(isClass(ArenaType.class)));
-//		else
 		if (instof!=null)
 			group = (Group) instof.endNode();
 		sealed = true;
@@ -164,21 +156,12 @@ public class Component
 	}
 
 	@Override
-//	@SuppressWarnings("unchecked")
 	public List<SystemComponent> getInstance(int id) {
 		if (!sealed)
 			initialise();
 		if (!individuals.containsKey(id)) {
 			// the factory for components of this category
 			ComponentFactory factory = componentType.getInstance(id);
-
-//			// the spaces in this model
-//			TreeNode struc = (TreeNode) get(arena.getChildren(),
-//				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label()))); 
-//			Collection<SpaceNode> spaces = (Collection<SpaceNode>) get(struc,
-//				children(),
-//				selectZeroOrMany(hasTheLabel(N_SPACE.label())));
-			
 			List<SystemComponent> result = new ArrayList<>(nInstances);
 			// for as many instances as requested:
 			for (int i=0; i<nInstances; i++) {
@@ -196,27 +179,6 @@ public class Component
 						((ConstantValues) tn).fill(sc.constants());
 					}
 				}
-				// place component into spaces, if any
-				
-				// FLAW: this wont work with multiple spaces because locationData() needs a
-				// reference to the space
-				// unless all spaces use the same location data ?
-
-//				for (SpaceNode space:spaces) {
-//					DynamicSpace<SystemComponent> sp = space.getInstance(id);
-//					// locate component in all spaces
-//					// Rule: if n instances >1 or no constantValue or variableValue node,
-//					// then generate random locations - otherwise use provided locations
-//					if ((getChildren().isEmpty())||(nInstances>1)) { // no coordinates were passed in init
-//						// generate random coordinates
-//						double[] initLoc = sp.randomLocation();
-//						sc.locationData().setCoordinates(initLoc);
-//						sp.addInitialItem(sc);
-//					}
-//					else // use coordinates found in children nodes
-//						sp.addInitialItem(sc);
-//				}
-				
 				// insert component into its container
 				ComponentContainer container = null;
 				// find the proper container

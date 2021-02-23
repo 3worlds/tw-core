@@ -47,8 +47,6 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.experiment.runtime.Deployable;
 import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
-import au.edu.anu.twcore.experiment.runtime.deployment.SingleDeployer;
-
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import java.util.logging.Logger;

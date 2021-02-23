@@ -33,7 +33,6 @@ import java.util.Collections;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.runtime.containers.DynamicContainer;
-import au.edu.anu.twcore.ecosystem.runtime.containers.ResettableContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
 import au.edu.anu.twcore.rngFactory.RngHolder;

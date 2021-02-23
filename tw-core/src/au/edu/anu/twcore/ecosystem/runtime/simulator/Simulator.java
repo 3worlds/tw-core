@@ -48,7 +48,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.SearchProcess;
 import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
-import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
 import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.space.Space;
 import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
@@ -56,8 +55,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
-import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
-import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
@@ -147,7 +144,6 @@ public class Simulator implements Resettable {
 	/** all data trackers used in this simulator, together with their metadata */
 	private Map<DataTracker<?, Metadata>, Metadata> trackers = new HashMap<>();
 	/** all spaces used in this simulation */
-//	private Set<DynamicSpace<SystemComponent, LocatedSystemComponent>> spaces = new HashSet<>();
 	private SpaceOrganiser mainSpace=null;
 
 	// CONSTRUCTORS
@@ -346,49 +342,6 @@ public class Simulator implements Resettable {
 					}
 	}
 
-//	/**
-//	 * recomputes the coordinates of systemComponents after copied from initial
-//	 * systems recursive. Doesnt use the Observer system (but works ok, so...)
-//	 */
-//	private void computeInitialCoordinates(CategorizedContainer<SystemComponent> container) {
-//		for (SystemComponent sc : container.items()) {
-//			Iterable<DynamicSpace<SystemComponent>> spaces =
-//				((ComponentFactory) sc.membership()).spaces();
-//			// get the initial item matching this
-//			SystemComponent isc = container.initialForItem(sc.id());
-//			for (DynamicSpace<SystemComponent> space : spaces) {
-//				// make space dataTracker ready to receive data
-//				if (space.dataTracker() != null) {
-//					space.dataTracker().setInitialTime();
-//					space.dataTracker().openTimeRecord(status,startTime);
-//				}
-//				// get the location of this initial item
-//				if (space.getInitialItems().contains(isc)) {
-//					LocationData iscLoc = isc.locationData();
-//					if (iscLoc!=null) {
-//						if (!space.boundingBox().contains(iscLoc.asPoint())) {
-//							sc.locationData().setCoordinates(space.defaultLocation());
-//							space.locate(sc);
-//						}
-//						else {
-//							sc.locationData().setCoordinates(iscLoc.coordinates());
-//							space.locate(sc);
-//						}
-//						// send coordinates to data tracker if needed
-//						if (space.dataTracker() != null)
-//							space.dataTracker().createPoint(iscLoc.coordinates(),sc.hierarchicalId());
-////							space.dataTracker().createPoint(sc.locationData().coordinates(),container.itemId(sc.id()));
-//					}
-//				}
-//				// close and send dataTracker message
-//				if (space.dataTracker() != null)
-//					space.dataTracker().closeTimeRecord();
-//			}
-//		}
-//		for (CategorizedContainer<SystemComponent> cc : container.subContainers())
-//			computeInitialCoordinates(cc);
-//	}
-
 	// postProcess() + preProcess() = reset a simulation at its initial state
 	@SuppressWarnings("unchecked")
 	@Override
@@ -411,16 +364,13 @@ public class Simulator implements Resettable {
 			}
 		// clones initial items to ecosystem objects
 		ecosystem.preProcess();
-		// update spaces too
+		// update spaces and send data for display
 		if (mainSpace!=null)
 			for (ObserverDynamicSpace space : mainSpace.spaces()) {
 				space.effectChanges();
 				if (space.dataTracker() != null)
 					space.dataTracker().closeTimeRecord();
 		}
-		// computes coordinates of items just added before
-//		if (ecosystem.community()!=null)
-//			computeInitialCoordinates(ecosystem.community());
 		if (ecosystem.community()!=null)
 			setPermanentRelations(ecosystem.community().allItems(),0L);
 		// new community

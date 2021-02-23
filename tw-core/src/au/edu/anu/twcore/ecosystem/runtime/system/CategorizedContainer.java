@@ -158,17 +158,6 @@ public abstract class CategorizedContainer<T extends Identity>
 		return initialItems;
 	}
 
-//	/**
-//	 * Returns the set of categories ({@linkplain Category}) associated to this
-//	 * container. If this container has variables and parameters, they are specified
-//	 * by these categories.
-//	 *
-//	 * @return the object holding all the category information
-//	 */
-//	public Categorized<?> containerCategorized() {
-//		return avatar.membership();
-//	}
-
 	/**
 	 * Returns the set of categories ({@linkplain Category}) associated to the items
 	 * stored in this container.
@@ -391,7 +380,6 @@ public abstract class CategorizedContainer<T extends Identity>
 		for (CategorizedContainer<T> sc : subContainers.values())
 			sc.preProcess();
 		resetCounters();
-//		setInitialState();
 	}
 
 	protected void setInitialState() {
@@ -408,7 +396,6 @@ public abstract class CategorizedContainer<T extends Identity>
 		for (CategorizedContainer<T> sc : subContainers.values())
 			sc.postProcess();
 		resetCounters();
-//		((ResettableLocalScope)scope()).postProcess();
 		fullId = null;
 		depth = -1;
 		SimpleContainer.super.postProcess();

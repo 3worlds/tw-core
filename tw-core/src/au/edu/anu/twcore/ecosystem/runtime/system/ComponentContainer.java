@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import au.edu.anu.twcore.ecosystem.runtime.containers.SimpleContainer;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
@@ -88,13 +87,6 @@ public class ComponentContainer
 	@Override
 	public void removeItem(SystemComponent item) {
 		super.removeItem(item);
-		// Is this needed at all? effectChanges will remove all the relations anyway...
-//		for (SystemRelation sr:item.getRelations()) {
-//			// BUG HERE: sometimes container() == null ??? in neighbourhood relation
-//			// due to searchprocess
-////			if (sr.container()!=null) // this fix is probably a wrong idea. IT IS!
-//			sr.container().removeItem(sr);
-//		}
 	}
 
 	/**
@@ -140,24 +132,6 @@ public class ComponentContainer
 		clearState(this);
 	}
 	
-	
-//	// NB: Recursive on sub-containers
-//	@Override
-//	public void preProcess() {
-//		super.preProcess();
-//		for (SystemComponent item : initialItems) {
-//			SystemComponent c = cloneItem(item); // Pb! coordinates - how to get the spaces from here ?
-//			items.put(c.id(), c);
-//			itemsToInitials.put(c.id(), item);
-//		}
-//		for (CategorizedContainer<SystemComponent> sc : subContainers.values())
-//			sc.preProcess();
-//		resetCounters();
-//		setInitialState();
-//	}
-
-	
-
 	// best if static to avoid errors
 	private static void clearState(CategorizedContainer<SystemComponent> parentContainer) {
 		for (CategorizedContainer<SystemComponent> childContainer : parentContainer.subContainers())
@@ -231,7 +205,6 @@ public class ComponentContainer
 	// RECURSIVE
 	@Override
 	protected void setInitialState() {
-//		boolean yet = false;
 		CategorizedComponent group = null;
 		CategorizedComponent lifeCycle = null;
 		CategorizedComponent arena = null;
@@ -244,8 +217,6 @@ public class ComponentContainer
 			if (cc instanceof ArenaComponent)
 				arena = cc;
 			setInitialState(null,null,null,lifeCycle);
-//			if (lifeCycle.initialiser()!=null)
-//				lifeCycle.initialiser().setInitialState(null, null, null, lifeCycle, null);
 		}
 		else if (cc instanceof GroupComponent) {
 			group = cc;
@@ -260,36 +231,12 @@ public class ComponentContainer
 				arena = cc;
 			}
 			setInitialState(null,null,null,group);
-//			if (group.initialiser()!=null)
-//				group.initialiser().setInitialState(null, null, null, group, null);
 		}
 		for (SystemComponent item:items.values()) {
 			setInitialState(arena,lifeCycle,group,item);
 			for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
 				o.onNodeAdded(item);
 		}
-//			if (item.initialiser()!=null) {
-//				if (item.constants()!=null)
-//					item.constants().writeEnable();
-//				if (item.currentState()!=null) {
-//					item.currentState().writeEnable();
-//					item.nextState().writeEnable();
-//				}
-//				item.initialiser().setInitialState(arena, lifeCycle, group, item, null);
-//				if (item.constants()!=null)
-//					item.constants().writeDisable();
-//				if (item.currentState()!=null) {
-//					// initialiser methods return values in currentState, so copy them
-//					// to nextState in order for stepForward() to work properly
-//					item.nextState().setProperties(item.currentState());
-//					item.currentState().writeDisable();
-//					item.nextState().writeDisable();
-//				}
-//				if (!yet) {
-//					item.initialiser().startEventQueues();
-//					yet=true;
-//				}
-//			}
 		for (CategorizedContainer<SystemComponent> sc : subContainers())
 			sc.setInitialState();
 	}

@@ -29,10 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -104,10 +101,6 @@ public abstract class SpaceAdapter
 	private Set<SystemComponent> toDelete = new HashSet<>();
 	/** list of SystemComponents to move later */
 	private Set<SystemComponent> toMove = new HashSet<>();
-	/** list of initial SystemComponents */
-//	private Set<SystemComponent> initialComponents = new HashSet<>();
-	/** mapping of cloned item to their initial components */
-//	private Map<String,SystemComponent> itemsToInitials = new HashMap<>();
 	private boolean changed = false;
 	private Set<SystemComponent> outOfSpace = new HashSet<>();
 
@@ -241,7 +234,7 @@ public abstract class SpaceAdapter
 		toMove.add(item);
 	}
 
-	// ResettableContainer
+	// DynamicContainer
 
 	@SafeVarargs
 	@Override
@@ -262,46 +255,6 @@ public abstract class SpaceAdapter
 		changed = false;
 	}
 
-//	@Override
-//	@Deprecated
-//	public final void setInitialItems(SystemComponent... items) {
-////		for (SystemComponent lsc:items)
-////			initialComponents.add(lsc);
-//	}
-//
-//	@Override
-//	@Deprecated
-//	public final void setInitialItems(Collection<SystemComponent> items) {
-////		initialComponents.addAll(items);
-//	}
-//
-//	@Override
-//	@Deprecated
-//	public final void addInitialItem(SystemComponent item) {
-////		initialComponents.add(item);
-//	}
-//
-//	@Override
-//	@Deprecated
-//	public final Set<SystemComponent> getInitialItems() {
-////		return Collections.unmodifiableSet(initialComponents);
-//		return null;
-//	}
-//
-//	@Override
-//	@Deprecated
-//	public final boolean containsInitialItem(SystemComponent item) {
-////		return initialComponents.contains(item);
-//		return false;
-//	}
-//
-//	@Override
-//	@Deprecated
-//	public final SystemComponent initialForItem(String id) {
-////		return itemsToInitials.get(id);
-//		return null;
-//	}
-
 	// Resettable
 
 	@Override
@@ -314,7 +267,6 @@ public abstract class SpaceAdapter
 		clear();
 		toDelete.clear();
 		toInsert.clear();
-//		itemsToInitials.clear();
 		((ResettableLocalScope)scope()).postProcess();
 	}
 

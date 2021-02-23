@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
@@ -48,12 +47,6 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 	public ArenaComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
-
-//	// not very clean, but that's where the info is
-//	@Override
-//	public SetInitialStateFunction initialiser() {
-//		return ((ArenaFactory) membership()).setinit;
-//	}
 
 	// Particular to arena as it is a singleton instance
 	@Override
@@ -75,7 +68,6 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 				constants().writeDisable();
 			if (currentState() != null)
 				currentState().writeDisable();
-//			initialiser().startEventQueues();
 		}
 
 	}
