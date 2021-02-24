@@ -34,14 +34,21 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_SYSTEM;
 import java.util.Arrays;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.queries.prototype.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.prototype.Queryable;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 
-import static au.edu.anu.rscs.aot.queries.prototype.XCoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.prototype.XSequenceQuery.*;
+import static au.edu.anu.rscs.aot.queries.XCoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.XSequenceQuery.*;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 
+/**
+ * @author Ian Davies
+ *
+ * @date 24 Feb. 2021
+ * 
+ * Test case for syntax for revised query system.
+ */
 public class XBaselineQuery extends QueryAdaptor {
 
 	@Override
@@ -64,7 +71,7 @@ public class XBaselineQuery extends QueryAdaptor {
 			int i = 0;
 			for (TreeNode s : systems)
 				sys[i++] = s.toShortString();
-			errorMsg = "'" + exp.toShortString() + "' must have an edge '" + E_BASELINE.label() + "' to one of "
+			errorMsg = "'" + exp.toShortString() + "' must have an edge labelled '" + E_BASELINE.label() + "' to one of "
 					+ Arrays.deepToString(sys);
 			return this;
 		}
