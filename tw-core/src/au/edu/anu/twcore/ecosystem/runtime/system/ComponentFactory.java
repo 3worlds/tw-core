@@ -30,12 +30,13 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
-import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.properties.SimplePropertyList;
 
@@ -49,15 +50,15 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 public class ComponentFactory extends ElementFactory<SystemComponent> {
 
 	/** The list of spaces in which the components made by this factory MUST be located */
-	private List<DynamicSpace<SystemComponent>> spaces = new ArrayList<>();
+	private List<ObserverDynamicSpace> spaces = new ArrayList<>();
 
 	public ComponentFactory(Set<Category> categories,
-			Collection<DynamicSpace<SystemComponent>> spaces,
+			Collection<ObserverDynamicSpace> spaces,
 			TwData auto, TwData drv,
 			TwData dec, TwData ltc, SetInitialStateFunction setinit,
 			boolean permanent,int simulatorId) {
 		super(categories, auto, drv, dec, ltc, setinit, permanent, simulatorId);
-		this.spaces.addAll(spaces);
+		this.spaces.addAll(spaces); // !: this. must be kept
 	}
 
 	@Override
@@ -74,8 +75,8 @@ public class ComponentFactory extends ElementFactory<SystemComponent> {
 		return result;
 	}
 
-	public Iterable<DynamicSpace<SystemComponent>> spaces() {
-		return spaces;
+	public Collection<ObserverDynamicSpace> spaces() {
+		return Collections.unmodifiableCollection(spaces);
 	}
 
 }

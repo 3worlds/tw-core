@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
@@ -251,7 +252,8 @@ public class ComponentContainer
 		for (SystemComponent item:items.values()) {
 			setInitialState(arena,lifeCycle,group,item);
 			for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
-				o.onNodeAdded(item);
+				if (item.isInSpace((ObserverDynamicSpace) o))
+					o.onNodeAdded(item);
 		}
 		for (CategorizedContainer<SystemComponent> sc : subContainers())
 			sc.setInitialState();

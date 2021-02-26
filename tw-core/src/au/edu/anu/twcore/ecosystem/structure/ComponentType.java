@@ -41,12 +41,13 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
-import au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace;
+import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -107,18 +108,36 @@ public class ComponentType extends ElementType<ComponentFactory, SystemComponent
 					edgeListStartNodes()));
 		}
 		// get all the spaces attached to the ProcessNodes
-		for (ProcessNode pn:lp) {
-			SpaceNode sn = (SpaceNode) get(pn.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_SPACE.label())),
-				endNode());
-			if (sn!=null)
-				spaces.add(sn);
+//		// FLAW: one must check if coordinate fields are present in ComponentType categories, rather
+//		for (ProcessNode pn:lp) {
+//			SpaceNode sn = (SpaceNode) get(pn.edges(Direction.OUT),
+//				selectZeroOrOne(hasTheLabel(E_SPACE.label())),
+//				endNode());
+//			if (sn!=null)
+//				spaces.add(sn);
+//		}
+		// search for spaces this type of component may be inserted in
+		for (Category c:lc) {
+			// look for all fields in categories
+			Collection<TreeGraphDataNode> records = (Collection<TreeGraphDataNode>) get(c.edges(Direction.OUT),
+				edgeListEndNodes(),
+				selectZeroOrMany(hasTheLabel(N_RECORD.label())));
+			for (TreeGraphDataNode rec:records) 
+				for (TreeNode field:rec.getChildren()){
+				// look for fields which are referenced by a space
+				Collection<SpaceNode> sp = (Collection<SpaceNode>) get(field.edges(Direction.IN),
+					edgeListStartNodes(),
+					selectZeroOrMany(hasTheLabel(N_SPACE.label())));
+				// record the spaces
+				spaces.addAll(sp);
+			}
 		}
+		
 	}
 
 	@Override
 	protected ComponentFactory makeTemplate(int id) {
-		List<DynamicSpace<SystemComponent>> sps = new LinkedList<>();
+		List<ObserverDynamicSpace> sps = new LinkedList<>();
 		for (SpaceNode sn:spaces)
 			sps.add(sn.getInstance(id));
 		if (setinit!=null)

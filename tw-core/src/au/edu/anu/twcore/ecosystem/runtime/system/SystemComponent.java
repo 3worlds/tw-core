@@ -36,6 +36,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
 import au.edu.anu.twcore.ecosystem.runtime.space.Locatable;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
+import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.ALDataNode;
 import fr.cnrs.iees.identity.Identity;
@@ -203,6 +204,10 @@ public class SystemComponent
 	@Override
 	public boolean mobile() {
 		return (dynamicLocation);
+	}
+	
+	public boolean isInSpace(ObserverDynamicSpace space) {
+		return ((ComponentFactory) categories).spaces().contains(space);
 	}
 
 }
