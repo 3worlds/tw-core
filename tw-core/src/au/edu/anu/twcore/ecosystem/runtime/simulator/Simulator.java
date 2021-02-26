@@ -311,9 +311,18 @@ public class Simulator implements Resettable {
 							au.writeDisable();
 			}
 			// apply changes to spaces
-			if (mainSpace!=null)
-				for (DynamicSpace<SystemComponent> space : mainSpace.spaces())
+			if (mainSpace!=null) {
+				for (DynamicSpace<SystemComponent> space : mainSpace.spaces()) {
 					space.effectChanges();
+					// handle components that left the space (oblivion edge effect)
+					for (SystemComponent sc:space.outOfSpaceItems()) {
+						ComponentContainer c = (ComponentContainer) sc.container();
+						c.removeItemNow(sc);
+						sc.detachFromContainer(); // important: cannot be done inside removeItemNow() --> crash
+					}
+					space.outOfSpaceItems().clear();
+				}
+			}
 			// set permanent relation for newly created (and located) systems
 			setPermanentRelations(newComp,nexttime);
 			for (RelationContainer rc:ecosystem.relations())

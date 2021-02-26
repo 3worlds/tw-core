@@ -29,7 +29,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
-
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
@@ -171,7 +170,7 @@ public interface Space<T extends Locatable> {
 	 * clears all items EXCEPT those that were located with locateUnclearable
 	 */
 	public void clear();
-
+	
 //	/**
 //	 * return a location from x coordinates
 //	 * @param x

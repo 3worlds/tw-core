@@ -144,7 +144,7 @@ public class SearchProcess
 	 */
 	private void indexedLoop(double t, double dt,
 			SystemComponent focal) {
-		Iterable<SystemComponent> lsc;
+		Iterable<SystemComponent> lsc = null;
 		// Get candidates for a relation in a restricted area of space
 		// search radius positive, means we only search until this distance
 		if (searchRadius>space.precision())

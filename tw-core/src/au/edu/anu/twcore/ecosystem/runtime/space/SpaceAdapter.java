@@ -243,9 +243,6 @@ public abstract class SpaceAdapter
 		for (SystemComponent sc:toDelete)
 			unlocate(sc);
 		toDelete.clear();
-		// CAUTION: what happens if the system is to be deleted in containers after relocation?
-		// IDEA: have an 'outofSpace' list of items that are off this space? so they are not
-		// deleted here
 		for (SystemComponent lsc:toInsert)
 			locate(lsc);
 		toInsert.clear();
@@ -498,6 +495,11 @@ public abstract class SpaceAdapter
 		removeItem(sc);
 		if (dataTracker!=null)
 			dataTracker().deletePoint(sc.hierarchicalId());
+	}
+
+	@Override
+	public Collection<SystemComponent> outOfSpaceItems() {
+		return outOfSpace;
 	}
 
 }

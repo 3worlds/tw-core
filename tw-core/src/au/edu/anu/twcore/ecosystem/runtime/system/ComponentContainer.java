@@ -88,6 +88,22 @@ public class ComponentContainer
 	public void removeItem(SystemComponent item) {
 		super.removeItem(item);
 	}
+	
+	
+
+	/**
+	 * CAUTION: This method is only here to handle removal of SystemComponents that jumped out
+	 * of their space. As this cannot be handled in the usual effectChanges() method, it is done
+	 * here. It should NEVER be used for anything else.
+	 */
+	@Override
+	public void removeItemNow(SystemComponent item) {
+		SystemComponent sc = items.remove(item.id());
+		if (sc != null) {
+			itemsToInitials.remove(item.id());
+			sc.disconnect();
+		}
+	}
 
 	/**
 	 * clears decorators for next time step,
