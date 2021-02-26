@@ -109,6 +109,8 @@ hasNode processSpec
 		className = String("au.edu.anu.twcore.archetype.tw.LifespanFunctionCompatibilityQuery")
 	mustSatisfyQuery CategoryConsistencySpec
 		className = String("au.edu.anu.twcore.archetype.tw.CategoryConsistencyQuery")
+	mustSatisfyQuery SearchProcessConsistencySpec
+		className = String("au.edu.anu.twcore.archetype.tw.SearchProcessConsistencyQuery")
 
 	hasEdge dependsOnSpec
 		isOfClass = String("dependsOn")
