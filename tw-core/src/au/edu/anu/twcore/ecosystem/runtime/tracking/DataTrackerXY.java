@@ -52,7 +52,6 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  */
 public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,OutputXYData, Metadata> {
 
-	private CategorizedComponent trackedComponent = null;
 	private long currentTime = 0L;
 	private SimulatorStatus currentStatus = null;
 	private DataLabel currentItem = null;
@@ -70,9 +69,9 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 			ReadOnlyPropertyList fieldMetadata) {
 		super(DataMessageTypes.XY,simulatorId,selection,1,trackedGroup,trackedComponents);
 		senderId = simulatorId;
-		if (trackedComponents!=null)
-			if (!trackedComponents.isEmpty())
-				trackedComponent = trackedComponents.get(0);
+//		if (trackedComponents!=null)
+//			if (!trackedComponents.isEmpty())
+//				trackedComponent = trackedComponents.get(0);
 		// Assuming here that fieldMetadata only contains 2 properties
 		metadata = new Metadata(senderId,fieldMetadata);
 		// the properties are sorted in alphabetical order: first is x, second is y
@@ -166,60 +165,13 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 	}
 
 	@Override
-	public boolean isTracked(CategorizedComponent sc) {
-		return (trackedComponent==sc);
-	}
-
-	@Override
-	public void updateSample() {
-		super.updateSample();
-// TODO: refactor this completely		
-		
-//		if (!trackedComponent.isPermanent()) {
-//			if (samplingPool==null) {
-//				trackedComponent = null;
-//				currentItem = null;
-//			}
-//			else if (!trackedContainer.contains(trackedComponent)) {
-//				trackedComponent = null;
-//				currentItem = null;
-//				switch (trackMode) {
-//					case FIRST:
-//						for (CategorizedComponent cc:trackedContainer.items()) {
-//							trackedComponent = cc;
-//							break;
-//						}
-//						break;
-//					case RANDOM:
-//						int max = ((Population)trackedContainer.descriptors().autoVar()).count();
-//						int stop = rng.nextInt(max);
-//						int i=0;
-//						for (CategorizedComponent cc:trackedContainer.items()) {
-//							trackedComponent = cc;
-//							if (i==stop)
-//								break;
-//							i++;
-//						}
-//						break;
-//					case LAST:
-//						for (CategorizedComponent cc:trackedContainer.items())
-//							trackedComponent = cc;
-//						break;
-//				}
-//				// NB: trackedComponent may sill be null here
-//			}
-//		}
-	}
-
-	@Override
 	public Metadata getInstance() {
 		return metadata;
 	}
 
 	@Override
 	public void closeTimeRecord() {
-		// TODO Auto-generated method stub
-		
+		// DO NOTHING as messages are sent at every call to record.
 	}
 
 

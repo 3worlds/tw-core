@@ -234,8 +234,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 
 	@Override
 	public void closeTimeRecord() {
-		// TODO Auto-generated method stub
-		
+		// DO NOTHING as messages are sent at every call to record.
 	}
 
 }

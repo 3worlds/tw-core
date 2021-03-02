@@ -201,5 +201,4 @@ public abstract class SamplerDataTracker<C,T,M>
 		return sample.contains(item);
 	}
 
-
 }
