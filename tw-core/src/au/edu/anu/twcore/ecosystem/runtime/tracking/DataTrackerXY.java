@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.OutputXYData;
@@ -60,6 +59,9 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 	// but this is already done in the DataTracker0D...
 	private String xPropName = null;
 	private String yPropName = null;
+	// JG: new
+	private DataLabel xprop = null;
+	private DataLabel yprop = null;
 
 	public DataTrackerXY(int simulatorId,
 			SamplingMode selection,
@@ -69,9 +71,6 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 			ReadOnlyPropertyList fieldMetadata) {
 		super(DataMessageTypes.XY,simulatorId,selection,1,trackedGroup,trackedComponents);
 		senderId = simulatorId;
-//		if (trackedComponents!=null)
-//			if (!trackedComponents.isEmpty())
-//				trackedComponent = trackedComponents.get(0);
 		// Assuming here that fieldMetadata only contains 2 properties
 		metadata = new Metadata(senderId,fieldMetadata);
 		// the properties are sorted in alphabetical order: first is x, second is y
@@ -88,6 +87,8 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 				break;
 			i++;
 		}
+		xprop = new DataLabel(xPropName);
+		yprop = new DataLabel(yPropName);
 	}
 
 	@Override
@@ -102,63 +103,65 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 			currentItem = new DataLabel(labels);
 	}
 
-	// AT the moment this only works with fields, no tables.
-	private void getRecValue(int depth, TwData root, OutputXYData xyd) {
-		if (root.hasProperty(xPropName)) {
-			Object next = root.getPropertyValue(xPropName);
-			if (next instanceof Table) {
-				// TODO !!
-			}
-			else {
-				if (next instanceof Double)
-					xyd.setX((double) next);
-				else if (next instanceof Float)
-					xyd.setX((Float)next);
-				else if (next instanceof Integer)
-					xyd.setX((int)next);
-				else if (next instanceof Long)
-					xyd.setX((long)next);
-				else if (next instanceof Boolean)
-					xyd.setX((boolean)next);
-				else if (next instanceof Short)
-					xyd.setX((short)next);
-				else if (next instanceof Byte)
-					xyd.setX((byte)next);
-			}
-		}
-		if (root.hasProperty(yPropName)) {
-			Object next = root.getPropertyValue(yPropName);
-			if (next instanceof Table) {
-				// TODO !!
-			}
-			else {
-				if (next instanceof Double)
-					xyd.setY((double) next);
-				else if (next instanceof Float)
-					xyd.setY((Float)next);
-				else if (next instanceof Integer)
-					xyd.setY((int)next);
-				else if (next instanceof Long)
-					xyd.setY((long)next);
-				else if (next instanceof Boolean)
-					xyd.setY((boolean)next);
-				else if (next instanceof Short)
-					xyd.setY((short)next);
-				else if (next instanceof Byte)
-					xyd.setY((byte)next);
-			}
-		}
-	}
+//	// AT the moment this only works with fields, no tables.
+//	private void getRecValue(int depth, TwData root, OutputXYData xyd) {
+//		if (root.hasProperty(xPropName)) {
+//			Object next = root.getPropertyValue(xPropName);
+//			if (next instanceof Table) {
+//				// TODO !!
+//			}
+//			else {
+//				if (next instanceof Double)
+//					xyd.setX((double) next);
+//				else if (next instanceof Float)
+//					xyd.setX((Float)next);
+//				else if (next instanceof Integer)
+//					xyd.setX((int)next);
+//				else if (next instanceof Long)
+//					xyd.setX((long)next);
+//				else if (next instanceof Boolean)
+//					xyd.setX((boolean)next);
+//				else if (next instanceof Short)
+//					xyd.setX((short)next);
+//				else if (next instanceof Byte)
+//					xyd.setX((byte)next);
+//			}
+//		}
+//		if (root.hasProperty(yPropName)) {
+//			Object next = root.getPropertyValue(yPropName);
+//			if (next instanceof Table) {
+//				// TODO !!
+//			}
+//			else {
+//				if (next instanceof Double)
+//					xyd.setY((double) next);
+//				else if (next instanceof Float)
+//					xyd.setY((Float)next);
+//				else if (next instanceof Integer)
+//					xyd.setY((int)next);
+//				else if (next instanceof Long)
+//					xyd.setY((long)next);
+//				else if (next instanceof Boolean)
+//					xyd.setY((boolean)next);
+//				else if (next instanceof Short)
+//					xyd.setY((short)next);
+//				else if (next instanceof Byte)
+//					xyd.setY((byte)next);
+//			}
+//		}
+//	}
 
 	@Override
 	public void record(TwData... props) {
 		if (hasObservers()) {
-			OutputXYData xyd = new OutputXYData(currentStatus,senderId,metadata.type());
+			OutputXYData xyd = new OutputXYData(currentStatus,senderId,metadata.type(),xprop,yprop);
 			xyd.setTime(currentTime);
 			xyd.setItemLabel(currentItem);
 			for (TwData data:props)
 				if (data!=null) {
-					getRecValue(0,data,xyd);
+//					getRecValue(0,data,xyd);
+					TwDataReader.getValue(data,xprop,xyd);
+					TwDataReader.getValue(data,yprop,xyd);
 			}
 			sendData(xyd);
 		}

@@ -30,12 +30,11 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_FIELD_LABEL;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_FIELD_TYPE;
+import static au.edu.anu.twcore.ecosystem.runtime.tracking.TwDataReader.*;
 
 import java.util.Collection;
 import java.util.List;
-import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.DataLabel;
-import au.edu.anu.twcore.data.runtime.IndexedDataLabel;
 import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.data.runtime.TwData;
@@ -106,62 +105,6 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 		currentItem = new DataLabel(labels);
 	}
 
-	// cross-recursive with below
-	private void getTableValue(int depth, Table table, int[] index, DataLabel lab, Output0DData tsd) {
-		if (table instanceof ObjectTable<?>) {
-			ObjectTable<?> t = (ObjectTable<?>) table;
-			TwData next = (TwData) t.getByInt(index);
-			getRecValue(depth, next, lab, tsd);
-		} else { // this is a table of primitive types and we are at the end of the label
-			if (table instanceof DoubleTable)
-				tsd.setValue(lab, ((DoubleTable) table).getByInt(index));
-			else if (table instanceof FloatTable)
-				tsd.setValue(lab, ((FloatTable) table).getByInt(index));
-			else if (table instanceof IntTable)
-				tsd.setValue(lab, ((IntTable) table).getByInt(index));
-			else if (table instanceof LongTable)
-				tsd.setValue(lab, ((LongTable) table).getByInt(index));
-			else if (table instanceof BooleanTable)
-				tsd.setValue(lab, ((BooleanTable) table).getByInt(index));
-			else if (table instanceof ShortTable)
-				tsd.setValue(lab, ((ShortTable) table).getByInt(index));
-			else if (table instanceof ByteTable)
-				tsd.setValue(lab, ((ByteTable) table).getByInt(index));
-			else if (table instanceof StringTable)
-				tsd.setValue(lab, ((StringTable) table).getByInt(index));
-		}
-	}
-
-	// cross-recursive with above
-	private void getRecValue(int depth, TwData root, DataLabel lab, Output0DData tsd) {
-		String key = lab.get(depth);
-		if (key.contains("["))
-			key = key.substring(0, key.indexOf("["));
-		if (root.hasProperty(key)) {
-			Object next = root.getPropertyValue(key);
-			if (next instanceof Table) {
-				getTableValue(depth + 1, (Table) next, ((IndexedDataLabel) lab).getIndex(depth), lab, tsd);
-			} else { // this is a primitive type and we should be at the end of the label
-				if (next instanceof Double)
-					tsd.setValue(lab, (double) next);
-				else if (next instanceof Float)
-					tsd.setValue(lab, (float) next);
-				else if (next instanceof Integer)
-					tsd.setValue(lab, (int) next);
-				else if (next instanceof Long)
-					tsd.setValue(lab, (long) next);
-				else if (next instanceof Boolean)
-					tsd.setValue(lab, (boolean) next);
-				else if (next instanceof Short)
-					tsd.setValue(lab, (short) next);
-				else if (next instanceof Byte)
-					tsd.setValue(lab, (byte) next);
-				else if (next instanceof String)
-					tsd.setValue(lab, (String) next);
-			}
-		}
-	}
-
 	private void addMetadataVariable(Output0DMetadata meta, Class<?> c, DataLabel lab) {
 		if (c.equals(String.class))
 			meta.addStringVariable(lab);
@@ -183,11 +126,11 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 				for (TwData data:props)
 					if (data!=null) {
 						for (DataLabel lab : metadata.intNames())
-							getRecValue(0, data, lab, tmp);
+							getValue(data, lab, tmp);
 						for (DataLabel lab : metadata.doubleNames())
-							getRecValue(0, data, lab, tmp);
+							getValue(data, lab, tmp);
 						for (DataLabel lab : metadata.stringNames())
-							getRecValue(0, data, lab, tmp);
+							getValue(data, lab, tmp);
 				}
 				// aggregate the data into aggregators
 				for (int i=0; i<tmp.getIntValues().length; i++)
@@ -217,11 +160,11 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 				for (TwData data:props)
 					if (data!=null) {
 					for (DataLabel lab : metadata.intNames())
-						getRecValue(0, data, lab, tsd);
+						getValue(data, lab, tsd);
 					for (DataLabel lab : metadata.doubleNames())
-						getRecValue(0, data, lab, tsd);
+						getValue(data, lab, tsd);
 					for (DataLabel lab : metadata.stringNames())
-						getRecValue(0, data, lab, tsd);
+						getValue(data, lab, tsd);
 				}
 				tsd.setItemLabel(currentItem);
 				// NB: must not alter msg contents after sending.
