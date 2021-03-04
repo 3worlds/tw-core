@@ -33,7 +33,8 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
@@ -44,42 +45,39 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  * @author Jacques Gignoux - 6/9/2016 Constraint on a node's parent class
  *
  */
-public class ParentClassQuery extends Query implements ArchetypeArchetypeConstants {
-
-	private List<String> klasses = new LinkedList<String>();
+public class ParentClassQuery extends QueryAdaptor implements ArchetypeArchetypeConstants {
+	private final List<String> klasses;
 
 	public ParentClassQuery(StringTable ot) {
 		super();
+		klasses = new LinkedList<String>();
 		for (int i = 0; i < ot.size(); i++)
 			klasses.add((String) ot.getWithFlatIndex(i));
 	}
 
 	public ParentClassQuery(String s) {
+		klasses = new LinkedList<String>();
 		klasses.add(s);
 	}
 
-	// TODO Modified IDD: untested - maybe wrong?
 	@Override
-	public Query process(Object input) { // input is a node
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		TreeNode localItem = (TreeNode) input;
 		Node parent = (Node) localItem.getParent();
 		if (parent != null) {
 			SimplePropertyList p = ((SimpleDataTreeNode) parent).properties();
 			if (p.hasProperty(TwArchetypeConstants.twaSubclass)) {
-				String subclass  = (String) p.getPropertyValue(TwArchetypeConstants.twaSubclass);
-				for (String klass : klasses)
-					if (subclass.equals(klass)) {
-						satisfied = true;
-						break;
-					}
+				String subclass = (String) p.getPropertyValue(TwArchetypeConstants.twaSubclass);
+				for (String klass : klasses) {
+					if (subclass.equals(klass))
+						return this;
+				}
+				errorMsg = "Parent must have class one of '" + klasses.toString() + "'.";
+				return this;
 			}
 		}
 		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "Parent must have class one of '" + klasses.toString() + "'.]";
 	}
 
 }

@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          *
+ *       shayne.flint@anu.edu.au                                          * 
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            *
+ *       ian.davies@anu.edu.au                                            * 
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************
+ **************************************************************************                                       
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,63 +19,50 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *
+ *  GNU General Public License for more details.                          *                         
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype.tw;
+package au.edu.anu.twcore.archetype.tw.old;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.endNode;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrOne;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_CYCLE;
-
-import au.edu.anu.rscs.aot.queries.Query;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
-import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.TreeNode;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.old.queries.Query;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
- * In InitialState, a group attached to a life cycle cannot have components as chlidren. They
- * must be contained in subgroups. This Query checks there are no components in this
- * group's children if it's a lifecycle.
- *
- * @author Jacques Gignoux - 10 janv. 2020
+ * A Query to test that a node, edge or treenode has either of two properties, but not both
+ * @author gignoux - 22 nov. 2016
  *
  */
 @Deprecated
-public class LifeCycleNoComponentsQuery extends Query {
+public class PropertyXorQuery extends Query {
 
-	public LifeCycleNoComponentsQuery() { }
+	private String name1 = null;
+	private String name2 = null;
+	
+	public PropertyXorQuery(String name1, String name2) {
+		this.name1 = name1;
+		this.name2 = name2;
+	}
 
-	@Override
-	public Query process(Object input) { // input is a Group Node with an out edge to a life cycle
-		defaultProcess(input);
-		Group localItem = (Group) input;
-		LifeCycleType lc = (LifeCycleType) get(localItem.edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
-			endNode());
-		satisfied = true;
-		if (lc!=null)
-			for (TreeNode tn:localItem.getChildren())
-				if (tn instanceof Component) {
-					satisfied = false;
-					return this;
-				}
-		return this;
+	public PropertyXorQuery(StringTable ot) {
+		name1 = ot.getWithFlatIndex(0);
+		name2 = ot.getWithFlatIndex(1);
 	}
 
 	@Override
+	public Query process(Object input) { // input is a node, treenode or edge
+		defaultProcess(input);
+		ReadOnlyDataHolder e = (ReadOnlyDataHolder) input;
+		satisfied = e.properties().hasProperty(name1)^e.properties().hasProperty(name2);
+		return this;
+	}
+
 	public String toString() {
-		return "[" + stateString()
-			+ "A life cycle group cannot have components."
-			+ "]";
+		return "['" + this.getClass().getSimpleName() +"' Must have either '"+name1+"' or '"+name2+ "' property'.]";
 	}
 
 }

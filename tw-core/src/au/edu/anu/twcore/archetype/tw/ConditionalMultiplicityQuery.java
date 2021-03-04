@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          *
+ *       shayne.flint@anu.edu.au                                          * 
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            *
+ *       ian.davies@anu.edu.au                                            * 
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************
+ **************************************************************************                                       
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *
+ *  GNU General Public License for more details.                          *                         
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -28,17 +28,17 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.TreeNode;
-
+import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.util.Collection;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.graph.TreeNode;
 
 /**
  * Checks that a multiplicity is 0 if a certain condition is met, 1 otherwise.
@@ -48,11 +48,13 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
  * @author J. Gignoux - 14 juil. 2020
  *
  */
-public class ConditionalMultiplicityQuery extends Query {
+public class ConditionalMultiplicityQuery extends QueryAdaptor{
+	//args = StringTable(([2]"fixedPoints","space"))
+	//nMin = Integer(2)
 
-	private String property = null;
-	private String nodeLabel = null;
-	private int nMin = 0;
+	private final String property;
+	private final String nodeLabel;
+	private final int nMin;
 
 	public ConditionalMultiplicityQuery(StringTable args, Integer nMin) {
 		super();
@@ -66,16 +68,17 @@ public class ConditionalMultiplicityQuery extends Query {
 	}
 
 	@Override
-	public Query process(Object input) { // input is a node
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		TreeNode localItem = (TreeNode) input;
 		ReadOnlyDataHolder rodh = (ReadOnlyDataHolder) input;
 		Collection<?> l = (Collection<?>) get(localItem.getChildren(),
 			selectZeroOrMany(hasTheLabel(nodeLabel)));
-		satisfied = ((l.size()>=nMin) && (rodh.properties().hasProperty(property))) ||
-			(l.size()<nMin);
-//		satisfied = ((l.size()>=nMin) && (rodh.properties().hasProperty(property))) ||
-//				((l.size()<nMin) && (!rodh.properties().hasProperty(property)));
+		boolean ok= (((l.size()>=nMin) && (rodh.properties().hasProperty(property))) ||
+			(l.size()<nMin)) ;
+		if (!ok)
+			errorMsg = "Well I must say!"+getClass().getSimpleName()+" but I don't know what to say!";
+		
 		return this;
 	}
 

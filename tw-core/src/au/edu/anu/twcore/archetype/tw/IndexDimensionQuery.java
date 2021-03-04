@@ -28,25 +28,27 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.IndexString;
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
-import au.edu.anu.twcore.data.TableNode;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.ALDataEdge;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_SIZEDBY;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DIMENSIONER_RANK;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DIMENSIONER_SIZE;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TRACKEDGE_INDEX;
 
 import java.util.Comparator;
 import java.util.List;
+
+import au.edu.anu.rscs.aot.collections.tables.IndexString;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.data.TableNode;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.ALDataEdge;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
 /**
  * A Query to check that table index specifications in data trackers have
@@ -55,19 +57,12 @@ import java.util.List;
  * @author Jacques Gignoux - 7 nov. 2019
  *
  */
-public class IndexDimensionQuery extends Query {
-
-	private String ixs = null;
-	private String nodeId = null;
-
-	public IndexDimensionQuery() {
-		super();
-	}
+public class IndexDimensionQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // input is an edge with start=dataTracker and end=field or table
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		if (((ReadOnlyDataHolder) input).properties().hasProperty(P_TRACKEDGE_INDEX.key())) {
 			StringTable index = (StringTable) ((ReadOnlyDataHolder) input).properties()
 					.getPropertyValue(P_TRACKEDGE_INDEX.key());
@@ -75,6 +70,9 @@ public class IndexDimensionQuery extends Query {
 			TreeNode parent = end;
 			int i = index.size() - 1;
 			boolean ok = true;
+			String ixs = null;
+			String nodeId = null;
+
 			while (parent != null) {
 				if (parent instanceof TableNode) {
 					// get the dimensioners - but do not instantiate or edits won't be seen since
@@ -112,14 +110,10 @@ public class IndexDimensionQuery extends Query {
 				}
 				parent = parent.getParent();
 			}
-			satisfied = ok;
-		} else
-			satisfied = true;
+			if (!ok)
+				errorMsg = "Index string '" + ixs + "' out of range for table '" + nodeId + "'.";
+		}
 		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "Index string '" + ixs + "' out of range for table '" + nodeId + "'.]";
 	}
 
 }

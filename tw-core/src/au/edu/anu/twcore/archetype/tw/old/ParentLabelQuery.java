@@ -26,46 +26,60 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype.tw;
+package au.edu.anu.twcore.archetype.tw.old;
 
-import au.edu.anu.rscs.aot.queries.Query;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
-
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
+import java.util.LinkedList;
 import java.util.List;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.old.queries.Query;
+import fr.cnrs.iees.graph.TreeNode;
 
 /**
- * 
- * @author Ian Davies - ?
+ * @author Jacques Gignoux - 6/9/2016
+ * Constraint on a node's parent label
  *
  */
-public class ZeroOrOneEdgeQuery extends Query {
-
-	private String edgeLabel = null;
+@Deprecated
+public class ParentLabelQuery extends Query {
 	
-	public ZeroOrOneEdgeQuery(String name) {
-		edgeLabel=name;
+	private List<String> labels = new LinkedList<String>();
+	
+	/**
+	 * Use this constructor to test a set of labels. Argument in file
+	 * must be an ObjectTable
+	 * @param ot
+	 */
+	public ParentLabelQuery(StringTable ot) {
+		super();
+		for (int i=0; i<ot.size(); i++)
+			labels.add(ot.getWithFlatIndex(i));
+	}
+
+	/**
+	 * Use this constructor to test a single label
+	 * @param s
+	 */
+	public ParentLabelQuery(String s) {
+		labels.add(s);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // input is a node
+	public Query process(Object input) { // input is a TreeNode
 		defaultProcess(input);
-		Node localItem = (Node) input;
-		List<Edge> el = (List<Edge>) get(localItem,
-			outEdges(),
-			selectZeroOrMany(hasTheLabel(edgeLabel)));
-		if (el.size()<=1) satisfied=true;
+		TreeNode localItem = (TreeNode) input;
+		TreeNode parent = localItem.getParent();
+		if (parent!=null)
+			for (String label:labels) 
+				if (parent.classId().equals(label)) {
+					satisfied=true;
+					break;
+				}
 		return this;
 	}
 	
 	public String toString() {
-		return "[" + stateString() + "Node must have 0..1 out edges with label '" + edgeLabel+"'.]";
+		return "[" + stateString() + "Parent label must be one of '" + labels.toString() + "'.]";
 	}
-
 
 }

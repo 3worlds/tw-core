@@ -33,4 +33,4 @@
  *
  */
 // This file only created to generate package-level javadoc
-package au.edu.anu.twcore.archetype.tw;
+package au.edu.anu.twcore.archetype.tw.old;

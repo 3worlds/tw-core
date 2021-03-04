@@ -1,4 +1,37 @@
+/**************************************************************************
+ *  TW-CORE - 3Worlds Core classes and methods                            *
+ *                                                                        *
+ *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
+ *       shayne.flint@anu.edu.au                                          * 
+ *       jacques.gignoux@upmc.fr                                          *
+ *       ian.davies@anu.edu.au                                            * 
+ *                                                                        *
+ *  TW-CORE is a library of the principle components required by 3W       *
+ *                                                                        *
+ **************************************************************************                                       
+ *  This file is part of TW-CORE (3Worlds Core).                          *
+ *                                                                        *
+ *  TW-CORE is free software: you can redistribute it and/or modify       *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation, either version 3 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  TW-CORE is distributed in the hope that it will be useful,            *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details.                          *                         
+ *                                                                        *
+ *  You should have received a copy of the GNU General Public License     *
+ *  along with TW-CORE.                                                   *
+ *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
+ *                                                                        *
+ **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_RECORD;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -6,7 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -15,36 +49,12 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-
-/**
- * <p>A Query to make sure that,</p> 
- * <ol>
- * <li>when a Process applies to categories that define data (drivers,
- * constants or decorators), then there is at least one ElementType node that belongs to these
- * categories;</li>
- * 
- * <li>[TODO:]the categories it refers to do not belong to different element types (???)</li>
- * </ol> 
- * 
- * @author Jacques Gignoux - 11 févr. 2021
- *
- */
-public class CategoryConsistencyQuery extends Query {
-	
-	private String message = "CategoryConsistencyQuery.process() not run";
-	
-	public CategoryConsistencyQuery() {
-		super();
-	}
+public class CategoryConsistencyQuery extends QueryAdaptor{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // input is a ProcessNode
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		ProcessNode proc = (ProcessNode) input;
 		List<TreeGraphDataNode> ltgn =  (List<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
@@ -84,14 +94,9 @@ public class CategoryConsistencyQuery extends Query {
 			if (belongers.isEmpty())
 				result = false;
 		}
-		satisfied = result;
-		if (!satisfied)
-			message = "A Category process '"+proc.id()+"' applies must have a 'belongsTo' edge to an ElementType";
+		if (!result)// TODO: not clear! What does this mean? process must applyTo a cateogry that belongsTo something
+			errorMsg = "A Category process '"+proc.id()+"' applies must have a 'belongsTo' edge to an ElementType";
 		return this;
-	}
-	
-	public String toString() {
-		return "[" + stateString() + " " + message + "]";
 	}
 
 }

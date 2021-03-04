@@ -28,32 +28,33 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+
 import java.util.Arrays;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.queries.base.OrQuery;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
 /**
- * Checks that an out edge has two labels (each coming from two separate sets). ie, if one
- * label of the first set is present, then one of the second must be here too
- *  
+ * Checks that an out edge has two labels (each coming from two separate sets).
+ * ie, if one label of the first set is present, then one of the second must be
+ * here too
+ * 
  * @author Jacques Gignoux - 14 Novembre 2019
  * 
  * 
  */
-public class OutEdgeXNorQuery extends Query {
+public class OutEdgeXNorQuery extends QueryAdaptor {
+	private final String[] edgeLabel1;
+	private final String[] edgeLabel2;
 
-	private String[] edgeLabel1 = null;
-	private String[] edgeLabel2 = null;
-	
 	public OutEdgeXNorQuery(String label1, String label2) {
 		super();
 		edgeLabel1 = new String[1];
@@ -67,50 +68,44 @@ public class OutEdgeXNorQuery extends Query {
 		edgeLabel1 = new String[1];
 		edgeLabel2 = new String[label2.size()];
 		edgeLabel1[0] = label1;
-		for (int i=0; i<edgeLabel2.length; i++)
+		for (int i = 0; i < edgeLabel2.length; i++)
 			edgeLabel2[i] = label2.getWithFlatIndex(i);
 	}
-	
+
 	public OutEdgeXNorQuery(StringTable label1, String label2) {
-		this(label2,label1);
+		this(label2, label1);
 	}
-	
+
 	public OutEdgeXNorQuery(StringTable label1, StringTable label2) {
 		super();
 		edgeLabel1 = new String[label1.size()];
 		edgeLabel2 = new String[label2.size()];
-		for (int i=0; i<edgeLabel1.length; i++)
+		for (int i = 0; i < edgeLabel1.length; i++)
 			edgeLabel1[i] = label1.getWithFlatIndex(i);
-		for (int i=0; i<edgeLabel2.length; i++)
+		for (int i = 0; i < edgeLabel2.length; i++)
 			edgeLabel2[i] = label2.getWithFlatIndex(i);
 	}
-		
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) {  // input is a node
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		Node localItem = (Node) input;
-		Query[] q = new Query[edgeLabel1.length];
-		for (int i=0; i<edgeLabel1.length; i++)
+		Queryable[] q = new Queryable[edgeLabel1.length];
+		for (int i = 0; i < edgeLabel1.length; i++)
 			q[i] = hasTheLabel(edgeLabel1[i]);
-		OrQuery orq1 = new OrQuery(q); 
-		q = new Query[edgeLabel2.length];
-		for (int i=0; i<edgeLabel2.length; i++)
+		OrQuery orq1 = new OrQuery(q);
+		q = new Queryable[edgeLabel2.length];
+		for (int i = 0; i < edgeLabel2.length; i++)
 			q[i] = hasTheLabel(edgeLabel2[i]);
 		OrQuery orq2 = new OrQuery(q);
-		List<Edge> el1 = (List<Edge>) get(localItem. 
-			edges(Direction.OUT),
-			selectZeroOrMany(orq1));
-		List<Edge> el2 = (List<Edge>) get(localItem.
-			edges(Direction.OUT),
-			selectZeroOrMany(orq2));
-		satisfied = !((el1.size()>0)^(el2.size()>0));
+		List<Edge> el1 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq1));
+		List<Edge> el2 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq2));
+		if ((el1.size() > 0) ^ (el2.size() > 0)) {
+			errorMsg = "There must be at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one from "
+					+ Arrays.toString(edgeLabel2) + ".]";
+		}
 		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "There must be at least one edge labelled from " 
-			+ Arrays.toString(edgeLabel1) + " and one from "+ Arrays.toString(edgeLabel2) +".]";
 	}
 
 }

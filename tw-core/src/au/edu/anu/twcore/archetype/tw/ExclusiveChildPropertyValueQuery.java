@@ -31,22 +31,23 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.LinkedList;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.collections.tables.*;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.collections.tables.BooleanTable;
+import au.edu.anu.rscs.aot.collections.tables.ByteTable;
+import au.edu.anu.rscs.aot.collections.tables.CharTable;
+import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
+import au.edu.anu.rscs.aot.collections.tables.FloatTable;
+import au.edu.anu.rscs.aot.collections.tables.IntTable;
+import au.edu.anu.rscs.aot.collections.tables.LongTable;
+import au.edu.anu.rscs.aot.collections.tables.ShortTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.archetype.tw.NodeHasPropertyValueQuery;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 
-/**
- * Checks that if a child node with a given property value is present, then no child with another
- * value in the same property can be present. Can be instantiated with a single label, or a
- * table of compatible labels.
- *
- * @author J. Gignoux - 22 mai 2020
- *
- */
 public class ExclusiveChildPropertyValueQuery extends NodeHasPropertyValueQuery {
-
 	public ExclusiveChildPropertyValueQuery(BooleanTable values, String pname) {
 		super(values, pname);
 	}
@@ -120,34 +121,31 @@ public class ExclusiveChildPropertyValueQuery extends NodeHasPropertyValueQuery 
 	}
 
 	@Override
-	public Query process(Object input) { // input is a treenode (one of the siblings that must be tested
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		TreeNode topNode = (TreeNode) input;
 		Class<?> nodeClass = topNode.getClass();
 		topNode = topNode.getParent();
 		List<TreeNode> nodesWithProperValue = new LinkedList<>();
 		List<TreeNode> nodesWithOtherValue = new LinkedList<>();
-		for (TreeNode child: topNode.getChildren())
+		boolean ok = true;
+		for (TreeNode child : topNode.getChildren())
 			if (nodeClass.isAssignableFrom(child.getClass())) {
-				super.process(child);
-				if (satisfied) {
+				super.submit(child);
+				if (satisfied()) {
 					nodesWithProperValue.add(child);
-					satisfied = false;
-				}
-				else if (child instanceof ReadOnlyDataHolder) {
+					ok = false;
+				} else if (child instanceof ReadOnlyDataHolder) {
 					ReadOnlyPropertyList props = ((ReadOnlyDataHolder) child).properties();
 					if (props.hasProperty(propertyName))
 						nodesWithOtherValue.add(child);
 				}
-		}
-		satisfied  = nodesWithProperValue.isEmpty() ||
-			((!nodesWithProperValue.isEmpty()) && (nodesWithOtherValue.isEmpty()));
+			}
+		ok = nodesWithProperValue.isEmpty() || ((!nodesWithProperValue.isEmpty()) && (nodesWithOtherValue.isEmpty()));
+		if (ok)
+			errorMsg = null;//fuck!
+		
 		return this;
 	}
-
-	public String toString() {
-		return "[" + stateString() + "ExclusiveChildPropertyValueQuery failed";
-	}
-
 
 }

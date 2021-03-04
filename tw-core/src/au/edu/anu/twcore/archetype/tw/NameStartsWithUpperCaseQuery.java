@@ -28,24 +28,22 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.identity.Identity;
-import au.edu.anu.rscs.aot.queries.Query;
 
-public class NameStartsWithUpperCaseQuery extends Query {
+public class NameStartsWithUpperCaseQuery extends QueryAdaptor{
 
-	private String localItem;
 	@Override
-	public Query process(Object input) { // input is a node - actually anything with an id() will work
-		defaultProcess(input);
-		localItem = ((Identity) input).id();
+	public Queryable submit(Object input) {
+		initInput(input);
+		String localItem = ((Identity) input).id();
 		char c = localItem.charAt(0);
 		char upper = Character.toUpperCase(c);
-		if (c==upper) satisfied = true;
+		if (c!=upper) 
+			errorMsg = "'"+localItem+"' must start with an upper case character.";
 		return this;
-	}
 
-	public String toString() {
-		return "[" + stateString() + "'"+localItem+"' must start with an upper case character.]";
 	}
 
 }

@@ -26,47 +26,27 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-
 package au.edu.anu.twcore.archetype.tw;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import au.edu.anu.rscs.aot.queries.Query;
+
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
-/**
- * A query to check that if controller is headless then a StoppingCondition must exist. 
- * Otherwise there is no need for one as the user can do it.
- */
-
-/**
- * @author Ian Davies
- *
- * @date 29 Dec 2019
- */
-public class UICanStopQuery extends Query {
-
-	private String msg;
-
-	private static void getWidgets(TreeNode parent, List<TreeGraphDataNode> widgets, List<TreeNode> containers) {
-		if (parent.classId().equals(N_UIWIDGET.label()))
-			widgets.add((TreeGraphDataNode) parent);
-		else
-			containers.add(parent);
-
-		for (TreeNode child : parent.getChildren())
-			getWidgets(child, widgets, containers);
-	}
+public class UICanStopQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) {
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		TreeNode ui = (TreeNode) input;
 		Class<?> smcClass = fr.cnrs.iees.rvgrid.statemachine.StateMachineController.class;
 		List<TreeGraphDataNode> widgets = new ArrayList<>();
@@ -93,31 +73,23 @@ public class UICanStopQuery extends Query {
 			}
 		}
 		// other queries will deal with this
-		if (controllersHl.isEmpty()) {
-			satisfied = true;
+		if (controllersHl.isEmpty())
 			return this;
-		}
+
 		// other queries will deal with this
-		if (!controllersGui.isEmpty()) {
-			satisfied = true;
+		if (!controllersGui.isEmpty())
 			return this;
-		}
-		//WidgetNode ctrlNodeHl = (WidgetNode) controllersHl.get(0);
+
 		// ok we need a stopping condition but only if system.dynamics exists
 		TreeNode root = ui.getParent();
-		if (root == null) {
-			satisfied = true;
+		if (root == null)
 			return this;
-		}
 
 		List<TreeNode> systems = (List<TreeNode>) get(root.getChildren(),
 				selectZeroOrMany(hasTheLabel(N_SYSTEM.label())));
 		// other queries will deal with this
-		if (systems.isEmpty()) {
-			satisfied = true;
+		if (systems.isEmpty())
 			return this;
-
-		}
 
 		List<TreeNode> dyns = new ArrayList<>();
 		for (TreeNode system : systems) {
@@ -125,27 +97,30 @@ public class UICanStopQuery extends Query {
 			if (dyn != null)
 				dyns.add(dyn);
 		}
-		if (dyns.isEmpty()) {
-			satisfied = true;
+
+		if (dyns.isEmpty())
 			return this;
-		}
+
 		for (TreeNode dyn : dyns) {
 			List<TreeNode> stpConds = (List<TreeNode>) get(dyn.getChildren(),
 					selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
-			if (!stpConds.isEmpty()) {
-				satisfied = true;
+			if (!stpConds.isEmpty())
 				return this;
-			}
+
 		}
-		satisfied = false;
-		msg = "Stopping condition required but none found.";
+		
+		errorMsg = "Unattended simulations require at least one stopping condition but were none found.";
 		return this;
 	}
 
-	@Override
-	public String toString() {
-		return "[" + stateString() + msg + "]";
+	private static void getWidgets(TreeNode parent, List<TreeGraphDataNode> widgets, List<TreeNode> containers) {
+		if (parent.classId().equals(N_UIWIDGET.label()))
+			widgets.add((TreeGraphDataNode) parent);
+		else
+			containers.add(parent);
 
+		for (TreeNode child : parent.getChildren())
+			getWidgets(child, widgets, containers);
 	}
 
 }

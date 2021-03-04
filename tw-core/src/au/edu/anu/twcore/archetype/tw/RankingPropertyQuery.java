@@ -1,28 +1,58 @@
+/**************************************************************************
+ *  TW-CORE - 3Worlds Core classes and methods                            *
+ *                                                                        *
+ *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
+ *       shayne.flint@anu.edu.au                                          * 
+ *       jacques.gignoux@upmc.fr                                          *
+ *       ian.davies@anu.edu.au                                            * 
+ *                                                                        *
+ *  TW-CORE is a library of the principle components required by 3W       *
+ *                                                                        *
+ **************************************************************************                                       
+ *  This file is part of TW-CORE (3Worlds Core).                          *
+ *                                                                        *
+ *  TW-CORE is free software: you can redistribute it and/or modify       *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation, either version 3 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  TW-CORE is distributed in the hope that it will be useful,            *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details.                          *                         
+ *                                                                        *
+ *  You should have received a copy of the GNU General Public License     *
+ *  along with TW-CORE.                                                   *
+ *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
+ *                                                                        *
+ **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
-import fr.cnrs.iees.graph.DataHolder;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_CHILD;
+
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
+import fr.cnrs.iees.graph.DataHolder;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
+
 /**
- * Check that a series of Edges or Nodes which have a common number property have
- * values that can be strictly ranked (no check that the values are evenly spread, only that
- * there are no two equal values).
+ * Check that a series of Edges or Nodes which have a common number property
+ * have values that can be strictly ranked (no check that the values are evenly
+ * spread, only that there are no two equal values).
  *
  * @author J. Gignoux - 19 nov. 2020
  *
  */
-public class RankingPropertyQuery extends Query {
-
-	private String edgeLabel = "";
-	private String propName = "";
+public class RankingPropertyQuery extends QueryAdaptor {
+	private final String edgeLabel;
+	private final String propName;
 
 	/**
 	 *
@@ -30,10 +60,8 @@ public class RankingPropertyQuery extends Query {
 	 */
 	public RankingPropertyQuery(StringTable args) {
 		super();
-		if (args.size()==2) {
-			edgeLabel = args.getWithFlatIndex(0);
-			propName = args.getWithFlatIndex(1);
-		}
+		edgeLabel = args.getWithFlatIndex(0);
+		propName = args.getWithFlatIndex(1);
 	}
 
 	/**
@@ -43,8 +71,8 @@ public class RankingPropertyQuery extends Query {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // input is a TreeGraphNode
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		TreeGraphNode node = (TreeGraphNode) input;
 		Collection<DataHolder> elements = null;
 		if (edgeLabel.equals(E_CHILD.label()))
@@ -52,7 +80,7 @@ public class RankingPropertyQuery extends Query {
 		else
 			elements = (Collection<DataHolder>) get(node.edges(),
 				selectZeroOrMany(hasTheLabel(edgeLabel)));
-		satisfied = true;
+
 		SortedSet<Number> ranks = new TreeSet<>();
 		if (elements!=null) {
 			for (DataHolder dh:elements)
@@ -61,19 +89,12 @@ public class RankingPropertyQuery extends Query {
 					ranks.add(rk);
 				}
 			// if two ranks are equal, then the set should be smaller than the collection
-			if (ranks.size()<elements.size())
-				satisfied = false;
+			if (ranks.size()<elements.size()) {
+				errorMsg = "Values of "+edgeLabel+" edges be unique.";
+				return this;
+			}
 		}
 		return this;
-	}
-
-	public String toString() {
-		String msg = propName;
-		if (edgeLabel.equals(E_CHILD.label()))
-			msg += " values of child nodes must be unique";
-		else
-			msg += " values of "+edgeLabel+" edges be unique";
-		return stateString() + msg;
 	}
 
 }

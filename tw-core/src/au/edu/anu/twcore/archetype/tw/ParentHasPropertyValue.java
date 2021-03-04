@@ -28,8 +28,16 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.*;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.collections.tables.BooleanTable;
+import au.edu.anu.rscs.aot.collections.tables.ByteTable;
+import au.edu.anu.rscs.aot.collections.tables.CharTable;
+import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
+import au.edu.anu.rscs.aot.collections.tables.FloatTable;
+import au.edu.anu.rscs.aot.collections.tables.IntTable;
+import au.edu.anu.rscs.aot.collections.tables.LongTable;
+import au.edu.anu.rscs.aot.collections.tables.ShortTable;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
@@ -38,8 +46,8 @@ import fr.cnrs.iees.graph.TreeNode;
  * @author Jacques Gignoux - 9 août 2019
  *
  */
-public class ParentHasPropertyValue extends NodeHasPropertyValueQuery {
 
+public class ParentHasPropertyValue extends NodeHasPropertyValueQuery{
 	public ParentHasPropertyValue(String pname, StringTable values) {
 		super(pname, values);
 	}
@@ -111,18 +119,21 @@ public class ParentHasPropertyValue extends NodeHasPropertyValueQuery {
 	public ParentHasPropertyValue(CharTable values, String pname) {
 		super(values, pname);
 	}
-
+	
 	@Override
-	public Query process(Object input) {
+	public Queryable submit(Object input) {
 		TreeNode localItem = (TreeNode) input;
 		TreeNode parent = localItem.getParent();
-		return super.process(parent);
+		//TODO: Check this?
+		super.submit(parent);
+		if (!satisfied())
+			errorMsg =  "Parent property '"
+					+ propertyName + "' must have value '"
+					+ expectedValues.toString() + "'.]";
+		
+		return this;
+
 	}
 
-	public String toString() {
-		return "[" + stateString() + "Parent property '"
-			+ propertyName + "' must have value '"
-			+ expectedValues.toString() + "'.]";
-	}
 
 }

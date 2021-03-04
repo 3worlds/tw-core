@@ -26,61 +26,58 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype.tw;
-
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
-import java.util.List;
+package au.edu.anu.twcore.archetype.tw.old;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
-import au.edu.anu.twcore.archetype.TwArchetypeConstants;
+import au.edu.anu.rscs.aot.old.queries.Query;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 
+import static au.edu.anu.rscs.aot.old.queries.base.SequenceQuery.get;
+
+import java.util.Collection;
+
+import static au.edu.anu.rscs.aot.old.queries.CoreQueries.*;
+
+
 /**
- * Checks that a CHILD treenode has either of two labels.
- * @author Jacques Gignoux - 5/9/2016
- * Constraint: either 1..* nodes with label1 or 1..* nodes with label2
+ * Checks that a multiplicity is 0 if a certain condition is met, 1 otherwise.
+ * At the moment only applicable to properties and child nodes, but could be
+ * adapted to other cases by adding parameters or putting syntax in.
+ *
+ * @author J. Gignoux - 14 juil. 2020
+ *
  */
-public class ChildXorQuery extends Query implements TwArchetypeConstants{
+@Deprecated
+public class ConditionalMultiplicityQuery extends Query {
 
-	private String nodeLabel1 = null;
-	private String nodeLabel2 = null;
+	private String property = null;
+	private String nodeLabel = null;
+	private int nMin = 0;
 
-	public ChildXorQuery(String nodeLabel1, String nodeLabel2) {
+	public ConditionalMultiplicityQuery(StringTable args, Integer nMin) {
 		super();
-		this.nodeLabel1 = nodeLabel1;
-		this.nodeLabel2 = nodeLabel2;
+		property = args.getWithFlatIndex(0);
+		nodeLabel = args.getWithFlatIndex(1);
+		this.nMin = nMin;
 	}
 
-	public ChildXorQuery(StringTable table) {
-		super();
-		nodeLabel1 = table.getWithFlatIndex(0);
-		nodeLabel2 = table.getWithFlatIndex(1);
+	public ConditionalMultiplicityQuery(Integer nMin, StringTable args) {
+		this(args,nMin);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) {  // input is a node
+	public Query process(Object input) { // input is a node
 		defaultProcess(input);
 		TreeNode localItem = (TreeNode) input;
-		List<TreeNode> nl1 = (List<TreeNode>) get(localItem,
-			children(),
-			selectZeroOrMany(hasTheLabel(nodeLabel1)));
-// this is wrong - at least for the query ???
-//			selectZeroOrMany(hasTheLabel(twaNodeLabel1)));
-		List<TreeNode> nl2 = (List<TreeNode>) get(localItem,
-			children(),
-			selectZeroOrMany(hasTheLabel(nodeLabel2)));
-		// this is wrong - at least for the query ???
-//			selectZeroOrMany(hasTheLabel(twaNodeLabel2)));
-		satisfied = (nl1.size()>0)^(nl2.size()>0);
+		ReadOnlyDataHolder rodh = (ReadOnlyDataHolder) input;
+		Collection<?> l = (Collection<?>) get(localItem.getChildren(),
+			selectZeroOrMany(hasTheLabel(nodeLabel)));
+		satisfied = ((l.size()>=nMin) && (rodh.properties().hasProperty(property))) ||
+			(l.size()<nMin);
+//		satisfied = ((l.size()>=nMin) && (rodh.properties().hasProperty(property))) ||
+//				((l.size()<nMin) && (!rodh.properties().hasProperty(property)));
 		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "must have at least one child with either label '" + nodeLabel1 + "' or '"+nodeLabel2+"'.]";
 	}
 
 }

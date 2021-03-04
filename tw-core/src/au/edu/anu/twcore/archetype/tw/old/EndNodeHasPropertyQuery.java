@@ -26,40 +26,42 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype.tw;
+package au.edu.anu.twcore.archetype.tw.old;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
-
-import au.edu.anu.rscs.aot.queries.Query;
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import au.edu.anu.rscs.aot.old.queries.Query;
+import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
- * @author Jacques Gignoux - 5/9/2016
- * Constraint on type properties: content must be a PrimitiveType value
+ * Checks that an end node has a specific property with a non null value
  * 
- * NB I looked for this Query in the aot packages but couldnt find one, so here it is.
- * maybe it should be moved back to aot as it may be useful there
- * In tw, primitive is replaced by enum fr.ens.biologie.threeWorlds.resources.core.constants.DataElementType
- * so its no longer required unless the hasProperty type is a String
+ * @author Jacques Gignoux - 6 nov. 2019
+ *
  */
-public class IsPrimitiveTypeQuery extends Query {
+@Deprecated
+public class EndNodeHasPropertyQuery extends Query {
+
+	String propName = null;
+	ReadOnlyDataHolder rodh = null;
 	
-	public IsPrimitiveTypeQuery() {
+	public EndNodeHasPropertyQuery(String propname) {
 		super();
+		propName = propname;
 	}
 
-	private Property localItem;
 	@Override
-	public Query process(Object input) { // input is a prop here
+	public Query process(Object input) { // input is an Edge
 		defaultProcess(input);
-		localItem = (Property) input;
-		String name = (String)localItem.getValue();
-		satisfied = ValidPropertyTypes.isPrimitiveType(name);
+		rodh = (ReadOnlyDataHolder)((Edge)input).endNode();
+		if (rodh.properties().hasProperty(propName))
+			if (rodh.properties().getPropertyValue(propName)!=null)
+				satisfied = true;
 		return this;
 	}
 
 	public String toString() {
-		return "[" + stateString() + "Property '"+localItem.getKey()+"' value must be a primitive.]";
+		return "[" + stateString() + "end node '" + rodh 
+			+ "' must have the '"+propName+"' property.]";
 	}
 
 }

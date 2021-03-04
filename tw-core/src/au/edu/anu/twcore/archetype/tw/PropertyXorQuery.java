@@ -29,7 +29,8 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
@@ -37,11 +38,11 @@ import fr.cnrs.iees.graph.ReadOnlyDataHolder;
  * @author gignoux - 22 nov. 2016
  *
  */
-public class PropertyXorQuery extends Query {
-
-	private String name1 = null;
-	private String name2 = null;
+public class PropertyXorQuery extends QueryAdaptor {
 	
+	private final String name1;
+	private final String name2;
+
 	public PropertyXorQuery(String name1, String name2) {
 		this.name1 = name1;
 		this.name2 = name2;
@@ -53,15 +54,14 @@ public class PropertyXorQuery extends Query {
 	}
 
 	@Override
-	public Query process(Object input) { // input is a node, treenode or edge
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		ReadOnlyDataHolder e = (ReadOnlyDataHolder) input;
-		satisfied = e.properties().hasProperty(name1)^e.properties().hasProperty(name2);
+		if (!(e.properties().hasProperty(name1) ^ e.properties().hasProperty(name2))) {
+			errorMsg = "'" + getClass().getSimpleName() + "' must have either '" + name1 + "' or '" + name2
+					+ "' property'.";
+		}
 		return this;
-	}
-
-	public String toString() {
-		return "['" + this.getClass().getSimpleName() +"' Must have either '"+name1+"' or '"+name2+ "' property'.]";
 	}
 
 }

@@ -1,11 +1,37 @@
-/**
- * 
- */
+/**************************************************************************
+ *  TW-CORE - 3Worlds Core classes and methods                            *
+ *                                                                        *
+ *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
+ *       shayne.flint@anu.edu.au                                          * 
+ *       jacques.gignoux@upmc.fr                                          *
+ *       ian.davies@anu.edu.au                                            * 
+ *                                                                        *
+ *  TW-CORE is a library of the principle components required by 3W       *
+ *                                                                        *
+ **************************************************************************                                       
+ *  This file is part of TW-CORE (3Worlds Core).                          *
+ *                                                                        *
+ *  TW-CORE is free software: you can redistribute it and/or modify       *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation, either version 3 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  TW-CORE is distributed in the hope that it will be useful,            *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details.                          *                         
+ *                                                                        *
+ *  You should have received a copy of the GNU General Public License     *
+ *  along with TW-CORE.                                                   *
+ *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
+ *                                                                        *
+ **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
@@ -31,12 +57,10 @@ import fr.cnrs.iees.graph.io.GraphImporter;
  * @author gignoux - 22 nov. 2016
  *
  */
-public class CheckSubArchetypeQuery extends Query {
-
-	private String pKey = null;
-	private String pValue = null;
-	private String fileName = null;
-
+public class CheckSubArchetypeQuery extends QueryAdaptor{
+	private String pKey;
+	private String pValue;
+	private String fileName;
 	/**
 	 * @param parameters parameters[0] = name of the property on which this
 	 *                   archetype is conditioned parameters[1] = value of this
@@ -50,34 +74,23 @@ public class CheckSubArchetypeQuery extends Query {
 		fileName = parameters.getWithFlatIndex(2);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see au.edu.anu.rscs.aot.queries.Query#process(java.lang.Object)
-	 */
 	@Override
-	public Query process(Object input) {
-		// Once these sub-archetypes have been checked they should not
-		// be checked again!
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		ReadOnlyDataHolder localItem =  (ReadOnlyDataHolder) input;
 		TreeNode node = (TreeNode) input;
-		satisfied = true;
 		Object givenpValue = localItem.properties().getPropertyValue(pKey);
 		if (pValue.equals(givenpValue.toString())) {
 			Tree<?> tree = (Tree<?>) GraphImporter.importGraph(fileName,getClass());
-			// maybe this is a flaw to use this factory ?
 			Tree<TreeNode> treeToCheck = new SimpleTree<TreeNode>(node.factory());
 			for (TreeNode tn:node.subTree())
 				treeToCheck.addNode((TreeNode) tn);
 			Archetypes checker = new Archetypes();
-			// Check the 3worlds archetype is ok
+			// Check the 3worlds archetype is ok -- TODO hum lets see how this goes
 			if (checker.isArchetype(tree)) {
 				checker.check(treeToCheck,tree);
-				if (checker.errorList()==null)
-					satisfied = true;
-				else {
-					satisfied = false;
+				if (!(checker.errorList()==null)){
+					errorMsg = "Errors in sub-archetype '"+fileName+",";
 					result = checker.errorList();
 				}
 			}
@@ -86,7 +99,9 @@ public class CheckSubArchetypeQuery extends Query {
 					throw new TwcoreException("Sub-archetype '"+tree.root().toShortString()+"' is not a valid archetype");
 				else
 					throw new TwcoreException("Sub-archetype '"+tree.toShortString()+"' is not a valid archetype");
+
 		}
 		return this;
 	}
+
 }

@@ -26,52 +26,73 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
+package au.edu.anu.twcore.archetype.tw.old;
 
-package au.edu.anu.twcore.archetype.tw;
-
-import java.io.File;
-
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
-import au.edu.anu.rscs.aot.queries.Query;
-import au.edu.anu.rscs.aot.util.Resources;
-import fr.cnrs.iees.twcore.constants.FileType;
+import au.edu.anu.rscs.aot.old.queries.Query;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.twcore.constants.TimeScaleType;
+import fr.cnrs.iees.twcore.constants.TimeUnits;
 
 /**
- * checks an input file is present in local/models subdir of 3w repo
- * @author gignoux - 24 févr. 2017
+ * A Query to check that time units are valid according to a time scale type
+ * Applies to a property of a Node which is or has a link to a TimeLine node
+ * (with a scale property)
  * 
- * Same as InputFileExists but if File is null its statisfied.
- * Used for initialState file where it is valid not to have a file selected 
- * but if the selected file does not exist, we need a warning.
+ * @author gignoux
  *
  */
+@Deprecated
+public class TimeUnitValidityQuery extends Query {
 
-/**
- * @author Ian Davies
- *
- * @date 7 May 2019
- */
-public class InputFileExistifSelectedQuery extends Query {
-	File s;
-	Property localItem;
+	private TimeScaleType refScale = null;
+	private String pscale = null;
+	private String pname = null;
+
+	public TimeUnitValidityQuery(StringTable parameters) {
+		super();
+		pname = parameters.getWithFlatIndex(0); // name of the time property
+		pscale = parameters.getWithFlatIndex(1); // name of the time scale prop
+	}
+
 	@Override
-	public Query process(Object input) { // input is a property 
+	public Query process(Object input) { // input is a Node with 2 properties, one of them has the time scale
 		defaultProcess(input);
-		localItem = (Property) input;
-		FileType ft = (FileType) localItem.getValue();
-		s = ft.getFile();
-		if (s==null)
+		ReadOnlyDataHolder localItem = (ReadOnlyDataHolder) input;
+		TreeNode localNode = (TreeNode) input;
+		// search for a property named pscale, which has the time scale type
+		refScale = (TimeScaleType) localItem.properties().getPropertyValue(pscale);
+		// If null, this query should remain silent;
+		if (refScale == null) {
+			ReadOnlyDataHolder p = (ReadOnlyDataHolder) localNode.getParent();
+			if (p != null) 
+				refScale = (TimeScaleType) p.properties().getPropertyValue(pscale);
+		}
+		Property prop = null;
+		prop = localItem.properties().getProperty(pname);
+		if (prop == null)
+			// satisfied = false;
 			satisfied = true;
-		if (s!=null && s.exists())
+		else if (refScale == null)
 			satisfied = true;
-		// TODO need to handle jars!!
-		if (s!=null && Resources.getFile(s.getName())!=null)
+		// remain silent until there are time models present
+		// Could make the default refScale ABITRARY but I think it would seem confusing.
+		else if(!localNode.hasChildren())
 			satisfied = true;
+		else {
+			TimeUnits tu = (TimeUnits) prop.getValue();
+			if (tu == null)
+				tu = TimeUnits.UNSPECIFIED;
+			satisfied = TimeScaleType.validTimeUnits(refScale).contains(tu);
+		}
 		return this;
 	}
 
 	public String toString() {
-		return "[" + stateString() + "File for property '"+localItem.getKey()+"' must exist if selected.";
+		return "[" + stateString() + "Property value for " + pname + " must be one of {"
+				+ TimeScaleType.validTimeUnits(refScale).toString() + "}.]";
 	}
 
 }

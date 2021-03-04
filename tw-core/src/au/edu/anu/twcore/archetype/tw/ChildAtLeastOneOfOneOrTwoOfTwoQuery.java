@@ -28,69 +28,89 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
-import au.edu.anu.twcore.archetype.TwArchetypeConstants;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.TreeNode;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
-/**
- * Checks that a CHILD treenode has either of two labels. 
- * @author Jacques Gignoux - 5/9/2016
- * Constraint: either 1..* nodes with label1 or 1..* nodes with label2
- */
 /**
  * @author Ian Davies
  *
  * @date 27 Sep 2019
  * 
+ *       input is either a Tab or a Container.
+ * 
  *       Constraint: Either 1 or 2 of nodeLabel1 or just 2 nodelabel2 - for tabs
  *       and containers in the UI
+ * 
+ *       Cannot have just one container(node label2)
+ *       Cannot have nothing
+ *       Cannot have more that 2 in total
+ * 
+ * 
+ *       1) 1 widget OR
+ * 
+ *       3) 1 widget and 1 container OR
+ * 
+ *       4) 2 widgets OR
+ * 
+ *       5) 2 containers
  */
 // Great name!
-public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends Query implements TwArchetypeConstants {
-
-	private String nodeLabel1 = null;
-	private String nodeLabel2 = null;
+public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends QueryAdaptor {
+	private final String widgetLabel;
+	private final String containerLabel;
 
 	public ChildAtLeastOneOfOneOrTwoOfTwoQuery(String nodeLabel1, String nodeLabel2) {
-		this.nodeLabel1 = nodeLabel1;
-		this.nodeLabel2 = nodeLabel2;
+		super();
+		this.widgetLabel = nodeLabel1;
+		this.containerLabel = nodeLabel2;
 	}
 
 	public ChildAtLeastOneOfOneOrTwoOfTwoQuery(StringTable table) {
 		super();
-		nodeLabel1 = table.getWithFlatIndex(0);
-		nodeLabel2 = table.getWithFlatIndex(1);
+		widgetLabel = table.getWithFlatIndex(0);
+		containerLabel = table.getWithFlatIndex(1);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) {
-		defaultProcess(input);
-		TreeNode parent = (TreeNode) input;
-		List<TreeNode> type1 = (List<TreeNode>) get(parent, children(), selectZeroOrMany(hasTheLabel(nodeLabel1)));
-		List<TreeNode> type2 = (List<TreeNode>) get(parent, children(), selectZeroOrMany(hasTheLabel(nodeLabel2)));
-		if ((type2.size()+ type1.size())>2) {
-			satisfied = false;
+	public Queryable submit(Object input) {
+		initInput(input);
+		TreeNode localItem = (TreeNode) input;
+		List<TreeNode> widgets = (List<TreeNode>) get(localItem.getChildren(), selectZeroOrMany(hasTheLabel(widgetLabel)));
+		List<TreeNode> containers= (List<TreeNode>) get(localItem.getChildren(), selectZeroOrMany(hasTheLabel(containerLabel)));
+
+		switch (widgets.size()) {
+		case 0:{
+			if (containers.isEmpty())
+				errorMsg = "'"+localItem.toShortString()+"' must have '"+widgetLabel+"' or '"+containerLabel+"' child node.";
+			else if (containers.size()==1)
+				errorMsg = "'"+localItem.toShortString()+"' must have '"+widgetLabel+"' or additional '"+containerLabel+"' child node.";			
 			return this;
 		}
-		if (!type1.isEmpty() && type2.isEmpty())
-			satisfied = true;
-		else if (type1.isEmpty() && type2.size() == 2)
-			satisfied = true;
-		else if (type1.size() == 1 && type2.size() == 1)
-			satisfied = true;
+		case 1:{
+//			if (containers.size()>1)
+//				
+//				ok = false;
+//			// Remove a container OR add widget
+		
+			break;
+		}
+		case 2:{
+//			if (!containers.isEmpty())
+//				ok = false;
+//			// remove all containers
+			break;
+		}
+		default :{
+//			ok = false;
+			// remove n widgets
+		}
+		}
 		return this;
 	}
-
-	public String toString() {
-		return "[" + stateString() + "must have at least one or two children node with label '" + nodeLabel1
-				+ "' or two children with label '" + nodeLabel2 + "'.]";
-	}
-
 }

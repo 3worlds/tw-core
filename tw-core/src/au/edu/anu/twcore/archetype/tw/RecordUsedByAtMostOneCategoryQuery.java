@@ -1,10 +1,39 @@
+/**************************************************************************
+ *  TW-CORE - 3Worlds Core classes and methods                            *
+ *                                                                        *
+ *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
+ *       shayne.flint@anu.edu.au                                          * 
+ *       jacques.gignoux@upmc.fr                                          *
+ *       ian.davies@anu.edu.au                                            * 
+ *                                                                        *
+ *  TW-CORE is a library of the principle components required by 3W       *
+ *                                                                        *
+ **************************************************************************                                       
+ *  This file is part of TW-CORE (3Worlds Core).                          *
+ *                                                                        *
+ *  TW-CORE is free software: you can redistribute it and/or modify       *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation, either version 3 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  TW-CORE is distributed in the hope that it will be useful,            *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details.                          *                         
+ *                                                                        *
+ *  You should have received a copy of the GNU General Public License     *
+ *  along with TW-CORE.                                                   *
+ *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
+ *                                                                        *
+ **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.data.Record;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -16,33 +45,27 @@ import fr.cnrs.iees.graph.impl.ALEdge;
  * @author Jacques Gignoux - 9 févr. 2021
  *
  */
-public class RecordUsedByAtMostOneCategoryQuery extends Query {
-	
-	private Collection<String> edgeLabels = new ArrayList<>(4); 
-	private int nEdges = 0;
-	private String recname;
-	
+public class RecordUsedByAtMostOneCategoryQuery extends QueryAdaptor{
+	private final Collection<String> edgeLabels; 
 	public RecordUsedByAtMostOneCategoryQuery(StringTable params) {
 		super();
+		edgeLabels = new ArrayList<>(4); 
 		for (int i=0; i<params.size(); i++)
 			edgeLabels.add(params.getWithFlatIndex(i));
 	}
 
 	@Override
-	public Query process(Object input) { // input is a Record root node
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		Record record = (Record) input;
-		recname = record.id();
+		int nEdges = 0;
 		for (ALEdge e:record.edges(Direction.IN))
 			if (edgeLabels.contains(e.classId()))
 				nEdges++;
-		satisfied = (nEdges<=1);
+		if (nEdges>1)
+			errorMsg = "Record '" + record.id() + "' must be used by at most one Category. Found "+ nEdges +".";
+		
 		return this;
-	}
-	
-	public String toString() {
-		return "[" + this.getClass().getName() +
-			": Record '" + recname + "' must be used by at most one Category. Found "+ nEdges +"]";
 	}
 
 }

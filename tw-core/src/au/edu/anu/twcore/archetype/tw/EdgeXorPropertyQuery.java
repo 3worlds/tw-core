@@ -28,50 +28,37 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
+public class EdgeXorPropertyQuery extends QueryAdaptor {
+	private final String nodeLabel;
+	private final String propertyName;
 
-/**
- * @author Jacques Gignoux - 5/9/2016
- * Constraint: some nodes must have ONE of either a property or an edge 
- * NB the check is made on the edge's endNode label because edges can sometimes have a _child label
- */
-public class EdgeXorPropertyQuery extends Query {
-	
-	private String nodeLabel = null;
-	private String propertyName = null;
-	
 	public EdgeXorPropertyQuery(StringTable args) {
 		nodeLabel = args.getWithFlatIndex(0);
 		propertyName = args.getWithFlatIndex(1);
 	}
 
 	@Override
-	public Query process(Object input) { // NB: input is the Node on which the Query is called		
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		Node localItem = (Node) input;
 		boolean propertyPresent = false;
 		if (localItem instanceof ReadOnlyDataHolder)
 			propertyPresent = (((ReadOnlyDataHolder) localItem).properties().hasProperty(propertyName));
-		Node n = (Node) get(localItem,
-			outEdges(),
-			edgeListEndNodes(),
-			selectZeroOrOne(hasTheLabel(nodeLabel)));
-		boolean edgePresent = (n!=null);
-		satisfied = (propertyPresent^edgePresent);
+		Node n = (Node) get(localItem, outEdges(), edgeListEndNodes(), selectZeroOrOne(hasTheLabel(nodeLabel)));
+		boolean edgePresent = (n != null);
+		if (!(propertyPresent ^ edgePresent))
+			errorMsg = "'" + localItem.toShortString() + "' must have either property '" + propertyName.toString()
+					+ "' or edge to '" + nodeLabel + "'.]";
 		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "must have either property '" + propertyName.toString() + "' or edge to '"+nodeLabel+"'.]";
 	}
 
 }

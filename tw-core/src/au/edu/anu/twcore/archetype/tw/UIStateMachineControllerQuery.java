@@ -26,52 +26,30 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-
 package au.edu.anu.twcore.archetype.tw;
+
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_UIWIDGET;
 
 import java.util.ArrayList;
 import java.util.List;
-import au.edu.anu.rscs.aot.queries.Query;
+
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
-/**
- * A query to check that a controller of some kind exists in the userInterface
- */
-
-/**
- * @author Ian Davies
- *
- * @date 29 Dec 2019
- */
-public class UIStateMachineControllerQuery extends Query {
-	// could be SubTreeContainsOneOf??
-
-	private String msg;
-
-	private static void getWidgets(TreeNode parent, List<TreeGraphDataNode> widgets, List<TreeNode> containers) {
-		if (parent.classId().equals(N_UIWIDGET.label()))
-			widgets.add((TreeGraphDataNode) parent);
-		else
-			containers.add(parent);
-
-		for (TreeNode child : parent.getChildren())
-			getWidgets(child, widgets, containers);
-	}
+public class UIStateMachineControllerQuery extends QueryAdaptor{
 
 	@Override
-	public Query process(Object input) {
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		TreeNode ui = (TreeNode) input;
 		Class<?> smcClass = fr.cnrs.iees.rvgrid.statemachine.StateMachineController.class;
 		List<TreeGraphDataNode> widgets = new ArrayList<>();
 		List<TreeNode> containers = new ArrayList<>();
-
 		for (TreeNode child : ui.getChildren()) 
 			getWidgets(child, widgets, containers);
-
 		int count=0;
 		for (TreeGraphDataNode widgetNode : widgets) {
 			String kstr = (String) widgetNode.properties().getPropertyValue(TwArchetypeConstants.twaSubclass);
@@ -85,25 +63,24 @@ public class UIStateMachineControllerQuery extends Query {
 				e.printStackTrace();
 			}
 		}
-		// ha - this is like dna methylation. Suppress the query if something else will
-		// activate a query before hand.
-		// In this case its the must have a child with label top, bottom or tab child.
+		// nothing to test yet
 		if (containers.isEmpty()) {
-			satisfied = true;
 			return this;
 		}
-		if (!(count == 1)) {
-			msg = "User interface must have one and only one controller widget";
-			satisfied = false;
-		} else
-			satisfied = true;
+		if (!(count == 1)) 
+			errorMsg = "User interface must have one and only one controller widget.";
+		
 		return this;
 	}
+	
+	private static void getWidgets(TreeNode parent, List<TreeGraphDataNode> widgets, List<TreeNode> containers) {
+		if (parent.classId().equals(N_UIWIDGET.label()))
+			widgets.add((TreeGraphDataNode) parent);
+		else
+			containers.add(parent);
 
-	@Override
-	public String toString() {
-		return "[" + stateString() + msg + "]";
-
+		for (TreeNode child : parent.getChildren())
+			getWidgets(child, widgets, containers);
 	}
 
 }

@@ -31,7 +31,8 @@ package au.edu.anu.twcore.archetype.tw;
 import java.io.File;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.util.Resources;
 import fr.cnrs.iees.twcore.constants.FileType;
 
@@ -40,24 +41,19 @@ import fr.cnrs.iees.twcore.constants.FileType;
  * @author gignoux - 24 févr. 2017
  *
  */
-public class InputFileExistQuery extends Query{
-	File s;
-	Property localItem;
-	@Override
-	public Query process(Object input) { // input is a property 
-		defaultProcess(input);
-		localItem = (Property) input;
-		s = ((FileType) localItem.getValue()).getFile();
-		if (s!=null && s.exists())
-			satisfied = true;
-		// TODO need to handle jars!!
-		if (s!=null && Resources.getFile(s.getName())!=null)
-			satisfied = true;
-		return this;
-	}
+public class InputFileExistQuery extends QueryAdaptor{
 
-	public String toString() {
-		return "[" + stateString() + "File for property '"+localItem.getKey()+"' must exist.";
+	@Override
+	public Queryable submit(Object input) {
+		initInput(input);
+		Property localItem = (Property) input;
+		File s = ((FileType) localItem.getValue()).getFile();
+		if (s!=null && s.exists())
+			return this;
+		// TODO need to handle jars!!
+		if (!(s!=null && Resources.getFile(s.getName())!=null))
+			errorMsg =  "File for property '"+localItem.getKey()+"' must exist.";
+		return this;
 	}
 
 }

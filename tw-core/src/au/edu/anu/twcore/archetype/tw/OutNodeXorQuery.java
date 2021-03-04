@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          *
+ *       shayne.flint@anu.edu.au                                          * 
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            *
+ *       ian.davies@anu.edu.au                                            * 
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************
+ **************************************************************************                                       
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,7 +19,7 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *
+ *  GNU General Public License for more details.                          *                         
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
@@ -32,14 +32,13 @@ import java.util.List;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.ens.biologie.generic.utils.Duple;
-
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 /**
  * Checks that an out node has either of two labels.
  *
@@ -47,8 +46,8 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
  *         label1 or 1..* nodes with label2
  *
  */
-public class OutNodeXorQuery extends Query {
 
+public class OutNodeXorQuery extends QueryAdaptor {
 	private String nodeLabel1 = null;
 	private String nodeLabel2 = null;
 
@@ -63,31 +62,25 @@ public class OutNodeXorQuery extends Query {
 		nodeLabel2 = (String) table.getWithFlatIndex(1);
 	}
 
-	private Node localItem;
-
 	@Override
-	public Query process(Object input) { // input is a node
-		defaultProcess(input);
-		localItem = (Node) input;
+	public Queryable submit(Object input) {
+		initInput(input);
+		Node localItem = (Node) input;
 		Duple<List<Node>, List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1, nodeLabel2);
-		satisfied = (nodeLists.getFirst().size() > 0) ^ (nodeLists.getSecond().size() > 0);
-		return this;
+		if(!((nodeLists.getFirst().size() > 0) ^ (nodeLists.getSecond().size() > 0))){
+			errorMsg = "'" + localItem.toShortString()
+			+ "' must have at least one edge to a node labelled either '" +nodeLabel1 + "' or '" + nodeLabel2+"'.";
+		};
+
+		return null;
 	}
 
-	public String toString() {
-		return "[" + stateString() + "'" + localItem.classId() + ":" + localItem.id()
-				+ "' must have at least one edge to a node labelled either [" + nodeLabel1 + "] or [" + nodeLabel2
-				+ "].]";
-	}
-
-	@SuppressWarnings("unchecked")
 	private static Duple<List<Node>, List<Node>> getNodeLists(Node localItem, String nodeLabel1, String nodeLabel2) {
 		List<Node> nl1 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
 				selectZeroOrMany(hasTheLabel(nodeLabel1)));
 		List<Node> nl2 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
 				selectZeroOrMany(hasTheLabel(nodeLabel2)));
 		return new Duple<List<Node>, List<Node>>(nl1, nl2);
-
 	}
 
 	public static boolean propose(Node localItem, Node proposedEndNode, String nodeLabel1, String nodeLabel2) {
@@ -97,13 +90,13 @@ public class OutNodeXorQuery extends Query {
 		 */
 		if (Set.of(nodeLabel1, nodeLabel2).contains(proposedEndNode.classId())) {
 			Duple<List<Node>, List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1, nodeLabel2);
-			String choice=null;
+			String choice = null;
 			if (!nodeLists.getFirst().isEmpty())
 				choice = nodeLists.getFirst().get(0).classId();
-			else if(!nodeLists.getSecond().isEmpty())
+			else if (!nodeLists.getSecond().isEmpty())
 				choice = nodeLists.getSecond().get(0).classId();
 
-			if (choice==null)
+			if (choice == null)
 				return true;
 			return choice.equals(proposedEndNode.classId());
 		}

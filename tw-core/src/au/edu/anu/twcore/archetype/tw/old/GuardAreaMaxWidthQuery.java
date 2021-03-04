@@ -26,56 +26,76 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype.tw;
+package au.edu.anu.twcore.archetype.tw.old;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BASELINE;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_SYSTEM;
+import au.edu.anu.rscs.aot.old.queries.Query;
+import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
+import fr.cnrs.iees.twcore.constants.SpaceType;
+import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
+import fr.ens.biologie.generic.utils.Interval;
 
-import java.util.Arrays;
-import java.util.List;
-
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
-
-import static au.edu.anu.rscs.aot.queries.XCoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.XSequenceQuery.*;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.TreeNode;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * @author Ian Davies
+ * Checks that a guard area fits within a space
  *
- * @date 24 Feb. 2021
- * 
- * Test case for syntax for revised query system.
+ * @author Jacques Gignoux - 16 sept. 2020
+ *
  */
-public class XBaselineQuery extends QueryAdaptor {
+//Tested OK 16/6/2020
+@Deprecated
+public class GuardAreaMaxWidthQuery extends Query {
+
+	public GuardAreaMaxWidthQuery() {
+		super();
+	}
 
 	@Override
-	public Queryable query(Object input) {
-		initQuery(input, TreeNode.class);
-		TreeNode exp = (TreeNode) input;
-		Object edge = get(exp.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_BASELINE.label())));
-		// ok
-		if (edge != null)
-			return this;
-		TreeNode root = exp.getParent();
-		// Not ready to decide
-		if (root == null)
-			return this;
-		List<TreeNode> systems = (List<TreeNode>) get(root.getChildren(),
-				selectZeroOrMany(hasTheLabel(N_SYSTEM.label())));
-		// has no baseline but has multiple systems
-		if (systems.size() > 1) {
-			String[] sys = new String[systems.size()];
-			int i = 0;
-			for (TreeNode s : systems)
-				sys[i++] = s.toShortString();
-			errorMsg = "'" + exp.toShortString() + "' must have an edge labelled '" + E_BASELINE.label() + "' to one of "
-					+ Arrays.deepToString(sys);
-			return this;
+	public Query process(Object input) { // input is a space node
+		defaultProcess(input);
+		SpaceNode spn = (SpaceNode) input;
+		if (spn.properties().hasProperty(P_SPACE_GUARDAREA.key())) {
+			SpaceType stype = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
+			double width = (double) spn.properties().getPropertyValue(P_SPACE_GUARDAREA.key());
+			Box lim = null;
+			switch (stype) {
+				case continuousFlatSurface:
+					Interval x = (Interval) spn.properties().getPropertyValue(P_SPACE_XLIM.key());
+					Interval y = (Interval) spn.properties().getPropertyValue(P_SPACE_YLIM.key());
+					lim = Box.boundingBox(Point.newPoint(x.inf(),y.inf()), 
+						Point.newPoint(x.sup(),y.sup()));
+				break;
+				case linearNetwork:
+					// TODO
+				break;
+				case squareGrid:
+					double cellSize = (double) spn.properties().getPropertyValue(P_SPACE_CELLSIZE.key());
+					int nx = (int) spn.properties().getPropertyValue(P_SPACE_NX.key());
+					int ny = nx;
+					if (spn.properties().hasProperty("ny"))
+						ny = (int) spn.properties().getPropertyValue(P_SPACE_NY.key());
+					lim = Box.boundingBox(Point.newPoint(0.0,0.0),
+						Point.newPoint(nx*cellSize,ny*cellSize));
+				break;
+				case topographicSurface:
+					// TODO
+				break;
+				default:
+				break;
+			}
+			if (lim!=null)
+				satisfied = (Math.min(lim.sideLength(0),lim.sideLength(1))>2*width);
 		}
+		else
+			satisfied = true;
 		return this;
 	}
+	
+	@Override
+	public String toString() {
+		return "[" + stateString() + "guard area width must be smaller than half the space shortest side length]";
+	}
+
 
 }

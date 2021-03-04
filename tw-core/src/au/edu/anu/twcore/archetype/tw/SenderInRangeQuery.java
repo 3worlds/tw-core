@@ -28,16 +28,17 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.Query;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
-
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 /**
  * @author Ian Davies
@@ -49,50 +50,37 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
  * Check that the range of simulator ids a widget is listening to is in fact
  * within the range [0..number of simulators-1].
  */
-public class SenderInRangeQuery extends Query {
-	private static int nReps = 1;
-	private static IntegerRange listenerRange = new IntegerRange(0, 0);
+public class SenderInRangeQuery extends QueryAdaptor {
 
 	@Override
-	public Query process(Object input) {
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		// input is a widget
 		TreeGraphDataNode widget = (TreeGraphDataNode) input;
 
 		// find config root.
 		TreeNode root = getRoot(widget);
-		if (root == null) {
-			// not ready to decide yet
-			satisfied = true;
+		if (root == null)
 			return this;
-		}
+
 		TreeGraphDataNode exp = (TreeGraphDataNode) get(root.getChildren(),
 				selectZeroOrOne(hasTheLabel(N_EXPERIMENT.label())));
-		if (exp == null) {
-			// not ready to decide yet
-			satisfied = true;
+		if (exp == null)
 			return this;
-		}
+
 		TreeGraphDataNode dsgn = (TreeGraphDataNode) get(exp.getChildren(),
 				selectZeroOrOne(hasTheLabel(N_DESIGN.label())));
-		if (dsgn == null) {
-			// not ready to decide yet
-			satisfied = true;
+		if (dsgn == null)
 			return this;
-		}
-		if (!dsgn.properties().hasProperty(P_DESIGN_TYPE.key())) {
-			// Not designed for this query
-			satisfied = true;
-			return this;
-		}
-		ExperimentDesignType edt = (ExperimentDesignType) dsgn.properties().getPropertyValue(P_DESIGN_TYPE.key());
-		if (!edt.equals(ExperimentDesignType.singleRun)) {
-			// Query not designed for other exp types (yet?)
-			satisfied = true;
-			return this;
-		}
 
-		nReps = 1;
+		if (!dsgn.properties().hasProperty(P_DESIGN_TYPE.key()))
+			return this;
+
+		ExperimentDesignType edt = (ExperimentDesignType) dsgn.properties().getPropertyValue(P_DESIGN_TYPE.key());
+		if (!edt.equals(ExperimentDesignType.singleRun))
+			return this;
+
+		int nReps = 1;
 		if (exp.properties().hasProperty(P_EXP_NREPLICATES.key()))
 			nReps = (Integer) exp.properties().getPropertyValue(P_EXP_NREPLICATES.key());
 		// Depends on widget policy
@@ -107,10 +95,11 @@ public class SenderInRangeQuery extends Query {
 				nSenders = Math.max(1, nSenders);// IsInRangeQuery will cover this
 			}
 		}
-		listenerRange = new IntegerRange(firstSender, firstSender + (nSenders - 1));
+		IntegerRange listenerRange = new IntegerRange(firstSender, firstSender + (nSenders - 1));
 		IntegerRange simRange = new IntegerRange(0, nReps - 1);
-		if (simRange.contains(listenerRange)) {
-			satisfied = true;
+		if (!simRange.contains(listenerRange)) {
+			errorMsg = widget.toShortString()+ " is listening to simulators within the range " + listenerRange + " but there are only "
+					+ nReps + " simulators.]";
 			return this;
 		}
 		return this;
@@ -124,9 +113,4 @@ public class SenderInRangeQuery extends Query {
 		return null;
 	}
 
-	@Override
-	public String toString() {
-		return "[" + stateString() + " Widget is listening to simulators within the range " + listenerRange
-				+ " but there are only " + nReps + " simulators.]";
-	}
 }

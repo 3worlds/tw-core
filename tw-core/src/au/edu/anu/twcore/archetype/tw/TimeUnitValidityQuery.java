@@ -30,7 +30,8 @@ package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
@@ -44,21 +45,21 @@ import fr.cnrs.iees.twcore.constants.TimeUnits;
  * @author gignoux
  *
  */
-public class TimeUnitValidityQuery extends Query {
 
-	private TimeScaleType refScale = null;
-	private String pscale = null;
-	private String pname = null;
+public class TimeUnitValidityQuery extends QueryAdaptor {
+	private TimeScaleType refScale;
+	private String pscale;
+	private String propertyName;
 
 	public TimeUnitValidityQuery(StringTable parameters) {
 		super();
-		pname = parameters.getWithFlatIndex(0); // name of the time property
+		propertyName = parameters.getWithFlatIndex(0); // name of the time property
 		pscale = parameters.getWithFlatIndex(1); // name of the time scale prop
 	}
 
 	@Override
-	public Query process(Object input) { // input is a Node with 2 properties, one of them has the time scale
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		ReadOnlyDataHolder localItem = (ReadOnlyDataHolder) input;
 		TreeNode localNode = (TreeNode) input;
 		// search for a property named pscale, which has the time scale type
@@ -66,32 +67,29 @@ public class TimeUnitValidityQuery extends Query {
 		// If null, this query should remain silent;
 		if (refScale == null) {
 			ReadOnlyDataHolder p = (ReadOnlyDataHolder) localNode.getParent();
-			if (p != null) 
+			if (p != null)
 				refScale = (TimeScaleType) p.properties().getPropertyValue(pscale);
 		}
 		Property prop = null;
-		prop = localItem.properties().getProperty(pname);
-		if (prop == null)
-			// satisfied = false;
-			satisfied = true;
-		else if (refScale == null)
-			satisfied = true;
+		prop = localItem.properties().getProperty(propertyName);
 		// remain silent until there are time models present
-		// Could make the default refScale ABITRARY but I think it would seem confusing.
-		else if(!localNode.hasChildren())
-			satisfied = true;
+		if (prop == null)
+			return this;
+		else if (refScale == null)
+			return this;
+		else if (!localNode.hasChildren())
+			return this;
 		else {
 			TimeUnits tu = (TimeUnits) prop.getValue();
 			if (tu == null)
 				tu = TimeUnits.UNSPECIFIED;
-			satisfied = TimeScaleType.validTimeUnits(refScale).contains(tu);
+			if (!TimeScaleType.validTimeUnits(refScale).contains(tu)) {
+				errorMsg = "Property value for '" + propertyName + "' must be one of {"
+						+ TimeScaleType.validTimeUnits(refScale).toString() + "}.";
+				return this;
+			}
 		}
 		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "Property value for " + pname + " must be one of {"
-				+ TimeScaleType.validTimeUnits(refScale).toString() + "}.]";
 	}
 
 }

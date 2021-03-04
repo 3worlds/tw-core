@@ -35,19 +35,21 @@ import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.LongTable;
 import au.edu.anu.rscs.aot.collections.tables.ShortTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 
 /**
  * @author Jacques Gignoux - 21/3/2018 Constraint on numeric properties: value
  *         must be within a given interval
  */
-public class IsInRangeQuery extends Query {
-
-	private double min;
-	private double max;
+public class IsInRangeQuery extends QueryAdaptor {
+	private final double min;
+	private final double max;
 
 	/**
-	 * Use this constructors if values are provided as a table of 2 values, min first
+	 * Use this constructors if values are provided as a table of 2 values, min
+	 * first
+	 * 
 	 * @param interval
 	 */
 	public IsInRangeQuery(IntTable interval) {
@@ -55,26 +57,31 @@ public class IsInRangeQuery extends Query {
 		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
 		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();
 	}
+
 	public IsInRangeQuery(LongTable interval) {
 		super();
 		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
 		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();
 	}
+
 	public IsInRangeQuery(ShortTable interval) {
 		super();
 		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
 		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();
 	}
+
 	public IsInRangeQuery(FloatTable interval) {
 		super();
 		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
 		max = ((Number) interval.getWithFlatIndex(1)).doubleValue();
 	}
+
 	public IsInRangeQuery(DoubleTable interval) {
 		super();
 		min = interval.getWithFlatIndex(0);
 		max = interval.getWithFlatIndex(1);
 	}
+
 	public IsInRangeQuery(ByteTable interval) {
 		super();
 		min = ((Number) interval.getWithFlatIndex(0)).doubleValue();
@@ -82,34 +89,35 @@ public class IsInRangeQuery extends Query {
 	}
 
 	/**
-	 * Use this constructor if two values are provided as two numbers (int or double)
+	 * Use this constructor if two values are provided as two numbers (int or
+	 * double)
+	 * 
 	 * @param mini
 	 * @param maxi
 	 */
 	public IsInRangeQuery(Number mini, Number maxi) {
 		super();
-		min = mini.doubleValue();
-		max = maxi.doubleValue();
-		if (min>max) {
-			double d = min;
-			min = max;
-			max = d;
+		double tmin = mini.doubleValue();
+		double tmax = maxi.doubleValue();
+		if (tmin > tmax) {
+			double d = tmin;
+			tmin = tmax;
+			tmax = d;
 		}
+		min = tmin;
+		max = tmax;
 	}
 
-	private Property localItem;
 	@Override
-	public Query process(Object input) { // input is a prop here
-		defaultProcess(input);
-		localItem = (Property) input;
+	public Queryable submit(Object input) {
+		initInput(input);
+		Property localItem = (Property) input;
 		double value = ((Number) localItem.getValue()).doubleValue();
-		satisfied = (value >= min) & (value <= max);
+		if (!(value >= min) & (value <= max)) {
+			errorMsg = "Property " + localItem.getKey() + "=" + localItem.getValue() + "' must be within [" + min + "; "
+					+ max + "].";
+		}
 		return this;
-	}
-
-	public String toString() {
-		//NB will crash if process has not been run
-		return "[" + stateString() + "Property "+localItem.getKey()+"="+localItem.getValue()+"' must be within [" + min + "; " + max + "].]";
 	}
 
 }

@@ -26,51 +26,72 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype.tw;
+package au.edu.anu.twcore.archetype.tw.old;
 
-import au.edu.anu.rscs.aot.queries.Query;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.rscs.aot.old.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.old.queries.base.SequenceQuery.get;
+
+import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-
+import au.edu.anu.rscs.aot.old.queries.Query;
+import au.edu.anu.twcore.archetype.TwArchetypeConstants;
+import fr.cnrs.iees.graph.TreeNode;
 
 /**
+ * Checks that a CHILD treenode has either of two labels. 
  * @author Jacques Gignoux - 5/9/2016
- * Constraint: some nodes must have at least ONE of a property or an edge 
- * NB the check is made on the edge's endNode label because edges can sometimes have a _child label
+ * Constraint: either 1..* nodes with label1 or 1..* nodes with label2
  */
-public class EdgeOrPropertyQuery extends Query {
-	
-	private String nodeLabel = null;
-	private String propertyName = null;
-	
-	public EdgeOrPropertyQuery(StringTable args) {
-		nodeLabel = args.getWithFlatIndex(0);
-		propertyName = args.getWithFlatIndex(1);
+/**
+ * @author Ian Davies
+ *
+ * @date 27 Sep 2019
+ * 
+ *       Constraint: Either 1 or 2 of nodeLabel1 or just 2 nodelabel2 - for tabs
+ *       and containers in the UI
+ */
+// Great name!
+@Deprecated
+public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends Query implements TwArchetypeConstants {
+
+	private String nodeLabel1 = null;
+	private String nodeLabel2 = null;
+
+	public ChildAtLeastOneOfOneOrTwoOfTwoQuery(String nodeLabel1, String nodeLabel2) {
+		this.nodeLabel1 = nodeLabel1;
+		this.nodeLabel2 = nodeLabel2;
 	}
 
+	public ChildAtLeastOneOfOneOrTwoOfTwoQuery(StringTable table) {
+		super();
+		nodeLabel1 = table.getWithFlatIndex(0);
+		nodeLabel2 = table.getWithFlatIndex(1);
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // NB: input is the AotNode on which the Query is called		
+	public Query process(Object input) {
 		defaultProcess(input);
-		Node localItem = (Node) input;
-		boolean propertyPresent = false;
-		if (localItem instanceof ReadOnlyDataHolder)
-			propertyPresent = (((ReadOnlyDataHolder) localItem).properties().hasProperty(propertyName));
-		Node n = (Node) get(localItem,
-			outEdges(),
-			edgeListEndNodes(),
-			selectZeroOrOne(hasTheLabel(nodeLabel)));
-		boolean edgePresent = (n!=null);
-		satisfied = (propertyPresent|edgePresent);
+		TreeNode parent = (TreeNode) input;
+		List<TreeNode> type1 = (List<TreeNode>) get(parent, children(), selectZeroOrMany(hasTheLabel(nodeLabel1)));
+		List<TreeNode> type2 = (List<TreeNode>) get(parent, children(), selectZeroOrMany(hasTheLabel(nodeLabel2)));
+		if ((type2.size()+ type1.size())>2) {
+			satisfied = false;
+			return this;
+		}
+		if (!type1.isEmpty() && type2.isEmpty())
+			satisfied = true;
+		else if (type1.isEmpty() && type2.size() == 2)
+			satisfied = true;
+		else if (type1.size() == 1 && type2.size() == 1)
+			satisfied = true;
 		return this;
 	}
-	
+
 	public String toString() {
-		return "[" + stateString() + "must have at least property '" + propertyName.toString() + "' or edge to '"+nodeLabel+"'.]";
+		return "[" + stateString() + "must have at least one or two children node with label '" + nodeLabel1
+				+ "' or two children with label '" + nodeLabel2 + "'.]";
 	}
 
 }

@@ -28,7 +28,15 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.Query;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+
+import java.util.List;
+
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
@@ -38,13 +46,6 @@ import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-
-import java.util.List;
-
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 /**
  * A Query to check that a function type is compatible with its ProcessNode type (component or relation process)
@@ -52,37 +53,29 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
  * @author Jacques Gignoux - 16 sept. 2019
  *
  */
-public class FunctionMatchProcessTypeQuery extends Query {
-	
-	private String functionType = null;
-	private String processType = null;
-
-	public FunctionMatchProcessTypeQuery() {
-		
-	}
+public class FunctionMatchProcessTypeQuery extends QueryAdaptor{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // object is a FunctionNode
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		FunctionNode fn = (FunctionNode) input;
 		//  can't decide without a parent - yes that circumstance is possible with ModelMaker
-		if (fn.getParent()==null) {
-			satisfied = true;
+		if (fn.getParent()==null) 			
 			return this;
-		}
+		
 		if (fn.getParent() instanceof ProcessNode) {
 			TwFunctionTypes ftype = (TwFunctionTypes) fn.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-			functionType = ftype.name();
+			String functionType = ftype.name();
 			ProcessNode pn = (ProcessNode) fn.getParent();
 			// avoid throwing a f)(&^ing select query error because its incomprehensible at this level
 			List<Node> targets = (List<Node>) get(pn.edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
 				edgeListEndNodes());
-			if (targets.isEmpty()) {
-				satisfied = true;
+			if (targets.isEmpty()) 
 				return this;
-			}
+
+			String processType=null;
 			TwFunctionTypes[] validFunctions = null;
 			if (targets.get(0) instanceof RelationType) {
 				validFunctions = AbstractRelationProcess.compatibleFunctionTypes;
@@ -92,18 +85,17 @@ public class FunctionMatchProcessTypeQuery extends Query {
 				validFunctions = ComponentProcess.compatibleFunctionTypes;
 				processType = "component";
 			}
+			boolean ok = false;
 			for (TwFunctionTypes ft:validFunctions)
 				if (ft.equals(ftype)) {
-					satisfied = true;
+					ok = true;
 					break;
 			}
+			if (!ok)
+				errorMsg = "Function type '" + functionType + 
+				"' is incompatible with a " + processType + " process.";
 		}
 		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "Function type '" + functionType + 
-				"' incompatible with a " + processType + " process.";
 	}
 
 }

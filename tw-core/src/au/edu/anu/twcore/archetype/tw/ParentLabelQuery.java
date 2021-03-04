@@ -32,53 +32,53 @@ import java.util.LinkedList;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
- * @author Jacques Gignoux - 6/9/2016
- * Constraint on a node's parent label
+ * @author Jacques Gignoux - 6/9/2016 Constraint on a node's parent label
  *
  */
-public class ParentLabelQuery extends Query {
-	
-	private List<String> labels = new LinkedList<String>();
-	
+public class ParentLabelQuery extends QueryAdaptor {
+	private final List<String> labels;
+
 	/**
-	 * Use this constructor to test a set of labels. Argument in file
-	 * must be an ObjectTable
+	 * Use this constructor to test a set of labels. Argument in file must be an
+	 * ObjectTable
+	 * 
 	 * @param ot
 	 */
 	public ParentLabelQuery(StringTable ot) {
 		super();
-		for (int i=0; i<ot.size(); i++)
+		labels = new LinkedList<String>();
+		for (int i = 0; i < ot.size(); i++)
 			labels.add(ot.getWithFlatIndex(i));
 	}
 
 	/**
 	 * Use this constructor to test a single label
+	 * 
 	 * @param s
 	 */
 	public ParentLabelQuery(String s) {
+		labels = new LinkedList<String>();
 		labels.add(s);
 	}
-	
+
 	@Override
-	public Query process(Object input) { // input is a TreeNode
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		TreeNode localItem = (TreeNode) input;
 		TreeNode parent = localItem.getParent();
-		if (parent!=null)
-			for (String label:labels) 
+		if (parent != null) {
+			for (String label : labels)
 				if (parent.classId().equals(label)) {
-					satisfied=true;
-					break;
+					return this;
 				}
+			errorMsg = "Parent label must be one of '" + labels.toString() + "'.";
+		}
 		return this;
-	}
-	
-	public String toString() {
-		return "[" + stateString() + "Parent label must be one of '" + labels.toString() + "'.]";
 	}
 
 }

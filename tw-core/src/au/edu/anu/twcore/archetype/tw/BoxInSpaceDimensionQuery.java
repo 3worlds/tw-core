@@ -30,7 +30,8 @@ package au.edu.anu.twcore.archetype.tw;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_SPACETYPE;
 
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
@@ -41,33 +42,27 @@ import fr.cnrs.iees.uit.space.Box;
  * @author Jacques Gignoux - 16 sept. 2020
  *
  */
-// Tested OK 16/6/2020
-public class BoxInSpaceDimensionQuery extends Query {
 
+public class BoxInSpaceDimensionQuery extends QueryAdaptor {
 	private String propName;
-	
+
 	public BoxInSpaceDimensionQuery(String boxProp) {
 		super();
 		propName = boxProp;
 	}
 
 	@Override
-	public Query process(Object input) { // input is a space node
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		SpaceNode spn = (SpaceNode) input;
 		SpaceType stype = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
+		// no problem if no Box property
 		if (spn.properties().hasProperty(propName)) {
-			Box prop = (Box)spn.properties().getPropertyValue(propName);
-			satisfied = (prop.dim()==stype.dimensions());
+			Box prop = (Box) spn.properties().getPropertyValue(propName);
+			if (prop.dim() != stype.dimensions())
+				errorMsg = "'" + propName + "' must have the same dimensions as its containing space.";
 		}
-		else
-			satisfied = true; // no problem if no Box property
 		return this;
-	}
-
-	@Override
-	public String toString() {
-		return "[" + stateString() +"'"+ propName + "' must have the same dimensions as its containing space]";
 	}
 
 }

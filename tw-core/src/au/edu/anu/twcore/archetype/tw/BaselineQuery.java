@@ -28,56 +28,55 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BASELINE;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_SYSTEM;
 
+import java.util.Arrays;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.queries.Query;
-import au.edu.anu.twcore.experiment.Experiment;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
  * @author Ian Davies
  *
- * @date 16 Jun 2020
+ * @date 24 Feb. 2021
+ * 
+ * Test case for syntax for revised query system.
  */
-public class BaselineQuery extends Query {
+public class BaselineQuery extends QueryAdaptor {
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) {
-		defaultProcess(input);
-		Experiment exp = (Experiment) input;
+	public Queryable submit(Object input) {
+		initInput(input);
+		TreeNode exp = (TreeNode) input;
 		Object edge = get(exp.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_BASELINE.label())));
-		// Don't care
-		if (edge != null) {
-			satisfied = true;
+		// ok
+		if (edge != null)
 			return this;
-		}
 		TreeNode root = exp.getParent();
-		// not ready
-		if (root == null) {
-			satisfied = true;
+		// Not ready to decide
+		if (root == null)
 			return this;
-		}
-
-		@SuppressWarnings("unchecked")
 		List<TreeNode> systems = (List<TreeNode>) get(root.getChildren(),
 				selectZeroOrMany(hasTheLabel(N_SYSTEM.label())));
 		// has no baseline but has multiple systems
 		if (systems.size() > 1) {
-			satisfied = false;
+			String[] sys = new String[systems.size()];
+			int i = 0;
+			for (TreeNode s : systems)
+				sys[i++] = s.toShortString();
+			errorMsg = "'" + exp.toShortString() + "' must have an edge labelled '" + E_BASELINE.label() + "' to one of "
+					+ Arrays.deepToString(sys);
 			return this;
 		}
-		satisfied = true;
 		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "requires `baseline:` edge to a `system:'.]";
 	}
 
 }

@@ -32,19 +32,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.TreeNode;
 
-/**
- * @author Ian Davies
- * @date 17 May 2018
- */
-/*-
- * Input is node. 
- * Check that node has at least one child with a label in the
- * list.
- */
-public class NodeAtLeastOneChildLabelOfQuery extends Query {
+public class NodeAtLeastOneChildLabelOfQuery extends QueryAdaptor {
 	private List<String> labels = new LinkedList<String>();
 
 	public NodeAtLeastOneChildLabelOfQuery(StringTable table) {
@@ -53,28 +45,24 @@ public class NodeAtLeastOneChildLabelOfQuery extends Query {
 			labels.add(table.getWithFlatIndex(i).trim());
 	}
 
-	private TreeNode node;
 	@Override
-	public Query process(Object input) {
-		defaultProcess(input);
-		node = (TreeNode) input;
+	public Queryable submit(Object input) {
+		initInput(input);
+		TreeNode node = (TreeNode) input;
 		Iterable<? extends TreeNode> children = node.getChildren();
-		satisfied = false;
+		boolean ok = false;
 		for (String label : labels) {
 			for (TreeNode child : children) {
 				if (child.classId().equals(label)) {
-					satisfied = true;
+					ok = true;
 					return this;
 				}
 			}
 		}
+		if (!ok)
+			errorMsg = "'" + node.toShortString() + "' must have at least one child labelled '"
+					+ labels.toString() + "'.";
 		return this;
-	}
-
-	@Override
-	public String toString() {
-		return "[" + stateString() + "'"+ node.classId()+":"+node.id()+"' must have at least one child labelled '" + 
-			labels.toString() + "'.]";
 	}
 
 }

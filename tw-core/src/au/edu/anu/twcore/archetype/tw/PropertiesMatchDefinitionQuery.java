@@ -2,13 +2,13 @@
  *  TW-CORE - 3Worlds Core classes and methods                            *
  *                                                                        *
  *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
- *       shayne.flint@anu.edu.au                                          *
+ *       shayne.flint@anu.edu.au                                          * 
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            *
+ *       ian.davies@anu.edu.au                                            * 
  *                                                                        *
  *  TW-CORE is a library of the principle components required by 3W       *
  *                                                                        *
- **************************************************************************
+ **************************************************************************                                       
  *  This file is part of TW-CORE (3Worlds Core).                          *
  *                                                                        *
  *  TW-CORE is free software: you can redistribute it and/or modify       *
@@ -19,14 +19,13 @@
  *  TW-CORE is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *
+ *  GNU General Public License for more details.                          *                         
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-CORE.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-
 package au.edu.anu.twcore.archetype.tw;
 
 import java.util.Collection;
@@ -37,7 +36,8 @@ import java.util.Set;
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.ecosystem.structure.ElementType;
@@ -47,7 +47,6 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.LifespanType;
 import fr.ens.biologie.generic.utils.Duple;
-
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
@@ -64,8 +63,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  *
  * @date 29 Dec 2019
  */
-public class PropertiesMatchDefinitionQuery extends Query {
-
+public class PropertiesMatchDefinitionQuery extends QueryAdaptor {
 	private String dataCategory;
 
 	public PropertiesMatchDefinitionQuery(String dataCategory) {
@@ -77,140 +75,103 @@ public class PropertiesMatchDefinitionQuery extends Query {
 		this.dataCategory = (table.getWithFlatIndex(0));
 	}
 
-	private String msg;
-
-	// NB this doesnt check complex data structures, ie tables of records of tables
 	@Override
-	public Query process(Object input) { // input is a variableValues or constantValues node
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		TreeGraphDataNode targetNode = (TreeGraphDataNode) input;
-
 		Duple<Boolean, Collection<TreeGraphDataNode>> defData = getDataDefs(targetNode, dataCategory);
-
-		// nothing to say at this time so return ok. Leave it to some other query to
-		// indicate what to do.
-		if (defData == null) {
-			satisfied = true;
+		if (defData == null)
 			return this;
-		}
 
 		// TODO: Remove all this autovar stuff and check with the predefined tree?
 		// I would prefer to remove this query and the whole concept of property based
 		// initialisers - Ian
 		Collection<TreeGraphDataNode> defs = defData.getSecond();
 		Boolean useAutoVars = defData.getFirst();
-
-		satisfied = true;
-		if (defs == null || defs.isEmpty()) {
-			msg = "No property definitions found.";
-			satisfied = false;
+		if (defs.isEmpty()) {
+			errorMsg = "No property definitions found for '" + targetNode.toShortString() + "'.";
 			return this;
 		}
 		SimplePropertyList trgProps = targetNode.properties();
 		if (useAutoVars) {
 			if (!trgProps.hasProperty("birthDate")) {
-				msg = "Property 'birthDate' not found.";
-				satisfied = false;
+				errorMsg = "Property 'birthDate' not foundfor '" + targetNode.toShortString() + "'.";
 				return this;
 			}
 			if (!trgProps.hasProperty("age")) {
-				msg = "Property 'age' not found.";
-				satisfied = false;
+				errorMsg = "Property 'age' not foundfor '" + targetNode.toShortString() + "'.";
 				return this;
 			}
-//			if (!trgProps.hasProperty("name")) {
-//				msg = "Property 'name' not found.";
-//				satisfied = false;
-//				return this;
-//			}
-		}
-		for (TreeGraphDataNode def : defs) {
-			if (trgProps.hasProperty(def.id())) {
-				if (def.classId().equals(N_FIELD.label())) {
-					DataElementType dt = (DataElementType) def.properties().getPropertyValue(P_FIELD_TYPE.key());
-					String trgClassName = trgProps.getPropertyClass(def.id()).getName();
-					String defClassName = dt.className();
-					if (!trgClassName.equals(defClassName)) {
-						msg = "Property '" + def.id() + "' should have class '" + defClassName + "' but has '"
-								+ trgClassName + "'.";
-						satisfied = false;
-						return this;
-					}
-				} else { // record entry is a table
-					TableNode tblDef = (TableNode) def;
-					Dimensioner[] defDims = tblDef.dimensioners();
-					Table trgValue = (Table) trgProps.getPropertyValue(def.id());
-					Dimensioner[] trgDims = trgValue.getDimensioners();
-					// check table dimensions
-					if (trgDims.length != defDims.length) {
-						msg = "Property '" + def.id() + "' has " + defDims.length + " dimensions but has "
-								+ trgDims.length + ".";
-						satisfied = false;
-						return this;
-					}
-					for (int i = 0; i < trgDims.length; i++) {
-						if (trgDims[i].getLength() != defDims[i].getLength()) {
-							msg = "Property '" + def.id() + "' dimension [" + i + "] has length "
-									+ trgDims[i].getLength() + " but should be length " + defDims[i].getLength();
-							satisfied = false;
+			for (TreeGraphDataNode def : defs) {
+				if (trgProps.hasProperty(def.id())) {
+					if (def.classId().equals(N_FIELD.label())) {
+						DataElementType dt = (DataElementType) def.properties().getPropertyValue(P_FIELD_TYPE.key());
+						String trgClassName = trgProps.getPropertyClass(def.id()).getName();
+						String defClassName = dt.className();
+						if (!trgClassName.equals(defClassName)) {
+							errorMsg = "Property '" + def.id() + "' should have class '" + defClassName + "' but has '"
+									+ trgClassName + "'.";
 							return this;
+						}
+					} else { // record entry is a table
+						TableNode tblDef = (TableNode) def;
+						Dimensioner[] defDims = tblDef.dimensioners();
+						Table trgValue = (Table) trgProps.getPropertyValue(def.id());
+						Dimensioner[] trgDims = trgValue.getDimensioners();
+						// check table dimensions
+						if (trgDims.length != defDims.length) {
+							errorMsg = "Property '" + def.id() + "' has " + defDims.length + " dimensions but has "
+									+ trgDims.length + ".";
+							return this;
+						}
+						for (int i = 0; i < trgDims.length; i++) {
+							if (trgDims[i].getLength() != defDims[i].getLength()) {
+								errorMsg = "Property '" + def.id() + "' dimension [" + i + "] has length "
+										+ trgDims[i].getLength() + " but should be length " + defDims[i].getLength();
+								return this;
+							}
 
 						}
-
-					}
-					// check table element type
-					DataElementType defDType = (DataElementType) tblDef.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
-//					Table defValue = tblDef.newInstance();
-//					if (!trgValue.getClass().equals(defValue.getClass())) {
-					if (!defDType.name().equals(trgValue.elementSimpleClassName())) {
-						msg = "Property '" + def.id() + " is of class '" + trgValue.elementSimpleClassName()
-							+ "' but should be of class '" + defDType.name() + "'.";
-						satisfied = false;
-						return this;
+						// check table element type
+						DataElementType defDType = (DataElementType) tblDef.properties()
+								.getPropertyValue(P_DATAELEMENTTYPE.key());
+//						Table defValue = tblDef.newInstance();
+//						if (!trgValue.getClass().equals(defValue.getClass())) {
+						if (!defDType.name().equals(trgValue.elementSimpleClassName())) {
+							errorMsg = "Property '" + def.id() + " is of class '" + trgValue.elementSimpleClassName()
+									+ "' but should be of class '" + defDType.name() + "'.";
+							return this;
+						}
 					}
 				}
-			}
-			// missing property values are only a problem for drivers - not for parameters
-			else if (dataCategory.equals(E_DRIVERS.label())) {
-				msg = "Property '" + def.id() + "' is missing.";
-				satisfied = false;
-				return this;
+				// missing property values are only a problem for drivers - not for parameters
+				else if (dataCategory.equals(E_DRIVERS.label())) {
+					errorMsg = "Property '" + def.id() + "' is missing.";
+					return this;
+				}
 			}
 		}
-		return null;
+		return this;
 	}
 
-	@Override
-	public String toString() {
-		return "[" + stateString() + msg + "]";
-
-	}
-
-	/* Public static - available for use by MM for matching purpose */
-	// argument 'node' is a variableValues or constantValues node
-	
-	// TODO: 16/9/2020 rewrite this method because:
-	// CAUTION: tree structure has changed:
-	// constantValues or variableValues are now children of System, Component or Group
-	// who are themselves children of ComponentType, GroupType (System has no parent).
-	// no more instanceOf edge here
-	
 	@SuppressWarnings("unchecked")
 	public static Duple<Boolean, Collection<TreeGraphDataNode>> getDataDefs(TreeGraphDataNode node,
 			String dataCategory) {
-
-		// can't allow exceptions to arise here if used from MM
 		Boolean addAutoVars = false;
 		TreeGraphDataNode parent = (TreeGraphDataNode) node.getParent();
 		if (parent == null)
 			return null;
 		TreeGraphDataNode ct = null;
-
 		// CAUTION: this is wrong now!
-		ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), 
-			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
-			endNode());
 
+		/*
+		 * These nodes are a bad idea in many ways - chiefly because the config is being
+		 * edited and this will be constantly flagging an error and have to be re
+		 * parameterised. I hope to delete this query otherwise needs updating and
+		 * better use of queries.: IDD
+		 */
+		ct = (TreeGraphDataNode) get(parent.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())),
+				endNode());
 		if (ct == null)
 			ct = parent;
 		while (!(ct != null) && !(ct instanceof ElementType<?, ?>))
@@ -223,23 +184,21 @@ public class PropertiesMatchDefinitionQuery extends Query {
 					addAutoVars = true;
 			}
 		}
-
 		List<TreeGraphDataNode> cats = (List<TreeGraphDataNode>) get(ct.edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), 
-			edgeListEndNodes());
+				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 		if (cats.isEmpty())
 			return null;
 		Set<TreeGraphDataNode> definitions = new HashSet<>();
 		for (TreeGraphDataNode cat : cats) {
-			Record rootRecord = (Record) get(cat.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(dataCategory)),
-				endNode());
+			Record rootRecord = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(dataCategory)),
+					endNode());
 			if (rootRecord != null)
 				definitions.addAll(Record.getLeaves(rootRecord));
 			if (cat.id().contentEquals("*ephemeral*"))
 				addAutoVars |= true;
 		}
-
 		return new Duple<Boolean, Collection<TreeGraphDataNode>>(addAutoVars, definitions);
+
 	}
+
 }

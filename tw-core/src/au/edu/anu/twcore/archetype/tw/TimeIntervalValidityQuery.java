@@ -28,32 +28,27 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMEMODEL_TU;
+
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMEMODEL_TU;
 
 /**
- * A Query to check that minimal time unit and maximal time unit are consistent
+ * A Query to check that minimum and maximum time units are consistent
  * 
  * @author gignoux
  *
  */
-public class TimeIntervalValidityQuery extends Query {
 
-	private TimeScaleType refScale;
-	private TimeUnits modelMax;
-	private TimeUnits modelMin;
-	private TimeUnits minTU;
-	private TimeUnits maxTU;
-
-	private String pscale;
-	private String pmin;
-	private String pmax;
-	private boolean timeModelRangeError;
+public class TimeIntervalValidityQuery extends QueryAdaptor {
+	private final String pscale;
+	private final String pmin;
+	private final String pmax;
 
 	public TimeIntervalValidityQuery(StringTable parameters) {
 		super();
@@ -64,14 +59,15 @@ public class TimeIntervalValidityQuery extends Query {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) {
-		// input is a Timeline - can't be generalised
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		ReadOnlyDataHolder timeLine = (ReadOnlyDataHolder) input;
 		TreeNode timeLineNode = (TreeNode) input;
-		refScale = (TimeScaleType) timeLine.properties().getPropertyValue(pscale);
-		minTU = (TimeUnits) timeLine.properties().getProperty(pmin).getValue();
-		maxTU = (TimeUnits) timeLine.properties().getProperty(pmax).getValue();
+		TimeScaleType refScale = (TimeScaleType) timeLine.properties().getPropertyValue(pscale);
+		TimeUnits minTU = (TimeUnits) timeLine.properties().getProperty(pmin).getValue();
+		TimeUnits maxTU = (TimeUnits) timeLine.properties().getProperty(pmax).getValue();
+		TimeUnits modelMax;
+		TimeUnits modelMin;
 		if (refScale.equals(TimeScaleType.ARBITRARY)) {
 			modelMax = TimeUnits.UNSPECIFIED;
 			modelMin = TimeUnits.UNSPECIFIED;
@@ -79,21 +75,21 @@ public class TimeIntervalValidityQuery extends Query {
 			modelMax = TimeUnits.MICROSECOND;
 			modelMin = TimeUnits.MILLENNIUM;
 		}
-		timeModelRangeError = false;
+		boolean timeModelRangeError = false;
 
 		// If there is no refScale property we should crash.
+		boolean ok;
 		if (refScale.equals(TimeScaleType.MONO_UNIT))
-			satisfied = (minTU == maxTU);
+			ok = (minTU == maxTU);
 		else
-			satisfied = (minTU.compareTo(maxTU) <= 0);
-		if (satisfied) {
+			ok = (minTU.compareTo(maxTU) <= 0);
+		if (ok) {
 			if (timeLineNode.hasChildren()) {
 				Iterable<ReadOnlyDataHolder> timeModels = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
 				for (ReadOnlyDataHolder timeModel : timeModels) {
-					if (!timeModel.properties().hasProperty(P_TIMEMODEL_TU.key())) {
-						satisfied = true;
+					if (!timeModel.properties().hasProperty(P_TIMEMODEL_TU.key()))
 						return this;
-					}
+
 					TimeUnits tu = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
 					if (tu.compareTo(modelMin) < 0)
 						modelMin = tu;
@@ -102,24 +98,23 @@ public class TimeIntervalValidityQuery extends Query {
 				}
 				if (!modelMin.equals(minTU)) {
 					timeModelRangeError = true;
-					satisfied = false;
+					ok = false;
 				} else if (!modelMax.equals(maxTU)) {
 					timeModelRangeError = true;
-					satisfied = false;
-				}		
+					ok = false;
+				}
 			}
 		}
+		if (!ok) {
+			if (timeModelRangeError)
+				errorMsg = "Time models collectively must span the whole range of possible values of the time line, i.e. from "
+						+ minTU + " to " + maxTU + ".";
+			else if (refScale.equals(TimeScaleType.MONO_UNIT))
+				errorMsg = "For " + TimeScaleType.MONO_UNIT + ", " + pmin + " must be equal to " + pmax + ".";
+			else
+				errorMsg = pmin + " must be shorter than or equal to " + pmax + ".";
+		}
 		return this;
-	}
-
-	public String toString() {
-		if (timeModelRangeError)
-			return ": Time models collectively must span the whole range of possible values of the time line, i.e. from "
-					+ minTU + " to " + maxTU+".";
-		else if (refScale.equals(TimeScaleType.MONO_UNIT))
-			return ": For " + TimeScaleType.MONO_UNIT + ", " + pmin + " must be equal to " + pmax+".";
-		else
-			return ": " + pmin + " must be shorter than or equal to " + pmax+".";
 	}
 
 }

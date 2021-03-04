@@ -28,8 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
@@ -38,29 +40,25 @@ import fr.cnrs.iees.graph.ReadOnlyDataHolder;
  * @author Jacques Gignoux - 6 nov. 2019
  *
  */
-public class EndNodeHasPropertyQuery extends Query {
 
-	String propName = null;
-	ReadOnlyDataHolder rodh = null;
-	
+public class EndNodeHasPropertyQuery extends QueryAdaptor {
+	String propName;
+
 	public EndNodeHasPropertyQuery(String propname) {
 		super();
 		propName = propname;
 	}
 
 	@Override
-	public Query process(Object input) { // input is an Edge
-		defaultProcess(input);
-		rodh = (ReadOnlyDataHolder)((Edge)input).endNode();
+	public Queryable submit(Object input) {
+		initInput(input);
+		ReadOnlyDataHolder rodh = (ReadOnlyDataHolder) ((Edge) input).endNode();
 		if (rodh.properties().hasProperty(propName))
-			if (rodh.properties().getPropertyValue(propName)!=null)
-				satisfied = true;
+			if (rodh.properties().getPropertyValue(propName) == null)
+//				errorMsg = ((Element)input).toShortString()+"' must have the '"+propName+"' property.";
+				errorMsg = ((Element) rodh).toShortString() + "' is a leaf node and must have the '" + propName
+						+ "' property.";
 		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "end node '" + rodh 
-			+ "' must have the '"+propName+"' property.]";
 	}
 
 }

@@ -30,7 +30,8 @@ package au.edu.anu.twcore.archetype.tw;
 
 import java.util.Arrays;
 
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -46,10 +47,8 @@ import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
  * @author J. Gignoux - 21 mai 2020
  *
  */
-public class EdgeToOneChildOfQuery extends Query {
-
-	// the reference of the node in which to look for possible children
-	private String nodeRef = null;
+public class EdgeToOneChildOfQuery extends QueryAdaptor {
+	private String nodeRef;
 	private String[] options;
 
 	public EdgeToOneChildOfQuery(String reference) {
@@ -66,8 +65,8 @@ public class EdgeToOneChildOfQuery extends Query {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // input is a node with out edges
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		Node localItem = (Node) input;
 		// get all the nodes
 		TreeNode rootNode = (TreeNode) localItem;
@@ -95,16 +94,14 @@ public class EdgeToOneChildOfQuery extends Query {
 						break;
 					}
 			}
-		satisfied = foundOne;
+		if (!foundOne) {
+			String msg = "Out node must be one of the children of ";
+			if (options == null)
+				errorMsg = msg + nodeRef + ".";
+			else
+				errorMsg = msg + nodeRef + " " + Arrays.deepToString(options);
+		}
 		return this;
-	}
-
-	public String toString() {
-		String msg = "out node must be one of the children of ";
-		if (options == null)
-			return stateString() + msg + nodeRef + ".";
-		else
-			return stateString() + msg + nodeRef + " " + Arrays.deepToString(options);
 	}
 
 }

@@ -1,12 +1,41 @@
+/**************************************************************************
+ *  TW-CORE - 3Worlds Core classes and methods                            *
+ *                                                                        *
+ *  Copyright 2018: Shayne Flint, Jacques Gignoux & Ian D. Davies         *
+ *       shayne.flint@anu.edu.au                                          * 
+ *       jacques.gignoux@upmc.fr                                          *
+ *       ian.davies@anu.edu.au                                            * 
+ *                                                                        *
+ *  TW-CORE is a library of the principle components required by 3W       *
+ *                                                                        *
+ **************************************************************************                                       
+ *  This file is part of TW-CORE (3Worlds Core).                          *
+ *                                                                        *
+ *  TW-CORE is free software: you can redistribute it and/or modify       *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation, either version 3 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  TW-CORE is distributed in the hope that it will be useful,            *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details.                          *                         
+ *                                                                        *
+ *  You should have received a copy of the GNU General Public License     *
+ *  along with TW-CORE.                                                   *
+ *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
+ *                                                                        *
+ **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 
 import java.util.List;
 
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
-
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 /**
  * A Query to check that edges to/from a particular node having the same label
@@ -15,8 +44,8 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
  * @author J. Gignoux - 18 nov. 2020
  *
  */
-public class EdgeToSiblingNodesQuery extends Query {
 
+public class EdgeToSiblingNodesQuery extends QueryAdaptor{
 	private String label;
 
 	/**
@@ -37,13 +66,13 @@ public class EdgeToSiblingNodesQuery extends Query {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Query process(Object input) { // input is a TreeGraphNode
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		TreeGraphNode node = (TreeGraphNode) input;
 		List<TreeGraphNode> fields = (List<TreeGraphNode>) get(node.edges(),
 			selectZeroOrMany(hasTheLabel(label)),
 			edgeListOtherNodes(node));
-		satisfied = true;
+		
 		if (fields.size() >= 1) {
 			/**
 			 * Parent may be null but thats ok. If all parents are null (i.e. during MM
@@ -53,14 +82,10 @@ public class EdgeToSiblingNodesQuery extends Query {
 			TreeGraphNode theParent = (TreeGraphNode) fields.get(0).getParent();
 			for (TreeGraphNode f : fields)
 				if ((f.getParent()!=null) && (f.getParent()!=theParent))
-					satisfied = false;
+					errorMsg = label + " edges must refer to sibling nodes, i.e. nodes with the same parent.";
+
 		}
 		return this;
-	}
-
-	public String toString() {
-		String msg = label + " edges must refer to sibling nodes, i.e. nodes with the same parent";
-		return stateString() + msg;
 	}
 
 }

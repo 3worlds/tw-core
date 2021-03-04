@@ -35,27 +35,21 @@ import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.graph.property.Property;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 
 /**
  * A Query to check a property value is within a set of valid values. Can be
- * constructed from a list given in the Archetype or an Enum class name.
- * NB: in case of an enum class, values are converted to Strings and checked
- * as Strings.
+ * constructed from a list given in the Archetype or an Enum class name. NB: in
+ * case of an enum class, values are converted to Strings and checked as
+ * Strings.
  * 
  * @author J. Gignoux - 22 nov. 2016
  *
  */
-public class IsInValueSetQuery extends Query {
-
-//	private ObjectTable<Object> valueSet = null;
+public class IsInValueSetQuery extends QueryAdaptor {
 	private Table valueSet = null;
 
-	/**
-	 * build the query from a list of values present in the Archetype
-	 * 
-	 * @param values
-	 */
 	public IsInValueSetQuery(StringTable values) {
 		super();
 		valueSet = values;
@@ -69,6 +63,24 @@ public class IsInValueSetQuery extends Query {
 	public IsInValueSetQuery(DoubleTable values) {
 		super();
 		valueSet = values;
+	}
+	
+	@Override
+	public Queryable submit(Object input) {
+		initInput(input);
+		Property localItem = (Property) input;
+		Object o = localItem.getValue();
+		boolean ok  = true;
+		if (ObjectTable.class.isAssignableFrom(o.getClass())) {
+			ObjectTable<?> table = (ObjectTable<?>) o;	
+			for (int i = 0; i < table.size(); i++)
+				ok = ok & valueInSet(table.getWithFlatIndex(i));
+		} else
+			ok = valueInSet(o);
+		if (!ok)
+			errorMsg="Property '"+localItem.getKey()+"' value must be one of " + valueSet.toString() + ".]";
+		
+		return this;
 	}
 
 	/**
@@ -88,7 +100,6 @@ public class IsInValueSetQuery extends Query {
 			e.printStackTrace();
 		}
 	}
-
 	private boolean valueInSet(Object value) {
 		for (int i = 0; i < valueSet.size(); i++) {
 			if (valueSet instanceof StringTable) {
@@ -109,24 +120,5 @@ public class IsInValueSetQuery extends Query {
 		return false;
 	}
 
-	private Property localItem;
-	@Override
-	public Query process(Object input) { // input is a property
-		defaultProcess(input);
-		localItem = (Property) input;
-		Object o = localItem.getValue();
-		if (ObjectTable.class.isAssignableFrom(o.getClass())) {
-			ObjectTable<?> table = (ObjectTable<?>) o;
-			satisfied = true;
-			for (int i = 0; i < table.size(); i++)
-				satisfied = satisfied & valueInSet(table.getWithFlatIndex(i));
-		} else
-			satisfied = valueInSet(o);
-		return this;
-	}
-
-	public String toString() {
-		return "[" + stateString() + "Property '"+localItem.getKey()+"' value must be one of " + valueSet.toString() + ".]";
-	}
 
 }

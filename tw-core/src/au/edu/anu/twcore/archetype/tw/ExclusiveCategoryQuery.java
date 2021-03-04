@@ -28,20 +28,21 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.Query;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_CATEGORY;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
-
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * A Query to check that a ComponentType only belongs to one category of a given
  * category set (categories within a set are assumed exclusive)
@@ -49,45 +50,32 @@ import java.util.List;
  * @author Jacques Gignoux - 4 juin 2019
  *
  */
-public class ExclusiveCategoryQuery extends Query {
-
-	private CategorySet failedCategorySet = null;
-
-	public ExclusiveCategoryQuery() {
-	}
+public class ExclusiveCategoryQuery extends QueryAdaptor{
 
 	@Override
-	public Query process(Object input) { // input is a node with outEdges to categories
-		defaultProcess(input);
+	public Queryable submit(Object input) {
+		initInput(input);
 		Node localItem = (Node) input;
 		Iterable<Category> cats = getLocalCategories(localItem);
 
-		if (!cats.iterator().hasNext()) {
-			satisfied = true;
+		if (!cats.iterator().hasNext())
 			return this;
-		}
+		
 
-		satisfied = true;
 		List<CategorySet> csl = new LinkedList<>();
 		for (Category c : cats) {
 			CategorySet cs = (CategorySet) c.getParent();
 			if (!csl.contains(cs))
 				csl.add(cs);
 			else {
-				satisfied = false;
-				failedCategorySet = cs;
-				break;
+				errorMsg = "'"+localItem.toShortString()+"'cannot belong to two categories of the same set. Two categories of set '"
+						+ cs.toShortString() + "' were found.";
+				return this;
 			}
 		}
 		return this;
-	}
 
-	@Override
-	public String toString() {
-		return "[" + stateString() + "node cannot belong to two categories of the same set. Two categories of set '"
-				+ failedCategorySet.id() + "' found." + "]";
 	}
-
 	public static boolean propose(TreeNode startNode, TreeNode proposedEndNode) {
 
 		Iterable<Category> cats = getLocalCategories(startNode);
@@ -116,13 +104,6 @@ public class ExclusiveCategoryQuery extends Query {
 		return true;
 
 	}
-
-	/**
-	 * use selectZeroOrMany rather than selectOneOrMany to avoid throwing a
-	 * selection error. If there are no categories, this query can't make a decision
-	 * and so should remain silent allowing some other query to raise a query.
-	 */
-
 	@SuppressWarnings("unchecked")
 	private static Iterable<Category> getLocalCategories(Node localItem) {
 		return (Iterable<Category>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
