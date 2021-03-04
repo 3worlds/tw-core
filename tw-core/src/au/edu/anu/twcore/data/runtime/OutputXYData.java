@@ -38,59 +38,122 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @author J. Gignoux - 15 mai 2020
  *
  */
-public class OutputXYData extends LabelledItemData {
+public class OutputXYData extends LabelledItemData implements OutputTwData {
 
 	private double x;
 	private double y;
+	private DataLabel xname = null;
+	private DataLabel yname = null;
 
-	public OutputXYData(SimulatorStatus status, int senderId, int metaDataType) {
+
+	public OutputXYData(SimulatorStatus status, int senderId, int metaDataType,
+			DataLabel xname,DataLabel yname) {
 		super(status, senderId, metaDataType);
+		this.xname = xname;
+		this.yname = yname;
 	}
 
-	public void setX(double x) {
-		this.x = x;
-	}
-	public void setX(float x) {
-		this.x = x;
-	}
-	public void setX(long x) {
-		this.x = x;
-	}
-	public void setX(int x) {
-		this.x = x;
-	}
-	public void setX(short x) {
-		this.x = x;
-	}
-	public void setX(byte x) {
-		this.x = x;
-	}
-	public void setX(boolean x) {
-		this.x = x?1.0:0.0;
+	@Override
+	public void setValue(DataLabel label, double value) {
+		if (label.equals(xname))
+			x = value;
+		else
+			y = value;
 	}
 
-	public void setY(double y) {
-		this.y = y;
-	}
-	public void setY(float y) {
-		this.y = y;
-	}
-	public void setY(long y) {
-		this.y = y;
-	}
-	public void setY(int y) {
-		this.y = y;
-	}
-	public void setY(short y) {
-		this.y = y;
-	}
-	public void setY(byte y) {
-		this.y = y;
-	}
-	public void setY(boolean y) {
-		this.y = y?1.0:0.0;
+	@Override
+	public void setValue(DataLabel label, float value) {
+		if (label.equals(xname))
+			x = value;
+		else
+			y = value;
 	}
 
+	@Override
+	public void setValue(DataLabel label, int value) {
+		if (label.equals(xname))
+			x = value;
+		else
+			y = value;
+	}
+
+	@Override
+	public void setValue(DataLabel label, long value) {
+		if (label.equals(xname))
+			x = value;
+		else
+			y = value;
+	}
+
+	@Override
+	public void setValue(DataLabel label, byte value) {
+		if (label.equals(xname))
+			x = value;
+		else
+			y = value;
+	}
+
+	@Override
+	public void setValue(DataLabel label, short value) {
+		if (label.equals(yname))
+			y = value;
+		else
+			x = value;
+	}
+
+	@Override
+	public void setValue(DataLabel label, boolean value) {
+		if (label.equals(xname))
+			x = value?1.0:0.0;
+		else
+			y = value?1.0:0.0;
+	}
+//
+//
+//	public void setX(double x) {
+//		this.x = x;
+//	}
+//	public void setX(float x) {
+//		this.x = x;
+//	}
+//	public void setX(long x) {
+//		this.x = x;
+//	}
+//	public void setX(int x) {
+//		this.x = x;
+//	}
+//	public void setX(short x) {
+//		this.x = x;
+//	}
+//	public void setX(byte x) {
+//		this.x = x;
+//	}
+//	public void setX(boolean x) {
+//		this.x = x?1.0:0.0;
+//	}
+//
+//	public void setY(double y) {
+//		this.y = y;
+//	}
+//	public void setY(float y) {
+//		this.y = y;
+//	}
+//	public void setY(long y) {
+//		this.y = y;
+//	}
+//	public void setY(int y) {
+//		this.y = y;
+//	}
+//	public void setY(short y) {
+//		this.y = y;
+//	}
+//	public void setY(byte y) {
+//		this.y = y;
+//	}
+//	public void setY(boolean y) {
+//		this.y = y?1.0:0.0;
+//	}
+//
 
 	public double getX() {
 		return x;

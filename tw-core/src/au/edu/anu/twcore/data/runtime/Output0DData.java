@@ -44,7 +44,7 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-public class Output0DData extends LabelledItemData {
+public class Output0DData extends LabelledItemData implements OutputTwData {
 	
 	private Output0DMetadata meta;
 	// this tells the widget on which dispayChannel to put the data
@@ -82,34 +82,42 @@ public class Output0DData extends LabelledItemData {
 			stringValues[i] = values[i];
 	}
 	
+	@Override
 	public void setValue(DataLabel label, double value) {
 		doubleValues[meta.indexOf(label)] = value;
 	}
 
+	@Override
 	public void setValue(DataLabel label, float value) {
 		doubleValues[meta.indexOf(label)] = value;
 	}
 
+	@Override
 	public void setValue(DataLabel label, int value) {
 		intValues[meta.indexOf(label)] = value;
 	}
 
+	@Override
 	public void setValue(DataLabel label, long value) {
 		intValues[meta.indexOf(label)] = value;
 	}
 
+	@Override
 	public void setValue(DataLabel label, byte value) {
 		intValues[meta.indexOf(label)] = value;
 	}
 
+	@Override
 	public void setValue(DataLabel label, short value) {
 		intValues[meta.indexOf(label)] = value;
 	}
 
+	@Override
 	public void setValue(DataLabel label, boolean value) {
 		intValues[meta.indexOf(label)] = value?1:0;
 	}
 
+	@Override
 	public void setValue(DataLabel label, String value) {
 		stringValues[meta.indexOf(label)] = value;
 	}
