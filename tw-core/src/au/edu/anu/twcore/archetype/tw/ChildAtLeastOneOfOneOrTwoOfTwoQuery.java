@@ -77,6 +77,7 @@ public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends QueryAdaptor {
 		containerLabel = table.getWithFlatIndex(1);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
