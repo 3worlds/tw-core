@@ -204,7 +204,7 @@ public enum TimeScaleType {
 	}
 
 	public static TimeScaleType defaultValue() {
-		return MONO_UNIT;
+		return ARBITRARY;
 	}
 
 	static {

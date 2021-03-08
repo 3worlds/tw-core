@@ -89,8 +89,10 @@ public class OutEdgeXorQuery extends QueryAdaptor {
 		Node localItem = (Node) input;
 		Duple<List<Edge>, List<Edge>> lstEdges = getEdgeLists(localItem, edgeLabel1, edgeLabel2);
 		if (!(lstEdges.getFirst().size() > 0) ^ (lstEdges.getSecond().size() > 0)) {
-			errorMsg = "There must be at least one edge labelled either " + Arrays.toString(edgeLabel1) + " or "
+			errorMsg = "Must be at least one edge labelled either " + Arrays.toString(edgeLabel1) + " or "
 					+ Arrays.toString(edgeLabel2) + ".]";
+			//actionMsg = "Add "
+			
 		}
 		return this;
 	}

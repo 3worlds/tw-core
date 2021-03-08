@@ -95,11 +95,15 @@ public class EdgeToOneChildOfQuery extends QueryAdaptor {
 					}
 			}
 		if (!foundOne) {
-			String msg = "Out node must be one of the children of ";
-			if (options == null)
-				errorMsg = msg + nodeRef + ".";
-			else
-				errorMsg = msg + nodeRef + " " + Arrays.deepToString(options);
+			String emsg = "must have edge to a child of '" + nodeRef + "'";
+			String amsg = "Add edge to a child of '" + nodeRef + "'";
+			if (options == null) {
+				actionMsg = amsg + ".";
+				errorMsg = emsg + ".";
+			} else {
+				actionMsg = "Add edge 'belongsTo' to one of " + Arrays.deepToString(options) + ".";
+				errorMsg = emsg + " labelled one of " + Arrays.deepToString(options) + ".";
+			}
 		}
 		return this;
 	}

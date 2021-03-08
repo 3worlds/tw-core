@@ -65,7 +65,8 @@ public class SpaceCoordinateTypeQuery extends QueryAdaptor {
 				DataElementType ftype = (DataElementType) f.properties().getPropertyValue(P_FIELD_TYPE.key());
 //				if (!numberTypes.contains(ftype))
 				if (!ftype.isNumeric()) {
-					errorMsg = "coordinate fields must be numeric";
+					actionMsg = "Change coordinate fields to be numeric.";
+					errorMsg = "coordinate fields must be numeric but found '"+ftype+"'.";
 					return this;
 				}
 			}

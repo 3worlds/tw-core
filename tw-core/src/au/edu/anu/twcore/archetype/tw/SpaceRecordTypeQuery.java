@@ -64,8 +64,14 @@ public class SpaceRecordTypeQuery extends QueryAdaptor {
 			TreeGraphNode rec = (TreeGraphNode) fields.get(0).getParent();
 			List<Edge> ln = (List<Edge>) get(rec.edges(Direction.IN),
 					selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()), hasTheLabel(E_CONSTANTS.label()))));
-			if (ln.isEmpty())
-				errorMsg = "coordinate fields must belong to a record used as drivers or constants";
+			if (ln.isEmpty()) {
+				String fieldNames = "";
+				for (TreeGraphNode n:fields)
+					fieldNames+=","+n.toShortString();
+				fieldNames = fieldNames.replaceFirst("'", "");	
+				actionMsg = "Set coordinate field(s) to belong to a record that is used as either a driver or contant.";
+				errorMsg = "coordinate fields ["+fieldNames+"] must belong to a record used as drivers or constants but found '"+ln.size()+"'.";
+			}
 		}
 		return this;
 	}

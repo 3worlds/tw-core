@@ -43,12 +43,13 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 
 /**
- * Check that the number of edge coordinates of a space exactly matches its dimension.
+ * Check that the number of edge coordinates of a space exactly matches its
+ * dimension.
  *
  * @author J. Gignoux - 18 nov. 2020
  *
  */
-public class SpaceDimensionConsistencyQuery extends QueryAdaptor{
+public class SpaceDimensionConsistencyQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -58,10 +59,17 @@ public class SpaceDimensionConsistencyQuery extends QueryAdaptor{
 		SpaceType spt = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
 		int dimension = spt.dimensions();
 		List<Edge> coordEdges = (List<Edge>) get(spn.edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_COORDMAPPING.label())));
-		if (coordEdges.size()!=dimension) {
-			errorMsg = "space must have " + dimension + " "+ E_COORDMAPPING.label() + " edges";
-		};
+				selectZeroOrMany(hasTheLabel(E_COORDMAPPING.label())));
+		if (coordEdges.size() != dimension) {
+			int dif = dimension - coordEdges.size();
+			if (dif > 0)
+				actionMsg = "Add " + dif + " '" + E_COORDMAPPING.label() + ":' edges.";
+			else// can't happen unless editing by hand.
+				actionMsg = "Remove " + dif + " '" + E_COORDMAPPING.label() + ":' edges.";
+
+			errorMsg = "must have " + dimension + " " + E_COORDMAPPING.label() + " edges.";
+		}
+		;
 		return this;
 	}
 

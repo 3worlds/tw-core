@@ -60,6 +60,7 @@ public class TimeUnitValidityQuery extends QueryAdaptor {
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
+		// input is TimeLine or Timer (ClockTimer)
 		ReadOnlyDataHolder localItem = (ReadOnlyDataHolder) input;
 		TreeNode localNode = (TreeNode) input;
 		// search for a property named pscale, which has the time scale type
@@ -77,17 +78,18 @@ public class TimeUnitValidityQuery extends QueryAdaptor {
 			return this;
 		else if (refScale == null)
 			return this;
-		else if (!localNode.hasChildren())
-			return this;
-		else {
+//		else if (!localNode.hasChildren())
+//			return this;
+//		else {
 			TimeUnits tu = (TimeUnits) prop.getValue();
 			if (tu == null)
 				tu = TimeUnits.UNSPECIFIED;
 			if (!TimeScaleType.validTimeUnits(refScale).contains(tu)) {
+				actionMsg = "Change '" + propertyName + "' value to be one of "+ TimeScaleType.validTimeUnits(refScale)+".";
 				errorMsg = "Property value for '" + propertyName + "' must be one of {"
 						+ TimeScaleType.validTimeUnits(refScale).toString() + "}.";
 				return this;
-			}
+//			}
 		}
 		return this;
 	}

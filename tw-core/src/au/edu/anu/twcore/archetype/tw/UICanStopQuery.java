@@ -47,6 +47,7 @@ public class UICanStopQuery extends QueryAdaptor {
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
+		// input is the UserInterface
 		TreeNode ui = (TreeNode) input;
 		Class<?> smcClass = fr.cnrs.iees.rvgrid.statemachine.StateMachineController.class;
 		List<TreeGraphDataNode> widgets = new ArrayList<>();
@@ -108,8 +109,8 @@ public class UICanStopQuery extends QueryAdaptor {
 				return this;
 
 		}
-		
-		errorMsg = "Unattended simulations require at least one stopping condition but were none found.";
+		actionMsg = "Add a stopping condition";
+		errorMsg = "Unattended simulations require at least one stopping condition but none found.";
 		return this;
 	}
 

@@ -116,6 +116,10 @@ public class IsInRangeQuery extends QueryAdaptor {
 		if (!(value >= min) & (value <= max)) {
 			errorMsg = "Property " + localItem.getKey() + "=" + localItem.getValue() + "' must be within [" + min + "; "
 					+ max + "].";
+			if (max > 100_000_000)
+				actionMsg = "Set '" + localItem.getKey() + "' to be greater or equal to '" + min + "'.";
+			else
+				actionMsg = "Set '" + localItem.getKey() + "' to be within the range " + min + " to " + max + ".";
 		}
 		return this;
 	}

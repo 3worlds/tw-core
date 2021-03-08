@@ -39,18 +39,19 @@ import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
-public class UIStateMachineControllerQuery extends QueryAdaptor{
+public class UIStateMachineControllerQuery extends QueryAdaptor {
 
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
+		// input is the UserInterface 
 		TreeNode ui = (TreeNode) input;
 		Class<?> smcClass = fr.cnrs.iees.rvgrid.statemachine.StateMachineController.class;
 		List<TreeGraphDataNode> widgets = new ArrayList<>();
 		List<TreeNode> containers = new ArrayList<>();
-		for (TreeNode child : ui.getChildren()) 
+		for (TreeNode child : ui.getChildren())
 			getWidgets(child, widgets, containers);
-		int count=0;
+		int count = 0;
 		for (TreeGraphDataNode widgetNode : widgets) {
 			String kstr = (String) widgetNode.properties().getPropertyValue(TwArchetypeConstants.twaSubclass);
 			try {
@@ -67,12 +68,14 @@ public class UIStateMachineControllerQuery extends QueryAdaptor{
 		if (containers.isEmpty()) {
 			return this;
 		}
-		if (!(count == 1)) 
-			errorMsg = "User interface must have one and only one controller widget.";
-		
+		if (!(count == 1)) {
+			errorMsg = "User interface must have one widget that descends from '" + smcClass.getSimpleName() + "'.";
+			actionMsg = "Add a control widget as a child of 'top:', 'bottom:', 'tab:' or 'container:'.";
+		}
+
 		return this;
 	}
-	
+
 	private static void getWidgets(TreeNode parent, List<TreeGraphDataNode> widgets, List<TreeNode> containers) {
 		if (parent.classId().equals(N_UIWIDGET.label()))
 			widgets.add((TreeGraphDataNode) parent);

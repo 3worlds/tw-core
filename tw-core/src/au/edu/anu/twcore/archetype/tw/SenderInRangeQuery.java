@@ -98,7 +98,7 @@ public class SenderInRangeQuery extends QueryAdaptor {
 		IntegerRange listenerRange = new IntegerRange(firstSender, firstSender + (nSenders - 1));
 		IntegerRange simRange = new IntegerRange(0, nReps - 1);
 		if (!simRange.contains(listenerRange)) {
-			errorMsg = widget.toShortString()+ " is listening to simulators within the range " + listenerRange + " but there are only "
+			errorMsg = " is listening to simulators within the range " + listenerRange + " but there are only "
 					+ nReps + " simulators.]";
 			return this;
 		}

@@ -35,11 +35,8 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
-import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.userProject.UserProjectLink;
-import fr.cnrs.iees.graph.Element;
-import fr.cnrs.iees.graph.Node;
 
 /**
  * @author Ian Davies
@@ -50,35 +47,46 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 	private ModelBuildErrors msgType;
 	private Object[] args;
-	private String verbose1;
-	private String verbose2;
-	private boolean ignore;
+	private String actionsMsg;
+	private String detailsMsg;
+	private String debugMsg;
+//	private boolean ignore;
 
 	public ModelBuildErrorMsg(ModelBuildErrors msgType, Object... args) {
 		this.msgType = msgType;
 		this.args = args;
-		this.ignore = false;
+//		this.ignore = false;
 		buildMessages();
 	}
 
-	private String labelId(Element e) {
-		return e.classId() + ":" + e.id();
-	}
-
-	public boolean ignore() {
-		return ignore;
-	}
+//	public boolean ignore() {
+//		return ignore;
+//	}
 
 	private void buildMessages() {
 		switch (msgType) {
+		case SPECIFICATION: {// messages from the archetype checking
+			SpecificationErrorMsg sem = (SpecificationErrorMsg) args[0];
+			actionsMsg = sem.actionInfo();
+			detailsMsg = sem.detailsInfo();
+			debugMsg = sem.debugInfo();
+			break;
+		}
 		case MODEL_FILE_BACKUP: {
 			File localSrcFile = (File) args[0];
-			verbose1 = category() + "Check and refresh linked Java project. Model file '" + localSrcFile.getName()
-					+ "' has changed structure due to configuration edits.";
-			verbose2 = category() + errorName() + "Check and refresh linked Java project. Model file '"
-					+ localSrcFile.getName() + "' has changed structure due to configuration edits.\n" + //
-					"Old Model file has been backed up and renamed with ext *.orig<n>";
+			String actionStr = "Update code in newly created java file.";
+			String constraintStr = "Configuration has changed requiring creation of a new Java file. The previous file has been backed up and renamed with ext *.orig<n>.";
+			actionsMsg = category() + localSrcFile.getName() + ": " + actionStr;
 
+			detailsMsg = "\nAction: " + actionStr;
+			detailsMsg += "\nConstraint: " + constraintStr;
+			detailsMsg += "\nItem: " + localSrcFile.getName();
+
+			debugMsg = "\nAction: " + actionStr;
+			debugMsg += "\nConstraint: " + constraintStr;
+			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nMessage Class: " + msgType;
+			debugMsg += "\nItem: " + localSrcFile;
 			break;
 
 		}
@@ -87,31 +95,59 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			String compileResult = "unknown";
 			if (args.length > 0)
 				compileResult = (String) args[1];
-			verbose1 = category() + "There were compiling warnings/errors in " + file.getName() + ".";
-			verbose2 = category() + errorName() + "There were compiling warnings/errors in " + file.getName()
-					+ ". Errors: " + compileResult;
-			if (UserProjectLink.haveUserProject()) {
-				verbose2 = category() + errorName() + "There were compiling warnings/errors in " + file.getName()
-						+ ". Errors: " + compileResult + ".\nFile has not been pushed to "
-						+ UserProjectLink.projectRoot().getName();
-			}
 
+			String actionStr;
+			if (UserProjectLink.haveUserProject())
+				actionStr = "Correct coding errors in " + UserProjectLink.projectRoot().getName() + ".";
+			else
+				actionStr = "Correct coding errors in code snippets.";
+
+			String constraintStr = compileResult;
+
+			actionsMsg = category() + actionStr;
+
+			detailsMsg = "\nAction: " + actionStr;
+			detailsMsg += "\nConstraint: " + constraintStr;
+			detailsMsg += "\nFile: " + file.getName();
+
+			debugMsg = "\nAction: " + actionStr;
+			debugMsg += "\nConstraint: " + constraintStr;
+			debugMsg += "\nFile: " + file;
+			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nMessage Class: " + msgType;
+			if (UserProjectLink.haveUserProject())
+				debugMsg += "\nInfo: File has not been pushed to " + UserProjectLink.projectRoot().getName();
 			break;
 		}
 		case COMPILER_MISSING: {
-			verbose1 = category() + "Java compiler not found.";
-			verbose2 = category() + errorName()
-					+ "Java compiler not found. Check installation of Java Development Kit (JDK)";
+			String actionStr = "Install Java Development Kit (JDK)";
+			String constraintStr = "A Java compiler is required and not found on the system.";
+			actionsMsg = category() + actionStr;
+
+			detailsMsg = "\nAction: " + actionStr;
+			detailsMsg += "\nConstraint: " + constraintStr;
+
+			debugMsg = detailsMsg;
+			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nMessage Class: " + msgType;
+			debugMsg += "\nJava runtime version: " + System.getProperty("java.runtime.version");
 			break;
 		}
 		case DEPLOY_CLASS_MISSING: {
 			File cls = (File) args[0];
 			File src = (File) args[1];
-			verbose1 = category() + "Class file is missing [" + cls.getName() + "].";
-			verbose1 = category() + errorName() + "Class file missing:\n" + //
-					cls.getAbsolutePath() + "\n" + //
-					src.getAbsoluteFile();
+			String actionStr = "A Java class file is missing";
+			String constraintStr = "Expected class file for '" + src.getName() + "' but none found.";
+			actionsMsg = category() + actionStr;
 
+			detailsMsg = "\nAction: " + actionStr;
+			detailsMsg += "\nConstraint: " + constraintStr;
+
+			debugMsg = detailsMsg;
+			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nMessage Class: " + msgType;
+			debugMsg += "\nJava file: " + src;
+			debugMsg += "\nClass file: " + cls;
 			break;
 		}
 		case DEPLOY_CLASS_OUTOFDATE: {
@@ -121,92 +157,84 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			FileTime ftSrc = (FileTime) args[2];
 			FileTime ftCls = (FileTime) args[3];
 
-			verbose1 = category() + "Refresh Java project: Compiled class file is older than Java source file '"
-					+ remoteSrcFile.getName() + ".";
-			verbose2 = category() + errorName()
-					+ "Refresh Java project.  Compiled class file is older than Java source file:\n" + //
-					remoteClsFile.getAbsolutePath() + " Time = " + ftCls.toString() + "\n" + //
-					remoteSrcFile.getAbsolutePath() + " Time = " + ftSrc.toString();
-			break;
-		}
-		case SPECIFICATION: {
-			// Translate error msg a bit for mm
-			/*- SpecificationErrorMsg se)*/
+			String actionStr = "Refresh Java project.";
+			String constraintStr = "Compiled class file is older than Java source file";
 
-			SpecificationErrorMsg sem = (SpecificationErrorMsg) args[0];
-//			@SuppressWarnings("unchecked")
-//			TreeGraph<TreeGraphDataNode, ALEdge> graph = (TreeGraph<TreeGraphDataNode, ALEdge>) args[1];
-			verbose1 = sem.verbose1();
-			verbose2 = sem.verbose2();
-			switch (sem.error()) {
-			case NODE_RANGE_INCORRECT2: {
-				Node parent = (Node) sem.args()[0];
-				String childClassName = (String) sem.args()[1];
-				IntegerRange range = (IntegerRange) sem.args()[2];
-				Integer nChildren = (Integer) sem.args()[3];
-				if (nChildren < range.getLast())
-					verbose1 = sem.category() + "Add node '" + childClassName + ":' to '" + labelId(parent) + "'.";
-			}
-				break;
-			case EDGE_RANGE_INCORRECT: {
-				Node fromNode = (Node) sem.args()[0];
-				IntegerRange range = (IntegerRange) sem.args()[1];
-				String label = (String) sem.args()[2];
-				String reference = (String) sem.args()[3];
-				Integer nEdges = (Integer) sem.args()[4];
-//				if (!findNodeWithClassId(refToClassId(reference), graph))
-//					ignore = true;
-//				else { // can't do this! will fall through to generateCode and crash!
-				if (nEdges < range.getLast())
-					verbose1 = sem.category() + "Add edge '" + label + ":' from '" + labelId(fromNode) + "' to '"
-							+ reference + "'.";
-//				}
-				break;
-			}
-			default: {
-				// do nothing
-			}
-			}
+			actionsMsg = category() + actionStr;
+
+			detailsMsg = "\nAction: " + actionStr;
+			detailsMsg += "\nConstraint: " + constraintStr;
+			detailsMsg += "\nSource file: " + remoteSrcFile.getName() + "[time: " + ftSrc.toString() + "]";
+			detailsMsg += "\nClass file: " + remoteClsFile.getName() + "[time: " + ftCls.toString() + "]";
+
+			debugMsg = detailsMsg;
+			debugMsg += "\nSource path: " + remoteSrcFile;
+			debugMsg += "\nClass path: " + remoteClsFile;
+
 			break;
 		}
 		case DEPLOY_PROJECT_UNSAVED: {
 			// no args
-			verbose1 = category() + "Configuration is unsaved [press Ctrl+s].";
-			verbose2 = category() + errorName()
-					+ "Configuration is unsaved [press Ctrl+s]. Project must be saved before model can be deployed from ModelMaker.";
+			String actionStr = "Press [Ctrl+s] to save configuration.";
+			String constraintStr = "Configuration must be saved to allowed deployment.";
+			actionsMsg = category() + actionStr;
+
+			detailsMsg = "\nAction: " + actionStr;
+			detailsMsg += "\nConstraint: " + constraintStr;
+
+			debugMsg = detailsMsg;
+			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nMessage Class: " + msgType;
+
 			break;
 		}
 		case DEPLOY_RESOURCE_MISSING: {
 			/*- file */
-			File file = (File) args[0];
-			String hint = (String) args[1];
-			verbose1 = category() + "Resource missing [" + file.getName() + "].";
-			verbose2 = category() + errorName() + "Resource missing [" + file.getAbsolutePath() + "]. " + hint;
+			String resourceName = (String) args[0];
+			String location = (String) args[1];
+			String actionStr = "Add '" + resourceName + "' to '" + location + "'.";
+			String constraintStr = "Resource must be present for deployment";
+
+			actionsMsg = category() + actionStr;
+
+			detailsMsg = "\nAction: " + actionStr;
+			detailsMsg += "\nConstraint: " + constraintStr;
+			detailsMsg += "\nCategory: " + msgType.category();
+
+			debugMsg = detailsMsg;
+			debugMsg += "\nMessage Class: " + msgType;
 			break;
 		}
 		case DEPLOY_EXCEPTION: {
 			Exception e = (Exception) args[0];
 			@SuppressWarnings("unchecked")
 			List<String> cmds = (List<String>) args[1];
-			verbose1 = category() + "Failed to launch ModelRunner.";
-			verbose2 = category() + errorName() + "Failed to launch ModelRunner.\n" + //
-					"Cmds=" + Arrays.deepToString(cmds.toArray()) + "\n" + //
-					"Exception=" + e.toString();
+			String actionStr = "Failed to launch ModelRunner.";
+			String constraintStr = e.getMessage();
+			actionsMsg = category() + actionStr;
+
+			detailsMsg = "\nAction: " + actionStr;
+			detailsMsg += "\nConstraint: " + constraintStr;
+			detailsMsg += "\nCommands: " + Arrays.deepToString(cmds.toArray());
+
+			debugMsg = detailsMsg;
+			debugMsg += "\nException: " + e;
 			break;
 		}
-		case DEPLOY_FAIL: {
+		case DEPLOY_FAIL: {// not used 
 			// Exception e = (Exception) args[0];
 			@SuppressWarnings("unchecked")
 			List<String> lines = (List<String>) args[0];
 			File project = (File) args[1];
-			verbose1 = category() + "ModelRunner has errors.";
+			actionsMsg = category() + "ModelRunner has errors.";
 			StringBuilder sb = new StringBuilder();
 			for (String line : lines)
 				sb.append(line).append("\n");
-			verbose2 = category() + errorName() + "ModelRunner has errors.\n" + //
+			detailsMsg = category() + errorName() + "ModelRunner has errors.\n" + //
 					"Log=" + sb.toString() + //
 					"Project=" + project.getAbsoluteFile();
-			break;
+			throw new TwcoreException("Message type not handled [" + msgType + "]");
+//			break;
 		}
 		default: {
 			throw new TwcoreException("Message type not handled [" + msgType + "]");
@@ -227,23 +255,13 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 //	}
 
 	@Override
-	public String verbose1() {
-		return verbose1;
-	}
-
-	@Override
-	public String verbose2() {
-		return verbose2;
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("verbose1: ");
-		sb.append(verbose1);
+		sb.append(actionsMsg);
 		sb.append("\n");
 		sb.append("verbose2: ");
-		sb.append(verbose2);
+		sb.append(detailsMsg);
 		sb.append("\n");
 		return sb.toString();
 	}
@@ -260,6 +278,21 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 	public ModelBuildErrors error() {
 		return msgType;
+	}
+
+	@Override
+	public String actionInfo() {
+		return actionsMsg;
+	}
+
+	@Override
+	public String detailsInfo() {
+		return detailsMsg;
+	}
+
+	@Override
+	public String debugInfo() {
+		return debugMsg;
 	}
 
 }

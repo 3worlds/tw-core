@@ -68,8 +68,8 @@ public class OutNodeXorQuery extends QueryAdaptor {
 		Node localItem = (Node) input;
 		Duple<List<Node>, List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1, nodeLabel2);
 		if(!((nodeLists.getFirst().size() > 0) ^ (nodeLists.getSecond().size() > 0))){
-			errorMsg = "'" + localItem.toShortString()
-			+ "' must have at least one edge to a node labelled either '" +nodeLabel1 + "' or '" + nodeLabel2+"'.";
+			errorMsg = "Must have edge to a node labelled either '" +nodeLabel1 + "' or '" + nodeLabel2+"'.";
+			actionMsg = "Add edge from '"+localItem.toShortString()+"' to a node labelled '"+nodeLabel1+":' or '"+nodeLabel2+":'.";
 		};
 
 		return null;

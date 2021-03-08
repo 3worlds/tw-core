@@ -33,6 +33,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMEMOD
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
@@ -56,7 +58,13 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 		pmax = parameters.getWithFlatIndex(1); // name of the maximal time unit property
 		pscale = parameters.getWithFlatIndex(2); // name of the time scale property
 	}
-
+	// WRONG!
+/**Action: Decrease 'longestTimeUnit' in 'timer:tmr1' to be greater than or equal to UNSPECIFIED or change the time unit range in 'timeline:tmLn1'.
+Constraint: Expected property 'longestTimeUnit' of 'timer:tmr1' to be <= UNSPECIFIED but found MICROSECOND
+Query class: TimeIntervalValidityQuery
+Constraint Specification: mustSatisfyQuery:TimeIntervalValidityQuery
+Query item: timeline:tmLn1
+*/
 	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
@@ -64,56 +72,96 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 		ReadOnlyDataHolder timeLine = (ReadOnlyDataHolder) input;
 		TreeNode timeLineNode = (TreeNode) input;
 		TimeScaleType refScale = (TimeScaleType) timeLine.properties().getPropertyValue(pscale);
-		TimeUnits minTU = (TimeUnits) timeLine.properties().getProperty(pmin).getValue();
-		TimeUnits maxTU = (TimeUnits) timeLine.properties().getProperty(pmax).getValue();
-		TimeUnits modelMax;
-		TimeUnits modelMin;
+		TimeUnits currentMinTU = (TimeUnits) timeLine.properties().getProperty(pmin).getValue();
+		TimeUnits currentMaxTU = (TimeUnits) timeLine.properties().getProperty(pmax).getValue();
+		TimeUnits allowedMax;
+		TimeUnits allowedMin;
 		if (refScale.equals(TimeScaleType.ARBITRARY)) {
-			modelMax = TimeUnits.UNSPECIFIED;
-			modelMin = TimeUnits.UNSPECIFIED;
+			allowedMax = TimeUnits.UNSPECIFIED;
+			allowedMin = TimeUnits.UNSPECIFIED;
 		} else {
-			modelMax = TimeUnits.MICROSECOND;
-			modelMin = TimeUnits.MILLENNIUM;
+			allowedMax = TimeUnits.MICROSECOND;
+			allowedMin = TimeUnits.MILLENNIUM;
 		}
 		boolean timeModelRangeError = false;
 
 		// If there is no refScale property we should crash.
-		boolean ok;
-		if (refScale.equals(TimeScaleType.MONO_UNIT))
-			ok = (minTU == maxTU);
-		else
-			ok = (minTU.compareTo(maxTU) <= 0);
-		if (ok) {
-			if (timeLineNode.hasChildren()) {
-				Iterable<ReadOnlyDataHolder> timeModels = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
-				for (ReadOnlyDataHolder timeModel : timeModels) {
-					if (!timeModel.properties().hasProperty(P_TIMEMODEL_TU.key()))
-						return this;
+//		boolean ok;
+		if (refScale.equals(TimeScaleType.MONO_UNIT)) {
+			// !ok: Time units of x and y must be the same
+			if (currentMinTU != currentMaxTU) {
+				errorMsg = "'" + pmin + "' and '" + pmax + "' of '" + timeLineNode.toShortString()
+						+ "' must be the same for " + pscale + "'.";
+				actionMsg = "Set '" + pmin + "' or '" + pmax + "' of '" + timeLineNode.toShortString()
+						+ "' to the same value.";
+				return this;
+			}
 
-					TimeUnits tu = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
-					if (tu.compareTo(modelMin) < 0)
-						modelMin = tu;
-					if (tu.compareTo(modelMax) > 0)
-						modelMax = tu;
+		} else if (currentMinTU.compareTo(currentMaxTU) > 0) {
+			// !ok: min must be less than max
+			errorMsg = "'" + pmin + "' must be <= '" + pmax + "' for time scale type '" + pscale + ".";
+			actionMsg = "Set '" + pmin + "' to be greater than or equal to '" + pmax + "' in '"
+					+ timeLineNode.toShortString() + "'.";
+			return this;
+		}
+
+		if (timeLineNode.hasChildren()) {
+			Iterable<ReadOnlyDataHolder> timeModels = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
+			for (ReadOnlyDataHolder timeModel : timeModels) {
+				if (!timeModel.properties().hasProperty(P_TIMEMODEL_TU.key()))
+					break;
+
+				TimeUnits tu = (TimeUnits) timeModel.properties().getPropertyValue(P_TIMEMODEL_TU.key());
+
+				// if tu outside range of currentTU list error here
+				if (tu.compareTo(currentMinTU) < 0) {
+					// this timer must have time unit >= min WRONG!
+					errorMsg = "Expected property '" + P_TIMEMODEL_TU.key() + "' of '" + ((Element) timeModel).toShortString()
+							+ "' to be >= " + currentMinTU + " but found " + tu;
+					actionMsg = "Increase '" + P_TIMEMODEL_TU.key() + "' in '" + ((Element) timeModel).toShortString()
+							+ "' to be greater than or equal to " + currentMinTU + " or change the time unit range in '"
+							+ timeLineNode.toShortString() + "'.";
+					return this;
 				}
-				if (!modelMin.equals(minTU)) {
-					timeModelRangeError = true;
-					ok = false;
-				} else if (!modelMax.equals(maxTU)) {
-					timeModelRangeError = true;
-					ok = false;
+				if (tu.compareTo(currentMaxTU) > 0) {
+					// this timer must have tu >=max
+					errorMsg = "Expected property '" + pmax + "' of '" + ((Element) timeModel).toShortString()
+							+ "' to be <= " + currentMaxTU + " but found " + tu;
+					actionMsg = "Decrease '" + pmax + "' in '" + ((Element) timeModel).toShortString()
+							+ "' to be greater than or equal to " + currentMinTU + " or change the time unit range in '"
+							+ timeLineNode.toShortString() + "'.";
+					return this;
 				}
+
+				if (tu.compareTo(allowedMin) < 0)
+					allowedMin = tu;
+				if (tu.compareTo(allowedMax) > 0)
+					allowedMax = tu;
+			}
+			if (!allowedMin.equals(currentMinTU)) {
+				// set at least one of the timers to have min = allowedMin or change this range
+				// of time scale
+				
+				timeModelRangeError = true;
+				throw new TwcoreException("TODO");
+//					ok = false;
+			} else if (!allowedMax.equals(currentMaxTU)) {
+				// set at least one of the timers to have max = allowedMax or change this range
+				// of time scale
+				timeModelRangeError = true;
+//					ok = false;
 			}
 		}
-		if (!ok) {
-			if (timeModelRangeError)
-				errorMsg = "Time models collectively must span the whole range of possible values of the time line, i.e. from "
-						+ minTU + " to " + maxTU + ".";
-			else if (refScale.equals(TimeScaleType.MONO_UNIT))
-				errorMsg = "For " + TimeScaleType.MONO_UNIT + ", " + pmin + " must be equal to " + pmax + ".";
-			else
-				errorMsg = pmin + " must be shorter than or equal to " + pmax + ".";
-		}
+//		}
+//		if (!ok) {
+//			if (timeModelRangeError)
+//				errorMsg = "Time models collectively must span the whole range of possible values of the time line, i.e. from "
+//						+ currentMinTU + " to " + currentMaxTU + ".";
+//			else if (refScale.equals(TimeScaleType.MONO_UNIT))
+//				errorMsg = "For " + TimeScaleType.MONO_UNIT + ", " + pmin + " must be equal to " + pmax + ".";
+//			else
+//				errorMsg = pmin + " must be shorter than or equal to " + pmax + ".";
+//		}
 		return this;
 	}
 
