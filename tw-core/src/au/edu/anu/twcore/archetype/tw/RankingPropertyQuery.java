@@ -40,6 +40,8 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.DataHolder;
+import fr.cnrs.iees.graph.Element;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 /**
@@ -67,7 +69,9 @@ public class RankingPropertyQuery extends QueryAdaptor {
 	/**
 	 * {@inheritDoc}
 	 *
-	 *  <p>The expected input is a {@linkplain TreeGraphNode}.</p>
+	 * <p>
+	 * The expected input is a {@linkplain TreeGraphNode}.
+	 * </p>
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -78,20 +82,38 @@ public class RankingPropertyQuery extends QueryAdaptor {
 		if (edgeLabel.equals(E_CHILD.label()))
 			elements = (Collection<DataHolder>) node.getChildren();
 		else
-			elements = (Collection<DataHolder>) get(node.edges(),
-				selectZeroOrMany(hasTheLabel(edgeLabel)));
+			elements = (Collection<DataHolder>) get(node.edges(), selectZeroOrMany(hasTheLabel(edgeLabel)));
 
+		String numberList = "";
 		SortedSet<Number> ranks = new TreeSet<>();
-		if (elements!=null) {
-			for (DataHolder dh:elements)
+		if (elements != null) {
+			for (DataHolder dh : elements)
 				if (dh.properties().hasProperty(propName)) {
 					Number rk = (Number) dh.properties().getPropertyValue(propName);
 					ranks.add(rk);
+					numberList += ", " + rk;
 				}
 			// if two ranks are equal, then the set should be smaller than the collection
-			if (ranks.size()<elements.size()) {
-				errorMsg = "Values of "+edgeLabel+" edges be unique.";
-				return this;
+			if (ranks.size() < elements.size()) {
+				String elementList = "";
+				for (DataHolder e:elements)
+					elementList += ", " + ((Element)e).toShortString();
+				elementList = elementList.replaceFirst(", ", "");
+				numberList = numberList.replaceFirst(", ", "");
+				if (edgeLabel.equals(E_CHILD.label())) {
+					actionMsg = "Edit '" + propName + "' property values for nodes [" + elementList
+							+ "] so they have unique values.";
+					errorMsg = "Expected '" + propName + "' values for children of '" + node.toShortString()
+							+ "' to be unique but found values [" + numberList + "].";
+					return this;
+				} else {
+					actionMsg = "Edit '" + propName + "' property values for elements [" + elementList
+							+ "] to unique values.";
+				
+					errorMsg = "Expected '" + propName + "' property values of '" + edgeLabel + "' to be unique but found ["
+							+ numberList + "].";
+					return this;
+				}
 			}
 		}
 		return this;

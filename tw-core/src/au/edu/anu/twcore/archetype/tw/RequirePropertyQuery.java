@@ -31,6 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
@@ -66,8 +67,12 @@ public class RequirePropertyQuery extends QueryAdaptor {
 				for (int i = 0; i < stringValues.length; i++)
 					if (n.properties().getPropertyValue(p2).toString().equals(stringValues[i]))
 						ok = true;
-				if (!ok)
+				if (!ok) {
+					// Should throw exception
+					actionMsg = "Remove property '" + p1 + "' by editing '" + Project.getProjectFile().getName()
+							+ "' with a text editor. [ModelMaker programming error!].";// send config to me!
 					errorMsg = "Presence of property '" + p1 + "' is incompatible with value of property '" + p2 + "'.";
+				}
 			}
 		return this;
 	}

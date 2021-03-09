@@ -63,7 +63,6 @@ public class SearchProcessConsistencyQuery extends QueryAdaptor {
 	public Queryable submit(Object input) {
 		initInput(input);
 		ProcessNode proc = (ProcessNode) input;
-		String pname = proc.id();
 
 		boolean checkProcess = false;
 		Collection<FunctionNode> funx = (Collection<FunctionNode>) get(proc.getChildren(),
@@ -121,8 +120,16 @@ public class SearchProcessConsistencyQuery extends QueryAdaptor {
 							}
 					}
 					if (!(toSpaces.contains(space)) & (fromSpaces.contains(space))) {
-						errorMsg = "All componentTypes that can be processed by '" + pname
-								+ "' must have valid coordinates for space '" + space.id() + "']";
+						//TODO: Untested - IDD
+						String list = "";
+						for (SpaceNode s : toSpaces)
+							list += "," + s.toShortString();
+						list = list.replaceFirst(",", "");
+						actionMsg = "Reconfigure graph so that all componentTypes processed by '" + proc.toShortString()
+								+ "' have valid coordinates for '" + space.toShortString() + "'.";
+						errorMsg = "Expected all componentTypes processed by '" + proc.toShortString()
+								+ "' to have valid coordinates for '" + space.toShortString()
+								+ "' but found associations with [" + list + "].";
 						return this;
 					}
 				}

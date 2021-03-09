@@ -112,6 +112,9 @@ hasNode tableSpec
 	mustSatisfyQuery TableIntegerNumberRangeSpecCondition
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([7]"range","dataElementType","Integer","Long","Boolean","Short","Byte"))
+	mustSatisfyQuery dimRanksAreDifferentQuery
+		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
+		parameters = StringTable(([2]"sizedBy","rank"))
 
 hasNode recordFieldSpec
 	isOfClass = String("field")

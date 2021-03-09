@@ -61,15 +61,6 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 		scaleKey = parameters.getWithFlatIndex(2); // name of the time scale property
 	}
 
-	// WRONG!
-	/**
-	 * Action: Decrease 'longestTimeUnit' in 'timer:tmr1' to be greater than or
-	 * equal to UNSPECIFIED or change the time unit range in 'timeline:tmLn1'.
-	 * Constraint: Expected property 'longestTimeUnit' of 'timer:tmr1' to be <=
-	 * UNSPECIFIED but found MICROSECOND Query class: TimeIntervalValidityQuery
-	 * Constraint Specification: mustSatisfyQuery:TimeIntervalValidityQuery Query
-	 * item: timeline:tmLn1
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
@@ -135,42 +126,30 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 					// Decrease timer tu to be less than or equal to longestTimeUnit;
 					actionMsg = "Decrease '" + timerNode.toShortString() + "#" + P_TIMEMODEL_TU.key()
 							+ "' to be less than or equal to '" + longestTimeUnit + "'.";
-					// expected property timer#TUname to be<>= longest shortest but found this
-					errorMsg = "Expected '" + timerNode.toShortString() + "#" + P_TIMEMODEL_TU.key() + "' to be >= "
+					// expected property timer#TUname to be<= longest shortest but found this
+					errorMsg = "Expected '" + timerNode.toShortString() + "#" + P_TIMEMODEL_TU.key() + "' to be <= "
 							+ longestTimeUnit + " but found '" + timerTimeUnits+"'.";
 					return this;
 				}
 				
-
 				if (timerTimeUnits.compareTo(foundTimeUnitsMin) < 0)
 					foundTimeUnitsMin = timerTimeUnits;
 				if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
 					foundTimeUnitsMax = timerTimeUnits;
 			}
-			if (!foundTimeUnitsMin.equals(shortestTimeUnit)) {
-				// set at least one of the timers to have min = allowedMin or change this range
-				// of time scale
-
-				
-//					ok = false;
+			if (foundTimeUnitsMin.compareTo(shortestTimeUnit)>0) {
+				// set shortest to found
+				actionMsg = "Set property '"+shortestTimeUnitKey+"' to '"+foundTimeUnitsMin+"'.";
+				errorMsg = "Expected '"+shortestTimeUnitKey+"="+foundTimeUnitsMin+"' but found '"+shortestTimeUnit+"'.";
+				return this;
 			} 
-			if (!foundTimeUnitsMax.equals(longestTimeUnit)) {
-				// set at least one of the timers to have max = allowedMax or change this range
-				// of time scale
-				timeModelRangeError = true;
-//					ok = false;
+			if (foundTimeUnitsMax.compareTo(longestTimeUnit)<0) {
+				// set longest to found;
+				actionMsg = "Set property '"+longestTimeUnitKey+"' to '"+foundTimeUnitsMax+"'.";
+				errorMsg = "Expected '"+longestTimeUnitKey+"="+foundTimeUnitsMax+"' but found '"+longestTimeUnit+"'.";
+				return this;
 			}
 		}
-//		}
-//		if (!ok) {
-//			if (timeModelRangeError)
-//				errorMsg = "Time models collectively must span the whole range of possible values of the time line, i.e. from "
-//						+ currentMinTU + " to " + currentMaxTU + ".";
-//			else if (refScale.equals(TimeScaleType.MONO_UNIT))
-//				errorMsg = "For " + TimeScaleType.MONO_UNIT + ", " + pmin + " must be equal to " + pmax + ".";
-//			else
-//				errorMsg = pmin + " must be shorter than or equal to " + pmax + ".";
-//		}
 		return this;
 	}
 

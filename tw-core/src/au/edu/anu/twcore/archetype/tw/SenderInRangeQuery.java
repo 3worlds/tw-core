@@ -86,20 +86,27 @@ public class SenderInRangeQuery extends QueryAdaptor {
 		// Depends on widget policy
 		int nSenders = 1;
 		int firstSender = 0;
+		String pKey = P_WIDGET_SENDER.key();
 		if (widget.properties().hasProperty(P_WIDGET_SENDER.key())) {
 			firstSender = (Integer) widget.properties().getPropertyValue(P_WIDGET_SENDER.key());
 		} else if (widget.properties().hasProperty(P_WIDGET_FIRSTSENDER.key())) {
 			firstSender = (Integer) widget.properties().getPropertyValue(P_WIDGET_FIRSTSENDER.key());
+			pKey=P_WIDGET_FIRSTSENDER.key();
 			if (widget.properties().hasProperty(P_WIDGET_NSENDERS.key())) {
 				nSenders = (Integer) widget.properties().getPropertyValue(P_WIDGET_NSENDERS.key());
 				nSenders = Math.max(1, nSenders);// IsInRangeQuery will cover this
 			}
 		}
 		IntegerRange listenerRange = new IntegerRange(firstSender, firstSender + (nSenders - 1));
+		//NB: integer range will crash : nReps==0 is taken care of by another query
+		if (nReps<=0)
+			return this;
+		//NB Not yet tested with Multi sim (range) widgets
 		IntegerRange simRange = new IntegerRange(0, nReps - 1);
 		if (!simRange.contains(listenerRange)) {
-			errorMsg = " is listening to simulators within the range " + listenerRange + " but there are only "
-					+ nReps + " simulators.]";
+			actionMsg = "Edit property '" +pKey+"' to receive data in the range ["+simRange+"].";
+			errorMsg = "Expected sufficent simulator(s) to send data in the range [" + listenerRange + "] but found only '"
+					+ nReps + "' simulator(s). ["+pKey+"="+firstSender+"]";
 			return this;
 		}
 		return this;

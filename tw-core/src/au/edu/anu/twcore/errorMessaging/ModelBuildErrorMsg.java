@@ -108,11 +108,11 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 			detailsMsg = "\nAction: " + actionStr;
 			detailsMsg += "\nConstraint: " + constraintStr;
-			detailsMsg += "\nFile: " + file.getName();
+			detailsMsg += "\nFile/Directory: " + file.getName();
 
 			debugMsg = "\nAction: " + actionStr;
 			debugMsg += "\nConstraint: " + constraintStr;
-			debugMsg += "\nFile: " + file;
+			debugMsg += "\nPath: " + file;
 			debugMsg += "\nCategory: " + msgType.category();
 			debugMsg += "\nMessage Class: " + msgType;
 			if (UserProjectLink.haveUserProject())
