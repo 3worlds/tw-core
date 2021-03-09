@@ -363,6 +363,7 @@ public class Simulator implements Resettable {
 		timetracker.openTimeRecord(status,startTime);
 		timetracker.closeTimeRecord(); // does nothing but for code consistency
 		// make spaces listen to changes in ecosystem
+		// NB: only containers which components have coordinates can be observed
 		if (mainSpace!=null)
 			for (ObserverDynamicSpace space:mainSpace.spaces()) {
 				ecosystem.addObserver(space);
