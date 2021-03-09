@@ -73,8 +73,9 @@ public class GroupInstanceRequirementQuery extends QueryAdaptor{
 			ok &= gts.remove(g.getParent());
 		// if there was no error (ie exactly one group per grouptype) then the list should be empty:
 		ok &= gts.isEmpty();
-		if (!ok)
+		if (!ok) {
 			errorMsg = "LifeCycle must have exactly one instance of Group per GroupType of its LifeCycleType.";
+		}
 		return this;
 	}
 

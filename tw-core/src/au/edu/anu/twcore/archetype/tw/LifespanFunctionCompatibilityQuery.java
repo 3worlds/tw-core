@@ -157,9 +157,10 @@ public class LifespanFunctionCompatibilityQuery extends QueryAdaptor {
 				if (lcct.containsAll(procCats))
 					// check the componentType is ephemeral
 					if (!lcct.contains(ceph)) {
-						errorMsg = "ComponentType '" + ct.id() + "' is not ephemeral but may be processed by function '"
-								+ fn.id() + "' of process '" + pn.id()
-								+ "' that only works on ephemeral ComponentTypes\n";
+						errorMsg = "Expected '" + ct.toShortString() + "' to belong to Category:*ephemeral*.";
+						actionMsg = "Reconfigure. '" + ct.toShortString() + "' is not ephemeral but is processed by '"
+								+ fn.toShortString() + "' of '" + pn.toShortString()
+								+ "' that only works on ephemeral ComponentTypes.";
 					}
 			}
 		}

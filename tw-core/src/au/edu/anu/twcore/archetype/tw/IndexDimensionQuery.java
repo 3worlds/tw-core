@@ -99,7 +99,7 @@ public class IndexDimensionQuery extends QueryAdaptor {
 					String ix = index.getWithFlatIndex(i--);
 					// compare them
 					ixs = ix;
-					nodeId = parent.id();
+					nodeId = parent.toShortString();
 					try {
 						IndexString.stringToIndex(ix, dd);
 						ok &= true;
@@ -110,8 +110,10 @@ public class IndexDimensionQuery extends QueryAdaptor {
 				}
 				parent = parent.getParent();
 			}
-			if (!ok)
+			if (!ok) {
+				actionMsg = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeId + "'.";
 				errorMsg = "Index string '" + ixs + "' out of range for table '" + nodeId + "'.";
+			}
 		}
 		return this;
 	}

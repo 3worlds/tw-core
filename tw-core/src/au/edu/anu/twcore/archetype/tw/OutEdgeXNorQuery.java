@@ -104,6 +104,8 @@ public class OutEdgeXNorQuery extends QueryAdaptor {
 		if ((el1.size() > 0) ^ (el2.size() > 0)) {
 			errorMsg = "There must be at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one from "
 					+ Arrays.toString(edgeLabel2) + ".]";
+			actionMsg = "Add one of " + Arrays.toString(edgeLabel1) + " edges and one of "
+					+ Arrays.toString(edgeLabel2) + " edges.";
 		}
 		return this;
 	}

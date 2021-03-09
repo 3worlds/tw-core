@@ -188,13 +188,16 @@ public class NodeHasPropertyValueQuery extends QueryAdaptor {
 					for (Object o : expectedValues)
 						if ((o.equals(props.getPropertyValue(propertyName))) ||
 						// this to handle enums
-							(o.toString().equals(props.getPropertyValue(propertyName).toString()))) {
+								(o.toString().equals(props.getPropertyValue(propertyName).toString()))) {
 							ok = true;
 							break;
 						}
 			}
-		if (!ok)
-			errorMsg = "Node property '" + propertyName + "' must have value '" + expectedValues.toString() + "'.]";
+		if (!ok) {
+			errorMsg = "Node property '" + propertyName + "' must have value '" + expectedValues.toString() + "'.";
+			actionMsg = "Edit graph with a text editor to set '" + propertyName + "' value to one of '"
+					+ expectedValues.toString() + "'.";
+		}
 		return this;
 	}
 

@@ -76,6 +76,7 @@ public class ParentLabelQuery extends QueryAdaptor {
 				if (parent.classId().equals(label)) {
 					return this;
 				}
+			actionMsg = "Edit graph file with text editor to repair file.";
 			errorMsg = "Parent label must be one of '" + labels.toString() + "'.";
 		}
 		return this;

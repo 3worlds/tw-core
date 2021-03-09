@@ -63,13 +63,15 @@ public class LifeCycleInstanceRequirementQuery extends QueryAdaptor {
 			// no 'cycle' edge found
 			// TODO: Fix msgs
 			if (lc == null) {
-				errorMsg = "Group must have a \"cycle\" edge to a LifeCycle.";
+				errorMsg = "Group must have a 'cycle' edge to a LifeCycle.";
+				actionMsg = "What should I do?";
 				return this;
 			}
 
 			// a 'cycle' edge found, check it is under the same lifeCycle as groupType
 			if (lc.getParent() != groupType.getParent()) {
-				errorMsg = "Group \"cycle\" edge must be is connected to the same\"cycle\" as it GroupType.";
+				errorMsg = "Group 'cycle' edge must be is connected to the same\"cycle\" as it GroupType.";
+				actionMsg = "What should I do?";
 				return this;
 			}
 		}

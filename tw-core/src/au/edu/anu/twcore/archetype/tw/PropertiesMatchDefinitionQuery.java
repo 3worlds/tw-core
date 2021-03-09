@@ -89,6 +89,7 @@ public class PropertiesMatchDefinitionQuery extends QueryAdaptor {
 		Collection<TreeGraphDataNode> defs = defData.getSecond();
 		Boolean useAutoVars = defData.getFirst();
 		if (defs.isEmpty()) {
+			actionMsg = "Delete and recreate '" + targetNode.toShortString() + "'.";
 			errorMsg = "No property definitions found for '" + targetNode.toShortString() + "'.";
 			return this;
 		}

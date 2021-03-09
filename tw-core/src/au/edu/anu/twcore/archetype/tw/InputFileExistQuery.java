@@ -38,21 +38,25 @@ import fr.cnrs.iees.twcore.constants.FileType;
 
 /**
  * checks an input file is present in local/models subdir of 3w repo
+ * 
  * @author gignoux - 24 févr. 2017
  *
  */
-public class InputFileExistQuery extends QueryAdaptor{
+public class InputFileExistQuery extends QueryAdaptor {
 
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
 		Property localItem = (Property) input;
 		File s = ((FileType) localItem.getValue()).getFile();
-		if (s!=null && s.exists())
+		if (s != null && s.exists())
 			return this;
 		// TODO need to handle jars!!
-		if (!(s!=null && Resources.getFile(s.getName())!=null))
-			errorMsg =  "File for property '"+localItem.getKey()+"' must exist.";
+		if (!(s != null && Resources.getFile(s.getName()) != null)) {
+			actionMsg = "Add file '" + s.getName() + ".";
+//					errorMsg =  "File for property '"+localItem.getKey()+"' must exist.";
+			errorMsg = "Expected file '" + s + "' but not found.";
+		}
 		return this;
 	}
 

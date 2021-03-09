@@ -51,10 +51,13 @@ public class IsInIntervalQuery extends QueryAdaptor {
 		initInput(input);
 		Property localItem = (Property) input;
 		double value = ((Number) localItem.getValue()).doubleValue();
-		if (!interval.contains(value))
+		if (!interval.contains(value)) {
 			errorMsg = "Property " + localItem.getKey() + "=" + localItem.getValue() + "' must be within " + interval
 					+ ".";
+			errorMsg = "Expected '" + localItem.getKey() + "' to be within " + interval +" but found "+localItem.getValue() + ".";
 
+			actionMsg = "Set value within the interval "+interval+".";
+		}
 		return this;
 	}
 

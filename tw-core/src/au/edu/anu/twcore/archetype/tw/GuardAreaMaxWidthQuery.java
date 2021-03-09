@@ -37,6 +37,7 @@ import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.utils.Interval;
+
 /**
  * Checks that a guard area fits within a space
  *
@@ -79,9 +80,11 @@ public class GuardAreaMaxWidthQuery extends QueryAdaptor {
 				break;
 			}
 			if (lim != null)
-				if (!(Math.min(lim.sideLength(0), lim.sideLength(1)) > 2 * width))
-					errorMsg = "'" + spn.toShortString()
-							+ "' guard area width must be smaller than half the space shortest side length]";
+				if (!(Math.min(lim.sideLength(0), lim.sideLength(1)) > 2 * width)) {
+					errorMsg = "Expected guard area width to be smaller than half the length of the shortest side but found "
+							+ width;
+					actionMsg = "Set property value to at most half the length of the shortest side.";
+				}
 		}
 		return this;
 

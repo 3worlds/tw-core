@@ -58,8 +58,9 @@ public class PropertyXorQuery extends QueryAdaptor {
 		initInput(input);
 		ReadOnlyDataHolder e = (ReadOnlyDataHolder) input;
 		if (!(e.properties().hasProperty(name1) ^ e.properties().hasProperty(name2))) {
-			errorMsg = "'" + getClass().getSimpleName() + "' must have either '" + name1 + "' or '" + name2
-					+ "' property'.";
+			actionMsg = "Edit graph file with text editor to remove one of the properties '"+ name1 + "' or '" + name2+"'.";
+			errorMsg =  "Must have either '" + name1 + "' or '" + name2
+					+ "' but not both.";
 		}
 		return this;
 	}

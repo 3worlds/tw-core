@@ -64,22 +64,24 @@ public class IsInValueSetQuery extends QueryAdaptor {
 		super();
 		valueSet = values;
 	}
-	
+
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
 		Property localItem = (Property) input;
 		Object o = localItem.getValue();
-		boolean ok  = true;
+		boolean ok = true;
 		if (ObjectTable.class.isAssignableFrom(o.getClass())) {
-			ObjectTable<?> table = (ObjectTable<?>) o;	
+			ObjectTable<?> table = (ObjectTable<?>) o;
 			for (int i = 0; i < table.size(); i++)
 				ok = ok & valueInSet(table.getWithFlatIndex(i));
 		} else
 			ok = valueInSet(o);
-		if (!ok)
-			errorMsg="Property '"+localItem.getKey()+"' value must be one of " + valueSet.toString() + ".]";
-		
+		if (!ok) {
+			errorMsg = "Property '" + localItem.getKey() + "' value must be one of " + valueSet.toString() + ".";
+			actionMsg = "Edit graph file with a text editor to set'" + localItem.getKey() + "' equals one of "
+					+ valueSet.toString() + ".";
+		}
 		return this;
 	}
 
@@ -91,15 +93,17 @@ public class IsInValueSetQuery extends QueryAdaptor {
 	@SuppressWarnings("unchecked")
 	public IsInValueSetQuery(String enumName) {
 		try {
-			Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) Class.forName(enumName,true,Thread.currentThread().getContextClassLoader());
+			Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) Class.forName(enumName, true,
+					Thread.currentThread().getContextClassLoader());
 			Object[] oo = e.getEnumConstants();
 			valueSet = new StringTable(new Dimensioner(oo.length));
 			for (int i = 0; i < oo.length; i++)
-				valueSet.setWithFlatIndex(oo[i].toString(), i); 
+				valueSet.setWithFlatIndex(oo[i].toString(), i);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
+
 	private boolean valueInSet(Object value) {
 		for (int i = 0; i < valueSet.size(); i++) {
 			if (valueSet instanceof StringTable) {
@@ -107,18 +111,15 @@ public class IsInValueSetQuery extends QueryAdaptor {
 					value = ((Enum<?>) value).name();// Ian - watch out - dirty Australian trick
 				if (value.equals(((StringTable) valueSet).getWithFlatIndex(i)))
 					return true;
-			}
-			else if (valueSet instanceof DoubleTable) {
+			} else if (valueSet instanceof DoubleTable) {
 				if (value.equals(((DoubleTable) valueSet).getWithFlatIndex(i)))
 					return true;
-			}
-			else if (valueSet instanceof IntTable) {
+			} else if (valueSet instanceof IntTable) {
 				if (value.equals(((IntTable) valueSet).getWithFlatIndex(i)))
 					return true;
 			}
 		}
 		return false;
 	}
-
 
 }

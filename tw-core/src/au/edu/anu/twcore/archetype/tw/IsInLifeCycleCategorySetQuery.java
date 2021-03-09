@@ -77,9 +77,11 @@ public class IsInLifeCycleCategorySetQuery extends QueryAdaptor{
 			if (lifeCycleCats.contains(c))
 				nLCCats++;
 		if (nLCCats==0) {
+			actionMsg = "What should I do?";
 			errorMsg = " Missing life cycle category for the 'from' link.";
 			return this;
 		}else if (nLCCats>1) {
+			actionMsg = "What should I do?";
 			errorMsg = " Too many life cycle categories for the 'from' link.";
 			return this;
 		}
@@ -88,9 +90,11 @@ public class IsInLifeCycleCategorySetQuery extends QueryAdaptor{
 			if (lifeCycleCats.contains(c))
 				nLCCats++;
 		if (nLCCats==0) {
+			actionMsg = "What should I do?";
 			errorMsg = " Missing life cycle category for the 'to' link.";
 			return this;
 		} else if (nLCCats>1) {
+			actionMsg = "What should I do?";
 			errorMsg = " Too many life cycle categories for the 'to' link.";
 			return this;
 		}

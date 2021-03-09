@@ -32,7 +32,7 @@ import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.identity.Identity;
 
-public class NameStartsWithUpperCaseQuery extends QueryAdaptor{
+public class NameStartsWithUpperCaseQuery extends QueryAdaptor {
 
 	@Override
 	public Queryable submit(Object input) {
@@ -40,8 +40,10 @@ public class NameStartsWithUpperCaseQuery extends QueryAdaptor{
 		String localItem = ((Identity) input).id();
 		char c = localItem.charAt(0);
 		char upper = Character.toUpperCase(c);
-		if (c!=upper) 
-			errorMsg = "'"+localItem+"' must start with an upper case character.";
+		if (c != upper) {
+			errorMsg = "'" + localItem + "' must start with an upper case character.";
+			actionMsg = "Edit graph with a text editor so '" + localItem + "' starts with an upper case character.";
+		}
 		return this;
 
 	}

@@ -126,11 +126,12 @@ public class ParentHasPropertyValue extends NodeHasPropertyValueQuery{
 		TreeNode parent = localItem.getParent();
 		//TODO: Check this?
 		super.submit(parent);
-		if (!satisfied())
+		if (!satisfied()) {
+			actionMsg = "Edit graph file with text editor to repair file.";
 			errorMsg =  "Parent property '"
 					+ propertyName + "' must have value '"
 					+ expectedValues.toString() + "'.]";
-		
+		}
 		return this;
 
 	}

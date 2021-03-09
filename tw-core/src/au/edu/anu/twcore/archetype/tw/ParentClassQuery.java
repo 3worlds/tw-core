@@ -73,6 +73,7 @@ public class ParentClassQuery extends QueryAdaptor implements ArchetypeArchetype
 					if (subclass.equals(klass))
 						return this;
 				}
+				actionMsg = "Edit graph file with text editor to repair file.";
 				errorMsg = "Parent must have class one of '" + klasses.toString() + "'.";
 				return this;
 			}

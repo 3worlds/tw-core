@@ -62,11 +62,13 @@ public class LifeCycleSubGroupsQuery extends QueryAdaptor {
 			LifeCycleType lct = (LifeCycleType) lc.getParent();
 			GroupType gt = (GroupType) localItem.getParent();
 			if (gt.getParent() != null) {
-				if (!gt.getParent().equals(lct))
-					errorMsg = "A life cycle group must have at least one child group "
-							+ "belonging to each category of its categorySet."
-							+ "]";
-				return this;
+				if (!gt.getParent().equals(lct)) {//??????
+					actionMsg = "Reconfigure GroupType to have at least one child group belonging to each category of it's categorySet.";
+//					errorMsg = "A life cycle group must have at least one child group "
+//							+ "belonging to each category of it's categorySet.";
+					errorMsg = "Expected life cycle group to have at least one child group to belong to each category of it's categorySet but found none.";
+					return this;
+				}
 			}
 		}
 //		LifeCycleType lc = (LifeCycleType) get(localItem.edges(Direction.OUT),
