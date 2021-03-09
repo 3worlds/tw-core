@@ -112,6 +112,8 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 		}
 
 		if (timeLineNode.hasChildren()) {
+			TimeUnits foundTimeUnitsMax = TimeUnits.UNSPECIFIED;
+			TimeUnits foundTimeUnitsMin = TimeUnits.MILLENNIUM;
 			Iterable<ReadOnlyDataHolder> timers = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
 			for (ReadOnlyDataHolder timer : timers) {
 				TimerNode timerNode = (TimerNode) timer;
@@ -140,19 +142,19 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 				}
 				
 
-				if (timerTimeUnits.compareTo(allowedMin) < 0)
-					allowedMin = timerTimeUnits;
-				if (timerTimeUnits.compareTo(allowedMax) > 0)
-					allowedMax = timerTimeUnits;
+				if (timerTimeUnits.compareTo(foundTimeUnitsMin) < 0)
+					foundTimeUnitsMin = timerTimeUnits;
+				if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
+					foundTimeUnitsMax = timerTimeUnits;
 			}
-			if (!allowedMin.equals(shortestTimeUnit)) {
+			if (!foundTimeUnitsMin.equals(shortestTimeUnit)) {
 				// set at least one of the timers to have min = allowedMin or change this range
 				// of time scale
 
-				timeModelRangeError = true;
-				throw new TwcoreException("TODO");
+				
 //					ok = false;
-			} else if (!allowedMax.equals(longestTimeUnit)) {
+			} 
+			if (!foundTimeUnitsMax.equals(longestTimeUnit)) {
 				// set at least one of the timers to have max = allowedMax or change this range
 				// of time scale
 				timeModelRangeError = true;
