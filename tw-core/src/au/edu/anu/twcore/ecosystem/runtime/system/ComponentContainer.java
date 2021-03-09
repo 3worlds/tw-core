@@ -263,7 +263,11 @@ public class ComponentContainer
 
 	@Override
 	public void addObserver(DynamicGraphObserver<SystemComponent, SystemRelation> listener) {
-		observers.add(listener);
+		if (itemCategorized()!=null) {
+			ComponentFactory cf = (ComponentFactory)itemCategorized();
+			if (cf.spaces().contains(listener))
+				observers.add(listener);
+		}
 		for (CategorizedContainer<SystemComponent> cc:subContainers()) {
 			ComponentContainer ccc = (ComponentContainer) cc;
 			ccc.addObserver(listener);
