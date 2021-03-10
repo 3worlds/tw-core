@@ -37,6 +37,11 @@ import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.userProject.UserProjectLink;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
  * @author Ian Davies
@@ -75,7 +80,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 		case MODEL_FILE_BACKUP: {
 			File localSrcFile = (File) args[0];
 			String actionStr = "Update code in newly created java file.";
-			String constraintStr = "Configuration has changed requiring creation of a new Java file. The previous file has been backed up and renamed with ext *.orig<n>.";
+			String constraintStr = "Configuration has changed requiring creation of a new Java file. The previous file has been backed up and renamed to a numbered text file (*.txt)";
 			actionsMsg = category() + localSrcFile.getName() + ": " + actionStr;
 
 			detailsMsg = "\nAction: " + actionStr;
@@ -91,16 +96,29 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 		}
 		case COMPILER_ERROR: {
-			File file = (File) args[0];
+			String codeSnippetsNames = "";
+			@SuppressWarnings("unchecked")
+			TreeGraph<TreeGraphDataNode, ALEdge> graph = (TreeGraph<TreeGraphDataNode, ALEdge>) args[0];
+			for (TreeGraphDataNode n : graph.nodes())
+				if (n.classId().equals(N_SNIPPET.label()))
+					codeSnippetsNames += ", " + n.toShortString();
+			if (!codeSnippetsNames.isBlank())
+				codeSnippetsNames = codeSnippetsNames.replaceFirst(", ", "");
+			File file = (File) args[1];
 			String compileResult = "unknown";
-			if (args.length > 0)
-				compileResult = (String) args[1];
+			if (args.length > 1)
+				compileResult = (String) args[2];
 
 			String actionStr;
-			if (UserProjectLink.haveUserProject())
-				actionStr = "Correct coding errors in " + UserProjectLink.projectRoot().getName() + ".";
-			else
-				actionStr = "Correct coding errors in code snippets.";
+			if (UserProjectLink.haveUserProject()) {
+				actionStr = "Correct coding errors in java project '" + UserProjectLink.projectRoot().getName() + "'";
+				if (!codeSnippetsNames.isBlank())
+					actionStr += " and/or code snippet(s): " + codeSnippetsNames;
+				actionStr += ".";
+			} else
+				actionStr = "Correct coding errors in code snippet(s): " + codeSnippetsNames + ".";
+			if (!UserProjectLink.haveUserProject() && codeSnippetsNames.isBlank())
+				actionStr = "[Crash now or crash later!] Check if additional queries are required to prevent generating code with this configuration OR there are programming errors in codeGenerator!!";
 
 			String constraintStr = compileResult;
 
@@ -115,8 +133,10 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			debugMsg += "\nPath: " + file;
 			debugMsg += "\nCategory: " + msgType.category();
 			debugMsg += "\nMessage Class: " + msgType;
-			if (UserProjectLink.haveUserProject())
-				debugMsg += "\nInfo: File has not been pushed to " + UserProjectLink.projectRoot().getName();
+			if (UserProjectLink.haveUserProject()) {
+				debugMsg += "\nJava project path: " + UserProjectLink.projectRoot();
+				debugMsg += "\nInfo: NB: Files have NOT been transferred to the Java project.";
+			}
 			break;
 		}
 		case COMPILER_MISSING: {
@@ -221,7 +241,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			debugMsg += "\nException: " + e;
 			break;
 		}
-		case DEPLOY_FAIL: {// not used 
+		case DEPLOY_FAIL: {// not used
 			// Exception e = (Exception) args[0];
 			@SuppressWarnings("unchecked")
 			List<String> lines = (List<String>) args[0];

@@ -101,18 +101,20 @@ public class CodeGenerator {
 	// (au.edu.anu.twapps.mm.configGraph)
 	@SuppressWarnings("unchecked")
 	public boolean generate() {
-
 		File localCodeRoot = Project.makeFile(ProjectPaths.LOCALJAVA);
-		try {
-			if (localCodeRoot.exists())
-				FileUtilities.deleteFileTree(localCodeRoot);
-		} catch (IOException e1) {
-			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
+		synchronized (this) {// Test to see if something happens between ...exists and delete...?
+			try {
+				if (localCodeRoot.exists())
+					FileUtilities.deleteFileTree(localCodeRoot);
+			} catch (Exception e1) {
+//			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
+				System.err.println("WARNING: Unable to delete old code tree '" + localCodeRoot + "'.\nException: "
+						+ e1);
+			}
 		}
-
 		// generate code for every system node found
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
-			N_SYSTEM.label());
+				N_SYSTEM.label());
 		for (TreeGraphDataNode systemNode : systemNodes) {
 			/**
 			 * TODO :This is crap - there can be many systems but we have one dir - see ref
@@ -122,29 +124,29 @@ public class CodeGenerator {
 			File systemDir = Project.makeFile(ProjectPaths.LOCALJAVACODE, wordUpperCaseName(systemNode.id()));
 			systemDir.mkdirs();
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(systemNode.getChildren(),
-				selectOne(hasTheLabel(N_DYNAMICS.label())));
+					selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(systemNode.getChildren(),
-				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+					selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 
 			// generate data interfaces (matching categories)
 			// NB predefined categories only have auto variables, not considered here
 			Collection<TreeGraphDataNode> categories = (Collection<TreeGraphDataNode>) get(systemNode.subTree(),
-				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
-			for (TreeGraphDataNode cat:categories)
-				if (generateDataInterfaceCode(cat,systemNode.id()))
+					selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+			for (TreeGraphDataNode cat : categories)
+				if (generateDataInterfaceCode(cat, systemNode.id()))
 					GraphState.setChanged();
-			
+
 			// generate data classes
 			if (structure != null) {
 				// for ComponentTypes
 				List<TreeGraphDataNode> componentTypes = (List<TreeGraphDataNode>) get(structure.subTree(),
-					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 				for (TreeGraphDataNode componentType : componentTypes)
 					generateDataCode(componentType, systemNode.id());
-					// out of here system has the names of the generated data classes
+				// out of here system has the names of the generated data classes
 				// for GroupTypes
 				List<TreeGraphDataNode> groupTypes = (List<TreeGraphDataNode>) get(structure.subTree(),
-					selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+						selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
 				for (TreeGraphDataNode groupType : groupTypes)
 					generateDataCode(groupType, systemNode.id());
 				// for LifeCycleTypes
@@ -155,7 +157,7 @@ public class CodeGenerator {
 			}
 			// for Arena
 			Collection<Category> cats = (Collection<Category>) get(systemNode.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
+					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 			if (!cats.isEmpty())
 				generateDataCode(systemNode, systemNode.id());
 
@@ -165,8 +167,8 @@ public class CodeGenerator {
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
 			List<TreeGraphDataNode> timerNodes = (List<TreeGraphDataNode>) get(dynamics.getChildren(),
-				selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
-				selectZeroOrMany(hasTheLabel(N_TIMER.label())));
+					selectZeroOrOne(hasTheLabel(N_TIMELINE.label())), children(),
+					selectZeroOrMany(hasTheLabel(N_TIMER.label())));
 			if (timerNodes != null)
 				for (TreeGraphDataNode timerNode : timerNodes) {
 					List<TreeGraphDataNode> processes = getChildrenLabelled(timerNode, N_PROCESS.label());
@@ -176,11 +178,9 @@ public class CodeGenerator {
 				}
 			// initialiser function code here
 			List<TreeGraphDataNode> initables = (List<TreeGraphDataNode>) get(systemNode.subTree(),
-				selectZeroOrMany(orQuery(
-					hasTheLabel(N_LIFECYCLETYPE.label()),
-					hasTheLabel(N_GROUPTYPE.label()),
+					selectZeroOrMany(orQuery(hasTheLabel(N_LIFECYCLETYPE.label()), hasTheLabel(N_GROUPTYPE.label()),
 //					hasTheLabel(N_SPACE.label()),
-					hasTheLabel(N_COMPONENTTYPE.label()) )));
+							hasTheLabel(N_COMPONENTTYPE.label()))));
 			if (initables == null)
 				initables = new ArrayList<TreeGraphDataNode>();
 			initables.add(systemNode);
@@ -198,21 +198,21 @@ public class CodeGenerator {
 		// compile code to check it
 		String result = compileLocalTree(localCodeRoot);
 		if (!result.isBlank())
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, localCodeRoot, result));
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, graph, localCodeRoot, result));
 		if (!ErrorList.haveErrors()) {
 			UserProjectLink.pushCompiledTree(localCodeRoot, modelgen.getFile());
 		}
 		return !ErrorList.haveErrors();
 	}
-	
+
 	/**
-	 * Generates a data-interface code for all category records. use this to typecast ComponentType
-	 * records to higher-level data
+	 * Generates a data-interface code for all category records. use this to
+	 * typecast ComponentType records to higher-level data
 	 * 
 	 * @param categories
 	 */
-	private boolean generateDataInterfaceCode(TreeGraphDataNode category,String modelName) {
-		TwDataInterfaceGenerator ig = new TwDataInterfaceGenerator(modelName,category);
+	private boolean generateDataInterfaceCode(TreeGraphDataNode category, String modelName) {
+		TwDataInterfaceGenerator ig = new TwDataInterfaceGenerator(modelName, category);
 		return ig.generateCode();
 	}
 
@@ -246,9 +246,7 @@ public class CodeGenerator {
 		return result;
 	}
 
-	private void generateDataCode(TreeGraphDataNode spec, 
-			TreeGraphDataNode elementType, 
-			String modelName,
+	private void generateDataCode(TreeGraphDataNode spec, TreeGraphDataNode elementType, String modelName,
 			String dataGroup) {
 		if (spec != null) {
 			// generate the new class
@@ -256,17 +254,18 @@ public class CodeGenerator {
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec, cats, dataGroup);
 			gen.generateCode();
 			// keep the graph in sync with the newly generated class
-			// check the new generated class name replaces the old one in properties driverClass, constantClass, etc.
+			// check the new generated class name replaces the old one in properties
+			// driverClass, constantClass, etc.
 			if (elementType.properties().hasProperty(dataGroup)) {
 				String oldValue = (String) elementType.properties().getPropertyValue(dataGroup);
 				String newValue = gen.generatedClassName();
 				if (!newValue.equals(oldValue)) {
 					elementType.properties().setProperty(dataGroup, newValue);
 					GraphState.setChanged(); // Seems to be secret French business so we won't look
- 											 // rhaa! it's jsut telling the graph the property value has changed!
+												// rhaa! it's jsut telling the graph the property value has changed!
 				}
 			} else {
-			// set the properties driverClass, constantClass, etc. if they didnt exist
+				// set the properties driverClass, constantClass, etc. if they didnt exist
 				((ResizeablePropertyList) elementType.properties()).addProperty(dataGroup, gen.generatedClassName());
 				GraphState.setChanged();
 			}
@@ -277,7 +276,8 @@ public class CodeGenerator {
 					graph.removeNode(spec);
 				}
 		} else if (elementType.properties().hasProperty(dataGroup)) {
-			// if the spec was deleted from a previous version, remove the property refering to the former
+			// if the spec was deleted from a previous version, remove the property refering
+			// to the former
 			// class name in the graph
 			((ResizeablePropertyList) elementType.properties()).removeProperty(dataGroup);
 			GraphState.setChanged();
@@ -285,11 +285,11 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Called for every ComponentType/GroupType/LifeCycleType found in the structure sub-tree.
-	 * Uses system node id as model name.
+	 * Called for every ComponentType/GroupType/LifeCycleType found in the structure
+	 * sub-tree. Uses system node id as model name.
 	 * 
 	 * @param elementType the [...]Type node
-	 * @param modelName the system node id, or model name
+	 * @param modelName   the system node id, or model name
 	 */
 	private void generateDataCode(TreeGraphDataNode elementType, String modelName) {
 		// 1. automatic variables
@@ -305,8 +305,8 @@ public class CodeGenerator {
 		generateDataCode(spec, elementType, modelName, P_CONSTANTCLASS.key());
 	}
 
-
-	// TODO HERE: arguments to user model functions change with the organisation level, ie
+	// TODO HERE: arguments to user model functions change with the organisation
+	// level, ie
 	// group, arena, lifecylce, component...
 	@SuppressWarnings("unchecked")
 	private void generateProcessCode(TreeGraphDataNode process, String modelName) {
@@ -324,27 +324,27 @@ public class CodeGenerator {
 
 		// this code is now useless
 		ProcessSpaceEdge spaceEdge = (ProcessSpaceEdge) get(process.edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_SPACE.label())));
+				selectZeroOrOne(hasTheLabel(E_SPACE.label())));
 		if (spaceEdge != null) {
 			List<TreeGraphDataNode> ltgn = (List<TreeGraphDataNode>) get(process.edges(Direction.OUT),
-				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
+					selectOneOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
 			// RelationProcess
 			if (ltgn.get(0) instanceof RelationType) {
 				Set<TreeGraphDataNode> cptypes = new HashSet<>();
 				List<TreeGraphDataNode> fromcats = (List<TreeGraphDataNode>) get(ltgn.get(0).edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
+						selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
 				for (TreeGraphDataNode cat : fromcats) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 				List<TreeGraphDataNode> tocats = (List<TreeGraphDataNode>) get(ltgn.get(0).edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
+						selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
 				for (TreeGraphDataNode cat : tocats) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 			}
@@ -355,8 +355,8 @@ public class CodeGenerator {
 				Set<TreeGraphDataNode> cptypes = new HashSet<>();
 				for (TreeGraphDataNode cat : ltgn) {
 					List<TreeGraphDataNode> lcomp = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-						selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					cptypes.addAll(lcomp);
 				}
 			}
