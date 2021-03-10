@@ -1728,7 +1728,7 @@ public class DocoGenerator {
 				selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
 		List<TreeGraphDataNode> fromCats = (List<TreeGraphDataNode>) get(rt.edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
-		for (int i = 0; i < toCats.size(); i++) {
+		for (int i = 0; i < toCats.size(); i++) {// TODO: WE DON'T UNDERSTAND THE ARCHETYPE HERE - 
 			TreeGraphDataNode toCat = toCats.get(i);
 			TreeGraphDataNode fromCat = fromCats.get(i);// ???
 			TreeGraphDataNode ctTo = (TreeGraphDataNode) get(toCat.edges(Direction.IN),
