@@ -61,7 +61,6 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -88,7 +87,7 @@ public class CodeGenerator {
 
 	private static Logger log = Logging.getLogger(CodeGenerator.class);
 //	static { log.setLevel(Level.SEVERE); }
-	private TreeGraph<TreeGraphDataNode, ALEdge> graph = null;
+	private final TreeGraph<TreeGraphDataNode, ALEdge> graph;
 	// the generator for the single user model file
 	private ModelGenerator modelgen = null;
 
@@ -100,18 +99,17 @@ public class CodeGenerator {
 	// NOTE: called by ConfigGraph.validateGraph in tw-apps
 	// (au.edu.anu.twapps.mm.configGraph)
 	@SuppressWarnings("unchecked")
-	public boolean generate() {
+	public synchronized boolean generate() {// see if this helps avoid a thread problem if, in fact there is one?-IDD
 		File localCodeRoot = Project.makeFile(ProjectPaths.LOCALJAVA);
-		synchronized (this) {// Test to see if something happens between ...exists and delete...?
-			try {
-				if (localCodeRoot.exists())
-					FileUtilities.deleteFileTree(localCodeRoot);
-			} catch (Exception e1) {
+		// Test to see if something happens between ...exists and delete...?
+		try {
+			if (localCodeRoot.exists())
+				FileUtilities.deleteFileTree(localCodeRoot);
+		} catch (Exception e1) {
 //			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
-				System.err.println("WARNING: Unable to delete old code tree '" + localCodeRoot + "'.\nException: "
-						+ e1);
-			}
+			System.err.println("WARNING: Unable to delete old code tree '" + localCodeRoot + "'.\nException: " + e1);
 		}
+
 		// generate code for every system node found
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());

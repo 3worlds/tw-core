@@ -256,7 +256,13 @@ public class DocoGenerator {
 					ephemeralComponents.addAll(cmps);
 				}
 			} else if (n.classId().equals(N_RELATIONTYPE.label())) {
-				relTypes.add(n);
+				List<Duple<TreeGraphDataNode, TreeGraphDataNode>> pairs = getFromToCategories(n);
+				boolean include = false;
+				for (Duple<TreeGraphDataNode, TreeGraphDataNode> pair : pairs)
+					if (pair.getFirst() != null && pair.getSecond() != null)
+						include = true;
+				if (include)
+					relTypes.add(n);
 				// TODO if either of the the related components have ephemeral lifespans then
 				// this indicates an ephemeral relation - yes?
 			} else if (n.classId().equals(N_SPACE.label())) {
@@ -1703,10 +1709,13 @@ public class DocoGenerator {
 			String c1 = rt.id();
 			List<Duple<TreeGraphDataNode, TreeGraphDataNode>> fromToList = getFromToCategories(rt);
 			for (Duple<TreeGraphDataNode, TreeGraphDataNode> pair : fromToList) {
-				String c2a = pair.getFirst().id();
-				String c2b = pair.getSecond().id();
-				entries.add(
-						new StringBuilder().append(c1).append(sep).append(c2a).append(" → ").append(c2b).toString());
+				// NB: pre-def relationType will not necessarily have from/to cats
+				if (pair.getFirst() != null && pair.getSecond() != null) {
+					String c2a = pair.getFirst().id();
+					String c2b = pair.getSecond().id();
+					entries.add(new StringBuilder().append(c1).append(sep).append(c2a).append(" → ").append(c2b)
+							.toString());
+				}
 			}
 		}
 		return entries;
