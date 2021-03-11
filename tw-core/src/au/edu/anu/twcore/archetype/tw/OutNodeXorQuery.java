@@ -75,11 +75,12 @@ public class OutNodeXorQuery extends QueryAdaptor {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Duple<List<Node>, List<Node>> getNodeLists(Node localItem, String nodeLabel1, String nodeLabel2) {
 		List<Node> nl1 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
-				selectZeroOrMany(hasTheLabel(nodeLabel1)));
+			selectZeroOrMany(hasTheLabel(nodeLabel1)));
 		List<Node> nl2 = (List<Node>) get(localItem.edges(Direction.OUT), edgeListEndNodes(),
-				selectZeroOrMany(hasTheLabel(nodeLabel2)));
+			selectZeroOrMany(hasTheLabel(nodeLabel2)));
 		return new Duple<List<Node>, List<Node>>(nl1, nl2);
 	}
 
