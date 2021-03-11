@@ -70,7 +70,7 @@ public class UIStateMachineControllerQuery extends QueryAdaptor {
 		}
 		if (!(count == 1)) {
 			errorMsg = "User interface must have one widget that descends from '" + smcClass.getSimpleName() + "'.";
-			actionMsg = "Add a control widget as a child of 'top:', 'bottom:', 'tab:' or 'container:'.";
+			actionMsg = "Add a control widget to either 'top:', 'bottom:', 'tab:' or 'container:'.";
 		}
 
 		return this;

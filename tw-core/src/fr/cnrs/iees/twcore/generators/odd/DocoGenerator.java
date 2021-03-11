@@ -97,20 +97,21 @@ import org.odftoolkit.simple.style.StyleTypeDefinitions;
 /**
  * ODD generator
  * 
- * This can go in tw-core when finished. Running from jar may crash if left in
- * tw-uifx since its not included in this library.
  */
 public class DocoGenerator {
 	/**
 	 * Minimal config baseline
 	 */
-	private static int baseNodes = 26;
-	private static int baseEdges = 6;
+	private static int baseNodes = 28;
+	private static int baseEdges = 10;
 	private static int baseDrvs = 0;
 	private static int baseCnts = 0;
 	private static int baseDecs = 0;
-	private static int baseProps = 27;
+	private static int baseProps = 29;// to get a baseline we need one function which has 2 properties. Do we subtract
+										// these?
 	private static int baseCT = 1; // the system
+	private static int baseRT = 2; // pre-def
+	private static int baseGT = 0;// just in case
 
 	private int nNodes;
 	private int nEdges;
@@ -161,32 +162,33 @@ public class DocoGenerator {
 	private static int figureNumber;
 
 	// NB: Ignore ui. experiment and snippets
-	private static List<String> allowedNodes = new ArrayList<>();
+	private static List<String> countedNodes = new ArrayList<>();
 	static {
-		allowedNodes.add(N_DIMENSIONER.label());
-		allowedNodes.add(N_TABLE.label());
-		allowedNodes.add(N_RECORD.label());
-		allowedNodes.add(N_FIELD.label());
-		allowedNodes.add(N_RNG.label());
-		allowedNodes.add(N_SYSTEM.label());
-		allowedNodes.add(N_DYNAMICS.label());
-		allowedNodes.add(N_TIMELINE.label());
-		allowedNodes.add(N_TIMER.label());
-		allowedNodes.add(N_PROCESS.label());
-		allowedNodes.add(N_FUNCTION.label());
-		allowedNodes.add(N_LIFECYCLE.label());
-		allowedNodes.add(N_RECRUIT.label());
-		allowedNodes.add(N_PRODUCE.label());
-		allowedNodes.add(N_INITFUNCTION.label());
-		allowedNodes.add(N_GROUP.label());
-		allowedNodes.add(N_COMPONENT.label());
-		allowedNodes.add(N_STRUCTURE.label());
-		allowedNodes.add(N_CATEGORYSET.label());
-		allowedNodes.add(N_CATEGORY.label());
-		allowedNodes.add(N_COMPONENTTYPE.label());
-		allowedNodes.add(N_RELATIONTYPE.label());
-		allowedNodes.add(N_SPACE.label());
-		allowedNodes.add(N_PREDEFINED.label());
+		countedNodes.add(N_DIMENSIONER.label());
+		countedNodes.add(N_TABLE.label());
+		countedNodes.add(N_RECORD.label());
+		countedNodes.add(N_FIELD.label());
+		countedNodes.add(N_RNG.label());
+		countedNodes.add(N_SYSTEM.label());
+		countedNodes.add(N_DYNAMICS.label());
+		countedNodes.add(N_TIMELINE.label());
+		countedNodes.add(N_TIMER.label());
+		countedNodes.add(N_PROCESS.label());
+		countedNodes.add(N_FUNCTION.label());
+		countedNodes.add(N_LIFECYCLE.label());
+		countedNodes.add(N_RECRUIT.label());
+		countedNodes.add(N_PRODUCE.label());
+		countedNodes.add(N_INITFUNCTION.label());
+		countedNodes.add(N_GROUP.label());
+		countedNodes.add(N_GROUPTYPE.label());
+		countedNodes.add(N_COMPONENT.label());
+		countedNodes.add(N_STRUCTURE.label());
+		countedNodes.add(N_CATEGORYSET.label());
+		countedNodes.add(N_CATEGORY.label());
+		countedNodes.add(N_COMPONENTTYPE.label());
+		countedNodes.add(N_RELATIONTYPE.label());
+		countedNodes.add(N_SPACE.label());
+		countedNodes.add(N_PREDEFINED.label());
 	}
 
 //	private long startTime;
@@ -217,11 +219,11 @@ public class DocoGenerator {
 		List<TreeGraphDataNode> snippetNodes = new ArrayList<>();
 		// basic metrics
 		for (TreeGraphDataNode n : cfg.nodes()) {
-			if (allowedNodes.contains(n.classId())) {
+			if (countedNodes.contains(n.classId())) {
 				nNodes++;
 				nProps += n.properties().size();
 				for (ALEdge e : n.edges(Direction.OUT)) {
-					if (allowedNodes.contains(e.endNode().classId())) {
+					if (countedNodes.contains(e.endNode().classId())) {
 						nEdges++;
 						if (e instanceof ALDataEdge)
 							nProps += ((ALDataEdge) e).properties().size();
@@ -256,13 +258,7 @@ public class DocoGenerator {
 					ephemeralComponents.addAll(cmps);
 				}
 			} else if (n.classId().equals(N_RELATIONTYPE.label())) {
-				List<Duple<TreeGraphDataNode, TreeGraphDataNode>> pairs = getFromToCategories(n);
-				boolean include = false;
-				for (Duple<TreeGraphDataNode, TreeGraphDataNode> pair : pairs)
-					if (pair.getFirst() != null && pair.getSecond() != null)
-						include = true;
-				if (include)
-					relTypes.add(n);
+				relTypes.add(n);
 				// TODO if either of the the related components have ephemeral lifespans then
 				// this indicates an ephemeral relation - yes?
 			} else if (n.classId().equals(N_SPACE.label())) {
@@ -1010,7 +1006,8 @@ public class DocoGenerator {
 			para1.setFont(font);
 			for (String line : snp.getValue()) {
 				if (line.startsWith("\t\t"))
-					line = line.substring(2, line.length() - 1);
+					line = line.replaceFirst("\t\t", "");
+//					line = line.substring(2, line.length() - 1);
 				para1.appendTextContent(line + "\n", true);
 			}
 		}
@@ -1573,12 +1570,23 @@ public class DocoGenerator {
 		}
 		// need a better string here. from/to but this depends on the function type
 		if (relationType != null) {
-			List<Duple<TreeGraphDataNode, TreeGraphDataNode>> fromToCats = getFromToCategories(relationType);
-			sb.append(", ").append(relationType.id()).append(" (").append(fromToCats.get(0).getFirst().id()).append("→")
-					.append(fromToCats.get(0).getSecond().id()).append(")");
+			Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>> fromToCats = getFromToComponentTypes(relationType);
+			String fromStr = getIdList(fromToCats.getFirst());
+			String toStr = getIdList(fromToCats.getSecond());
+			sb.append(", ").append(relationType.id()).append(" (").append(fromStr).append("→").append(toStr)
+					.append(")");
 		}
 
 		return sb.toString().replaceFirst(", ", "");
+	}
+
+	private String getIdList(List<TreeGraphDataNode> l) {
+		String result = "";
+		if (l == null)
+			return result;
+		for (TreeGraphDataNode i : l)
+			result += ", " + i.id();
+		return result.replaceFirst("' ", "");
 	}
 
 	private void appendConsequences(String indent, StringBuilder flowChart, TreeNode parent) {
@@ -1707,39 +1715,45 @@ public class DocoGenerator {
 		List<String> entries = new ArrayList<>();
 		for (TreeGraphDataNode rt : relTypes) {
 			String c1 = rt.id();
-			List<Duple<TreeGraphDataNode, TreeGraphDataNode>> fromToList = getFromToCategories(rt);
-			for (Duple<TreeGraphDataNode, TreeGraphDataNode> pair : fromToList) {
-				// NB: pre-def relationType will not necessarily have from/to cats
-				if (pair.getFirst() != null && pair.getSecond() != null) {
-					String c2a = pair.getFirst().id();
-					String c2b = pair.getSecond().id();
-					entries.add(new StringBuilder().append(c1).append(sep).append(c2a).append(" → ").append(c2b)
-							.toString());
-				}
+			Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>> fromToList = getFromToComponentTypes(rt);
+			if (fromToList.getFirst() != null && fromToList.getSecond() != null) {
+				String fList = getIdList(fromToList.getFirst());
+				String tList = getIdList(fromToList.getSecond());
+				entries.add(new StringBuilder().append(c1).append(sep).append(fList).append(" → ").append(tList)
+						.toString());
 			}
 		}
 		return entries;
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Duple<TreeGraphDataNode, TreeGraphDataNode>> getFromToCategories(TreeGraphDataNode rt) {
-		List<Duple<TreeGraphDataNode, TreeGraphDataNode>> result = new ArrayList<>();
+	private Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>> getFromToComponentTypes(TreeGraphDataNode rt) {
 		List<TreeGraphDataNode> toCats = (List<TreeGraphDataNode>) get(rt.edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
 		List<TreeGraphDataNode> fromCats = (List<TreeGraphDataNode>) get(rt.edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
-		for (int i = 0; i < toCats.size(); i++) {// TODO: WE DON'T UNDERSTAND THE ARCHETYPE HERE - 
-			TreeGraphDataNode toCat = toCats.get(i);
-			TreeGraphDataNode fromCat = fromCats.get(i);// ???
-			TreeGraphDataNode ctTo = (TreeGraphDataNode) get(toCat.edges(Direction.IN),
+
+		List<TreeGraphDataNode> validFromCT = new ArrayList<>();
+		List<TreeGraphDataNode> validToCT = new ArrayList<>();
+
+		// select only from/to edges whose categories connect to a componentType(s)
+		for (TreeGraphDataNode fromCat : fromCats) {
+			List<TreeGraphDataNode> ctFrom = (List<TreeGraphDataNode>) get(fromCat.edges(Direction.IN),
 					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-					selectOne(hasTheLabel(N_COMPONENTTYPE.label())));
-			TreeGraphDataNode ctFrom = (TreeGraphDataNode) get(fromCat.edges(Direction.IN),
-					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
-					selectOne(hasTheLabel(N_COMPONENTTYPE.label())));
-			result.add(new Duple<TreeGraphDataNode, TreeGraphDataNode>(ctFrom, ctTo));
+					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+			validFromCT.addAll(ctFrom);
 		}
-		return result;
+		for (TreeGraphDataNode toCat : toCats) {
+			List<TreeGraphDataNode> ctTo = (List<TreeGraphDataNode>) get(toCat.edges(Direction.IN),
+					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
+					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+			validToCT.addAll(ctTo);
+		}
+		if (validFromCT.isEmpty() && validToCT.isEmpty()) {
+			return new Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>>(null, null);
+		} else
+			return new Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>>(validFromCT, validFromCT);
+
 	}
 
 	private List<String> getSpatialUnitsDetails() {
@@ -1787,8 +1801,10 @@ public class DocoGenerator {
 		entries.add(new StringBuilder().append("7 #Decorators").append(sep).append((nDecs - baseDecs)).toString());
 		entries.add(new StringBuilder().append("8 #ComponentTypes").append(sep).append((compTypes.size() - baseCT))
 				.toString());
-		entries.add(new StringBuilder().append("9 #RelationTypes").append(sep).append((relTypes.size())).toString());
-		entries.add(new StringBuilder().append("10 #GroupTypes").append(sep).append((groupTypes.size())).toString());
+		entries.add(new StringBuilder().append("9 #RelationTypes").append(sep).append((relTypes.size() - baseRT))
+				.toString());
+		entries.add(new StringBuilder().append("10 #GroupTypes").append(sep).append((groupTypes.size() - baseGT))
+				.toString());
 		return entries;
 	}
 
@@ -1821,9 +1837,10 @@ public class DocoGenerator {
 			String txt = "[";
 			for (int i = 0; i < sizes.length; i++)
 				for (int s : sizes[i])
-					txt += s + ",";
+					txt += ", "+s;
+			txt.replaceFirst("' ", "");
 			if (txt.length() > 1)
-				dims = txt.substring(0, txt.length() - 1) + "]";
+				dims = txt + "]";
 
 			DataElementType det = (DataElementType) n.properties().getPropertyValue(kType);
 			String type = det.name();

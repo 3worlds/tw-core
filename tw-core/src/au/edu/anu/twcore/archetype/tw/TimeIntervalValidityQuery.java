@@ -81,23 +81,24 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 		}
 		boolean timeModelRangeError = false;
 
-		// If there is no refScale property we should crash.
-//		boolean ok;
 		if (timeScaleType.equals(TimeScaleType.MONO_UNIT)) {
-			// !ok: Time units of x and y must be the same
+			// Time units of min and max must be the same
 			if (shortestTimeUnit != longestTimeUnit) {
-				errorMsg = "'" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
-						+ timeLineNode.toShortString() + "' must be the same for " + scaleKey + "'.";
+				errorMsg = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
+						+ timeLineNode.toShortString() + "' must be the same for '" + scaleKey + "' but found '"
+						+ shortestTimeUnit + "' and '" + longestTimeUnit + "'.";
 				actionMsg = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '"
 						+ timeLineNode.toShortString() + "' to the same value.";
 				return this;
 			}
 
 		} else if (shortestTimeUnit.compareTo(longestTimeUnit) > 0) {
-			// !ok: min must be less than max
-			errorMsg = "'" + shortestTimeUnitKey + "' must be <= '" + longestTimeUnitKey + "' for time scale type '"
-					+ scaleKey + ".";
-			actionMsg = "Set '" + shortestTimeUnitKey + "' to be greater than or equal to '" + longestTimeUnitKey
+			// min must be less than max
+			errorMsg = "Expected '" + shortestTimeUnitKey + "' to be <= '" + longestTimeUnitKey
+					+ "' for time scale type '" + scaleKey + "' but found '" + shortestTimeUnit + "' and '"
+					+ longestTimeUnit + "'.";
+			;
+			actionMsg = "Set '" + shortestTimeUnitKey + "' to be less than or equal to '" + longestTimeUnitKey
 					+ "'.";
 			return this;
 		}
@@ -113,40 +114,23 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 
 				TimeUnits timerTimeUnits = (TimeUnits) timer.properties().getPropertyValue(P_TIMEMODEL_TU.key());
 				// check if outside range
-				if (timerTimeUnits.compareTo(shortestTimeUnit) < 0) {
-					// increase timer tu to be greater than or equal to shortestTimeUnit;
-					actionMsg = "Increase '" + timerNode.toShortString() + "#" + P_TIMEMODEL_TU.key()
-							+ "' to be greater than or equal to '" + shortestTimeUnit + "'.";
-					// expected property timer#TUname to be >= shortest but found this
-					errorMsg = "Expected '" + timerNode.toShortString() + "#" + P_TIMEMODEL_TU.key() + "' to be >= "
-							+ shortestTimeUnit + " but found " + timerTimeUnits+"'.";
-					return this;
-				}
-				if (timerTimeUnits.compareTo(longestTimeUnit) > 0) {
-					// Decrease timer tu to be less than or equal to longestTimeUnit;
-					actionMsg = "Decrease '" + timerNode.toShortString() + "#" + P_TIMEMODEL_TU.key()
-							+ "' to be less than or equal to '" + longestTimeUnit + "'.";
-					// expected property timer#TUname to be<= longest shortest but found this
-					errorMsg = "Expected '" + timerNode.toShortString() + "#" + P_TIMEMODEL_TU.key() + "' to be <= "
-							+ longestTimeUnit + " but found '" + timerTimeUnits+"'.";
-					return this;
-				}
-				
 				if (timerTimeUnits.compareTo(foundTimeUnitsMin) < 0)
 					foundTimeUnitsMin = timerTimeUnits;
 				if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
 					foundTimeUnitsMax = timerTimeUnits;
 			}
-			if (foundTimeUnitsMin.compareTo(shortestTimeUnit)>0) {
+			if (foundTimeUnitsMin.compareTo(shortestTimeUnit) > 0) {
 				// set shortest to found
-				actionMsg = "Set property '"+shortestTimeUnitKey+"' to '"+foundTimeUnitsMin+"'.";
-				errorMsg = "Expected '"+shortestTimeUnitKey+"="+foundTimeUnitsMin+"' but found '"+shortestTimeUnit+"'.";
+				actionMsg = "Set property '" + shortestTimeUnitKey + "' to '" + foundTimeUnitsMin + "'.";
+				errorMsg = "Expected '" + shortestTimeUnitKey + "=" + foundTimeUnitsMin + "' but found '"
+						+ shortestTimeUnit + "'.";
 				return this;
-			} 
-			if (foundTimeUnitsMax.compareTo(longestTimeUnit)<0) {
+			}
+			if (foundTimeUnitsMax.compareTo(longestTimeUnit) < 0) {
 				// set longest to found;
-				actionMsg = "Set property '"+longestTimeUnitKey+"' to '"+foundTimeUnitsMax+"'.";
-				errorMsg = "Expected '"+longestTimeUnitKey+"="+foundTimeUnitsMax+"' but found '"+longestTimeUnit+"'.";
+				actionMsg = "Set property '" + longestTimeUnitKey + "' to '" + foundTimeUnitsMax + "'.";
+				errorMsg = "Expected '" + longestTimeUnitKey + "=" + foundTimeUnitsMax + "' but found '"
+						+ longestTimeUnit + "'.";
 				return this;
 			}
 		}
