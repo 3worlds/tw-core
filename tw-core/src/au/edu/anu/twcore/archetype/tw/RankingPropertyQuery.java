@@ -41,7 +41,6 @@ import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.Element;
-import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 /**

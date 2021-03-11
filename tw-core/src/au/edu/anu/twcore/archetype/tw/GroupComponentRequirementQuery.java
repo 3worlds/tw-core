@@ -52,11 +52,11 @@ public class GroupComponentRequirementQuery extends QueryAdaptor {
 	public Queryable submit(Object input) {
 		initInput(input);
 		Node group = (Node) input;
-		Edge groupof = (Edge) get(group.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_GROUPOF.label())));
+		Edge groupof = (Edge) get(group.edges(Direction.OUT), 
+			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())));
 		Collection<Edge> instofs = (Collection<Edge>) get(group.edges(Direction.IN),
-				selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())));
-		
-		if (!(groupof == null) ^ (instofs.isEmpty())) {
+			selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())));
+		if ((groupof == null) ^ (instofs.isEmpty())) {
 			errorMsg = "If no Component is instance of Group, Group must have a groupOf link to a ComponentType.";
 		}
 		return this;
