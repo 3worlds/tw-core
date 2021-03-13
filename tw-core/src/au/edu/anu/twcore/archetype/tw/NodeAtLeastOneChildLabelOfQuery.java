@@ -63,7 +63,7 @@ public class NodeAtLeastOneChildLabelOfQuery extends QueryAdaptor {
 			errorMsg = "'" + node.toShortString() + "' must have at least one child labelled '"
 					+ labels.toString() + "'.";
 			
-			actionMsg = "Add one of "+labels.toString()+" to '"+node.toShortString()+"'.";
+			actionMsg = "Add node that is one of "+labels.toString()+" to '"+node.toShortString()+"'.";
 		}
 		
 		return this;
