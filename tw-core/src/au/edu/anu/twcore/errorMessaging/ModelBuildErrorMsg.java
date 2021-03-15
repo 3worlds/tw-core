@@ -30,6 +30,7 @@ package au.edu.anu.twcore.errorMessaging;
 
 import java.io.File;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -96,14 +97,12 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 		}
 		case COMPILER_ERROR: {
-			String codeSnippetsNames = "";
+			List<String> codeSnippetsNames = new ArrayList<>();
 			@SuppressWarnings("unchecked")
 			TreeGraph<TreeGraphDataNode, ALEdge> graph = (TreeGraph<TreeGraphDataNode, ALEdge>) args[0];
 			for (TreeGraphDataNode n : graph.nodes())
 				if (n.classId().equals(N_SNIPPET.label()))
-					codeSnippetsNames += ", " + n.toShortString();
-			if (!codeSnippetsNames.isBlank())
-				codeSnippetsNames = codeSnippetsNames.replaceFirst(", ", "");
+					codeSnippetsNames.add(n.toShortString());
 			File file = (File) args[1];
 			String compileResult = "unknown";
 			if (args.length > 1)
@@ -112,12 +111,12 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			String actionStr;
 			if (UserProjectLink.haveUserProject()) {
 				actionStr = "Correct coding errors in java project '" + UserProjectLink.projectRoot().getName() + "'";
-				if (!codeSnippetsNames.isBlank())
+				if (!codeSnippetsNames.isEmpty())
 					actionStr += " and/or code snippet(s): " + codeSnippetsNames;
 				actionStr += ".";
 			} else
 				actionStr = "Correct coding errors in code snippet(s): " + codeSnippetsNames + ".";
-			if (!UserProjectLink.haveUserProject() && codeSnippetsNames.isBlank())
+			if (!UserProjectLink.haveUserProject() && codeSnippetsNames.isEmpty())
 				actionStr = "[Crash now or crash later!] Check if additional queries are required to prevent generating code with this configuration OR there are programming errors in codeGenerator!!";
 
 			String constraintStr = compileResult;

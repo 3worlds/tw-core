@@ -44,20 +44,20 @@ public class UIStateMachineControllerQuery extends QueryAdaptor {
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
-		// input is the UserInterface 
+		// input is the UserInterface
 		TreeNode ui = (TreeNode) input;
 		Class<?> smcClass = fr.cnrs.iees.rvgrid.statemachine.StateMachineController.class;
 		List<TreeGraphDataNode> widgets = new ArrayList<>();
 		List<TreeNode> containers = new ArrayList<>();
 		for (TreeNode child : ui.getChildren())
 			getWidgets(child, widgets, containers);
-		int count = 0;
+		List<String> ctrlNames = new ArrayList<>();
 		for (TreeGraphDataNode widgetNode : widgets) {
 			String kstr = (String) widgetNode.properties().getPropertyValue(TwArchetypeConstants.twaSubclass);
 			try {
 				Class<?> widgetClass = Class.forName(kstr);
 				if (smcClass.isAssignableFrom(widgetClass)) {
-					count++;
+					ctrlNames.add(widgetNode.toShortString());
 				}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -68,9 +68,16 @@ public class UIStateMachineControllerQuery extends QueryAdaptor {
 		if (containers.isEmpty()) {
 			return this;
 		}
-		if (!(count == 1)) {
-			errorMsg = "User interface must have one widget that descends from '" + smcClass.getSimpleName() + "'.";
-			actionMsg = "Add a control widget to either 'top:', 'bottom:', 'tab:' or 'container:'.";
+		if (!(ctrlNames.size() == 1)) {
+			errorMsg = "Expected one widget that descends from '" + smcClass.getSimpleName()
+					+ "' as child of [top,bottom,tab,container] but found " + ctrlNames.size() + ".";
+			if (ctrlNames.isEmpty())
+				actionMsg = "Add a control widget to either [top,bottom,tab,container].";
+			else {
+				actionMsg = "Remove one of "+ctrlNames+".";
+			}
+
+			// Ajoutez un widget de contrôle à [top,bottom,tab,container]
 		}
 
 		return this;
