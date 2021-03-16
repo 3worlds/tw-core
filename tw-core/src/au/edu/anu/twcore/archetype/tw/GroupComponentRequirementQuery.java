@@ -56,7 +56,7 @@ public class GroupComponentRequirementQuery extends QueryAdaptor {
 			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())));
 		Collection<Edge> instofs = (Collection<Edge>) get(group.edges(Direction.IN),
 			selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())));
-		if ((groupof == null) ^ (instofs.isEmpty())) {
+		if (!((groupof == null) ^ (instofs.isEmpty()))) {
 			errorMsg = "If no Component is instance of Group, Group must have a groupOf link to a ComponentType.";
 		}
 		return this;
