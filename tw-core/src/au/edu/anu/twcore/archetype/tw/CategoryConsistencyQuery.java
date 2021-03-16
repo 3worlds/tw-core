@@ -49,53 +49,62 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
-public class CategoryConsistencyQuery extends QueryAdaptor{
+public class CategoryConsistencyQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
 		ProcessNode proc = (ProcessNode) input;
-		List<TreeGraphDataNode> ltgn =  (List<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
-			edgeListEndNodes());
-		// get all process categories
+		// see if these are categories OR relationType
+		List<TreeGraphDataNode> ltgn = (List<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
+		// if empty we don't care here as OutNodeXorQuery will deal with that
+		if (ltgn.isEmpty())
+			return this;
+
+		// get all process categories NB XOR Query
 		Set<Category> catList = new HashSet<>();
-		if (!ltgn.isEmpty()) {
-			if (ltgn.get(0) instanceof Category) {
-				catList.addAll((Collection<Category>) get(proc.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
-					edgeListEndNodes()));
-			}
-			else if (ltgn.get(0) instanceof RelationType) {
-				RelationType rel = (RelationType) ltgn.get(0);
-				catList.addAll((Collection<Category>) get(rel.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_TOCATEGORY.label())),
-					edgeListEndNodes()));
-				catList.addAll((Collection<Category>) get(rel.edges(Direction.OUT),
-					selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())),
-					edgeListEndNodes()));
-			}
+		if (ltgn.get(0) instanceof Category) { // if cat there can be many
+			catList.addAll((Collection<Category>) get(proc.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes()));
+		} else if (ltgn.get(0) instanceof RelationType) {// if rel there will be only one
+			RelationType rel = (RelationType) ltgn.get(0);
+			catList.addAll((Collection<Category>) get(rel.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes()));
+			catList.addAll((Collection<Category>) get(rel.edges(Direction.OUT),
+					selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes()));
 		}
+
 		// get the list of categories that have data
 		List<Category> categoriesWithData = new LinkedList<>();
-		for (Category c:catList) {
-			List<Record> crecs = (List<Record>) get(c.edges(Direction.OUT),
-				edgeListEndNodes(),
-				selectZeroOrMany(hasTheLabel(N_RECORD.label())));
+		for (Category c : catList) {
+			List<Record> crecs = (List<Record>) get(c.edges(Direction.OUT), edgeListEndNodes(),
+					selectZeroOrMany(hasTheLabel(N_RECORD.label())));
 			if (!crecs.isEmpty())
 				categoriesWithData.add(c);
 		}
-		// check that at least one ElementType belongs to one of the categories with data
-		boolean result = true;
-		for (Category c:categoriesWithData) {
+		// check that at least one ElementType belongs to one of the categories with
+		// data
+//		boolean result = true;
+		for (Category c : categoriesWithData) {
 			Collection<Edge> belongers = (Collection<Edge>) get(c.edges(Direction.IN),
-				selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())));
-			if (belongers.isEmpty())
-				result = false;
+					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())));
+			if (belongers.isEmpty()) {// is this correct? It's the same logic. -IDD
+				actionMsg = "Add edge '" + E_BELONGSTO.label() + "': from '" + c.toShortString()
+						+ "' to a 'Record:' node.";// something else here .e.g. a record with constant/driver inedge??
+				errorMsg = "Expected '" + c.toShortString() + "' (that is 'appliedTo' by '" + proc.toShortString()
+						+ "') to 'belongTo' a 'Record:' node but found none."
+						+ " All categories that a process applies to must reference a record.";
+				return this;
+			}
 		}
-		if (!result)// TODO: not clear! What does this mean? process must applyTo a cateogry that belongsTo something
-			errorMsg = "A Category process '"+proc.id()+"' applies must have a 'belongsTo' edge to an ElementType";
+//		if (!result)// TODO: not clear! What does this mean? process must applyTo a cateogry that
+//					// belongsTo something
+//			errorMsg = "A Category process '" + proc.id() + "' applies must have a 'belongsTo' edge to an ElementType";
+		// Constraint: A Category process 'p1' applies must have a 'belongsTo' edge to
+		// an ElementType
+//processToRelationOrCategorySpec = check its working - this query should not appear until there is an apply
 		return this;
 	}
 

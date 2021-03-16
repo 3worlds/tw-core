@@ -6,26 +6,38 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-SimpleXYPlotWidget
+archetype 3wSA-ScatterPlotWidget1
 
-	hasNode SimpleXYPlotWidgetSpec
+	hasNode ScatterPlotWidget1Spec
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
-		mustSatisfyQuery SenderInRangeQuery
+		mustSatisfyQuery ScatterPlotWidget1SenderInRangeQuery
 			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
-		hasProperty SimpleXYPlotWidgetSenderProperty
-			hasName = String("sender")
+			
+		hasProperty ScatterPlotWidget1FirstSenderProperty
+			hasName = String("firstSender")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
-		mustSatisfyQuery SimpleXYPlotWidgetParentClassQuery
+			mustSatisfyQuery ScatterPlotWidget1firstSenderInRangeQuery1
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]0,2147483647))
+				
+		hasProperty ScatterPlotWidget1NSenderProperty
+			hasName = String("nSenders")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery RangeTimeSeriesWidget1nSendersInRangeQuery2
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]1,2147483647))
+				
+		mustSatisfyQuery ScatterPlotWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
-		hasEdge SimpleXYPlotWidgetDataTrackerEdgeSpec
+
+		hasEdge ScatterPlotWidget1DataTrackerEdgeSpec
 			isOfClass = String("trackSeries")
 			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
-		// TODO: must check that the edge end node has property subclass== 
-		// au.edu.anu.twcore.ecosystem.runtime.tracking.TimeSeriesTracker
 			
 			

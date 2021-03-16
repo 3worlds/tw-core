@@ -28,74 +28,26 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.util.Arrays;
-
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.ecosystem.structure.CategorySet;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.io.parsing.impl.NodeReference;
-import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
-import fr.ens.biologie.generic.utils.Duple;
+import au.edu.anu.rscs.aot.errorMessaging.impl.ErrorMessageText;
 
 /**
- * Checks that an out edge points to one and only one child of a given node
+ * @author Ian Davies
  *
- * @author J. Gignoux - 21 mai 2020
- *
+ * @date 14 Mar. 2021
  */
-public class EdgeToOneChildOfQuery extends QueryAdaptor {
-	private String nodeRef;
+public class QueryMessages extends ErrorMessageText {
 
-	public EdgeToOneChildOfQuery(String reference) {
-		super();
-		nodeRef = reference;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Queryable submit(Object input) {
-		initInput(input);
-		Node localItem = (Node) input;
-		// get all the nodes
-		TreeNode rootNode = (TreeNode) localItem;
-		while (rootNode.getParent() != null)
-			rootNode = rootNode.getParent();
-		Iterable<TreeGraphNode> searchList = (Iterable<TreeGraphNode>) rootNode.subTree();
-		// get the node which matches the reference passed as argument to the query
-		// constructor
-		TreeNode cset = null;
-		for (TreeNode catset : searchList)
-			if (NodeReference.matchesRef(catset, nodeRef)) {
-				cset = catset;
-				break;
-			}
-		// searches in all edges if their end node is one of the children of the
-		// previous node
-		boolean foundOne = false;
-		if (cset != null)
-			for (Edge e : localItem.edges(Direction.OUT)) {
-				TreeNode targetNode = (TreeNode) e.endNode();
-				// search for the node with the proper reference in the whole tree
-				for (TreeNode cat : cset.getChildren())
-					if ((targetNode.id().equals(cat.id()) && (targetNode.classId().equals(cat.classId())))) {
-						foundOne |= true;
-						break;
-					}
-			}
-		if (!foundOne) {
-			String[] msg = QueryMessages.EdgeToOneChildOfQuery(nodeRef);
-			actionMsg = msg[0];
-			errorMsg = msg[1];
-//			actionMsg = "Add edge to a child of '" + nodeRef + "'";
-//			errorMsg = "Expected edge to a child of '" + nodeRef + "' but found none.";
-			return this;
+	public static String[] EdgeToOneChildOfQuery(String nodeRef) {
+		String am;
+		String cm;
+		if (isFrench()) {
+			am = "Ajouter un bord à un enfant de <<" + nodeRef + ">>.";
+			cm = "Bord attendu pour un enfant de <<" + nodeRef + ">> mais n'en trouve aucun.";
+		} else {
+			am = "Add edge to a child of '" + nodeRef + "'";
+			cm = "Expected edge to a child of '" + nodeRef + "' but found none.";
 		}
-		return this;
-	}
-
+		String[] result = { am, cm };
+		return result;
+	};
 }
