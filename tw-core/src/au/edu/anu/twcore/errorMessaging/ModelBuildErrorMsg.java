@@ -90,7 +90,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 			debugMsg = "\nAction: " + actionStr;
 			debugMsg += "\nConstraint: " + constraintStr;
-			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nCategory: " + category();
 			debugMsg += "\nMessage Class: " + msgType;
 			debugMsg += "\nItem: " + localSrcFile;
 			break;
@@ -130,7 +130,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			debugMsg = "\nAction: " + actionStr;
 			debugMsg += "\nConstraint: " + constraintStr;
 			debugMsg += "\nPath: " + file;
-			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nCategory: " + category();
 			debugMsg += "\nMessage Class: " + msgType;
 			if (UserProjectLink.haveUserProject()) {
 				debugMsg += "\nJava project path: " + UserProjectLink.projectRoot();
@@ -147,7 +147,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			detailsMsg += "\nConstraint: " + constraintStr;
 
 			debugMsg = detailsMsg;
-			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nCategory: " + category();
 			debugMsg += "\nMessage Class: " + msgType;
 			debugMsg += "\nJava runtime version: " + System.getProperty("java.runtime.version");
 			break;
@@ -163,7 +163,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			detailsMsg += "\nConstraint: " + constraintStr;
 
 			debugMsg = detailsMsg;
-			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nCategory: " + category();
 			debugMsg += "\nMessage Class: " + msgType;
 			debugMsg += "\nJava file: " + src;
 			debugMsg += "\nClass file: " + cls;
@@ -202,7 +202,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			detailsMsg += "\nConstraint: " + constraintStr;
 
 			debugMsg = detailsMsg;
-			debugMsg += "\nCategory: " + msgType.category();
+			debugMsg += "\nCategory: " + category();
 			debugMsg += "\nMessage Class: " + msgType;
 
 			break;
@@ -218,7 +218,7 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 
 			detailsMsg = "\nAction: " + actionStr;
 			detailsMsg += "\nConstraint: " + constraintStr;
-			detailsMsg += "\nCategory: " + msgType.category();
+			detailsMsg += "\nCategory: " + category();
 
 			debugMsg = detailsMsg;
 			debugMsg += "\nMessage Class: " + msgType;

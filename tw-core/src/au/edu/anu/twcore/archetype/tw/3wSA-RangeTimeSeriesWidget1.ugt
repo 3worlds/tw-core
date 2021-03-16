@@ -12,22 +12,22 @@ archetype 3wSA-RangeTimeSeriesWidget1
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
-		mustSatisfyQuery SenderInRangeQuery
+		mustSatisfyQuery RangeTimeSeriesWidget1SenderInRangeQuery
 			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 
 		hasProperty RangeTimeSeriesWidget1FirstSenderProperty
 			hasName = String("firstSender")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
-			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery1
+			mustSatisfyQuery RangeTimeSeriesWidget1firstSenderInRangeQuery1
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]0,2147483647))
 
-		hasProperty RangeTimeSeriesWidget1RangeSenderProperty
+		hasProperty RangeTimeSeriesWidget1NSendersProperty
 			hasName = String("nSenders")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
-			mustSatisfyQuery RangeTimeSeriesWidget1MaxAxesInRangeQuery2
+			mustSatisfyQuery RangeTimeSeriesWidget1NSendersInRangeQuery2
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]1,2147483647))
 
