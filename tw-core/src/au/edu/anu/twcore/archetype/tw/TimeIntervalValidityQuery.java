@@ -33,7 +33,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMEMOD
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
@@ -72,13 +71,23 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 		if (timeScaleType.equals(TimeScaleType.ARBITRARY)) {
 			allowedMax = TimeUnits.UNSPECIFIED;
 			allowedMin = TimeUnits.UNSPECIFIED;
-		} else {
+		} 
+		else {
 			allowedMax = TimeUnits.MICROSECOND;
 			allowedMin = TimeUnits.MILLENNIUM;
 		}
-		boolean timeModelRangeError = false;
-
-		if (timeScaleType.equals(TimeScaleType.MONO_UNIT)) {
+		
+		if (timeScaleType.equals(TimeScaleType.ARBITRARY)) {
+			if ((shortestTimeUnit != allowedMin)||(longestTimeUnit != allowedMax)) {
+				errorMsg = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
+						+ timeLineNode.toShortString() + "' must be '"+allowedMax+"' for '" + scaleKey + "' but found '"
+						+ shortestTimeUnit + "' and '" + longestTimeUnit + "'.";
+				actionMsg = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '"
+						+ timeLineNode.toShortString() + "' to '"+allowedMin+"'.";
+				return this;
+			}
+		}
+		else if (timeScaleType.equals(TimeScaleType.MONO_UNIT)) {
 			// Time units of min and max must be the same
 			if (shortestTimeUnit != longestTimeUnit) {
 				errorMsg = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
@@ -88,8 +97,8 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 						+ timeLineNode.toShortString() + "' to the same value.";
 				return this;
 			}
-
-		} else if (shortestTimeUnit.compareTo(longestTimeUnit) > 0) {
+		} 
+		else if (shortestTimeUnit.compareTo(longestTimeUnit) > 0) {
 			// min must be less than max
 			errorMsg = "Expected '" + shortestTimeUnitKey + "' to be <= '" + longestTimeUnitKey
 					+ "' for time scale type '" + scaleKey + "' but found '" + shortestTimeUnit + "' and '"
@@ -105,7 +114,6 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 			TimeUnits foundTimeUnitsMin = TimeUnits.MILLENNIUM;
 			Iterable<ReadOnlyDataHolder> timers = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
 			for (ReadOnlyDataHolder timer : timers) {
-				TimerNode timerNode = (TimerNode) timer;
 				if (!timer.properties().hasProperty(P_TIMEMODEL_TU.key()))
 					break;
 
