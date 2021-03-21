@@ -48,7 +48,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.omhtk.jars.Jars;
-import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
@@ -142,7 +142,7 @@ public class ProjectJarGenerator {
 				File localSrcFile = replaceParentPath(remoteSrcFile, UserProjectLink.srcRoot(), localDir);
 				File localClsFile = replaceParentPath(remoteClsFile, UserProjectLink.classRoot(), localDir);
 				if (!remoteClsFile.exists())
-					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_CLASS_MISSING, remoteClsFile,
+					ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_CLASS_MISSING, remoteClsFile,
 							remoteSrcFile));
 				else {
 					try {
@@ -151,7 +151,7 @@ public class ProjectJarGenerator {
 						Long ageJava = ftSrc.toMillis();
 						Long ageClass = ftCls.toMillis();
 						if (ageJava > ageClass)
-							ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_CLASS_OUTOFDATE, remoteSrcFile,
+							ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_CLASS_OUTOFDATE, remoteSrcFile,
 									remoteClsFile, ftSrc, ftCls));
 					} catch (IOException e) {
 						e.printStackTrace();

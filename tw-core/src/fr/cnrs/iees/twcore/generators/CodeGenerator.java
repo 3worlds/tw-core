@@ -53,7 +53,7 @@ import javax.tools.ToolProvider;
 
 import org.apache.commons.io.FileUtils;
 
-import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
@@ -99,7 +99,7 @@ public class CodeGenerator {
 	// NOTE: called by ConfigGraph.validateGraph in tw-apps
 	// (au.edu.anu.twapps.mm.configGraph)
 	@SuppressWarnings("unchecked")
-	public synchronized boolean generate() {// see if this helps avoid a thread problem if, in fact there is one?-IDD
+	public boolean generate() {// see if this helps avoid a thread problem if, in fact there is one?-IDD
 		File localCodeRoot = Project.makeFile(ProjectPaths.LOCALJAVA);
 		// Test to see if something happens between ...exists and delete...?
 		try {
@@ -196,11 +196,11 @@ public class CodeGenerator {
 		// compile code to check it
 		String result = compileLocalTree(localCodeRoot);
 		if (!result.isBlank())
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, graph, localCodeRoot, result));
-		if (!ErrorList.haveErrors()) {
+			ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, graph, localCodeRoot, result));
+		if (!ErrorMessageManager.haveErrors()) {
 			UserProjectLink.pushCompiledTree(localCodeRoot, modelgen.getFile());
 		}
-		return !ErrorList.haveErrors();
+		return !ErrorMessageManager.haveErrors();
 	}
 
 	/**

@@ -44,7 +44,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
@@ -137,7 +137,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 			backupFile(remoteSrc);
 			FileUtilities.copyFileReplace(localSrc, remoteSrc);
 			FileUtilities.copyFileReplace(localCls, remoteCls);
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.MODEL_FILE_BACKUP, localSrc));
+			ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.MODEL_FILE_BACKUP, localSrc));
 		}
 		remoteModelFile = remoteSrc;
 	}
