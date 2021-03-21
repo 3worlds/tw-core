@@ -8,23 +8,23 @@ tree
 
 archetype 3wSA-MeanTimeWidget1
 
-	hasNode MeanTimeWidget1Spec
+	hasNode TimeWidget1Spec
 		isOfClass = String("widget")
 		// TODO this should override parent when checking
-		hasParent = StringTable(([2]"top:","bottom:"))
+		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
-		hasProperty MeanTimeWidget1RefreshRatePropertySpec
+		hasProperty TimeWidget1RefreshRatePropertySpec
 			hasName = String("refreshRate")
 			type = String("Long")
 			multiplicity = IntegerRange("0..1")
-			mustSatisfyQuery MeanTimeWidget1RefreshRateIsInRangeQuerySpec
+			mustSatisfyQuery TimeWidget1RefreshRateIsInRangeQuerySpec
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]250,60000))
-		hasEdge MeanTimeWidget1ToSimSpec
+		hasEdge TimeWidget1ToSimSpec
 			isOfClass = String("trackTime")
 			toNode = String("dynamics:")
 			multiplicity = IntegerRange("1..1")
-		mustSatisfyQuery MeanTimeWidget1ParentClassQuery
+		mustSatisfyQuery TimeWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"top", "bottom"))
 			

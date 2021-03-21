@@ -108,10 +108,10 @@ hasNode widgetSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery widgetClassInValueSetQuery
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
-			values = StringTable(([11]+
+			values = StringTable(([10]+
 			"au.edu.anu.twuifx.widgets.TableWidget1",+
 			"au.edu.anu.twuifx.widgets.SimpleDM2Widget",+
-			"au.edu.anu.twuifx.widgets.SimpleTimeWidget",+
+			//"au.edu.anu.twuifx.widgets.SimpleTimeWidget",+
 			"au.edu.anu.twuifx.widgets.SimpleControlWidget1",+
 			"au.edu.anu.twuifx.widgets.SimpleControlWidget2",+
 			"au.edu.anu.twuifx.widgets.SimpleControlWidget3",+
@@ -120,7 +120,7 @@ hasNode widgetSpec
 			"au.edu.anu.twuifx.widgets.ScatterPlotWidget1",+
 			"au.edu.anu.twuifx.widgets.SimpleSpatial2DWidget1",+
 			"au.edu.anu.twuifx.widgets.SimpleGraphWidget1",+
-			"au.edu.anu.twuifx.widgets.MeanTimeWidget1"))
+			"au.edu.anu.twuifx.widgets.TimeWidget1"))
 
 	mustSatisfyQuery CheckSubArchetypeQueryTableWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
@@ -130,9 +130,9 @@ hasNode widgetSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleDM2Widget","3wSA-SimpleDM2Widget.ugt"))
 
-	mustSatisfyQuery CheckSubArchetypeQueryTimeWidget
-		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleTimeWidget","3wSA-SimpleTimeWidget.ugt"))
+//	mustSatisfyQuery CheckSubArchetypeQueryTimeWidget
+//		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+//		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SimpleTimeWidget","3wSA-SimpleTimeWidget.ugt"))
 
 	mustSatisfyQuery CheckSubArchetypeQuerySpaceWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
@@ -168,5 +168,5 @@ hasNode widgetSpec
 
 	mustSatisfyQuery CheckSubArchetypeQueryMeanTimeWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.MeanTimeWidget1","3wSA-MeanTimeWidget1.ugt"))
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.TimeWidget1","3wSA-TimeWidget1.ugt"))
 
