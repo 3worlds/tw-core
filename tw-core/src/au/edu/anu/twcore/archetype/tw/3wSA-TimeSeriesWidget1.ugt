@@ -1,0 +1,59 @@
+tree
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-TimeSeriesWidget1
+
+	hasNode TimeSeriesWidget1Spec
+		isOfClass = String("widget")
+		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
+		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery TimeSeriesWidget1SenderInRangeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
+
+		hasProperty TimeSeriesWidget1FirstSenderProperty
+			hasName = String("firstSender")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery TimeSeriesWidget1firstSenderInRangeQuery1
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]0,2147483647))
+
+		hasProperty TimeSeriesWidget1NSendersProperty
+			hasName = String("nSenders")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery TimeSeriesWidget1NSendersInRangeQuery2
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]1,2147483647))
+
+		hasProperty TimeSeriesWidget1maxAxesProperty
+			hasName = String("maxAxes")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery TimeSeriesWidget1MaxAxesInRangeQuery3
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]1,10))
+
+		hasProperty TimeSeriesWidget1BufferSizeProperty
+			hasName = String("bufferSize")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1") 
+			mustSatisfyQuery TimeSeriesWidget1BufferSizeInRangeQuery
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]10,10000))
+
+		mustSatisfyQuery TimeSeriesWidget1ParentClassQuery
+			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
+			parentLabels = StringTable(([2]"tab","container"))
+
+		hasEdge TimeSeriesWidget1DataTrackerEdgeSpec
+			isOfClass = String("trackSeries")
+			toNode = String("dataTracker:")
+			multiplicity = IntegerRange("1..1")
+
+

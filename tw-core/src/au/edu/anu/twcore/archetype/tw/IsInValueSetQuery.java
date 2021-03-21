@@ -44,11 +44,13 @@ import au.edu.anu.rscs.aot.queries.Queryable;
  * case of an enum class, values are converted to Strings and checked as
  * Strings.
  * 
+ * Modified to allow reference to the element that has this property list.
+ * 
  * @author J. Gignoux - 22 nov. 2016
  *
  */
 public class IsInValueSetQuery extends QueryAdaptor {
-	private Table valueSet = null;
+	private  Table valueSet;
 
 	public IsInValueSetQuery(StringTable values) {
 		super();
@@ -78,9 +80,8 @@ public class IsInValueSetQuery extends QueryAdaptor {
 		} else
 			ok = valueInSet(o);
 		if (!ok) {
-			errorMsg = "Property '" + localItem.getKey() + "' value must be one of " + valueSet.toString() + ".";
-			actionMsg = "Edit graph file with a text editor to set'" + localItem.getKey() + "' equals one of "
-					+ valueSet.toString() + ".";
+			errorMsg = "Property '" + localItem.getKey() + "' value must be one of " + valueSet.toString() + ". This graph is possibly out of date.";
+			actionMsg = "Edit graph file with a text editor to correct that property value of '" + localItem.getKey() +".";
 		}
 		return this;
 	}

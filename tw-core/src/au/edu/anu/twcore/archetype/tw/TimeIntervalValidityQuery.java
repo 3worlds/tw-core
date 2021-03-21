@@ -71,23 +71,21 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 		if (timeScaleType.equals(TimeScaleType.ARBITRARY)) {
 			allowedMax = TimeUnits.UNSPECIFIED;
 			allowedMin = TimeUnits.UNSPECIFIED;
-		} 
-		else {
+		} else {
 			allowedMax = TimeUnits.MICROSECOND;
 			allowedMin = TimeUnits.MILLENNIUM;
 		}
-		
+
 		if (timeScaleType.equals(TimeScaleType.ARBITRARY)) {
-			if ((shortestTimeUnit != allowedMin)||(longestTimeUnit != allowedMax)) {
+			if ((shortestTimeUnit != allowedMin) || (longestTimeUnit != allowedMax)) {
 				errorMsg = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
-						+ timeLineNode.toShortString() + "' must be '"+allowedMax+"' for '" + scaleKey + "' but found '"
-						+ shortestTimeUnit + "' and '" + longestTimeUnit + "'.";
+						+ timeLineNode.toShortString() + "' must be '" + allowedMax + "' for '" + scaleKey
+						+ "' but found '" + shortestTimeUnit + "' and '" + longestTimeUnit + "'.";
 				actionMsg = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '"
-						+ timeLineNode.toShortString() + "' to '"+allowedMin+"'.";
+						+ timeLineNode.toShortString() + "' to '" + allowedMin + "'.";
 				return this;
 			}
-		}
-		else if (timeScaleType.equals(TimeScaleType.MONO_UNIT)) {
+		} else if (timeScaleType.equals(TimeScaleType.MONO_UNIT)) {
 			// Time units of min and max must be the same
 			if (shortestTimeUnit != longestTimeUnit) {
 				errorMsg = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
@@ -97,15 +95,13 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 						+ timeLineNode.toShortString() + "' to the same value.";
 				return this;
 			}
-		} 
-		else if (shortestTimeUnit.compareTo(longestTimeUnit) > 0) {
+		} else if (shortestTimeUnit.compareTo(longestTimeUnit) > 0) {
 			// min must be less than max
 			errorMsg = "Expected '" + shortestTimeUnitKey + "' to be <= '" + longestTimeUnitKey
 					+ "' for time scale type '" + scaleKey + "' but found '" + shortestTimeUnit + "' and '"
 					+ longestTimeUnit + "'.";
 			;
-			actionMsg = "Set '" + shortestTimeUnitKey + "' to be less than or equal to '" + longestTimeUnitKey
-					+ "'.";
+			actionMsg = "Set '" + shortestTimeUnitKey + "' to be less than or equal to '" + longestTimeUnitKey + "'.";
 			return this;
 		}
 
@@ -114,15 +110,14 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 			TimeUnits foundTimeUnitsMin = TimeUnits.MILLENNIUM;
 			Iterable<ReadOnlyDataHolder> timers = (Iterable<ReadOnlyDataHolder>) timeLineNode.getChildren();
 			for (ReadOnlyDataHolder timer : timers) {
-				if (!timer.properties().hasProperty(P_TIMEMODEL_TU.key()))
-					break;
-
-				TimeUnits timerTimeUnits = (TimeUnits) timer.properties().getPropertyValue(P_TIMEMODEL_TU.key());
-				// check if outside range
-				if (timerTimeUnits.compareTo(foundTimeUnitsMin) < 0)
-					foundTimeUnitsMin = timerTimeUnits;
-				if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
-					foundTimeUnitsMax = timerTimeUnits;
+				if (timer.properties().hasProperty(P_TIMEMODEL_TU.key())) {
+					TimeUnits timerTimeUnits = (TimeUnits) timer.properties().getPropertyValue(P_TIMEMODEL_TU.key());
+					// check if outside range
+					if (timerTimeUnits.compareTo(foundTimeUnitsMin) < 0)
+						foundTimeUnitsMin = timerTimeUnits;
+					if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
+						foundTimeUnitsMax = timerTimeUnits;
+				}
 			}
 			if (foundTimeUnitsMin.compareTo(shortestTimeUnit) > 0) {
 				// set shortest to found

@@ -1741,13 +1741,15 @@ public class DocoGenerator {
 			List<TreeGraphDataNode> ctFrom = (List<TreeGraphDataNode>) get(fromCat.edges(Direction.IN),
 					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
 					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-			validFromCT.addAll(ctFrom);
+			if (ctFrom != null)
+				validFromCT.addAll(ctFrom);
 		}
 		for (TreeGraphDataNode toCat : toCats) {
 			List<TreeGraphDataNode> ctTo = (List<TreeGraphDataNode>) get(toCat.edges(Direction.IN),
 					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
 					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-			validToCT.addAll(ctTo);
+			if (ctTo != null)
+				validToCT.addAll(ctTo);
 		}
 		if (validFromCT.isEmpty() && validToCT.isEmpty()) {
 			return new Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>>(null, null);
@@ -1837,7 +1839,7 @@ public class DocoGenerator {
 			String txt = "[";
 			for (int i = 0; i < sizes.length; i++)
 				for (int s : sizes[i])
-					txt += ", "+s;
+					txt += ", " + s;
 			txt.replaceFirst("' ", "");
 			if (txt.length() > 1)
 				dims = txt + "]";
