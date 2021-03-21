@@ -80,8 +80,8 @@ public class IsInValueSetQuery extends QueryAdaptor {
 		} else
 			ok = valueInSet(o);
 		if (!ok) {
-			errorMsg = "Property '" + localItem.getKey() + "' value must be one of " + valueSet.toString() + ". This graph is possibly out of date.";
-			actionMsg = "Edit graph file with a text editor to correct that property value of '" + localItem.getKey() +".";
+			errorMsg = "Expected property '" + localItem.getKey() + "' value to be one of " + valueSet.toString() + " but found '"+o+"'.";
+			actionMsg = "Edit graph file with a text editor to change the property value of '" + localItem.getKey() +" to a valid value.";
 		}
 		return this;
 	}

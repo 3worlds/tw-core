@@ -61,7 +61,7 @@ public class UIStateMachineControllerQuery extends QueryAdaptor {
 				}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();// do nothing - this exception will be found by IsInValueSetQuery
 			}
 		}
 		// nothing to test yet
