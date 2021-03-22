@@ -31,6 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.Collection;
 
@@ -39,6 +40,7 @@ import au.edu.anu.rscs.aot.queries.Queryable;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
+
 /**
  * Checks that a group either has in 'instanceOf' edges or one 'groupOf' edge
  *
@@ -52,13 +54,22 @@ public class GroupComponentRequirementQuery extends QueryAdaptor {
 	public Queryable submit(Object input) {
 		initInput(input);
 		Node group = (Node) input;
-		Edge groupof = (Edge) get(group.edges(Direction.OUT), 
-			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())));
+		Edge groupof = (Edge) get(group.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_GROUPOF.label())));
 		Collection<Edge> instofs = (Collection<Edge>) get(group.edges(Direction.IN),
-			selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())));
-		if (!((groupof == null) ^ (instofs.isEmpty()))) {
-			errorMsg = "If no Component is instance of Group, Group must have a groupOf link to a ComponentType.";
-		}
+				selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())));
+		if (instofs.isEmpty())// if no component is instance of this group
+			if (groupof == null) {// Group must have a groupOf link to a ComponentType
+				// that's what it says
+				actionMsg = "Make '" + group + "' an '" + E_INSTANCEOF.label() + "' some '" + N_COMPONENTTYPE.label()
+						+ ":' OR make it a  '" + E_GROUPOF.label() + "' of some '" + N_GROUPTYPE.label() + "'.";
+				errorMsg = "Expected inEdge '" + E_INSTANCEOF.label() + "' from some '" + N_COMPONENTTYPE.label()
+						+ ":' OR outEdge '" + E_GROUPOF.label() + "' to some '" + N_GROUPTYPE.label()
+						+ "' but found neither case.";
+			}
+//		!XOR both true OR both false : here we have false/true so need groupof!=null? but easier to read above BUT what is wanted?
+//		if (!((groupof == null) ^ (instofs.isEmpty()))) {
+//			errorMsg = "If no Component is instance of Group, Group must have a groupOf link to a ComponentType.";
+//		}
 		return this;
 	}
 

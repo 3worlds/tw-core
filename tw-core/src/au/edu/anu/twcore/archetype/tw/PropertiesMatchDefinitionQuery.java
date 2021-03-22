@@ -63,6 +63,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  *
  * @date 29 Dec 2019
  */
+@Deprecated // compiler says this query is wrong (cf line 180) and I don't want to continue with it.
 public class PropertiesMatchDefinitionQuery extends QueryAdaptor {
 	private String dataCategory;
 

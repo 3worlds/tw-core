@@ -28,19 +28,14 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.util.Arrays;
-
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.io.parsing.impl.NodeReference;
-import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
-import fr.ens.biologie.generic.utils.Duple;
 
 /**
  * Checks that an out edge points to one and only one child of a given node
