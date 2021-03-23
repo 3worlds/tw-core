@@ -107,25 +107,6 @@ public class SpaceData extends TimeData /**implements Cloneable*/ {
 		return linesToDelete;
 	}
 
-//	/** This was used for debugging but is probably not needed. (IDD)*/
-//	@Override
-//	public SpaceData clone() {
-//		// Cloning for recipients
-//		SpaceData result = new SpaceData(status(), sender(), type());
-//		result.setTime(time());
-//		result.linesToCreate.addAll(linesToCreate);
-//		result.linesToDelete.addAll(linesToDelete);
-//		result.pointsToDelete.addAll(pointsToDelete);
-//		pointsToMove.forEach((k, v) -> {
-//			result.pointsToMove().put(k, v);
-//		});
-//		pointsToCreate.forEach((k, v) -> {
-//			result.pointsToCreate.put(k, v);
-//		});
-//		return result;
-//
-//	}
-
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("SpaceData: ");
