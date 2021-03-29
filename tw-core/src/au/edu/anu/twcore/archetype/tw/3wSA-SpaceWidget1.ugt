@@ -1,0 +1,30 @@
+tree
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-SpaceWidget1
+
+	hasNode SpaceWidget1Spec
+		isOfClass = String("widget")
+		// ignored
+		hasParent = StringTable(([2]"tab", "container"))
+		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery SpaceWidget1ParentClassQuery
+			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
+			parentLabels = StringTable(([2]"tab", "container"))
+		hasEdge SpaceWidget1EdgeSpec
+			isOfClass = String("trackSpace")
+			toNode = String("space:")
+			multiplicity = IntegerRange("1..1")
+		hasProperty SpaceWidget1ViewsProperty
+			hasName = String("nViews")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery SpaceWidget1ViewsInRangeQuery
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]1,25))
+		
