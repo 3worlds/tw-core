@@ -92,6 +92,7 @@ hasNode componentTypeSpec
 	//
 	// required predefined categories in sets *organisation* and *lifespan*
 	//
+	// Is this really consistent? Shouldnt a componentType always be *atomic*?
 	mustSatisfyQuery hasOneCategoryOforganisationSpec
 		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
 		reference = String(categorySet:*organisation*)
