@@ -39,6 +39,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -88,14 +89,21 @@ public class ValidLifeCycleProcessQuery extends QueryAdaptor {
 			String cats = " ";
 			for (Category c : fromprod)
 				cats += c.id() + " ";
-			errorMsg = s + " node fromCategories {" + cats + "} not all found in process '" + proc.id() + "'";
+			String[] msgs = TextTranslations.getValidLifeCycleProcessQuery1(s,cats,proc.toShortString());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+
+//			errorMsg = s + " node fromCategories {" + cats + "} not all found in process '" + proc.id() + "'";
 			return this;
 		}
 		// 2 make sure the process has a function of the proper type
 		if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key()).equals(requiredFunc))
 			return this;
 //		if ((message==null) && (!satisfied)) // means we didnt fall into the previous trap
-		errorMsg = "missing '" + requiredFunc + "' function type in process '" + proc.id() + "'";
+		String[] msgs = TextTranslations.getValidLifeCycleProcessQuery2(requiredFunc.name(),proc.toShortString());
+		actionMsg = msgs[0];
+		errorMsg = msgs[1];
+//		errorMsg = "missing '" + requiredFunc + "' function type in process '" + proc.id() + "'";
 		return this;
 	}
 

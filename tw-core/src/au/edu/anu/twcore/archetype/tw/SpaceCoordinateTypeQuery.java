@@ -37,6 +37,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.Direction;
@@ -65,8 +66,11 @@ public class SpaceCoordinateTypeQuery extends QueryAdaptor {
 				DataElementType ftype = (DataElementType) f.properties().getPropertyValue(P_FIELD_TYPE.key());
 //				if (!numberTypes.contains(ftype))
 				if (!ftype.isNumeric()) {
-					actionMsg = "Change coordinate fields to be numeric.";
-					errorMsg = "coordinate fields must be numeric but found '"+ftype+"'.";
+					String[] msgs = TextTranslations.getSpaceCoordinateTypeQuery(ftype.name());
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+//					actionMsg = "Change coordinate fields to be numeric.";
+//					errorMsg = "coordinate fields must be numeric but found '"+ftype+"'.";
 					return this;
 				}
 			}

@@ -38,7 +38,9 @@ import au.edu.anu.rscs.aot.collections.tables.LongTable;
 import au.edu.anu.rscs.aot.collections.tables.ShortTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
 /**
  * A query to check that a TreeNode parent has a certain property value
@@ -127,10 +129,14 @@ public class ParentHasPropertyValue extends NodeHasPropertyValueQuery{
 		//TODO: Check this?
 		super.submit(parent);
 		if (!satisfied()) {
-			actionMsg = "Edit graph file with text editor to repair file.";
-			errorMsg =  "Parent property '"
-					+ propertyName + "' must have value '"
-					+ expectedValues.toString() + "'.]";
+			TreeGraphDataNode p = (TreeGraphDataNode)parent;
+			String[] msgs = TextTranslations.getParentHasPropertyValue(propertyName,p.properties().getPropertyValue(propertyName),expectedValues);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			actionMsg = "Edit graph file with text editor to repair file.";
+//			errorMsg =  "Parent property '"
+//					+ propertyName + "' must have value '"
+//					+ expectedValues.toString() + "'.]";
 		}
 		return this;
 

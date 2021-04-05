@@ -32,6 +32,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
@@ -81,9 +82,12 @@ public class GuardAreaMaxWidthQuery extends QueryAdaptor {
 			}
 			if (lim != null)
 				if (!(Math.min(lim.sideLength(0), lim.sideLength(1)) > 2 * width)) {
-					errorMsg = "Expected guard area width to be smaller than half the length of the shortest side but found "
-							+ width;
-					actionMsg = "Set property value to at most half the length of the shortest side.";
+					String[] msgs = TextTranslations.getGuardAreaMaxWidthQuery(width);
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+//					errorMsg = "Expected guard area width to be smaller than half the length of the shortest side but found "
+//							+ width;
+//					actionMsg = "Set property value to at most half the length of the shortest side.";
 				}
 		}
 		return this;

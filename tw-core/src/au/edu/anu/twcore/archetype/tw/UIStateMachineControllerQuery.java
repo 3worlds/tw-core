@@ -35,6 +35,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -69,15 +70,17 @@ public class UIStateMachineControllerQuery extends QueryAdaptor {
 			return this;
 		}
 		if (!(ctrlNames.size() == 1)) {
-			errorMsg = "Expected one widget that descends from '" + smcClass.getSimpleName()
-					+ "' as child of [top,bottom,tab,container] but found " + ctrlNames.size() + ".";
-			if (ctrlNames.isEmpty())
-				actionMsg = "Add a control widget to either [top,bottom,tab,container].";
-			else {
-				actionMsg = "Remove one of "+ctrlNames+".";
-			}
+			String[] msgs = TextTranslations.getUIStateMachineControllerQuery(smcClass.getSimpleName(),ctrlNames);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			errorMsg = "Expected one widget that descends from '" + smcClass.getSimpleName()
+//					+ "' as child of [top,bottom,tab,container] but found " + ctrlNames.size() + ".";
+//			if (ctrlNames.isEmpty())
+//				actionMsg = "Add a control widget to either [top,bottom,tab,container].";
+//			else {
+//				actionMsg = "Remove one of "+ctrlNames+".";
+//			}
 
-			// Ajoutez un widget de contrôle à [top,bottom,tab,container]
 		}
 
 		return this;

@@ -34,6 +34,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_CYCLE;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
@@ -63,10 +64,13 @@ public class LifeCycleSubGroupsQuery extends QueryAdaptor {
 			GroupType gt = (GroupType) localItem.getParent();
 			if (gt.getParent() != null) {
 				if (!gt.getParent().equals(lct)) {//??????
-					actionMsg = "Reconfigure GroupType to have at least one child group belonging to each category of it's categorySet.";
+					String[] msgs = TextTranslations.getLifeCycleSubGroupsQuery();
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+//					actionMsg = "Reconfigure GroupType to have at least one child group belonging to each category of it's categorySet.";
 //					errorMsg = "A life cycle group must have at least one child group "
 //							+ "belonging to each category of it's categorySet.";
-					errorMsg = "Expected life cycle group to have at least one child group to belong to each category of it's categorySet but found none.";
+//					errorMsg = "Expected life cycle group to have at least one child group to belong to each category of it's categorySet but found none.";
 					return this;
 				}
 			}

@@ -34,6 +34,7 @@ import java.util.Set;
 import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.ens.biologie.generic.utils.Duple;
@@ -68,8 +69,11 @@ public class OutNodeXorQuery extends QueryAdaptor {
 		Node localItem = (Node) input;
 		Duple<List<Node>, List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1, nodeLabel2);
 		if(!((nodeLists.getFirst().size() > 0) ^ (nodeLists.getSecond().size() > 0))){
-			errorMsg = "Must have edge to a node labelled either '" +nodeLabel1 + "' or '" + nodeLabel2+"'.";
-			actionMsg = "Add edge from '"+localItem.toShortString()+"' to a node labelled '"+nodeLabel1+":' or '"+nodeLabel2+":'.";
+			String[] msgs = TextTranslations.getOutNodeXorQuery(nodeLabel1,nodeLabel2);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			errorMsg = "Must have edge to a node labelled either '" +nodeLabel1 + "' or '" + nodeLabel2+"'.";
+//			actionMsg = "Add edge from '"+localItem.toShortString()+"' to a node labelled '"+nodeLabel1+":' or '"+nodeLabel2+":'.";
 		};
 
 		return null;

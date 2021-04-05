@@ -32,6 +32,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_SPACETY
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
@@ -59,8 +60,12 @@ public class BoxInSpaceDimensionQuery extends QueryAdaptor {
 		// no problem if no Box property
 		if (spn.properties().hasProperty(propName)) {
 			Box prop = (Box) spn.properties().getPropertyValue(propName);
-			if (prop.dim() != stype.dimensions())
-				errorMsg = "'" + propName + "' must have the same dimensions as its containing space.";
+			if (prop.dim() != stype.dimensions()) {
+				String[] msgs = TextTranslations.getBoxInSpaceDimensionQuery(propName, spn.toShortString(),
+						stype.dimensions(), prop.dim());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+			}
 		}
 		return this;
 	}

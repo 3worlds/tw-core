@@ -34,6 +34,7 @@ import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.util.Resources;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.twcore.constants.FileType;
 
 /**
@@ -53,9 +54,12 @@ public class InputFileExistQuery extends QueryAdaptor {
 			return this;
 		// TODO need to handle jars!!
 		if (!(s != null && Resources.getFile(s.getName()) != null)) {
-			actionMsg = "Add file '" + s.getName() + ".";
-//					errorMsg =  "File for property '"+localItem.getKey()+"' must exist.";
-			errorMsg = "Expected file '" + s + "' but not found.";
+			String[] msgs = TextTranslations.getInputFileExistQuery(s);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			actionMsg = "Add file '" + s.getName() + ".";
+////					errorMsg =  "File for property '"+localItem.getKey()+"' must exist.";
+//			errorMsg = "Expected file '" + s + "' but not found.";
 		}
 		return this;
 	}

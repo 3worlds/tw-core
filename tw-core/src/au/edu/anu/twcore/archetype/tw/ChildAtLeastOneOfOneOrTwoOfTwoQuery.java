@@ -33,6 +33,7 @@ import java.util.List;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.TreeNode;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -47,9 +48,8 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
  *       Constraint: Either 1 or 2 of nodeLabel1 or just 2 nodelabel2 - for tabs
  *       and containers in the UI
  * 
- *       Cannot have just one container(node label2)
- *       Cannot have nothing
- *       Cannot have more that 2 in total
+ *       Cannot have just one container(node label2) Cannot have nothing Cannot
+ *       have more that 2 in total
  * 
  * 
  *       1) 1 widget OR
@@ -82,32 +82,41 @@ public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends QueryAdaptor {
 	public Queryable submit(Object input) {
 		initInput(input);
 		TreeNode localItem = (TreeNode) input;
-		List<TreeNode> widgets = (List<TreeNode>) get(localItem.getChildren(), selectZeroOrMany(hasTheLabel(widgetLabel)));
-		List<TreeNode> containers= (List<TreeNode>) get(localItem.getChildren(), selectZeroOrMany(hasTheLabel(containerLabel)));
+		List<TreeNode> widgets = (List<TreeNode>) get(localItem.getChildren(),
+				selectZeroOrMany(hasTheLabel(widgetLabel)));
+		List<TreeNode> containers = (List<TreeNode>) get(localItem.getChildren(),
+				selectZeroOrMany(hasTheLabel(containerLabel)));
 
 		switch (widgets.size()) {
-		case 0:{
-			if (containers.isEmpty())
-				errorMsg = "'"+localItem.toShortString()+"' must have '"+widgetLabel+"' or '"+containerLabel+"' child node.";
-			else if (containers.size()==1)
-				errorMsg = "'"+localItem.toShortString()+"' must have '"+widgetLabel+"' or additional '"+containerLabel+"' child node.";			
+		case 0: {
+			if (containers.isEmpty()) {
+				String[] msgs = TextTranslations.getChildAtLeastOneOfOneOrTwoOfTwoQuery1(localItem.toShortString(),
+						widgetLabel, containerLabel);
+				errorMsg = "'" + localItem.toShortString() + "' must have '" + widgetLabel + "' or '" + containerLabel
+						+ "' child node.";
+			} else if (containers.size() == 1) {
+				String[] msgs = TextTranslations.getChildAtLeastOneOfOneOrTwoOfTwoQuery2(localItem.toShortString(),
+						widgetLabel, containerLabel);
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+			}
 			return this;
 		}
-		case 1:{
+		case 1: {
 //			if (containers.size()>1)
 //				
 //				ok = false;
 //			// Remove a container OR add widget
-		
+
 			break;
 		}
-		case 2:{
+		case 2: {
 //			if (!containers.isEmpty())
 //				ok = false;
 //			// remove all containers
 			break;
 		}
-		default :{
+		default: {
 //			ok = false;
 			// remove n widgets
 		}

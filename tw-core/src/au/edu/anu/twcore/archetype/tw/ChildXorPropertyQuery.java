@@ -36,6 +36,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
@@ -63,13 +64,14 @@ public class ChildXorPropertyQuery extends QueryAdaptor {
 		boolean propertyPresent = false;
 		if (localItem instanceof ReadOnlyDataHolder)
 			propertyPresent = (((ReadOnlyDataHolder) localItem).properties().hasProperty(propertyName));
-		Node n = (Node) get(localItem,
-			children(),
-			selectZeroOrOne(hasTheLabel(nodeLabel)));
-		boolean edgePresent = (n!=null);
-		boolean ok = (propertyPresent^edgePresent);
-		if (!ok)
-			errorMsg = "Must have either the property '" + propertyName + "' or child '"+nodeLabel+"'.";
+		Node n = (Node) get(localItem, children(), selectZeroOrOne(hasTheLabel(nodeLabel)));
+		boolean edgePresent = (n != null);
+		boolean ok = (propertyPresent ^ edgePresent);
+		if (!ok) {
+			String[] msgs = TextTranslations.getChildXorPropertyQuery(propertyName,nodeLabel);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+		}
 		return this;
 	}
 

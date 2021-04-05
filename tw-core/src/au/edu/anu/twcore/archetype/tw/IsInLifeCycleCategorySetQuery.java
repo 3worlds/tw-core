@@ -37,6 +37,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
@@ -44,58 +45,79 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 /**
- * A Query to check that a categorized object's categories belong to a categorySet found in
- * its parent - designed for testing that recruit and produce nodes only deal with the categorySet
- * applicable to their parent lifecycle
+ * A Query to check that a categorized object's categories belong to a
+ * categorySet found in its parent - designed for testing that recruit and
+ * produce nodes only deal with the categorySet applicable to their parent
+ * lifecycle
  *
  * @author Jacques Gignoux - 11 sept. 2019
  *
  */
 // tested, works ok. 11/9/2019
 // refactored and tested 9/2/2021
-public class IsInLifeCycleCategorySetQuery extends QueryAdaptor{
+public class IsInLifeCycleCategorySetQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
 		TreeGraphNode node = (TreeGraphNode) input;
-		LifeCycleType parent = (LifeCycleType) node.getParent();
-		CategorySet catset =  (CategorySet) get(parent.edges(Direction.OUT),
-			selectOne(hasTheLabel(E_APPLIESTO.label())),
-			endNode());
-		List<Category> lifeCycleCats = (List<Category>) get(catset.getChildren(),
-			selectOneOrMany(hasTheLabel(N_CATEGORY.label())));
-		List<Category> toCats = (List<Category>) get(node.edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_TOCATEGORY.label())),
-			edgeListEndNodes());
-		List<Category> fromCats = (List<Category>) get(node.edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())),
-			edgeListEndNodes());
-		int nLCCats = 0;
-		for (Category c:fromCats)
-			if (lifeCycleCats.contains(c))
-				nLCCats++;
-		if (nLCCats==0) {
-			actionMsg = "What should I do?";
-			errorMsg = " Missing life cycle category for the 'from' link.";
+		LifeCycleType lifecycleType = (LifeCycleType) node.getParent();
+		CategorySet catset = (CategorySet) get(lifecycleType.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
+				endNode());
+		// Too soon to know
+		if (catset ==null)
 			return this;
-		}else if (nLCCats>1) {
-			actionMsg = "What should I do?";
-			errorMsg = " Too many life cycle categories for the 'from' link.";
+		List<Category> lifeCycleCats = (List<Category>) get(catset.getChildren(),
+				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+		// Too soon to know
+		if (lifeCycleCats.isEmpty())
+			return this;
+		List<Category> toCats = (List<Category>) get(node.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_TOCATEGORY.label())), edgeListEndNodes());
+		List<Category> fromCats = (List<Category>) get(node.edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
+		int nFromCats = 0;
+		for (Category c : fromCats)
+			if (lifeCycleCats.contains(c))
+				nFromCats++;
+		int nToCats = 0;
+		for (Category c : toCats)
+			if (lifeCycleCats.contains(c))
+				nToCats++;
+		
+		if (nFromCats == 0) {
+			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery1(nToCats, nFromCats, E_TOCATEGORY.label(),
+					E_FROMCATEGORY.label());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			actionMsg = "What should I do?";
+//			errorMsg = " Missing life cycle category for the 'from' link.";
+			return this;
+		} else if (nFromCats > 1) {
+			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery2(nToCats, nFromCats, E_TOCATEGORY.label(),
+					E_FROMCATEGORY.label());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			actionMsg = "What should I do?";
+//			errorMsg = " Too many life cycle categories for the 'from' link.";
 			return this;
 		}
-		nLCCats = 0;
-		for (Category c:toCats)
-			if (lifeCycleCats.contains(c))
-				nLCCats++;
-		if (nLCCats==0) {
-			actionMsg = "What should I do?";
-			errorMsg = " Missing life cycle category for the 'to' link.";
+		if (nToCats == 0) {
+			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery3(nToCats, nFromCats, E_TOCATEGORY.label(),
+					E_FROMCATEGORY.label());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			actionMsg = "What should I do?";
+//			errorMsg = " Missing life cycle category for the 'to' link.";
 			return this;
-		} else if (nLCCats>1) {
-			actionMsg = "What should I do?";
-			errorMsg = " Too many life cycle categories for the 'to' link.";
+		} else if (nToCats > 1) {
+			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery4(nToCats, nFromCats, E_TOCATEGORY.label(),
+					E_FROMCATEGORY.label());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			actionMsg = "What should I do?";
+//			errorMsg = " Too many life cycle categories for the 'to' link.";
 			return this;
 		}
 		return this;

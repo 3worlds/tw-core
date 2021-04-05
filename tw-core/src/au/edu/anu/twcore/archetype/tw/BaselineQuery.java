@@ -31,11 +31,11 @@ package au.edu.anu.twcore.archetype.tw;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BASELINE;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_SYSTEM;
 
-import java.util.Arrays;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
@@ -47,7 +47,7 @@ import fr.cnrs.iees.graph.TreeNode;
  *
  * @date 24 Feb. 2021
  * 
- * Test case for syntax for revised query system.
+ *       Test case for syntax for revised query system.
  */
 public class BaselineQuery extends QueryAdaptor {
 
@@ -72,8 +72,9 @@ public class BaselineQuery extends QueryAdaptor {
 			int i = 0;
 			for (TreeNode s : systems)
 				sys[i++] = s.toShortString();
-			errorMsg = "'" + exp.toShortString() + "' must have an edge labelled '" + E_BASELINE.label() + "' to one of "
-					+ Arrays.deepToString(sys);
+			String[] msgs = TextTranslations.getBaselineQuery(exp.toShortString(), sys,E_BASELINE.label());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
 			return this;
 		}
 		return this;

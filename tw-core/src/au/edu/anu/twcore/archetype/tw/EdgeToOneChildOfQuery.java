@@ -30,6 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
@@ -83,11 +84,9 @@ public class EdgeToOneChildOfQuery extends QueryAdaptor {
 					}
 			}
 		if (!foundOne) {
-			String[] msg = QueryMessages.EdgeToOneChildOfQuery(nodeRef);
+			String[] msg = TextTranslations.getEdgeToOneChildOfQuery(nodeRef);
 			actionMsg = msg[0];
 			errorMsg = msg[1];
-//			actionMsg = "Add edge to a child of '" + nodeRef + "'";
-//			errorMsg = "Expected edge to a child of '" + nodeRef + "' but found none.";
 			return this;
 		}
 		return this;

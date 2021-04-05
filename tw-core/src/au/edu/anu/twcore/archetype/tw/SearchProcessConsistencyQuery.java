@@ -39,6 +39,7 @@ import java.util.HashSet;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -120,16 +121,21 @@ public class SearchProcessConsistencyQuery extends QueryAdaptor {
 							}
 					}
 					if (!(toSpaces.contains(space)) & (fromSpaces.contains(space))) {
-						//TODO: Untested - IDD
+						// TODO: Untested - IDD
 						String list = "";
 						for (SpaceNode s : toSpaces)
 							list += "," + s.toShortString();
 						list = list.replaceFirst(",", "");
-						actionMsg = "Reconfigure graph so that all componentTypes processed by '" + proc.toShortString()
-								+ "' have valid coordinates for '" + space.toShortString() + "'.";
-						errorMsg = "Expected all componentTypes processed by '" + proc.toShortString()
-								+ "' to have valid coordinates for '" + space.toShortString()
-								+ "' but found associations with [" + list + "].";
+						String[] msgs = TextTranslations.getSearchProcessConsistencyQuery(proc.toShortString(),
+								space.toShortString(), list);
+						actionMsg = msgs[0];
+						errorMsg = msgs[1];
+
+//						actionMsg = "Reconfigure graph so that all componentTypes processed by '" + proc.toShortString()
+//								+ "' have valid coordinates for '" + space.toShortString() + "'.";
+//						errorMsg = "Expected all componentTypes processed by '" + proc.toShortString()
+//								+ "' to have valid coordinates for '" + space.toShortString()
+//								+ "' but found associations with [" + list + "].";
 						return this;
 					}
 				}

@@ -31,6 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.ens.biologie.generic.utils.Interval;
 
 /**
@@ -52,11 +53,17 @@ public class IsInIntervalQuery extends QueryAdaptor {
 		Property localItem = (Property) input;
 		double value = ((Number) localItem.getValue()).doubleValue();
 		if (!interval.contains(value)) {
-			errorMsg = "Property " + localItem.getKey() + "=" + localItem.getValue() + "' must be within " + interval
-					+ ".";
-			errorMsg = "Expected '" + localItem.getKey() + "' to be within " + interval +" but found "+localItem.getValue() + ".";
-
-			actionMsg = "Set value within the interval "+interval+".";
+			
+			String[] msgs = TextTranslations.getIsInIntervalQuery(localItem.getValue(),interval);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+			
+			
+//			errorMsg = "Property " + localItem.getKey() + "=" + localItem.getValue() + "' must be within " + interval
+//					+ ".";
+//			errorMsg = "Expected '" + localItem.getKey() + "' to be within " + interval +" but found "+localItem.getValue() + ".";
+//
+//			actionMsg = "Set value within the interval "+interval+".";
 		}
 		return this;
 	}

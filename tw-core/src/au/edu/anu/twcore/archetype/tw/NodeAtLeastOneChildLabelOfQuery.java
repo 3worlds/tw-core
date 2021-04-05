@@ -34,6 +34,7 @@ import java.util.List;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.TreeNode;
 
 public class NodeAtLeastOneChildLabelOfQuery extends QueryAdaptor {
@@ -60,10 +61,14 @@ public class NodeAtLeastOneChildLabelOfQuery extends QueryAdaptor {
 			}
 		}
 		if (!ok) {
-			errorMsg = "'" + node.toShortString() + "' must have at least one child labelled '"
-					+ labels.toString() + "'.";
-			
-			actionMsg = "Add node that is one of "+labels.toString()+" to '"+node.toShortString()+"'.";
+			String[] msgs = TextTranslations.getNodeAtLeastOneChildLabelOfQuery(labels);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			
+//			errorMsg = "Expected at least one child labelled '"
+//					+ labels.toString() + "' but found none.";
+//			
+//			actionMsg = "Add child that is one of '"+labels.toString()+"'.";
 		}
 		
 		return this;

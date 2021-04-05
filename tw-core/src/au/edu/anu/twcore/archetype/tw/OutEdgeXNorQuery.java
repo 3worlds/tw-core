@@ -38,6 +38,7 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.queries.base.OrQuery;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
@@ -102,10 +103,14 @@ public class OutEdgeXNorQuery extends QueryAdaptor {
 		List<Edge> el1 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq1));
 		List<Edge> el2 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq2));
 		if ((el1.size() > 0) ^ (el2.size() > 0)) {
-			errorMsg = "There must be at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one from "
-					+ Arrays.toString(edgeLabel2) + ".]";
-			actionMsg = "Add one of " + Arrays.toString(edgeLabel1) + " edges and one of "
-					+ Arrays.toString(edgeLabel2) + " edges.";
+			String[] msgs = TextTranslations.getOutEdgeXNorQuery(edgeLabel1,edgeLabel2);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//
+//			errorMsg = "There must be at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one from "
+//					+ Arrays.toString(edgeLabel2) + ".]";
+//			actionMsg = "Add one of " + Arrays.toString(edgeLabel1) + " edges and one of "
+//					+ Arrays.toString(edgeLabel2) + " edges.";
 		}
 		return this;
 	}

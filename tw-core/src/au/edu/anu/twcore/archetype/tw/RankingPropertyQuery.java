@@ -39,6 +39,7 @@ import java.util.TreeSet;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
@@ -100,17 +101,24 @@ public class RankingPropertyQuery extends QueryAdaptor {
 				elementList = elementList.replaceFirst(", ", "");
 				numberList = numberList.replaceFirst(", ", "");
 				if (edgeLabel.equals(E_CHILD.label())) {
-					actionMsg = "Edit '" + propName + "' property values for nodes [" + elementList
-							+ "] so they have unique values.";
-					errorMsg = "Expected '" + propName + "' values for children of '" + node.toShortString()
-							+ "' to be unique but found values [" + numberList + "].";
+					String[] msgs = TextTranslations.getRankingPropertyQuery1(propName,elementList,numberList,node.toShortString());
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+
+//					actionMsg = "Edit '" + propName + "' values for nodes [" + elementList
+//							+ "] to unique values.";
+//					errorMsg = "Expected '" + propName + "' values for children of '" + node.toShortString()
+//							+ "' to be unique but found values [" + numberList + "].";
 					return this;
 				} else {
-					actionMsg = "Edit '" + propName + "' property values for elements [" + elementList
-							+ "] to unique values.";
-				
-					errorMsg = "Expected '" + propName + "' property values of '" + edgeLabel + "' to be unique but found ["
-							+ numberList + "].";
+					String[] msgs = TextTranslations.getRankingPropertyQuery2(propName,elementList,numberList,edgeLabel);
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+//					actionMsg = "Edit '" + propName + "' values for elements [" + elementList
+//							+ "] to unique values.";
+//				
+//					errorMsg = "Expected '" + propName + "' values of '" + edgeLabel + "' to be unique but found ["
+//							+ numberList + "].";
 					return this;
 				}
 			}

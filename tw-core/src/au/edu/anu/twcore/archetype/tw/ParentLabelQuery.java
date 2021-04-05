@@ -34,6 +34,7 @@ import java.util.List;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
@@ -76,8 +77,11 @@ public class ParentLabelQuery extends QueryAdaptor {
 				if (parent.classId().equals(label)) {
 					return this;
 				}
-			actionMsg = "Change parent to be one of '"+labels.toString()+"'.";
-			errorMsg = "Expected parent to be on of '" + labels.toString() + "' but found '"+localItem.toShortString()+"'.";
+			String[] msgs = TextTranslations.getParentLabelQuery(labels,localItem.toShortString());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			actionMsg = "Change parent to be one of '"+labels.toString()+"'.";
+//			errorMsg = "Expected parent to be on of '" + labels.toString() + "' but found '"+localItem.toShortString()+"'.";
 		}
 		return this;
 	}

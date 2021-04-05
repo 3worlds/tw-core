@@ -37,6 +37,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -109,8 +110,12 @@ public class UICanStopQuery extends QueryAdaptor {
 				return this;
 
 		}
-		actionMsg = "Add a stopping condition";
-		errorMsg = "Unattended simulations require at least one stopping condition but none found.";
+		String[] msgs = TextTranslations.getUICanStopQuery(N_STOPPINGCONDITION.label(),N_DYNAMICS.label());
+		actionMsg = msgs[0];
+		errorMsg = msgs[1];
+//		
+//		actionMsg = "Add a "+N_STOPPINGCONDITION.label()+" child to "+N_DYNAMICS.label()+".";
+//		errorMsg = "Expected at least one"+N_STOPPINGCONDITION.label()+ "for unattended simulation but found none.";
 		return this;
 	}
 

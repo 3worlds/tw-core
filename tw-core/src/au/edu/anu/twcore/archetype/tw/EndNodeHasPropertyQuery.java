@@ -30,6 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
@@ -54,10 +55,14 @@ public class EndNodeHasPropertyQuery extends QueryAdaptor {
 		initInput(input);
 		ReadOnlyDataHolder rodh = (ReadOnlyDataHolder) ((Edge) input).endNode();
 		if (rodh.properties().hasProperty(propName))
-			if (rodh.properties().getPropertyValue(propName) == null)
-//				errorMsg = ((Element)input).toShortString()+"' must have the '"+propName+"' property.";
-				errorMsg = ((Element) rodh).toShortString() + "' is a leaf node and must have the '" + propName
-						+ "' property.";
+			if (rodh.properties().getPropertyValue(propName) == null) {
+				String item = ((Element) rodh).toShortString();
+				String[] msgs = TextTranslations.getEndNodeHasPropertyQuery(item, propName);
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				errorMsg = ((Element) rodh).toShortString() + "' is a leaf node and must have the '" + propName
+//						+ "' property.";
+			}
 		return this;
 	}
 

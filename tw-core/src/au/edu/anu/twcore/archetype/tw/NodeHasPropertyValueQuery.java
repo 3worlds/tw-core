@@ -42,6 +42,7 @@ import au.edu.anu.rscs.aot.collections.tables.ShortTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -180,10 +181,11 @@ public class NodeHasPropertyValueQuery extends QueryAdaptor {
 	public Queryable submit(Object input) {
 		initInput(input);
 		TreeNode localItem = (TreeNode) input;
+		ReadOnlyPropertyList props = null;
 		boolean ok = false;
 		if (localItem != null)
 			if (localItem instanceof ReadOnlyDataHolder) {
-				ReadOnlyPropertyList props = ((ReadOnlyDataHolder) localItem).properties();
+				props = ((ReadOnlyDataHolder) localItem).properties();
 				if (props.hasProperty(propertyName))
 					for (Object o : expectedValues)
 						if ((o.equals(props.getPropertyValue(propertyName))) ||
@@ -194,9 +196,13 @@ public class NodeHasPropertyValueQuery extends QueryAdaptor {
 						}
 			}
 		if (!ok) {
-			errorMsg = "Node property '" + propertyName + "' must have value '" + expectedValues.toString() + "'.";
-			actionMsg = "Edit graph with a text editor to set '" + propertyName + "' value to one of '"
-					+ expectedValues.toString() + "'.";
+			String[] msgs = TextTranslations.getNodeHasPropertyValueQuery(propertyName,expectedValues,props.getPropertyValue(propertyName));
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//
+//			errorMsg = "Expected property '" + propertyName + "' to  have value '" + expectedValues.toString() + "' but found '"+props.getPropertyValue(propertyName)+"'.";
+//			actionMsg = "Edit graph with a text editor to set '" + propertyName + "' value to one of '"
+//					+ expectedValues.toString() + "'.";
 		}
 		return this;
 	}

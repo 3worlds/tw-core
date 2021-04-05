@@ -33,10 +33,12 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
@@ -48,52 +50,62 @@ import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
- * A Query to check that a function type is compatible with its ProcessNode type (component or relation process)
+ * A Query to check that a function type is compatible with its ProcessNode type
+ * (component or relation process)
  * 
  * @author Jacques Gignoux - 16 sept. 2019
  *
  */
-public class FunctionMatchProcessTypeQuery extends QueryAdaptor{
+public class FunctionMatchProcessTypeQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
 		FunctionNode fn = (FunctionNode) input;
-		//  can't decide without a parent - yes that circumstance is possible with ModelMaker
-		if (fn.getParent()==null) 			
+		// can't decide without a parent - yes that circumstance is possible with
+		// ModelMaker
+		if (fn.getParent() == null)
 			return this;
-		
+
 		if (fn.getParent() instanceof ProcessNode) {
 			TwFunctionTypes ftype = (TwFunctionTypes) fn.properties().getPropertyValue(P_FUNCTIONTYPE.key());
 			String functionType = ftype.name();
 			ProcessNode pn = (ProcessNode) fn.getParent();
-			// avoid throwing a f)(&^ing select query error because its incomprehensible at this level
+			// avoid throwing a f)(&^ing select query error because its incomprehensible at
+			// this level
 			List<Node> targets = (List<Node>) get(pn.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())),
-				edgeListEndNodes());
-			if (targets.isEmpty()) 
+					selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
+			if (targets.isEmpty())
 				return this;
 
-			String processType=null;
+			String processType = null;
 			TwFunctionTypes[] validFunctions = null;
 			if (targets.get(0) instanceof RelationType) {
 				validFunctions = AbstractRelationProcess.compatibleFunctionTypes;
 				processType = "relation";
-			}
-			else if (targets.get(0) instanceof Category) {
+			} else if (targets.get(0) instanceof Category) {
 				validFunctions = ComponentProcess.compatibleFunctionTypes;
 				processType = "component";
 			}
 			boolean ok = false;
-			for (TwFunctionTypes ft:validFunctions)
+			for (TwFunctionTypes ft : validFunctions)
 				if (ft.equals(ftype)) {
 					ok = true;
 					break;
+				}
+			if (!ok) {
+				List<String> vt = new ArrayList<>();
+				for (TwFunctionTypes ft : validFunctions)
+					vt.add(ft.name());
+				String[] msgs = TextTranslations.getFunctionMatchProcessTypeQuery(functionType, processType, vt,
+						fn.toShortString());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+
+				// errorMsg = "Function type '" + functionType +
+//				"' is incompatible with a " + processType + " process.";
 			}
-			if (!ok)
-				errorMsg = "Function type '" + functionType + 
-				"' is incompatible with a " + processType + " process.";
 		}
 		return this;
 	}

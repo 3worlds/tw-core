@@ -34,6 +34,7 @@ import java.util.Collection;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
@@ -67,8 +68,13 @@ public class ConsequenceMatchFunctionTypeQuery extends QueryAdaptor {
 				String strValidTypes = s;
 				String consequenceType = csqtype.name();
 				String functionType = ftype.name();
-				errorMsg = "Consequence function type must be one of " + strValidTypes + " for function '"
-				+ functionType + "' but found '" + consequenceType + "'.";
+				String[] msgs = TextTranslations.getConsequenceMatchFunctionTypeQuery(strValidTypes, functionType,
+						consequenceType);
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+				// errorMsg = "Consequence function type must be one of " + strValidTypes + "
+				// for function '"
+//				+ functionType + "' but found '" + consequenceType + "'.";
 			}
 		}
 		return this;

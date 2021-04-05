@@ -34,6 +34,7 @@ import java.util.Collection;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.Record;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -63,8 +64,12 @@ public class RecordUsedByAtMostOneCategoryQuery extends QueryAdaptor{
 			if (edgeLabels.contains(e.classId()))
 				nEdges++;
 		if (nEdges>1) {
-			actionMsg = "Remove "+(nEdges -1)+" to Category nodes from this root record.";
-			errorMsg = "A root record must have 1 edge to a Category but found "+ nEdges +".";
+			String[] msgs = TextTranslations.getRecordUsedByAtMostOneCategoryQuery(nEdges);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+
+//			actionMsg = "Remove "+(nEdges -1)+" to Category nodes from this root record.";
+//			errorMsg = "A root record must have 1 edge to a Category but found "+ nEdges +".";
 		}
 		return this;
 	}

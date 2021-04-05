@@ -34,6 +34,7 @@ import java.util.List;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
@@ -89,9 +90,13 @@ public class OutEdgeXorQuery extends QueryAdaptor {
 		Node localItem = (Node) input;
 		Duple<List<Edge>, List<Edge>> lstEdges = getEdgeLists(localItem, edgeLabel1, edgeLabel2);
 		if (!(lstEdges.getFirst().size() > 0) ^ (lstEdges.getSecond().size() > 0)) {
-			errorMsg = "Must be at least one edge labelled either " + Arrays.toString(edgeLabel1) + " or "
-					+ Arrays.toString(edgeLabel2) + ".";
-			actionMsg = "Add edge '" + edgeLabel1 + " or " + Arrays.toString(edgeLabel2) + ".";
+			String[] msgs = TextTranslations.getOutEdgeXorQuery(edgeLabel1,edgeLabel2);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+			
+//			errorMsg = "Must be at least one edge labelled either " + Arrays.toString(edgeLabel1) + " or "
+//					+ Arrays.toString(edgeLabel2) + ".";
+//			actionMsg = "Add edge '" + edgeLabel1 + " or " + Arrays.toString(edgeLabel2) + ".";
 		}
 		return this;
 	}

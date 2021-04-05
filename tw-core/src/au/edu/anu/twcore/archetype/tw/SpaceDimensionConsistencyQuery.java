@@ -37,6 +37,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -62,12 +63,15 @@ public class SpaceDimensionConsistencyQuery extends QueryAdaptor {
 				selectZeroOrMany(hasTheLabel(E_COORDMAPPING.label())));
 		if (coordEdges.size() != dimension) {
 			int dif = dimension - coordEdges.size();
-			if (dif > 0)
-				actionMsg = "Add " + dif + " '" + E_COORDMAPPING.label() + ":' edges.";
-			else// can't happen unless editing by hand.
-				actionMsg = "Remove " + dif + " '" + E_COORDMAPPING.label() + ":' edges.";
-
-			errorMsg = "must have " + dimension + " " + E_COORDMAPPING.label() + " edges.";
+			String[] msgs = TextTranslations.getSpaceDimensionConsistencyQuery(dif,dimension, E_COORDMAPPING.label());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			if (dif > 0)
+//				actionMsg = "Add " + dif + " '" + E_COORDMAPPING.label() + ":' edges.";
+//			else// can't happen unless editing by hand.
+//				actionMsg = "Remove " + dif + " '" + E_COORDMAPPING.label() + ":' edges.";
+//
+//			errorMsg = "must have " + dimension + " " + E_COORDMAPPING.label() + " edges.";
 		}
 		;
 		return this;

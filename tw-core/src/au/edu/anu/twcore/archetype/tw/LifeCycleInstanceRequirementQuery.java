@@ -31,9 +31,11 @@ package au.edu.anu.twcore.archetype.tw;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_CYCLE;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_LIFECYCLE;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
@@ -63,15 +65,21 @@ public class LifeCycleInstanceRequirementQuery extends QueryAdaptor {
 			// no 'cycle' edge found
 			// TODO: Fix msgs
 			if (lc == null) {
-				errorMsg = "Group must have a 'cycle' edge to a LifeCycle.";
-				actionMsg = "What should I do?";
+				String[] msgs = TextTranslations.getLifeCycleInstanceRequirementQuery1(E_CYCLE.label(),N_LIFECYCLE.label());
+				actionMsg= msgs[0];
+				errorMsg = msgs[1];
+//				errorMsg = "Group must have a 'cycle' edge to a LifeCycle.";
+//				actionMsg = "What should I do?";
 				return this;
 			}
 
 			// a 'cycle' edge found, check it is under the same lifeCycle as groupType
 			if (lc.getParent() != groupType.getParent()) {
-				errorMsg = "Group 'cycle' edge must be is connected to the same\"cycle\" as it GroupType.";
-				actionMsg = "What should I do?";
+				String[] msgs = TextTranslations.getLifeCycleInstanceRequirementQuery2(E_CYCLE.label(),lc.toShortString(),lc.getParent().toShortString(),groupType.toShortString(),groupType.getParent().toShortString());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				errorMsg = "Group 'cycle' edge must be connected to the same\"cycle\" as its GroupType.";
+//				actionMsg = "What should I do?";
 				return this;
 			}
 		}

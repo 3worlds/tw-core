@@ -31,6 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -55,9 +56,13 @@ public class EdgeXorPropertyQuery extends QueryAdaptor {
 			propertyPresent = (((ReadOnlyDataHolder) localItem).properties().hasProperty(propertyName));
 		Node n = (Node) get(localItem, outEdges(), edgeListEndNodes(), selectZeroOrOne(hasTheLabel(nodeLabel)));
 		boolean edgePresent = (n != null);
-		if (!(propertyPresent ^ edgePresent))
-			errorMsg = "'" + localItem.toShortString() + "' must have either property '" + propertyName.toString()
-					+ "' or edge to '" + nodeLabel + "'.]";
+		if (!(propertyPresent ^ edgePresent)) {
+			String[] msgs = TextTranslations.getEdgeXorPropertyQuery(localItem.toShortString(),propertyName,nodeLabel);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			errorMsg = "'" + localItem.toShortString() + "' must have either property '" + propertyName.toString()
+//					+ "' or edge to '" + nodeLabel + "'.]";
+		}
 		return this;
 	}
 

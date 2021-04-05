@@ -37,6 +37,7 @@ import au.edu.anu.rscs.aot.collections.tables.ShortTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 
 /**
  * @author Jacques Gignoux - 21/3/2018 Constraint on numeric properties: value
@@ -114,12 +115,9 @@ public class IsInRangeQuery extends QueryAdaptor {
 		Property localItem = (Property) input;
 		double value = ((Number) localItem.getValue()).doubleValue();
 		if (!(value >= min) & (value <= max)) {
-			errorMsg = "Property " + localItem.getKey() + "=" + localItem.getValue() + "' must be within [" + min + "; "
-					+ max + "].";
-			if (max > 100_000_000)
-				actionMsg = "Set '" + localItem.getKey() + "' to be greater or equal to '" + min + "'.";
-			else
-				actionMsg = "Set '" + localItem.getKey() + "' to be within the range " + min + " to " + max + ".";
+			String[] msgs = TextTranslations.getIsInRangeQuery(localItem.getKey(),value,min,max);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
 		}
 		return this;
 	}

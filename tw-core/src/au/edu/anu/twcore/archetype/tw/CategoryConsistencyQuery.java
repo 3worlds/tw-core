@@ -41,6 +41,7 @@ import java.util.Set;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -90,12 +91,11 @@ public class CategoryConsistencyQuery extends QueryAdaptor {
 		for (Category c : categoriesWithData) {
 			Collection<Edge> belongers = (Collection<Edge>) get(c.edges(Direction.IN),
 					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())));
-			if (belongers.isEmpty()) {// is this correct? It's the same logic. -IDD
-				actionMsg = "Add edge '" + E_BELONGSTO.label() + "': from '" + c.toShortString()
-						+ "' to a 'Record:' node.";// something else here .e.g. a record with constant/driver inedge??
-				errorMsg = "Expected '" + c.toShortString() + "' (that is 'appliedTo' by '" + proc.toShortString()
-						+ "') to 'belongTo' a 'Record:' node but found none."
-						+ " All categories that a process applies to must reference a record.";
+			if (belongers.isEmpty()) {
+				String[] msgs = TextTranslations.getCategoryConsistencyQuery(E_BELONGSTO.label(), c.toShortString(),
+						proc.toShortString());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
 				return this;
 			}
 		}

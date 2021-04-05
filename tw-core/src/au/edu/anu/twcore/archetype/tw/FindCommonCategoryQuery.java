@@ -36,6 +36,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.Direction;
@@ -85,9 +86,12 @@ public class FindCommonCategoryQuery extends QueryAdaptor {
 			}
 		}
 		if (!ok) {
-				errorMsg =  "Track variable '" + trackName
-						+ "' does not belong to any of the DataTracker's '" + process.classId() + ":" + process.id()
-						+ "' categories.]";
+			String[] msgs = TextTranslations.getFindCommonCategoryQuery(end.toShortString(),process.toShortString());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//				errorMsg =  "Track variable '" + trackName
+//						+ "' does not belong to any of the DataTracker's '" + process.toShortString()
+//						+ "' categories.]";
 		}
 		return this;
 	}

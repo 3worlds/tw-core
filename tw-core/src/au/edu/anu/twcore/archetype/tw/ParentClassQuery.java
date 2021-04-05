@@ -35,6 +35,7 @@ import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
@@ -73,8 +74,11 @@ public class ParentClassQuery extends QueryAdaptor implements ArchetypeArchetype
 					if (subclass.equals(klass))
 						return this;
 				}
-				actionMsg = "Edit graph file with text editor to repair file.";
-				errorMsg = "Parent must have class one of '" + klasses.toString() + "'.";
+				String[] msgs = TextTranslations.getParentClassQuery(klasses,parent.toShortString());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				actionMsg = "Edit graph file with text editor to repair file.";
+//				errorMsg = "Parent must have class one of '" + klasses.toString() + "'.";
 				return this;
 			}
 		}

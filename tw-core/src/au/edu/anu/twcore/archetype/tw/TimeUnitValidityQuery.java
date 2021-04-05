@@ -32,6 +32,7 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
@@ -85,9 +86,13 @@ public class TimeUnitValidityQuery extends QueryAdaptor {
 			if (tu == null)
 				tu = TimeUnits.UNSPECIFIED;
 			if (!TimeScaleType.validTimeUnits(refScale).contains(tu)) {
-				actionMsg = "Change '" + propertyName + "' value to be one of "+ TimeScaleType.validTimeUnits(refScale)+".";
-				errorMsg = "Property value for '" + propertyName + "' must be one of {"
-						+ TimeScaleType.validTimeUnits(refScale).toString() + "}.";
+				String[] msgs = TextTranslations.getTimeUnitValidityQuery(propertyName,TimeScaleType.validTimeUnits(refScale).toString(),tu.toString());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+		
+//				actionMsg = "Change '" + propertyName + "' value to be one of "+ TimeScaleType.validTimeUnits(refScale)+".";
+//				errorMsg = "Property value for '" + propertyName + "' must be one of {"
+//						+ TimeScaleType.validTimeUnits(refScale).toString() + "}.";
 				return this;
 //			}
 		}

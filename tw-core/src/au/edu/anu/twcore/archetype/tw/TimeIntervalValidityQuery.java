@@ -33,6 +33,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMEMOD
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
@@ -78,30 +79,45 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 
 		if (timeScaleType.equals(TimeScaleType.ARBITRARY)) {
 			if ((shortestTimeUnit != allowedMin) || (longestTimeUnit != allowedMax)) {
-				errorMsg = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
-						+ timeLineNode.toShortString() + "' must be '" + allowedMax + "' for '" + scaleKey
-						+ "' but found '" + shortestTimeUnit + "' and '" + longestTimeUnit + "'.";
-				actionMsg = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '"
-						+ timeLineNode.toShortString() + "' to '" + allowedMin + "'.";
+				String[] msgs = TextTranslations.getTimeIntervalValidityQuery1(shortestTimeUnitKey, longestTimeUnitKey,
+						timeLineNode.toShortString(), allowedMin.name(), allowedMax.name(), shortestTimeUnit.name(),
+						longestTimeUnit.name(), scaleKey);
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+
+//				errorMsg = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
+//						+ timeLineNode.toShortString() + "' to be '" + allowedMax + "' for '" + scaleKey
+//						+ "' but found '" + shortestTimeUnit + "' and '" + longestTimeUnit + "'.";
+//				actionMsg = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '"
+//						+ timeLineNode.toShortString() + "' to '" + allowedMax + "'.";
 				return this;
 			}
 		} else if (timeScaleType.equals(TimeScaleType.MONO_UNIT)) {
 			// Time units of min and max must be the same
 			if (shortestTimeUnit != longestTimeUnit) {
-				errorMsg = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
-						+ timeLineNode.toShortString() + "' must be the same for '" + scaleKey + "' but found '"
-						+ shortestTimeUnit + "' and '" + longestTimeUnit + "'.";
-				actionMsg = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '"
-						+ timeLineNode.toShortString() + "' to the same value.";
+				String[] msgs = TextTranslations.getTimeIntervalValidityQuery2(shortestTimeUnitKey, longestTimeUnitKey,
+						timeLineNode.toShortString(), scaleKey, shortestTimeUnit.name(), longestTimeUnit.name());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				errorMsg = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '"
+//						+ timeLineNode.toShortString() + "' must be the same for '" + scaleKey + "' but found '"
+//						+ shortestTimeUnit + "' and '" + longestTimeUnit + "'.";
+//				actionMsg = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '"
+//						+ timeLineNode.toShortString() + "' to the same value.";
 				return this;
 			}
 		} else if (shortestTimeUnit.compareTo(longestTimeUnit) > 0) {
 			// min must be less than max
-			errorMsg = "Expected '" + shortestTimeUnitKey + "' to be <= '" + longestTimeUnitKey
-					+ "' for time scale type '" + scaleKey + "' but found '" + shortestTimeUnit + "' and '"
-					+ longestTimeUnit + "'.";
-			;
-			actionMsg = "Set '" + shortestTimeUnitKey + "' to be less than or equal to '" + longestTimeUnitKey + "'.";
+			String[] msgs = TextTranslations.getTimeIntervalValidityQuery3(shortestTimeUnitKey, longestTimeUnitKey,
+					scaleKey, shortestTimeUnit.name(), longestTimeUnit.name());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+			
+//			errorMsg = "Expected '" + shortestTimeUnitKey + "' to be <= '" + longestTimeUnitKey
+//					+ "' for time scale type '" + scaleKey + "' but found '" + shortestTimeUnit + "' and '"
+//					+ longestTimeUnit + "'.";
+//
+//			actionMsg = "Set '" + shortestTimeUnitKey + "' to be less than or equal to '" + longestTimeUnitKey + "'.";
 			return this;
 		}
 
@@ -121,16 +137,22 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 			}
 			if (foundTimeUnitsMin.compareTo(shortestTimeUnit) > 0) {
 				// set shortest to found
-				actionMsg = "Set property '" + shortestTimeUnitKey + "' to '" + foundTimeUnitsMin + "'.";
-				errorMsg = "Expected '" + shortestTimeUnitKey + "=" + foundTimeUnitsMin + "' but found '"
-						+ shortestTimeUnit + "'.";
+				String[] msgs = TextTranslations.getTimeIntervalValidityQuery4(shortestTimeUnitKey,foundTimeUnitsMin.name(),shortestTimeUnit.name());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				actionMsg = "Set property '" + shortestTimeUnitKey + "' to '" + foundTimeUnitsMin + "'.";
+//				errorMsg = "Expected '" + shortestTimeUnitKey + "=" + foundTimeUnitsMin + "' but found '"
+//						+ shortestTimeUnit + "'.";
 				return this;
 			}
 			if (foundTimeUnitsMax.compareTo(longestTimeUnit) < 0) {
 				// set longest to found;
-				actionMsg = "Set property '" + longestTimeUnitKey + "' to '" + foundTimeUnitsMax + "'.";
-				errorMsg = "Expected '" + longestTimeUnitKey + "=" + foundTimeUnitsMax + "' but found '"
-						+ longestTimeUnit + "'.";
+				String[] msgs = TextTranslations.getTimeIntervalValidityQuery4(longestTimeUnitKey,foundTimeUnitsMax.name(),longestTimeUnit.name());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				actionMsg = "Set property '" + longestTimeUnitKey + "' to '" + foundTimeUnitsMax + "'.";
+//				errorMsg = "Expected '" + longestTimeUnitKey + "=" + foundTimeUnitsMax + "' but found '"
+//						+ longestTimeUnit + "'.";
 				return this;
 			}
 		}

@@ -42,6 +42,7 @@ import au.edu.anu.rscs.aot.collections.tables.IndexString;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.TableNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -111,8 +112,11 @@ public class IndexDimensionQuery extends QueryAdaptor {
 				parent = parent.getParent();
 			}
 			if (!ok) {
-				actionMsg = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeId + "'.";
-				errorMsg = "Index string '" + ixs + "' out of range for table '" + nodeId + "'.";
+				String[] msgs = TextTranslations.getIndexDimensionQuery(ixs,nodeId);
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				actionMsg = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeId + "'.";
+//				errorMsg = "Index string '" + ixs + "' out of range for table '" + nodeId + "'.";
 			}
 		}
 		return this;

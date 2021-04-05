@@ -36,6 +36,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -80,8 +81,10 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 		}
 		case MODEL_FILE_BACKUP: {
 			File localSrcFile = (File) args[0];
-			String actionStr = "Update code in newly created java file.";
-			String constraintStr = "Configuration has changed requiring creation of a new Java file. The previous file has been backed up and renamed to a numbered text file (*.txt)";
+//			String uplName = UserProjectLink.projectRoot().getName();
+			String[] msgs = TextTranslations.getMODEL_FILE_BACKUP();
+			String actionStr = msgs[0];
+			String constraintStr = msgs[1];
 			actionsMsg = category() + localSrcFile.getName() + ": " + actionStr;
 
 			detailsMsg = "\nAction: " + actionStr;
@@ -104,22 +107,14 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 				if (n.classId().equals(N_SNIPPET.label()))
 					codeSnippetsNames.add(n.toShortString());
 			File file = (File) args[1];
-			String compileResult = "unknown";
+			String compileResult = null;
 			if (args.length > 1)
 				compileResult = (String) args[2];
-
-			String actionStr;
-			if (UserProjectLink.haveUserProject()) {
-				actionStr = "Correct coding errors in java project '" + UserProjectLink.projectRoot().getName() + "'";
-				if (!codeSnippetsNames.isEmpty())
-					actionStr += " and/or code snippet(s): " + codeSnippetsNames;
-				actionStr += ".";
-			} else
-				actionStr = "Correct coding errors in code snippet(s): " + codeSnippetsNames + ".";
-			if (!UserProjectLink.haveUserProject() && codeSnippetsNames.isEmpty())
-				actionStr = "[Crash now or crash later!] Check if additional queries are required to prevent generating code with this configuration OR there are programming errors in codeGenerator!!";
-
-			String constraintStr = compileResult;
+			
+			String[] msgs = TextTranslations.getCOMPILER_ERROR(compileResult, codeSnippetsNames);
+			// how many variants: with/without compileResult; with/without snippets/with/without ljp
+			String actionStr = msgs[0];
+			String constraintStr = msgs[1];
 
 			actionsMsg = category() + actionStr;
 
@@ -139,8 +134,9 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			break;
 		}
 		case COMPILER_MISSING: {
-			String actionStr = "Install Java Development Kit (JDK)";
-			String constraintStr = "A Java compiler is required and not found on the system.";
+			String[] msgs = TextTranslations.getCOMPILER_MISSING();
+			String actionStr = msgs[0];
+			String constraintStr = msgs[1];
 			actionsMsg = category() + actionStr;
 
 			detailsMsg = "\nAction: " + actionStr;
@@ -155,8 +151,9 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 		case DEPLOY_CLASS_MISSING: {
 			File cls = (File) args[0];
 			File src = (File) args[1];
-			String actionStr = "A Java class file is missing";
-			String constraintStr = "Expected class file for '" + src.getName() + "' but none found.";
+			String[] msgs = TextTranslations.getDEPLOY_CLASS_MISSING(src.getName());
+			String actionStr = msgs[0];
+			String constraintStr = msgs[1];
 			actionsMsg = category() + actionStr;
 
 			detailsMsg = "\nAction: " + actionStr;
@@ -176,8 +173,9 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			FileTime ftSrc = (FileTime) args[2];
 			FileTime ftCls = (FileTime) args[3];
 
-			String actionStr = "Refresh Java project.";
-			String constraintStr = "Compiled class file is older than Java source file";
+			String[] msgs = TextTranslations.getDEPLOY_CLASS_OUTOFDATE();
+			String actionStr = msgs[0];
+			String constraintStr = msgs[1];
 
 			actionsMsg = category() + actionStr;
 
@@ -228,8 +226,9 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			Exception e = (Exception) args[0];
 			@SuppressWarnings("unchecked")
 			List<String> cmds = (List<String>) args[1];
-			String actionStr = "Failed to launch ModelRunner.";
-			String constraintStr = e.getMessage();
+			String[] msgs = TextTranslations.getDEPLOY_EXCEPTION(e);
+			String actionStr = msgs[0];
+			String constraintStr = msgs[1];
 			actionsMsg = category() + actionStr;
 
 			detailsMsg = "\nAction: " + actionStr;

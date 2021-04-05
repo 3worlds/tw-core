@@ -67,6 +67,9 @@ public class ConditionalMultiplicityQuery extends QueryAdaptor{
 		this(args,nMin);
 	}
 
+	/**		args = StringTable(([2]"fixedPoints","space"))
+		nMin = Integer(2)
+*/
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
@@ -76,9 +79,10 @@ public class ConditionalMultiplicityQuery extends QueryAdaptor{
 			selectZeroOrMany(hasTheLabel(nodeLabel)));
 		boolean ok= (((l.size()>=nMin) && (rodh.properties().hasProperty(property))) ||
 			(l.size()<nMin)) ;
-		if (!ok)
+		if (!ok) {
+			actionMsg = "I don't know what to do!!";
 			errorMsg = "Well I must say!"+getClass().getSimpleName()+" but I don't know what to say!";
-		
+		}
 		return this;
 	}
 

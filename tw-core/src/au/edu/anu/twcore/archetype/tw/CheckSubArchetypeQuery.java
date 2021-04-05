@@ -32,6 +32,7 @@ import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
@@ -90,7 +91,9 @@ public class CheckSubArchetypeQuery extends QueryAdaptor{
 			if (checker.isArchetype(tree)) {
 				checker.check(treeToCheck,tree);
 				if (!(checker.errorList()==null)){
-					errorMsg = "Errors in sub-archetype '"+fileName+",";
+					String[] msgs = TextTranslations.getCheckSubArchetypeQuery(fileName);
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
 					result = checker.errorList();
 				}
 			}

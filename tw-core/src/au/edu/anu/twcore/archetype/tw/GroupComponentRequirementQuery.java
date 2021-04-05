@@ -37,6 +37,7 @@ import java.util.Collection;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
@@ -60,11 +61,15 @@ public class GroupComponentRequirementQuery extends QueryAdaptor {
 		if (instofs.isEmpty())// if no component is instance of this group
 			if (groupof == null) {// Group must have a groupOf link to a ComponentType
 				// that's what it says
-				actionMsg = "Make '" + group + "' an '" + E_INSTANCEOF.label() + "' some '" + N_COMPONENTTYPE.label()
-						+ ":' OR make it a  '" + E_GROUPOF.label() + "' of some '" + N_GROUPTYPE.label() + "'.";
-				errorMsg = "Expected inEdge '" + E_INSTANCEOF.label() + "' from some '" + N_COMPONENTTYPE.label()
-						+ ":' OR outEdge '" + E_GROUPOF.label() + "' to some '" + N_GROUPTYPE.label()
-						+ "' but found neither case.";
+				String[] msgs = TextTranslations.getGroupComponentRequirementQuery(group.toShortString(),
+						E_INSTANCEOF.label(), N_COMPONENTTYPE.label(), E_GROUPOF.label(), N_GROUPTYPE.label());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				actionMsg = "Make '" + group + "' an '" + E_INSTANCEOF.label() + "' some '" + N_COMPONENTTYPE.label()
+//						+ ":' OR make it a  '" + E_GROUPOF.label() + "' of some '" + N_GROUPTYPE.label() + "'.";
+//				errorMsg = "Expected inEdge '" + E_INSTANCEOF.label() + "' from some '" + N_COMPONENTTYPE.label()
+//						+ ":' OR outEdge '" + E_GROUPOF.label() + "' to some '" + N_GROUPTYPE.label()
+//						+ "' but found neither case.";
 			}
 //		!XOR both true OR both false : here we have false/true so need groupof!=null? but easier to read above BUT what is wanted?
 //		if (!((groupof == null) ^ (instofs.isEmpty()))) {

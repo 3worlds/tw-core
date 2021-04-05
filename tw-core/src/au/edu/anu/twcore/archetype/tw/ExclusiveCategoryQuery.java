@@ -38,6 +38,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import fr.cnrs.iees.graph.Direction;
@@ -68,8 +69,11 @@ public class ExclusiveCategoryQuery extends QueryAdaptor{
 			if (!csl.contains(cs))
 				csl.add(cs);
 			else {
-				errorMsg = "'"+localItem.toShortString()+"'cannot belong to two categories of the same set. Two categories of set '"
-						+ cs.toShortString() + "' were found.";
+				String[] msgs = TextTranslations.getExclusiveCategoryQuery(localItem.toShortString(),cs.toShortString());
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				errorMsg = "'"+localItem.toShortString()+"'cannot belong to two categories of the same set. Two categories of set '"
+//						+ cs.toShortString() + "' were found.";
 				return this;
 			}
 		}

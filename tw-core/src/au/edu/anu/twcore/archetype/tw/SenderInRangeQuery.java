@@ -36,6 +36,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
@@ -104,9 +105,12 @@ public class SenderInRangeQuery extends QueryAdaptor {
 		//NB Not yet tested with Multi sim (range) widgets
 		IntegerRange simRange = new IntegerRange(0, nReps - 1);
 		if (!simRange.contains(listenerRange)) {
-			actionMsg = "Edit property '" +pKey+"' to receive data in the range ["+simRange+"].";
-			errorMsg = "Expected sufficent simulator(s) to send data in the range [" + listenerRange + "] but found only '"
-					+ nReps + "' simulator(s). ["+pKey+"="+firstSender+"]";
+			String[] msgs = TextTranslations.getSenderInRangeQuery(pKey,simRange,listenerRange,nReps,firstSender);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			actionMsg = "Edit property '" +pKey+"' to receive data in the range ["+simRange+"].";
+//			errorMsg = "Expected sufficent simulator(s) to send data in the range [" + listenerRange + "] but found only '"
+//					+ nReps + "' simulator(s). ["+pKey+"="+firstSender+"]";
 			return this;
 		}
 		return this;

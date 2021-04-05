@@ -35,6 +35,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 /**
@@ -81,9 +82,12 @@ public class EdgeToSiblingNodesQuery extends QueryAdaptor{
 			 */
 			TreeGraphNode theParent = (TreeGraphNode) fields.get(0).getParent();
 			for (TreeGraphNode f : fields)
-				if ((f.getParent()!=null) && (f.getParent()!=theParent))
-					errorMsg = label + " edges must refer to sibling nodes, i.e. nodes with the same parent.";
-
+				if ((f.getParent()!=null) && (f.getParent()!=theParent)) {
+					String[] msgs = TextTranslations.getEdgeToSiblingNodesQuery(label);
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+//					errorMsg = label + " edges must refer to sibling nodes, i.e. nodes with the same parent.";
+				}
 		}
 		return this;
 	}

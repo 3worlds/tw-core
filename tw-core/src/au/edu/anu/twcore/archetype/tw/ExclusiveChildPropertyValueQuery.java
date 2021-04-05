@@ -41,6 +41,7 @@ import au.edu.anu.rscs.aot.collections.tables.LongTable;
 import au.edu.anu.rscs.aot.collections.tables.ShortTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -140,9 +141,13 @@ public class ExclusiveChildPropertyValueQuery extends NodeHasPropertyValueQuery 
 				}
 			}
 		ok = nodesWithProperValue.isEmpty() || ((!nodesWithProperValue.isEmpty()) && (nodesWithOtherValue.isEmpty()));
-		if (ok)
-			errorMsg = null;//fuck!
-		
+		if (ok) {
+			String[] msgs = TextTranslations.getExclusiveChildPropertyValueQuery(nodesWithProperValue.isEmpty(),
+					nodesWithOtherValue.isEmpty());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+		}
+
 		return this;
 	}
 

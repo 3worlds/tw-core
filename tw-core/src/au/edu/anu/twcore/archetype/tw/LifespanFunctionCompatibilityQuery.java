@@ -38,6 +38,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.structure.Category;
@@ -157,10 +158,14 @@ public class LifespanFunctionCompatibilityQuery extends QueryAdaptor {
 				if (lcct.containsAll(procCats))
 					// check the componentType is ephemeral
 					if (!lcct.contains(ceph)) {
-						errorMsg = "Expected '" + ct.toShortString() + "' to belong to Category:*ephemeral*.";
-						actionMsg = "Reconfigure. '" + ct.toShortString() + "' is not ephemeral but is processed by '"
-								+ fn.toShortString() + "' of '" + pn.toShortString()
-								+ "' that only works on ephemeral ComponentTypes.";
+						String[] msgs = TextTranslations.getLifespanFunctionCompatibilityQuery(ct.toShortString(),
+								fn.toShortString(), pn.toShortString());
+						actionMsg = msgs[0];
+						errorMsg = msgs[1];
+//						errorMsg = "Expected '" + ct.toShortString() + "' to belong to Category:*ephemeral*.";
+//						actionMsg = "Reconfigure. '" + ct.toShortString() + "' is not ephemeral but is processed by '"
+//								+ fn.toShortString() + "' of '" + pn.toShortString()
+//								+ "' that only works on ephemeral ComponentTypes.";
 					}
 			}
 		}

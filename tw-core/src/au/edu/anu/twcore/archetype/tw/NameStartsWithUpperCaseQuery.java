@@ -30,6 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.identity.Identity;
 
 public class NameStartsWithUpperCaseQuery extends QueryAdaptor {
@@ -41,8 +42,11 @@ public class NameStartsWithUpperCaseQuery extends QueryAdaptor {
 		char c = localItem.charAt(0);
 		char upper = Character.toUpperCase(c);
 		if (c != upper) {
-			errorMsg = "'" + localItem + "' must start with an upper case character.";
-			actionMsg = "Edit graph with a text editor so '" + localItem + "' starts with an upper case character.";
+			String[] msgs = TextTranslations.getNameStartsWithUpperCaseQuery(localItem,c);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			errorMsg = "Expected first character to be upper case but found '"+c+"'.";
+//			actionMsg = "Edit graph with a text editor so '" + localItem + "' starts with an upper case character.";
 		}
 		return this;
 

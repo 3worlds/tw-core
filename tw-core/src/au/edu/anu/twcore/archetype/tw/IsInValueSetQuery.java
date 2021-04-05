@@ -37,6 +37,7 @@ import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 
 /**
  * A Query to check a property value is within a set of valid values. Can be
@@ -71,17 +72,18 @@ public class IsInValueSetQuery extends QueryAdaptor {
 	public Queryable submit(Object input) {
 		initInput(input);
 		Property localItem = (Property) input;
-		Object o = localItem.getValue();
+		Object foundValue = localItem.getValue();
 		boolean ok = true;
-		if (ObjectTable.class.isAssignableFrom(o.getClass())) {
-			ObjectTable<?> table = (ObjectTable<?>) o;
+		if (ObjectTable.class.isAssignableFrom(foundValue.getClass())) {
+			ObjectTable<?> table = (ObjectTable<?>) foundValue;
 			for (int i = 0; i < table.size(); i++)
 				ok = ok & valueInSet(table.getWithFlatIndex(i));
 		} else
-			ok = valueInSet(o);
+			ok = valueInSet(foundValue);
 		if (!ok) {
-			errorMsg = "Expected property '" + localItem.getKey() + "' value to be one of " + valueSet.toString() + " but found '"+o+"'.";
-			actionMsg = "Edit graph file with a text editor to change the property value of '" + localItem.getKey() +" to a valid value.";
+			String[] msgs = TextTranslations.getIsInValueSetQuery(localItem.getKey(),valueSet,foundValue);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
 		}
 		return this;
 	}

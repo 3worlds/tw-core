@@ -31,6 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
@@ -58,9 +59,12 @@ public class PropertyXorQuery extends QueryAdaptor {
 		initInput(input);
 		ReadOnlyDataHolder e = (ReadOnlyDataHolder) input;
 		if (!(e.properties().hasProperty(name1) ^ e.properties().hasProperty(name2))) {
-			actionMsg = "Edit graph file with text editor to remove one of the properties '"+ name1 + "' or '" + name2+"'.";
-			errorMsg =  "Must have either '" + name1 + "' or '" + name2
-					+ "' but not both.";
+			String[] msgs = TextTranslations.getPropertyXorQuery(name1,name2);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			actionMsg = "Edit graph file with text editor to remove one of the properties '"+ name1 + "' or '" + name2+"'.";
+//			errorMsg =  "Must have either '" + name1 + "' or '" + name2
+//					+ "' but not both.";
 		}
 		return this;
 	}

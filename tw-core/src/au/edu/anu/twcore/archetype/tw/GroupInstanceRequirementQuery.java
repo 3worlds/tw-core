@@ -37,6 +37,7 @@ import java.util.Collection;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
@@ -74,7 +75,10 @@ public class GroupInstanceRequirementQuery extends QueryAdaptor{
 		// if there was no error (ie exactly one group per grouptype) then the list should be empty:
 		ok &= gts.isEmpty();
 		if (!ok) {
-			errorMsg = "LifeCycle must have exactly one instance of Group per GroupType of its LifeCycleType.";
+			String[] msgs = TextTranslations.getGroupInstanceRequirementQuery();
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+//			errorMsg = "LifeCycle must have exactly one instance of Group per GroupType of its LifeCycleType.";
 		}
 		return this;
 	}

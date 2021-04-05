@@ -38,6 +38,7 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -68,9 +69,12 @@ public class SpaceRecordTypeQuery extends QueryAdaptor {
 				String fieldNames = "";
 				for (TreeGraphNode n:fields)
 					fieldNames+=","+n.toShortString();
-				fieldNames = fieldNames.replaceFirst("'", "");	
-				actionMsg = "Set coordinate field(s) to belong to a record that is used as either a driver or contant.";
-				errorMsg = "coordinate fields ["+fieldNames+"] must belong to a record used as drivers or constants but found '"+ln.size()+"'.";
+				fieldNames = fieldNames.replaceFirst("'", "");
+				String[] msgs = TextTranslations.getSpaceRecordTypeQuery(fieldNames);
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+//				actionMsg = "Set coordinate field(s) to belong to a record that is used as either a driver or contant.";
+//				errorMsg = "coordinate fields ["+fieldNames+"] must belong to a record used as drivers or constants but found none.";
 			}
 		}
 		return this;
