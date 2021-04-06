@@ -45,11 +45,6 @@ import fr.ens.biologie.generic.utils.Interval;
  * @date 14 Mar. 2021
  */
 public class TextTranslations {
-//	private String jpOpenQuote = "「";
-//	private String jpCloseQuote = "」";
-	// Simplified chinese uses english quotation marks.
-//	private String japanese = "「system.sys1」の子1人へのリンクを追加";
-//	private String chinese = "将链接添加到\"system.sys1\"的一个子级 ";
 
 	// -------------------- ModelBuildErrorMsg ----
 	public static String[] getMODEL_FILE_BACKUP() {
@@ -71,8 +66,8 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			if (UserProjectLink.haveUserProject()) {
-				am = "Corriger les erreurs de codage dans le projet java <<" + UserProjectLink.projectRoot().getName()
-						+ ">> ";
+				am = "Corriger les erreurs de codage dans le projet java <<" + Language.oq+UserProjectLink.projectRoot().getName()
+						+ Language.cq+". ";
 				if (!snippets.isEmpty())
 					am += " et / ou extrait (s) de code: " + snippets;
 				am += ".";
@@ -119,7 +114,7 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			am = "Un fichier de classe Java est manquant.";
-			cm = "Fichier de classe attendu pour '<<" + srcName + ">> mais aucun n'a été trouvé.";
+			cm = "Fichier de classe attendu pour " + Language.oq+srcName + Language.cq+" mais aucun n'a été trouvé.";
 		} else {// make sure default is English!
 			am = "A Java class file is missing.";
 			cm = "Expected class file for '" + srcName + "' but none found.";
@@ -160,7 +155,7 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajoutez <<" + resourceName + ">>  à  <<" + location + ">>.";
+			am = "Ajoutez <<" + Language.oq+resourceName + Language.cq+" à " + Language.oq+location + Language.cq+".";
 			cm = "La ressource doit être présente pour le déploiement.";
 		} else {// make sure default is English!
 			am = "Add '" + resourceName + "' to '" + location + "'.";
@@ -193,8 +188,8 @@ public class TextTranslations {
 		String am;// action message
 		String cm;// constraint message
 		if (Language.French()) {
-			am = "Ajouter un lien vers un enfant de <<" + nodeRef + ">>.";
-			cm = "Lien attendu vers un enfant de <<" + nodeRef + ">> mais n'en a trouvé aucun.";
+			am = "Ajouter un lien vers un enfant de " + Language.oq+ nodeRef + Language.cq+".";
+			cm = "Lien attendu vers un enfant de "+ Language.oq + nodeRef + Language.cq+" mais n'en a trouvé aucun.";
 		} else {// make sure default is English!
 			am = "Add edge to one child of '" + nodeRef + "'";
 			cm = "Expected edge to one child of '" + nodeRef + "' but found none.";
@@ -747,10 +742,10 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add child that is one of '" + labels.toString() + "'.";
-			cm = "Expected at least one child labelled '" + labels.toString() + "' but found none.";
+			am = "Ajouter un noeud à l'un des «" + labels.toString() + "».";
+			cm = "Attendu au moins un enfant intitulé «"+ labels.toString() +"», mais n'en trouve aucun";
 		} else {// make sure default is English!
-			am = "Add child that is one of '" + labels.toString() + "'.";
+			am = "Add noded to one of '" + labels.toString() + "'.";
 			cm = "Expected at least one child labelled '" + labels.toString() + "' but found none.";
 		}
 		String[] result = { am, cm };
