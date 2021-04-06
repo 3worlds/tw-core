@@ -141,11 +141,14 @@ public class ExclusiveChildPropertyValueQuery extends NodeHasPropertyValueQuery 
 				}
 			}
 		ok = nodesWithProperValue.isEmpty() || ((!nodesWithProperValue.isEmpty()) && (nodesWithOtherValue.isEmpty()));
-		if (ok) {
+		if (!ok) {
 			String[] msgs = TextTranslations.getExclusiveChildPropertyValueQuery(nodesWithProperValue.isEmpty(),
 					nodesWithOtherValue.isEmpty());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
+		} else {
+			actionMsg = null;
+			errorMsg = null;
 		}
 
 		return this;
