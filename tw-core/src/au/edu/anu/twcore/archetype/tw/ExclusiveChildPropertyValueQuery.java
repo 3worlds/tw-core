@@ -27,6 +27,14 @@
  *                                                                        *
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
+/**
+ * Checks that if a child node with a given property value is present, then no child with another
+ * value in the same property can be present. Can be instantiated with a single label, or a
+ * table of compatible labels.
+ *
+ * @author J. Gignoux - 22 mai 2020
+ *
+ */
 
 import java.util.LinkedList;
 import java.util.List;
@@ -142,8 +150,7 @@ public class ExclusiveChildPropertyValueQuery extends NodeHasPropertyValueQuery 
 			}
 		ok = nodesWithProperValue.isEmpty() || ((!nodesWithProperValue.isEmpty()) && (nodesWithOtherValue.isEmpty()));
 		if (!ok) {
-			String[] msgs = TextTranslations.getExclusiveChildPropertyValueQuery(nodesWithProperValue.isEmpty(),
-					nodesWithOtherValue.isEmpty());
+			String[] msgs = TextTranslations.getExclusiveChildPropertyValueQuery(propertyName,expectedValues);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 		} else {

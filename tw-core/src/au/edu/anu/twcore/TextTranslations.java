@@ -433,10 +433,17 @@ public class TextTranslations {
 		return result;
 	}
 
-// TODO: 
-	public static String[] getExclusiveChildPropertyValueQuery(boolean notHaveProperty, boolean otherNotHaveProperty) {
+	/**
+	 * Checks that if a child node with a given property value is present, then no child with another
+	 * value in the same property can be present. Can be instantiated with a single label, or a
+	 * table of compatible labels.
+	 *
+	 */
+ 
+	public static String[] getExclusiveChildPropertyValueQuery(String key, List<Object> expectedValues) {
 		String am;
 		String cm;
+		// value of 'key' must be unique within children?
 		if (Language.French()) {
 			am = "Don't know what to do!";
 			cm = "Don't know what to say!";
