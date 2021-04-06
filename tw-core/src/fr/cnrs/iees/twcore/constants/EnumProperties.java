@@ -56,7 +56,6 @@ public class EnumProperties {
 		DateTimeType.defaultValue();
 		ExperimentDesignType.defaultValue();
 		FileType.defaultValue();
-		Grouping.defaultValue();
 		LifespanType.defaultValue();
 		SamplingMode.defaultValue();
 		SnippetLocation.defaultValue();

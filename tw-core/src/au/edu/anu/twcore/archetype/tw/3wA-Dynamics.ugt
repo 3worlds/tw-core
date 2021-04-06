@@ -5,22 +5,6 @@ hasNode dynamicsSpec
 	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"system:"))
 	multiplicity = IntegerRange("1..1")
 
-// this to be removed soon - cf function specs below
-//hasNode initialisationSpec
-//	isOfClass = String("initialiser")
-//	hasParent = StringTable(([1]"dynamics:"))
-//	multiplicity = IntegerRange("0..1")
-//	mustSatisfyQuery initialiserNameWithUppercaseQuery
-//		className = String("au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery")
-//	hasEdge initAppliesToCategorySpec
-//		isOfClass = String("appliesTo")
-//		toNode = String("category:")
-//		multiplicity = IntegerRange("1..*")
-//	hasProperty userInitialiserSpec
-//		hasName = String("userClassName")
-//		type = String("String")
-//		multiplicity = IntegerRange("0..1")
-
 hasNode timeLineSpec
 	isOfClass = String("timeline")
 	hasParent = StringTable(([1]"dynamics:"))
@@ -335,41 +319,3 @@ hasNode stoppingConditionSpec
 	mustSatisfyQuery CheckSubArchetypeQueryMultipleAndStop
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition","3wSA-MultipleStoppingCondition.ugt"))
-
-// how to specify initial community:
-
-//hasNode initialStateSpec
-//	isOfClass = String("initialState")
-//	hasParent = StringTable(([1]"dynamics:"))
-//	multiplicity = IntegerRange("0..1")
-//	hasEdge ecosystemToSourceLoadFromSpec
-//		isOfClass = String("loadFrom")
-//		toNode = String("dataSource:")
-//		multiplicity = IntegerRange("0..*")
-
-
-//	// initial state for an individual component// now moved to child of ComponentType in Structure
-
-//	hasNode componentSpec
-//		isOfClass = String("component")
-//		hasParent = StringTable(([2]"initialState:","group:"))
-//		multiplicity = IntegerRange("0..*")
-//		hasEdge componentToSystemSpec
-//			isOfClass = String("instanceOf")
-//			toNode = String("componentType:")
-//			multiplicity = IntegerRange("1..1")
-//		hasEdge componentToSpaceSpec
-//			isOfClass = String("location")
-//			toNode = String("space:")
-//			multiplicity = IntegerRange("0..1")
-//			hasProperty spaceComponentCoordinatesSpec
-//				hasName = String("coordinates")
-//				type = String("DoubleTable")
-//				multiplicity = IntegerRange("1..1")
-////		mustSatisfyQuery mustHaveCoordinatesSpec
-////			className = String("au.edu.anu.twcore.archetype.tw.RequiresCoordinatesQuery")
-//		hasEdge instanceOfToSourceLoadFromSpec
-//			isOfClass = String("loadFrom")
-//			toNode = String("dataSource:")
-//			multiplicity = IntegerRange("0..*")
-
