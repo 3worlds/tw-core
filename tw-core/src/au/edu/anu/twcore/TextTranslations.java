@@ -1138,13 +1138,13 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '" + tlName
+			am = "Set '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
 					+ "' to the same value.";
 			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
 					+ "' must be the same for '" + scaleKey + "' but found '" + foundShortest + "' and '" + foundLongest
 					+ "'.";
 		} else {// make sure default is English!
-			am = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '" + tlName
+			am = "Set '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
 					+ "' to the same value.";
 			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
 					+ "' must be the same for '" + scaleKey + "' but found '" + foundShortest + "' and '" + foundLongest
@@ -1175,10 +1175,10 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Set property '" + key + "' value to '" + expected + "'.";
+			am = "Set property '" + key + "' value to '" + expected + "' or change the time units of associated Timers.";
 			cm = "Expected value of '" + key + " to be " + expected + "' but found '" + found + "'.";
 		} else {// make sure default is English!
-			am = "Set property '" + key + "' value to '" + expected + "'.";
+			am = "Set property '" + key + "' value to '" + expected + "' or change the time units of associated Timers.";
 			cm = "Expected value of '" + key + " to be " + expected + "' but found '" + found + "'.";
 		}
 		String[] result = { am, cm };
