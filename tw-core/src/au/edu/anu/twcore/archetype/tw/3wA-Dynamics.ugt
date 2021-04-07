@@ -108,10 +108,10 @@ hasNode processSpec
 			hasName = String("searchRadius")
 			type = String("Double")
 			multiplicity = IntegerRange("1..1")
-			// TODO: relax this constraint - radius can be null but then a mx number of neighbours must be given
-			mustSatisfyQuery searchRadiusMustBeNonNullConstraint
-				className = String("au.edu.anu.twcore.archetype.tw.IsInIntervalQuery")
-				range = Interval(]0.0,+Inf[)
+//			// TODO: relax this constraint - radius can be null but then a mx number of neighbours must be given
+//			mustSatisfyQuery searchRadiusMustBeNonNullConstraint
+//				className = String("au.edu.anu.twcore.archetype.tw.IsInIntervalQuery")
+//				range = Interval(]0.0,+Inf[)
 
 hasNode functionSpec
 	isOfClass = String("function")
