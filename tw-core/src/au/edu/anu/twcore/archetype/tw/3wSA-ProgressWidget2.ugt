@@ -6,25 +6,18 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-MeanTimeWidget1
+archetype 3wSA-ProgressTimeWidget2
 
-	hasNode TimeWidget1Spec
+	hasNode ProgressWidget2Spec
 		isOfClass = String("widget")
 		// TODO this should override parent when checking
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
-		hasProperty TimeWidget1RefreshRatePropertySpec
-			hasName = String("refreshRate")
-			type = String("Long")
-			multiplicity = IntegerRange("0..1")
-			mustSatisfyQuery TimeWidget1RefreshRateIsInRangeQuerySpec
-				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
-				interval = IntTable(([2]250,60000))
-		hasEdge TimeWidget1ToSimSpec
+		hasEdge ProgressWidget2ToSimSpec
 			isOfClass = String("trackTime")
 			toNode = String("dynamics:")
 			multiplicity = IntegerRange("1..1")
-		mustSatisfyQuery TimeWidget1ParentClassQuery
+		mustSatisfyQuery ProgressWidget2ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
-			parentLabels = StringTable(([2]"top", "bottom"))
+			parentLabels = StringTable(([2]"tab", "container"))
 			

@@ -6,22 +6,22 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-SimpleGraphWidget
+archetype 3wSA-GraphWidget1
 
-	hasNode SimpleGraphWidgetSpec
+	hasNode GraphWidget1Spec
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
-		mustSatisfyQuery SenderInRangeQuery
+		mustSatisfyQuery GraphWidget1SenderInRangeQuery
 			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
-		hasProperty SimpleGraphWidgetSenderProperty
+		hasProperty GraphWidget1SenderProperty
 			hasName = String("sender")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
-		mustSatisfyQuery SimpleTimeWidgetParentClassQuery
+		mustSatisfyQuery GraphWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab","container"))
-		hasEdge GraphWidgetToSystemEdgeSpec
+		hasEdge GraphWidget1ToSystemEdgeSpec
 			isOfClass = String("trackSystem")
 			toNode = String("system:")
 			multiplicity = IntegerRange("1..1")
