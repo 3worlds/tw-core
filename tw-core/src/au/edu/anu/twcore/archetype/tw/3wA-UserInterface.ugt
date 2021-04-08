@@ -133,15 +133,15 @@ hasNode widgetSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.SpaceWidget1","3wSA-SpaceWidget1.ugt"))
 
-	mustSatisfyQuery CheckSubArchetypeQueryPNWidget
+	mustSatisfyQuery CheckSubArchetypeQueryControlWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.ControlWidget1","3wSA-ControlWidget1.ugt"))
 
-	mustSatisfyQuery CheckSubArchetypeQueryPNWidget2
+	mustSatisfyQuery CheckSubArchetypeQueryControlWidget2
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.ControlWidget2","3wSA-ControlWidget2.ugt"))
 
-	mustSatisfyQuery CheckSubArchetypeQuerySimpleControlWidget
+	mustSatisfyQuery CheckSubArchetypeQueryControlWidget3
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.ControlWidget3","3wSA-ControlWidget3.ugt"))
 
@@ -149,11 +149,11 @@ hasNode widgetSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.ScatterPlotWidget1","3wSA-ScatterPlotWidget1.ugt"))
 
-	mustSatisfyQuery CheckSubArchetypeQueryTimeSeriesWidget
+	mustSatisfyQuery CheckSubArchetypeQueryTimeSeriesWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.TimeSeriesWidget1","3wSA-TimeSeriesWidget1.ugt"))
 
-	mustSatisfyQuery CheckSubArchetypeQuerySimpleGraphWidget
+	mustSatisfyQuery CheckSubArchetypeQueryGraphWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.GraphWidget1","3wSA-GraphWidget1.ugt"))
 
