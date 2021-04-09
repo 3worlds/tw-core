@@ -171,10 +171,10 @@ public abstract class AbstractUPL implements IUserProjectLink {
 				// method found?
 				String tmp = line.trim();
 				String[] parts = tmp.split("\\W+");
-				if (parts.length > 2) {
+				if (parts.length > 3) {
 					if (parts[0].equals("public") && parts[1].equals("static") && !startMethod) {
 						startMethod = true;
-						key = parts[parts.length-1];
+						key = parts[3];
 					}
 				}
 				// start read
