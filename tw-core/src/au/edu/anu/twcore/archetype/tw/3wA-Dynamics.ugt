@@ -4,6 +4,8 @@ hasNode dynamicsSpec
 	isOfClass = String("dynamics")
 	hasParent =  au.edu.anu.rscs.aot.collections.tables.StringTable(([1]"system:"))
 	multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery DynamicsMustHaveAtLeastOneFunctionQuery
+		className = String("au.edu.anu.twcore.archetype.tw.DynamicsMustHaveAtLeastOneFunctionQuery")
 
 hasNode timeLineSpec
 	isOfClass = String("timeline")

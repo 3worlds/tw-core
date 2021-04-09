@@ -28,50 +28,63 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
-import au.edu.anu.twcore.data.Record;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.TreeNode;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Check that a root record is used by at most one category and for at most one usage among
- * {autoVar, decorators, drivers, constants}.
- * 
- * Changed to: a root record must be used by one category.
- * 
- * @author Jacques Gignoux - 9 févr. 2021
+ * @author Ian Davies
  *
+ * @date 9 Apr. 2021
  */
-public class RecordUsedByAtMostOneCategoryQuery extends QueryAdaptor{
-	private final Collection<String> edgeLabels; 
-	public RecordUsedByAtMostOneCategoryQuery(StringTable params) {
-		super();
-		edgeLabels = new ArrayList<>(4); 
-		for (int i=0; i<params.size(); i++)
-			edgeLabels.add(params.getWithFlatIndex(i));
-	}
 
+/** Check that each simulator has at least one function. */
+public class DynamicsMustHaveAtLeastOneFunctionQuery extends QueryAdaptor {
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
-		Record record = (Record) input;
-		int nEdges = 0;
-		for (ALEdge e:record.edges(Direction.IN))
-			if (edgeLabels.contains(e.classId()))
-				nEdges++;
-		if (nEdges!=1) {
-			String[] msgs = TextTranslations.getRecordUsedByAtMostOneCategoryQuery(nEdges);
+		TreeNode dynamics = (TreeNode) input;
+		// Ignore this query until there is at least one process;
+		TreeNode timeline = (TreeNode) get(dynamics, children(), selectZeroOrOne(hasTheLabel(N_TIMELINE.label())));
+		if (timeline == null)
+			return this;
+		
+		List<TreeNode> timers = (List<TreeNode>) get(timeline, children(),
+				selectZeroOrMany(hasTheLabel(N_TIMER.label())));
+		if (timers.isEmpty())
+			return this;
+		
+		List<TreeNode> procs = new ArrayList<>();
+		for (TreeNode timer : timers) {
+			List<TreeNode> lst = (List<TreeNode>) get(timer, children(),
+					selectZeroOrMany(hasTheLabel(N_PROCESS.label())));
+			procs.addAll(lst);
+		}
+
+		if (procs.isEmpty())
+			return this;
+
+		List<TreeNode> funcs = new ArrayList<>();
+		for (TreeNode proc : procs) {
+			List<TreeNode> lst = (List<TreeNode>) get(proc, children(),
+					selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
+			funcs.addAll(lst);
+		}
+		
+		if (funcs.isEmpty()) {
+			String[] msgs = TextTranslations.DynamicsMustHaveAtLeastOneFunctionQuery();
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
-
-//			actionMsg = "Remove "+(nEdges -1)+" to Category nodes from this root record.";
-//			errorMsg = "A root record must have 1 edge to a Category but found "+ nEdges +".";
+			return this;
 		}
 		return this;
 	}

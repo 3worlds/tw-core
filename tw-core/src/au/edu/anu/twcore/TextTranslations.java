@@ -918,14 +918,18 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Check that a root record is used by one and only one category
+	 * {autoVar, decorators, drivers, constants}.
+	 */
 	public static String[] getRecordUsedByAtMostOneCategoryQuery(int nEdges) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Remove " + (nEdges - 1) + " to Category nodes from this root record.";
+			am = "Remove all but one in edge from a Category.";
 			cm = "Expected 1 edge to this root record but found " + nEdges + ".";
 		} else {// make sure default is English!
-			am = "Remove " + (nEdges - 1) + " to Category nodes from this root record.";
+			am = "Remove all but one in edge from a Category.";
 			cm = "Expected 1 edge to this root record but found " + nEdges + ".";
 		}
 		String[] result = { am, cm };
@@ -1185,6 +1189,20 @@ public class TextTranslations {
 		return result;
 	}
 
+	public static String[] DynamicsMustHaveAtLeastOneFunctionQuery() {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Add at least one 'function:' node to a process in the 'dynamics:' sub-tree.";
+			cm = "Expected at least one 'function:' node but found none.";
+		} else {// make sure default is English or Sanskrit users will get no messages!
+			am = "Add at least one 'function:' node to a process in the 'dynamics:' sub-tree.";
+			cm = "Expected at least one 'function:' node but found none.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
 
 }
 
@@ -1194,7 +1212,7 @@ public class TextTranslations {
 //if (Language.French()) {
 //	am = "";
 //	cm = "";
-//} else {// make sure default is English!
+//} else {// make sure default is English or Sanskrit users will get no messages!
 //	am = "";
 //	cm = "";
 //}
