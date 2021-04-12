@@ -1586,7 +1586,7 @@ public class DocoGenerator {
 			return result;
 		for (TreeGraphDataNode i : l)
 			result += ", " + i.id();
-		return result.replaceFirst("' ", "");
+		return result.replaceFirst(", ", "");
 	}
 
 	private void appendConsequences(String indent, StringBuilder flowChart, TreeNode parent) {
@@ -1754,7 +1754,7 @@ public class DocoGenerator {
 		if (validFromCT.isEmpty() && validToCT.isEmpty()) {
 			return new Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>>(null, null);
 		} else
-			return new Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>>(validFromCT, validFromCT);
+			return new Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>>(validFromCT, validToCT);
 
 	}
 
