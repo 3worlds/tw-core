@@ -119,7 +119,7 @@ public enum ConfigurationEdgeLabels {
 	E_TRACKSPACE	("trackSpace",		"trks1",		TrackSpaceEdge.class),
 //	E_TRACKSYSTEM	("trackSystem",		"trks1",		TrackSystemEdge.class)
 	// Utility - in some cases one may save a child node as an out node with a specific label
-	E_CHILD			("_CHILD",			"child",				Edge.class)
+	E_CHILD			("_CHILD",			"child",		Edge.class)
 	;
 	//=========================================================================
 	private final String label;
