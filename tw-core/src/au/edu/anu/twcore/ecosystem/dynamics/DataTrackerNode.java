@@ -275,8 +275,13 @@ public class DataTrackerNode extends InitialisableNode
 			if (parent instanceof FieldNode)
 				l.add(parent.id());
 			else if (parent instanceof TableNode) {
-				if (index != null)
-					l.add(parent.id() + index.getWithFlatIndex(i--));
+				if (index != null) {
+					if (index.getWithFlatIndex(i) != null) 
+						l.add(parent.id() + index.getWithFlatIndex(i));
+					else
+						l.add(parent.id());
+					i--;
+				}
 				else
 					l.add(parent.id());
 			}
