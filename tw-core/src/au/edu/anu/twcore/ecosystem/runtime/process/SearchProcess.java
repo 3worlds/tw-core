@@ -223,18 +223,20 @@ public class SearchProcess
 	 * @param others	the list of candidate SystemComponents for establishing a relation to
 	 */
 	private void crudeLoop(SystemComponent focal,
-		DescribedContainer<SystemComponent> others) {
+			DescribedContainer<SystemComponent> others,
+			double t,
+			double dt) {
 		if ((others.itemCategorized()!=null) &&
 			(others.itemCategorized().belongsTo(otherCategories)) ) {
 				Collection<SystemComponent> fcOthers = focal.getOutRelatives(relContainer.type().id());
 				for (SystemComponent sc: others.items())
 					if (focal!=sc)
 						if (!fcOthers.contains(sc))
-							executeFunctions(0.0,0.0,focal,sc);
+							executeFunctions(t,dt,focal,sc);
 		}
 		else
 			for (CategorizedContainer<SystemComponent> subc: others.subContainers())
-				crudeLoop(focal,(DescribedContainer<SystemComponent>) subc);
+				crudeLoop(focal,(DescribedContainer<SystemComponent>) subc,t,dt);
 	}
 
 	//
@@ -249,20 +251,25 @@ public class SearchProcess
 	 * @param comm	the arena container, which contains all already present components
 	 *
 	 */
-	public void setPermanentRelations(Collection<SystemComponent> newComps,ComponentContainer comm) {
+	public void setPermanentRelations(Collection<SystemComponent> newComps,
+			ComponentContainer comm,
+			long time,
+			long dtime) {
 		if (relContainer.isPermanent()) {
+			double t = timer.userTime(time);
+			double dt = timer.dt(dtime);
 			arena = (ArenaComponent) comm.descriptors();
 			// 1. loop on new components as focals to relate them to existing components
 			if (comm!=null) {
 				if (space==null) { // unindexed search
 					for (SystemComponent focal:newComps)
 						if (focal.membership().belongsTo(focalCategories))
-							crudeLoop(focal,comm);
+							crudeLoop(focal,comm,t,dt);
 				}
 				else { // indexed search
 					for (SystemComponent focal:newComps)
 						if (focal.membership().belongsTo(focalCategories))
-							indexedLoop(0.0,0.0,focal);
+							indexedLoop(t,dt,focal);
 				}
 			}
 			// 2. loop on old components as focals to relate them to newly created components
@@ -279,7 +286,7 @@ public class SearchProcess
 									// but other may be in the same list as focal if they
 									// belong to the same categories
 									if (!((focalCategories==otherCategories) && (focs.contains(other))))
-										executeFunctions(0.0,0.0,focal,other);
+										executeFunctions(t,dt,focal,other);
 				}
 				else  {
 					// indexed search
@@ -298,7 +305,7 @@ public class SearchProcess
 								if (newComps.contains(other))
 									if (other!=focal)
 										if (!other.container().containsInitialItem(other))
-											executeFunctions(0.0,0.0,focal,other);
+											executeFunctions(t,dt,focal,other);
 						}
 					}
 				}
