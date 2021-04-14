@@ -968,7 +968,10 @@ public class DocoGenerator {
 		StringTable tblRefs = (StringTable) cfg.root().properties().getPropertyValue(P_MODEL_CITATIONS.key());
 		StringBuilder refs = new StringBuilder();
 		for (int i = 0; i < tblRefs.size(); i++) {
-			String entry = tblRefs.getWithFlatIndex(i).trim();
+			String entry = tblRefs.getWithFlatIndex(i);
+			if (entry==null)
+				entry="";
+			entry = entry.trim();
 			if (!entry.isBlank()) {
 				refs.append(++counter).append(". ").append(entry).append("\n");
 			}
