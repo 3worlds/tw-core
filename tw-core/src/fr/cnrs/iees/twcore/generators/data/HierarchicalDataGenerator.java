@@ -275,7 +275,7 @@ public abstract class HierarchicalDataGenerator
 	protected abstract void tableCode(ClassGenerator cg,String ftype,String contentType,Iterable<TreeGraphDataNode> dimList);
 
 	@Override
-	public final boolean generateCode() {
+	public final boolean generateCode(boolean reportErrors) {
 		if (spec.classId().equals(N_RECORD.label()))
 			className = packageName+"."+generateRecordCode(spec);
 		else if (spec.classId().equals(N_TABLE.label()))

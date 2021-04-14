@@ -1307,7 +1307,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	}
 
 	@Override
-	public boolean generateCode() {
+	public boolean generateCode(boolean reportErrors) {
 		log.info("    generating file " + className + ".java ...");
 		File ctGeneratedCodeDir = getModelCodeDir(modelName);
 		ctGeneratedCodeDir.mkdirs();

@@ -190,7 +190,7 @@ public class CodeGenerator {
 						generateFunctionCode(initFuncs.get(0), systemNode.id());
 			}
 			// write the user code file
-			modelgen.generateCode();
+			modelgen.generateCode(true);
 		}
 
 		// compile code to check it
@@ -211,7 +211,7 @@ public class CodeGenerator {
 	 */
 	private boolean generateDataInterfaceCode(TreeGraphDataNode category, String modelName) {
 		TwDataInterfaceGenerator ig = new TwDataInterfaceGenerator(modelName, category);
-		return ig.generateCode();
+		return ig.generateCode(true);
 	}
 
 	// Q&D testing
@@ -250,7 +250,7 @@ public class CodeGenerator {
 			// generate the new class
 			Collection<Category> cats = Categorized.getSuperCategories(elementType);
 			TwDataGenerator gen = new TwDataGenerator(modelName, spec, cats, dataGroup);
-			gen.generateCode();
+			gen.generateCode(true);
 			// keep the graph in sync with the newly generated class
 			// check the new generated class name replaces the old one in properties
 			// driverClass, constantClass, etc.
@@ -365,7 +365,7 @@ public class CodeGenerator {
 		modelgen.setMethod(function);
 		TwFunctionGenerator generator = new TwFunctionGenerator(function.id(), function, modelName);
 		generator.setArgumentCalls(modelgen);
-		generator.generateCode();
+		generator.generateCode(true);
 		// UserProjectLink.addFunctionFile(generator.getFile());
 		String genClassName = generator.generatedClassName();
 		if (function.properties().hasProperty(P_FUNCTIONCLASS.key())) {

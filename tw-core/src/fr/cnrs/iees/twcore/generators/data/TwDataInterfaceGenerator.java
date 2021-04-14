@@ -146,7 +146,7 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 	}
 	
 	@Override
-	public boolean generateCode() {
+	public boolean generateCode(boolean reportErrors) {
 		ExtendablePropertyList catProps = (ExtendablePropertyList) spec.properties();
 		boolean cd1, cd2, cd3;
 		cd1 = setDataClassName(catProps,P_DRIVERCLASS.key());

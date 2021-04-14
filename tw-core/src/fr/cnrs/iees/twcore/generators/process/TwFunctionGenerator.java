@@ -202,7 +202,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 	}
 
 	@Override
-	public boolean generateCode() {
+	public boolean generateCode(boolean reportErrors) {
 		log.info("    generating file " + name + ".java ...");
 //		File ctGeneratedCodeDir = getModelCodeDir(model);
 		File ctGeneratedCodeDir = getModelGlueCodeDir(model);
