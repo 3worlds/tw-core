@@ -51,7 +51,7 @@ public enum TwFunctionArguments {
 	other			("au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent", "other component "),
 	// space
 	space			("au.edu.anu.twcore.ecosystem.runtime.space.DynamicSpace", "space "),
-	limits			(Box.class.getCanonicalName(), "limits "),
+	limits			(Box.class.getCanonicalName(), "space limits "),
 	searchRadius	("double", "maximal search radius "),
 
 //	focalLoc		(Point.class.getCanonicalName(), "focal component location "),

@@ -56,6 +56,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
@@ -273,7 +274,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			else
 				sb.append("\n<dl><dt>Authors: </dt><dd>\n");
 			for (int i = 0; i < auths.size(); i++) {
-				sb.append(auths.getWithFlatIndex(i)).append("<br/>\n");
+				sb.append(Strings.nullToEmpty(auths.getWithFlatIndex(i))).append("<br/>\n");
 				if (i > 0)
 					sb.append("         ");
 			}
@@ -292,7 +293,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			else
 				sb.append("\n<dl><dt>Contacts: </dt><dd>\n");
 			for (int i = 0; i < contacts.size(); i++) {
-				sb.append(contacts.getWithFlatIndex(i)).append("<br/>\n");
+				sb.append(Strings.nullToEmpty(contacts.getWithFlatIndex(i))).append("<br/>\n");
 				if (i > 0)
 					sb.append("         ");
 			}
@@ -308,12 +309,12 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			StringTable refs = (StringTable) root3w.properties().getPropertyValue(P_MODEL_CITATIONS.key());
 			if (refs.size() == 1) {
 				sb.append("\n<dl><dt>Reference publication: </dt><dd>\n");
-				sb.append(refs.getWithFlatIndex(0)).append("</dd></dl>");
+				sb.append(Strings.nullToEmpty(refs.getWithFlatIndex(0))).append("</dd></dl>");
 			} else {
 				sb.append("\n<p><strong>Reference publications: </strong></p>\n");
 				sb.append("<ol>");
 				for (int i = 0; i < refs.size(); i++)
-					sb.append("<li>").append(refs.getWithFlatIndex(i)).append("</li>\n");
+					sb.append("<li>").append(Strings.nullToEmpty(refs.getWithFlatIndex(i))).append("</li>\n");
 				sb.append("</ol>");
 			}
 		} else {
@@ -1236,7 +1237,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 					}
 				}
 				// writeable arguments (inner variables)
-				if ((arg == focal) || (arg == other))
+				if (EnumSet.of(focal,other,group,otherGroup,lifeCycle,otherLifeCycle,arena).contains(arg))
+//				if ((arg == focal) || (arg == other))
 					for (String innerVar : ftype.innerVars()) // otherDrv etc
 						if (recToInnerVar.get(rec.name)!=null)
 							if ((innerVar.contains(recToInnerVar.get(rec.name))) &&

@@ -369,7 +369,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					if (rec!=null)
 						if (rec.klass!=null) // this occurs when a category has no data attached
 							if (rec.members!=null) {
-								if ((arg==focal)||(arg==other))
+								if (EnumSet.of(focal,other,group,otherGroup,lifeCycle,otherLifeCycle,arena).contains(arg))
+//								if ((arg==focal)||(arg==other))
 									for (String innerVar:type.innerVars() ) {
 					// generation of inner classes for return values: unique statements
 					if (recToInnerVar.get(rec.name)!=null)
@@ -436,7 +437,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					if (callArg!=null)
 						callStatement += indent+indent+indent+ callArg + ",\n";
 					// for returned values, generate inner class and proper calls
-					if ((arg==focal)||(arg==other))
+					if (EnumSet.of(focal,other,group,otherGroup,lifeCycle,otherLifeCycle,arena).contains(arg))
+//					if ((arg==focal)||(arg==other))
 						for (String innerVar:type.innerVars() )
 							if (recToInnerVar.get(rec.name)!=null)
 								if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
@@ -460,7 +462,8 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 								+field.name+"(_"+innerVar+"."+field.name+")");
 					}
 				} // rec.members
-				if ((arg==focal)||(arg==other))
+//				if ((arg==focal)||(arg==other))
+				if (EnumSet.of(focal,other,group,otherGroup,lifeCycle,otherLifeCycle,arena).contains(arg))
 					for (String innerVar:type.innerVars() )
 						if (recToInnerVar.get(rec.name)!=null)
 							if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
