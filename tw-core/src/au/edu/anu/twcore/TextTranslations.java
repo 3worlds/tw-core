@@ -66,8 +66,8 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			if (UserProjectLink.haveUserProject()) {
-				am = "Corriger les erreurs de codage dans le projet java <<" + Language.oq+UserProjectLink.projectRoot().getName()
-						+ Language.cq+". ";
+				am = "Corriger les erreurs de codage dans le projet java <<" + Language.oq
+						+ UserProjectLink.projectRoot().getName() + Language.cq + ". ";
 				if (!snippets.isEmpty())
 					am += " et / ou extrait (s) de code: " + snippets;
 				am += ".";
@@ -114,7 +114,8 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			am = "Un fichier de classe Java est manquant.";
-			cm = "Fichier de classe attendu pour " + Language.oq+srcName + Language.cq+" mais aucun n'a été trouvé.";
+			cm = "Fichier de classe attendu pour " + Language.oq + srcName + Language.cq
+					+ " mais aucun n'a été trouvé.";
 		} else {// make sure default is English!
 			am = "A Java class file is missing.";
 			cm = "Expected class file for '" + srcName + "' but none found.";
@@ -155,7 +156,8 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajoutez <<" + Language.oq+resourceName + Language.cq+" à " + Language.oq+location + Language.cq+".";
+			am = "Ajoutez <<" + Language.oq + resourceName + Language.cq + " à " + Language.oq + location + Language.cq
+					+ ".";
 			cm = "La ressource doit être présente pour le déploiement.";
 		} else {// make sure default is English!
 			am = "Add '" + resourceName + "' to '" + location + "'.";
@@ -188,8 +190,8 @@ public class TextTranslations {
 		String am;// action message
 		String cm;// constraint message
 		if (Language.French()) {
-			am = "Ajouter un lien vers un enfant de " + Language.oq+ nodeRef + Language.cq+".";
-			cm = "Lien attendu vers un enfant de "+ Language.oq + nodeRef + Language.cq+" mais n'en a trouvé aucun.";
+			am = "Ajouter un lien vers un enfant de " + Language.oq + nodeRef + Language.cq + ".";
+			cm = "Lien attendu vers un enfant de " + Language.oq + nodeRef + Language.cq + " mais n'en a trouvé aucun.";
 		} else {// make sure default is English!
 			am = "Add edge to one child of '" + nodeRef + "'";
 			cm = "Expected edge to one child of '" + nodeRef + "' but found none.";
@@ -434,12 +436,12 @@ public class TextTranslations {
 	}
 
 	/**
-	 * Checks that if a child node with a given property value is present, then no child with another
-	 * value in the same property can be present. Can be instantiated with a single label, or a
-	 * table of compatible labels.
+	 * Checks that if a child node with a given property value is present, then no
+	 * child with another value in the same property can be present. Can be
+	 * instantiated with a single label, or a table of compatible labels.
 	 *
 	 */
- 
+
 	public static String[] getExclusiveChildPropertyValueQuery(String key, List<Object> expectedValues) {
 		String am;
 		String cm;
@@ -750,7 +752,7 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			am = "Ajouter un noeud à l'un des «" + labels.toString() + "».";
-			cm = "Attendu au moins un enfant intitulé «"+ labels.toString() +"», mais n'en trouve aucun";
+			cm = "Attendu au moins un enfant intitulé «" + labels.toString() + "», mais n'en trouve aucun";
 		} else {// make sure default is English!
 			am = "Add noded to one of '" + labels.toString() + "'.";
 			cm = "Expected at least one child labelled '" + labels.toString() + "' but found none.";
@@ -919,17 +921,23 @@ public class TextTranslations {
 	}
 
 	/**
-	 * Check that a root record is used by one and only one category
-	 * {autoVar, decorators, drivers, constants}.
+	 * Check that a root record is used by one and only one category {autoVar,
+	 * decorators, drivers, constants}.
 	 */
 	public static String[] getRecordUsedByAtMostOneCategoryQuery(int nEdges) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Remove all but one in edge from a Category.";
+			if (nEdges == 0) {
+				am = "Add an edge from a Category to here or remove this record sub-tree.";
+			} else
+				am = "Remove all but one in edge from a Category to this record.";
 			cm = "Expected 1 edge to this root record but found " + nEdges + ".";
 		} else {// make sure default is English!
-			am = "Remove all but one in edge from a Category.";
+			if (nEdges == 0) {
+				am = "Add an edge from a Category to here or remove this record sub-tree.";
+			} else
+				am = "Remove all but one in edge from a Category to this record.";
 			cm = "Expected 1 edge to this root record but found " + nEdges + ".";
 		}
 		String[] result = { am, cm };
@@ -1158,18 +1166,18 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getTimeIntervalValidityQuery3(String shortestKey, String longestKey,
-			String scaleType, String foundShortest, String foundLongest) {
+	public static String[] getTimeIntervalValidityQuery3(String shortestKey, String longestKey, String scaleType,
+			String foundShortest, String foundLongest) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Set '" + shortestKey + "' to be less than or equal to '" + longestKey + "'.";
-			cm = "Expected '" + shortestKey + "' to be <= '" + longestKey + "' for time scale type '"
-					+ scaleType + "' but found '" + foundShortest + "' and '" + foundLongest + "'.";
+			cm = "Expected '" + shortestKey + "' to be <= '" + longestKey + "' for time scale type '" + scaleType
+					+ "' but found '" + foundShortest + "' and '" + foundLongest + "'.";
 		} else {// make sure default is English!
 			am = "Set '" + shortestKey + "' to be less than or equal to '" + longestKey + "'.";
-			cm = "Expected '" + shortestKey + "' to be <= '" + longestKey + "' for time scale type '"
-					+ scaleType + "' but found '" + foundShortest + "' and '" + foundLongest + "'.";
+			cm = "Expected '" + shortestKey + "' to be <= '" + longestKey + "' for time scale type '" + scaleType
+					+ "' but found '" + foundShortest + "' and '" + foundLongest + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
@@ -1179,10 +1187,12 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Set property '" + key + "' value to '" + expected + "' or change the time units of associated Timers.";
+			am = "Set property '" + key + "' value to '" + expected
+					+ "' or change the time units of associated Timers.";
 			cm = "Expected value of '" + key + " to be " + expected + "' but found '" + found + "'.";
 		} else {// make sure default is English!
-			am = "Set property '" + key + "' value to '" + expected + "' or change the time units of associated Timers.";
+			am = "Set property '" + key + "' value to '" + expected
+					+ "' or change the time units of associated Timers.";
 			cm = "Expected value of '" + key + " to be " + expected + "' but found '" + found + "'.";
 		}
 		String[] result = { am, cm };
@@ -1202,7 +1212,6 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
-
 
 }
 
