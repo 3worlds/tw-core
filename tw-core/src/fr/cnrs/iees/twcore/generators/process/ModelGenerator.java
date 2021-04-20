@@ -147,6 +147,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private static Map<String,EnumSet<TwFunctionArguments>> excludedOtherArguments = new HashMap<>();
 	// access strings to dataGroups of CategorizedComponents (excl. nextState)
 	static EnumMap<ConfigurationEdgeLabels, String> dataAccessors = new EnumMap<>(ConfigurationEdgeLabels.class);
+	// prefixes when making inner classes and variables for data groups (drivers etc.)
+	static Map<String, String> dataGroupPrefixes = new HashMap<>();
 	static {
 		excludedFocalArguments.put(Category.arena,EnumSet.of(arena,lifeCycle,group));
 		excludedFocalArguments.put(Category.lifeCycle,EnumSet.of(lifeCycle,group));
@@ -158,7 +160,11 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		dataAccessors.put(E_AUTOVAR, "autoVar");
 		dataAccessors.put(E_CONSTANTS, "constants");
 		dataAccessors.put(E_DECORATORS, "decorators");
-		dataAccessors.put(E_DRIVERS, "currentState");// nextState ?
+		dataAccessors.put(E_DRIVERS, "drivers");// CAUTION: access is via currentState or nextState
+		dataGroupPrefixes.put("autoVar", "Auto");
+		dataGroupPrefixes.put("constants", "Cnt");
+		dataGroupPrefixes.put("decorators", "Dec");
+		dataGroupPrefixes.put("drivers", "Drv");
 	}
 
 	private class generatedData {
@@ -1112,18 +1118,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public ModelMethodGenerator setMethod(TreeGraphDataNode function) {
-		Map<String, ConfigurationEdgeLabels> nameLabelMatches = new HashMap<>();
-		nameLabelMatches.put("autoVar", E_AUTOVAR);
-		nameLabelMatches.put("constants", E_CONSTANTS);
-		nameLabelMatches.put("decorators", E_DECORATORS);
-		nameLabelMatches.put("currentState", E_DRIVERS);
-		// mapping between inerVar names and rec.name
-		Map<String, String> recToInnerVar = new HashMap<>();
-		recToInnerVar.put("autoVar", null);
-		recToInnerVar.put("constants", "Cnt");
-		recToInnerVar.put("decorators", "Dec");
-		recToInnerVar.put("currentState", "Drv");
-
 		orgLevel(function);
 		StringBuilder headerComment = new StringBuilder();
 		String returnComment = null;
@@ -1199,7 +1193,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		EnumSet<TwFunctionArguments> argSet2 = EnumSet.noneOf(TwFunctionArguments.class);
 		argSet2.addAll(ftype.readOnlyArguments());
 		argSet2.addAll(ftype.localArguments());
-//		argSet2.addAll(ftype.writeableArguments());
 
 		// t, dt
 		Set<TwFunctionArguments> intersection = new TreeSet<>(ftype.readOnlyArguments());
@@ -1227,8 +1220,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						String prefix = "";
 						if (EnumSet.of(other,group,otherGroup,lifeCycle,otherLifeCycle).contains(arg))
 							prefix = arg.name()+"_";
-						method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
-							prefix+mb.name, mb.type,
+						method.addArgument(prefix+mb.name, 
+							mb.type,
 							arg.description() + rec.name + " " + mb.comment);
 						headerComment.append("@param ").append(prefix).append(mb.name).append(' ')
 							.append(arg.description()).append(rec.name).append(' ').append(mb.comment)
@@ -1236,27 +1229,28 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 						replicateNames.add(mb.name);
 					}
 				}
-				// writeable arguments (inner variables)
-				if (EnumSet.of(focal,other,group,otherGroup,lifeCycle,otherLifeCycle,arena).contains(arg))
-//				if ((arg == focal) || (arg == other))
-					for (String innerVar : ftype.innerVars()) // otherDrv etc
-						if (recToInnerVar.get(rec.name)!=null)
-							if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
-								(innerVar.contains(arg.name()))) {
+				// writeable arguments (including inner variables)
+				if (EnumSet.of(focal,other,group,otherGroup,
+					lifeCycle,otherLifeCycle,arena).contains(arg)) {
+					List<String> list = ftype.innerVars().get(arg);
+					if (list!=null)
+						if (list.contains(rec.name)) {
+							String innerVar = rec.name;
 						String s = "";
-						if (innerVar.contains("Drv"))
+						if (innerVar.equals("drivers"))
 							s = "next drivers for ";
-						else if (innerVar.contains("Cnt"))
-							s = "new constants for ";
-						else if (innerVar.contains("Dec"))
-							s = "new decorators for ";
-						// e.g.: Chaos.FocalDrv focalDrv // next
-						method.addArgument(/* arg,nameLabelMatches.get(rec.name), */
-							innerVar, fname + "." + initialUpperCase(innerVar),
+						else if (innerVar.equals("autoVar"))
+							s = "new automatic variables for ";
+						else 
+							s = "new " + innerVar + " for ";
+						String argName = arg.name() + dataGroupPrefixes.get(innerVar);
+						method.addArgument(argName, 
+							fname + "." + initialUpperCase(argName),
 							s + arg.description());
-						headerComment.append("@param ").append(innerVar).append(' ').append(s)
+						headerComment.append("@param ").append(argName).append(' ').append(s)
 							.append(arg.description()).append('\n');
-						replicateNames.add(innerVar);
+						replicateNames.add(argName);
+					}
 				}
 			}
 		}
@@ -1264,7 +1258,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// space, including return values
 		if (hasSpace) {
 			// read-only argument read from space
-			if (ftype.innerVars().contains("limits")) {
+			if (ftype.innerVars().containsKey(limits)) {
 				method.addArgument(limits.name(), simpleType(limits.type()), limits.description());
 				headerComment.append("@param ").append(limits.name()).append(' ').append(limits.description()).append('\n');
 				replicateNames.add(limits.name());

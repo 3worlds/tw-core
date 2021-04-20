@@ -339,12 +339,6 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 
 	@SuppressWarnings("unchecked")
 	public void setArgumentCalls(ModelGenerator gen) {
-		// mapping between inerVar names and rec.name
-		Map<String,String> recToInnerVar = new HashMap<>();
-		recToInnerVar.put("autoVar",null);
-		recToInnerVar.put("constants","Cnt");
-		recToInnerVar.put("decorators","Dec");
-		recToInnerVar.put("currentState","Drv");
 		String classToCall = gen.className();
 		modelCodeClassName = gen.generatedClassName();
 		String indent = "\t";
@@ -369,37 +363,44 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					if (rec!=null)
 						if (rec.klass!=null) // this occurs when a category has no data attached
 							if (rec.members!=null) {
-								if (EnumSet.of(focal,other,group,otherGroup,lifeCycle,otherLifeCycle,arena).contains(arg))
-//								if ((arg==focal)||(arg==other))
-									for (String innerVar:type.innerVars() ) {
-					// generation of inner classes for return values: unique statements
-					if (recToInnerVar.get(rec.name)!=null)
-						if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
-							(innerVar.contains(arg.name())))  {
-								String innerClass = initialUpperCase(innerVar);
-								List<String> innerClassDeclaration = new LinkedList<>();
-								// workout inner class declaration first line
-								// e.g.: "public class FocalDrv {"
-								innerClassDeclaration.add(indent+"public class "+innerClass+" {");
-								innerClassDecl.put(innerVar,innerClassDeclaration);
-								// workout instantiation of inner class as a local variable
-								// e.g.: FocalDrv _focalDrv = new FocalDrv();
-								List<String> innerVarInitialisation = new LinkedList<>();
-								innerVarInitialisation.add(innerClass+" _"+innerVar+" = new "+innerClass+"()");
-								innerVarInit.put(innerVar,innerVarInitialisation);
-								// workout copy of user-code-modified values back into SystemComponent data structures
-								// (NB different treatment for dynamic variables, ie drivers, and others)
-								// e.g.: TwData focalDrv = focal.nextState();
-								List<String> innerVarBackCopy = new LinkedList<>();
-								innerVarCopy.put(innerVar,innerVarBackCopy);
-								dataClassesToImport.add(TwData.class.getCanonicalName());
-								if ((rec.name.equals("currentState")) & !(type==TwFunctionTypes.SetInitialState))
+								if (EnumSet.of(focal,other,group,otherGroup,
+									lifeCycle,otherLifeCycle,arena).contains(arg)) {
+				List<String> list = type.innerVars().get(arg);
+				if (list!=null)
+					if (list.contains(rec.name)) {
+						// generation of inner classes for return values: unique statements
+						if (ModelGenerator.dataGroupPrefixes.get(rec.name)!=null) {
+							String innerVar = arg.name()+ ModelGenerator.dataGroupPrefixes.get(rec.name);
+							String innerClass = initialUpperCase(innerVar);
+							List<String> innerClassDeclaration = new LinkedList<>();
+							// workout inner class declaration first line
+							// e.g.: "public class FocalDrv {"
+							innerClassDeclaration.add(indent+"public class "+innerClass+" {");
+							innerClassDecl.put(innerVar,innerClassDeclaration);
+							// workout instantiation of inner class as a local variable
+							// e.g.: FocalDrv _focalDrv = new FocalDrv();
+							List<String> innerVarInitialisation = new LinkedList<>();
+							innerVarInitialisation.add(innerClass+" _"+innerVar+" = new "+innerClass+"()");
+							innerVarInit.put(innerVar,innerVarInitialisation);
+							// workout copy of user-code-modified values back into SystemComponent data structures
+							// (NB different treatment for dynamic variables, ie drivers, and others)
+							// e.g.: TwData focalDrv = focal.nextState();
+							List<String> innerVarBackCopy = new LinkedList<>();
+							innerVarCopy.put(innerVar,innerVarBackCopy);
+							dataClassesToImport.add(TwData.class.getCanonicalName());
+							if (rec.name.equals("drivers")) { 
+								if (type==TwFunctionTypes.SetInitialState)
 									innerVarInit.get(innerVar).add(TwData.class.getSimpleName()+" "
-										+innerVar+" = "+arg.toString()+".nextState()");
+										+innerVar+" = "+arg.toString()+".currentState()");
 								else
 									innerVarInit.get(innerVar).add(TwData.class.getSimpleName()+" "
-										+innerVar+" = "+arg.toString()+"."+rec.name+"()");
+											+innerVar+" = "+arg.toString()+".nextState()");
+							}
+							else
+								innerVarInit.get(innerVar).add(TwData.class.getSimpleName()+" "
+									+innerVar+" = "+arg.toString()+"."+rec.name+"()");
 						}
+					}
 				}
 				// special case for automatic variables (age, birthdate, population size etc)
 				if (rec.klass.equals(ComponentData.class.getName()) || rec.klass.equals(ContainerData.class.getName()))
@@ -433,49 +434,59 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 								}
 							}
 					}
-					callArg = "((" + typeCast + ")"+arg.toString()+"."+rec.name+"())."+field.name+"()";
+					String dataGroup = rec.name;
+					if (dataGroup.equals("drivers"))
+						dataGroup = "currentState";
+					callArg = "((" + typeCast + ")"+arg.toString()+"."+dataGroup+"())."+field.name+"()";
 					if (callArg!=null)
 						callStatement += indent+indent+indent+ callArg + ",\n";
 					// for returned values, generate inner class and proper calls
-					if (EnumSet.of(focal,other,group,otherGroup,lifeCycle,otherLifeCycle,arena).contains(arg))
-//					if ((arg==focal)||(arg==other))
-						for (String innerVar:type.innerVars() )
-							if (recToInnerVar.get(rec.name)!=null)
-								if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
-									(innerVar.contains(arg.name()))) {
-						// imports needed for non primitive field classes
-						if (field.fullType!=null)
-							dataClassesToImport.add(field.fullType);
-						// workout inner class field declarations
-						// e.g.: double y;
-						innerClassDecl.get(innerVar).add(indent+indent+"public "+field.type+" "+field.name+";");
-						// workout local variable initialisation from SystemComponent data structures
-						// e.g.: _focalDec.y = ((DecVar)focalDec).y();
-						innerVarInit.get(innerVar).add("_"+innerVar+"."+field.name
-							+" = (("+typeCast+")"+innerVar+")."+field.name+"()");
-						// workout back copy of user-code function output into SystemComponent data structures
-						// e.g.: ((DrvVar)focalDrv).y(_focalDrv.y);
-						if (field.isTable)
-							; // nothing to do with tables since they can be directly modified.
-						else
-							innerVarCopy.get(innerVar).add("(("+typeCast+")"+innerVar+")."
-								+field.name+"(_"+innerVar+"."+field.name+")");
+					if (EnumSet.of(focal,other,group,otherGroup,
+						lifeCycle,otherLifeCycle,arena).contains(arg)) {
+						List<String> list = type.innerVars().get(arg);
+						if (list!=null)
+							if (list.contains(rec.name)) {
+							if (ModelGenerator.dataGroupPrefixes.get(rec.name)!=null) {
+								String innerVar = arg.name()+ ModelGenerator.dataGroupPrefixes.get(rec.name);
+								// imports needed for non primitive field classes
+								if (field.fullType!=null)
+									dataClassesToImport.add(field.fullType);
+								// workout inner class field declarations
+								// e.g.: double y;
+								innerClassDecl.get(innerVar).add(indent+indent+"public "+field.type+" "+field.name+";");
+								// workout local variable initialisation from SystemComponent data structures
+								// e.g.: _focalDec.y = ((DecVar)focalDec).y();
+								innerVarInit.get(innerVar).add("_"+innerVar+"."+field.name
+									+" = (("+typeCast+")"+innerVar+")."+field.name+"()");
+								// workout back copy of user-code function output into SystemComponent data structures
+								// e.g.: ((DrvVar)focalDrv).y(_focalDrv.y);
+								if (field.isTable)
+									; // nothing to do with tables since they can be directly modified.
+								else
+									innerVarCopy.get(innerVar).add("(("+typeCast+")"+innerVar+")."
+										+field.name+"(_"+innerVar+"."+field.name+")");
+							}
+						}
 					}
 				} // rec.members
-//				if ((arg==focal)||(arg==other))
-				if (EnumSet.of(focal,other,group,otherGroup,lifeCycle,otherLifeCycle,arena).contains(arg))
-					for (String innerVar:type.innerVars() )
-						if (recToInnerVar.get(rec.name)!=null)
-							if ((innerVar.contains(recToInnerVar.get(rec.name))) &&
-								(innerVar.contains(arg.name())))
-						// e.g.:_focalDrv // next value
+				if (EnumSet.of(focal,other,group,otherGroup,
+					lifeCycle,otherLifeCycle,arena).contains(arg)) {
+					List<String> list = type.innerVars().get(arg);
+					if (list!=null)
+						if (list.contains(rec.name))
+							if (ModelGenerator.dataGroupPrefixes.get(rec.name)!=null) {
+								String innerVar = arg.name() + 
+									ModelGenerator.dataGroupPrefixes.get(rec.name);
+							// e.g.:_focalDrv // next value
 								callStatement += indent+indent+indent+"_"+innerVar+ ",\n";
+						}
+				}
 			}
 		}
 		// space calls
 		if (gen.hasSpace) {
 			// read-only argument read from space
-			if (type.innerVars().contains("limits"))
+			if (type.innerVars().containsKey(limits))
 				callStatement += indent+indent+indent+ "space.boundingBox(),\n";
 			if (type.localArguments().contains(searchRadius))
 				callStatement += indent+indent+indent+ "process().searchRadius(),\n";
@@ -506,10 +517,17 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 					callStatement += indent+indent+indent+ callArg + ",\n";
 				}
 		}
-
-		for (String innerVar:type.innerVars())
-			if (innerClassDecl.get(innerVar)!=null)
-				innerClassDecl.get(innerVar).add(indent+"}\n");
+		Map<TwFunctionArguments,List<String>> map = type.innerVars();
+		for (TwFunctionArguments arg:map.keySet()) {
+			List<String> list = map.get(arg);
+			if (list!=null) 
+				for (String s:list)
+					if (ModelGenerator.dataGroupPrefixes.get(s)!=null) {
+						String innerVar = arg.name()+ ModelGenerator.dataGroupPrefixes.get(s);
+						if (innerClassDecl.get(innerVar)!=null)
+							innerClassDecl.get(innerVar).add(indent+"}\n");
+		}
+		}
 		// completion of user method call
 		callStatement = callStatement.substring(0, callStatement.length()-2);
 		callStatement +=")";

@@ -26,12 +26,13 @@
 package fr.cnrs.iees.twcore.constants;
 
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.EnumSet;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionArguments;
 import static fr.cnrs.iees.twcore.generators.process.TwFunctionArguments.*;
@@ -152,9 +153,24 @@ public enum TwFunctionTypes {
 	}
 
     /**
-     * read-only Function arguments to call the TwFunction descendant from Process
-     * eg in Process.executeFunction(): userFunction.changeState(...)
-     *
+     * <p>Selection of a TwFunctionType in the FunctionNode of the 3Worlds configuration graph
+     * triggers the generation of code that can be modified by the user to suit their particular
+     * model needs. Code generation consists in (i) one user-editable file hereafter called
+     * 'Model java file', and (ii) one non-editable file per FunctionNode hereafter called 
+     * 'function java file' that serves as an interface between the model java file and the
+     * 3Wolrds code.</p>
+     * 
+     * <p>This method returns the possible read-only arguments to user-defined functions.</p>     
+     * 
+     * <p>These will cause the generation by ModelGenerator of:</p>
+     * <ul>
+     * <li>a comment on the argument of the type "[field/table description] for [element type]".</li>
+     * <Li>a read-only argument in the function header list (of the Model java file) for each
+     * field/table of the 2Worlds data structure</li>
+     * <li>a conversion from the 3Worlds data structure to the argument in the function file when
+     * calling the function in the Model java file.</li>
+     * </ul>
+     * 
      * @return
      */
     public Set<TwFunctionArguments> readOnlyArguments() {
@@ -201,76 +217,80 @@ public enum TwFunctionTypes {
             return EnumSet.noneOf(TwFunctionArguments.class);
         }
     }
-
-    /** writeable arguments */
-    // Question here: should we allow components to modify decorators of their context
-    // (ie arena, group, lifecycle)? This would be handy to perform statistics on them,
-    // but this may also be source of a lot of mess - wait and see
-    // DONE: we allow writing to decorators of higher level containers.
-    public List<String> innerVars() {
-        List<String> result = new ArrayList<>();
-        switch (this) {
-        case ChangeOtherState:
-        	result.add("arenaDec");
-        	result.add("otherLifeCycleDec");
-        	result.add("otherGroupDec");
-            result.add("otherDrv");
-            result.add("otherDec");
-            result.add("limits");
-        break;
-        case ChangeRelationState:
-        	result.add("arenaDec");
-        	result.add("lifeCycleDec");
-        	result.add("otherLifeCycleDec");
-        	result.add("groupDec");
-        	result.add("otherGroupDec");
-            result.add("focalDrv");
-            result.add("focalDec");
-            result.add("otherDrv");
-            result.add("otherDec");
-            result.add("limits");
-        break;
-        case ChangeState:
-        	result.add("arenaDec");
-        	result.add("lifeCycleDec");
-        	result.add("groupDec");
-            result.add("focalDrv");
-            result.add("focalDec");
-            result.add("limits");
-        break;
-        case SetInitialState:
-            result.add("focalDrv");
-            result.add("focalCnt");
-        break;
-        case SetOtherInitialState:
-            result.add("otherDrv");
-            result.add("otherCnt");
-            result.add("limits");
-        break;
-        case MaintainRelationDecision:
-        case RelateToDecision:
-            result.add("limits");
-        default:
-            result.add("limits");
-        break;
-        }
-        return result;
+    
+    private static Map<TwFunctionTypes,Map<TwFunctionArguments,List<String>>> innerVarMap;
+    
+    static {
+    	innerVarMap = new EnumMap<>(TwFunctionTypes.class);
+    	for (TwFunctionTypes ft:TwFunctionTypes.values()) {
+    		Map<TwFunctionArguments,List<String>> result = new EnumMap<>(TwFunctionArguments.class);
+    		innerVarMap.put(ft,result);
+        	switch (ft) {
+    		case ChangeOtherState:
+    			result.put(arena, List.of("decorators"));
+            	result.put(otherLifeCycle,List.of("decorators"));
+            	result.put(otherGroup,List.of("decorators"));
+                result.put(other,List.of("drivers","decorators"));
+                result.put(limits,List.of());
+    			break;
+    		case ChangeRelationState:
+            	result.put(arena, List.of("decorators"));
+            	result.put(lifeCycle,List.of("decorators"));
+            	result.put(otherLifeCycle,List.of("decorators"));
+            	result.put(group,List.of("decorators"));
+            	result.put(otherGroup,List.of("decorators"));
+                result.put(focal,List.of("drivers","decorators"));
+                result.put(other,List.of("drivers","decorators"));
+                result.put(limits,List.of());
+    			break;
+    		case ChangeState:
+            	result.put(arena, List.of("decorators"));
+            	result.put(lifeCycle,List.of("decorators"));
+            	result.put(group,List.of("decorators"));
+                result.put(focal,List.of("drivers","decorators"));
+                result.put(limits,List.of());
+    			break;
+    		case SetInitialState:
+    			// NB: NO autoVar because no time model at this stage
+                result.put(focal,List.of("drivers","constants"));
+    			break;
+    		case SetOtherInitialState:
+                result.put(other,List.of("drivers","constants"));
+                result.put(limits,List.of());
+    			break;
+    		default:
+                result.put(limits,List.of());
+    			break;
+        	}   		
+    	}
     }
-
-//    public Set<TwFunctionArguments> writeableArguments() {
-//        switch (this) {
-//        case ChangeRelationState:
-//            return EnumSet.of(nextFocalLoc,nextOtherLoc);
-//        case ChangeOtherState:
-//        case SetOtherInitialState:
-//            return EnumSet.of(nextOtherLoc);
-//        case ChangeState:
-//        case SetInitialState:
-//            return EnumSet.of(nextFocalLoc);
-//        default:
-//            return EnumSet.noneOf(TwFunctionArguments.class);
-//        }
-//    }
+       
+    /**
+     * <p>Selection of a TwFunctionType in the FunctionNode of the 3Worlds configuration graph
+     * triggers the generation of code that can be modified by the user to suit their particular
+     * model needs. Code generation consists in (i) one user-editable file hereafter called
+     * 'Model java file', and (ii) one non-editable file per FunctionNode hereafter called 
+     * 'function java file' that serves as an interface between the model java file and the
+     * 3Wolrds code.</p>
+     * 
+     * <p>This method returns the possible writeable arguments to user-defined functions.</p>
+     * 
+     * <p>These will cause the generation by ModelGenerator of:</p>
+     * <ul>
+     * <li>a comment on the argument of the type "next/new [variable group] for [element type]".
+     * Variable groups are: constants, decorators, autoVar, drivers.</li>
+     * <li>a writeable argument in the function header list (of the Model java file)</li>
+     * <li>an inner class in the function jave file</li>
+     * <li>an instance of this inner class in the function java file</li>
+     * <li>a copy-back statement of this instance after the call to the Model java file function 
+     * matching this one</li>
+     * </ul>
+     * 
+     * @return a map of the writeable arguments required by this TwFunctionType
+     */
+    public Map<TwFunctionArguments,List<String>> innerVars() {
+    	return innerVarMap.get(this);
+    }
 
 }
 
