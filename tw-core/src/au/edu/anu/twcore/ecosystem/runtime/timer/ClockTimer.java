@@ -82,7 +82,7 @@ public class ClockTimer extends AbstractTimer {
 			long result = TimeUtil.timeBetween(currentDate, nextDate, baseUnit);
 			return result;
 		} else
-			return dt;
+			return dt*grainsPerBaseUnit; // in time line units
 	}
 
 	@Override
