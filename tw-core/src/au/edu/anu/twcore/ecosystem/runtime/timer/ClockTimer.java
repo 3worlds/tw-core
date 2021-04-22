@@ -43,13 +43,23 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  */
 public class ClockTimer extends AbstractTimer {
 
+	/** The time step of this model (the clock tick)*/
 	private long dt;
+	/** The time unit used by this timer, eg hour or month */
 	private TimeUnits timeUnit;
+	/** The shortest time unit of its TimeLine*/
 	private TimeUnits baseUnit;
+	/** The number of timeUnits use to count time ticks in this model, ie 1= 1hour or 1 month, 2
+	 * = 2hours or 2 monts */
 	private int nTimeUnits;
+	/** true if this timer doesnt use calendar time, ie dt is exact */
 	private boolean isExact;
-	/** if isExact is false grainsPerBaseUnit will be zero */
+	/** number of baseUnits in nTimeUnits*TimeUnit, ie the smallest time tick managed by this timer 
+	 * if isExact is false grainsPerBaseUnit will be zero */
 	protected long grainsPerBaseUnit;
+	/** the number of baseunits (or time grains) to shift the start of this timer at simulation start. 
+	 * Use this eg when you want two clock timers with the same units to always run out of sync*/
+	private long offset = 0;
 
 //	private LocalDateTime startDateTime;
 
@@ -67,7 +77,10 @@ public class ClockTimer extends AbstractTimer {
 			grainsPerBaseUnit = nTimeUnits;
 		else
 			grainsPerBaseUnit = nTimeUnits * f;
-
+		if (timeModel.properties().hasProperty(P_TIMEMODEL_OFFSET.key())) {
+			double os = (double) timeModel.properties().getPropertyValue(P_TIMEMODEL_OFFSET.key());
+			offset = twTime(os);
+		}
 	}
 
 	@Override
@@ -81,7 +94,8 @@ public class ClockTimer extends AbstractTimer {
 			// use calendar functions to calculate the difference.
 			long result = TimeUtil.timeBetween(currentDate, nextDate, baseUnit);
 			return result;
-		} else
+		} 
+		else 
 			return dt*grainsPerBaseUnit; // in time line units
 	}
 
@@ -90,6 +104,12 @@ public class ClockTimer extends AbstractTimer {
 		lastTime = newTime;
 	}
 
+	@Override
+	public void preProcess() {
+		lastTime = offset;
+	}
+
+	
 	// Still used???
 //	@Override
 //	protected Timer clone() {
@@ -97,20 +117,6 @@ public class ClockTimer extends AbstractTimer {
 //		ct.dt = dt;
 //		ct.baseUnit = baseUnit;
 //		return ct;
-//	}
-
-//	// No longer used
-//	@Override
-//	public long modelTime(double t) {
-//		// convert model time to simulator baseTime
-//		if (isExact)
-//			return Math.round(t * grainsPerBaseUnit);
-//		else {
-//			double result = TimeUtil.convertTime(t, timeUnit, baseUnit, startDateTime);
-//			result = result * nTimeUnits;
-//			return Math.round(result);
-//		}
-//
 //	}
 
 	@Override

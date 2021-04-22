@@ -254,7 +254,7 @@ public class SearchProcess
 	public void setPermanentRelations(Collection<SystemComponent> newComps,
 			ComponentContainer comm,
 			long time,
-			long dtime) {
+			long dtime) {		
 		if (relContainer.isPermanent()) {
 			double t = timer.userTime(time);
 			double dt = timer.dt(dtime);

@@ -60,6 +60,7 @@ public enum ConfigurationPropertyNames {
 	P_TIMEMODEL_NTU             ("nTimeUnits"),
 	P_TIMEMODEL_DT				("dt"),
 	P_TIMEMODEL_SUBCLASS		("subclass"),
+	P_TIMEMODEL_OFFSET			("offset"),
 	P_COMPONENT_LIFESPAN		("lifeSpan"),
 	P_RELATION_LIFESPAN			("lifeSpan"),
 	P_RELATION_DIRECTIONAL		("directional"),

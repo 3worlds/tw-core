@@ -38,4 +38,11 @@ archetype 3wSA-ClockTimer
 		mustSatisfyQuery timeUnitTimeUnitValidityQuery
 			className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
 			values = StringTable(([2]"timeUnit","scale"))
-      
+
+		hasProperty clockTimerOffsetPropertySpec
+			hasName = String("offset")
+			type = String("Double")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery isInRangeQueryOffsetClockTimerSpec
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = DoubleTable(([2]0.0,1E308)) 
