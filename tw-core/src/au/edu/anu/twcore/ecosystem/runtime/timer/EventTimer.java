@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.timer;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -48,12 +47,11 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 	private static final int INITIAL_QUEUE_SIZE = 100;
 	private Queue<TimeEvent> queue;
 	private TimeUnits timeUnit;
-	private LocalDateTime startDateTime;
+//	private LocalDateTime startDateTime;
 
 	public EventTimer(TimerNode timeModel) {
 		super(timeModel);
 		timeUnit = ((Timeline) timeModel.getParent()).shortestTimeUnit();
-		startDateTime = ((Timeline) timeModel.getParent()).getTimeOrigin();
 		queue = new PriorityQueue<TimeEvent>(INITIAL_QUEUE_SIZE,
 			new Comparator<TimeEvent>() {
 				@Override

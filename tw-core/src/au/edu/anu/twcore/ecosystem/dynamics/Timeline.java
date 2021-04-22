@@ -142,6 +142,13 @@ public class Timeline extends InitialisableNode implements Sealable {
 			return startDateTime;
 		throw new TwcoreException("attempt to access uninitialised data");
 	}
+	
+	public long getTimeOriginAsLong() {
+		if (sealed)
+			return timeOrigin;
+		throw new TwcoreException("attempt to access uninitialised data");
+	}
+
 
 	@Override
 	public int initRank() {

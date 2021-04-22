@@ -28,8 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.timer;
 
+import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
+import au.edu.anu.twcore.ecosystem.dynamics.Timeline;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import fr.ens.biologie.generic.utils.Logging;
@@ -40,10 +42,14 @@ public abstract class AbstractTimer implements Timer {
 	protected long lastTime = 0L;
 	protected TimerNode timeModel;
 	protected static Logger log = Logging.getLogger(AbstractTimer.class);
+	protected long timeOrigin = 0L;
+	protected LocalDateTime startDateTime;
 
 	public AbstractTimer(TimerNode timeModel) {
 		super();
 		this.timeModel = timeModel;
+		startDateTime = ((Timeline) timeModel.getParent()).getTimeOrigin();
+		timeOrigin = ((Timeline) timeModel.getParent()).getTimeOriginAsLong();
 	}
 
 	/**
@@ -64,7 +70,7 @@ public abstract class AbstractTimer implements Timer {
 
 	@Override
 	public void preProcess() {
-		lastTime = 0L;
+		lastTime = timeOrigin;
 	}
 
 	@Override

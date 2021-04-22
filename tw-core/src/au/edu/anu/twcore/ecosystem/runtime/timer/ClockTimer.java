@@ -106,7 +106,7 @@ public class ClockTimer extends AbstractTimer {
 
 	@Override
 	public void preProcess() {
-		lastTime = offset;
+		lastTime = timeOrigin + offset;
 	}
 
 	
