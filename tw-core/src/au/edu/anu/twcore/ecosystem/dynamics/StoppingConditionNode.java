@@ -126,8 +126,18 @@ public class StoppingConditionNode
 		String subClass = (String)properties().getPropertyValue(P_STOPCD_SUBCLASS.key());
 		StoppingCondition result = null;
 		if (SimpleStoppingCondition.class.getName().equals(subClass)) {
+			// compute end time from parameter + timeLine timeOrigin
 			DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_STOPCD_ENDTIME.key());
-			result = new SimpleStoppingCondition(dtt.getDateTime());
+			TreeNode system = this;
+			while (!(system instanceof SimulatorNode))
+				system = system.getParent();
+			Timeline tl = (Timeline) get(system, children(), 
+				selectOne(hasTheLabel(N_TIMELINE.label())));
+			long to = 0L;
+			if (tl.properties().hasProperty(P_TIMELINE_TIMEORIGIN.key()))
+				to = ((DateTimeType) tl.properties()
+					.getPropertyValue(P_TIMELINE_TIMEORIGIN.key())).getDateTime();
+			result = new SimpleStoppingCondition(dtt.getDateTime()+to);
 		}
 		else if (ValueStoppingCondition.class.getName().equals(subClass))
 			result = new ValueStoppingCondition(
