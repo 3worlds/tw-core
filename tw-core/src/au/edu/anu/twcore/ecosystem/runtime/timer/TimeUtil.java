@@ -135,7 +135,7 @@ public class TimeUtil {
 	}
 
 	/**
-	 * Non-Gregorian time formatting units assumed sorted from largest to smallest
+	 * Non-Gregorian time formatting units assumed sorted from smallest to largest
 	 */
 	public static String formatExactTimeScales(long time, List<TimeUnits> units) {
 		long[] unitTimes = factorExactTime(time, units);
@@ -143,9 +143,8 @@ public class TimeUtil {
 		for (int i = 0; i < unitTimes.length; i++)
 			if (unitTimes[i] > 0)
 				nFields++;
-		TimeUnits smallest = units.get(units.size() - 1);
 		String result = "";
-		for (int i = 0; i < unitTimes.length; i++)
+		for (int i = unitTimes.length-1;i>=0; i--)
 			if (time >= 0)
 				result = result + units.get(i).abbreviation() + ": " + unitTimes[i] + " ";
 			else
@@ -153,7 +152,7 @@ public class TimeUtil {
 
 		// Don't bother adding total of smallest unit if there is only 1 field
 		if (nFields > 1)
-			return result + "[Total " + smallest.abbreviation() + ": " + time + "]";
+			return result + "[Total " + units.get(0).abbreviation() + ": " + time + "]";
 		else
 			return result;
 	}
