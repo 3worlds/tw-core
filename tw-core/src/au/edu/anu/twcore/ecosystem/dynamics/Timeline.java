@@ -43,8 +43,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
-
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.timer.TimeUtil;
 import au.edu.anu.twcore.exceptions.TwcoreException;
@@ -81,74 +79,20 @@ public class Timeline extends InitialisableNode implements Sealable {
 	@Override
 	public void initialise() {
 		super.initialise();
-		sealed = false;
-		timeScale = (TimeScaleType) properties().getPropertyValue(P_TIMELINE_SCALE.key());
-		TimeUnits minTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_SHORTTU.key());
-		TimeUnits maxTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_LONGTU.key());
-		timeOrigin = 0L;
-		if (properties().hasProperty(P_TIMELINE_TIMEORIGIN.key())) {
-			DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
-			timeOrigin = dtt.getDateTime();
-		}
-
-		// This is now in the TimeScaleType.validTimeUnits() BUT should be made static
-		timeUnits = new TreeSet<TimeUnits>();
-		if (timeScale.equals(TimeScaleType.ARBITRARY))
-			timeUnits.add(TimeUnits.UNSPECIFIED);
-		else if (timeScale.equals(TimeScaleType.MONO_UNIT))
-			timeUnits.add(minTU); // assuming MaxTU==minTU== the time unit to use for this time scale
-		else {
-			for (TimeUnits tu : TimeUnits.values()) {
-				if (tu.compareTo(maxTU) <= 0)
-					if (tu.compareTo(minTU) >= 0)
-						switch (tu) {
-						case MILLENNIUM:
-						case CENTURY:
-						case DECADE:
-						case DAY:
-						case HOUR:
-						case MINUTE:
-						case SECOND:
-						case MILLISECOND:
-						case MICROSECOND:
-							timeUnits.add(tu);
-							break;
-						default:
-							;
-						}
+		if (sealed==false) {
+			timeScale = (TimeScaleType) properties().getPropertyValue(P_TIMELINE_SCALE.key());
+			TimeUnits minTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_SHORTTU.key());
+			TimeUnits maxTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_LONGTU.key());
+			timeOrigin = 0L;
+			if (properties().hasProperty(P_TIMELINE_TIMEORIGIN.key())) {
+				DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
+				timeOrigin = dtt.getDateTime();
 			}
-			TimeUnits u = timeScale.yearUnit();
-			if (u != null)
-				if (u.compareTo(maxTU) <= 0)
-					if (u.compareTo(minTU) >= 0)
-						timeUnits.add(u);
-			u = timeScale.monthUnit();
-			if (u != null)
-				if (u.compareTo(maxTU) <= 0)
-					if (u.compareTo(minTU) >= 0)
-						timeUnits.add(u);
-			u = timeScale.weekUnit();
-			if (u != null)
-				if (u.compareTo(maxTU) <= 0)
-					if (u.compareTo(minTU) >= 0)
-						timeUnits.add(u);
+			timeUnits = timeScale.validTimeUnits(minTU,maxTU);
+			startDateTime = TimeUtil.longToDate(timeOrigin, minTU);
+			sealed = true;
 		}
-		startDateTime = TimeUtil.longToDate(timeOrigin, minTU);
-		sealed = true;
 	}
-
-	public LocalDateTime getTimeOrigin() {
-		if (sealed)
-			return startDateTime;
-		throw new TwcoreException("attempt to access uninitialised data");
-	}
-	
-	public long getTimeOriginAsLong() {
-		if (sealed)
-			return timeOrigin;
-		throw new TwcoreException("attempt to access uninitialised data");
-	}
-
 
 	@Override
 	public int initRank() {
@@ -167,6 +111,18 @@ public class Timeline extends InitialisableNode implements Sealable {
 	}
 
 	// all these methods are valid only after initialise() has been called;
+
+	public LocalDateTime getTimeOrigin() {
+		if (sealed)
+			return startDateTime;
+		throw new TwcoreException("attempt to access uninitialised data");
+	}
+	
+	public long getTimeOriginAsLong() {
+		if (sealed)
+			return timeOrigin;
+		throw new TwcoreException("attempt to access uninitialised data");
+	}
 
 	public final TimeScaleType getTimeScale() {
 		if (sealed)

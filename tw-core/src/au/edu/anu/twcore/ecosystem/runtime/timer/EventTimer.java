@@ -47,7 +47,6 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 	private static final int INITIAL_QUEUE_SIZE = 100;
 	private Queue<TimeEvent> queue;
 	private TimeUnits timeUnit;
-//	private LocalDateTime startDateTime;
 
 	public EventTimer(TimerNode timeModel) {
 		super(timeModel);
@@ -90,7 +89,7 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 		else
 			return adt - lastTime;
 	}
-
+	
 	@Override
 	public void advanceTime(long newTime) {
 		lastTime = newTime;
@@ -100,6 +99,14 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 			log.warning(()->"Event queue is now empty");
 		}
 	}
+
+	// start the timer by adding an initial event in its own queue
+	@Override
+	public void preProcess() {
+		lastTime = timeOrigin;
+		queue.add(new TimeEvent(timeOrigin));
+	}
+
 
 	// TODO check this!
 	@Override
@@ -130,15 +137,6 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 //					+ ", time: " + eventTime + "]");
 		queue.add(new TimeEvent(eventTime));
 	}
-
-//	@Override
-//	public void setInitialEvent() {
-//		if (queue.isEmpty())
-//			queue.add(new TimeEvent(1));
-//		// this doesnt work: it generates a dt=0 in the simulator, which then infinitely
-//		// loops on t=0. This because conceptually, dt cannot be equal to zero.
-////			queue.add(new TimeEvent(0));
-//	}
 
 	@Override
 	public double userTime(long t) {

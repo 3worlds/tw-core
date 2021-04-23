@@ -28,6 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMELINE_TIMEORIGIN;
 import static fr.cnrs.iees.twcore.constants.SimulatorStatus.*;
 
 import java.util.Collection;
@@ -66,6 +67,7 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
+import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.Resettable;
 import fr.ens.biologie.generic.utils.Logging;
@@ -180,21 +182,28 @@ public class Simulator implements Resettable {
 		this.processCallingOrder = processCallingOrder;
 		this.ecosystem = ecosystem;
 		this.mainSpace = space;
-		// looping aids
+		// looping aids----------------------------------------------------------------
 		currentTimes = new long[timerList.size()];
-		// data tracking - record all data trackers and make their metadata
-		timetracker = new TimeTracker();
-//		timetracker.setSender(id);
+		if (refTimer.properties().hasProperty(P_TIMELINE_TIMEORIGIN.key()))
+			startTime = ((DateTimeType)refTimer.properties()
+				.getPropertyValue(P_TIMELINE_TIMEORIGIN.key())).getDateTime();
+		// time line metadata for data trackers----------------------------------------
 		metadata = new Metadata(id, refTimer.properties());
-
+		// make sure a default value is there for optional properties
+		if (!refTimer.properties().hasProperty(P_TIMELINE_TIMEORIGIN.key())) {
+			DateTimeType dtt = new DateTimeType(0L);
+			metadata.addProperty(P_TIMELINE_TIMEORIGIN.key(),dtt);
+		}
+		// stopping conditions metadata for data trackers
 		String scDesc = stoppingCondition.toString();
 		if (noStoppingConditions)//i.e. not the default stopping condition
 			scDesc = "(never)";
-
-		// Add the description of the stopping condition for display by widgets if required
 		metadata.addProperty("StoppingDesc", scDesc);
-
+		// data tracking - record all data trackers------------------------------------
+		// time tracker
+		timetracker = new TimeTracker();
 		trackers.put(timetracker, metadata);
+		// ComponentProcess data trackers 
 		for (List<List<TwProcess>> llp : processCallingOrder.values())
 			for (List<TwProcess> lp : llp)
 				for (TwProcess p : lp) {
@@ -209,12 +218,11 @@ public class Simulator implements Resettable {
 					trackers.put(dt, meta);
 			}
 		}
-		// add system (arena) GraphDataTracker
+		// system (arena) GraphDataTracker
 		GraphDataTracker gdt = ecosystem.arena().getDataTracker();
 		if (gdt!=null)
 			trackers.put(gdt,gdt.getInstance());
-
-		// add space data trackers to datatracker list
+		// space data trackers
 		if (mainSpace!=null)
 			for (Space<SystemComponent> sp : mainSpace.spaces())
 				if (sp instanceof SingleDataTrackerHolder) {
@@ -357,6 +365,7 @@ public class Simulator implements Resettable {
 	public synchronized void preProcess() {
 		status = Initial;
 		log.info(()->"START Simulator " + id + " reset/pre");
+		lastTime = startTime;
 		stoppingCondition.preProcess();
 		for (Timer t : timerList)
 			t.preProcess();

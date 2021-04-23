@@ -216,45 +216,87 @@ public enum TimeScaleType {
         return (inflationFactor==1.0);
     }
     
-    public static SortedSet<TimeUnits> validTimeUnits(TimeScaleType scale) {
-        SortedSet<TimeUnits> result = new TreeSet<TimeUnits>();
-        if (scale.equals(ARBITRARY))
-            result.add(TimeUnits.UNSPECIFIED);
-        else {
-            for (TimeUnits tu:TimeUnits.values())
-                if (tu.compareTo(scale.longestUnit)<=0)
-                    if (tu.compareTo(scale.shortestUnit)>=0)
-                        switch(tu) {
-                        case MILLENNIUM:
-                        case CENTURY:
-                        case DECADE:
-                        case DAY:
-                        case HOUR:
-                        case MINUTE:
-                        case SECOND:
-                        case MILLISECOND:
-                        case MICROSECOND:
-                            result.add(tu);
-                            break;
-                        default:;
-                        }
-            TimeUnits u = scale.yearUnit;
-            if (u!=null) 
-                if (u.compareTo(scale.longestUnit)<=0)
-                    if (u.compareTo(scale.shortestUnit)>=0)
-                        result.add(u);
-            u = scale.monthUnit;
-            if (u!=null) 
-                if (u.compareTo(scale.longestUnit)<=0)
-                    if (u.compareTo(scale.shortestUnit)>=0)
-                        result.add(u);
-            u = scale.weekUnit();
-            if (u!=null)
-                if (u.compareTo(scale.longestUnit)<=0)
-                    if (u.compareTo(scale.shortestUnit)>=0)
-                        result.add(u);
-        }
-        return result;
+    /**
+     * Returns the set of time units compatible with a given TimeScale and comprised between
+     * arguments minTU and maxTU
+     * 
+     * @param scale
+     * @param minTU
+     * @param maxTU
+     * @return
+     */
+    public static SortedSet<TimeUnits> validTimeUnits(TimeScaleType scale, 
+    	TimeUnits minTU, TimeUnits maxTU) {
+    	SortedSet<TimeUnits> timeUnits = new TreeSet<TimeUnits>();
+		if (scale.equals(TimeScaleType.ARBITRARY))
+			timeUnits.add(TimeUnits.UNSPECIFIED);
+		else if (scale.equals(TimeScaleType.MONO_UNIT))
+			timeUnits.add(minTU); // assuming MaxTU==minTU== the time unit to use for this time scale
+		else {
+			for (TimeUnits tu : TimeUnits.values()) {
+				if (tu.compareTo(maxTU) <= 0)  // means tu<=longestUnit
+					if (tu.compareTo(minTU) >= 0)  // means tu>= shortestUnit
+						switch (tu) {
+						case MILLENNIUM:
+						case CENTURY:
+						case DECADE:
+						case DAY:
+						case HOUR:
+						case MINUTE:
+						case SECOND:
+						case MILLISECOND:
+						case MICROSECOND:
+							timeUnits.add(tu);
+							break;
+						default:
+							;
+						}
+			}
+			TimeUnits u = scale.yearUnit();
+			if (u != null)
+				if (u.compareTo(maxTU) <= 0)
+					if (u.compareTo(minTU) >= 0)
+						timeUnits.add(u);
+			u = scale.monthUnit();
+			if (u != null)
+				if (u.compareTo(maxTU) <= 0)
+					if (u.compareTo(minTU) >= 0)
+						timeUnits.add(u);
+			u = scale.weekUnit();
+			if (u != null)
+				if (u.compareTo(maxTU) <= 0)
+					if (u.compareTo(minTU) >= 0)
+						timeUnits.add(u);
+		}
+		return timeUnits;
     }
+    
+    /**
+     * Returns all time units compatible with a given time scale
+     * 
+     * @param scale
+     * @return
+     */
+    public static SortedSet<TimeUnits> validTimeUnits(TimeScaleType scale) {
+    	return validTimeUnits(scale,scale.shortestUnit,scale.longestUnit);
+     }
+    
+    /**
+     * Returns all time units compatible with this time scale
+     * @return
+     */
+    public SortedSet<TimeUnits> validTimeUnits() {
+    	return validTimeUnits(this);
+    }
+    
+    /**
+     * Returns all time units compatible with this time scale and comprised between
+     * arguments minTU and maxTU
+     * @return
+     */
+    public SortedSet<TimeUnits> validTimeUnits(TimeUnits minTU, TimeUnits maxTU) {
+    	return validTimeUnits(this,minTU,maxTU);
+    }
+
 }
 

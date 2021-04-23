@@ -87,7 +87,6 @@ public class ClockTimer extends AbstractTimer {
 	public long dt(long time) {
 		if (!isExact) {
 			// Create the calendar for this time
-//			LocalDateTime currentDate = TimeUtil.longToDate(time + startTime, baseUnit);
 			LocalDateTime currentDate = TimeUtil.longToDate(time, baseUnit);
 			// Create next calendar.
 			LocalDateTime nextDate = TimeUtil.getIncrementedDate(currentDate, timeUnit, nTimeUnits);
@@ -109,22 +108,12 @@ public class ClockTimer extends AbstractTimer {
 		lastTime = timeOrigin + offset;
 	}
 
-	
-	// Still used???
-//	@Override
-//	protected Timer clone() {
-//		ClockTimer ct = new ClockTimer(timeModel);
-//		ct.dt = dt;
-//		ct.baseUnit = baseUnit;
-//		return ct;
-//	}
-
 	@Override
 	public double userTime(long t) {
-		// convert simulator baseTime to model time. Needs checking with Gregorian Timeline
-		return (1.0 * t) / grainsPerBaseUnit;
-		// if (!exact)
-		//TimeUtil.convertTime(t, baseUnit,timeUnit, startDateTime); x some bloody thing?
+		if (isExact)
+			return (1.0 * t) / grainsPerBaseUnit;
+		else
+			return TimeUtil.convertTime(t, baseUnit,timeUnit, startDateTime);
 	}
 
 	@Override
@@ -134,8 +123,13 @@ public class ClockTimer extends AbstractTimer {
 
 	@Override
 	public long twTime(double t) {
-		// cf caution above in userTime
-		return Math.round(t*grainsPerBaseUnit);
+		if (isExact)
+			return Math.round(t*grainsPerBaseUnit);
+		else {
+			double convF = TimeUtil.convertTime(t, timeUnit, baseUnit, startDateTime);
+			return Math.round(convF);
+		}
+			
 	}
 
 }

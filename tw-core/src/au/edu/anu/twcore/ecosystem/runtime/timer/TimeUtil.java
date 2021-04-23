@@ -98,7 +98,7 @@ public class TimeUtil {
 	public static long getDateTimeField(LocalDateTime dt, TimeUnits timeUnits) {
 		switch (timeUnits) {
 		case MICROSECOND:
-			return dt.getNano();
+			return dt.getNano()/1000L;
 		case SECOND:
 			return dt.getSecond();
 		case MINUTE:
