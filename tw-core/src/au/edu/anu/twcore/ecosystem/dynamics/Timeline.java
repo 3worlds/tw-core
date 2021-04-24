@@ -79,7 +79,7 @@ public class Timeline extends InitialisableNode implements Sealable {
 	@Override
 	public void initialise() {
 		super.initialise();
-		if (sealed==false) {
+		if (sealed == false) {
 			timeScale = (TimeScaleType) properties().getPropertyValue(P_TIMELINE_SCALE.key());
 			TimeUnits minTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_SHORTTU.key());
 			TimeUnits maxTU = (TimeUnits) properties().getPropertyValue(P_TIMELINE_LONGTU.key());
@@ -88,7 +88,7 @@ public class Timeline extends InitialisableNode implements Sealable {
 				DateTimeType dtt = (DateTimeType) properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
 				timeOrigin = dtt.getDateTime();
 			}
-			timeUnits = timeScale.validTimeUnits(minTU,maxTU);
+			timeUnits = timeScale.validTimeUnits(minTU, maxTU);
 			startDateTime = TimeUtil.longToDate(timeOrigin, minTU);
 			sealed = true;
 		}
@@ -117,7 +117,7 @@ public class Timeline extends InitialisableNode implements Sealable {
 			return startDateTime;
 		throw new TwcoreException("attempt to access uninitialised data");
 	}
-	
+
 	public long getTimeOriginAsLong() {
 		if (sealed)
 			return timeOrigin;

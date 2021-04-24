@@ -61,9 +61,9 @@ public abstract class AbstractTimer implements Timer {
 	 */
 	@Override
 	public final long nextTime(long time) {
-		long adt = dt(time);
-		if (adt != Long.MAX_VALUE)
-			return lastTime + adt;
+		long advance = dt(time);
+		if (advance != Long.MAX_VALUE)
+			return lastTime + advance;
 		else
 			return Long.MAX_VALUE;
 	}
