@@ -170,8 +170,6 @@ public enum TimeScaleType {
 		SortedSet<TimeUnits> timeUnits = new TreeSet<TimeUnits>();
 		if (scale.equals(TimeScaleType.ARBITRARY))
 			timeUnits.add(TimeUnits.UNSPECIFIED);
-		else if (scale.equals(TimeScaleType.MONO_UNIT))
-			timeUnits.add(minTU); // assuming MaxTU==minTU== the time unit to use for this time scale
 		else {
 			for (TimeUnits tu : TimeUnits.values()) {
 				if (tu.compareTo(maxTU) <= 0) // means tu<=longestUnit

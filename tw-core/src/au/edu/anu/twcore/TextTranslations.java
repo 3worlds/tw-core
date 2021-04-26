@@ -66,13 +66,13 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			if (UserProjectLink.haveUserProject()) {
-				am = "Corriger les erreurs de codage dans le projet java <<" + Language.oq
+				am = "Corriger les erreurs de programmation dans le projet java <<" + Language.oq
 						+ UserProjectLink.projectRoot().getName() + Language.cq + ". ";
 				if (!snippets.isEmpty())
-					am += " et / ou extrait (s) de code: " + snippets;
+					am += " et / ou extrait(s) de code: " + snippets;
 				am += ".";
 			} else {
-				am = "Corriger les erreurs de codage dans les extrait(s) de code: " + snippets + ".";
+				am = "Corriger les erreurs de programmation dans les extrait(s) de code: " + snippets + ".";
 			}
 			if (compileResult == null)
 				compileResult = "inconnu";
@@ -99,8 +99,8 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Installer Java Development Kit (JDK).";
-			cm = "Compilateur Java attendu mais aucun trouvé.";
+			am = "Installer le 'Java Development Kit' (JDK).";
+			cm = "Aucun compilateur Java n'a été trouvé.";
 		} else {// make sure default is English!
 			am = "Install Java Development Kit (JDK).";
 			cm = "Expected Java compiler but none found.";
@@ -113,8 +113,8 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Un fichier de classe Java est manquant.";
-			cm = "Fichier de classe attendu pour " + Language.oq + srcName + Language.cq
+			am = "Un fichier compilé Java (.class) est manquant.";
+			cm = "Fichier compilé attendu pour " + Language.oq + srcName + Language.cq
 					+ " mais aucun n'a été trouvé.";
 		} else {// make sure default is English!
 			am = "A Java class file is missing.";
@@ -128,8 +128,8 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Actualisez le projet Java.";
-			cm = "Un fichier de classe compilé est plus ancien que le fichier source Java.";
+			am = "Actualiser le projet Java.";
+			cm = "Un fichier compilé java (.class) est plus ancien que le fichier source Java.";
 		} else {// make sure default is English!
 			am = "Refresh Java project.";
 			cm = "Compiled class file is older than Java source file.";
@@ -142,8 +142,8 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Appuyez sur [Ctrl + s] pour enregistrer la configuration.";
-			cm = "La configuration doit être enregistrée pour le déploiement autorisé.";
+			am = "Appuyez sur [Ctrl+s] pour enregistrer la configuration.";
+			cm = "La configuration doit être enregistrée pour permettre le lancement des simulations.";
 		} else {// make sure default is English!
 			am = "Press [Ctrl+s] to save configuration.";
 			cm = "Configuration must be saved to allowed deployment.";
@@ -158,7 +158,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Ajoutez <<" + Language.oq + resourceName + Language.cq + " à " + Language.oq + location + Language.cq
 					+ ".";
-			cm = "La ressource doit être présente pour le déploiement.";
+			cm = "La ressource doit être présente pour le lancement des simulations.";
 		} else {// make sure default is English!
 			am = "Add '" + resourceName + "' to '" + location + "'.";
 			cm = "Resource must be present for deployment";
@@ -190,8 +190,8 @@ public class TextTranslations {
 		String am;// action message
 		String cm;// constraint message
 		if (Language.French()) {
-			am = "Ajouter un lien vers un enfant de " + Language.oq + nodeRef + Language.cq + ".";
-			cm = "Lien attendu vers un enfant de " + Language.oq + nodeRef + Language.cq + " mais n'en a trouvé aucun.";
+			am = "Ajouter un lien vers un noeud fils de " + Language.oq + nodeRef + Language.cq + ".";
+			cm = "Lien attendu vers un noeud fils de " + Language.oq + nodeRef + Language.cq + ", mais aucun trouvé.";
 		} else {// make sure default is English!
 			am = "Add edge to one child of '" + nodeRef + "'";
 			cm = "Expected edge to one child of '" + nodeRef + "' but found none.";
@@ -204,9 +204,9 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add edge labelled '" + baselineLabel + "' to one of " + Arrays.deepToString(sys) + ".";
-			cm = "Expected an edge labelled '" + baselineLabel + "' to one of " + Arrays.deepToString(sys)
-					+ " but found none.";
+			am = "Ajouter un lien de type '" + baselineLabel + "' vers un noeud parmi " + Arrays.deepToString(sys) + ".";
+			cm = "Lien de type '" + baselineLabel + "' vers un noeud parmi " + Arrays.deepToString(sys)
+					+ " attendu, mais aucun trouvé.";
 		} else {
 			am = "Add edge labelled '" + baselineLabel + "' to one of " + Arrays.deepToString(sys) + ".";
 			cm = "Expected an edge labelled '" + baselineLabel + "' to one of " + Arrays.deepToString(sys)
@@ -268,9 +268,9 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Edit dimensions of '" + key + "' to have " + expectedDims
-					+ " dimensions, the same dimensions as its containing space '" + spaceName + "'.";
-			cm = "Expected '" + key + "' to have " + expectedDims + " dimensions but found " + foundDims + ".";
+			am = "Changer le nombre de dimensions de '" + key + "' pour " + expectedDims
+					+ ", nombre de dimensions de l'espace '" + spaceName + "' qui le contient.";
+			cm = "'" + key + "' devrait avoir " + expectedDims + " dimension(s) au lieu de " + foundDims + " trouvée(s).";
 		} else {// make sure default is English!
 			am = "Edit dimensions of '" + key + "' to have " + expectedDims
 					+ " dimensions, the same dimensions as its containing space '" + spaceName + "'.";
@@ -284,15 +284,15 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add edge '" + label + "': from '" + fromCat + "' to a 'Record:' node.";
-			cm = "Expected '" + fromCat + "' (that is 'appliedTo' by '" + procName
-					+ "') to 'belongTo' a 'Record:' node but found none."
-					+ " All categories that a process applies to must reference a record.";
+			am = "Ajouter un lien de type '" + label + "': de la catégorie '" + fromCat + "' vers un noeud 'Record:'.";
+			cm = "La catégorie '" + fromCat + "' (référencée par un lien 'appliesTo' du noeud '" + procName
+					+ "') doit avoir un lien vers un noeud 'Record:'; aucun n'a été trouvé."
+					+ " Toutes les catégories référencées par un noeud 'Process' doivent avoir un lien vers au moins un noeud 'Record:'.";
 		} else {// make sure default is English!
 			am = "Add edge '" + label + "': from '" + fromCat + "' to a 'Record:' node.";
-			cm = "Expected '" + fromCat + "' (that is 'appliedTo' by '" + procName
-					+ "') to 'belongTo' a 'Record:' node but found none."
-					+ " All categories that a process applies to must reference a record.";
+			cm = "Expected '" + fromCat + "' (that is 'appliesTo' by '" + procName
+					+ "') to have a link to a 'Record:' node but found none."
+					+ " All categories that a process applies to must reference at least one record.";
 		}
 		String[] result = { am, cm };
 		return result;
@@ -302,15 +302,17 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Fix errors in sub-archetype.";
-			cm = "Errors found in sub-archetype '" + fileName + ",";
+			am = "Corriger les erreurs dans le sous-archétype.";
+			cm = "Le sous archétype '" + fileName + "' contient des erreurs.";
 		} else {// make sure default is English!
 			am = "Fix errors in sub-archetype.";
-			cm = "Errors found in sub-archetype '" + fileName + ",";
+			cm = "Errors found in sub-archetype '" + fileName + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
+	
+	// TODO: French done down to here (except 'crazy' above)
 
 	public static String[] getChildAtLeastOneOfOneOrTwoOfTwoQuery1(String item, String widgetLabel,
 			String containerLabel) {

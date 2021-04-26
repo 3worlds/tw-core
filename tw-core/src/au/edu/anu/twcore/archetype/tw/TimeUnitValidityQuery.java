@@ -79,22 +79,18 @@ public class TimeUnitValidityQuery extends QueryAdaptor {
 			return this;
 		else if (refScale == null)
 			return this;
-//		else if (!localNode.hasChildren())
-//			return this;
-//		else {
-			TimeUnits tu = (TimeUnits) prop.getValue();
-			if (tu == null)
-				tu = TimeUnits.UNSPECIFIED;
-			if (!TimeScaleType.validTimeUnits(refScale).contains(tu)) {
-				String[] msgs = TextTranslations.getTimeUnitValidityQuery(propertyName,TimeScaleType.validTimeUnits(refScale).toString(),tu.toString());
-				actionMsg = msgs[0];
-				errorMsg = msgs[1];
-		
-//				actionMsg = "Change '" + propertyName + "' value to be one of "+ TimeScaleType.validTimeUnits(refScale)+".";
-//				errorMsg = "Property value for '" + propertyName + "' must be one of {"
-//						+ TimeScaleType.validTimeUnits(refScale).toString() + "}.";
-				return this;
-//			}
+		TimeUnits tu = (TimeUnits) prop.getValue();
+		if (tu == null)
+			tu = TimeUnits.UNSPECIFIED;
+		if (!TimeScaleType.validTimeUnits(refScale).contains(tu)) {
+			String[] msgs = TextTranslations.getTimeUnitValidityQuery(propertyName,TimeScaleType.validTimeUnits(refScale).toString(),tu.toString());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+	
+//			actionMsg = "Change '" + propertyName + "' value to be one of "+ TimeScaleType.validTimeUnits(refScale)+".";
+//			errorMsg = "Property value for '" + propertyName + "' must be one of {"
+//					+ TimeScaleType.validTimeUnits(refScale).toString() + "}.";
+			return this;
 		}
 		return this;
 	}
