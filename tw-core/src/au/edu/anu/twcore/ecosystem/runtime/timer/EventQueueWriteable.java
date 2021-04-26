@@ -50,6 +50,6 @@ public interface EventQueueWriteable {
 	 */
 	public void postEvent(double cTime, double time, TimeUnits tu);
 
-//	public void setInitialEvent();
+	public void postInitialEvent(double time, TimeUnits tu);
 
 }

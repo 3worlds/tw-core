@@ -56,7 +56,8 @@ public class EventQueueAdapter implements EventQueue {
 		// this is only for SetInitialState function, which are called only at t=0
 		else
 			if (function instanceof SetInitialStateFunction)
-				queue.postEvent(0, nextTime, ((SetInitialStateFunction)function).baseTimeUnit());
+				queue.postInitialEvent(nextTime, ((SetInitialStateFunction)function).baseTimeUnit());
+//				queue.postEvent(0, nextTime, ((SetInitialStateFunction)function).baseTimeUnit());
 	}
 
 }

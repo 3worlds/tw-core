@@ -37,5 +37,5 @@ package au.edu.anu.twcore.ecosystem.runtime.timer;
 public interface EventQueue {
 
 	public void postTimeEvent(double nextTime);
-
+	
 }

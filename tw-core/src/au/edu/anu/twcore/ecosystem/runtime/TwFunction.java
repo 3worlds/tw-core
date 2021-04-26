@@ -66,10 +66,6 @@ public interface TwFunction extends RngHolder {
 
 	public void addConsequence(TwFunction function);
 
-//	public void setFocalContext(HierarchicalContext context);
-
-//	public void setOtherContext(HierarchicalContext context);
-
 	public default Iterable<? extends TwFunction> getConsequences() {
 		return null;
 	}

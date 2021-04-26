@@ -64,15 +64,6 @@ public class TimerNode
 	/** the reference time scale, normally belonging to the TimerModelSimulator */
 	protected Timeline timeLine;
 
-//	private TimeUnits timeUnit;
-//
-//	private int nTimeUnits;
-//
-//	protected boolean isExact = false;
-//
-//	/** if isExact is false grainsPerBaseUnit will be zero */
-//	protected long grainsPerBaseUnit = 0L;
-	
 	private Map<Integer,Timer> timers = new HashMap<>();
 
 	public TimerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -128,30 +119,11 @@ public class TimerNode
 		return timers.get(index);
 	}
 
-
-//	public int nTimeUnits() {
-//		if (sealed)
-//			return nTimeUnits;
-//		throw new TwcoreException("attempt to access uninitialised data");
-//	}
-//
-//	public TimeUnits timeUnit() {
-//		if (sealed)
-//			return timeUnit;
-//		throw new TwcoreException("attempt to access uninitialised data");
-//	}
-
 	public Timeline timeLine() {
 		if (sealed)
 			return timeLine;
 		throw new TwcoreException("attempt to access uninitialised data");
 	}
-
-//	public boolean isExact() {
-//		if (sealed)
-//			return isExact;
-//		throw new TwcoreException("attempt to access uninitialised data");
-//	}
 
 	@Override
 	public Sealable seal() {
@@ -169,40 +141,5 @@ public class TimerNode
 		for (Timer timer:timers.values())
 			timer.reset();
 	}
-	
-	/**
-	 * Utility to convert user time of this time unit to base time in timeLine time
-	 * grains.
-	 * 
-	 * Watch out for this now: if you want the value of a time segment between t1
-	 * and t2 you need to call this function for each t1 and t2 and take the
-	 * difference to get the time line segment value.
-	 * 
-	 * 
-	 * 
-	 * @param modelTime
-	 *            the user time to convert from
-	 * @return internal time (= number of timegrains)
-	 */
-//	public final long modelToBaseTime(double modelTime) {
-//		if (isExact)
-//			return Math.round(modelTime * grainsPerBaseUnit);
-//		else {
-//			double result = TimeUtil.convertTime(modelTime, timeUnit, timeLine.shortestTimeUnit(),
-//					timeLine.getTimeOrigin());
-//			result = result * nTimeUnits;
-//			return Math.round(result);
-//		}
-//	}
-//	
-    /**
-     * Utility to convert internal time to this Time Model's time units
-     * @return
-     */
-//    public final double userTime(long t) {
-//    	return (1.0*t)/grainsPerBaseUnit;
-////    	return (t-timeOrigin)/timeGrain; // time origin is gone: it's either 0 or a date depending on the calendar system
-//    }
-
 
 }
