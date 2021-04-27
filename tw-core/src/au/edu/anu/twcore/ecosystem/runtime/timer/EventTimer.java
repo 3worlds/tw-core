@@ -141,12 +141,12 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 	
 	@Override
 	public double userTime(long t) {
-		// TODO: This is badly wrong!
+		// Since EventTimer.timeUnit = Timeline.shortestTimeUnit, the conversion factor is 1
 		return t;
 	}
 	@Override
 	public long twTime(double t) {
-		// TODO : This is badly wrong!
+		// Since EventTimer.timeUnit = Timeline.shortestTimeUnit, the conversion factor is 1
 		return Math.round(t);
 	}
 
