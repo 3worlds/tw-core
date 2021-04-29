@@ -311,16 +311,14 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
-	
-	// TODO: French done down to here (except 'crazy' above)
 
 	public static String[] getChildAtLeastOneOfOneOrTwoOfTwoQuery1(String item, String widgetLabel,
 			String containerLabel) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = " Add child node '" + widgetLabel + "' or '" + containerLabel + "'.";
-			cm = "Expected '" + item + "' must have a child node of '" + widgetLabel + "' or '" + containerLabel + "'.";
+			am = " Ajouter un noeud fils de type '" + widgetLabel + "' ou '" + containerLabel + "'.";
+			cm = "Un noeud de type '" + item + "' doit avoir un noeud fils de type '" + widgetLabel + "' ou '" + containerLabel + "'.";
 		} else {// make sure default is English!
 			am = " Add child node '" + widgetLabel + "' or '" + containerLabel + "'.";
 			cm = "Expected '" + item + "' must have a child node of '" + widgetLabel + "' or '" + containerLabel + "'.";
@@ -334,9 +332,10 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add either a '" + widgetLabel + "' child or an additional '" + containerLabel + "' child.";
-			cm = "Expected '" + item + "' to have a '" + widgetLabel + "' child or an additional '" + containerLabel
-					+ "' child.";
+			am = "Ajouter soit un noeud fils de type '" + widgetLabel 
+					+ "', soit encore un noeud fils de type '" + containerLabel + "'.";
+			cm = "Un noeud de type '" + item + "' doit avoir soit un noeud fils de type '" 
+					+ widgetLabel + "', soit un noeud fils de type '" + containerLabel + "' de plus.";
 		} else {// make sure default is English!
 			am = "Add either a '" + widgetLabel + "' child or an additional '" + containerLabel + "' child.";
 			cm = "Expected '" + item + "' to have a '" + widgetLabel + "' child or an additional '" + containerLabel
@@ -350,9 +349,9 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add either property '" + propertyName + "' or child node '" + nodeLabel + "'.";
-			cm = "Expected either the property '" + propertyName + "' or the child '" + nodeLabel
-					+ "' but found neither or both.";
+			am = "Ajouter soit la propriété '" + propertyName + "', soit un noeud fils de type '" + nodeLabel + "'.";
+			cm = "Propriété '" + propertyName + "' ou noeud fils de type '" + nodeLabel
+					+ "' attendus, mais aucun des deux n'a été trouvé.";
 		} else {// make sure default is English!
 			am = "Add either property '" + propertyName + "' or child node '" + nodeLabel + "'.";
 			cm = "Expected either the property '" + propertyName + "' or the child '" + nodeLabel
@@ -367,9 +366,9 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Re-create Consequence function with one of these types: " + strValidTypes + " for function '"
-					+ functionType + "'.";
-			cm = "Expected type of function to be one of " + strValidTypes + " but found " + foundType + "'.";
+			am = "La conséquence de la fonction '" + functionType + "' doit être redéfinie avec l'un des types "
+					+ strValidTypes + ".";
+			cm = "Conséquence de type " + strValidTypes + " attendue, mais type '" + foundType + "' trouvé.";
 		} else {// make sure default is English!
 			am = "Re-create Consequence function to have type of " + strValidTypes + " for function '" + functionType
 					+ "'.";
@@ -383,22 +382,22 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Change '" + label + " edges to connect to sibling nodes.";
-			cm = "Expected '" + label + " edges to refer to sibling nodes.";
+			am = "Changer les liens de type '" + label + "' pour qu'ils pointent vers des noeuds frères.";
+			cm = "Les liens de type '" + label + "' doivent pointer vers des noeuds frères (ayant le même parent).";
 		} else {// make sure default is English!
-			am = "Change '" + label + " edges to connect to sibling nodes.";
-			cm = "Expected '" + label + " edges to refer to sibling nodes.";
+			am = "Change '" + label + "' edges to connect to sibling nodes.";
+			cm = "Expected '" + label + "' edges to refer to sibling nodes.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
-
+	
 	public static String[] getEdgeXorPropertyQuery(String item, String key, String label) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add either property '" + key + "' or an edge to node '" + label + "'.";
-			cm = "Expected either property '" + key + "' or edge to '" + label + "' but found neither or both.]";
+			am = "Ajouter soit la propriété '" + key + "', soit un lien vers un noeud de type '" + label + "'.";
+			cm = "Propriété '" + key + "' ou lien vers noeud de type '" + label + "' attendus, mais aucun des deux ou les deux ont été trouvés.]";
 		} else {// make sure default is English!
 			am = "Add either property '" + key + "' or an edge to node '" + label + "'.";
 			cm = "Expected either property '" + key + "' or edge to '" + label + "' but found neither or both.]";
@@ -411,8 +410,8 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add property '" + key + "' to leaf node '" + item + "'.";
-			cm = "Expected leaf node '" + item + "' to have property '" + key + "'.";
+			am = "Ajouter la propriété '" + key + "' au noeud terminal '" + item + "'.";
+			cm = "Le noeud terminal '" + item + "' doit avoir la propriété '" + key + "'.";
 		} else {// make sure default is English!
 			am = "Add property '" + key + "' to leaf node '" + item + "'.";
 			cm = "Expected leaf node '" + item + "' to have property '" + key + "'.";
@@ -420,6 +419,8 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
+
+	// TODO: French done down to here (except 'crazy' above)
 
 	public static String[] getExclusiveCategoryQuery(String item, String catSet) {
 		String am;
