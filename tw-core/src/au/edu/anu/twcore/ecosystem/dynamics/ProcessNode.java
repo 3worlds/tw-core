@@ -88,6 +88,7 @@ public class ProcessNode
 
 	private SpaceNode spaceNode = null;
 	private double searchRadius = 0.0;
+	private int searchNeighbours = 0;
 
 	// default constructor
 	public ProcessNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -127,12 +128,14 @@ public class ProcessNode
 	}
 
 	private void getSpace() {
-		// TODO: component processes may also refer to a space - how to find it ???
 		ProcessSpaceEdge pse = (ProcessSpaceEdge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_SPACE.label())));
 		if (pse!=null) {
 			spaceNode = (SpaceNode) pse.endNode();
-			searchRadius = (double) pse.properties().getPropertyValue(P_SPACE_SEARCHRADIUS.key());
+			if (spaceNode.properties().hasProperty(P_SPACE_SEARCHRADIUS.key()))
+				searchRadius = (double) pse.properties().getPropertyValue(P_SPACE_SEARCHRADIUS.key());
+			else if (spaceNode.properties().hasProperty(P_SPACE_SEARCHNEIGHBOURS.key()))
+				searchNeighbours = (int) pse.properties().getPropertyValue(P_SPACE_SEARCHNEIGHBOURS.key());
 		}
 	}
 
@@ -161,16 +164,16 @@ public class ProcessNode
 			sp = spaceNode.getInstance(index);
 		if (categories!=null)
 			result = new ComponentProcess(ecosystem.getInstance(index).getInstance(),
-				categories,tm.getInstance(index),sp,searchRadius);
+				categories,tm.getInstance(index),sp,searchRadius,searchNeighbours);
 		else if (relation!=null) {
 			if ((functions.size()==1) &&
 				(functions.get(0).properties().getPropertyValue(P_FUNCTIONTYPE.key())
 					.equals(TwFunctionTypes.RelateToDecision)))
 				result = new SearchProcess(ecosystem.getInstance(index).getInstance(),
-					relation.getInstance(index),tm.getInstance(index),sp,searchRadius);
+					relation.getInstance(index),tm.getInstance(index),sp,searchRadius,searchNeighbours);
 			else
 				result = new RelationProcess(ecosystem.getInstance(index).getInstance(),
-					relation.getInstance(index),tm.getInstance(index),sp,searchRadius);
+					relation.getInstance(index),tm.getInstance(index),sp,searchRadius,searchNeighbours);
 		}
 		for (FunctionNode func:functions) {
 			TwFunction funk = func.getInstance(index);

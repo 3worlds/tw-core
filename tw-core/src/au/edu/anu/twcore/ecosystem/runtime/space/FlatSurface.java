@@ -105,6 +105,11 @@ public class FlatSurface extends SpaceAdapter {
 	public Iterable<SystemComponent> getNearestItems(SystemComponent item) {
 		return indexer.getNearestItems(locatedItems.get(item));
 	}
+	
+	@Override
+	public Iterable<SystemComponent> getNearestItems(SystemComponent item, int rank) {
+		return indexer.getNearestItems(locatedItems.get(item),rank);
+	}
 
 	@Override
 	public Iterable<SystemComponent> getItemsWithin(SystemComponent item, double distance) {

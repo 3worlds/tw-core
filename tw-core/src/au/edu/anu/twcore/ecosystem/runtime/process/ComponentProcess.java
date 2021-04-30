@@ -104,8 +104,8 @@ public class ComponentProcess
 	 * @param searchR the maximal search radius in this space
 	 */
 	public ComponentProcess(ArenaComponent world, Collection<Category> categories,
-			Timer timer, DynamicSpace<SystemComponent> space, double searchR) {
-		super(world,timer,space,searchR);
+			Timer timer, DynamicSpace<SystemComponent> space, double searchR, int searchN) {
+		super(world,timer,space,searchR,searchN);
 		focalCategories.addAll(categories);
 		categoryId = buildCategorySignature();
 	}

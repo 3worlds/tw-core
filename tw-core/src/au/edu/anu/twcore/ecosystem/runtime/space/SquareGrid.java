@@ -140,18 +140,27 @@ public class SquareGrid extends SpaceAdapter {
 
 	@Override
 	public Iterable<SystemComponent> getNearestItems(SystemComponent item) {
+		return this.getNearestItems(item,1);
+	}
+
+	@Override
+	public Iterable<SystemComponent> getNearestItems(SystemComponent item, int rank) {
 		int[] refloc = locatedItems.get(item);
 		List<SystemComponent> result = new ArrayList<>();
 		result.addAll(grid[refloc[0]][refloc[1]]);
 		result.remove(item);
 		Iterator<List<Duple<Integer,Integer>>> it = distanceMap.values().iterator();
-		while (result.isEmpty() && it.hasNext()) {
+//		while (result.isEmpty() && it.hasNext()) {
+		// not sure - check this:
+		while (result.isEmpty() && it.hasNext() && (result.size()<rank)) {
 			List<Duple<Integer,Integer>> l = it.next();
 			getItemsAtSameDistance(refloc,l,result);
 		}
 		return result;
 	}
 
+	
+	
 	private void getItemsAtSameDistance(int[] refloc,
 			List<Duple<Integer,Integer>> l,
 			List<SystemComponent> result) {

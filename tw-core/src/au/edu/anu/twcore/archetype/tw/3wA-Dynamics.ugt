@@ -109,7 +109,15 @@ hasNode processSpec
 		hasProperty spaceMaxSearchRadiusSpec
 			hasName = String("searchRadius")
 			type = String("Double")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
+		hasProperty spaceMaxNNSpec
+			hasName = String("searchNeighbours")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+		mustSatisfyQuery searchRadiusXorsearchNNConstraint
+			className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
+			name1 = String("searchRadius")
+			name2 = String("searchNeighbours")
 //			// TODO: relax this constraint - radius can be null but then a mx number of neighbours must be given
 //			mustSatisfyQuery searchRadiusMustBeNonNullConstraint
 //				className = String("au.edu.anu.twcore.archetype.tw.IsInIntervalQuery")

@@ -69,8 +69,8 @@ public class SearchProcess
 	private CategorizedComponent otherGroup = null;
 
 	public SearchProcess(ArenaComponent world, RelationContainer relation,
-			Timer timer, DynamicSpace<SystemComponent> space,double searchR) {
-		super(world, relation, timer, space, searchR);
+			Timer timer, DynamicSpace<SystemComponent> space,double searchR, int searchN) {
+		super(world, relation, timer, space, searchR, searchN);
 	}
 
 	@Override
@@ -150,6 +150,8 @@ public class SearchProcess
 		if (searchRadius>space.precision())
 			 lsc = space.getItemsWithin(focal,searchRadius);
 		// search radius null, means we search for the nearest neighbours only
+		else if (searchNeighbours>0)
+			lsc = space.getNearestItems(focal);
 		else
 			lsc = space.getNearestItems(focal);
 		// if any candidate found, proceed

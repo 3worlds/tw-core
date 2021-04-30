@@ -147,6 +147,18 @@ public interface Space<T extends Locatable> {
 	public Iterable<T> getNearestItems(T item);
 
 	/**
+	 * gets the first rank neighbours of an item.
+	 * It allows for items having the same location.
+	 * contract: always return a non-null (possibly empty) list
+	 * NB: more items than rank canbe returned if they are at the same distance.
+	 *
+	 * @param item
+	 * @return
+	 */
+	public Iterable<T> getNearestItems(T item, int rank);
+
+	
+	/**
 	 * gets all items within a distance of the focal item.
 	 * contract: always return a non-null (possibly empty) list
 	 *

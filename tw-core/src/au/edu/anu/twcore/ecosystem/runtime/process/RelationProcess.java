@@ -69,8 +69,8 @@ public class RelationProcess extends AbstractRelationProcess {
 	private CategorizedComponent otherGroup = null;
 
 	public RelationProcess(ArenaComponent world, RelationContainer relation,
-			Timer timer, DynamicSpace<SystemComponent> space, double searchR) {
-		super(world,relation,timer,space,searchR);
+			Timer timer, DynamicSpace<SystemComponent> space, double searchR, int searchN) {
+		super(world,relation,timer,space,searchR,searchN);
 	}
 
 	@Override

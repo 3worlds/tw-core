@@ -61,8 +61,8 @@ public abstract class AbstractRelationProcess
 	protected SortedSet<Category> otherCategories = new TreeSet<>();
 
 	public AbstractRelationProcess(ArenaComponent world, RelationContainer relation,
-			Timer timer, DynamicSpace<SystemComponent> space, double searchR) {
-		super(world, timer, space, searchR);
+			Timer timer, DynamicSpace<SystemComponent> space, double searchR, int searchN) {
+		super(world, timer, space, searchR, searchN);
 		relContainer = relation;
 		focalCategoryId = relContainer.from().buildCategorySignature();
 		otherCategoryId = relContainer.to().buildCategorySignature();

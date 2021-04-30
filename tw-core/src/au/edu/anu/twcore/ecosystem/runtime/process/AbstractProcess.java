@@ -65,6 +65,7 @@ public abstract class AbstractProcess
 	protected Timer timer = null;
 	protected DynamicSpace<SystemComponent> space = null;
 	protected double searchRadius = 0.0;
+	protected int searchNeighbours = 0;
 	protected double currentTime = 0.0;
     // dataTrackers - common to all process types
     // NB: space data trackers are contained into spaces
@@ -72,12 +73,14 @@ public abstract class AbstractProcess
 
 	public AbstractProcess(ArenaComponent world, Timer timer,
 			DynamicSpace<SystemComponent> space,
-    		double searchR) {
+    		double searchR,
+    		int searchN) {
     	super();
     	ecosystem = world;
     	this.timer = timer;
     	this.space = space;
     	searchRadius = searchR;
+    	searchNeighbours = searchN;
     }
 
 	@Override
