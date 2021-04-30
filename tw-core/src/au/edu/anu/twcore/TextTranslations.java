@@ -420,15 +420,13 @@ public class TextTranslations {
 		return result;
 	}
 
-	// TODO: French done down to here (except 'crazy' above)
-
 	public static String[] getExclusiveCategoryQuery(String item, String catSet) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Remove edge from '" + item + "' to one of the categories of '" + catSet + "'.";
-			cm = "Expected '" + item + "' to have an edge to only one of the categories of '" + catSet
-					+ "' but found more.";
+			am = "Enlever un des liens de '" + item + "' vers une des catégories de '" + catSet + "'.";
+			cm = "'" + item + "' ne peut pointer que vers une seule des catégories de l'ensemble '" 
+					+ catSet + "'.";
 		} else {// make sure default is English!
 			am = "Remove edge from '" + item + "' to one of the categories of '" + catSet + "'.";
 			cm = "Expected '" + item + "' to have an edge to only one of the categories of '" + catSet
@@ -450,8 +448,8 @@ public class TextTranslations {
 		String cm;
 		// value of 'key' must be unique within children?
 		if (Language.French()) {
-			am = "Don't know what to do!";
-			cm = "Don't know what to say!";
+			am = "M'enfin ?";
+			cm = "J'y comprends rien !";
 		} else {// make sure default is English!
 			am = "Don't know what to do!";
 			cm = "Don't know what to say!";
@@ -460,6 +458,9 @@ public class TextTranslations {
 		return result;
 	}
 
+	// TODO: French done down to here (except 'crazy' above)
+
+	
 	public static String[] getFindCommonCategoryQuery(String trackName, String processName) {
 		String am;
 		String cm;
