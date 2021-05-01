@@ -116,8 +116,13 @@ hasNode processSpec
 			multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery searchRadiusXorsearchNNConstraint
 			className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
-			name1 = String("searchRadius")
-			name2 = String("searchNeighbours")
+// It's very difficult for MM to parse these different constructor alternatives. 
+// It's not the job of MM to construct and execute queries. 
+// It just looks for a StringTable class entry to find the options to present to the user.
+//			name1 = String("searchRadius")
+//			name2 = String("searchNeighbours")
+			proplist = StringTable(([2]searchRadius,searchNeighbours))
+			
 //			// TODO: relax this constraint - radius can be null but then a mx number of neighbours must be given
 //			mustSatisfyQuery searchRadiusMustBeNonNullConstraint
 //				className = String("au.edu.anu.twcore.archetype.tw.IsInIntervalQuery")

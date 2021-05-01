@@ -118,7 +118,7 @@ public class TableNode
 	}
 
 	@Override
-	@Deprecated // we dont want to see this anymore - it must go.
+	@Deprecated // we dont want to see this anymore - it must go. BUT please check where its being used before removing!
 	public Table newInstance() {
 		if (!sealed)
 			initialise();
