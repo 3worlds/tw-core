@@ -132,10 +132,15 @@ public class ProcessNode
 			selectZeroOrOne(hasTheLabel(E_SPACE.label())));
 		if (pse!=null) {
 			spaceNode = (SpaceNode) pse.endNode();
-			if (spaceNode.properties().hasProperty(P_SPACE_SEARCHRADIUS.key()))
+//			if (spaceNode.properties().hasProperty(P_SPACE_SEARCHRADIUS.key()))
+//				searchRadius = (double) pse.properties().getPropertyValue(P_SPACE_SEARCHRADIUS.key());
+//			else if (spaceNode.properties().hasProperty(P_SPACE_SEARCHNEIGHBOURS.key()))
+//				searchNeighbours = (int) pse.properties().getPropertyValue(P_SPACE_SEARCHNEIGHBOURS.key());
+			if (pse.properties().hasProperty(P_SPACE_SEARCHRADIUS.key()))
 				searchRadius = (double) pse.properties().getPropertyValue(P_SPACE_SEARCHRADIUS.key());
-			else if (spaceNode.properties().hasProperty(P_SPACE_SEARCHNEIGHBOURS.key()))
+			else if (pse.properties().hasProperty(P_SPACE_SEARCHNEIGHBOURS.key()))
 				searchNeighbours = (int) pse.properties().getPropertyValue(P_SPACE_SEARCHNEIGHBOURS.key());
+
 		}
 	}
 
