@@ -92,8 +92,8 @@ public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends QueryAdaptor {
 			if (containers.isEmpty()) {
 				String[] msgs = TextTranslations.getChildAtLeastOneOfOneOrTwoOfTwoQuery1(localItem.toShortString(),
 						widgetLabel, containerLabel);
-				errorMsg = "'" + localItem.toShortString() + "' must have '" + widgetLabel + "' or '" + containerLabel
-						+ "' child node.";
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
 			} else if (containers.size() == 1) {
 				String[] msgs = TextTranslations.getChildAtLeastOneOfOneOrTwoOfTwoQuery2(localItem.toShortString(),
 						widgetLabel, containerLabel);
