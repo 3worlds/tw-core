@@ -31,7 +31,6 @@ package au.edu.anu.twcore.archetype.tw;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
-import java.util.Arrays;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
@@ -47,6 +46,9 @@ import fr.cnrs.iees.graph.Node;
  * Checks that an out edge has two labels (each coming from two separate sets).
  * ie, if one label of the first set is present, then one of the second must be
  * here too
+ * 
+ * NB Modified to agree with original msg. It's no longer a pure NXOR but also
+ * handles case where there are no out-edges.-IDD
  * 
  * @author Jacques Gignoux - 14 Novembre 2019
  * 
@@ -102,11 +104,21 @@ public class OutEdgeXNorQuery extends QueryAdaptor {
 		OrQuery orq2 = new OrQuery(q);
 		List<Edge> el1 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq1));
 		List<Edge> el2 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq2));
-		if (!((el1.size() > 0) ^ (el2.size() > 0))) {
-			String[] msgs = TextTranslations.getOutEdgeXNorQuery(edgeLabel1,edgeLabel2);
+		if (el1.isEmpty() && el2.isEmpty()) {
+			String[] msgs = TextTranslations.getOutEdgeXNorQuery1(edgeLabel1, edgeLabel2);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
-//
+		} else if ((el1.size() > 0) ^ (el2.size() > 0)) {
+			String[] msgs;
+			if (el1.isEmpty())
+				msgs = TextTranslations.getOutEdgeXNorQuery2(edgeLabel1, edgeLabel2);
+			else
+				msgs = TextTranslations.getOutEdgeXNorQuery2(edgeLabel2, edgeLabel1);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+
+//		 According to the message below we must have at least 2 edges, one from each edgeLabel set. Therefore its not really an NXOR
+
 //			errorMsg = "There must be at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one from "
 //					+ Arrays.toString(edgeLabel2) + ".]";
 //			actionMsg = "Add one of " + Arrays.toString(edgeLabel1) + " edges and one of "

@@ -114,8 +114,7 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			am = "Un fichier compilé Java (.class) est manquant.";
-			cm = "Fichier compilé attendu pour " + Language.oq + srcName + Language.cq
-					+ " mais aucun n'a été trouvé.";
+			cm = "Fichier compilé attendu pour " + Language.oq + srcName + Language.cq + " mais aucun n'a été trouvé.";
 		} else {// make sure default is English!
 			am = "A Java class file is missing.";
 			cm = "Expected class file for '" + srcName + "' but none found.";
@@ -204,7 +203,8 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajouter un lien de type '" + baselineLabel + "' vers un noeud parmi " + Arrays.deepToString(sys) + ".";
+			am = "Ajouter un lien de type '" + baselineLabel + "' vers un noeud parmi " + Arrays.deepToString(sys)
+					+ ".";
 			cm = "Lien de type '" + baselineLabel + "' vers un noeud parmi " + Arrays.deepToString(sys)
 					+ " attendu, mais aucun trouvé.";
 		} else {
@@ -270,7 +270,8 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Changer le nombre de dimensions de '" + key + "' pour " + expectedDims
 					+ ", nombre de dimensions de l'espace '" + spaceName + "' qui le contient.";
-			cm = "'" + key + "' devrait avoir " + expectedDims + " dimension(s) au lieu de " + foundDims + " trouvée(s).";
+			cm = "'" + key + "' devrait avoir " + expectedDims + " dimension(s) au lieu de " + foundDims
+					+ " trouvée(s).";
 		} else {// make sure default is English!
 			am = "Edit dimensions of '" + key + "' to have " + expectedDims
 					+ " dimensions, the same dimensions as its containing space '" + spaceName + "'.";
@@ -318,7 +319,8 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			am = " Ajouter un noeud fils de type '" + widgetLabel + "' ou '" + containerLabel + "'.";
-			cm = "Un noeud de type '" + item + "' doit avoir un noeud fils de type '" + widgetLabel + "' ou '" + containerLabel + "'.";
+			cm = "Un noeud de type '" + item + "' doit avoir un noeud fils de type '" + widgetLabel + "' ou '"
+					+ containerLabel + "'.";
 		} else {// make sure default is English!
 			am = " Add child node '" + widgetLabel + "' or '" + containerLabel + "'.";
 			cm = "Expected '" + item + "' must have a child node of '" + widgetLabel + "' or '" + containerLabel + "'.";
@@ -332,10 +334,10 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajouter soit un noeud fils de type '" + widgetLabel 
-					+ "', soit encore un noeud fils de type '" + containerLabel + "'.";
-			cm = "Un noeud de type '" + item + "' doit avoir soit un noeud fils de type '" 
-					+ widgetLabel + "', soit un noeud fils de type '" + containerLabel + "' de plus.";
+			am = "Ajouter soit un noeud fils de type '" + widgetLabel + "', soit encore un noeud fils de type '"
+					+ containerLabel + "'.";
+			cm = "Un noeud de type '" + item + "' doit avoir soit un noeud fils de type '" + widgetLabel
+					+ "', soit un noeud fils de type '" + containerLabel + "' de plus.";
 		} else {// make sure default is English!
 			am = "Add either a '" + widgetLabel + "' child or an additional '" + containerLabel + "' child.";
 			cm = "Expected '" + item + "' to have a '" + widgetLabel + "' child or an additional '" + containerLabel
@@ -391,13 +393,14 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
-	
+
 	public static String[] getEdgeXorPropertyQuery(String item, String key, String label) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Ajouter soit la propriété '" + key + "', soit un lien vers un noeud de type '" + label + "'.";
-			cm = "Propriété '" + key + "' ou lien vers noeud de type '" + label + "' attendus, mais aucun des deux ou les deux ont été trouvés.]";
+			cm = "Propriété '" + key + "' ou lien vers noeud de type '" + label
+					+ "' attendus, mais aucun des deux ou les deux ont été trouvés.]";
 		} else {// make sure default is English!
 			am = "Add either property '" + key + "' or an edge to node '" + label + "'.";
 			cm = "Expected either property '" + key + "' or edge to '" + label + "' but found neither or both.]";
@@ -425,8 +428,7 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			am = "Enlever un des liens de '" + item + "' vers une des catégories de '" + catSet + "'.";
-			cm = "'" + item + "' ne peut pointer que vers une seule des catégories de l'ensemble '" 
-					+ catSet + "'.";
+			cm = "'" + item + "' ne peut pointer que vers une seule des catégories de l'ensemble '" + catSet + "'.";
 		} else {// make sure default is English!
 			am = "Remove edge from '" + item + "' to one of the categories of '" + catSet + "'.";
 			cm = "Expected '" + item + "' to have an edge to only one of the categories of '" + catSet
@@ -460,7 +462,6 @@ public class TextTranslations {
 
 	// TODO: French done down to here (except 'crazy' above)
 
-	
 	public static String[] getFindCommonCategoryQuery(String trackName, String processName) {
 		String am;
 		String cm;
@@ -784,18 +785,35 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getOutEdgeXNorQuery(String[] edgeLabel1, String[] edgeLabel2) {
+	public static String[] getOutEdgeXNorQuery1(String[] edgeLabel1, String[] edgeLabel2) {
 		String am;
 		String cm;
 		// TODO: msg possibly incorrect
 		if (Language.French()) {
-			am = "Add one of " + Arrays.toString(edgeLabel1) + " edges and one of " + Arrays.toString(edgeLabel2)
-					+ " edges.";
+			am = "Add at least one of " + Arrays.toString(edgeLabel1) + " edges and one of "
+					+ Arrays.toString(edgeLabel2) + " edges.";
 			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
 					+ Arrays.toString(edgeLabel2) + " but condition not met.";
 		} else {// make sure default is English!
-			am = "Add one of " + Arrays.toString(edgeLabel1) + " edges and one of " + Arrays.toString(edgeLabel2)
-					+ " edges.";
+			am = "Add at least one of " + Arrays.toString(edgeLabel1) + " edges and one of "
+					+ Arrays.toString(edgeLabel2) + " edges.";
+			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
+					+ Arrays.toString(edgeLabel2) + " but condition not met.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	public static String[] getOutEdgeXNorQuery2(String[] edgeLabel1, String[] edgeLabel2) {
+		String am;
+		String cm;
+		// TODO: msg possibly incorrect
+		if (Language.French()) {
+			am = "Add at least one of " + Arrays.toString(edgeLabel1) + " edges.";
+			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
+					+ Arrays.toString(edgeLabel2) + " but condition not met.";
+		} else {// make sure default is English!
+			am = "Add at least one of " + Arrays.toString(edgeLabel1) + " edges.";
 			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
 					+ Arrays.toString(edgeLabel2) + " but condition not met.";
 		}
