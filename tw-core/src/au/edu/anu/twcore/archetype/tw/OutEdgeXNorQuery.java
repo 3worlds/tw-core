@@ -102,7 +102,7 @@ public class OutEdgeXNorQuery extends QueryAdaptor {
 		OrQuery orq2 = new OrQuery(q);
 		List<Edge> el1 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq1));
 		List<Edge> el2 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq2));
-		if ((el1.size() > 0) ^ (el2.size() > 0)) {
+		if (!((el1.size() > 0) ^ (el2.size() > 0))) {
 			String[] msgs = TextTranslations.getOutEdgeXNorQuery(edgeLabel1,edgeLabel2);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
