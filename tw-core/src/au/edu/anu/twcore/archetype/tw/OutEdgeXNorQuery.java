@@ -41,6 +41,7 @@ import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
+import fr.ens.biologie.generic.utils.Duple;
 
 /**
  * Checks that an out edge has two labels (each coming from two separate sets).
@@ -94,23 +95,24 @@ public class OutEdgeXNorQuery extends QueryAdaptor {
 	public Queryable submit(Object input) {
 		initInput(input);
 		Node localItem = (Node) input;
-		Queryable[] q = new Queryable[edgeLabel1.length];
-		for (int i = 0; i < edgeLabel1.length; i++)
-			q[i] = hasTheLabel(edgeLabel1[i]);
-		OrQuery orq1 = new OrQuery(q);
-		q = new Queryable[edgeLabel2.length];
-		for (int i = 0; i < edgeLabel2.length; i++)
-			q[i] = hasTheLabel(edgeLabel2[i]);
-		OrQuery orq2 = new OrQuery(q);
-		List<Edge> el1 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq1));
-		List<Edge> el2 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq2));
-		if (el1.isEmpty() && el2.isEmpty()) {
+		Duple<List<Edge>, List<Edge>> edgeList = getEdgeLists(localItem, edgeLabel1, edgeLabel2);
+//		Queryable[] q = new Queryable[edgeLabel1.length];
+//		for (int i = 0; i < edgeLabel1.length; i++)
+//			q[i] = hasTheLabel(edgeLabel1[i]);
+//		OrQuery orq1 = new OrQuery(q);
+//		q = new Queryable[edgeLabel2.length];
+//		for (int i = 0; i < edgeLabel2.length; i++)
+//			q[i] = hasTheLabel(edgeLabel2[i]);
+//		OrQuery orq2 = new OrQuery(q);
+//		List<Edge> el1 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq1));
+//		List<Edge> el2 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq2));
+		if (edgeList.getFirst().isEmpty() && edgeList.getSecond().isEmpty()) {
 			String[] msgs = TextTranslations.getOutEdgeXNorQuery1(edgeLabel1, edgeLabel2);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
-		} else if ((el1.size() > 0) ^ (el2.size() > 0)) {
+		} else if ((edgeList.getFirst().size() > 0) ^ (edgeList.getSecond().size() > 0)) {
 			String[] msgs;
-			if (el1.isEmpty())
+			if (edgeList.getFirst().isEmpty())
 				msgs = TextTranslations.getOutEdgeXNorQuery2(edgeLabel1, edgeLabel2);
 			else
 				msgs = TextTranslations.getOutEdgeXNorQuery2(edgeLabel2, edgeLabel1);
@@ -126,5 +128,33 @@ public class OutEdgeXNorQuery extends QueryAdaptor {
 		}
 		return this;
 	}
+	// we don't need a proposal because you can always add one of these somewhere.
+	// It's up to the query to decide if eventually, the query is satisfied
 
+//	public static boolean propose(Node localItem, String[] edgeLabel1, String[] edgeLabel2, String proposedEdgeLabel) {
+//		Duple<List<Edge>, List<Edge>> edgeList = getEdgeLists(localItem, edgeLabel1, edgeLabel2);
+//		/**
+//		 * The proposed edge id must be:
+//		 * 
+//		 * 1) in either one of the edge lists
+//		 */
+//		return false;
+//	}
+
+	@SuppressWarnings("unchecked")
+	private static Duple<List<Edge>, List<Edge>> getEdgeLists(Node localItem, String[] edgeLabel1,
+			String[] edgeLabel2) {
+		Queryable[] q = new Queryable[edgeLabel1.length];
+		for (int i = 0; i < edgeLabel1.length; i++)
+			q[i] = hasTheLabel(edgeLabel1[i]);
+		OrQuery orq1 = new OrQuery(q);
+		q = new Queryable[edgeLabel2.length];
+		for (int i = 0; i < edgeLabel2.length; i++)
+			q[i] = hasTheLabel(edgeLabel2[i]);
+		OrQuery orq2 = new OrQuery(q);
+		List<Edge> el1 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq1));
+		List<Edge> el2 = (List<Edge>) get(localItem.edges(Direction.OUT), selectZeroOrMany(orq2));
+
+		return new Duple<List<Edge>, List<Edge>>(el1, el2);
+	}
 }
