@@ -759,7 +759,7 @@ public class TextTranslations {
 			am = "Ajouter un noeud à l'un des «" + labels.toString() + "».";
 			cm = "Attendu au moins un enfant intitulé «" + labels.toString() + "», mais n'en trouve aucun";
 		} else {// make sure default is English!
-			am = "Add noded to one of '" + labels.toString() + "'.";
+			am = "Add node to one of '" + labels.toString() + "'.";
 			cm = "Expected at least one child labelled '" + labels.toString() + "' but found none.";
 		}
 		String[] result = { am, cm };
