@@ -175,7 +175,7 @@ public abstract class HierarchicalDataGenerator
 		finalCode(cg);
 		log.info("    generating file "+cn+".java ...");
 		File file = new File(packagePath+File.separator+cn+".java");
-		writeFile(cg,file,cn);
+		writeFile(cg,file);
 		//UserProjectLink.addDataFile(file);
 		log.info("  ...done.");
 		return cn;
@@ -259,7 +259,7 @@ public abstract class HierarchicalDataGenerator
 			ClassGenerator cg = getTableClassGenerator(ftype,contentType,comment);
 			tableCode(cg,ftype,contentType,dims);
 			File file = new File(packagePath+File.separator+ftype+".java");
-			writeFile(cg,file,ftype);
+			writeFile(cg,file);
 			//UserProjectLink.addDataFile(file);
 			log.info("  ...done.");
 		}

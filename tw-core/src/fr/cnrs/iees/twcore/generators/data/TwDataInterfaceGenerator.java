@@ -109,7 +109,7 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 		}
 		log.info("    generating file "+className+".java ...");
 		File file = new File(packagePath+File.separator+className+".java");
-		writeFile(cg,file,className);
+		writeFile(cg,file);
 		log.info("  ...done.");
 	}
 	

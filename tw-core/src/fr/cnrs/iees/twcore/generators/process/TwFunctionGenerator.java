@@ -301,7 +301,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		}
 //		generator.setRawMethodCode(inClassCode);
 		File file = Project.makeFile(LOCALJAVACODE,ctmodel,GENERATED, name + ".java");
-		writeFile(generator, file, name);
+		writeFile(generator, file);
 		generatedClassName = packageName + "." + name;
 		log.info("  done.");
 		return true; 

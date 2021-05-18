@@ -1308,7 +1308,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		File ctGeneratedCodeDir = getModelCodeDir(modelName);
 		ctGeneratedCodeDir.mkdirs();
 		File file = Project.makeFile(LOCALJAVACODE, modelName, className + ".java");
-		writeFile(this, file, className);
+		writeFile(this, file);
 //		generatedClassName = packageName + "." + className;
 		log.info("  done.");
 		return true;
