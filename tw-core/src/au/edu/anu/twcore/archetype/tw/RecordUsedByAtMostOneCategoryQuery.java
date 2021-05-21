@@ -66,12 +66,9 @@ public class RecordUsedByAtMostOneCategoryQuery extends QueryAdaptor{
 			if (edgeLabels.contains(e.classId()))
 				nEdges++;
 		if (nEdges!=1) {
-			String[] msgs = TextTranslations.getRecordUsedByAtMostOneCategoryQuery(nEdges);
+			String[] msgs = TextTranslations.getRecordUsedByAtMostOneCategoryQuery(record.toShortString(),nEdges);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
-
-//			actionMsg = "Remove "+(nEdges -1)+" to Category nodes from this root record.";
-//			errorMsg = "A root record must have 1 edge to a Category but found "+ nEdges +".";
 		}
 		return this;
 	}

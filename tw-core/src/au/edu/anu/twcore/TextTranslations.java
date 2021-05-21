@@ -946,21 +946,21 @@ public class TextTranslations {
 	 * Check that a root record is used by one and only one category {autoVar,
 	 * decorators, drivers, constants}.
 	 */
-	public static String[] getRecordUsedByAtMostOneCategoryQuery(int nEdges) {
+	public static String[] getRecordUsedByAtMostOneCategoryQuery(String target,int nEdges) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			if (nEdges == 0) {
-				am = "Add an edge from a Category to here or remove this record sub-tree.";
+				am = "Add an edge from a Category to '"+target+"'.";
 			} else
-				am = "Remove all but one in edge from a Category to this record.";
-			cm = "Expected 1 edge to this root record but found " + nEdges + ".";
+				am = "Remove all but one in edge from a Category to '"+target+"'.";
+			cm = "Expected 1 in-edge to '"+target+"' but found " + nEdges + ".";
 		} else {// make sure default is English!
 			if (nEdges == 0) {
-				am = "Add an edge from a Category to here or remove this record sub-tree.";
+				am = "Add an edge from a Category to '"+target+"'.";
 			} else
-				am = "Remove all but one in edge from a Category to this record.";
-			cm = "Expected 1 edge to this root record but found " + nEdges + ".";
+				am = "Remove all but one in edge from a Category to '"+target+"'.";
+			cm = "Expected 1 in-edge to '"+target+"' but found " + nEdges + ".";
 		}
 		String[] result = { am, cm };
 		return result;
