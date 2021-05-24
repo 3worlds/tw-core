@@ -339,7 +339,7 @@ public class Project implements ProjectPaths, TwPaths {
 	 * @return
 	 */
 	public static File makeLayoutFile() {
-		return makeFile("Layout" + GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
+		return makeFile(".layout" + GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
 	}
 
 // used for menu creation
