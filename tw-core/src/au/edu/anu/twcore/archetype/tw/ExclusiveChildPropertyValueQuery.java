@@ -150,7 +150,7 @@ public class ExclusiveChildPropertyValueQuery extends NodeHasPropertyValueQuery 
 			}
 		ok = nodesWithProperValue.isEmpty() || ((!nodesWithProperValue.isEmpty()) && (nodesWithOtherValue.isEmpty()));
 		if (!ok) {
-			String[] msgs = TextTranslations.getExclusiveChildPropertyValueQuery(propertyName,expectedValues);
+			String[] msgs = TextTranslations.getExclusiveChildPropertyValueQuery(topNode.toShortString(),propertyName,expectedValues);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 		} else {

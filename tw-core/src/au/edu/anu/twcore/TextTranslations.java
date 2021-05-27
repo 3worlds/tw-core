@@ -445,16 +445,18 @@ public class TextTranslations {
 	 *
 	 */
 
-	public static String[] getExclusiveChildPropertyValueQuery(String key, List<Object> expectedValues) {
+	public static String[] getExclusiveChildPropertyValueQuery(String parent,String key, List<Object> expectedValues) {
 		String am;
 		String cm;
 		// value of 'key' must be unique within children?
 		if (Language.French()) {
-			am = "M'enfin ?";
-			cm = "J'y comprends rien !";
+			am = "Mein Modell ist kaputt";
+			cm = "Ich weiß nicht warum";
+			am = "Remove all but one of the children of '"+parent+"' that contain the property '"+key+"'.";
+			cm = "Expected at most one child of '"+parent+"' to contain the property '"+key+"' but found more.";
 		} else {// make sure default is English!
-			am = "Don't know what to do!";
-			cm = "Don't know what to say!";
+			am = "Remove all but one of the children of '"+parent+"' that contain the property '"+key+"'.";
+			cm = "Expected at most one child of '"+parent+"' to contain the property '"+key+"' but found more.";
 		}
 		String[] result = { am, cm };
 		return result;
