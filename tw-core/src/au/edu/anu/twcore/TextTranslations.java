@@ -437,32 +437,38 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
+	// TODO: French done down to here
 
 	/**
 	 * Checks that if a child node with a given property value is present, then no
 	 * child with another value in the same property can be present. Can be
 	 * instantiated with a single label, or a table of compatible labels.
-	 *
+	 * 
+	 * @param target The label:name of target sibling
+	 * @param key Target's property key
+	 * @param expectedValues Required property values
+	 * @param nDiffSibs Number of non-compliant siblings
+	 * @return
 	 */
-
-	public static String[] getExclusiveChildPropertyValueQuery(String parent,String key, List<Object> expectedValues) {
+	public static String[] getExclusiveChildPropertyValueQuery(String target, String key, List<Object> expectedValues,
+			int nDiffSibs) {
 		String am;
 		String cm;
-		// value of 'key' must be unique within children?
 		if (Language.French()) {
-			am = "Mein Modell ist kaputt";
-			cm = "Ich weiß nicht warum";
-			am = "Remove all but one of the children of '"+parent+"' that contain the property '"+key+"'.";
-			cm = "Expected at most one child of '"+parent+"' to contain the property '"+key+"' but found more.";
+			am = "Either change property value of '" + key + "' to "
+					+ expectedValues + " for all sibling(s) of '"+target+"' OR remove this node.";
+			cm = "Expected siblings of '" + target + "' containing the property '" + key + "' to have the value(s) "
+					+ expectedValues + "but found " + nDiffSibs + " sibling(s) with other values.";
 		} else {// make sure default is English!
-			am = "Remove all but one of the children of '"+parent+"' that contain the property '"+key+"'.";
-			cm = "Expected at most one child of '"+parent+"' to contain the property '"+key+"' but found more.";
+			am = "Either change property value of '" + key + "' to "
+					+ expectedValues + " for all sibling(s) of '"+target+"' OR remove this node.";
+			cm = "Expected siblings of '" + target + "' containing the property '" + key + "' to have the value(s) "
+					+ expectedValues + "but found " + nDiffSibs + " sibling(s) with other values.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	// TODO: French done down to here (except 'crazy' above)
 
 	public static String[] getFindCommonCategoryQuery(String trackName, String processName) {
 		String am;
@@ -948,21 +954,21 @@ public class TextTranslations {
 	 * Check that a root record is used by one and only one category {autoVar,
 	 * decorators, drivers, constants}.
 	 */
-	public static String[] getRecordUsedByAtMostOneCategoryQuery(String target,int nEdges) {
+	public static String[] getRecordUsedByAtMostOneCategoryQuery(String target, int nEdges) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			if (nEdges == 0) {
-				am = "Add an edge from a Category to '"+target+"'.";
+				am = "Add an edge from a Category to '" + target + "'.";
 			} else
-				am = "Remove all but one in edge from a Category to '"+target+"'.";
-			cm = "Expected 1 in-edge to '"+target+"' but found " + nEdges + ".";
+				am = "Remove all but one in edge from a Category to '" + target + "'.";
+			cm = "Expected 1 in-edge to '" + target + "' but found " + nEdges + ".";
 		} else {// make sure default is English!
 			if (nEdges == 0) {
-				am = "Add an edge from a Category to '"+target+"'.";
+				am = "Add an edge from a Category to '" + target + "'.";
 			} else
-				am = "Remove all but one in edge from a Category to '"+target+"'.";
-			cm = "Expected 1 in-edge to '"+target+"' but found " + nEdges + ".";
+				am = "Remove all but one in edge from a Category to '" + target + "'.";
+			cm = "Expected 1 in-edge to '" + target + "' but found " + nEdges + ".";
 		}
 		String[] result = { am, cm };
 		return result;

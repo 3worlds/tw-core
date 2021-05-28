@@ -130,14 +130,14 @@ public class ExclusiveChildPropertyValueQuery extends NodeHasPropertyValueQuery 
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
-		TreeNode topNode = (TreeNode) input;
-		Class<?> nodeClass = topNode.getClass();
-		topNode = topNode.getParent();
+		TreeNode sibbling = (TreeNode) input;
+		Class<?> sibblingClass = sibbling.getClass();
+		TreeNode parent = sibbling.getParent();
 		List<TreeNode> nodesWithProperValue = new LinkedList<>();
 		List<TreeNode> nodesWithOtherValue = new LinkedList<>();
 		boolean ok = true;
-		for (TreeNode child : topNode.getChildren())
-			if (nodeClass.isAssignableFrom(child.getClass())) {
+		for (TreeNode child : parent.getChildren())
+			if (sibblingClass.isAssignableFrom(child.getClass())) {
 				super.submit(child);
 				if (satisfied()) {
 					nodesWithProperValue.add(child);
@@ -150,7 +150,7 @@ public class ExclusiveChildPropertyValueQuery extends NodeHasPropertyValueQuery 
 			}
 		ok = nodesWithProperValue.isEmpty() || ((!nodesWithProperValue.isEmpty()) && (nodesWithOtherValue.isEmpty()));
 		if (!ok) {
-			String[] msgs = TextTranslations.getExclusiveChildPropertyValueQuery(topNode.toShortString(),propertyName,expectedValues);
+			String[] msgs = TextTranslations.getExclusiveChildPropertyValueQuery(sibbling.toShortString(),propertyName,expectedValues,nodesWithOtherValue.size());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 		} else {
