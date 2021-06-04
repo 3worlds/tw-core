@@ -254,7 +254,7 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 
 	public void addObserver(DataReceiver<TimeData, Metadata> observer) {
 		for (Simulator sim : simulators.values())
-			sim.addObserver(observer);
+			sim.addTimeTracker(observer);
 		// simulators.clear(); IDD: what's going on here -no longer needed?
 	}
 

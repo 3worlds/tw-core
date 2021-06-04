@@ -72,6 +72,7 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 	private long currentTime;
 	private Metadata metadata = null;
 	private SpaceData ctMessage = null;
+	private SimulatorStatus currentStatus = null;
 
 	public SpaceDataTracker(int simId, ReadOnlyPropertyList meta) {
 		super(DataMessageTypes.SPACE, simId);
@@ -88,8 +89,34 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 	@Override
 	public void openTimeRecord(SimulatorStatus status, long time) {
 		currentTime = time;
-		ctMessage = new SpaceData(status, senderId, metadata.type());
-		ctMessage.setTime(currentTime);
+		currentStatus = status;
+	}
+
+	@Override
+	public void openRecord() {
+		if (currentStatus==null)
+			log.warning(()->"Attempt to record data before time has been recorded");
+		if (ctMessage==null) {
+			ctMessage = new SpaceData(currentStatus, senderId, metadata.type());
+			ctMessage.setTime(currentTime);
+		}
+		else
+			log.warning(()->"Attempt to send a space data message before the previous has been sent");
+	}
+
+	@Override
+	public void closeRecord() {
+		/**
+		 * This data continues to be written to by other processes AFTER sending.
+		 * Therefore, to avoid concurrentModification exceptions, it must be cloned by
+		 * the recipient IN THIS THREAD. This is a bit expensive so a redesign to avoid
+		 * this would be preferable.
+		 */
+		if (ctMessage!=null)
+			sendData(ctMessage);
+		else
+			log.warning(()->"Attempt to close uninitialised SpaceData message.");
+		ctMessage = null;
 	}
 
 	public void createPoint(double[] coord, String... labels) {
@@ -129,17 +156,18 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 	}
 
 	public void closeTimeRecord() {
-		/**
-		 * This data continues to be written to by other processes AFTER sending.
-		 * Therefore, to avoid concurrentModification exceptions, it must be cloned by
-		 * the recipient IN THIS THREAD. This is a bit expensive so a redesign to avoid
-		 * this would be preferable.
-		 */
-		if (ctMessage!=null)
-			sendData(ctMessage);
-		else
-			log.warning(()->"Attempt to close uninitialised SpaceData message.");
-		ctMessage = null;
+//		/**
+//		 * This data continues to be written to by other processes AFTER sending.
+//		 * Therefore, to avoid concurrentModification exceptions, it must be cloned by
+//		 * the recipient IN THIS THREAD. This is a bit expensive so a redesign to avoid
+//		 * this would be preferable.
+//		 */
+//		if (ctMessage!=null)
+//			sendData(ctMessage);
+//		else
+//			log.warning(()->"Attempt to close uninitialised SpaceData message.");
+//		ctMessage = null;
+		currentStatus = null;
 	}
 
 	@Override

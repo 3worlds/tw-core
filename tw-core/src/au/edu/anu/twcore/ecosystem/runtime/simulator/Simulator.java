@@ -247,18 +247,18 @@ public class Simulator implements Resettable {
 	}
 
 	// METHODS
-
-	public void addObserver(DataReceiver<TimeData, Metadata> observer) {
+	public void addTimeTracker(DataReceiver<TimeData, Metadata> observer) {
 		timetracker.addObserver(observer);
 		timetracker.sendMetadataTo((GridNode) observer, metadata);
 	}
 
-	// run one simulation step
-	@SuppressWarnings({ "unused", "unchecked" })
+	// TIME LOOP: run one simulation step
+	@SuppressWarnings({ "unused" })
 	public synchronized void step() {
 		status = SimulatorStatus.Active;
 		log.info(()->"START Simulator " + id +" stepping time = " + lastTime);
-		// 1 find next time step by querying timeModels
+		// 1 //
+		// find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
 		int i = 0;
 		for (Timer tm : timerList) {
@@ -266,17 +266,18 @@ public class Simulator implements Resettable {
 			nexttime = Math.min(nexttime, currentTimes[i]);
 			i++;
 		}
-		// advance main timer clock
+		// stop simulation if time reached infinity
 		if (nexttime == Long.MAX_VALUE)
 			status = SimulatorStatus.Final;
+		// otherwise proceed with computations for this time step
 		else {
 			long step = nexttime - lastTime;
 			// start recording data for this time step in all data trackers
 			for (DataTracker<?, Metadata> tracker : trackers.keySet())
 				tracker.openTimeRecord(status, nexttime);
 			lastTime = nexttime;
-			// 2 find all timeModels which must execute now - using bitmasks for
-			// searches
+			// 2 //
+			// find all timeModels which must execute now - using bitmasks for searches
 			i = 0;
 			int ctmask = 0;
 			for (Timer tm : timerList) {
@@ -285,29 +286,46 @@ public class Simulator implements Resettable {
 				}
 				i++;
 			}
-			// 3 execute all the processes depending on these time models
+			// 3 // 
+			// CAUSAL LOOP: loop on dependency rank within a time step and
+			// execute all the processes depending on these time models
+			// drivers and graph structure are updated at the end of each causal step
+			// decorators are not; they are set to zero at the end of the time step
+			//
 			List<List<TwProcess>> currentProcesses = processCallingOrder.get(ctmask);
-			// loop on dependency rank
 			for (int j = 0; j < currentProcesses.size(); j++) {
 				List<TwProcess> torun = currentProcesses.get(j);
+				// prepare data trackers for recording (important for space data trackers only)
+				for (DataTracker<?, Metadata> tracker : trackers.keySet())
+					tracker.openRecord();
 				// execute all processes at the same dependency level
 				for (TwProcess p : torun) {
 					p.execute(status, nexttime, step);
 				}
+				// 5 apply all changes to community (structure and state)
+				updateStateAndStructure(nexttime,step);
+				// tell all data trackers to flush data and to readapt to changes in community
+				for (DataTracker<?, Metadata> tracker : trackers.keySet()) {
+					tracker.closeRecord();
+					// resample community for data trackers who need it
+					if (tracker instanceof Sampler)
+						((Sampler<?>)tracker).updateSample();
+				}
 			}
-			// 3b resetting decorators and population counters to zero for next step
-			// only for those processes that were run just before
-			if (ecosystem.community()!=null) // TODO improve this treatment
-				ecosystem.community().prepareStepAll();
-			// 4 advance time ONLY for those time models that were processed
+			// 3b 
+			// resetting decorators and population counters to zero for next step
+			setDecoratorsToZero();
+			// 4 
+			// advance time ONLY for those time models that were processed
 			i = 0;
 			for (Timer tm : timerList) {
 				if ((timeModelMasks[i] & ctmask) != 0)
 					tm.advanceTime(lastTime);
 				i++;
 			}
-			// 5 apply all changes to community (structure and state)
-			Collection<SystemComponent> newComp = ecosystem.effectChanges();
+//			// 5 apply all changes to community (structure and state)
+//			Collection<SystemComponent> newComp = ecosystem.effectChanges();
+//			updateStateAndStructure(nexttime,step);
 			// 6 advance age of ALL SystemComponents, including the not update ones.
 			if (ecosystem.community()!=null) // TODO improve this treatment
 				for (SystemComponent sc : ecosystem.community().allItems())
@@ -318,35 +336,70 @@ public class Simulator implements Resettable {
 							au.age(nexttime - au.birthDate());
 							au.writeDisable();
 			}
-			// apply changes to spaces
-			if (mainSpace!=null) {
-				for (DynamicSpace<SystemComponent> space : mainSpace.spaces()) {
-					space.effectChanges();
-					// handle components that left the space (oblivion edge effect)
-					for (SystemComponent sc:space.outOfSpaceItems()) {
-						ComponentContainer c = (ComponentContainer) sc.container();
-						c.removeItemNow(sc);
-						sc.detachFromContainer(); // important: cannot be done inside removeItemNow() --> crash
-					}
-					space.outOfSpaceItems().clear();
-				}
-			}
-			// set permanent relation for newly created (and located) systems
-			setPermanentRelations(newComp,nexttime,step);
-			for (RelationContainer rc:ecosystem.relations())
-				if (rc.isPermanent())
-					rc.effectChanges();
+//			// apply changes to spaces
+//			if (mainSpace!=null) {
+//				for (DynamicSpace<SystemComponent> space : mainSpace.spaces()) {
+//					space.effectChanges();
+//					// handle components that left the space (oblivion edge effect)
+//					for (SystemComponent sc:space.outOfSpaceItems()) {
+//						ComponentContainer c = (ComponentContainer) sc.container();
+//						c.removeItemNow(sc);
+//						sc.detachFromContainer(); // important: cannot be done inside removeItemNow() --> crash
+//					}
+//					space.outOfSpaceItems().clear();
+//				}
+//			}
+//			// set permanent relation for newly created (and located) systems
+//			setPermanentRelations(newComp,nexttime,step);
+//			for (RelationContainer rc:ecosystem.relations())
+//				if (rc.isPermanent())
+//					rc.effectChanges();
 			for (DataTracker<?, Metadata> tracker : trackers.keySet()) {
 				// stop recording data in all data trackers
 				tracker.closeTimeRecord();
-				// resample community for data trackers who need it
-				if (tracker instanceof Sampler)
-					((Sampler<?>)tracker).updateSample();
+//				// resample community for data trackers who need it
+//				if (tracker instanceof Sampler)
+//					((Sampler<?>)tracker).updateSample();
 			}
 		}
 		log.info(()->"END Simulator " + id +" stepping time = " + lastTime);
+	} // step()
+
+	// helper method for step()
+	// resetting decorators and population counters to zero for next step
+	// only for those processes that were run just before (as indicated by the changed() method in 
+	// ComponentContainer).
+	private void setDecoratorsToZero() {
+		if (ecosystem.community()!=null) 
+			ecosystem.community().prepareStepAll();
+	}
+	
+	// helper method for step()
+	// update state and structure at the end of every causal step
+	@SuppressWarnings("unchecked")
+	private void updateStateAndStructure(long nexttime, long step) {
+		Collection<SystemComponent> newComp = ecosystem.effectChanges();
+		// apply changes to spaces
+		if (mainSpace!=null) {
+			for (DynamicSpace<SystemComponent> space : mainSpace.spaces()) {
+				space.effectChanges();
+				// handle components that left the space (oblivion edge effect)
+				for (SystemComponent sc:space.outOfSpaceItems()) {
+					ComponentContainer c = (ComponentContainer) sc.container();
+					c.removeItemNow(sc);
+					sc.detachFromContainer(); // important: cannot be done inside removeItemNow() --> crash
+				}
+				space.outOfSpaceItems().clear();
+			}
+		}
+		// set permanent relation for newly created (and located) systems
+		setPermanentRelations(newComp,nexttime,step);
+		for (RelationContainer rc:ecosystem.relations())
+			if (rc.isPermanent())
+				rc.effectChanges();
 	}
 
+	// helper method for step()
 	// establish permanent relations at creation of SystemComponents
 	private void setPermanentRelations(Collection<SystemComponent> comps, long time, long timeStep) {
 		for (List<List<TwProcess>> llp:processCallingOrder.values())
@@ -379,6 +432,7 @@ public class Simulator implements Resettable {
 				if (space.dataTracker() != null) {
 					space.dataTracker().setInitialTime();
 					space.dataTracker().openTimeRecord(status,startTime);
+					space.dataTracker().openRecord();
 				}
 			}
 		// clones initial items to ecosystem objects
@@ -387,8 +441,10 @@ public class Simulator implements Resettable {
 		if (mainSpace!=null)
 			for (ObserverDynamicSpace space : mainSpace.spaces()) {
 				space.effectChanges();
-				if (space.dataTracker() != null)
+				if (space.dataTracker() != null) {
+					space.dataTracker().closeRecord();
 					space.dataTracker().closeTimeRecord();
+				}
 		}
 		if (ecosystem.community()!=null)
 			setPermanentRelations(ecosystem.community().allItems(),0L,0L);
