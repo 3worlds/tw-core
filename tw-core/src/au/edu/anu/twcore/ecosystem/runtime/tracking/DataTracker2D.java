@@ -31,12 +31,17 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+
 
 import java.util.Collection;
 import java.util.List;
 
+import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 
 /**
@@ -47,13 +52,24 @@ import au.edu.anu.twcore.data.runtime.Metadata;
  */
 public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Output2DData, Metadata> {
 
+	private final Metadata metadata;
 	public DataTracker2D(int simulatorId, 
 			SamplingMode selection, 
 			int sampleSize,
 			Collection<CategorizedComponent> samplingPool, 
-			List<CategorizedComponent> trackedComponents) {
+			List<CategorizedComponent> trackedComponents,
+			Collection<String> track,
+			ReadOnlyPropertyList tableMetadata) {
 		super(DataMessageTypes.DIM2, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
-		// TODO Auto-generated constructor stub
+		senderId = simulatorId;
+		metadata = new Metadata(senderId,tableMetadata);
+		// Looks like Output2DData currently assumes 1 table only. Would be better it is followed the Output0DData - IDD
+		for (String s : track) {
+			Class<?> c = (Class<?>) tableMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
+			DataLabel l = (DataLabel) tableMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
+//			addMetadataVariable(metadata,c, l);
+		}
+
 	}
 
 	@Override
@@ -82,7 +98,7 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Outpu
 
 	@Override
 	public void closeTimeRecord() {
-		// TODO Auto-generated method stub
+		// DO NOTHING as messages are sent at every call to record.
 		
 	}
 
