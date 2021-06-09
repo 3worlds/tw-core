@@ -77,16 +77,16 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 		SortedSet<String> names = new TreeSet<>();
 		names.addAll(metadata.properties().getKeysAsSet());
 		int i=0;
-		for (String name:names)
-			if (name.contains(".hlabel")){
-			if (i==0)
-				xPropName = name.substring(0,name.indexOf('.'));
-			else if (i==1)
-				yPropName = name.substring(0,name.indexOf('.'));
-			else
-				break;
-			i++;
-		}
+		for (String name : names)
+			if (name.contains(".hlabel")) {
+				if (i == 0)
+					xPropName = name.substring(0, name.indexOf('.'));
+				else if (i == 1)
+					yPropName = name.substring(0, name.indexOf('.'));
+				else
+					break;
+				i++;
+			}
 		xprop = new DataLabel(xPropName);
 		yprop = new DataLabel(yPropName);
 	}
@@ -103,7 +103,35 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 			currentItem = new DataLabel(labels);
 	}
 
-//	// AT the moment this only works with fields, no tables.
+	@Override
+	public void record(TwData... props) {
+		if (hasObservers()) {
+			OutputXYData xyd = new OutputXYData(currentStatus,senderId,metadata.type(),xprop,yprop);
+			xyd.setTime(currentTime);
+			xyd.setItemLabel(currentItem);
+			for (TwData data:props)
+				if (data!=null) {
+//					getRecValue(0,data,xyd);
+					TwDataReader.getValue(data,xprop,xyd);
+					TwDataReader.getValue(data,yprop,xyd);
+			}
+			sendData(xyd);
+		}
+	}
+
+	@Override
+	public Metadata getInstance() {
+		return metadata;
+	}
+
+	@Override
+	public void closeTimeRecord() {
+		// DO NOTHING as messages are sent at every call to record.
+	}
+
+	
+	
+	//	// AT the moment this only works with fields, no tables.
 //	private void getRecValue(int depth, TwData root, OutputXYData xyd) {
 //		if (root.hasProperty(xPropName)) {
 //			Object next = root.getPropertyValue(xPropName);
@@ -150,32 +178,6 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 //			}
 //		}
 //	}
-
-	@Override
-	public void record(TwData... props) {
-		if (hasObservers()) {
-			OutputXYData xyd = new OutputXYData(currentStatus,senderId,metadata.type(),xprop,yprop);
-			xyd.setTime(currentTime);
-			xyd.setItemLabel(currentItem);
-			for (TwData data:props)
-				if (data!=null) {
-//					getRecValue(0,data,xyd);
-					TwDataReader.getValue(data,xprop,xyd);
-					TwDataReader.getValue(data,yprop,xyd);
-			}
-			sendData(xyd);
-		}
-	}
-
-	@Override
-	public Metadata getInstance() {
-		return metadata;
-	}
-
-	@Override
-	public void closeTimeRecord() {
-		// DO NOTHING as messages are sent at every call to record.
-	}
 
 
 }

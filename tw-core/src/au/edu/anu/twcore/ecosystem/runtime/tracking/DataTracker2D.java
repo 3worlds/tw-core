@@ -53,46 +53,54 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Output2DData, Metadata> {
 
 	private final Metadata metadata;
+	private DataLabel currentItem;
+	private long currentTime;
+	private SimulatorStatus currentStatus;
+	protected int metadataType;
+	private int nx;
+	private int ny;
 	public DataTracker2D(int simulatorId, 
 			SamplingMode selection, 
 			int sampleSize,
 			Collection<CategorizedComponent> samplingPool, 
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
-			ReadOnlyPropertyList tableMetadata) {
+			ReadOnlyPropertyList fieldMetadata) {
 		super(DataMessageTypes.DIM2, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
 		senderId = simulatorId;
-		metadata = new Metadata(senderId,tableMetadata);
+		metadata = new Metadata(senderId,fieldMetadata);
 		// Looks like Output2DData currently assumes 1 table only. Would be better it is followed the Output0DData - IDD
-		for (String s : track) {
-			Class<?> c = (Class<?>) tableMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
-			DataLabel l = (DataLabel) tableMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
-//			addMetadataVariable(metadata,c, l);
-		}
+//		for (String s : track) {
+//			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
+//			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
+////			addMetadataVariable(metadata,c, l);
+//		}
 
 	}
 
 	@Override
 	public void recordItem(String... labels) {
-		// TODO Auto-generated method stub
-		
+		if (currentItem==null)
+		currentItem = new DataLabel(labels);
 	}
 
 	@Override
 	public Metadata getInstance() {
-		// TODO Auto-generated method stub
-		return null;
+		return metadata;
 	}
 
 	@Override
 	public void record(TwData... props) {
-		// TODO Auto-generated method stub
+		if (hasObservers()) {
+			Output2DData tsd = new Output2DData(currentStatus,senderId,metadata.type(),nx,ny);
+		}
 		
 	}
 
 	@Override
 	public void openTimeRecord(SimulatorStatus status, long time) {
-		// TODO Auto-generated method stub
+		currentTime = time;
+		currentStatus = status;
 		
 	}
 

@@ -63,6 +63,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import au.edu.anu.rscs.aot.collections.tables.IndexString;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.DefaultStrings;
@@ -276,9 +277,9 @@ public class DataTrackerNode extends InitialisableNode
 				l.add(parent.id());
 			else if (parent instanceof TableNode) {
 				if (index != null) {
-					if (index.getWithFlatIndex(i) != null) 
+					if (index.getWithFlatIndex(i) != null) {
 						l.add(parent.id() + index.getWithFlatIndex(i));
-					else
+					}else
 						l.add(parent.id());
 					i--;
 				}
