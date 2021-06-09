@@ -262,6 +262,7 @@ public class DataTrackerNode extends InitialisableNode
 		String trackName = lab.getEnd();
 		if (trackName.contains("["))
 			trackName = trackName.substring(0, trackName.indexOf('['));
+		trackName = trackName.replaceAll("\\|", "");
 		return trackName;
 	}
 
@@ -499,7 +500,7 @@ public class DataTrackerNode extends InitialisableNode
 		}
 		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
 			// TODO: dummy construction at the moment
-			result = new DataTracker2D(index, selection, index, null, null, null, null);
+			result = new DataTracker2D(index, selection, sampleSize, null,ls, expandedTrackList.keySet(), fieldMetadata);
 		}
 		else if (dataTrackerClass.equals(DataTrackerXY.class.getName())) {
 			if (samplingPool!=null)
