@@ -61,11 +61,15 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 
 	public DataTracker2D(int simulatorId, SamplingMode selection, int sampleSize,
 			Collection<CategorizedComponent> samplingPool, List<CategorizedComponent> trackedComponents,
-			Collection<String> track, ReadOnlyPropertyList fieldMetadata) {
+			Collection<String> track, ReadOnlyPropertyList fieldMetadata, 
+			int dim1, int dim2) {
 		super(DataMessageTypes.DIM2, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
 		senderId = simulatorId;
 		metadata = new Metadata(senderId, fieldMetadata);
+		nx = dim1;
+		ny = dim2;
 		// This system is fine for small arrays but its crazy for large ones.
+		// J: OK, but let's get it to work and then we'll see how to improve it
 		// We need a different approach for setting up the field data for tables: element info and table min , max in each dim.
 		System.out.println("Constructor:\n"+fieldMetadata);
 	}
@@ -86,6 +90,9 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 		System.out.println("record "+props);
 		if (hasObservers()) {
 			Output2DData outputData = new Output2DData(currentStatus, senderId, metadata.type(), nx, ny);
+			for (int i=0; i<nx; i++)
+				for (int j=0; j<ny; j++)
+					outputData.addValue(i, j, 0.0);
 		}
 
 	}

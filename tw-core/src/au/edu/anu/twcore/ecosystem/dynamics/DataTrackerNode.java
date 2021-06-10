@@ -63,7 +63,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import au.edu.anu.rscs.aot.collections.tables.IndexString;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.DefaultStrings;
@@ -499,8 +498,13 @@ public class DataTrackerNode extends InitialisableNode
 					null, null, permanent, ls, expandedTrackList.keySet(),fieldMetadata);
 		}
 		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
-			// TODO: dummy construction at the moment
-			result = new DataTracker2D(index, selection, sampleSize, null,ls, expandedTrackList.keySet(), fieldMetadata);
+			// This happens only if trackTable was selected
+			// trackTable has multiplicity 0..1 after dynamics.utg
+			// to there must be only one item in the tableDims map.
+			// and since this is a 2D map it must have exactly two dimensions
+			int[] ix = tableDims.values().iterator().next();
+			result = new DataTracker2D(index, selection, sampleSize, null,ls, 
+				expandedTrackList.keySet(), fieldMetadata, ix[0], ix[1]);
 		}
 		else if (dataTrackerClass.equals(DataTrackerXY.class.getName())) {
 			if (samplingPool!=null)
