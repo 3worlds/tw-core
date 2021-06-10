@@ -37,7 +37,6 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
-
 import java.util.Collection;
 import java.util.List;
 
@@ -50,7 +49,7 @@ import au.edu.anu.twcore.data.runtime.Metadata;
  * @author Jacques Gignoux - 1 oct. 2019
  *
  */
-public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Output2DData, Metadata> {
+public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Output2DData, Metadata> {
 
 	private final Metadata metadata;
 	private DataLabel currentItem;
@@ -59,29 +58,22 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Outpu
 	protected int metadataType;
 	private int nx;
 	private int ny;
-	public DataTracker2D(int simulatorId, 
-			SamplingMode selection, 
-			int sampleSize,
-			Collection<CategorizedComponent> samplingPool, 
-			List<CategorizedComponent> trackedComponents,
-			Collection<String> track,
-			ReadOnlyPropertyList fieldMetadata) {
+
+	public DataTracker2D(int simulatorId, SamplingMode selection, int sampleSize,
+			Collection<CategorizedComponent> samplingPool, List<CategorizedComponent> trackedComponents,
+			Collection<String> track, ReadOnlyPropertyList fieldMetadata) {
 		super(DataMessageTypes.DIM2, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
 		senderId = simulatorId;
-		metadata = new Metadata(senderId,fieldMetadata);
-		// Looks like Output2DData currently assumes 1 table only. Would be better it is followed the Output0DData - IDD
-//		for (String s : track) {
-//			Class<?> c = (Class<?>) fieldMetadata.getPropertyValue(s + "." + P_FIELD_TYPE.key());
-//			DataLabel l = (DataLabel) fieldMetadata.getPropertyValue(s + "." + P_FIELD_LABEL.key());
-////			addMetadataVariable(metadata,c, l);
-//		}
-
+		metadata = new Metadata(senderId, fieldMetadata);
+		// This system is fine for small arrays but its crazy for large ones.
+		// We need a different approach for setting up the field data for tables: element info and table min , max in each dim.
+		System.out.println("Constructor:\n"+fieldMetadata);
 	}
 
 	@Override
 	public void recordItem(String... labels) {
-		if (currentItem==null)
-		currentItem = new DataLabel(labels);
+		if (currentItem == null)
+			currentItem = new DataLabel(labels);
 	}
 
 	@Override
@@ -91,24 +83,26 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent,Outpu
 
 	@Override
 	public void record(TwData... props) {
+		System.out.println("record "+props);
 		if (hasObservers()) {
-			Output2DData tsd = new Output2DData(currentStatus,senderId,metadata.type(),nx,ny);
+			Output2DData outputData = new Output2DData(currentStatus, senderId, metadata.type(), nx, ny);
 		}
-		
+
 	}
 
 	@Override
 	public void openTimeRecord(SimulatorStatus status, long time) {
+		System.out.println("openTimeRecord");
 		currentTime = time;
 		currentStatus = status;
-		
+
 	}
 
 	@Override
 	public void closeTimeRecord() {
+		System.out.println("closeTimeRecord");
 		// DO NOTHING as messages are sent at every call to record.
-		
-	}
 
+	}
 
 }
