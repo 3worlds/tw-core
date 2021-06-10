@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -136,8 +137,9 @@ public class DocoGenerator {
 	private TreeGraphDataNode system;
 	// private TreeGraphDataNode struct;
 	private TreeGraphDataNode dDef;
-	private List<TreeGraphDataNode> driverTypes;
+	private List<TreeGraphDataNode> drvTypes;
 	private List<TreeGraphDataNode> decTypes;
+	private List<TreeGraphDataNode> cnstTypes;
 	private List<TreeGraphDataNode> compTypes; // including the system
 	private List<TreeGraphDataNode> relTypes;
 	private List<TreeGraphDataNode> groupTypes;
@@ -147,6 +149,7 @@ public class DocoGenerator {
 	private List<TreeGraphDataNode> trackerTypes;
 	private List<TreeGraphDataNode> ephemeralComponents;
 	private List<TreeGraphDataNode> instanceComponents;
+	private List<TreeGraphDataNode> rngs;
 	private Map<TreeGraphDataNode, Map<TreeGraphDataNode, List<TreeGraphDataNode>>> ctFuncLookup;
 	private Map<String, List<String>> snippetMap;
 	// private List<TreeGraphDataNode>
@@ -209,8 +212,10 @@ public class DocoGenerator {
 		spaceTypes = new ArrayList<>();
 		rootStoppingConditions = new ArrayList<>();
 		initTypes = new ArrayList<>();
-		driverTypes = new ArrayList<>();
+		drvTypes = new ArrayList<>();
 		decTypes = new ArrayList<>();
+		cnstTypes = new ArrayList<>();
+		rngs = new ArrayList<>();
 		ephemeralComponents = new ArrayList<>();
 		instanceComponents = new ArrayList<>();
 		trackerTypes = new ArrayList<>();
@@ -258,7 +263,10 @@ public class DocoGenerator {
 					ephemeralComponents.addAll(cmps);
 				}
 			} else if (n.classId().equals(N_RELATIONTYPE.label())) {
-				relTypes.add(n);
+				Collection<ALEdge> ate = (Collection<ALEdge>) get(n.edges(Direction.IN),
+						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())));
+				if (!ate.isEmpty())
+					relTypes.add(n);
 				// TODO if either of the the related components have ephemeral lifespans then
 				// this indicates an ephemeral relation - yes?
 			} else if (n.classId().equals(N_SPACE.label())) {
@@ -281,12 +289,14 @@ public class DocoGenerator {
 				dtDesc.put(n, n.id() + formatClassifier(sn));
 			} else if (n.classId().equals(N_SNIPPET.label())) {
 				snippetNodes.add(n);
+			} else if (n.classId().equals(N_RNG.label())) {
+				rngs.add(n);
 			}
 		}
 		/**
 		 * It would be nice for the reader if a distinction was made between
 		 * initFunctions and other functions. This is not straight forward because in
-		 * the absence of snippets we cant tell what type of function it is just from
+		 * the absence of snippets we can't tell what type of function it is just from
 		 * the model java file. We would have to look at the corresponding function file
 		 */
 		if (UserProjectLink.haveUserProject()) {
@@ -314,10 +324,11 @@ public class DocoGenerator {
 					selectZeroOrOne(hasTheLabel(E_DRIVERS.label())), startNode());
 			if (drvCat != null) {
 				nDrvs += getDimensions(n);
-				driverTypes.add(n);
-			} else if (get(n.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_CONSTANTS.label()))) != null)
+				drvTypes.add(n);
+			} else if (get(n.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_CONSTANTS.label()))) != null) {
 				nCnts += getDimensions(n);
-			else if (get(n.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_DECORATORS.label()))) != null) {
+				cnstTypes.add(n);
+			} else if (get(n.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_DECORATORS.label()))) != null) {
 				nDecs += getDimensions(n);
 				decTypes.add(n);
 			}
@@ -532,15 +543,22 @@ public class DocoGenerator {
 		}
 
 		// Drivers,
-		entries = getDataDetails(driverTypes);
+		entries = getDataDetails(drvTypes, E_DRIVERS.label());
 		if (!entries.isEmpty()) {
-			doc.addParagraph("Table " + (++tableNumber) + ". Driver (state variable) details");
+			doc.addParagraph("Table " + (++tableNumber) + ". Drivers (state variables).");
 			writeTable(doc, entries, "Driver", "name", "Description", "Dimensions", "Type", "Units", "Range");
 		}
-		entries = getDataDetails(decTypes);
+		// Decorators,
+		entries = getDataDetails(decTypes, E_DECORATORS.label());
 		if (!entries.isEmpty()) {
-			doc.addParagraph("Table " + (++tableNumber) + ". Decorator (dependent state variable) details");
+			doc.addParagraph("Table " + (++tableNumber) + ". Decorators (dependent state variable).");
 			writeTable(doc, entries, "Decorator", "name", "Description", "Dimensions", "Type", "Units", "Range");
+		}
+		// Constants,
+		entries = getDataDetails(cnstTypes, E_CONSTANTS.label());
+		if (!entries.isEmpty()) {
+			doc.addParagraph("Table " + (++tableNumber) + ". Constants");
+			writeTable(doc, entries, "Constants", "name", "Description", "Dimensions", "Type", "Units", "Range");
 		}
 	}
 
@@ -605,13 +623,20 @@ public class DocoGenerator {
 	 * and demand, fishing pressure, and tax regulations.
 	 */
 	private void writeEnvironment(TextDocument doc, int level) {
-		// get arena constants
-		List<String> entries = getArenaConstantsDetails();
+		// random number generation
+		List<String> entries = getRNGDetails();
 		if (!entries.isEmpty()) {
 			doc.addParagraph("Environment").applyHeading(true, level);
-			doc.addParagraph("Table " + (++tableNumber) + ". Arena constants");
-			writeTable(doc, entries, "constants", "name", "Description", "Dimensions", "Type", "Units", "Range");
+			doc.addParagraph("Table " + (++tableNumber) + ". Random number application");
+			writeTable(doc, entries, "Generators", "Properties", "Values","Function uses");
 		}
+//		// get arena constants
+//		List<String> entries = getArenaConstantsDetails();
+//		if (!entries.isEmpty()) {
+//			doc.addParagraph("Environment").applyHeading(true, level);
+//			doc.addParagraph("Table " + (++tableNumber) + ". Arena constants");
+//			writeTable(doc, entries, "constants", "name", "Description", "Dimensions", "Type", "Units", "Range");
+//		}
 	}
 
 	/**
@@ -969,8 +994,8 @@ public class DocoGenerator {
 		StringBuilder refs = new StringBuilder();
 		for (int i = 0; i < tblRefs.size(); i++) {
 			String entry = tblRefs.getWithFlatIndex(i);
-			if (entry==null)
-				entry="";
+			if (entry == null)
+				entry = "";
 			entry = entry.trim();
 			if (!entry.isBlank()) {
 				refs.append(++counter).append(". ").append(entry).append("\n");
@@ -1180,30 +1205,59 @@ public class DocoGenerator {
 		return entries;
 	}
 
-	private List<String> getArenaConstantsDetails() {
+	@SuppressWarnings("unchecked")
+	private List<String> getRNGDetails() {
 		List<String> entries = new ArrayList<>();
-		get(cfg.root().getChildren(), selectOne(hasTheName(ConfigurationReservedNodeId.categories.id())));
-		TreeGraphDataNode arena = (TreeGraphDataNode) get(cfg.root().getChildren(),
-				selectOne(hasTheName(ConfigurationReservedNodeId.categories.id())), children(),
-				selectOne(hasTheName(ConfigurationReservedNodeId.systemElements.id())), children(),
-				selectOne(hasTheName(ConfigurationReservedNodeId.arena.id())));
-		TreeGraphDataNode cnts = (TreeGraphDataNode) get(arena.edges(Direction.OUT),
-				selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())), endNode());
-		if (cnts != null) {
-			String c1 = cnts.id();
-			Map<String, List<String>> details = getDataTreeDetails(cnts);
-			for (Map.Entry<String, List<String>> entry : details.entrySet()) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(entry.getKey());
-				for (String d : entry.getValue()) {
-					sb.append(sep).append(d);
+		for (TreeGraphDataNode rng : rngs) {
+			String c1 = rng.id();
+			List<TreeGraphDataNode> users = (List<TreeGraphDataNode>) get(rng.edges(Direction.IN), selectZeroOrMany(hasTheLabel(E_USERNG.label())),
+					edgeListStartNodes());
+			String[] keys = rng.properties().getKeysAsArray();
+			for (int i = 0; i < Math.max(users.size(), keys.length); i++) {
+				String c2 = "";
+				String c3 = "";
+				if (i < keys.length) {
+					c2 = keys[i];
+					c3 = rng.properties().getPropertyValue(keys[i]).toString();
 				}
-				entries.add(c1 + sep + sb.toString());
-				c1 = "";
+				
+				String c4 = "";
+				if (i < users.size())
+					c4 = users.get(i).id();
+				StringBuilder sb = new StringBuilder();
+				sb.append(c1).append(sep).append(c2).append(sep).append(c3).append(sep).append(c4);
+				entries.add(sb.toString());
+				c1= "";
 			}
 		}
+
 		return entries;
 	}
+
+//	private List<String> getArenaConstantsDetails() {
+//		List<String> entries = new ArrayList<>();
+//		get(cfg.root().getChildren(), selectOne(hasTheName(ConfigurationReservedNodeId.categories.id())));
+//		TreeGraphDataNode arena = (TreeGraphDataNode) get(cfg.root().getChildren(),
+//				selectOne(hasTheName(ConfigurationReservedNodeId.categories.id())), children(),
+//				selectOne(hasTheName(ConfigurationReservedNodeId.systemElements.id())), children(),
+//				selectOne(hasTheName(ConfigurationReservedNodeId.arena.id())));
+//		TreeGraphDataNode cnts = (TreeGraphDataNode) get(arena.edges(Direction.OUT),
+//				selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())), endNode());
+//		if (cnts != null) {
+//			String c1 = cnts.id();
+//			Map<String, List<String>> details = getDataTreeDetails(cnts);
+//			for (Map.Entry<String, List<String>> entry : details.entrySet()) {
+//				StringBuilder sb = new StringBuilder();
+//				sb.append(entry.getKey());
+//				for (String d : entry.getValue()) {
+//					sb.append(sep).append(d);
+//				}
+//				entries.add(c1 + sep + sb.toString());
+//				c1 = "";
+//			}
+//		}
+//		return entries;
+//	}
 
 	@SuppressWarnings("unchecked")
 	private List<String> getTimeDetails() {
@@ -1450,21 +1504,23 @@ public class DocoGenerator {
 		 * 1. if either of the to/from cats belongsTo ephemeral category?
 		 * 
 		 * 2. if their processes are located in space?
+		 * 
+		 * TODO: state updates for structure and attributes.
 		 */
-		boolean haveEphemeralRelations = false;
-		flowChart.append("\tadvance time\n");
-		if (haveEphemeralRelations) {
-			flowChart.append("\tremove old relations\n");
-			flowChart.append("\tcreate new relations\n");
-		}
-
-		for (TreeGraphDataNode cmp : ephemeralComponents) {
-			flowChart.append("\tremove old ").append(cmp.id()).append("\n");
-			flowChart.append("\tcreate new ").append(cmp.id()).append("\n");
-		}
-
-		if (!driverTypes.isEmpty())
-			flowChart.append("\tassign drivers  ← newly computed values\n");
+//		boolean haveEphemeralRelations = false;
+//		flowChart.append("\tadvance time\n");
+//		if (haveEphemeralRelations) {
+//			flowChart.append("\tremove old relations\n");
+//			flowChart.append("\tcreate new relations\n");
+//		}
+//
+//		for (TreeGraphDataNode cmp : ephemeralComponents) {
+//			flowChart.append("\tremove old ").append(cmp.id()).append("\n");
+//			flowChart.append("\tcreate new ").append(cmp.id()).append("\n");
+//		}
+//
+//		if (!driverTypes.isEmpty())
+//			flowChart.append("\tassign drivers  ← newly computed values\n");
 
 		return flowChart.toString();
 	}
@@ -1478,6 +1534,9 @@ public class DocoGenerator {
 		}
 		case RelateToDecision: {
 			return "setRelation (" + getProcessAppliesToDesc((ProcessNode) func.getParent()) + ")";
+		}
+		case DeleteDecision: {
+			return "deleteComponent";
 		}
 		default: {
 			return result;
@@ -1696,11 +1755,13 @@ public class DocoGenerator {
 		return entries;
 	}
 
-	private List<String> getDataDetails(List<TreeGraphDataNode> dataTypes) {
+	private List<String> getDataDetails(List<TreeGraphDataNode> dataTypes, String edgeLabel) {
 		List<String> entries = new ArrayList<>();
-		for (TreeGraphDataNode drv : dataTypes) {
-			String c1 = drv.id();
-			Map<String, List<String>> details = getDataTreeDetails(drv);
+		for (TreeGraphDataNode rec : dataTypes) {
+			TreeGraphDataNode cat = (TreeGraphDataNode) get(rec.edges(Direction.IN), selectOne(hasTheLabel(edgeLabel)),
+					startNode());
+			String c1 = rec.id() + " [" + cat.id() + "]";
+			Map<String, List<String>> details = getDataTreeDetails(rec);
 			for (Map.Entry<String, List<String>> entry : details.entrySet()) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(entry.getKey());
@@ -1745,14 +1806,20 @@ public class DocoGenerator {
 					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
 					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 			if (ctFrom != null)
-				validFromCT.addAll(ctFrom);
+				for (TreeGraphDataNode n : ctFrom) {
+					if (!validFromCT.contains(n))
+						validFromCT.add(n);
+				}
 		}
 		for (TreeGraphDataNode toCat : toCats) {
 			List<TreeGraphDataNode> ctTo = (List<TreeGraphDataNode>) get(toCat.edges(Direction.IN),
 					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes(),
 					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 			if (ctTo != null)
-				validToCT.addAll(ctTo);
+				for (TreeGraphDataNode n : ctTo) {
+					if (!validToCT.contains(n))
+						validToCT.add(n);
+				}
 		}
 		if (validFromCT.isEmpty() && validToCT.isEmpty()) {
 			return new Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>>(null, null);
