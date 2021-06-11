@@ -35,7 +35,7 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static au.edu.anu.twcore.ecosystem.runtime.tracking.TwDataReader.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,16 +58,18 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 	protected int metadataType;
 	private int nx;
 	private int ny;
+	private DataLabel label = null;
 
 	public DataTracker2D(int simulatorId, SamplingMode selection, int sampleSize,
 			Collection<CategorizedComponent> samplingPool, List<CategorizedComponent> trackedComponents,
 			Collection<String> track, ReadOnlyPropertyList fieldMetadata, 
-			int dim1, int dim2) {
+			int dim1, int dim2, DataLabel tableLabel) {
 		super(DataMessageTypes.DIM2, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
 		senderId = simulatorId;
 		metadata = new Metadata(senderId, fieldMetadata);
 		nx = dim1;
 		ny = dim2;
+		label = tableLabel;
 		// This system is fine for small arrays but its crazy for large ones.
 		// J: OK, but let's get it to work and then we'll see how to improve it
 		// We need a different approach for setting up the field data for tables: element info and table min , max in each dim.
@@ -90,11 +92,17 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 		System.out.println("record "+props);
 		if (hasObservers()) {
 			Output2DData outputData = new Output2DData(currentStatus, senderId, metadata.type(), nx, ny);
+			outputData.setZLabel(label);
 			for (int i=0; i<nx; i++)
 				for (int j=0; j<ny; j++)
-					outputData.addValue(i, j, 0.0);
+					for (TwData data:props)
+						if (data!=null)
+							getValue(data, label, outputData);
+			outputData.setTime(currentTime);
+			outputData.setItemLabel(currentItem);
+			sendData(outputData);
+			// now outputData==null
 		}
-
 	}
 
 	@Override
@@ -109,7 +117,6 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 	public void closeTimeRecord() {
 		System.out.println("closeTimeRecord");
 		// DO NOTHING as messages are sent at every call to record.
-
 	}
 
 }

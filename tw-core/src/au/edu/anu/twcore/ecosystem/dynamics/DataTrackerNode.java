@@ -63,6 +63,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import au.edu.anu.rscs.aot.collections.tables.IndexString;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.DefaultStrings;
@@ -90,6 +91,7 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import au.edu.anu.twcore.ui.TrackTableEdge;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
 /**
@@ -152,6 +154,7 @@ public class DataTrackerNode extends InitialisableNode
 	// target objects of tracking: groups or systemComponents
 	private List<TreeGraphNode> trackedComponents = new ArrayList<>();
 	private List<Category> processCategories = null;
+	private DataLabel fullTableLabel = null;
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -293,6 +296,26 @@ public class DataTrackerNode extends InitialisableNode
 			result.append(it.next());
 		return result;
 	}
+	
+	/**
+	 * Returns true if the datalabel passed as argument as a leaf index indicating a full table.
+	 * 
+	 * @param unexpanded
+	 * @return
+	 */
+	private boolean trackFullLeafTable(DataLabel unexpanded,TableNode table) {
+		String end = unexpanded.getEnd();
+		if (end.contains("["))
+			end = end.substring(end.indexOf('['));
+		else
+			end = "";
+		int[] dimensions = getTableDims(table);
+		IntegerRange[] res = IndexString.stringIndexRanges(end, dimensions);
+		for (int i=0; i<res.length; i++)
+			if ((res[i].getFirst()!=0)||(res[i].getLast()!=dimensions[i]-1))
+				return false;
+		return true;
+	}
 
 	@SuppressWarnings("unchecked")
 	private void setupComponentTracker() {
@@ -330,23 +353,34 @@ public class DataTrackerNode extends InitialisableNode
 				for (Edge e : le) {
 					DataLabel unexpanded = getFullVarName((TreeNode) e.endNode(), (StringTable) ((ReadOnlyDataHolder) e)
 						.properties().getPropertyValue(P_TRACKEDGE_INDEX.key()));
+					if ((e instanceof TrackTableEdge)&&
+						(trackFullLeafTable(unexpanded,(TableNode)e.endNode()))) {
+							String last = unexpanded.getEnd();
+							if (last.contains("["))
+								last = last.substring(0,last.indexOf('['));
+							fullTableLabel = unexpanded;
+							fullTableLabel.stripEnd();
+							fullTableLabel.append(last);
+					}
+					else {
 					List<IndexedDataLabel> labels = IndexedDataLabel.expandIndexes(unexpanded, tableDims);
-					// now there is one label for each index combination
-					for (IndexedDataLabel l : labels) {
-						String trackName = stripVarName(l);
-						TrackMeta tm = new TrackMeta();
-						tm.label = l; // the index is in the label, now!
-						TrackMeta tmm = fm.get(trackName);
-						tm.irange = tmm.irange;
-						tm.rrange = tmm.rrange;
-						tm.prec = tmm.prec;
-						tm.trackType = tmm.trackType;
-						tm.units = tmm.units;
-						// this contains in the proper order all the indexes needed to read the data
-						for (int j = 0; j < l.size(); j++)
-							if (l.getIndex(j) != null)
-								tm.index.add(l.getIndex(j));
-						expandedTrackList.put(l.toString(), tm);
+						// now there is one label for each index combination
+						for (IndexedDataLabel l : labels) {
+							String trackName = stripVarName(l);
+							TrackMeta tm = new TrackMeta();
+							tm.label = l; // the index is in the label, now!
+							TrackMeta tmm = fm.get(trackName);
+							tm.irange = tmm.irange;
+							tm.rrange = tmm.rrange;
+							tm.prec = tmm.prec;
+							tm.trackType = tmm.trackType;
+							tm.units = tmm.units;
+							// this contains in the proper order all the indexes needed to read the data
+							for (int j = 0; j < l.size(); j++)
+								if (l.getIndex(j) != null)
+									tm.index.add(l.getIndex(j));
+							expandedTrackList.put(l.toString(), tm);
+						}
 					}
 				}
 				// 3 store results into fieldMetadata
@@ -504,7 +538,7 @@ public class DataTrackerNode extends InitialisableNode
 			// and since this is a 2D map it must have exactly two dimensions
 			int[] ix = tableDims.values().iterator().next();
 			result = new DataTracker2D(index, selection, sampleSize, null,ls, 
-				expandedTrackList.keySet(), fieldMetadata, ix[0], ix[1]);
+				expandedTrackList.keySet(), fieldMetadata, ix[0], ix[1], fullTableLabel);
 		}
 		else if (dataTrackerClass.equals(DataTrackerXY.class.getName())) {
 			if (samplingPool!=null)

@@ -1,5 +1,7 @@
 package au.edu.anu.twcore.data.runtime;
 
+import au.edu.anu.rscs.aot.collections.tables.Table;
+
 /**
  * An interface for data messages that get their data from the TwData hierarchy
  * 
@@ -23,5 +25,7 @@ public interface OutputTwData  {
 	public default void setValue(DataLabel label, boolean value) {}
 
 	public default void setValue(DataLabel label, String value) {}
+	
+	public default void setValues(DataLabel label, Table table) {}
 
 }

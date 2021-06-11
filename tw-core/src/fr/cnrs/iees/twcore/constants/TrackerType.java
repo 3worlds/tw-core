@@ -44,6 +44,8 @@ public class TrackerType extends StringTable {
 	}
 
 	public static TrackerType valueOf(String value) {
+//		if ((value==null)||(value.isBlank())||(value.isEmpty())||(value.equals("null")))
+//			return null;
 		StringTable st = StringTable.valueOf(value);
 		TrackerType result = new TrackerType(st.getDimensioners());
 		for (int i = 0; i < st.size(); i++)

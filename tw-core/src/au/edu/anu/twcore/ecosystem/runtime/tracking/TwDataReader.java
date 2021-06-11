@@ -63,7 +63,14 @@ public class TwDataReader {
 		if (root.hasProperty(key)) {
 			Object next = root.getPropertyValue(key);
 			if (next instanceof Table) {
-				getTableValue(depth + 1, (Table) next, ((IndexedDataLabel) lab).getIndex(depth), lab, tsd);
+				// case 1: there is an index in the table, saying table elements must be read
+				// one by one (slow)
+				if (lab instanceof IndexedDataLabel)
+					getTableValue(depth + 1, (Table) next, ((IndexedDataLabel) lab).getIndex(depth), lab, tsd);
+				// case 2: there is no index with the table name, saying the table is a leaf table 
+				// and must be read in full (fast)
+				else
+					getTableValue(depth + 1, (Table) next, lab, tsd);
 			} else { // this is a primitive type and we should be at the end of the label
 				if (next instanceof Double)
 					tsd.setValue(lab, (double) next);
@@ -85,4 +92,10 @@ public class TwDataReader {
 		}
 	}
 
+	// specific method for leaf tables with no indices, ie that must be read in full
+	private static void getTableValue(int depth, Table table, DataLabel lab, OutputTwData tsd) {
+		tsd.setValues(lab, table);
+	}
+
+	
 }
