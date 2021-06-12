@@ -70,10 +70,6 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 		nx = dim1;
 		ny = dim2;
 		label = tableLabel;
-		// This system is fine for small arrays but its crazy for large ones.
-		// J: OK, but let's get it to work and then we'll see how to improve it
-		// We need a different approach for setting up the field data for tables: element info and table min , max in each dim.
-		System.out.println("Constructor:\n"+fieldMetadata);
 	}
 
 	@Override
@@ -89,7 +85,6 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 
 	@Override
 	public void record(TwData... props) {
-		System.out.println("record "+props);
 		if (hasObservers()) {
 			Output2DData outputData = new Output2DData(currentStatus, senderId, metadata.type(), nx, ny);
 			outputData.setZLabel(label);
@@ -107,7 +102,6 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 
 	@Override
 	public void openTimeRecord(SimulatorStatus status, long time) {
-		System.out.println("openTimeRecord");
 		currentTime = time;
 		currentStatus = status;
 
@@ -115,7 +109,6 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 
 	@Override
 	public void closeTimeRecord() {
-		System.out.println("closeTimeRecord");
 		// DO NOTHING as messages are sent at every call to record.
 	}
 
