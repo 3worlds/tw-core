@@ -12,17 +12,41 @@ archetype 3wSA-MatrixWidget1
 		isOfClass = String("widget")
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
+		
 		mustSatisfyQuery MatrixWidget1SenderInRangeQuery
 			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
-		hasProperty MatrixWidget1SenderProperty
-			hasName = String("sender")
-			type = String("Integer")
-			multiplicity = IntegerRange("0..1")
+		
 		mustSatisfyQuery MatrixWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
+		
+		hasProperty MatrixWidget1FirstSenderProperty
+			hasName = String("firstSender")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery MatrixWidget1firstSenderInRangeQuery1
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]0,2147483647))
+
+		hasProperty MatrixWidget1NSendersProperty
+			hasName = String("nSenders")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery MatrixWidget1NSendersInRangeQuery2
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]1,2147483647))
+
+		hasProperty MatrixWidget1ViewsProperty
+			hasName = String("nViews")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery MatrixWidget1ViewsInRangeQuery
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]1,25))
+		
 		hasEdge MatrixWidget1DataTrackerEdgeSpec
 			isOfClass = String("trackSeries")
 			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
+			
 			

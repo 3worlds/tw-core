@@ -13,13 +13,16 @@ archetype 3wSA-SpaceWidget1
 		// ignored
 		hasParent = StringTable(([2]"tab", "container"))
 		multiplicity = IntegerRange("0..*")
+
 		mustSatisfyQuery SpaceWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
+
 		hasEdge SpaceWidget1EdgeSpec
 			isOfClass = String("trackSpace")
 			toNode = String("space:")
 			multiplicity = IntegerRange("1..1")
+
 		hasProperty SpaceWidget1ViewsProperty
 			hasName = String("nViews")
 			type = String("Integer")
