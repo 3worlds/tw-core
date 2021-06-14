@@ -304,17 +304,21 @@ public class DataTrackerNode extends InitialisableNode
 	 * @return
 	 */
 	private boolean trackFullLeafTable(DataLabel unexpanded,TableNode table) {
-		String end = unexpanded.getEnd();
-		if (end.contains("["))
-			end = end.substring(end.indexOf('['));
-		else
-			end = "";
-		int[] dimensions = getTableDims(table);
-		IntegerRange[] res = IndexString.stringIndexRanges(end, dimensions);
-		for (int i=0; i<res.length; i++)
-			if ((res[i].getFirst()!=0)||(res[i].getLast()!=dimensions[i]-1))
-				return false;
-		return true;
+		String s1 = (String) properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
+		String s2 = DataTracker0D.class.getName();
+		return !s2.equals(s1);
+
+//		String end = unexpanded.getEnd();
+//		if (end.contains("["))
+//			end = end.substring(end.indexOf('['));
+//		else
+//			end = "";
+//		int[] dimensions = getTableDims(table);
+//		IntegerRange[] res = IndexString.stringIndexRanges(end, dimensions);
+//		for (int i=0; i<res.length; i++)
+//			if ((res[i].getFirst()!=0)||(res[i].getLast()!=dimensions[i]-1))
+//				return false;
+//		return true;
 	}
 
 	@SuppressWarnings("unchecked")
