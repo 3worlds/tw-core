@@ -304,21 +304,20 @@ public class DataTrackerNode extends InitialisableNode
 	 * @return
 	 */
 	private boolean trackFullLeafTable(DataLabel unexpanded,TableNode table) {
-		String s1 = (String) properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
-		String s2 = DataTracker0D.class.getName();
-		return !s2.equals(s1);
-
-//		String end = unexpanded.getEnd();
-//		if (end.contains("["))
-//			end = end.substring(end.indexOf('['));
-//		else
-//			end = "";
-//		int[] dimensions = getTableDims(table);
-//		IntegerRange[] res = IndexString.stringIndexRanges(end, dimensions);
-//		for (int i=0; i<res.length; i++)
-//			if ((res[i].getFirst()!=0)||(res[i].getLast()!=dimensions[i]-1))
-//				return false;
-//		return true;
+//		String s1 = (String) properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
+//		String s2 = DataTracker0D.class.getName();
+//		return !s2.equals(s1);
+		String end = unexpanded.getEnd();
+		if (end.contains("["))
+			end = end.substring(end.indexOf('['));
+		else
+			end = "";
+		int[] dimensions = getTableDims(table);
+		IntegerRange[] res = IndexString.stringIndexRanges(end, dimensions);
+		for (int i=0; i<res.length; i++)
+			if ((res[i].getFirst()!=0)||(res[i].getLast()!=dimensions[i]-1))
+				return false;
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -357,7 +356,10 @@ public class DataTrackerNode extends InitialisableNode
 				for (Edge e : le) {
 					DataLabel unexpanded = getFullVarName((TreeNode) e.endNode(), (StringTable) ((ReadOnlyDataHolder) e)
 						.properties().getPropertyValue(P_TRACKEDGE_INDEX.key()));
+					String dtc = (String) properties().getPropertyValue(P_DATATRACKER_SUBCLASS.key());
+					// this only for the leaf table of dataTracker2Ds 
 					if ((e instanceof TrackTableEdge)&&
+						(DataTracker2D.class.getName().equals(dtc))&&
 						(trackFullLeafTable(unexpanded,(TableNode)e.endNode()))) {
 							String last = unexpanded.getEnd();
 							if (last.contains("["))
