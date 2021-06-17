@@ -89,6 +89,11 @@ public class RelationProcess extends AbstractRelationProcess {
 			CategorizedComponent focal,
 			CategorizedComponent other,
 			SystemRelation rel) {
+
+if (focal.id().contentEquals("1213")||other.id().contentEquals("1213"))
+	System.out.println("Stop RelationProcess!");
+
+
 		// ChangeOtherStateFunction-----------------------------------------------------------
         for (ChangeOtherStateFunction function:COSfunctions) {
         	if (other.currentState()!=null) {
@@ -151,7 +156,7 @@ public class RelationProcess extends AbstractRelationProcess {
 				else if (hc instanceof GroupComponent) {
 					// arena is already set
 					otherGroup = hc;
-					if (hc.getParent() instanceof LifeCycleComponent)					
+					if (hc.getParent() instanceof LifeCycleComponent)
 						otherLifeCycle = (LifeCycleComponent) hc.getParent();
 					else
 						otherLifeCycle = null;
