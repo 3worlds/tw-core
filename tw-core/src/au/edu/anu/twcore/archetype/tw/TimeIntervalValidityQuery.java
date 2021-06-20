@@ -111,15 +111,25 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 			for (ReadOnlyDataHolder timer : timers) {
 				if (timer.properties().hasProperty(P_TIMEMODEL_TU.key())) {
 					TimeUnits timerTimeUnits = (TimeUnits) timer.properties().getPropertyValue(P_TIMEMODEL_TU.key());
-					// if has an offset, allow a finer time unit
-					// TODO: relies on other queries:
-					// 1) offset must round to at least 1 of the next smaller unit.
-					// 2) Offset not allowed for ARBITRARY or MONO_UNIT
+					// if there is an offset, this will be next smallest time unit value
+					TimeUnits timerTimeUnitsMin = timerTimeUnits;
+					/**
+					 * if has an offset, allow a finer time unit
+					 * 
+					 * 1) offset must round to at least 1 of the next smaller unit. I don't like
+					 * this. It should be an integer with no need to round. E.g. if year is the time
+					 * unit then offset should be expressed in a number of months.
+					 * 
+					 * 2) Offset not allowed for ARBITRARY or MONO_UNIT
+					 * 
+					 * 3) Maybe we can eventually get rid of this - is it useful anymore since the
+					 * causal loop has changed?
+					 */
 					if (timer.properties().hasProperty(P_TIMEMODEL_OFFSET.key()))
-						timerTimeUnits = TimeScaleType.getPrev(timeScaleType, timerTimeUnits);
+						timerTimeUnitsMin = TimeScaleType.getPrev(timeScaleType, timerTimeUnits);
 					// check if outside range
-					if (timerTimeUnits.compareTo(foundTimeUnitsMin) < 0)
-						foundTimeUnitsMin = timerTimeUnits;
+					if (timerTimeUnitsMin.compareTo(foundTimeUnitsMin) < 0)
+						foundTimeUnitsMin = timerTimeUnitsMin;
 					if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
 						foundTimeUnitsMax = timerTimeUnits;
 				}

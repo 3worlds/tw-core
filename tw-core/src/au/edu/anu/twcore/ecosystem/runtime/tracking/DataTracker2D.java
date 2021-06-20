@@ -88,11 +88,14 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 		if (hasObservers()) {
 			Output2DData outputData = new Output2DData(currentStatus, senderId, metadata.type(), nx, ny);
 			outputData.setZLabel(label);
-			for (int i=0; i<nx; i++)
-				for (int j=0; j<ny; j++)
-					for (TwData data:props)
-						if (data!=null)
-							getValue(data, label, outputData);
+			for (TwData data:props)
+				if (data!=null)
+					getValue(data,label,outputData);
+//			for (int i=0; i<nx; i++) // IDD- Temp change: there is an (nx*ny)^2 loop here - presumably to manage trees of tables etc - what to do!!
+//				for (int j=0; j<ny; j++)
+//					for (TwData data:props)
+//						if (data!=null)
+//							getValue(data, label, outputData);
 			outputData.setTime(currentTime);
 			outputData.setItemLabel(currentItem);
 			sendData(outputData);
