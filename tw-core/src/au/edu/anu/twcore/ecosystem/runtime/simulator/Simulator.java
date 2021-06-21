@@ -203,7 +203,7 @@ public class Simulator implements Resettable {
 		// time tracker
 		timetracker = new TimeTracker();
 		trackers.put(timetracker, metadata);
-		// ComponentProcess data trackers 
+		// ComponentProcess data trackers
 		for (List<List<TwProcess>> llp : processCallingOrder.values())
 			for (List<TwProcess> lp : llp)
 				for (TwProcess p : lp) {
@@ -286,7 +286,7 @@ public class Simulator implements Resettable {
 				}
 				i++;
 			}
-			// 3 // 
+			// 3 //
 			// CAUSAL LOOP: loop on dependency rank within a time step and
 			// execute all the processes depending on these time models
 			// drivers and graph structure are updated at the end of each causal step
@@ -312,10 +312,10 @@ public class Simulator implements Resettable {
 						((Sampler<?>)tracker).updateSample();
 				}
 			}
-			// 3b 
+			// 3b
 			// resetting decorators and population counters to zero for next step
 			setDecoratorsToZero();
-			// 4 
+			// 4
 			// advance time ONLY for those time models that were processed
 			i = 0;
 			for (Timer tm : timerList) {
@@ -331,6 +331,13 @@ public class Simulator implements Resettable {
 				for (SystemComponent sc : ecosystem.community().allItems())
 					if (sc.autoVar()!=null)
 						if (sc.autoVar() instanceof ComponentData) {
+
+
+if (sc.id().contentEquals("1213"))
+	System.out.println("Stop Simulator Ageing!");
+
+
+
 							ComponentData au = (ComponentData) sc.autoVar();
 							au.writeEnable();
 							au.age(nexttime - au.birthDate());
@@ -367,13 +374,13 @@ public class Simulator implements Resettable {
 
 	// helper method for step()
 	// resetting decorators and population counters to zero for next step
-	// only for those processes that were run just before (as indicated by the changed() method in 
+	// only for those processes that were run just before (as indicated by the changed() method in
 	// ComponentContainer).
 	private void setDecoratorsToZero() {
-		if (ecosystem.community()!=null) 
+		if (ecosystem.community()!=null)
 			ecosystem.community().prepareStepAll();
 	}
-	
+
 	// helper method for step()
 	// update state and structure at the end of every causal step
 	@SuppressWarnings("unchecked")

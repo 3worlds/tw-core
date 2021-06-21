@@ -136,6 +136,7 @@ public class SquareGrid extends SpaceAdapter {
 		int[] ij = cellCoordinates(focal.locationData().coordinates());
 //		squareGridLocation at = (squareGridLocation) locatedItems.get(focal);
 		grid[ij[0]][ij[1]].remove(focal);
+		locatedItems.remove(focal);
 	}
 
 	@Override
@@ -159,8 +160,8 @@ public class SquareGrid extends SpaceAdapter {
 		return result;
 	}
 
-	
-	
+
+
 	private void getItemsAtSameDistance(int[] refloc,
 			List<Duple<Integer,Integer>> l,
 			List<SystemComponent> result) {
