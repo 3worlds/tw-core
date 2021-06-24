@@ -84,13 +84,10 @@ public class ComponentContainer
 			((ComponentContainer) sc).stepAll();
 	}
 
-
 	@Override
 	public void removeItem(SystemComponent item) {
 		super.removeItem(item);
 	}
-	
-	
 
 	/**
 	 * CAUTION: This method is only here to handle removal of SystemComponents that jumped out

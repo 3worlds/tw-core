@@ -31,9 +31,11 @@ package au.edu.anu.twcore.ecosystem.runtime.space;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -66,7 +68,7 @@ public class SquareGrid extends SpaceAdapter {
 
 	private Map<SystemComponent,int[]> locatedItems = new HashMap<>();
 //	private Map<SystemComponent,Location> unclearableItems = new HashMap<>();
-	private List<SystemComponent> grid[][];
+	private Set<SystemComponent> grid[][];
 	// precomputed inverted table of distances vs table indices
 	private SortedMap<Long,List<Duple<Integer,Integer>>> distanceMap = new TreeMap<>();
 
@@ -81,10 +83,10 @@ public class SquareGrid extends SpaceAdapter {
 		this.cellSize = cellSize;
 		this.nx = nx;
 		this.ny = ny;
-		grid = new ArrayList[nx+1][ny+1];
+		grid = new HashSet[nx+1][ny+1];
 		for (int i=0; i<grid.length; i++)
 			for (int j=0; j<grid.length; j++)
-				grid[i][j] = new ArrayList<SystemComponent>();
+				grid[i][j] = new HashSet<SystemComponent>();
 		// build a map of all cell index DIFFERENCES that are at the same distance
 		// may become a problem for big maps?
 		for (int di=0; di<nx+1; di++)
@@ -126,7 +128,6 @@ public class SquareGrid extends SpaceAdapter {
 	@Override
 	public void locate(SystemComponent focal) {
 		int[] ij = cellCoordinates(focal.locationData().coordinates());
-//		squareGridLocation at = new squareGridLocation(focal.locationData().coordinates());
 		locatedItems.put(focal,ij);
 		grid[ij[0]][ij[1]].add(focal);
 	}
@@ -134,7 +135,6 @@ public class SquareGrid extends SpaceAdapter {
 	@Override
 	public void unlocate(SystemComponent focal) {
 		int[] ij = cellCoordinates(focal.locationData().coordinates());
-//		squareGridLocation at = (squareGridLocation) locatedItems.get(focal);
 		grid[ij[0]][ij[1]].remove(focal);
 		locatedItems.remove(focal);
 	}

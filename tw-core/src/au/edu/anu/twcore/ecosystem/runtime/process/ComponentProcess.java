@@ -151,13 +151,6 @@ public class ComponentProcess
 			focal.currentState().writeDisable(); // we dont care anymore about that, except for tables...
 			focal.nextState().writeEnable();
 		}
-
-if (focal.id().contentEquals("1213"))
-	System.out.println("Stop ComponentProcess!");
-
-
-
-
 		//-----------------------------------------------------------------------------------
 		// change state of this SystemComponent - easy
 		for (ChangeStateFunction function : CSfunctions)

@@ -323,50 +323,19 @@ public class Simulator implements Resettable {
 					tm.advanceTime(lastTime);
 				i++;
 			}
-//			// 5 apply all changes to community (structure and state)
-//			Collection<SystemComponent> newComp = ecosystem.effectChanges();
-//			updateStateAndStructure(nexttime,step);
 			// 6 advance age of ALL SystemComponents, including the not update ones.
 			if (ecosystem.community()!=null) // TODO improve this treatment
 				for (SystemComponent sc : ecosystem.community().allItems())
 					if (sc.autoVar()!=null)
 						if (sc.autoVar() instanceof ComponentData) {
-
-
-if (sc.id().contentEquals("1213"))
-	System.out.println("Stop Simulator Ageing!");
-
-
-
 							ComponentData au = (ComponentData) sc.autoVar();
 							au.writeEnable();
 							au.age(nexttime - au.birthDate());
 							au.writeDisable();
 			}
-//			// apply changes to spaces
-//			if (mainSpace!=null) {
-//				for (DynamicSpace<SystemComponent> space : mainSpace.spaces()) {
-//					space.effectChanges();
-//					// handle components that left the space (oblivion edge effect)
-//					for (SystemComponent sc:space.outOfSpaceItems()) {
-//						ComponentContainer c = (ComponentContainer) sc.container();
-//						c.removeItemNow(sc);
-//						sc.detachFromContainer(); // important: cannot be done inside removeItemNow() --> crash
-//					}
-//					space.outOfSpaceItems().clear();
-//				}
-//			}
-//			// set permanent relation for newly created (and located) systems
-//			setPermanentRelations(newComp,nexttime,step);
-//			for (RelationContainer rc:ecosystem.relations())
-//				if (rc.isPermanent())
-//					rc.effectChanges();
 			for (DataTracker<?, Metadata> tracker : trackers.keySet()) {
 				// stop recording data in all data trackers
 				tracker.closeTimeRecord();
-//				// resample community for data trackers who need it
-//				if (tracker instanceof Sampler)
-//					((Sampler<?>)tracker).updateSample();
 			}
 		}
 		log.info(()->"END Simulator " + id +" stepping time = " + lastTime);

@@ -162,11 +162,6 @@ public class SearchProcess
 				// focal cannot relate to itself
 				if (other!=focal)
 					if (other.membership().belongsTo(otherCategories)) {
-
-
-if (other.id().contentEquals("1213"))
-	System.out.println("Stop SearchProcess!");
-
 						// dont search if item already related ! (NB: might be more efficient with set intersection ?)
 						if (!others.contains(other))
 							executeFunctions(t,dt,focal,other);
@@ -335,12 +330,6 @@ if (other.id().contentEquals("1213"))
 			else
 				focalGroup = null;
 		}
-
-
-if (other.container()==null)
-	System.out.println("coucou");
-
-
 		hc = other.container().descriptors();
 		other.container().change();
 		if (hc!=null) {
