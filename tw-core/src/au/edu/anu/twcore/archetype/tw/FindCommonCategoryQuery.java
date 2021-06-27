@@ -52,7 +52,6 @@ public class FindCommonCategoryQuery extends QueryAdaptor {
 		initInput(input);
 		TreeNode start = (TreeNode) ((Edge) input).startNode();
 		TreeNode end = (TreeNode) ((Edge) input).endNode();
-		String trackName = end.id();
 		Node process = start.getParent();
 		if (process == null)
 			return this;
@@ -83,6 +82,8 @@ public class FindCommonCategoryQuery extends QueryAdaptor {
 							ok = matchTopRec(topRec, end);
 					}
 				}
+				if (ok)
+					return this;
 			}
 		}
 		if (!ok) {
