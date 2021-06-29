@@ -44,8 +44,18 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
 
+/**
+ * A Query to check that both nodes of an edge have a common parent of a
+ * specified type
+ *
+ * @author Jacques Gignoux - 6 nov. 2019
+ *
+ */
 public class FindCommonCategoryQuery extends QueryAdaptor {
-
+	/**
+	 * input is an edge between a datatracker (start) OR a function (relateTo) and a
+	 * field or table (end)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
@@ -60,14 +70,14 @@ public class FindCommonCategoryQuery extends QueryAdaptor {
 				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
 		if (ln.isEmpty())
 			return this;
-		
-		boolean ok=true;// ??
-		if (ln.get(0) instanceof Category) {// if false is this an error?
+
+		boolean ok = true;
+		if (ln.get(0) instanceof Category) {
 			ok = false;
 			for (Node cat : ln) {
 				Record topRec = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
 						endNode());
-				
+
 				if (topRec != null)
 					ok = matchTopRec(topRec, end);
 				if (!ok) {
@@ -87,12 +97,9 @@ public class FindCommonCategoryQuery extends QueryAdaptor {
 			}
 		}
 		if (!ok) {
-			String[] msgs = TextTranslations.getFindCommonCategoryQuery(end.toShortString(),process.toShortString());
+			String[] msgs = TextTranslations.getFindCommonCategoryQuery(end.toShortString(), process.toShortString());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
-//				errorMsg =  "Track variable '" + trackName
-//						+ "' does not belong to any of the DataTracker's '" + process.toShortString()
-//						+ "' categories.]";
 		}
 		return this;
 	}

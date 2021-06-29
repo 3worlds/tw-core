@@ -469,7 +469,10 @@ public class TextTranslations {
 		return result;
 	}
 
-
+	/**
+	 * A Query to check that both nodes of an edge have a common parent of a
+	 * specified type
+	 */
 	public static String[] getFindCommonCategoryQuery(String trackName, String processName) {
 		String am;
 		String cm;
