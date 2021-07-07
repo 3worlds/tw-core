@@ -100,19 +100,45 @@ public class CodeGenerator {
 	// (au.edu.anu.twapps.mm.configGraph)
 	@SuppressWarnings("unchecked")
 	public boolean generate() {// see if this helps avoid a thread problem if, in fact there is one?-IDD
+		/**
+		 * We must not delete user dependencies. These can be anywhere except
+		 * 'generated'. So delete generated and the root Java project .class and .java
+		 * files only!
+		 * 
+		 * <localCodeRoot>/code/system:<name>/generated
+		 * 
+		 * and
+		 * 
+		 * <localCodeRoot>/code/system:<name>/<twRootNodeName>
+		 */
 		File localCodeRoot = Project.makeFile(ProjectPaths.LOCALJAVA);
-		// Test to see if something happens between ...exists and delete...?
-		try {
-			if (localCodeRoot.exists())
-				FileUtilities.deleteFileTree(localCodeRoot);
-		} catch (Exception e1) {
-//			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
-			System.err.println("WARNING: Unable to delete old code tree '" + localCodeRoot + "'.\nException: " + e1);
-		}
-
-		// generate code for every system node found
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
+		for (TreeGraphDataNode sys : systemNodes) {
+			File genDir = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, sys.id(), ProjectPaths.GENERATED);
+			if (genDir.exists()) {
+				try {
+					FileUtilities.deleteFileTree(genDir);
+				} catch (IOException e) {
+					System.err.println("WARNING: Unable to delete '" + genDir + "'.\nException: " + e);
+				}
+			}
+			File javaDir = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, sys.id());
+			File javaRootJava = new File(javaDir + File.separator + graph.root().id() + ".java");
+			File javaRootClass = new File(javaDir + File.separator + graph.root().id() + ".class");
+			javaRootJava.delete();
+			javaRootClass.delete();
+		}
+
+//		try {
+//			if (localCodeRoot.exists())
+//				FileUtilities.deleteFileTree(localCodeRoot);
+//		} catch (Exception e1) {
+////			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
+//			System.err.println("WARNING: Unable to delete old code tree '" + localCodeRoot + "'.\nException: " + e1);
+//		}
+
+		// generate code for every system node found
 		for (TreeGraphDataNode systemNode : systemNodes) {
 			/**
 			 * TODO :This is crap - there can be many systems but we have one dir - see ref
@@ -196,7 +222,8 @@ public class CodeGenerator {
 		// compile code to check it
 		String result = compileLocalTree(localCodeRoot);
 		if (!result.isBlank())
-			ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, graph, localCodeRoot, result));
+			ErrorMessageManager
+					.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, graph, localCodeRoot, result));
 		if (!ErrorMessageManager.haveErrors()) {
 			UserProjectLink.pushCompiledTree(localCodeRoot, modelgen.getFile());
 		}
