@@ -194,7 +194,16 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// working explanations
 
 		packagePath = Project.makeFile(LOCALJAVACODE, validJavaName(wordUpperCaseName(modelDir))).getAbsolutePath();
-		imports.add("static java.lang.Math.*");
+
+		// Collect user defined imports (def is static java.lang.Math.*)
+		StringTable importSnippets = (StringTable) root3w.properties().getPropertyValue(P_MODEL_IMPORTSNIPPET.key());
+		for (int i = 0; i < importSnippets.size(); i++) {
+			String line = importSnippets.getByInt(i);
+			line = line.trim();
+			if (!line.isBlank())
+				imports.add(line);
+		}
+		//imports.add("static java.lang.Math.*");
 		imports.add(packageName+"."+GENERATED+".*");
 		// get all nodes susceptible to require generated data:
 		// system/arena, lifecycle, group, component, space
@@ -1326,7 +1335,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		result += "package " + packageName + ";\n\n";
 		for (String imp : imports)
 			result += "import " + imp + ";\n";
-		result += "// Hey, model developer! You may add your own imports here as needed\n";
+		//result += "// Hey, model developer! You may add your own imports here as needed\n" No you can't;
 		if (imports.size() > 0)
 			result += "\n";
 		if (classComment != null)

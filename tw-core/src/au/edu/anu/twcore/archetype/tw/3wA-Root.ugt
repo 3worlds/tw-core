@@ -27,4 +27,9 @@ hasNode rootSpec
 		hasName = String("precis")
 		type =  String("String")
 		multiplicity = IntegerRange("1..1")
+	hasProperty importSnippetSpec
+		hasName = String("importSnippet")
+		type = String("StringTable")
+		multiplicity = IntegerRange("1..1")
+		
 		
