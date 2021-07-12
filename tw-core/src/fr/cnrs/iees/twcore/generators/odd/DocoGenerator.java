@@ -38,6 +38,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -69,6 +70,7 @@ import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import au.edu.anu.twcore.userProject.SnippetReader;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
@@ -236,6 +238,7 @@ public class DocoGenerator {
 				}
 			}
 
+			
 			if (n.classId().equals(N_DATADEFINITION.label()))
 				dDef = n;
 			else if (n.classId().equals(N_SYSTEM.label())) {
@@ -287,36 +290,35 @@ public class DocoGenerator {
 				trackerTypes.add(n);
 				String sn = getSimpleName((String) n.properties().getPropertyValue(twaSubclass));
 				dtDesc.put(n, n.id() + formatClassifier(sn));
-			} else if (n.classId().equals(N_SNIPPET.label())) {
+			} else if (n.classId().equals(N_FUNCTION.label()) || n.classId().equals(N_INITFUNCTION.label())) {
 				snippetNodes.add(n);
 			} else if (n.classId().equals(N_RNG.label())) {
 				rngs.add(n);
 			}
 		}
-		/**
-		 * It would be nice for the reader if a distinction was made between
-		 * initFunctions and other functions. This is not straight forward because in
-		 * the absence of snippets we can't tell what type of function it is just from
-		 * the model java file. We would have to look at the corresponding function file
+		/** get the file name:
+		 * 
+		 * project_Logistic1_2021-07-12-03-34-38-765/local/java/code/sys1
+		 * 
+		 * TODO: Assume one system for now!
 		 */
-		if (UserProjectLink.haveUserProject()) {
-			snippetMap = UserProjectLink.getSnippets();
-		} else {
-			snippetMap = new HashMap<>();
-			for (TreeGraphDataNode snippetNode : snippetNodes) {
-				StringTable tbl = (StringTable) snippetNode.properties().getPropertyValue(P_SNIPPET_JAVACODE.key());
-				char c[] = snippetNode.getParent().id().toCharArray();
-				List<String> value = new ArrayList<>();
-				c[0] = Character.toLowerCase(c[0]);
-				// TODO haven't distinguished between initFunctions and functions
-				// This is not possible unless every function has a snippet node from which its
-				// parents can be found. Unless we look at the ancestor of the function in the
-				// generated code and see if it is an initfunction
-				snippetMap.put(new String(c), value);
-				for (int i = 0; i < tbl.size(); i++)
-					value.add(tbl.getWithFlatIndex(i));
-			}
-		}
+		
+		File f = Project.makeFile(ProjectPaths.LOCALJAVACODE,system.id(),cfg.root().id()+".java");
+		snippetMap = SnippetReader.readSnippetsFromFile(f);
+//		snippetMap = new HashMap<>();
+//		for (TreeGraphDataNode snippetNode : snippetNodes) {
+//			StringTable tbl = (StringTable) snippetNode.properties().getPropertyValue(P_FUNCTIONSNIPPET.key());
+//			char c[] = snippetNode.getParent().id().toCharArray();
+//			List<String> value = new ArrayList<>();
+//			c[0] = Character.toLowerCase(c[0]);
+//			// TODO haven't distinguished between initFunctions and functions
+//			// This is not possible unless every function has a snippet node from which its
+//			// parents can be found. Unless we look at the ancestor of the function in the
+//			// generated code and see if it is an initfunction
+//			snippetMap.put(new String(c), value);
+//			for (int i = 0; i < tbl.size(); i++)
+//				value.add(tbl.getWithFlatIndex(i));
+//		}
 
 		// Count drivers, constants and decorators
 		for (TreeGraphDataNode n : cfg.subTree(dDef)) {
@@ -628,7 +630,7 @@ public class DocoGenerator {
 		if (!entries.isEmpty()) {
 			doc.addParagraph("Environment").applyHeading(true, level);
 			doc.addParagraph("Table " + (++tableNumber) + ". Random number application");
-			writeTable(doc, entries, "Generators", "Properties", "Values","Function uses");
+			writeTable(doc, entries, "Generators", "Properties", "Values", "Function uses");
 		}
 //		// get arena constants
 //		List<String> entries = getArenaConstantsDetails();
@@ -1210,8 +1212,8 @@ public class DocoGenerator {
 		List<String> entries = new ArrayList<>();
 		for (TreeGraphDataNode rng : rngs) {
 			String c1 = rng.id();
-			List<TreeGraphDataNode> users = (List<TreeGraphDataNode>) get(rng.edges(Direction.IN), selectZeroOrMany(hasTheLabel(E_USERNG.label())),
-					edgeListStartNodes());
+			List<TreeGraphDataNode> users = (List<TreeGraphDataNode>) get(rng.edges(Direction.IN),
+					selectZeroOrMany(hasTheLabel(E_USERNG.label())), edgeListStartNodes());
 			String[] keys = rng.properties().getKeysAsArray();
 			for (int i = 0; i < Math.max(users.size(), keys.length); i++) {
 				String c2 = "";
@@ -1220,44 +1222,19 @@ public class DocoGenerator {
 					c2 = keys[i];
 					c3 = rng.properties().getPropertyValue(keys[i]).toString();
 				}
-				
+
 				String c4 = "";
 				if (i < users.size())
 					c4 = users.get(i).id();
 				StringBuilder sb = new StringBuilder();
 				sb.append(c1).append(sep).append(c2).append(sep).append(c3).append(sep).append(c4);
 				entries.add(sb.toString());
-				c1= "";
+				c1 = "";
 			}
 		}
 
 		return entries;
 	}
-
-//	private List<String> getArenaConstantsDetails() {
-//		List<String> entries = new ArrayList<>();
-//		get(cfg.root().getChildren(), selectOne(hasTheName(ConfigurationReservedNodeId.categories.id())));
-//		TreeGraphDataNode arena = (TreeGraphDataNode) get(cfg.root().getChildren(),
-//				selectOne(hasTheName(ConfigurationReservedNodeId.categories.id())), children(),
-//				selectOne(hasTheName(ConfigurationReservedNodeId.systemElements.id())), children(),
-//				selectOne(hasTheName(ConfigurationReservedNodeId.arena.id())));
-//		TreeGraphDataNode cnts = (TreeGraphDataNode) get(arena.edges(Direction.OUT),
-//				selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())), endNode());
-//		if (cnts != null) {
-//			String c1 = cnts.id();
-//			Map<String, List<String>> details = getDataTreeDetails(cnts);
-//			for (Map.Entry<String, List<String>> entry : details.entrySet()) {
-//				StringBuilder sb = new StringBuilder();
-//				sb.append(entry.getKey());
-//				for (String d : entry.getValue()) {
-//					sb.append(sep).append(d);
-//				}
-//				entries.add(c1 + sep + sb.toString());
-//				c1 = "";
-//			}
-//		}
-//		return entries;
-//	}
 
 	@SuppressWarnings("unchecked")
 	private List<String> getTimeDetails() {

@@ -156,6 +156,10 @@ hasNode functionSpec
 		hasName = String("relateToProduct")
 		type = String("Boolean")
 		multiplicity = IntegerRange("0..1")
+	hasProperty snippetPropSpec
+		hasName = String("functionSnippet")
+		type = String("StringTable")
+		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery FunctionTypePropertySpecQuery
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([3]"relateToProduct","type","CreateOtherDecision"))
@@ -181,6 +185,10 @@ hasNode consequenceFunctionSpec
 		hasName = String("type")
 		type = String("TwFunctionTypes")
 		multiplicity = IntegerRange("1..1")
+	hasProperty csqSnippetPropSpec
+		hasName = String("functionSnippet")
+		type = String("StringTable")
+		multiplicity = IntegerRange("1..1")
 	hasProperty csquserFunctionSpec
 		hasName = String("userClassName")
 		type = String("String")
@@ -197,14 +205,14 @@ hasNode consequenceFunctionSpec
 	// TODO: specific to 	ChangeOtherStateFunction when consequence of DeleteDecision:
 	// must specify to which other item data should be returned...
 
-hasNode snippet
-	isOfClass = String("snippet")
-	hasParent = StringTable(([3]"function:","initFunction:","process:/function:"))
-	multiplicity = IntegerRange("0..*")
-	hasProperty snippetProp
-		hasName = String("javaCode")
-		type = String("StringTable")
-		multiplicity = IntegerRange("1..1")
+//hasNode snippet
+//	isOfClass = String("snippet")
+//	hasParent = StringTable(([3]"function:","initFunction:","process:/function:"))
+//	multiplicity = IntegerRange("0..*")
+//	hasProperty snippetProp
+//		hasName = String("javaCode")
+//		type = String("StringTable")
+//		multiplicity = IntegerRange("1..1")
 
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")

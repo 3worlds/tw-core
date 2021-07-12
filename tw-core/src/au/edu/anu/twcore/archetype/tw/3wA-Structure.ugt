@@ -347,6 +347,11 @@ hasNode initFunctionSpec
 		hasName = String("userClassName")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
+	// Use the same property name as in Function	
+	hasProperty snippetPropSpec
+		hasName = String("functionSnippet")
+		type = String("StringTable")
+		multiplicity = IntegerRange("1..1")
 	// a function may have a node to a RNG. if none is required, default is used
 	// if more than one is needed, then make two functions.
 	hasEdge initfunctionRngSpec

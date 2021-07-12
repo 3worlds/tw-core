@@ -104,15 +104,16 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			@SuppressWarnings("unchecked")
 			TreeGraph<TreeGraphDataNode, ALEdge> graph = (TreeGraph<TreeGraphDataNode, ALEdge>) args[0];
 			for (TreeGraphDataNode n : graph.nodes())
-				if (n.classId().equals(N_SNIPPET.label()))
+				if (n.classId().equals(N_FUNCTION.label()) || n.classId().equals(N_INITFUNCTION.label())
+						|| n.classId().equals(N_ROOT.label()))
 					codeSnippetsNames.add(n.toShortString());
 			File file = (File) args[1];
 			String compileResult = null;
 			if (args.length > 1)
 				compileResult = (String) args[2];
-			
+
 			String[] msgs = TextTranslations.getCOMPILER_ERROR(compileResult, codeSnippetsNames);
-			// how many variants: with/without compileResult; with/without snippets/with/without ljp
+
 			String actionStr = msgs[0];
 			String constraintStr = msgs[1];
 

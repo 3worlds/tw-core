@@ -155,7 +155,7 @@ public class ModelMethodGenerator extends MethodGenerator {
 		else if (rawCode.isEmpty())
 			result += indent+indent+returnStatement+";\n";
 		if (insertCodeInsertionComment) {
-			String[] cmt = Arrays.copyOf(endCodeInsertion,1);
+			String[] cmt = Arrays.copyOf(finishCodeInsertion,1);
 			cmt[0] = name + " " + cmt[0];
 			result += indent+singleLineComment(cmt);
 		}

@@ -75,16 +75,16 @@ public class TextTranslations {
 				am = "Corriger les erreurs de programmation dans les extrait(s) de code: " + snippets + ".";
 			}
 			if (compileResult == null)
-				compileResult = "inconnu";
+				compileResult = "inconnu.";
 			cm = compileResult;
 		} else {// make sure default is English!
 			if (UserProjectLink.haveUserProject()) {
 				am = "Correct coding errors in java project '" + UserProjectLink.projectRoot().getName() + "'";
 				if (!snippets.isEmpty())
-					am += " and/or code snippet(s): " + snippets;
+					am += " and/or code snippet properties of: " + snippets;
 				am += ".";
 			} else {
-				am = "Correct coding errors in code snippet(s): " + snippets + ".";
+				am = "Correct coding errors in code snippet properties of: " + snippets + ".";
 			}
 			if (compileResult == null)
 				compileResult = "unknown.";

@@ -43,6 +43,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
  * 
  * Class matching the ecosystem/dynamics/Snippet node label. Has property javaCode
  */
+@Deprecated
 public class Snippet extends InitialisableNode{
 
 	public Snippet(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -57,7 +58,8 @@ public class Snippet extends InitialisableNode{
 	@Override
 	public int initRank() {
 		// TODO Auto-generated method stub
-		return N_SNIPPET.initRank();
+//		return N_SNIPPET.initRank();
+		return -1;
 	}
 
 }
