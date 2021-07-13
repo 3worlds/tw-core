@@ -130,20 +130,11 @@ public class CodeGenerator {
 			javaRootClass.delete();
 		}
 
-//		try {
-//			if (localCodeRoot.exists())
-//				FileUtilities.deleteFileTree(localCodeRoot);
-//		} catch (Exception e1) {
-////			throw new TwcoreException("Unable to delete [" + localCodeRoot + "]", e1);
-//			System.err.println("WARNING: Unable to delete old code tree '" + localCodeRoot + "'.\nException: " + e1);
-//		}
-
 		// generate code for every system node found
 		for (TreeGraphDataNode systemNode : systemNodes) {
 			/**
-			 * TODO :This is crap - there can be many systems but we have one dir - see ref
-			 * to 'systemDir' outside this loop below
-			 */ // JG 9/2020: is the above comment still true?
+			 * TODO : There may be much to do if we have more than one system.
+			 */
 			// wordUpperCaseName is "camelBack" format used for java package names
 			File systemDir = Project.makeFile(ProjectPaths.LOCALJAVACODE, wordUpperCaseName(systemNode.id()));
 			systemDir.mkdirs();
@@ -224,9 +215,11 @@ public class CodeGenerator {
 		if (!result.isBlank())
 			ErrorMessageManager
 					.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, graph, localCodeRoot, result));
-		if (!ErrorMessageManager.haveErrors()) {
-			UserProjectLink.pushCompiledTree(localCodeRoot, modelgen.getFile());
-		}
+		// Push even if broken. Now that dependencies are managed, it's easier to fix in
+		// an IDE than through snippets
+		// if (!ErrorMessageManager.haveErrors()) 
+		UserProjectLink.pushCompiledTree(localCodeRoot, modelgen.getFile());
+		
 		return !ErrorMessageManager.haveErrors();
 	}
 
