@@ -54,8 +54,10 @@ public interface IUserProjectLink {
 
 	public File sourceForClass(File clsFile);
 	
-	public void pushCompiledTree(File root, File modelFile);
+	public void pushCompiledTree(File root, File mainModelClass);
 	
-	public Map<String,List<String>> getSnippets();
+	public List<String> pullDependentTree(File mainModelClass);
+	
+	public Map<String,List<String>> getSnippets(File mainModelClass);
 
 }

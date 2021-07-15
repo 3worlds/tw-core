@@ -58,6 +58,7 @@ public class UPLEclipse extends AbstractUPL{
 		this.projectDir=projectDir;
 		this.srcDir = new File(projectDir.getAbsoluteFile()+File.separator+"src");
 		this.classDir = new File(projectDir.getAbsoluteFile()+File.separator+"bin");
+		
 	}
 
 	@Override
@@ -120,6 +121,7 @@ public class UPLEclipse extends AbstractUPL{
 	public File projectRoot() {
 		return projectDir;
 	}
+
 
 
 	

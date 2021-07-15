@@ -50,10 +50,10 @@ public class UserProjectLink {
 		UserProjectLink.impl = impl;
 	}
 
-	public static Map<String,List<String>> getSnippets() {
+	public static Map<String,List<String>> getSnippets(File remoteMainModelClass) {
 		if (impl == null)
 			return null;
-		return impl.getSnippets();
+		return impl.getSnippets(remoteMainModelClass);
 	}
 
 	public static File srcRoot() {
@@ -94,40 +94,17 @@ public class UserProjectLink {
 		return impl.getUserLibraries(exclusions);
 	};
 
-//	public static void clearFiles() {
-//		if (impl != null)
-//			impl.clearFiles();
-//	}
-//
-//	public static void setModelFile(File f) {
-//		if (impl != null)
-//			impl.setModelFile(f);
-//	}
-//
-//	public static void addDataFile(File f) {
-//		if (impl != null)
-//			impl.addDataFile(f);
-//	}
-//
-//	public static void addFunctionFile(File f) {
-//		if (impl != null)
-//			impl.addFunctionFile(f);
-//	}
-//
-//	public static void addInitialiserFile(File f) {
-//		if (impl != null)
-//			impl.addInitialiserFile(f);
-//	}
-//
-//	public static void pushFiles() {
-//		if (impl != null)
-//			impl.pushFiles();
-//	}
 
 	public static void pushCompiledTree(File root, File modelFile) {
 		if (impl != null)
 			impl.pushCompiledTree(root, modelFile);
 
 	};
+	public static List<String>pullDependentTree(File remoteMainModelClass){
+		if (impl != null)
+			return impl.pullDependentTree(remoteMainModelClass);
+		else
+			return null;
+	}
 
 }

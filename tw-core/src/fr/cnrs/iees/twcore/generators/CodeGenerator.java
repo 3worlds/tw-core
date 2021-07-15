@@ -105,6 +105,8 @@ public class CodeGenerator {
 		 * 'generated'. So delete generated and the root Java project .class and .java
 		 * files only!
 		 * 
+		 * BUT if there is a linked project we must pull over dependencies!!!
+		 * 
 		 * <localCodeRoot>/code/system:<name>/generated
 		 * 
 		 * and
@@ -115,19 +117,31 @@ public class CodeGenerator {
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
 		for (TreeGraphDataNode sys : systemNodes) {
-			File genDir = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, sys.id(), ProjectPaths.GENERATED);
-			if (genDir.exists()) {
+			File localGeneratedFiles = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, sys.id(),
+					ProjectPaths.GENERATED);
+			if (localGeneratedFiles.exists()) {
 				try {
-					FileUtilities.deleteFileTree(genDir);
+					FileUtilities.deleteFileTree(localGeneratedFiles);
 				} catch (IOException e) {
-					System.err.println("WARNING: Unable to delete '" + genDir + "'.\nException: " + e);
+					System.err.println("WARNING: Unable to delete '" + localGeneratedFiles + "'.\nException: " + e);
 				}
 			}
-			File javaDir = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, sys.id());
-			File javaRootJava = new File(javaDir + File.separator + graph.root().id() + ".java");
-			File javaRootClass = new File(javaDir + File.separator + graph.root().id() + ".class");
-			javaRootJava.delete();
-			javaRootClass.delete();
+			if (UserProjectLink.haveUserProject()) {
+				File remoteGeneratedFiles = new File(UserProjectLink.srcRoot().getAbsoluteFile() + File.separator
+						+ ProjectPaths.CODE + File.separator + sys.id() + File.separator + ProjectPaths.GENERATED);
+				if (remoteGeneratedFiles.exists()) {
+					try {
+						FileUtilities.deleteFileTree(remoteGeneratedFiles);
+					} catch (IOException e) {
+						System.err
+								.println("WARNING: Unable to delete '" + remoteGeneratedFiles + "'.\nException: " + e);
+					}
+				}
+				// import deps to local
+				File remoteMainModelClass = new File(UserProjectLink.srcRoot().getAbsoluteFile() + File.separator
+						+ ProjectPaths.CODE + File.separator + sys.id() + File.separator +graph.root().id()+".java" );
+				UserProjectLink.pullDependentTree(remoteMainModelClass);
+			}
 		}
 
 		// generate code for every system node found
@@ -135,7 +149,7 @@ public class CodeGenerator {
 			/**
 			 * TODO : There may be much to do if we have more than one system.
 			 */
-			// wordUpperCaseName is "camelBack" format used for java package names
+			// wordUpperCaseName: aka "camelBack" format used for java package names
 			File systemDir = Project.makeFile(ProjectPaths.LOCALJAVACODE, wordUpperCaseName(systemNode.id()));
 			systemDir.mkdirs();
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(systemNode.getChildren(),
@@ -217,9 +231,9 @@ public class CodeGenerator {
 					.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_ERROR, graph, localCodeRoot, result));
 		// Push even if broken. Now that dependencies are managed, it's easier to fix in
 		// an IDE than through snippets
-		// if (!ErrorMessageManager.haveErrors()) 
+		// if (!ErrorMessageManager.haveErrors())
 		UserProjectLink.pushCompiledTree(localCodeRoot, modelgen.getFile());
-		
+
 		return !ErrorMessageManager.haveErrors();
 	}
 

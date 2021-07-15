@@ -54,6 +54,7 @@ import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import fr.ens.biologie.codeGeneration.Comments;
+import static au.edu.anu.rscs.aot.util.StringUtils.ELLIPSIS;
 
 /**
  * @author Ian Davies
@@ -61,10 +62,8 @@ import fr.ens.biologie.codeGeneration.Comments;
  * @date 29 Sep 2019
  */
 public abstract class AbstractUPL implements IUserProjectLink {
-	private List<File> srcPrev;
-	private List<File> clsPrev;
 	public static String extOrig = ".orig";
-	private File remoteModelFile;
+	//private File remoteModelFile;
 
 	// private static Logger log = Logging.getLogger(AbstractUPL.class);
 	private String userCodeRunnerStr = "public class UserCodeRunner {\n" + //
@@ -81,72 +80,111 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	private String ppph = "<projectPath>";
 
 	public AbstractUPL() {
-		srcPrev = new ArrayList<>();
-		clsPrev = new ArrayList<>();
+		super();
 	}
 
 	@Override
 	public void pushCompiledTree(File root, File srcModel) {
 
+		/**
+		 * If this is first time, create the UserCodeRunner.java file. We do this only
+		 * once to avoid overwriting user edits. This means, if the java project is used
+		 * by more than one 3w project, UserCodeRunner will attempt to run the wrong
+		 * project.
+		 */
 		writeUserCodeRunner();
 
-		List<File> srcFiles = getFileTree(root, "java");
-		List<File> clsFiles = getFileTree(root, "class");
+		// Obtain a complete list of all local files.
+		List<File> srcCurrentLocalFiles = getFileTree(root, "java");
+		List<File> clsCurrentLocalFiles = getFileTree(root, "class");
 
+		// Get local and remote paths as strings to use as find/replace
 		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + ProjectPaths.CODE;
 		String remoteClsPath = this.classRoot().getAbsolutePath() + File.separator + ProjectPaths.CODE;
 		String localPath = root.getAbsolutePath() + File.separator + ProjectPaths.CODE;
 
-		for (File f : srcPrev)
-			if (!srcFiles.contains(f))
-				deleteRemoteFile(f, localPath, remoteSrcPath);
-		for (File f : clsPrev)
-			if (!clsPrev.contains(f))
-				deleteRemoteFile(f, localPath, remoteSrcPath);
-
-		// handle modelFile
-
+		/**
+		 * The Main Model Class (MMC) is the only file that is edited by both MM and
+		 * IDE. Therefore, it must only be pushed if it has been changed by MM (with
+		 * backup if it already exists in the IDE). If the MMC is edited in IDE (and any
+		 * other files created and edited there), it is expected the edits of the MMC
+		 * (i.e these can only be snippets) and any other java files, are imported by
+		 * the user to 3w. Thus, the 'import' menu option in MM MUST also import any
+		 * user edited/created classes (cf import snippets).
+		 * 
+		 * TODO: Check what happens if there is some dependence upon data files when run
+		 * from:
+		 * 
+		 * 1) MM
+		 * 
+		 * 2) MR
+		 * 
+		 * 3) UserCodeRunner
+		 * 
+		 */
+		// push all files except the MMC
 		File clsModel = null;
-		for (File f : srcFiles)
+		for (File f : srcCurrentLocalFiles)
 			if (!f.equals(srcModel))
-				pushFile(f, localPath, remoteSrcPath);
+				copyOver(f, localPath, remoteSrcPath);
 			else
 				clsModel = new File(f.getAbsolutePath().replace(".java", ".class"));
-		for (File f : clsFiles)
+		for (File f : clsCurrentLocalFiles)
 			if (!f.equals(clsModel))
-				pushFile(f, localPath, remoteClsPath);
+				copyOver(f, localPath, remoteClsPath);
 
+		// Push the MMC if required.
 		updateModelFile(srcModel, clsModel, localPath, remoteSrcPath, remoteClsPath);
 
-		srcPrev.clear();
-		clsPrev.clear();
+	}
 
-		srcPrev.addAll(srcFiles);
-		clsPrev.addAll(clsFiles);
+	@Override
+	public List<String> pullDependentTree(File mainModelClass) {
+		// TODO: This assumes only one model main class and therefore one system node since this file is within the system.id dir!
+		List<File> fileList = getFileTree(new File(mainModelClass.getParentFile().getParent()), "java");
+		String genStr = mainModelClass.getParent() + File.separator + ProjectPaths.GENERATED;
+		String modStr = mainModelClass.getAbsolutePath();
+
+		List<File> remoteFiles = new ArrayList<>();
+		for (File f : fileList)
+			if (!f.getAbsolutePath().contains(genStr))
+				if (!f.getAbsolutePath().contains(modStr))
+					remoteFiles.add(f);
+
+		List<String> result = new ArrayList<>();
+		String remotePath = mainModelClass.getParentFile().getParent();
+		String localPath = Project.makeFile(ProjectPaths.LOCALJAVACODE).getAbsolutePath();
+		for (File remoteFile : remoteFiles) {
+			File toFile = copyOver(remoteFile, remotePath, localPath);
+			String s = remoteFile.getAbsolutePath().replace(remotePath, ELLIPSIS) + " -> "
+					+ toFile.getAbsolutePath().replace(localPath, ELLIPSIS);
+			result.add(s);
+		}
+		return result;
 	}
 
 	private void updateModelFile(File localSrc, File localCls, String localPath, String remoteSrcPath,
 			String remoteClsPath) {
-		File remoteSrc = new File(localSrc.getAbsolutePath().replace(localPath, remoteSrcPath));
+		File reomteSrc = new File(localSrc.getAbsolutePath().replace(localPath, remoteSrcPath));
 		File remoteCls = new File(localCls.getAbsolutePath().replace(localPath, remoteClsPath));
 		// first time
-		if (!remoteSrc.exists()) {
-			FileUtilities.copyFileReplace(localSrc, remoteSrc);
+		if (!reomteSrc.exists()) {
+			FileUtilities.copyFileReplace(localSrc, reomteSrc);
 			FileUtilities.copyFileReplace(localCls, remoteCls);
-		} else if (fileHasChanged(localSrc, remoteSrc)) {
-			backupFile(remoteSrc);
-			FileUtilities.copyFileReplace(localSrc, remoteSrc);
+		} else if (fileHasChanged(localSrc, reomteSrc)) {
+			backupFile(reomteSrc);
+			FileUtilities.copyFileReplace(localSrc, reomteSrc);
 			FileUtilities.copyFileReplace(localCls, remoteCls);
 			ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.MODEL_FILE_BACKUP, localSrc));
 		}
-		remoteModelFile = remoteSrc;
+		//remoteModelFile = remoteSrc;
 	}
 
 	private static boolean dump = false;
 
 	@Override
-	public  Map<String, List<String>> getSnippets() {
-		return SnippetReader.readSnippetsFromFile(remoteModelFile);
+	public Map<String, List<String>> getSnippets(File mainModelClass) {
+		return SnippetReader.readSnippetsFromFile(mainModelClass);
 	}
 
 	private boolean fileHasChanged(File localSrc, File remoteSrc) {
@@ -246,18 +284,27 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		FileUtilities.copyFileReplace(remoteSrc, backup);
 	}
 
-	private void deleteRemoteFile(File localFile, String localPath, String remotePath) {
-		File remoteFile = new File(localFile.getAbsolutePath().replace(localPath, remotePath));
-		if (remoteFile.exists())
-			remoteFile.delete();
+//	private void deleteRemoteFile(File localFile, String localPath, String remotePath) {
+//		File remoteFile = new File(localFile.getAbsolutePath().replace(localPath, remotePath));
+//		if (remoteFile.exists())
+//			remoteFile.delete();
+//	}
+
+//	private static void pushFile(File localFile, String localPath, String remotePath) {
+//		File remoteFile = new File(localFile.getAbsolutePath().replace(localPath, remotePath));
+//		FileUtilities.copyFileReplace(localFile, remoteFile);
+//	}
+//	private static void pullFile(File remoteFile, String remotePath, String localPath) {
+//		File localFile = new File (remoteFile.getAbsolutePath().replace(remotePath,localPath));
+//		FileUtilities.copyFileReplace(remoteFile,localFile);
+//	}
+	private static File copyOver(File fromFile, String from, String to) {
+		File toFile = new File(fromFile.getAbsolutePath().replace(from, to));
+		FileUtilities.copyFileReplace(fromFile, toFile);
+		return toFile;
 	}
 
-	private void pushFile(File localFile, String localPath, String remotePath) {
-		File remoteFile = new File(localFile.getAbsolutePath().replace(localPath, remotePath));
-		FileUtilities.copyFileReplace(localFile, remoteFile);
-	}
-
-	private List<File> getFileTree(File root, String... ext) {
+	private static List<File> getFileTree(File root, String... ext) {
 		List<File> files = new ArrayList<File>();
 		for (File f : FileUtils.listFiles(root, ext, true))
 			files.add(f);
