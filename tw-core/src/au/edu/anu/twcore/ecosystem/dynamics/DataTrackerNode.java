@@ -179,6 +179,7 @@ public class DataTrackerNode extends InitialisableNode
 		tableDims.put(tab.id(), getTableDims(tab));
 		TrackMeta result = null;
 		String tv = trackVar;
+
 		// leaf table, ie with primitive elements
 		// CAUTION: returns the type of the table elements, NOT the table type
 		// (eg Boolean, not BooleanTable)
@@ -542,7 +543,18 @@ public class DataTrackerNode extends InitialisableNode
 			// trackTable has multiplicity 0..1 after dynamics.utg
 			// to there must be only one item in the tableDims map.
 			// and since this is a 2D map it must have exactly two dimensions
-			int[] ix = tableDims.values().iterator().next();
+			int[] ix = tableDims.get(fullTableLabel.toString());
+			// the line below creates indexing miss-matches from time to time.
+			//int[] ix = tableDims.values().iterator().next();
+//			System.out.println("-----------");
+//			for (Map.Entry<String,int[]> e:tableDims.entrySet()){
+//				System.out.print(e.getKey()+"= ");
+//				for (int i=0;i<e.getValue().length;i++)
+//					System.out.print(e.getValue()[i]+",");
+//				System.out.println();		
+//			}
+//			System.out.println("pre-construct: "+fullTableLabel+" "+ix[0]+","+ix[1]);	
+
 			result = new DataTracker2D(index, selection, sampleSize, null,ls, 
 				expandedTrackList.keySet(), fieldMetadata, ix[0], ix[1], fullTableLabel);
 		}

@@ -70,7 +70,8 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 		nx = dim1;
 		ny = dim2;
 		label = tableLabel;
-	}
+//		System.out.println("construct: "+label+" "+nx+","+ny);	
+		}
 
 	@Override
 	public void recordItem(String... labels) {
@@ -87,6 +88,8 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 	public void record(TwData... props) {
 		if (hasObservers()) {
 			Output2DData outputData = new Output2DData(currentStatus, senderId, metadata.type(), nx, ny);
+//			System.out.println("Record: "+label+" "+nx+","+ny);
+			
 			outputData.setZLabel(label);
 			for (TwData data:props)
 				if (data!=null)
