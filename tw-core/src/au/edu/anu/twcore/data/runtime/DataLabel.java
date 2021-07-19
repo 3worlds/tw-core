@@ -42,6 +42,22 @@ import static fr.ens.biologie.generic.SaveableAsText.*;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
+
+/**
+ * The toString() method of this class is a hotspot problem in SpatialWidget and
+ * maybe elsewhere. The thing is that this class has a 'construction' phase and
+ * what is effectively a read-only phase. So a simple solution would be a
+ * lazyToString method that calls toString only if the a string prop is null.
+ * However, for widgets this shouldn't effect sim speed as they are in a
+ * different thread.
+ * 
+ * Will try and see
+ * 
+ * @author Ian Davies
+ *
+ * @date 19 July 2021
+ */
+// 
 public class DataLabel implements Comparable<DataLabel>, Cloneable {
 	private static final int HIERARCHYix = 3;
 	public static final String HIERARCHY_DOWN = Character.toString(BLOCK_DELIMITERS[HIERARCHYix][BLOCK_CLOSE]);
@@ -103,8 +119,11 @@ public class DataLabel implements Comparable<DataLabel>, Cloneable {
 		return sb.toString();
 	}
 
-	/** Replace all parts of the label with length>1 with ellipsis.
-	 * e.g. if l = 2  abc = ab... where the ellipsis is one char*/
+	/**
+	 * Replace all parts of the label with length>1 with ellipsis. e.g. if l = 2 abc
+	 * = ab... where the ellipsis is one char
+	 */
+	@Deprecated // TODO I don't think this is needed any longer
 	public String toAbbreviatedString(int l) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < label.size(); i++) {
@@ -125,6 +144,15 @@ public class DataLabel implements Comparable<DataLabel>, Cloneable {
 				sb.append(HIERARCHY_DOWN);
 		}
 		return sb.toString();
+	}
+
+	private String lazyString = null;
+
+	// cf comments above
+	public String toLazyString() {
+		if (lazyString == null)
+			lazyString = toString();
+		return lazyString;
 	}
 
 	// slow ?
