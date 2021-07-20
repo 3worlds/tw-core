@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
@@ -258,5 +259,6 @@ public class EcosystemGraph
 	public Collection<DynamicGraphObserver<SystemComponent, SystemRelation>> observers() {
 		return Collections.unmodifiableCollection(observers);
 	}
+
 
 }

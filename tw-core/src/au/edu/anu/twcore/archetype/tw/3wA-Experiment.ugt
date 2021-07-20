@@ -52,9 +52,9 @@ hasNode treatmentSpec
 			hasName = String("rank")
 			type = String("Integer")
 			multiplicity = IntegerRange("1..1")
-		hasProperty edgeTreatmentValuesSpec
-			hasName = String("valuesxxx")
-			type = String("StringTable")
+		hasProperty edgeTreatmentValuesSpec		
+			hasName = String("values")
+			type =  String("StringTable")
 			multiplicity = IntegerRange("1..1")
 
 //hasNode treatmentSpec

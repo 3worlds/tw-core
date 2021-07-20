@@ -28,6 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
+import java.util.List;
+
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
@@ -71,6 +74,18 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 		}
 
 	}
+	public void applyExperimentProperties(List<Property> expProperties) {
+		if (constants()!= null) {
+			constants().writeDisable();
+			for (Property p:expProperties) {
+				if (constants().hasProperty(p.getKey()))
+					constants().setProperty(p.getKey(), p.getValue());
+			}
+			constants().writeDisable();
+		}
+		
+	}
+
 
 	@Override
 	public ArenaFactory elementFactory() {
@@ -88,5 +103,6 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 	public String name() {
 		return elementFactory().name;
 	}
+
 
 }

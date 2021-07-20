@@ -49,6 +49,9 @@ public enum ConfigurationPropertyNames {
 	P_DESIGN_TYPE				("type"),
 	P_DESIGN_FILE				("file"),
 	P_TREATMENT_REPLICATES		("replicates"),
+	P_TREAT_VALUES				("values"),
+	P_TREAT_RANK				("rank"),
+	
 	P_MODELCHANGE_PARAMETER		("parameter"),
 	P_MODELCHANGE_REPLACEWITH	("replaceWith"),
 	P_TIMEPERIOD_START			("start"),

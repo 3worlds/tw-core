@@ -139,8 +139,10 @@ public class CodeGenerator {
 				}
 				// import deps to local
 				File remoteMainModelClass = new File(UserProjectLink.srcRoot().getAbsoluteFile() + File.separator
-						+ ProjectPaths.CODE + File.separator + sys.id() + File.separator +graph.root().id()+".java" );
-				UserProjectLink.pullDependentTree(remoteMainModelClass);
+						+ ProjectPaths.CODE + File.separator + sys.id() + File.separator + graph.root().id() + ".java");
+				// It won't exist the first time (i.e.upon newly connecting to a project)
+				if (remoteMainModelClass.exists())
+					UserProjectLink.pullDependentTree(remoteMainModelClass);
 			}
 		}
 

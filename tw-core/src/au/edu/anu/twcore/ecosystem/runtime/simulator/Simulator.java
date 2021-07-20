@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
@@ -147,6 +148,8 @@ public class Simulator implements Resettable {
 	private Map<DataTracker<?, Metadata>, Metadata> trackers = new HashMap<>();
 	/** all spaces used in this simulation */
 	private SpaceOrganiser mainSpace=null;
+	
+	private List<Property> expProperties;
 
 	// CONSTRUCTORS
 
@@ -231,6 +234,10 @@ public class Simulator implements Resettable {
 				trackers.put(dts, dts.getInstance());
 		}
 		log.info(()->"END Simulator " + this.id + " instantiated");
+	}
+	
+	public void setExpProperties(List<Property> expProperties) {
+		this.expProperties=expProperties;
 	}
 
 	public int id() {
@@ -413,6 +420,10 @@ public class Simulator implements Resettable {
 			}
 		// clones initial items to ecosystem objects
 		ecosystem.preProcess();
+		// as a first attempt, we assume global (arena) constants only to don't make this apply to components
+		if (expProperties!=null) {
+			ecosystem.arena().applyExperimentProperties(expProperties);
+		}
 		// update spaces and send data for display
 		if (mainSpace!=null)
 			for (ObserverDynamicSpace space : mainSpace.spaces()) {

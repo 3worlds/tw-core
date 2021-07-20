@@ -30,25 +30,37 @@ package au.edu.anu.twcore.experiment;
 
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.impl.ALDataEdge;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
+import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 import fr.ens.biologie.generic.utils.Logging;
+import fr.ens.biologie.generic.utils.Permute;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
+import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployable;
 import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -117,8 +129,46 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 						break;
 					}
 					case crossFactorial: {
+						// work out how many simulators are required.
+						Treatment treatment = (Treatment) get(getChildren(),
+								selectOne(hasTheLabel(N_TREATMENT.label())));
+						List<ALDataEdge> treats = (List<ALDataEdge>) get(treatment.edges(Direction.OUT),
+								selectOneOrMany(hasTheLabel(E_TREATS.label())));
+
+//						ExtendablePropertyList[] treatmentProperties = new ExtendablePropertyList[treats.size()];
+//						for (int i = 0;i<treats.size();i++) {
+//							treatmentProperties[i] = new ExtendablePropertyListImpl();
+//						}
+//						Map<Integer, Property[]> settings = new HashMap<>();
+						List<List<Property>> settings = new ArrayList<>();
+						for (int i = 0; i < treats.size(); i++)
+							settings.add(new ArrayList<Property>());
+						for (ALDataEdge e : treats) {
+							StringTable values = (StringTable) e.properties().getPropertyValue(P_TREAT_VALUES.key());
+							TreeGraphDataNode endNode = (TreeGraphDataNode) e.endNode();
+							DataElementType type = (DataElementType) endNode.properties()
+									.getPropertyValue(P_FIELD_TYPE.key());
+							int order = (Integer) e.properties().getPropertyValue(P_TREAT_RANK.key());
+							List<Property> props = getAsProperties(endNode.id(), type, values);
+							settings.set(order, props);
+						}
+
+						// assume order is normalized and packed 0..n(query)
+						int[] indices = new int[settings.size()];
+						int[] maxIndex = new int[settings.size()];
+						for (int i = 0; i < settings.size(); i++)
+							maxIndex[i] = settings.get(i).size() - 1;
+						List<List<Property>> simulatorParameterSettings = new ArrayList<>();
+						recurse(settings, indices, maxIndex, simulatorParameterSettings);
+
 						deployer = new ParallelDeployer();
-						System.out.println("crossFactorial deployment not yet implemented");
+						
+						for (int i = 0; i < simulatorParameterSettings.size(); i++) {
+							//System.out.println("Launch id "+N_SIMULATORS+" using "+simulatorParameterSettings.get(i));
+							Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
+							sim.setExpProperties(simulatorParameterSettings.get(i));
+							deployer.attachSimulator(sim);
+						}
 						break;
 					}
 					default: {
@@ -139,11 +189,106 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 	}
 
-	// TODO for Ian: implement something clever here
-//	private int nLocalSimulators() {
-//		return Runtime.getRuntime().availableProcessors();
-////		return 2;
-//	}
+	private static void recurse(List<List<Property>> s, int[] indices, int[] maxIndex, List<List<Property>> result) {
+		// output the current set
+		List<Property> newList = new ArrayList<>();
+		for (int i = 0; i < indices.length; i++) {
+			List<Property> lst = s.get(i);
+			newList.add(lst.get(indices[i]));
+		}
+		result.add(newList);
+
+		// increment the last
+		indices[indices.length - 1]++;
+		// if carry over, update indices recursively if length>1
+		if (indices[indices.length - 1] > maxIndex[indices.length - 1])
+			if (indices.length > 1)
+				doCarry(s, indices, maxIndex, indices.length - 1);
+		// stopping condition: if first dimension not finished, recurse
+		if (!(indices[0] > maxIndex[0]))
+			recurse(s, indices, maxIndex, result);
+
+	}
+
+	private static void doCarry(List<List<Property>> s, int[] indices, int[] maxIndex, int i) {
+		indices[i] = 0;
+		int j = i - 1;
+		indices[j]++;
+		// stopping condition: don't carry beyond the first dim and don't carry of not
+		// folding over
+		if (indices[j] > maxIndex[j] && j > 0)
+			doCarry(s, indices, maxIndex, j);
+
+	}
+
+	private static List<Property> getAsProperties(String key, DataElementType type, StringTable values) {
+		List<Property> result = new ArrayList<>();
+		switch (type) {
+		case Double: {
+			for (int i = 0; i < values.size(); i++) {
+				String v = values.getByInt(i);
+				result.add(new Property(key, Double.parseDouble(v)));
+			}
+			return result;
+		}
+		case Integer: {
+			for (int i = 0; i < values.size(); i++) {
+				String v = values.getByInt(i);
+				result.add(new Property(key, Integer.parseInt(v)));
+			}
+			return result;
+		}
+		case Long: {
+			for (int i = 0; i < values.size(); i++) {
+				String v = values.getByInt(i);
+				result.add(new Property(key, Long.parseLong(v)));
+			}
+			return result;
+		}
+		case Float: {
+			for (int i = 0; i < values.size(); i++) {
+				String v = values.getByInt(i);
+				result.add(new Property(key, Float.parseFloat(v)));
+			}
+			return result;
+		}
+		case Boolean: {
+			for (int i = 0; i < values.size(); i++) {
+				String v = values.getByInt(i);
+				result.add(new Property(key, Boolean.parseBoolean(v)));
+			}
+			return result;
+		}
+		case Short: {
+			for (int i = 0; i < values.size(); i++) {
+				String v = values.getByInt(i);
+				result.add(new Property(key, Short.parseShort(v)));
+			}
+			return result;
+		}
+		case Char: {
+			for (int i = 0; i < values.size(); i++) {
+				String v = values.getByInt(i);
+				result.add(new Property(key, v.charAt(0)));
+			}
+			return result;
+		}
+		case Byte: {
+			for (int i = 0; i < values.size(); i++) {
+				String v = values.getByInt(i);
+				result.add(new Property(key, Byte.parseByte(v)));
+			}
+			return result;
+		}
+		default: {
+			for (int i = 0; i < values.size(); i++) {
+				String v = values.getByInt(i);
+				result.add(new Property(key, v));
+			}
+			return result;
+		}
+		}
+	}
 
 	@Override
 	public int initRank() {
@@ -168,4 +313,65 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 		return sealed;
 	}
 
+//	private static void recurse(List<List<Character>> s, int[] indices, int[] maxIndex, List<List<Character>> result) {
+//		// output the current set
+//		List<Character> newList = new ArrayList<>();
+//		for (int i = 0; i < indices.length; i++) {
+//			List<Character> lst = s.get(i);
+//			newList.add(lst.get(indices[i]));
+//		}
+//		result.add(newList);
+//
+//		// increment the last
+//		indices[indices.length - 1]++;
+//		// if carry over, update indices recursively
+//		if (indices[indices.length - 1] > maxIndex[indices.length - 1])
+//			doCarry(s, indices, maxIndex, indices.length - 1);
+//		// if first dimension not finished, recurse
+//		if (!(indices[0] > maxIndex[0]))
+//			recurse(s, indices, maxIndex, result);
+//
+//	}
+//
+//	private static void doCarry(List<List<Character>> s, int[] indices, int[] maxIndex, int i) {
+//		indices[i] = 0;
+//		if (i > 0) {
+//			int j = i - 1;
+//			indices[j]++;
+//			if (indices[j] > maxIndex[j] && j > 0)
+//				doCarry(s, indices, maxIndex, j);
+//		}
+//
+//	}
+
+//	public static void main(String[] args) {
+//		List<Character> a = new ArrayList<>();
+//		a.add('x');
+//		a.add('y');
+//		a.add('z');
+//
+//		List<Character> b = new ArrayList<>();
+//		b.add('a');
+//		b.add('b');
+//
+//		List<Character> c = new ArrayList<>();
+//		c.add('l');
+//		c.add('m');
+//		c.add('n');
+//		c.add('o');
+//
+//		List<List<Character>> s = new ArrayList<>();
+//		s.add(a);
+//		s.add(b);
+//		s.add(c);
+//		int[] indices = new int[s.size()];
+//		int[] maxIndex = new int[s.size()];
+//		for (int i = 0; i < s.size(); i++)
+//			maxIndex[i] = s.get(i).size() - 1;
+//
+//		List<List<Character>> result = new ArrayList<>();
+//		recurse(s, indices, maxIndex, result);
+//		for (List<Character> l : result)
+//			System.out.println(l);
+//	}
 }
