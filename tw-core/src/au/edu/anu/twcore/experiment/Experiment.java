@@ -58,6 +58,7 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,56 +120,27 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 				if (expDesignType != null)
 					switch (expDesignType) {
 					case singleRun: {
-						if (nReps == 1)
-							// deployer = new SingleDeployer();
-							deployer = new ParallelDeployer();
-						else
-							deployer = new ParallelDeployer();
+
+						deployer = new ParallelDeployer();
+
 						for (int i = 0; i < nReps; i++)
 							deployer.attachSimulator(baselineSimulator.getInstance(N_SIMULATORS++));
 						break;
 					}
 					case crossFactorial: {
-						// work out how many simulators are required.
-						Treatment treatment = (Treatment) get(getChildren(),
-								selectOne(hasTheLabel(N_TREATMENT.label())));
-						List<ALDataEdge> treats = (List<ALDataEdge>) get(treatment.edges(Direction.OUT),
-								selectOneOrMany(hasTheLabel(E_TREATS.label())));
-
-//						ExtendablePropertyList[] treatmentProperties = new ExtendablePropertyList[treats.size()];
-//						for (int i = 0;i<treats.size();i++) {
-//							treatmentProperties[i] = new ExtendablePropertyListImpl();
-//						}
-//						Map<Integer, Property[]> settings = new HashMap<>();
-						List<List<Property>> settings = new ArrayList<>();
-						for (int i = 0; i < treats.size(); i++)
-							settings.add(new ArrayList<Property>());
-						for (ALDataEdge e : treats) {
-							StringTable values = (StringTable) e.properties().getPropertyValue(P_TREAT_VALUES.key());
-							TreeGraphDataNode endNode = (TreeGraphDataNode) e.endNode();
-							DataElementType type = (DataElementType) endNode.properties()
-									.getPropertyValue(P_FIELD_TYPE.key());
-							int order = (Integer) e.properties().getPropertyValue(P_TREAT_RANK.key());
-							List<Property> props = getAsProperties(endNode.id(), type, values);
-							settings.set(order, props);
-						}
-
-						// assume order is normalized and packed 0..n(query)
-						int[] indices = new int[settings.size()];
-						int[] maxIndex = new int[settings.size()];
-						for (int i = 0; i < settings.size(); i++)
-							maxIndex[i] = settings.get(i).size() - 1;
-						List<List<Property>> simulatorParameterSettings = new ArrayList<>();
-						recurse(settings, indices, maxIndex, simulatorParameterSettings);
+						// CAUTION: Limited protecting queries!
+						// 1) Only Fields that are constants associated with the arena
+						
+						List<List<Property>> treatmentPropertyList = buildSimpleFactorialTreatmentList(this);
 
 						deployer = new ParallelDeployer();
-						
-						for (int i = 0; i < simulatorParameterSettings.size(); i++) {
-							//System.out.println("Launch id "+N_SIMULATORS+" using "+simulatorParameterSettings.get(i));
-							Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
-							sim.setExpProperties(simulatorParameterSettings.get(i));
-							deployer.attachSimulator(sim);
-						}
+
+						for (int r = 0; r < nReps; r++)
+							for (int t = 0; t < treatmentPropertyList.size(); t++) {
+								Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
+								sim.setExpProperties(treatmentPropertyList.get(t));
+								deployer.attachSimulator(sim);
+							}
 						break;
 					}
 					default: {
@@ -189,7 +161,45 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 	}
 
-	private static void recurse(List<List<Property>> s, int[] indices, int[] maxIndex, List<List<Property>> result) {
+	public static List<List<Property>> buildSimpleFactorialTreatmentList(Experiment experiment) {
+		Treatment treatment = (Treatment) get(experiment.getChildren(), selectOne(hasTheLabel(N_TREATMENT.label())));
+		List<ALDataEdge> treats = (List<ALDataEdge>) get(treatment.edges(Direction.OUT),
+				selectOneOrMany(hasTheLabel(E_TREATS.label())));
+
+		// we don't want the user to be bothered by needing the rank property to be contiguous from zero
+		// so we prepare sorted list and use by index
+		List<Integer> rankings = new ArrayList<>();
+		for (ALDataEdge e : treats) 
+			rankings.add((Integer) e.properties().getPropertyValue(P_TREAT_RANK.key()));
+		
+		Collections.sort(rankings);
+			
+		List<List<Property>> settings = new ArrayList<>();
+		for (int i = 0; i < treats.size(); i++)
+			settings.add(new ArrayList<Property>());
+		
+		for (ALDataEdge e : treats) {
+			StringTable values = (StringTable) e.properties().getPropertyValue(P_TREAT_VALUES.key());
+			TreeGraphDataNode endNode = (TreeGraphDataNode) e.endNode();
+			DataElementType type = (DataElementType) endNode.properties().getPropertyValue(P_FIELD_TYPE.key());
+//			int order = (Integer) e.properties().getPropertyValue(P_TREAT_RANK.key());
+			int order = rankings.indexOf(e.properties().getPropertyValue(P_TREAT_RANK.key()));
+			List<Property> props = getAsProperties(endNode.id(), type, values);
+			settings.set(order, props);
+		}
+
+		// assume order is normalized and packed 0..n(query)
+		int[] indices = new int[settings.size()];
+		int[] maxIndex = new int[settings.size()];
+		for (int i = 0; i < settings.size(); i++)
+			maxIndex[i] = settings.get(i).size() - 1;
+		List<List<Property>> result = new ArrayList<>();
+		buildTreatments(settings, indices, maxIndex, result);
+		return result;
+	}
+
+	private static void buildTreatments(List<List<Property>> s, int[] indices, int[] maxIndex,
+			List<List<Property>> result) {
 		// output the current set
 		List<Property> newList = new ArrayList<>();
 		for (int i = 0; i < indices.length; i++) {
@@ -206,7 +216,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 				doCarry(s, indices, maxIndex, indices.length - 1);
 		// stopping condition: if first dimension not finished, recurse
 		if (!(indices[0] > maxIndex[0]))
-			recurse(s, indices, maxIndex, result);
+			buildTreatments(s, indices, maxIndex, result);
 
 	}
 
@@ -214,7 +224,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 		indices[i] = 0;
 		int j = i - 1;
 		indices[j]++;
-		// stopping condition: don't carry beyond the first dim and don't carry of not
+		// stopping condition: don't carry beyond the first dim and don't carry if not
 		// folding over
 		if (indices[j] > maxIndex[j] && j > 0)
 			doCarry(s, indices, maxIndex, j);

@@ -56,6 +56,9 @@ hasNode treatmentSpec
 			hasName = String("values")
 			type =  String("StringTable")
 			multiplicity = IntegerRange("1..1")
+	mustSatisfyQuery dimRanksAreDifferentQuery
+		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
+		parameters = StringTable(([2]"treats","rank"))
 
 //hasNode treatmentSpec
 //	isOfClass = String("treatment")

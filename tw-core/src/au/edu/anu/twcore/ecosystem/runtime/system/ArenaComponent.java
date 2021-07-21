@@ -74,7 +74,7 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 		}
 
 	}
-	public void applyExperimentProperties(List<Property> expProperties) {
+	public void applyTreatment(List<Property> expProperties) {
 		if (constants()!= null) {
 			constants().writeDisable();
 			for (Property p:expProperties) {

@@ -149,7 +149,7 @@ public class Simulator implements Resettable {
 	/** all spaces used in this simulation */
 	private SpaceOrganiser mainSpace=null;
 	
-	private List<Property> expProperties;
+	private List<Property> treatmentProperties;
 
 	// CONSTRUCTORS
 
@@ -237,7 +237,7 @@ public class Simulator implements Resettable {
 	}
 	
 	public void setExpProperties(List<Property> expProperties) {
-		this.expProperties=expProperties;
+		this.treatmentProperties=expProperties;
 	}
 
 	public int id() {
@@ -420,9 +420,11 @@ public class Simulator implements Resettable {
 			}
 		// clones initial items to ecosystem objects
 		ecosystem.preProcess();
-		// as a first attempt, we assume global (arena) constants only to don't make this apply to components
-		if (expProperties!=null) {
-			ecosystem.arena().applyExperimentProperties(expProperties);
+
+		// For now just the arena. Perhaps the relevant classes should implement
+		// Treatable applyTreatment(List<Property>)
+		if (treatmentProperties != null) {
+			ecosystem.arena().applyTreatment(treatmentProperties);
 		}
 		// update spaces and send data for display
 		if (mainSpace!=null)
