@@ -36,6 +36,7 @@ import au.edu.anu.omhtk.Language;
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.userProject.UserProjectLink;
+import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.ens.biologie.generic.utils.Interval;
 
@@ -1245,9 +1246,24 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
+	
+	public static String[] getTreatmentTableQuery2(String edgeName,String key, String entry, DataElementType dataType, int i) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Edit '"+edgeName+"#"+key+"["+i+"]'to conform with type '"+dataType+"'.";
+			cm = "Expected '"+edgeName+"#"+key+"["+i+"]' to be of type '"+dataType+"' but found '"+entry+"'.";
+		} else {// make sure default is English or Sanskrit users will get no messages!
+			am = "Edit '"+edgeName+"#"+key+"["+i+"]'to conform with type '"+dataType+"'.";
+			cm = "Expected '"+edgeName+"#"+key+"["+i+"]' to be of type '"+dataType+"' but found '"+entry+"'.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
 
 }
 
+// COPY AND PASTE THIS CONVENIENCE TEMPLATE
 //public static String[] getXXX() {
 //String am;
 //String cm;
