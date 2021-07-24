@@ -215,14 +215,19 @@ public class EcosystemGraph
 
 	@Override
 	public void preProcess() {
+		// reinitialise state variables and constants
+		
+		// Do the arena first as it runs the initialiser method once and user's dependent
+		// code can use this to initialise a run
+		arena.preProcess();
+		// Do these second as it can call initialiers many times and avoids the use of
+		// 'lazy' initialisation for user's dependent code.
 		if (components!=null) {
 			components.preProcess();
 			components.setInitialState();
 		}
 		for (RelationContainer rc: relations.values())
 			rc.preProcess();
-		// reinitialise state variables and constants
-		arena.preProcess();
 		if (arena.getDataTracker()!=null) {
 			arena.getDataTracker().setInitialTime();
 			arena.getDataTracker().recordItem(SimulatorStatus.Initial,this , arena.id());
