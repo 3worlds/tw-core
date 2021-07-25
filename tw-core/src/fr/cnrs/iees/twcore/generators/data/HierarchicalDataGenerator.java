@@ -57,6 +57,7 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
+import fr.cnrs.iees.graph.impl.ALNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
@@ -206,32 +207,16 @@ public abstract class HierarchicalDataGenerator
 		String ftype = "";
 		String fpack = "";
 		String fname = validJavaName(wordUpperCaseName(spec.id()));
-		// get the dimensioners
-		// NB although this is valid code, it doesnt work if two edges are pointing on the same dim
-		// hence the fix below for that particular case
-//		List<TreeGraphDataNode> dims = (List<TreeGraphDataNode>) get(spec,
-//			outEdges(),
-//			selectOneOrMany(hasTheLabel(E_SIZEDBY.label())),
-//			edgeListEndNodes());
-		List<Edge> edims = (List<Edge>) get(spec,
+		List<ALDataEdge> edims = (List<ALDataEdge>) get(spec,
 			outEdges(),
 			selectOneOrMany(hasTheLabel(E_SIZEDBY.label())));
-		List<TreeGraphDataNode> dims = new LinkedList<>();
-		for (Edge e:edims)
-			dims.add((TreeGraphDataNode)e.endNode());
-		// order them by rank
+		// CAUTION: It's the edge that has the rank property not the dim node - fixed 25/7/2021 IDD
+		// But does this now take account of a nested hierarchy??
 		SortedMap<Integer,TreeGraphDataNode> sortedDims = new TreeMap<>();
-		int rank = 0;
-		for (TreeGraphDataNode d:dims) {
-			if (d.properties().hasProperty(P_DIMENSIONER_RANK.key())) {
-				if (sortedDims.put((Integer)d.properties().getPropertyValue(P_DIMENSIONER_RANK.key()),d)!=null) {
-					// this is a case with duplicate ranks - should never happen!
-					throw new TwcoreException("Wrong ordering of dimensioners");
-				}
-			}
-			else
-				sortedDims.put(rank++,d);
-		}
+		for (ALDataEdge e:edims) 
+			sortedDims.put(
+					(Integer)e.properties().getPropertyValue(P_DIMENSIONER_RANK.key()),
+					(TreeGraphDataNode) e.endNode());
 		// get the table element type
 		if (spec.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
 			DataElementType tet = (DataElementType) spec.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
@@ -257,7 +242,8 @@ public abstract class HierarchicalDataGenerator
 			String contentType = validJavaName(initialUpperCase(wordUpperCaseName(rec.id())));
 			String comment = comment(general,classComment(fname),generatedCode(false,modelName, ""));
 			ClassGenerator cg = getTableClassGenerator(ftype,contentType,comment);
-			tableCode(cg,ftype,contentType,dims);
+			tableCode(cg,ftype,contentType,sortedDims.values());		
+			//tableCode(cg,ftype,contentType,dims);
 			File file = new File(packagePath+File.separator+ftype+".java");
 			writeFile(cg,file);
 			//UserProjectLink.addDataFile(file);
@@ -266,7 +252,8 @@ public abstract class HierarchicalDataGenerator
 		if (parentCG!=null) {
 			parentCG.setImport(fpack);
 			parentCG.setImport(Dimensioner.class.getCanonicalName());
-			tableInitCode(parentCG,fname,ftype,dims);
+//			tableInitCode(parentCG,fname,ftype,dims);
+			tableInitCode(parentCG,fname,ftype,sortedDims.values());
 		}
 		return ftype;
 	}
