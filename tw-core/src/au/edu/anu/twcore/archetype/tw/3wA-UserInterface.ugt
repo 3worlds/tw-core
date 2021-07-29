@@ -28,12 +28,12 @@ hasNode HLwidgetSpec
 		mustSatisfyQuery hlwidgetClassInValueSetQuery
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
 			values = StringTable(([2]+
-			"au.edu.anu.twuifx.widgets.headless.HLSimpleTimeSeriesWidget",+
+			"au.edu.anu.twuifx.widgets.headless.HLTimeSeriesWidget1",+
 			"au.edu.anu.twuifx.widgets.headless.HLSimpleControlWidget"))
 
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleTimeSeriesWidget2
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLSimpleTimeSeriesWidget","3wSA-HLSimpleTimeSeriesWidget.ugt"))
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLTimeSeriesWidget1","3wSA-HLTimeSeriesWidget1.ugt"))
 	mustSatisfyQuery CheckSubArchetypeQuerySimpleControlWidget2
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLSimpleControlWidget","3wSA-HLSimpleControlWidget.ugt"))
