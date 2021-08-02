@@ -130,8 +130,9 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 					case crossFactorial: {
 						// CAUTION: Limited protecting queries!
 						// 1) Only Fields that are constants associated with the arena
-						
-						List<List<Property>> treatmentPropertyList = buildSimpleFactorialTreatmentList(this);
+
+						List<List<Property>> treatmentPropertyList = buildSimpleFactorialTreatmentList(expDesignType,
+								this);
 
 						deployer = new ParallelDeployer();
 
@@ -142,6 +143,21 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 								deployer.attachSimulator(sim);
 							}
 						break;
+					}
+					case sensitivityAnalysis: {
+						List<List<Property>> treatmentPropertyList = buildSimpleFactorialTreatmentList(expDesignType,
+								this);
+
+						deployer = new ParallelDeployer();
+
+						for (int r = 0; r < nReps; r++)
+							for (int t = 0; t < treatmentPropertyList.size(); t++) {
+								Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
+								sim.setExpProperties(treatmentPropertyList.get(t));
+								deployer.attachSimulator(sim);
+							}
+						break;
+
 					}
 					default: {
 						log.warning(() -> "undefined deployment type");
@@ -161,41 +177,59 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 	}
 
-	public static List<List<Property>> buildSimpleFactorialTreatmentList(Experiment experiment) {
+// wrong name!
+	@SuppressWarnings("unchecked")
+	public static List<List<Property>> buildSimpleFactorialTreatmentList(ExperimentDesignType edt,
+			Experiment experiment) {
 		Treatment treatment = (Treatment) get(experiment.getChildren(), selectOne(hasTheLabel(N_TREATMENT.label())));
 		List<ALDataEdge> treats = (List<ALDataEdge>) get(treatment.edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_TREATS.label())));
 
-		// we don't want the user to be bothered by needing the rank property to be contiguous from zero
+		// we don't want the user to be bothered by needing the rank property to be
+		// contiguous from zero
 		// so we prepare sorted list and use by index
 		List<Integer> rankings = new ArrayList<>();
-		for (ALDataEdge e : treats) 
+		for (ALDataEdge e : treats)
 			rankings.add((Integer) e.properties().getPropertyValue(P_TREAT_RANK.key()));
-		
+
 		Collections.sort(rankings);
-			
+
 		List<List<Property>> settings = new ArrayList<>();
 		for (int i = 0; i < treats.size(); i++)
 			settings.add(new ArrayList<Property>());
-		
+
 		for (ALDataEdge e : treats) {
 			StringTable values = (StringTable) e.properties().getPropertyValue(P_TREAT_VALUES.key());
 			TreeGraphDataNode endNode = (TreeGraphDataNode) e.endNode();
 			DataElementType type = (DataElementType) endNode.properties().getPropertyValue(P_FIELD_TYPE.key());
-//			int order = (Integer) e.properties().getPropertyValue(P_TREAT_RANK.key());
 			int order = rankings.indexOf(e.properties().getPropertyValue(P_TREAT_RANK.key()));
 			List<Property> props = getAsProperties(endNode.id(), type, values);
 			settings.set(order, props);
 		}
 
 		// assume order is normalized and packed 0..n(query)
-		int[] indices = new int[settings.size()];
-		int[] maxIndex = new int[settings.size()];
-		for (int i = 0; i < settings.size(); i++)
-			maxIndex[i] = settings.get(i).size() - 1;
-		List<List<Property>> result = new ArrayList<>();
-		buildTreatments(settings, indices, maxIndex, result);
-		return result;
+		switch (edt) {
+		case crossFactorial: {
+			int[] indices = new int[settings.size()];
+			int[] maxIndex = new int[settings.size()];
+			for (int i = 0; i < settings.size(); i++)
+				maxIndex[i] = settings.get(i).size() - 1;
+			List<List<Property>> result = new ArrayList<>();
+			buildTreatments(settings, indices, maxIndex, result);
+			return result;
+		}
+		default: {
+			List<List<Property>> result = new ArrayList<>();			
+			for (List<Property> lst:settings) {
+				for (Property p: lst) {
+					List<Property> l = new ArrayList<>();
+					l.add(p);
+					result.add(l);
+				}
+			}
+			return result;
+		}
+		}
 	}
 
 	private static void buildTreatments(List<List<Property>> s, int[] indices, int[] maxIndex,
@@ -323,65 +357,4 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 		return sealed;
 	}
 
-//	private static void recurse(List<List<Character>> s, int[] indices, int[] maxIndex, List<List<Character>> result) {
-//		// output the current set
-//		List<Character> newList = new ArrayList<>();
-//		for (int i = 0; i < indices.length; i++) {
-//			List<Character> lst = s.get(i);
-//			newList.add(lst.get(indices[i]));
-//		}
-//		result.add(newList);
-//
-//		// increment the last
-//		indices[indices.length - 1]++;
-//		// if carry over, update indices recursively
-//		if (indices[indices.length - 1] > maxIndex[indices.length - 1])
-//			doCarry(s, indices, maxIndex, indices.length - 1);
-//		// if first dimension not finished, recurse
-//		if (!(indices[0] > maxIndex[0]))
-//			recurse(s, indices, maxIndex, result);
-//
-//	}
-//
-//	private static void doCarry(List<List<Character>> s, int[] indices, int[] maxIndex, int i) {
-//		indices[i] = 0;
-//		if (i > 0) {
-//			int j = i - 1;
-//			indices[j]++;
-//			if (indices[j] > maxIndex[j] && j > 0)
-//				doCarry(s, indices, maxIndex, j);
-//		}
-//
-//	}
-
-//	public static void main(String[] args) {
-//		List<Character> a = new ArrayList<>();
-//		a.add('x');
-//		a.add('y');
-//		a.add('z');
-//
-//		List<Character> b = new ArrayList<>();
-//		b.add('a');
-//		b.add('b');
-//
-//		List<Character> c = new ArrayList<>();
-//		c.add('l');
-//		c.add('m');
-//		c.add('n');
-//		c.add('o');
-//
-//		List<List<Character>> s = new ArrayList<>();
-//		s.add(a);
-//		s.add(b);
-//		s.add(c);
-//		int[] indices = new int[s.size()];
-//		int[] maxIndex = new int[s.size()];
-//		for (int i = 0; i < s.size(); i++)
-//			maxIndex[i] = s.get(i).size() - 1;
-//
-//		List<List<Character>> result = new ArrayList<>();
-//		recurse(s, indices, maxIndex, result);
-//		for (List<Character> l : result)
-//			System.out.println(l);
-//	}
 }
