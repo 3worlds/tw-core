@@ -131,7 +131,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 						// CAUTION: Limited protecting queries!
 						// 1) Only Fields that are constants associated with the arena
 
-						List<List<Property>> treatmentPropertyList = buildSimpleFactorialTreatmentList(expDesignType,
+						List<List<Property>> treatmentPropertyList = buildTreatmentList(expDesignType,
 								this);
 
 						deployer = new ParallelDeployer();
@@ -145,7 +145,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 						break;
 					}
 					case sensitivityAnalysis: {
-						List<List<Property>> treatmentPropertyList = buildSimpleFactorialTreatmentList(expDesignType,
+						List<List<Property>> treatmentPropertyList = buildTreatmentList(expDesignType,
 								this);
 
 						deployer = new ParallelDeployer();
@@ -179,7 +179,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 // wrong name!
 	@SuppressWarnings("unchecked")
-	public static List<List<Property>> buildSimpleFactorialTreatmentList(ExperimentDesignType edt,
+	public static List<List<Property>> buildTreatmentList(ExperimentDesignType edt,
 			Experiment experiment) {
 		Treatment treatment = (Treatment) get(experiment.getChildren(), selectOne(hasTheLabel(N_TREATMENT.label())));
 		List<ALDataEdge> treats = (List<ALDataEdge>) get(treatment.edges(Direction.OUT),
