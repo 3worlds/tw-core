@@ -42,6 +42,7 @@ import fr.ens.biologie.generic.utils.Logging;
  * @author Jacques Gignoux - 17 juin 2019
  *
  */
+// Test edit
 public abstract class InitialisableNode extends TreeGraphDataNode implements Initialisable {
 	
 	protected static Logger log = Logging.getLogger(InitialisableNode.class);
