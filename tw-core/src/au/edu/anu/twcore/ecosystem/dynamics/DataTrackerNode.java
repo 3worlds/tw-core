@@ -130,7 +130,8 @@ public class DataTrackerNode extends InitialisableNode
 
 	// a class to collect metadata on fields, ie min, max, precision, units etc.
 	private class TrackMeta {
-		IndexedDataLabel label = null;
+//		IndexedDataLabel label = null;
+		DataLabel label = null;
 		Class<?> trackType = null;
 		Interval rrange = null;
 		IntegerRange irange = null;
@@ -368,9 +369,11 @@ public class DataTrackerNode extends InitialisableNode
 							fullTableLabel = unexpanded;
 							fullTableLabel.stripEnd();
 							fullTableLabel.append(last);
+							TrackMeta tmm = fm.get(fullTableLabel.toString());
+							expandedTrackList.put(fullTableLabel.toString(), tmm);
 					}
 					else {
-					List<IndexedDataLabel> labels = IndexedDataLabel.expandIndexes(unexpanded, tableDims);
+						List<IndexedDataLabel> labels = IndexedDataLabel.expandIndexes(unexpanded, tableDims);
 						// now there is one label for each index combination
 						for (IndexedDataLabel l : labels) {
 							String trackName = stripVarName(l);
