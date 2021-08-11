@@ -71,6 +71,8 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.data.TwDataInterfaceGenerator;
+import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser;
+import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser.ExecutionStep;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
 import fr.ens.biologie.generic.utils.Logging;
@@ -224,6 +226,14 @@ public class CodeGenerator {
 			}
 			// write the user code file
 			modelgen.generateCode(true);
+			
+// Temporary: check for the flowchart analysis method			
+List<ExecutionStep> lll = TwConfigurationAnalyser.getExecutionFlow(graph);
+for (ExecutionStep es:lll)
+	System.out.println(es.toString());
+// end temp
+
+
 		}
 
 		// compile code to check it

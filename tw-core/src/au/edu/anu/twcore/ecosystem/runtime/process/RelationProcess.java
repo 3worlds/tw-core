@@ -89,11 +89,6 @@ public class RelationProcess extends AbstractRelationProcess {
 			CategorizedComponent focal,
 			CategorizedComponent other,
 			SystemRelation rel) {
-
-if (focal.id().contentEquals("1213")||other.id().contentEquals("1213"))
-	System.out.println("Stop RelationProcess!");
-
-
 		// ChangeOtherStateFunction-----------------------------------------------------------
         for (ChangeOtherStateFunction function:COSfunctions) {
         	if (other.currentState()!=null) {

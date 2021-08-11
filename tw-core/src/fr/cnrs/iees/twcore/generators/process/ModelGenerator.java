@@ -41,7 +41,6 @@ import static au.edu.anu.twcore.DefaultStrings.*;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumMap;
@@ -145,6 +144,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	// the organisation level to which the currently generated method applies
 	private String focalLevel = Category.component; // defaults to component
 	private String otherLevel = Category.component; // defaults to component
+
+	// match between function names and spec nodes
+	private Map<String, TreeGraphDataNode> functions = new HashMap<>();
 
 	// some arguments in generated methods are excluded according to the organisation level
 	private static Map<String,EnumSet<TwFunctionArguments>> excludedFocalArguments = new HashMap<>();
@@ -924,9 +926,6 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 	}
 
-	// match between function names and spec nodes
-	private Map<String, TreeGraphDataNode> functions = new HashMap<>();
-
 	public EnumMap<TwFunctionArguments, List<recInfo>> dataStructure(String method) {
 		if (dataStructures.get(method) == null) {
 			TwFunctionTypes ftype = (TwFunctionTypes) functions.get(method).properties()
@@ -1359,6 +1358,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			result += classComment;
 		result += "public interface " + className;
 		result += " {\n\n"; // 1
+		// HERE: that's where the order of method generation matters
 		for (ModelMethodGenerator m : methods.values())
 			result += m.asText(indent);
 //		if (rawMethods!=null)
