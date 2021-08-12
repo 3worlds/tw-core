@@ -12,12 +12,22 @@ import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.InitFunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
+import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.Graph;
+import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.ALGraph;
+import fr.cnrs.iees.graph.impl.ALGraphFactory;
+import fr.cnrs.iees.graph.impl.ALNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
@@ -309,4 +319,84 @@ public class TwConfigurationAnalyser {
 		}
 	}
 
+	/**
+	 * Builds a life cycle graph from a LifeCycleType root node in a 3w configuration
+	 * 
+	 * @param lifeCycleType the life cycle node to use as a start
+	 * @return a little graph showing the life cycle.
+	 */
+	@SuppressWarnings("unchecked")
+	public static Graph<? extends Node,? extends Edge> getLifeCycleGraph(TreeGraphNode lifeCycleType) {
+		GraphFactory factory = new ALGraphFactory(lifeCycleType.id());
+		ALGraph<ALNode,ALEdge> lcgraph = new ALGraph<>(factory);
+		Collection<TreeGraphNode> froms, tos;
+		String startNode=null, endNode=null;
+		// get the categories involved in this life cycle
+		TreeGraphNode cset = (TreeGraphNode) get(lifeCycleType,
+			outEdges(),
+			selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
+			endNode());
+		Collection<TreeGraphNode> cats = (Collection<TreeGraphNode>) cset.getChildren();
+		// create nodes from the categories
+		for (TreeGraphNode cat:cats)
+			factory.makeNode(cat.id());
+		// get all recruit edges and create matching edges in output graph
+		Collection<TreeGraphNode> recruits = (Collection<TreeGraphNode>) get(lifeCycleType,
+			children(),
+			selectZeroOrMany(hasTheLabel(N_RECRUIT.label())));
+		for (TreeGraphNode rec:recruits) {
+			froms = (Collection<TreeGraphNode>) get(rec,
+				outEdges(),
+				selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+				edgeListEndNodes());
+			for (TreeGraphNode cat:froms)
+				if (cats.contains(cat))
+					startNode = cat.id();
+			tos = (Collection<TreeGraphNode>) get(rec,
+				outEdges(),
+				selectZeroOrMany(hasTheLabel(E_TOCATEGORY.label())),
+				edgeListEndNodes());
+			for (TreeGraphNode cat:tos)
+				if (cats.contains(cat))
+					endNode = cat.id();
+			TreeGraphNode func = (TreeGraphNode) get(rec,
+				outEdges(),
+				selectZeroOrOne(hasTheLabel(E_EFFECTEDBY.label())),
+				endNode());
+			if ((func!=null)&&(startNode!=null)&&(endNode!=null))
+				factory.makeEdge(lcgraph.findNode(startNode), 
+					lcgraph.findNode(endNode), 
+					func.id());
+		}
+		// get all produce edges and create matching edges in output graph
+		Collection<TreeGraphNode> products = (Collection<TreeGraphNode>) get(lifeCycleType,
+			children(),
+			selectZeroOrMany(hasTheLabel(N_PRODUCE.label())));
+		for (TreeGraphNode prod:products) {
+			froms = (Collection<TreeGraphNode>) get(prod,
+				outEdges(),
+				selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())),
+				edgeListEndNodes());
+			for (TreeGraphNode cat:froms)
+				if (cats.contains(cat))
+					startNode = cat.id();
+			tos = (Collection<TreeGraphNode>) get(prod,
+				outEdges(),
+				selectZeroOrMany(hasTheLabel(E_TOCATEGORY.label())),
+				edgeListEndNodes());
+			for (TreeGraphNode cat:tos)
+				if (cats.contains(cat))
+					endNode = cat.id();
+			TreeGraphNode func = (TreeGraphNode) get(prod,
+				outEdges(),
+				selectZeroOrOne(hasTheLabel(E_EFFECTEDBY.label())),
+				endNode());
+			if ((func!=null)&&(startNode!=null)&&(endNode!=null))
+				factory.makeEdge(lcgraph.findNode(startNode), 
+					lcgraph.findNode(endNode), 
+					func.id());
+		}
+		return lcgraph;
+	}
+	
 }

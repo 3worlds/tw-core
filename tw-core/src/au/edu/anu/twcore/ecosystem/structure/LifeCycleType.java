@@ -25,10 +25,13 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Graphable;
+import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.ALGraph;
 import fr.cnrs.iees.graph.impl.ALGraphFactory;
@@ -39,6 +42,7 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ReadOnlyPropertyListImpl;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser;
 import fr.ens.biologie.generic.utils.Duple;
 
 /**
@@ -57,6 +61,9 @@ public class LifeCycleType
 		produceNodes = new HashMap<>(),
 		recruitNodes = new HashMap<>();
 	private SortedSet<Category> stageCategories = new TreeSet<>();
+	
+	// a graph of this life cycle - for display or any other use
+	private Graph<? extends Node,? extends Edge> lifeCycleGraph = null;
 
 	public LifeCycleType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -118,12 +125,27 @@ public class LifeCycleType
 			recruitNodes.put(fnode,new Duple<>(Categorized.signature(fromRecruitCat),
 				Categorized.signature(toRecruitCat)));
 		}
+		// get a human-readable version of the life cycle as a graph
+		lifeCycleGraph = TwConfigurationAnalyser.getLifeCycleGraph(this);
+//		System.out.println(lifeCycleGraph.toDetailedString());
 	}
 
 	@Override
 	public int initRank() {
 		return N_LIFECYCLETYPE.initRank();
 	}
+	
+	/**
+	 * 
+	 * @return a graph representing this life cycle
+	 */
+	public Graph<? extends Node,? extends Edge> graph() {
+		if (sealed)
+			return lifeCycleGraph;
+		else
+			throw new TwcoreException("attempt to access uninitialised data");
+	}
+
 
 	@Override
 	protected LifeCycleFactory makeTemplate(int id) {
