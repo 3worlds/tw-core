@@ -95,6 +95,9 @@ import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
+import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser;
+import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser.ExecutionLevel;
+import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser.ExecutionStep;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Distance;
 //import fr.cnrs.iees.uit.space.Distance;
@@ -147,6 +150,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 
 	// match between function names and spec nodes
 	private Map<String, TreeGraphDataNode> functions = new HashMap<>();
+	
+	// execution order of methods
+	private List<ExecutionStep> executionOrder = null;
 
 	// some arguments in generated methods are excluded according to the organisation level
 	private static Map<String,EnumSet<TwFunctionArguments>> excludedFocalArguments = new HashMap<>();
@@ -278,6 +284,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			dataClassNames.put(categories, cl);
 			elementTypeCategories.put(tn, categories);
 		}
+		// get the execution flowchart to generate methods in proper order
+		executionOrder = TwConfigurationAnalyser.getExecutionFlow(root3w);
 	}
 
 	private void generateClassComment(TreeGraphDataNode root3w) {
@@ -1358,9 +1366,15 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 			result += classComment;
 		result += "public interface " + className;
 		result += " {\n\n"; // 1
-		// HERE: that's where the order of method generation matters
-		for (ModelMethodGenerator m : methods.values())
-			result += m.asText(indent);
+		// write methods in the file in a meaningful order
+		for (ExecutionStep es:executionOrder) {
+			if (es.level==ExecutionLevel.init)
+				result += methods.get(es.node.id()).asText(indent);
+			if ((es.level==ExecutionLevel.function)||(es.level==ExecutionLevel.consequence))
+				result += methods.get(es.node.id()).asText(indent);
+		}
+//		for (ModelMethodGenerator m : methods.values())
+//			result += m.asText(indent);
 //		if (rawMethods!=null)
 //			for (String s:rawMethods)
 //				result += s+"\n";

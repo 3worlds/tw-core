@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
+import au.edu.anu.twcore.ecosystem.dynamics.InitFunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
@@ -32,6 +32,7 @@ public class TwConfigurationAnalyser {
 	
 	/** What kind of class is being looped on? */
 	public enum ExecutionLevel {
+		init,				// Initialisation methods --> called only once at start of a run
 		timer, 				// Timers --> parallel
 		dependencyRank,		// Dependency ranks of processes --> sequential
 		process,			// Processes within dep. rank --> parallel
@@ -98,17 +99,86 @@ public class TwConfigurationAnalyser {
 	 * 								for each data tracker
 	 * 									record data
 	 * </pre>
-	 * @param config a 3Worlds configuration graph
+	 * @param configRoot the root node of a 3Worlds configuration graph
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<ExecutionStep> getExecutionFlow(TreeGraph<TreeGraphDataNode, ALEdge> config) {
+	public static List<ExecutionStep> getExecutionFlow(TreeGraphDataNode configRoot) {
 		TwConfigurationAnalyser analyser = new TwConfigurationAnalyser();
-		TreeGraphDataNode root = config.root();
-		if (root!=null) {
+		if (configRoot!=null) {
+			
 			// get all component types who have an initFunction
-				// TODO
+			ArenaType arena = (ArenaType) get(configRoot,
+				childTree(),
+				selectOne(hasTheLabel(N_SYSTEM.label())));
+			// arena
+			InitFunctionNode ifunc = null;
+			ifunc = (InitFunctionNode) get(arena.getChildren(),
+				selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+			if (ifunc!=null)
+				analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.unique,false);
+			// other types with init functions - down the structure tree, if any
+			TreeGraphDataNode struc = (TreeGraphDataNode) get(arena,
+				children(),
+				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+			if (struc!=null) {
+				// life cycle types
+				Collection<TreeGraphDataNode> llct = (Collection<TreeGraphDataNode>) get(struc,
+					children(),selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label())));
+				for (TreeGraphDataNode lct:llct) {
+					ifunc = (InitFunctionNode) get(lct.getChildren(),
+						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+					if (ifunc!=null)
+						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,llct.size()==1);
+					// group types under life cycle types
+					Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(lct,
+						children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+					for (TreeGraphDataNode gt:lgt) {
+						ifunc = (InitFunctionNode) get(gt.getChildren(),
+							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+						if (ifunc!=null)
+							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lgt.size()==1);
+						// component types under group types
+						Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
+							children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						for (TreeGraphDataNode cpt:lcpt) {
+							ifunc = (InitFunctionNode) get(cpt.getChildren(),
+								selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+							if (ifunc!=null)
+								analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lcpt.size()==1);
+						}
+					}
+				}
+				// group types under arena type
+				Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(struc,
+					children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+				for (TreeGraphDataNode gt:lgt) {
+					ifunc = (InitFunctionNode) get(gt.getChildren(),
+						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+					if (ifunc!=null)
+						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lgt.size()==1);
+					// component types under group types
+					Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
+						children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+					for (TreeGraphDataNode cpt:lcpt) {
+						ifunc = (InitFunctionNode) get(cpt.getChildren(),
+							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+						if (ifunc!=null)
+							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lcpt.size()==1);
+					}
+				}
+				// component types under arena
+				Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(struc,
+					children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+				for (TreeGraphDataNode cpt:lcpt) {
+					ifunc = (InitFunctionNode) get(cpt.getChildren(),
+						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+					if (ifunc!=null)
+						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lcpt.size()==1);
+				}
+			}
+			
 			// get all timers for the loop on timers
-			Collection<TreeGraphDataNode> timers = (Collection<TreeGraphDataNode>) get(root,
+			Collection<TreeGraphDataNode> timers = (Collection<TreeGraphDataNode>) get(configRoot,
 				childTree(),
 				selectZeroOrMany(hasTheLabel(N_TIMER.label())));
 			for (TreeGraphDataNode timer:timers)
@@ -117,7 +187,7 @@ public class TwConfigurationAnalyser {
 					LoopingMode.parallel,
 					timers.size()==1);
 			// get all processes
-			SimulatorNode sim = (SimulatorNode) get(root,
+			SimulatorNode sim = (SimulatorNode) get(configRoot,
 				childTree(),
 				selectZeroOrOne(hasTheLabel(N_DYNAMICS.label())));
 			if (sim!=null) {
@@ -189,10 +259,11 @@ public class TwConfigurationAnalyser {
 				}
 			}
 		}
+		
 		return analyser.executionFlow;
 	}
 	
-	// helper for the above
+	// helper for getExecutionFlow(...)
 	private void addNewStep(TreeGraphDataNode node, 
 			ExecutionLevel level, 
 			LoopingMode mode, 
@@ -207,6 +278,7 @@ public class TwConfigurationAnalyser {
 		executionFlow.add(step);
 	}
 	
+	// helper for getExecutionFlow(...)
 	@SuppressWarnings("unchecked")
 	private void addFunctionSteps(Collection<FunctionNode> lfunc) {
 		if (lfunc!=null) {
