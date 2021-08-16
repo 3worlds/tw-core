@@ -37,6 +37,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
+import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 
@@ -49,6 +50,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
@@ -56,6 +58,7 @@ import au.edu.anu.twcore.data.runtime.SpaceData;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
+import au.edu.anu.twcore.experiment.Design;
 import au.edu.anu.twcore.experiment.Experiment;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import au.edu.anu.twcore.ui.runtime.StatusWidget;
@@ -110,7 +113,33 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 					Constructor<? extends Widget> widgetConstructor = widgetClass.getDeclaredConstructor();
 					widget = widgetConstructor.newInstance();
 				}
-				widget.setProperties(id(), properties());
+				if (getParent().classId().equals(N_UIHEADLESS.label())) {
+					TreeNode root = (TreeNode) this;
+					while (root.getParent() != null)
+						root = root.getParent();
+					Experiment exp = (Experiment) get(root.getChildren(), selectOne(hasTheLabel(N_EXPERIMENT.label())));
+					Design dsgn = (Design) get(exp.getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
+					if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key())) {
+						ExperimentDesignType edt = (ExperimentDesignType) dsgn.properties()
+								.getPropertyValue(P_DESIGN_TYPE.key());
+						if (edt.equals(ExperimentDesignType.crossFactorial)
+								|| edt.equals(ExperimentDesignType.sensitivityAnalysis)) {
+							List<List<Property>> lst = Experiment.buildTreatmentList(edt, exp);
+							ExtendablePropertyListImpl p = (ExtendablePropertyListImpl) properties().clone();
+							p.addProperty(P_DESIGN_TYPE.key(), edt);
+							p.addProperty("TreatmentList", lst);
+							p.addProperty(P_EXP_NREPLICATES.key(),exp.properties().getPropertyValue(P_EXP_NREPLICATES.key()));
+							widget.setProperties(id(), p);
+						} else
+							widget.setProperties(id(), properties());
+					}
+					// must clone the property list
+					// get the design; if its sa or fact then get the list and the number of reps
+					// Experiment.buildTreatmentList
+					// when the widget finishes, it should produce either a bar chart (sa) or an
+					// anova (factorial)
+				} else
+					widget.setProperties(id(), properties());
 				// time series tracker sending data to this widget
 				List<DataTrackerNode> timeSeriesTrackers = (List<DataTrackerNode>) get(edges(Direction.OUT),
 						selectZeroOrMany(hasTheLabel(E_TRACKSERIES.label())), edgeListEndNodes());

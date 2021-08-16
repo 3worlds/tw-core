@@ -181,6 +181,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	@SuppressWarnings("unchecked")
 	public static List<List<Property>> buildTreatmentList(ExperimentDesignType edt,
 			Experiment experiment) {
+		// should only be called for sa or factorial
 		Treatment treatment = (Treatment) get(experiment.getChildren(), selectOne(hasTheLabel(N_TREATMENT.label())));
 		List<ALDataEdge> treats = (List<ALDataEdge>) get(treatment.edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_TREATS.label())));
