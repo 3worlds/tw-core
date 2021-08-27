@@ -108,7 +108,7 @@ public class TwDataGenerator
 	@Override
 	protected ClassGenerator getTableClassGenerator(String className, String contentType, String comment) {
 		return new ClassGenerator(packageName, comment, className, false, null,
-			TableAdapter.class.getCanonicalName());
+			ObjectTable.class.getCanonicalName()+"<"+contentType+">");
 	}
 	public File getFile() {
 		String name = className.replace(this.packageName+".", "");
@@ -281,6 +281,8 @@ public class TwDataGenerator
 	@Override
 	protected void tableCode(ClassGenerator cg, String ftype, String contentType, Iterable<TreeGraphDataNode> dimList) {
 		cg.setImport(packageName+"."+contentType);
+		cg.setImport("au.edu.anu.rscs.aot.collections.tables.ObjectTable");
+		cg.setImport("fr.ens.biologie.generic.DataContainer");
 		cg.setImport(Dimensioner.class.getCanonicalName());
 		cg.setConstructor();
 		String s = "super(";
