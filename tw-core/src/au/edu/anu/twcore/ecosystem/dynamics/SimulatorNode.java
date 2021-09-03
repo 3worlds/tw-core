@@ -316,7 +316,7 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 	 * Code checked & tested with procesRankingTest.dsl.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	private void hierarchiseProcesses(List<TimerNode> timerList) {
+	public void hierarchiseProcesses(List<TimerNode> timerList) {
 		// compute bit pattern to identify timeModels
 		timeModelMasks = new int[timerList.size()];
 		int i = 0;

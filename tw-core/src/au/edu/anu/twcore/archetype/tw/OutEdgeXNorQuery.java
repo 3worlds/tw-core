@@ -90,7 +90,6 @@ public class OutEdgeXNorQuery extends QueryAdaptor {
 			edgeLabel2[i] = label2.getWithFlatIndex(i);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);

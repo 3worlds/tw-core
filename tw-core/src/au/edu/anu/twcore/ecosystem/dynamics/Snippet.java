@@ -34,8 +34,6 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-
 /**
  * @author Ian Davies
  *

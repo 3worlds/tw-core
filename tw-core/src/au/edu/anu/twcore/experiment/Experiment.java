@@ -41,8 +41,6 @@ import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 import fr.ens.biologie.generic.utils.Logging;
-import fr.ens.biologie.generic.utils.Permute;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
@@ -59,9 +57,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**

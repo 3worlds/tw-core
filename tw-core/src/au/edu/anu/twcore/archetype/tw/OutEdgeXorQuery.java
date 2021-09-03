@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.util.Arrays;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;

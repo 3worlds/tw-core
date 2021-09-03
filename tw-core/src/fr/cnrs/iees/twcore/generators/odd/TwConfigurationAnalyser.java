@@ -12,6 +12,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.InitFunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
+import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -188,7 +189,7 @@ public class TwConfigurationAnalyser {
 			}
 			
 			// get all timers for the loop on timers
-			Collection<TreeGraphDataNode> timers = (Collection<TreeGraphDataNode>) get(configRoot,
+			List<TimerNode> timers = (List<TimerNode>) get(configRoot,
 				childTree(),
 				selectZeroOrMany(hasTheLabel(N_TIMER.label())));
 			for (TreeGraphDataNode timer:timers)
@@ -201,6 +202,7 @@ public class TwConfigurationAnalyser {
 				childTree(),
 				selectZeroOrOne(hasTheLabel(N_DYNAMICS.label())));
 			if (sim!=null) {
+				sim.hierarchiseProcesses(timers);
 				Map<Integer, List<List<ProcessNode>>> processCallingOrder = sim.getProcessCallingOrder();
 				// NB for simplicity, we only present process ordering for the combination
 				// of all timers, which means that the Integer index is maximal (it's a mask
