@@ -301,6 +301,7 @@ public class Simulator implements Resettable {
 			//
 			List<List<TwProcess>> currentProcesses = processCallingOrder.get(ctmask);
 			for (int j = 0; j < currentProcesses.size(); j++) {
+				
 				List<TwProcess> torun = currentProcesses.get(j);
 				// prepare data trackers for recording (important for space data trackers only)
 				for (DataTracker<?, Metadata> tracker : trackers.keySet())

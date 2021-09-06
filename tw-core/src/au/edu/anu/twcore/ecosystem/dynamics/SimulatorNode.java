@@ -95,10 +95,6 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
 
-	// IDD temp code [JG: for how long?]
-	public Collection<Simulator> getSimulators() {
-		return simulators.values();
-	}
 
 	public SimulatorNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
