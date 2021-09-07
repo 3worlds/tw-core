@@ -36,6 +36,7 @@ import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.data.runtime.TwDataTable;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -108,7 +109,8 @@ public class TwDataGenerator
 	@Override
 	protected ClassGenerator getTableClassGenerator(String className, String contentType, String comment) {
 		return new ClassGenerator(packageName, comment, className, false, null,
-			ObjectTable.class.getCanonicalName()+"<"+contentType+">");
+			TwDataTable.class.getCanonicalName()+"<"+contentType+">");
+//			ObjectTable.class.getCanonicalName()+"<"+contentType+">");
 	}
 	public File getFile() {
 		String name = className.replace(this.packageName+".", "");
@@ -275,13 +277,14 @@ public class TwDataGenerator
 		cg.getConstructor("constructor1").setStatement(fname+" = new "+ftype+"("+dims+")");
 	}
 
-	// this is called only to generate ObjectTable descendants
+	// this is called only to generate TwDataTable descendants
 	// these Tables must implement clone() and clonestructure() with the proper return types,
 	// otherwise there is a cast exception when using the ancestor clone() method.
 	@Override
 	protected void tableCode(ClassGenerator cg, String ftype, String contentType, Iterable<TreeGraphDataNode> dimList) {
 		cg.setImport(packageName+"."+contentType);
-		cg.setImport("au.edu.anu.rscs.aot.collections.tables.ObjectTable");
+//		cg.setImport("au.edu.anu.rscs.aot.collections.tables.ObjectTable");
+		cg.setImport("au.edu.anu.twcore.data.runtime.TwDataTable");
 		cg.setImport(Dimensioner.class.getCanonicalName());
 		cg.setConstructor();
 		String s = "super(";
@@ -299,7 +302,9 @@ public class TwDataGenerator
 		cg.setMethod("clone", m);
 		cg.getMethod("clone").setReturnType(ftype);
 		cg.getMethod("clone").setStatement(ftype+" result = cloneStructure()");
-		cg.getMethod("clone").setStatement("for (int i=0; i<flatSize; i++)\n\t\t\tresult.setWithFlatIndex(getWithFlatIndex(i),i)");
+//		this was wrong : returns an uncloned object, so mixup between data trees		
+//		cg.getMethod("clone").setStatement("for (int i=0; i<flatSize; i++)\n\t\t\tresult.setWithFlatIndex(getWithFlatIndex(i),i)");
+		cg.getMethod("clone").setStatement("result.copy(this)");
 		cg.getMethod("clone").setReturnStatement("return result");
 		// since cloneStructure() is not abstract in ancestor, we must redeclare it here
 		m = new MethodGenerator("public",false,ftype,"cloneStructure");
