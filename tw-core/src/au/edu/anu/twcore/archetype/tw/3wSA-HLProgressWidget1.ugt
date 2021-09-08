@@ -1,0 +1,25 @@
+tree
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-HLProgressWidget1
+
+	hasNode HLProgressWidget1Spec
+		isOfClass = String("widget")
+		// TODO this should override parent when checking
+		hasParent = StringTable(([1]"headless:"))
+		multiplicity = IntegerRange("0..*")
+
+		hasEdge HLProgressWidget1ToSimSpec
+			isOfClass = String("trackTime")
+			toNode = String("dynamics:")
+			multiplicity = IntegerRange("1..1")
+
+		mustSatisfyQuery HLProgressWidget1ParentClassQuery
+			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
+			parentLabels = StringTable(([1]"headless"))
+			

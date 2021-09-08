@@ -27,17 +27,22 @@ hasNode HLwidgetSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery hlwidgetClassInValueSetQuery
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
-			values = StringTable(([2]+
+			values = StringTable(([3]+
+			"au.edu.anu.twuifx.widgets.headless.HLProgressWidget1",+
 			"au.edu.anu.twuifx.widgets.headless.HLExperimentWidget1",+
-			"au.edu.anu.twuifx.widgets.headless.HLSimpleControlWidget"))
+			"au.edu.anu.twuifx.widgets.headless.HLControlWidget1"))
 
-	mustSatisfyQuery CheckSubArchetypeQuerySimpleTimeSeriesWidget2
+	mustSatisfyQuery CheckSubArchetypeQueryHLExperimentWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLExperimentWidget1","3wSA-HLExperimentWidget1.ugt"))
 
-	mustSatisfyQuery CheckSubArchetypeQuerySimpleControlWidget2
+	mustSatisfyQuery CheckSubArchetypeQueryHLControlWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLSimpleControlWidget","3wSA-HLSimpleControlWidget.ugt"))
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLControlWidget1","3wSA-HLControlWidget1.ugt"))
+
+	mustSatisfyQuery CheckSubArchetypeQueryHLProgressWidget1
+		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLProgressWidget1","3wSA-HLProgressWidget1.ugt"))
 
 hasNode topSpec
 	isOfClass = String("top")

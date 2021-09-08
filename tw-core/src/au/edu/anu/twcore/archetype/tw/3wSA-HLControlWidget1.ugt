@@ -6,9 +6,9 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-HLSimpleControlWidget
+archetype 3wSA-HLControlWidget1
 
-	hasNode SimpleControlWidgetSpec
+	hasNode HLControlWidget1Spec
 		isOfClass = String("widget")
 		hasParent = StringTable(([1]"headless:"))
 		multiplicity = IntegerRange("0..1")
