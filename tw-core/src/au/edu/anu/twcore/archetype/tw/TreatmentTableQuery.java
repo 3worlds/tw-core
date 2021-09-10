@@ -59,14 +59,28 @@ public class TreatmentTableQuery extends QueryAdaptor {
 		StringTable values = (StringTable) localItem.properties().getPropertyValue(P_TREAT_VALUES.key());
 		TreeGraphDataNode endNode = (TreeGraphDataNode) localItem.endNode();
 		DataElementType dataType = (DataElementType) endNode.properties().getPropertyValue(P_FIELD_TYPE.key());
+		int nvalid = 0;
 		for (int i = 0; i < values.size(); i++) {
 			String s = values.getByInt(i).trim();
-			if (!isCorrectType(s, dataType)) {
-				String[] msgs = TextTranslations.getTreatmentTableQuery2(localItem.toShortString(),P_TREAT_VALUES.key(), s, dataType, i);
-				actionMsg = msgs[0];
-				errorMsg = msgs[1];
-				return this;
+			if (!s.isBlank()) {
+					if (!isCorrectType(s, dataType)) {
+					// error: one of the values is not of the proper type - 
+					// the first value will be reported 
+					String[] msgs = TextTranslations.getTreatmentTableQuery2(
+						localItem.toShortString(),P_TREAT_VALUES.key(), s, dataType, i);
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+					return this;
+				}
+				nvalid++;
 			}
+		}
+		if (nvalid==0) {
+			// error: there is no valid value (only empty strings)
+			String[] msgs = TextTranslations.getTreatmentTableQuery(
+				localItem.toShortString(),P_TREAT_VALUES.key());
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
 		}
 
 		return this;

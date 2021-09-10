@@ -1251,15 +1251,30 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Edit '"+edgeName+"#"+key+"["+i+"]'to conform with type '"+dataType+"'.";
-			cm = "Expected '"+edgeName+"#"+key+"["+i+"]' to be of type '"+dataType+"' but found '"+entry+"'.";
+			am = "Modifier la valeur de '"+edgeName+"#"+key+"["+i+"]' pour une valeur de type '"+dataType+"'.";
+			cm = "Valeur de '"+edgeName+"#"+key+"["+i+"]' de type , '"+dataType+"' attendue, type '"+entry+"' trouvé.";
 		} else {// make sure default is English or Sanskrit users will get no messages!
-			am = "Edit '"+edgeName+"#"+key+"["+i+"]'to conform with type '"+dataType+"'.";
+			am = "Edit '"+edgeName+"#"+key+"["+i+"]' to a '"+dataType+"' type value.";
 			cm = "Expected '"+edgeName+"#"+key+"["+i+"]' to be of type '"+dataType+"' but found '"+entry+"'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
+	
+	public static String[] getTreatmentTableQuery(String edgeName,String key) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Ajouter au moins une valeur à la variable '"+edgeName+"#"+key+"'.";
+			cm = "La variable '"+edgeName+"#"+key+"' ne contient aucune valeur utilisable.";
+		} else {// make sure default is English or Sanskrit users will get no messages!
+			am = "Add at least one value to '"+edgeName+"#"+key+"'.";
+			cm = "Expected '"+edgeName+"#"+key+"' to contain at least one value, but found none.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
 
 }
 
