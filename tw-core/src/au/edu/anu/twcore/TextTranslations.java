@@ -445,10 +445,10 @@ public class TextTranslations {
 	 * child with another value in the same property can be present. Can be
 	 * instantiated with a single label, or a table of compatible labels.
 	 * 
-	 * @param target The label:name of target sibling
-	 * @param key Target's property key
+	 * @param target         The label:name of target sibling
+	 * @param key            Target's property key
 	 * @param expectedValues Required property values
-	 * @param nDiffSibs Number of non-compliant siblings
+	 * @param nDiffSibs      Number of non-compliant siblings
 	 * @return
 	 */
 	public static String[] getExclusiveChildPropertyValueQuery(String target, String key, List<Object> expectedValues,
@@ -456,13 +456,13 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Either change property value of '" + key + "' to "
-					+ expectedValues + " for all sibling(s) of '"+target+"' OR remove this node.";
+			am = "Either change property value of '" + key + "' to " + expectedValues + " for all sibling(s) of '"
+					+ target + "' OR remove this node.";
 			cm = "Expected siblings of '" + target + "' containing the property '" + key + "' to have the value(s) "
 					+ expectedValues + "but found " + nDiffSibs + " sibling(s) with other values.";
 		} else {// make sure default is English!
-			am = "Either change property value of '" + key + "' to "
-					+ expectedValues + " for all sibling(s) of '"+target+"' OR remove this node.";
+			am = "Either change property value of '" + key + "' to " + expectedValues + " for all sibling(s) of '"
+					+ target + "' OR remove this node.";
 			cm = "Expected siblings of '" + target + "' containing the property '" + key + "' to have the value(s) "
 					+ expectedValues + "but found " + nDiffSibs + " sibling(s) with other values.";
 		}
@@ -573,11 +573,21 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add file '" + file.getName() + "' to the project.";
-			cm = "Expected file '" + file.getName() + "-" + file.getParent() + "' but not found.";
+			if (file != null) {
+				am = "Add file '" + file.getName() + "' to the project.";
+				cm = "Expected file '" + file.getName() + "-" + file.getParent() + "' but not found.";
+			} else {
+				am = "Select a file for this property.";
+				cm = "Expected file to be defined but found null.";
+			}
 		} else {// make sure default is English!
-			am = "Add file '" + file.getName() + "' to the project.";
-			cm = "Expected file '" + file.getName() + "-" + file.getParent() + "' but not found.";
+			if (file != null) {
+				am = "Add file '" + file.getName() + "' to the project.";
+				cm = "Expected file '" + file.getName() + "-" + file.getParent() + "' but not found.";
+			} else {
+				am = "Select a file for this property.";
+				cm = "Expected file to be defined but found null.";
+			}
 		}
 		String[] result = { am, cm };
 		return result;
@@ -1246,35 +1256,38 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
-	
-	public static String[] getTreatmentTableQuery2(String edgeName,String key, String entry, DataElementType dataType, int i) {
+
+	public static String[] getTreatmentTableQuery2(String edgeName, String key, String entry, DataElementType dataType,
+			int i) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Modifier la valeur de '"+edgeName+"#"+key+"["+i+"]' pour une valeur de type '"+dataType+"'.";
-			cm = "Valeur de '"+edgeName+"#"+key+"["+i+"]' de type , '"+dataType+"' attendue, type '"+entry+"' trouvé.";
+			am = "Modifier la valeur de '" + edgeName + "#" + key + "[" + i + "]' pour une valeur de type '" + dataType
+					+ "'.";
+			cm = "Valeur de '" + edgeName + "#" + key + "[" + i + "]' de type , '" + dataType + "' attendue, type '"
+					+ entry + "' trouvé.";
 		} else {// make sure default is English or Sanskrit users will get no messages!
-			am = "Edit '"+edgeName+"#"+key+"["+i+"]' to a '"+dataType+"' type value.";
-			cm = "Expected '"+edgeName+"#"+key+"["+i+"]' to be of type '"+dataType+"' but found '"+entry+"'.";
-		}
-		String[] result = { am, cm };
-		return result;
-	}
-	
-	public static String[] getTreatmentTableQuery(String edgeName,String key) {
-		String am;
-		String cm;
-		if (Language.French()) {
-			am = "Ajouter au moins une valeur à la variable '"+edgeName+"#"+key+"'.";
-			cm = "La variable '"+edgeName+"#"+key+"' ne contient aucune valeur utilisable.";
-		} else {// make sure default is English or Sanskrit users will get no messages!
-			am = "Add at least one value to '"+edgeName+"#"+key+"'.";
-			cm = "Expected '"+edgeName+"#"+key+"' to contain at least one value, but found none.";
+			am = "Edit '" + edgeName + "#" + key + "[" + i + "]' to a '" + dataType + "' type value.";
+			cm = "Expected '" + edgeName + "#" + key + "[" + i + "]' to be of type '" + dataType + "' but found '"
+					+ entry + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
+	public static String[] getTreatmentTableQuery(String edgeName, String key) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Ajouter au moins une valeur à la variable '" + edgeName + "#" + key + "'.";
+			cm = "La variable '" + edgeName + "#" + key + "' ne contient aucune valeur utilisable.";
+		} else {// make sure default is English or Sanskrit users will get no messages!
+			am = "Add at least one value to '" + edgeName + "#" + key + "'.";
+			cm = "Expected '" + edgeName + "#" + key + "' to contain at least one value, but found none.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
 
 }
 

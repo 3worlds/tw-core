@@ -155,7 +155,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 						break;
 
 					}
-					default: {
+						default: {
 						log.warning(() -> "undefined deployment type");
 					}
 					}
@@ -204,7 +204,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 			settings.set(order, props);
 		}
 
-		// assume order is normalized and packed 0..n(query)
+		// assume order is normalized and packed 0..n(??)
 		switch (edt) {
 		case crossFactorial: {
 			int[] indices = new int[settings.size()];
@@ -215,9 +215,34 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 			buildTreatments(settings, indices, maxIndex, result);
 			return result;
 		}
-		default: {
+		case sensitivityAnalysis:{
 			List<List<Property>> result = new ArrayList<>();			
 			for (List<Property> lst:settings) {
+				for (Property p: lst) {
+					List<Property> l = new ArrayList<>();
+					l.add(p);
+					result.add(l);
+				}
+			}
+			return result;
+		
+		}
+		// simpleCompare
+		default: {
+			// e.g.: Assume 3 properties with these values
+			// a: 1,2,3
+			// b: A,B
+			// c: X
+			// The sim property sets are the columns
+			// The missing values are, by default, the baseline value
+			
+			List<List<Property>> result = new ArrayList<>();
+			
+			for (int i=0;i< settings.size();i++) {
+				List<Property> lst = new ArrayList<>();
+				result.add(lst);
+				
+				
 				for (Property p: lst) {
 					List<Property> l = new ArrayList<>();
 					l.add(p);
