@@ -27,6 +27,11 @@ archetype 3wSA-MatrixWidget1
 			mustSatisfyQuery MatrixWidget1firstSenderInRangeQuery1
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]0,2147483647))
+		
+		hasProperty MatrixWidget1DefaultZRangeProperty
+			hasName = String("defaultZRange")
+			type = String("Interval")
+			multiplicity = IntegerRange("1..1")
 
 		hasProperty MatrixWidget1NSendersProperty
 			hasName = String("nSenders")

@@ -37,8 +37,10 @@ public enum ConfigurationPropertyNames {
 	P_MODEL_BUILTBY             ("built-by"),
 	P_MODEL_PRECIS              ("precis"),
 	P_MODEL_IMPORTSNIPPET		("importSnippet"),
+	
 	P_DIMENSIONER_SIZE 			("size"),
 	P_DIMENSIONER_RANK 			("rank"),
+	
 	P_FIELD_TYPE 				("type"),
 	P_FIELD_RANGE 				("range"),
 	P_FIELD_INTERVAL 			("interval"),
@@ -54,39 +56,51 @@ public enum ConfigurationPropertyNames {
 	
 	P_MODELCHANGE_PARAMETER		("parameter"),
 	P_MODELCHANGE_REPLACEWITH	("replaceWith"),
+	
 	P_TIMEPERIOD_START			("start"),
 	P_TIMEPERIOD_END			("end"),
+	
 	P_TIMELINE_SCALE			("scale"),
 	P_TIMELINE_SHORTTU			("shortestTimeUnit"),
 	P_TIMELINE_LONGTU			("longestTimeUnit"),
 	P_TIMELINE_TIMEORIGIN		("timeOrigin"),
+	
 	P_TIMEMODEL_TU				("timeUnit"),
 	P_TIMEMODEL_NTU             ("nTimeUnits"),
 	P_TIMEMODEL_DT				("dt"),
 	P_TIMEMODEL_SUBCLASS		("subclass"),
 	P_TIMEMODEL_OFFSET			("offset"),
+	
 	P_COMPONENT_LIFESPAN		("lifeSpan"),
-	P_RELATION_LIFESPAN			("lifeSpan"),
-	P_RELATION_DIRECTIONAL		("directional"),
 	P_COMPONENT_MOBILE			("mobile"),
 	P_COMPONENT_NINST			("nInstances"),
+	
+	P_RELATION_LIFESPAN			("lifeSpan"),
+	P_RELATION_DIRECTIONAL		("directional"),
+	
 	P_GROUP_NINST				("nInstances"),
+	
 	P_PARAMETERCLASS			("parameterClass"),
 	P_DRIVERCLASS				("driverClass"),
 	P_DECORATORCLASS			("decoratorClass"),
 	P_CONSTANTCLASS				("constantClass"),
 	P_DYNAMIC					("dynamic"),
+	
 	P_FUNCTIONTYPE				("type"),
 	P_FUNCTIONSNIPPET			("functionSnippet"),
 	P_FUNCTIONCLASS				("userClassName"),
+	
 	P_INITIALISERCLASS			("userClassName"),
 	P_DATAELEMENTTYPE			("dataElementType"),
+	
 	P_TABLE_DESCRIPTION			("description"),
 	P_TABLE_RANGE 				("range"),
 	P_TABLE_INTERVAL 			("interval"),
 	P_TABLE_PREC 				("precision"),
 	P_TABLE_UNITS 				("units"),
+	
 	P_STOPCD_SUBCLASS			("subclass"),
+	
 	P_WIDGET_SUBCLASS			("subclass"),
 	P_DATASOURCE_SUBCLASS		("subclass"),
 	P_DATATRACKER_SUBCLASS		("subclass"),
@@ -95,8 +109,10 @@ public enum ConfigurationPropertyNames {
 	P_STOPCD_STOPVAR			("stopVariable"),
 	P_STOPCD_STOPVAL			("stopValue"),
 	P_STOPCD_RANGE				("range"),
+	
 	P_UICONTAINER_ORIENT		("orientation"),
 	P_UIORDER					("order"),
+	
 	P_DATATRACKER_SELECT		("samplingMode"),
 	P_DATATRACKER_STATISTICS	("statistics"),
 	P_DATATRACKER_TABLESTATS	("tableStatistics"),
@@ -125,19 +141,20 @@ public enum ConfigurationPropertyNames {
 	P_SPACENAMES				("spaces"),
 	P_SPACE_SEARCHRADIUS		("searchRadius"),
 	P_SPACE_SEARCHNEIGHBOURS	("searchNeighbours"),
-//	P_SPACE_COORDINATES			("coordinates"),
 	P_SPACE_COORD_RANK			("rank"),
 	P_SPACE_EDGEEFFECTS			("edgeEffects"),
 	P_SPACE_BORDERTYPE			("borderType"),
 	P_SPACE_GUARDAREA			("guardAreaWidth"),
 	P_SPACE_OBSWINDOW			("observationWindow"),
-	//P_SNIPPET_JAVACODE          ("javaCode"),
+	
 	P_WIDGET_SENDER				("sender"),
 	P_WIDGET_MAXAXES			("maxAxes"),
 	P_WIDGET_BUFFERSIZE			("bufferSize"),
 	P_WIDGET_REFRESHRATE		("refreshRate"),
 	P_WIDGET_FIRSTSENDER		("firstSender"),
 	P_WIDGET_NSENDERS			("nSenders"),
+	P_WIDGET_DEFAULT_Z_RANGE	("defaultZRange"),
+	
 	P_EXP_DEPLOYMENT			("deployment"),
 	P_EXP_NREPLICATES			("nReplicates"),
 	;
