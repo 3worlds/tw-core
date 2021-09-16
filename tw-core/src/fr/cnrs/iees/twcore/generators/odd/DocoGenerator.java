@@ -77,6 +77,7 @@ import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.EdgeEffectCorrection;
 import fr.cnrs.iees.twcore.constants.SpaceType;
@@ -304,20 +305,6 @@ public class DocoGenerator {
 		
 		File f = Project.makeFile(ProjectPaths.LOCALJAVACODE,system.id(),cfg.root().id()+".java");
 		snippetMap = SnippetReader.readSnippetsFromFile(f);
-//		snippetMap = new HashMap<>();
-//		for (TreeGraphDataNode snippetNode : snippetNodes) {
-//			StringTable tbl = (StringTable) snippetNode.properties().getPropertyValue(P_FUNCTIONSNIPPET.key());
-//			char c[] = snippetNode.getParent().id().toCharArray();
-//			List<String> value = new ArrayList<>();
-//			c[0] = Character.toLowerCase(c[0]);
-//			// TODO haven't distinguished between initFunctions and functions
-//			// This is not possible unless every function has a snippet node from which its
-//			// parents can be found. Unless we look at the ancestor of the function in the
-//			// generated code and see if it is an initfunction
-//			snippetMap.put(new String(c), value);
-//			for (int i = 0; i < tbl.size(); i++)
-//				value.add(tbl.getWithFlatIndex(i));
-//		}
 
 		// Count drivers, constants and decorators
 		for (TreeGraphDataNode n : cfg.subTree(dDef)) {
@@ -445,8 +432,18 @@ public class DocoGenerator {
 					ci.next().setUseOptimalWidth(true);
 				t.setWidth(t.getWidth());
 			}
-
-			document.save(Project.makeFile(ProjectPaths.RUNTIME, cfg.root().id() + ".odt"));
+			
+			File dir = Project.makeFile(ProjectPaths.RUNTIME);
+			LocalScope scope = new LocalScope("Files");
+			for (String fileName:dir.list()) {
+				 int dotIndex = fileName.lastIndexOf('.');
+				 fileName = (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
+				 scope.newId(true,fileName);
+			}
+			String oddFileName = scope.newId(false,cfg.root().id()+"_0").id();
+			
+			//String fileName = cfg.root().id() + ".odt"
+			document.save(Project.makeFile(ProjectPaths.RUNTIME, oddFileName + ".odt"));
 
 			// free resources
 			document.close();
