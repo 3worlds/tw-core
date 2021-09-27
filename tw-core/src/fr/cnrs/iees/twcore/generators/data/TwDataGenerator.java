@@ -48,7 +48,7 @@ import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * A code generator to make descendants of {@link TwData}
+ * A code generator to make descendants of {@link TwData} 
  *
  * <p>3Worlds: component threeWorlds</p>
  * @author Jacques Gignoux - 23 déc. 2014
