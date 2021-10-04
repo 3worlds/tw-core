@@ -238,7 +238,6 @@ public class DocoGenerator {
 				}
 			}
 
-			
 			if (n.classId().equals(N_DATADEFINITION.label()))
 				dDef = n;
 			else if (n.classId().equals(N_SYSTEM.label())) {
@@ -296,14 +295,15 @@ public class DocoGenerator {
 				rngs.add(n);
 			}
 		}
-		/** get the file name:
+		/**
+		 * get the file name:
 		 * 
 		 * project_Logistic1_2021-07-12-03-34-38-765/local/java/code/sys1
 		 * 
 		 * TODO: Assume one system for now!
 		 */
-		
-		File f = Project.makeFile(ProjectPaths.LOCALJAVACODE,system.id(),cfg.root().id()+".java");
+
+		File f = Project.makeFile(ProjectPaths.LOCALJAVACODE, system.id(), cfg.root().id() + ".java");
 		snippetMap = SnippetReader.readSnippetsFromFile(f);
 
 		// Count drivers, constants and decorators
@@ -432,17 +432,17 @@ public class DocoGenerator {
 					ci.next().setUseOptimalWidth(true);
 				t.setWidth(t.getWidth());
 			}
-			
+
 			File dir = Project.makeFile(ProjectPaths.RUNTIME);
 			LocalScope scope = new LocalScope("Files");
-			for (String fileName:dir.list()) {
-				 int dotIndex = fileName.lastIndexOf('.');
-				 fileName = (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
-				 scope.newId(true,fileName);
+			for (String fileName : dir.list()) {
+				int dotIndex = fileName.lastIndexOf('.');
+				fileName = (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
+				scope.newId(true, fileName);
 			}
-			String oddFileName = scope.newId(false,cfg.root().id()+"_0").id();
-			
-			//String fileName = cfg.root().id() + ".odt"
+			String oddFileName = scope.newId(false, cfg.root().id() + "_0").id();
+
+			// String fileName = cfg.root().id() + ".odt"
 			document.save(Project.makeFile(ProjectPaths.RUNTIME, oddFileName + ".odt"));
 
 			// free resources
@@ -1030,12 +1030,16 @@ public class DocoGenerator {
 			font.setFamilyName("Liberation Mono");
 			font.setSize(10);
 			para1.setFont(font);
+			int lineCount = 0;
 			for (String line : snp.getValue()) {
 				if (line.startsWith("\t\t"))
 					line = line.replaceFirst("\t\t", "");
-//					line = line.substring(2, line.length() - 1);
 				para1.appendTextContent(line + "\n", true);
+				if (!line.trim().startsWith("//") && !line.isBlank()) {
+					lineCount++;
+				}
 			}
+			para1.appendTextContent("[Lines: " + lineCount + "]\n", true);
 		}
 	}
 
@@ -1850,6 +1854,17 @@ public class DocoGenerator {
 				.toString());
 		entries.add(new StringBuilder().append("10 #GroupTypes").append(sep).append((groupTypes.size() - baseGT))
 				.toString());
+		int lineCount = 0;
+		for (Map.Entry<String, List<String>> snp : snippetMap.entrySet()) {
+			for (String line : snp.getValue()) {
+				
+				if (!line.trim().startsWith("//") && !line.isBlank()) {
+					lineCount++;
+				}
+			}		
+		}
+		entries.add(new StringBuilder().append("11 #Lines of code").append(sep).append(lineCount).toString());
+
 		return entries;
 	}
 
