@@ -606,6 +606,19 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
+	public static String[] getIsBoundedIntervalQuery(Interval interval) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Set to be bounded.";
+			cm = "Expected interval to be bounded but found '" + interval + "'.";
+		} else {// make sure default is English!
+			am = "Set to be bounded.";
+			cm = "Expected interval to be bounded but found '" + interval + "'.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
 
 	public static String[] getIsInLifeCycleCategorySetQuery1(int nToCats, int nFromCats, String toLbl, String fromLbl) {
 		String am;

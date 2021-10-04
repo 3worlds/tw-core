@@ -32,6 +32,8 @@ archetype 3wSA-MatrixWidget1
 			hasName = String("defaultZRange")
 			type = String("Interval")
 			multiplicity = IntegerRange("1..1")
+			mustSatisfyQuery ZRangeBoundedQuery
+				className = String("au.edu.anu.twcore.archetype.tw.IsBoundedIntervalQuery")
 
 		hasProperty MatrixWidget1NSendersProperty
 			hasName = String("nSenders")
