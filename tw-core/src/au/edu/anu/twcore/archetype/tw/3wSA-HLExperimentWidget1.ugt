@@ -19,6 +19,14 @@ archetype 3wSA-HLExperimentWidget1
 			isOfClass = String("trackSeries")
 			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
+		
+		hasProperty HLExperimentWidget1nLinesProperty
+			hasName = String("nLines")
+			type = String("Integer")
+			multiplicity = IntegerRange("0..1")
+			mustSatisfyQuery HLExperimentWidget1nLinesPropertyInRangeQuery1
+				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
+				interval = IntTable(([2]1,2147483647))
 			
 		mustSatisfyQuery HLExperimentWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")

@@ -157,6 +157,7 @@ public enum ConfigurationPropertyNames {
 	
 	P_EXP_DEPLOYMENT			("deployment"),
 	P_EXP_NREPLICATES			("nReplicates"),
+	P_HLWIDGET_NLINES			("nLines"),
 	;
 
 	private final String pname;
