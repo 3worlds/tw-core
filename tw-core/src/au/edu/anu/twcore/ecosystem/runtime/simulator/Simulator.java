@@ -86,12 +86,14 @@ public class Simulator implements Resettable {
 	/** a data tracker to send time data */
 	class TimeTracker extends AbstractDataTracker<TimeData, Metadata> {
 		private TimeTracker() {
-			super(DataMessageTypes.TIME,id);
+			super(DataMessageTypes.TIME, id);
 		}
+
 		@Override
 		public Metadata getInstance() {
 			return null;
 		}
+
 		// returns quickly if there are no observers - no point building a TimeData
 		@Override
 		public void openTimeRecord(SimulatorStatus status, long time) {
@@ -101,8 +103,10 @@ public class Simulator implements Resettable {
 				sendData(output);
 			}
 		}
+
 		@Override
-		public void closeTimeRecord() {}
+		public void closeTimeRecord() {
+		}
 	}
 
 	// FIELDS
@@ -147,9 +151,11 @@ public class Simulator implements Resettable {
 	/** all data trackers used in this simulator, together with their metadata */
 	private Map<DataTracker<?, Metadata>, Metadata> trackers = new HashMap<>();
 	/** all spaces used in this simulation */
-	private SpaceOrganiser mainSpace=null;
-	
+	private SpaceOrganiser mainSpace = null;
+
 	private List<Property> treatmentProperties;
+
+	private Map<String, Object> baseline;
 
 	// CONSTRUCTORS
 
@@ -166,18 +172,12 @@ public class Simulator implements Resettable {
 	 * @param haveStoppingConditions
 	 */
 	@SuppressWarnings("unchecked")
-	public Simulator(int id,
-			StoppingCondition stoppingCondition,
-			Timeline refTimer,
-			List<TimerNode> timeModels,
-			List<Timer> timers,
-			int[] timeModelMasks,
-			Map<Integer, List<List<TwProcess>>> processCallingOrder,
-			SpaceOrganiser space,
-			EcosystemGraph ecosystem, boolean noStoppingConditions) {
+	public Simulator(int id, StoppingCondition stoppingCondition, Timeline refTimer, List<TimerNode> timeModels,
+			List<Timer> timers, int[] timeModelMasks, Map<Integer, List<List<TwProcess>>> processCallingOrder,
+			SpaceOrganiser space, EcosystemGraph ecosystem, boolean noStoppingConditions) {
 		super();
 		this.id = id;
-		log.info(()->"START Simulator " + this.id + " instantiated");
+		log.info(() -> "START Simulator " + this.id + " instantiated");
 		this.stoppingCondition = stoppingCondition;
 //		this.refTimer = refTimer;
 		this.timerList = timers;
@@ -188,18 +188,18 @@ public class Simulator implements Resettable {
 		// looping aids----------------------------------------------------------------
 		currentTimes = new long[timerList.size()];
 		if (refTimer.properties().hasProperty(P_TIMELINE_TIMEORIGIN.key()))
-			startTime = ((DateTimeType)refTimer.properties()
-				.getPropertyValue(P_TIMELINE_TIMEORIGIN.key())).getDateTime();
+			startTime = ((DateTimeType) refTimer.properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key()))
+					.getDateTime();
 		// time line metadata for data trackers----------------------------------------
 		metadata = new Metadata(id, refTimer.properties());
 		// make sure a default value is there for optional properties
 		if (!refTimer.properties().hasProperty(P_TIMELINE_TIMEORIGIN.key())) {
 			DateTimeType dtt = new DateTimeType(0L);
-			metadata.addProperty(P_TIMELINE_TIMEORIGIN.key(),dtt);
+			metadata.addProperty(P_TIMELINE_TIMEORIGIN.key(), dtt);
 		}
 		// stopping conditions metadata for data trackers
 		String scDesc = stoppingCondition.toString();
-		if (noStoppingConditions)//i.e. not the default stopping condition
+		if (noStoppingConditions)// i.e. not the default stopping condition
 			scDesc = "(never)";
 		metadata.addProperty("StoppingDesc", scDesc);
 		// data tracking - record all data trackers------------------------------------
@@ -210,34 +210,35 @@ public class Simulator implements Resettable {
 		for (List<List<TwProcess>> llp : processCallingOrder.values())
 			for (List<TwProcess> lp : llp)
 				for (TwProcess p : lp) {
-			if (p instanceof MultipleDataTrackerHolder)
-				for (DataTracker<?, Metadata> dt : ((MultipleDataTrackerHolder<Metadata>) p).dataTrackers()) {
-					// make metadata
-					Metadata meta = dt.getInstance();
-					meta.addProperties(refTimer.properties());
-					ReadOnlyPropertyList timerProps = findTimerProps(timeModels, p);
-					if (timerProps != null)
-						meta.addProperties(timerProps);
-					trackers.put(dt, meta);
-			}
-		}
+					if (p instanceof MultipleDataTrackerHolder)
+						for (DataTracker<?, Metadata> dt : ((MultipleDataTrackerHolder<Metadata>) p).dataTrackers()) {
+							// make metadata
+							Metadata meta = dt.getInstance();
+							meta.addProperties(refTimer.properties());
+							ReadOnlyPropertyList timerProps = findTimerProps(timeModels, p);
+							if (timerProps != null)
+								meta.addProperties(timerProps);
+							trackers.put(dt, meta);
+						}
+				}
 		// system (arena) GraphDataTracker
 		GraphDataTracker gdt = ecosystem.arena().getDataTracker();
-		if (gdt!=null)
-			trackers.put(gdt,gdt.getInstance());
+		if (gdt != null)
+			trackers.put(gdt, gdt.getInstance());
 		// space data trackers
-		if (mainSpace!=null)
+		if (mainSpace != null)
 			for (Space<SystemComponent> sp : mainSpace.spaces())
 				if (sp instanceof SingleDataTrackerHolder) {
-			SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<Metadata>) sp).dataTracker();
-			if (dts != null)
-				trackers.put(dts, dts.getInstance());
-		}
-		log.info(()->"END Simulator " + this.id + " instantiated");
+					SpaceDataTracker dts = (SpaceDataTracker) ((SingleDataTrackerHolder<Metadata>) sp).dataTracker();
+					if (dts != null)
+						trackers.put(dts, dts.getInstance());
+				}
+		log.info(() -> "END Simulator " + this.id + " instantiated");
 	}
-	
-	public void setExpProperties(List<Property> expProperties) {
-		this.treatmentProperties=expProperties;
+
+	public void applyTreatmentValues(Map<String, Object> baseline, List<Property> expProperties) {
+		this.baseline = baseline;
+		this.treatmentProperties = expProperties;
 	}
 
 	public int id() {
@@ -263,7 +264,7 @@ public class Simulator implements Resettable {
 	@SuppressWarnings({ "unused" })
 	public synchronized void step() {
 		status = SimulatorStatus.Active;
-		log.info(()->"START Simulator " + id +" stepping time = " + lastTime);
+		log.info(() -> "START Simulator " + id + " stepping time = " + lastTime);
 		// 1 //
 		// find next time step by querying timeModels
 		long nexttime = Long.MAX_VALUE;
@@ -301,7 +302,7 @@ public class Simulator implements Resettable {
 			//
 			List<List<TwProcess>> currentProcesses = processCallingOrder.get(ctmask);
 			for (int j = 0; j < currentProcesses.size(); j++) {
-				
+
 				List<TwProcess> torun = currentProcesses.get(j);
 				// prepare data trackers for recording (important for space data trackers only)
 				for (DataTracker<?, Metadata> tracker : trackers.keySet())
@@ -311,13 +312,13 @@ public class Simulator implements Resettable {
 					p.execute(status, nexttime, step);
 				}
 				// 5 apply all changes to community (structure and state)
-				updateStateAndStructure(nexttime,step);
+				updateStateAndStructure(nexttime, step);
 				// tell all data trackers to flush data and to readapt to changes in community
 				for (DataTracker<?, Metadata> tracker : trackers.keySet()) {
 					tracker.closeRecord();
 					// resample community for data trackers who need it
 					if (tracker instanceof Sampler)
-						((Sampler<?>)tracker).updateSample();
+						((Sampler<?>) tracker).updateSample();
 				}
 			}
 			// 3b
@@ -332,29 +333,30 @@ public class Simulator implements Resettable {
 				i++;
 			}
 			// 6 advance age of ALL SystemComponents, including the not update ones.
-			if (ecosystem.community()!=null) // TODO improve this treatment
+			if (ecosystem.community() != null) // TODO improve this treatment
 				for (SystemComponent sc : ecosystem.community().allItems())
-					if (sc.autoVar()!=null)
+					if (sc.autoVar() != null)
 						if (sc.autoVar() instanceof ComponentData) {
 							ComponentData au = (ComponentData) sc.autoVar();
 							au.writeEnable();
 							au.age(nexttime - au.birthDate());
 							au.writeDisable();
-			}
+						}
 			for (DataTracker<?, Metadata> tracker : trackers.keySet()) {
 				// stop recording data in all data trackers
 				tracker.closeTimeRecord();
 			}
 		}
-		log.info(()->"END Simulator " + id +" stepping time = " + lastTime);
+		log.info(() -> "END Simulator " + id + " stepping time = " + lastTime);
 	} // step()
 
 	// helper method for step()
 	// resetting decorators and population counters to zero for next step
-	// only for those processes that were run just before (as indicated by the changed() method in
+	// only for those processes that were run just before (as indicated by the
+	// changed() method in
 	// ComponentContainer).
 	private void setDecoratorsToZero() {
-		if (ecosystem.community()!=null)
+		if (ecosystem.community() != null)
 			ecosystem.community().prepareStepAll();
 	}
 
@@ -364,11 +366,11 @@ public class Simulator implements Resettable {
 	private void updateStateAndStructure(long nexttime, long step) {
 		Collection<SystemComponent> newComp = ecosystem.effectChanges();
 		// apply changes to spaces
-		if (mainSpace!=null) {
+		if (mainSpace != null) {
 			for (DynamicSpace<SystemComponent> space : mainSpace.spaces()) {
 				space.effectChanges();
 				// handle components that left the space (oblivion edge effect)
-				for (SystemComponent sc:space.outOfSpaceItems()) {
+				for (SystemComponent sc : space.outOfSpaceItems()) {
 					ComponentContainer c = (ComponentContainer) sc.container();
 					c.removeItemNow(sc);
 					sc.detachFromContainer(); // important: cannot be done inside removeItemNow() --> crash
@@ -377,8 +379,8 @@ public class Simulator implements Resettable {
 			}
 		}
 		// set permanent relation for newly created (and located) systems
-		setPermanentRelations(newComp,nexttime,step);
-		for (RelationContainer rc:ecosystem.relations())
+		setPermanentRelations(newComp, nexttime, step);
+		for (RelationContainer rc : ecosystem.relations())
 			if (rc.isPermanent())
 				rc.effectChanges();
 	}
@@ -386,13 +388,13 @@ public class Simulator implements Resettable {
 	// helper method for step()
 	// establish permanent relations at creation of SystemComponents
 	private void setPermanentRelations(Collection<SystemComponent> comps, long time, long timeStep) {
-		for (List<List<TwProcess>> llp:processCallingOrder.values())
-			for (List<TwProcess> lp:llp)
-				for (TwProcess p:lp)
+		for (List<List<TwProcess>> llp : processCallingOrder.values())
+			for (List<TwProcess> lp : llp)
+				for (TwProcess p : lp)
 					if (p instanceof SearchProcess) {
 						SearchProcess proc = (SearchProcess) p;
 						if (proc.isPermanent())
-							proc.setPermanentRelations(comps,ecosystem.community(),time,timeStep);
+							proc.setPermanentRelations(comps, ecosystem.community(), time, timeStep);
 					}
 	}
 
@@ -401,21 +403,21 @@ public class Simulator implements Resettable {
 	@Override
 	public synchronized void preProcess() {
 		status = Initial;
-		log.info(()->"START Simulator " + id + " reset/pre");
+		log.info(() -> "START Simulator " + id + " reset/pre");
 		lastTime = startTime;
 		stoppingCondition.preProcess();
 		for (Timer t : timerList)
 			t.preProcess();
-		timetracker.openTimeRecord(status,startTime);
+		timetracker.openTimeRecord(status, startTime);
 		timetracker.closeTimeRecord(); // does nothing but for code consistency
 		// make spaces listen to changes in ecosystem
 		// NB: only containers which components have coordinates can be observed
-		if (mainSpace!=null)
-			for (ObserverDynamicSpace space:mainSpace.spaces()) {
+		if (mainSpace != null)
+			for (ObserverDynamicSpace space : mainSpace.spaces()) {
 				ecosystem.addObserver(space);
 				if (space.dataTracker() != null) {
 					space.dataTracker().setInitialTime();
-					space.dataTracker().openTimeRecord(status,startTime);
+					space.dataTracker().openTimeRecord(status, startTime);
 					space.dataTracker().openRecord();
 				}
 			}
@@ -424,31 +426,31 @@ public class Simulator implements Resettable {
 
 		// For now just the arena. Perhaps the relevant classes should implement
 		// Treatable applyTreatment(List<Property>)
-		if (treatmentProperties != null) {
-			ecosystem.arena().applyTreatment(treatmentProperties);
-		}
+
+		ecosystem.arena().applyTreatment(baseline, treatmentProperties);
+
 		// update spaces and send data for display
-		if (mainSpace!=null)
+		if (mainSpace != null)
 			for (ObserverDynamicSpace space : mainSpace.spaces()) {
 				space.effectChanges();
 				if (space.dataTracker() != null) {
 					space.dataTracker().closeRecord();
 					space.dataTracker().closeTimeRecord();
 				}
-		}
-		if (ecosystem.community()!=null)
-			setPermanentRelations(ecosystem.community().allItems(),0L,0L);
+			}
+		if (ecosystem.community() != null)
+			setPermanentRelations(ecosystem.community().allItems(), 0L, 0L);
 		// new community
 		// reset data tracker sample lists, ie replace initial items by runtime items
-		for (DataTracker<?, Metadata> tracker:trackers.keySet())
+		for (DataTracker<?, Metadata> tracker : trackers.keySet())
 			tracker.preProcess();
-		log.info(()->"END Simulator " + id + " reset/pre");
+		log.info(() -> "END Simulator " + id + " reset/pre");
 	}
 
 	@Override
 	public synchronized void postProcess() {
 		status = Final;
-		log.info(()->"START Simulator " + id + " reset/post");
+		log.info(() -> "START Simulator " + id + " reset/post");
 		lastTime = startTime;
 		stoppingCondition.postProcess();
 		for (Timer t : timerList)
@@ -456,18 +458,18 @@ public class Simulator implements Resettable {
 		// remove all items from containers
 		ecosystem.postProcess();
 		// remove all items from spaces and stop observing ecosystem
-		if (mainSpace!=null)
+		if (mainSpace != null)
 			for (ObserverDynamicSpace space : mainSpace.spaces()) {
 				space.postProcess();
 				ecosystem.removeObserver(space);
-		}
-		log.info(()->"END Simulator " + id + " reset/post");
+			}
+		log.info(() -> "END Simulator " + id + " reset/post");
 	}
 
 	// returns true if stopping condition is met
 	public boolean stop() {
 		boolean finished = false;
-		if (status==Active)
+		if (status == Active)
 			finished = stoppingCondition.stop();
 		if (finished)
 			status = Final;
@@ -489,4 +491,5 @@ public class Simulator implements Resettable {
 	public ComponentContainer community() {
 		return ecosystem.community();
 	}
+
 }
