@@ -208,6 +208,8 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	private void buildTreatmentList(ExperimentDesignType edt) {
 		// should only be called for sa or factorial
 		treatmentList.clear();
+		if (get(this.getChildren(),selectZeroOrOne(hasTheLabel(N_TREATMENT.label())))==null)
+			return;
 		Treatment treatment = (Treatment) get(this.getChildren(), selectOne(hasTheLabel(N_TREATMENT.label())));
 		List<ALDataEdge> treats = (List<ALDataEdge>) get(treatment.edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_TREATS.label())));
