@@ -57,7 +57,9 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -76,15 +78,21 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	private Deployable deployer = null;
 	/** class constant = number of simulators in this running session */
 	private static int N_SIMULATORS = 0;
+	private final List<List<Property>> treatmentList;
+	private final Map<String, Object> baseline;
 
 	// default constructor
 	public Experiment(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
+		baseline = new HashMap<>();
+		treatmentList = new ArrayList<>();
 	}
 
 	// constructor with no properties
 	public Experiment(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
+		baseline = new HashMap<>();
+		treatmentList = new ArrayList<>();
 	}
 
 	@Override
@@ -107,55 +115,52 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 							selectOne(hasTheLabel(N_DYNAMICS.label())));
 				}
 
-				int nReps = 1;
-				if (properties().hasProperty(P_EXP_NREPLICATES.key()))
-					nReps = (Integer) properties().getPropertyValue(P_EXP_NREPLICATES.key());
-				ExperimentDesignType expDesignType = null;
-				if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key()))
-					expDesignType = (ExperimentDesignType) dsgn.properties().getPropertyValue(P_DESIGN_TYPE.key());
+				int nReps = getNReps();
+
+				ExperimentDesignType expDesignType = getDesignType();
 				if (expDesignType != null)
 					switch (expDesignType) {
 					case singleRun: {
-
 						deployer = new ParallelDeployer();
 
-						for (int i = 0; i < nReps; i++)
-							deployer.attachSimulator(baselineSimulator.getInstance(N_SIMULATORS++));
+						for (int i = 0; i < nReps; i++) {
+							Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
+							sim.applyTreatmentValues(baseline,null);
+							deployer.attachSimulator(sim);
+						}
 						break;
 					}
 					case crossFactorial: {
 						// CAUTION: Limited protecting queries!
 						// 1) Only Fields that are constants associated with the arena
-
-						List<List<Property>> treatmentPropertyList = buildTreatmentList(expDesignType,
-								this);
+						//
+						buildTreatmentList(expDesignType);
 
 						deployer = new ParallelDeployer();
 
 						for (int r = 0; r < nReps; r++)
-							for (int t = 0; t < treatmentPropertyList.size(); t++) {
+							for (int t = 0; t < treatmentList.size(); t++) {
 								Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
-								sim.setExpProperties(treatmentPropertyList.get(t));
+								sim.applyTreatmentValues(baseline,getTreatmentList().get(t));
 								deployer.attachSimulator(sim);
 							}
 						break;
 					}
 					case sensitivityAnalysis: {
-						List<List<Property>> treatmentPropertyList = buildTreatmentList(expDesignType,
-								this);
+						buildTreatmentList(expDesignType);
 
 						deployer = new ParallelDeployer();
 
 						for (int r = 0; r < nReps; r++)
-							for (int t = 0; t < treatmentPropertyList.size(); t++) {
+							for (int t = 0; t < treatmentList.size(); t++) {
 								Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
-								sim.setExpProperties(treatmentPropertyList.get(t));
+								sim.applyTreatmentValues(baseline,getTreatmentList().get(t));
 								deployer.attachSimulator(sim);
 							}
 						break;
 
 					}
-						default: {
+					default: {
 						log.warning(() -> "undefined deployment type");
 					}
 					}
@@ -173,12 +178,39 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 	}
 
-// wrong name!
+	public int getNReps() {
+		int result = 1;
+		if (properties().hasProperty(P_EXP_NREPLICATES.key()))
+			result = (Integer) properties().getPropertyValue(P_EXP_NREPLICATES.key());
+		return result;
+	}
+
+	public List<List<Property>> getTreatmentList() {
+		if (treatmentList.isEmpty())
+			buildTreatmentList(getDesignType());
+		return treatmentList;
+	}
+
+	public Map<String, Object> getBaseline() {
+		return baseline;
+	}
+
+	public ExperimentDesignType getDesignType() {
+		Design dsgn = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
+		ExperimentDesignType result = null;
+		if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key()))
+			result = (ExperimentDesignType) dsgn.properties().getPropertyValue(P_DESIGN_TYPE.key());
+		return result;
+
+	}
+
 	@SuppressWarnings("unchecked")
-	public static List<List<Property>> buildTreatmentList(ExperimentDesignType edt,
-			Experiment experiment) {
+	private void buildTreatmentList(ExperimentDesignType edt) {
 		// should only be called for sa or factorial
-		Treatment treatment = (Treatment) get(experiment.getChildren(), selectOne(hasTheLabel(N_TREATMENT.label())));
+		treatmentList.clear();
+		if (get(this.getChildren(),selectZeroOrOne(hasTheLabel(N_TREATMENT.label())))==null)
+			return;
+		Treatment treatment = (Treatment) get(this.getChildren(), selectOne(hasTheLabel(N_TREATMENT.label())));
 		List<ALDataEdge> treats = (List<ALDataEdge>) get(treatment.edges(Direction.OUT),
 				selectOneOrMany(hasTheLabel(E_TREATS.label())));
 
@@ -211,21 +243,20 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 			int[] maxIndex = new int[settings.size()];
 			for (int i = 0; i < settings.size(); i++)
 				maxIndex[i] = settings.get(i).size() - 1;
-			List<List<Property>> result = new ArrayList<>();
-			buildTreatments(settings, indices, maxIndex, result);
-			return result;
+
+			buildTreatments(settings, indices, maxIndex, treatmentList);
+			break;
 		}
-		case sensitivityAnalysis:{
-			List<List<Property>> result = new ArrayList<>();			
-			for (List<Property> lst:settings) {
-				for (Property p: lst) {
+		case sensitivityAnalysis: {
+			treatmentList.clear();
+			for (List<Property> lst : settings) {
+				for (Property p : lst) {
 					List<Property> l = new ArrayList<>();
 					l.add(p);
-					result.add(l);
+					treatmentList.add(l);
 				}
 			}
-			return result;
-		
+			break;
 		}
 		// simpleCompare
 		default: {
@@ -235,21 +266,17 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 			// c: X
 			// The sim property sets are the columns
 			// The missing values are, by default, the baseline value
-			
-			List<List<Property>> result = new ArrayList<>();
-			
-			for (int i=0;i< settings.size();i++) {
-				List<Property> lst = new ArrayList<>();
-				result.add(lst);
-				
-				
-				for (Property p: lst) {
-					List<Property> l = new ArrayList<>();
-					l.add(p);
-					result.add(l);
-				}
-			}
-			return result;
+
+//			for (int i = 0; i < settings.size(); i++) {
+//				List<Property> lst = new ArrayList<>();
+//				treatmentList.add(lst);
+//
+//				for (Property p : lst) {
+//					List<Property> l = new ArrayList<>();
+//					l.add(p);
+//					treatmentList.add(l);
+//				}
+//			}
 		}
 		}
 	}

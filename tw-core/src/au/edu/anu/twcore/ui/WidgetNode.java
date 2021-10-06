@@ -49,6 +49,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Map;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
@@ -118,26 +119,13 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 					while (root.getParent() != null)
 						root = root.getParent();
 					Experiment exp = (Experiment) get(root.getChildren(), selectOne(hasTheLabel(N_EXPERIMENT.label())));
-					Design dsgn = (Design) get(exp.getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
-					if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key())) {
-						ExperimentDesignType edt = (ExperimentDesignType) dsgn.properties()
-								.getPropertyValue(P_DESIGN_TYPE.key());
-						if (edt.equals(ExperimentDesignType.crossFactorial)
-								|| edt.equals(ExperimentDesignType.sensitivityAnalysis)) {
-							List<List<Property>> lst = Experiment.buildTreatmentList(edt, exp);
-							ExtendablePropertyListImpl p = (ExtendablePropertyListImpl) properties().clone();
-							p.addProperty(P_DESIGN_TYPE.key(), edt);
-							p.addProperty("TreatmentList", lst);
-							p.addProperty(P_EXP_NREPLICATES.key(),exp.properties().getPropertyValue(P_EXP_NREPLICATES.key()));
-							widget.setProperties(id(), p);
-						} else
-							widget.setProperties(id(), properties());
-					}
-					// must clone the property list
-					// get the design; if its sa or fact then get the list and the number of reps
-					// Experiment.buildTreatmentList
-					// when the widget finishes, it should produce either a bar chart (sa) or an
-					// anova (factorial)
+					ExperimentDesignType edt = exp.getDesignType();
+					ExtendablePropertyListImpl p = (ExtendablePropertyListImpl) properties().clone();
+					p.addProperty(P_DESIGN_TYPE.key(), edt);
+					p.addProperty("TreatmentList", exp.getTreatmentList());
+					p.addProperty("Baseline", exp.getBaseline());
+					p.addProperty(P_EXP_NREPLICATES.key(), exp.properties().getPropertyValue(P_EXP_NREPLICATES.key()));
+					widget.setProperties(id(), p);
 				} else
 					widget.setProperties(id(), properties());
 				// time series tracker sending data to this widget
@@ -168,6 +156,7 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 				sim.addObserver((DataReceiver<TimeData, Metadata>) widget);
 			sealed = true;
 		}
+
 	}
 
 	@Override
