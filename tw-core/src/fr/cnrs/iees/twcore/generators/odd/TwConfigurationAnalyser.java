@@ -64,6 +64,7 @@ public class TwConfigurationAnalyser {
 		public TreeGraphDataNode node = null;
 		public ExecutionLevel level = null;
 		public LoopingMode looping = null;
+		public String applyTo = null;
 		@Override
 		public String toString() {
 			String s = "";
@@ -73,6 +74,8 @@ public class TwConfigurationAnalyser {
 				s+= ":"+level;
 			if (looping!=null)
 				s+= ":"+looping;
+			if (applyTo!=null)
+				s+= ":"+applyTo;
 			return s;
 		}
 	}
@@ -126,7 +129,7 @@ public class TwConfigurationAnalyser {
 			ifunc = (InitFunctionNode) get(arena.getChildren(),
 				selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 			if (ifunc!=null)
-				analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.unique,false);
+				analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.unique,arena.id(),false);
 			// other types with init functions - down the structure tree, if any
 			TreeGraphDataNode struc = (TreeGraphDataNode) get(arena,
 				children(),
@@ -139,7 +142,8 @@ public class TwConfigurationAnalyser {
 					ifunc = (InitFunctionNode) get(lct.getChildren(),
 						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 					if (ifunc!=null)
-						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,llct.size()==1);
+						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+							lct.id(),llct.size()==1);
 					// group types under life cycle types
 					Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(lct,
 						children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
@@ -147,7 +151,8 @@ public class TwConfigurationAnalyser {
 						ifunc = (InitFunctionNode) get(gt.getChildren(),
 							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 						if (ifunc!=null)
-							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lgt.size()==1);
+							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+								gt.id(),lgt.size()==1);
 						// component types under group types
 						Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
 							children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
@@ -155,7 +160,8 @@ public class TwConfigurationAnalyser {
 							ifunc = (InitFunctionNode) get(cpt.getChildren(),
 								selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 							if (ifunc!=null)
-								analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lcpt.size()==1);
+								analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+									cpt.id(),lcpt.size()==1);
 						}
 					}
 				}
@@ -166,7 +172,8 @@ public class TwConfigurationAnalyser {
 					ifunc = (InitFunctionNode) get(gt.getChildren(),
 						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 					if (ifunc!=null)
-						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lgt.size()==1);
+						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+							gt.id(),lgt.size()==1);
 					// component types under group types
 					Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
 						children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
@@ -174,7 +181,8 @@ public class TwConfigurationAnalyser {
 						ifunc = (InitFunctionNode) get(cpt.getChildren(),
 							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 						if (ifunc!=null)
-							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lcpt.size()==1);
+							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+								cpt.id(),lcpt.size()==1);
 					}
 				}
 				// component types under arena
@@ -184,7 +192,8 @@ public class TwConfigurationAnalyser {
 					ifunc = (InitFunctionNode) get(cpt.getChildren(),
 						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 					if (ifunc!=null)
-						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,lcpt.size()==1);
+						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+							cpt.id(),lcpt.size()==1);
 				}
 			}
 			
@@ -196,6 +205,7 @@ public class TwConfigurationAnalyser {
 				analyser.addNewStep(timer,
 					ExecutionLevel.timer,
 					LoopingMode.parallel,
+					null,
 					timers.size()==1);
 			// get all processes
 			SimulatorNode sim = (SimulatorNode) get(configRoot,
@@ -215,12 +225,14 @@ public class TwConfigurationAnalyser {
 					analyser.addNewStep(null, 
 						ExecutionLevel.dependencyRank, 
 						LoopingMode.sequential, 
+						null,
 						processCallingOrder.get(allTimers).size()==1);
 					// loop on all processes within a dependency rank
 					for (ProcessNode proc:lproc) {
 						analyser.addNewStep(proc, 
 							ExecutionLevel.process, 
 							LoopingMode.parallel, 
+							null,
 							lproc.size()==1);
 						// get all functions of a process, per function type in proper order
 						// component process
@@ -266,6 +278,7 @@ public class TwConfigurationAnalyser {
 							analyser.addNewStep(dt, 
 								ExecutionLevel.dataTracker, 
 								LoopingMode.parallel, 
+								null,
 								ldt.size()==1);
 					}
 				}
@@ -279,6 +292,7 @@ public class TwConfigurationAnalyser {
 	private void addNewStep(TreeGraphDataNode node, 
 			ExecutionLevel level, 
 			LoopingMode mode, 
+			String apply,
 			boolean unique) {
 		ExecutionStep step = new ExecutionStep();
 		step.node = node;
@@ -287,6 +301,7 @@ public class TwConfigurationAnalyser {
 			step.looping = LoopingMode.unique;
 		else
 			step.looping = mode;
+		step.applyTo = apply;
 		executionFlow.add(step);
 	}
 	
@@ -299,12 +314,14 @@ public class TwConfigurationAnalyser {
 				addNewStep(null, 
 					ExecutionLevel.functionType, 
 					LoopingMode.unique, 
+					null,
 					false);
 				// functions within a function type
 				for (FunctionNode func:lfunc) {
 					addNewStep(func, 
 						ExecutionLevel.function, 
 						LoopingMode.parallel,
+						null,
 						lfunc.size()==1);
 					// function consequences
 					Collection<FunctionNode> lcsq = (Collection<FunctionNode>) get(func,
@@ -313,7 +330,8 @@ public class TwConfigurationAnalyser {
 					for (FunctionNode csq:lcsq) {
 						addNewStep(csq, 
 							ExecutionLevel.consequence, 
-							LoopingMode.parallel, 
+							LoopingMode.parallel,
+							null,
 							lcsq.size()==1);
 					}
 				}

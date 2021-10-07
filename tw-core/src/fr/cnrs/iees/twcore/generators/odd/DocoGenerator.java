@@ -92,14 +92,11 @@ import static au.edu.anu.twcore.archetype.TwArchetypeConstants.*;
 import org.odftoolkit.simple.style.StyleTypeDefinitions;
 
 /**
+ * ODD generator
+ * 
  * @author Ian Davies
  *
  * @date 13 Jul 2020
- */
-
-/**
- * ODD generator
- * 
  */
 public class DocoGenerator {
 	/**

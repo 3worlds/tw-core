@@ -98,6 +98,7 @@ import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser;
 import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser.ExecutionLevel;
 import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser.ExecutionStep;
+import fr.cnrs.iees.twcore.generators.odd.UMLGenerator;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Distance;
 //import fr.cnrs.iees.uit.space.Distance;
@@ -286,6 +287,9 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 		// get the execution flowchart to generate methods in proper order
 		executionOrder = TwConfigurationAnalyser.getExecutionFlow(root3w);
+		// debugging
+		UMLGenerator uml = new UMLGenerator();
+		uml.activityDiagram(executionOrder);
 	}
 
 	private void generateClassComment(TreeGraphDataNode root3w) {
