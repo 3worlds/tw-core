@@ -49,9 +49,6 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
-import java.util.Map;
-
-import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
@@ -59,7 +56,6 @@ import au.edu.anu.twcore.data.runtime.SpaceData;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
-import au.edu.anu.twcore.experiment.Design;
 import au.edu.anu.twcore.experiment.Experiment;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import au.edu.anu.twcore.ui.runtime.StatusWidget;
