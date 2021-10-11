@@ -63,7 +63,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
- * An ancestor to nodes that produce factories that create SystemCOmponents with data in
+ * An ancestor to nodes that produce factories that create SystemComponents with data in
  *
  * @author J. Gignoux - 22 avr. 2020
  *

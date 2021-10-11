@@ -1,8 +1,21 @@
 package fr.cnrs.iees.twcore.generators.odd;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import au.edu.anu.twcore.ecosystem.ArenaType;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
+import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
 import static au.edu.anu.rscs.aot.util.StringUtils.*;
 
@@ -59,22 +72,62 @@ public class UMLGenerator {
 			System.out.println(s);
 	}
 	
+	
+	// get the category signature (without predefs) of an ElementType
+	private String getMeaningfulCategory(TreeGraphDataNode node) {		
+		Collection<Category> cats = Categorized.getSuperCategories(node);
+		SortedSet<Category> cset = new TreeSet<>();
+		cset.addAll(cats);
+		String result = "";
+		for (Category c:cset) {
+			switch (c.id()) {
+				case Category.assemblage:
+				case Category.atomic:
+				case Category.permanent:
+				case Category.ephemeral:
+				break;
+				default:
+					result = result+c.id()+Categorized.CATEGORY_SEPARATOR;
+				break;
+			}
+		}
+		result = result.substring(0,result.length()-1);
+		return result;
+	}
+
+	// NB we only enter here if the collection of items is of size 1
+	@SuppressWarnings("unchecked")
+	private String getElementId(TreeGraphDataNode eltype) {
+		Collection<TreeGraphDataNode> children = (Collection<TreeGraphDataNode>) eltype.getChildren();
+		String result = null;
+		for (TreeGraphDataNode theChild:children) {
+			if (eltype instanceof ArenaType)
+				result = eltype.id();
+			if ( ((eltype instanceof LifeCycleType)&&(theChild instanceof LifeCycle)) ||
+				((eltype instanceof GroupType)&&(theChild instanceof Group)) ||
+				((eltype instanceof ComponentType)&&(theChild instanceof Component)) )
+				result = theChild.id();
+		}
+		return result;
+	}
+	
 	private void writeInitBlock(String indent,List<TwConfigurationAnalyser.ExecutionStep> flow) {
 		// here, we ALWAYS have level=init
 		for (TwConfigurationAnalyser.ExecutionStep step:flow) {
 			switch (step.looping) {
 			case parallel:
-				umlText.add(indent+"while(for each **"+step.applyTo+"**)");
-				umlText.add(indent+indent+":"+step.applyTo+"."+uncap(step.node.id())+"();");
+				umlText.add(indent+"while(for each **"+getMeaningfulCategory(step.applyTo)+"**)");
+				umlText.add(indent+indent+":"+uncap(step.node.id())+"();");
 				umlText.add(indent+"endwhile");
 				break;
 			case sequential:
-				umlText.add(indent+"while(for each **"+step.applyTo+"**)");
-				umlText.add(indent+indent+":"+step.applyTo+"."+uncap(step.node.id())+"();");
+				umlText.add(indent+"while(for each **"+getMeaningfulCategory(step.applyTo)+"**)");
+				umlText.add(indent+indent+":"+uncap(step.node.id())+"();");
 				umlText.add(indent+"endwhile");
 				break;
 			case unique:
-				umlText.add(indent+":"+step.applyTo+"."+uncap(step.node.id())+"();");
+				String id = getElementId(step.applyTo);
+				umlText.add(indent+":"+id+"."+uncap(step.node.id())+"();");
 				break;
 			default:
 				break;

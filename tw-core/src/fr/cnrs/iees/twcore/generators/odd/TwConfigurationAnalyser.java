@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
@@ -64,18 +63,18 @@ public class TwConfigurationAnalyser {
 		public TreeGraphDataNode node = null;
 		public ExecutionLevel level = null;
 		public LoopingMode looping = null;
-		public String applyTo = null;
+		public TreeGraphDataNode applyTo = null;
 		@Override
 		public String toString() {
 			String s = "";
 			if (node!=null)
-				s += node.classId() + ":" +node.id();
+				s += node.classId() + "." +node.id();
 			if (level!=null)
 				s+= ":"+level;
 			if (looping!=null)
 				s+= ":"+looping;
 			if (applyTo!=null)
-				s+= ":"+applyTo;
+				s+= ":"+applyTo.classId() + "." +node.id();
 			return s;
 		}
 	}
@@ -129,7 +128,7 @@ public class TwConfigurationAnalyser {
 			ifunc = (InitFunctionNode) get(arena.getChildren(),
 				selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 			if (ifunc!=null)
-				analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.unique,arena.id(),false);
+				analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.unique,arena,false);
 			// other types with init functions - down the structure tree, if any
 			TreeGraphDataNode struc = (TreeGraphDataNode) get(arena,
 				children(),
@@ -143,7 +142,7 @@ public class TwConfigurationAnalyser {
 						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 					if (ifunc!=null)
 						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
-							lct.id(),llct.size()==1);
+							lct,llct.size()==1);
 					// group types under life cycle types
 					Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(lct,
 						children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
@@ -152,7 +151,7 @@ public class TwConfigurationAnalyser {
 							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 						if (ifunc!=null)
 							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
-								gt.id(),lgt.size()==1);
+								gt,lgt.size()==1);
 						// component types under group types
 						Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
 							children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
@@ -161,7 +160,7 @@ public class TwConfigurationAnalyser {
 								selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 							if (ifunc!=null)
 								analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
-									cpt.id(),lcpt.size()==1);
+									cpt,lcpt.size()==1);
 						}
 					}
 				}
@@ -173,7 +172,7 @@ public class TwConfigurationAnalyser {
 						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 					if (ifunc!=null)
 						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
-							gt.id(),lgt.size()==1);
+							gt,lgt.size()==1);
 					// component types under group types
 					Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
 						children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
@@ -182,7 +181,7 @@ public class TwConfigurationAnalyser {
 							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 						if (ifunc!=null)
 							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
-								cpt.id(),lcpt.size()==1);
+								cpt,lcpt.size()==1);
 					}
 				}
 				// component types under arena
@@ -193,7 +192,7 @@ public class TwConfigurationAnalyser {
 						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 					if (ifunc!=null)
 						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
-							cpt.id(),lcpt.size()==1);
+							cpt,lcpt.size()==1);
 				}
 			}
 			
@@ -292,7 +291,7 @@ public class TwConfigurationAnalyser {
 	private void addNewStep(TreeGraphDataNode node, 
 			ExecutionLevel level, 
 			LoopingMode mode, 
-			String apply,
+			TreeGraphDataNode apply,
 			boolean unique) {
 		ExecutionStep step = new ExecutionStep();
 		step.node = node;
