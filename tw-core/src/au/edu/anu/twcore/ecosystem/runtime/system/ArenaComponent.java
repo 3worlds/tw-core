@@ -31,7 +31,6 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 import java.util.List;
 import java.util.Map;
 
-import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import fr.cnrs.iees.graph.GraphFactory;

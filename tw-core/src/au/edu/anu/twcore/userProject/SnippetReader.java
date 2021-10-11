@@ -44,8 +44,10 @@ import fr.ens.biologie.codeGeneration.Comments;
  * @date 12 July 2021
  */
 public class SnippetReader {
-	private SnippetReader() {};
-	public static Map<String, List<String>> readSnippetsFromFile(File f){
+	private SnippetReader() {
+	};
+
+	public static Map<String, List<String>> readSnippetsFromFile(File f) {
 		boolean startMethod = false;
 		boolean startRead = false;
 		boolean importing = false;
@@ -59,6 +61,12 @@ public class SnippetReader {
 			for (String line : lines) {
 				// stop
 				if (line.contains(Comments.importInsertEnd)) {
+					if (!result.containsKey(key)) {
+						//must have a blank line otherwise clearing the imports does nothing
+						List<String> importLines = new ArrayList<>();
+						importLines.add("");
+						result.put(key, importLines);
+					}
 					importing = false;
 					key = null;
 				}
@@ -79,6 +87,12 @@ public class SnippetReader {
 				}
 
 				if (line.contains(Comments.codeInsertEnd)) {
+					if (!result.containsKey(key)) {
+						//must have a blank line otherwise clearing the method does nothing
+						List<String> importLines = new ArrayList<>();
+						importLines.add("");
+						result.put(key, importLines);
+					}
 					startMethod = false;
 					startRead = false;
 					key = null;
@@ -110,7 +124,7 @@ public class SnippetReader {
 					importing = true;
 				}
 			}
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,6 +132,5 @@ public class SnippetReader {
 
 		return result;
 	}
-	
 
 }
