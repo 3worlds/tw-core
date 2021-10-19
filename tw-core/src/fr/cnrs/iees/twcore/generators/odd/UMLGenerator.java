@@ -18,6 +18,7 @@ import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
 import static au.edu.anu.rscs.aot.util.StringUtils.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
  * Utility class to generate various UML diagrams from the analysis of the configuration graph.
@@ -136,7 +137,27 @@ public class UMLGenerator {
 	}
 	
 	private void writeSimulBlock(String indent,List<TwConfigurationAnalyser.ExecutionStep> flow) {
-		umlText.add(indent+":doSomething;");
+		List<TwConfigurationAnalyser.ExecutionStep> timers = new ArrayList<>();
+		List<TwConfigurationAnalyser.ExecutionStep> steps = new ArrayList<>();
+		for (TwConfigurationAnalyser.ExecutionStep step:flow) {
+			if (step.node!=null) {
+				if (step.node.classId().equals(N_TIMER.label()))
+					timers.add(step);
+				else 
+					steps.add(step);
+			}
+		}
+		if (timers.size()==1) {
+			TwConfigurationAnalyser.ExecutionStep step = timers.get(0);
+			// get the time unit from the timer timeline
+			umlText.add(indent+"while(//t// = "+ step.node.id()+".nextTime(...))");
+			umlText.add(indent+indent+":doSomething;");	
+			umlText.add(indent+"endwhile");
+		}
+		else {
+			umlText.add(indent+":doSomethingElse;");	
+		}
+
 	}
 
 }
