@@ -150,14 +150,26 @@ public class UMLGenerator {
 		if (timers.size()==1) {
 			TwConfigurationAnalyser.ExecutionStep step = timers.get(0);
 			// get the time unit from the timer timeline
-			umlText.add(indent+"while(//t// = "+ step.node.id()+".nextTime(...))");
-			umlText.add(indent+indent+":doSomething;");	
+			umlText.add(indent+"while(//t//<sub>i+1</sub> = "+ step.node.id()+".nextTime(//t//<sub>i</sub>))");			
+			writeProcessBlock(indent+indent,steps);
 			umlText.add(indent+"endwhile");
 		}
 		else {
-			umlText.add(indent+":doSomethingElse;");	
+			umlText.add(indent+"://t//<sub>i+1</sub> = +∞;");
+			umlText.add(indent+"while(for each **timer**)");
+			umlText.add(indent+indent+"://t//<sub>i+1</sub> = min(//t//<sub>i+1</sub>,**timer**.nextTime(//t//<sub>i</sub>));");
+			umlText.add(indent+"endwhile");
+			umlText.add(indent+"while(for each **timer**)");
+			umlText.add(indent+indent+":if (**timer**.nextTime(//t//<sub>i</sub>) == //t//<sub>i+1</sub>)\nactivate **timer**;");
+			umlText.add(indent+"endwhile");
+			umlText.add(indent+"while(for each //active// **timer**)");
+			writeProcessBlock(indent+indent,steps);
+			umlText.add(indent+"endwhile");
 		}
-
+	}
+	
+	private void writeProcessBlock(String indent,List<TwConfigurationAnalyser.ExecutionStep> procs) {
+		umlText.add(indent+":doSomething;");	
 	}
 
 }
