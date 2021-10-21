@@ -15,9 +15,15 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOneOrMany;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static au.edu.anu.rscs.aot.util.StringUtils.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_APPLIESTO;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
@@ -58,14 +64,14 @@ public class UMLGenerator {
 		}
 		umlText.add(umlBlockOpen);
 		umlText.add(flowChartStart);
-		umlText.add("repeat");
+//		umlText.add("repeat");
 		umlText.add(umlIndent+":initialisation;");
 		writeInitBlock(umlIndent,initflow);
 		umlText.add(umlIndent+":simulation;");
 		umlText.add(umlIndent+"repeat"); // time loop
 		writeSimulBlock(umlIndent+umlIndent,simflow);
 		umlText.add(umlIndent+"repeatwhile (stoppingCondition?)"); // end time loop. todo: extract the stopping cd?
-		umlText.add("repeatwhile (more runs?)");
+//		umlText.add("repeatwhile (more runs?)");
 		umlText.add(flowChartStop);
 		umlText.add(umlBlockClose);
 		// debug
@@ -140,12 +146,10 @@ public class UMLGenerator {
 		List<TwConfigurationAnalyser.ExecutionStep> timers = new ArrayList<>();
 		List<TwConfigurationAnalyser.ExecutionStep> steps = new ArrayList<>();
 		for (TwConfigurationAnalyser.ExecutionStep step:flow) {
-			if (step.node!=null) {
-				if (step.node.classId().equals(N_TIMER.label()))
-					timers.add(step);
-				else 
-					steps.add(step);
-			}
+			if (step.level==TwConfigurationAnalyser.ExecutionLevel.timer)
+				timers.add(step);
+			else 
+				steps.add(step);
 		}
 		if (timers.size()==1) {
 			TwConfigurationAnalyser.ExecutionStep step = timers.get(0);
@@ -160,7 +164,8 @@ public class UMLGenerator {
 			umlText.add(indent+indent+"://t//<sub>i+1</sub> = min(//t//<sub>i+1</sub>,**timer**.nextTime(//t//<sub>i</sub>));");
 			umlText.add(indent+"endwhile");
 			umlText.add(indent+"while(for each **timer**)");
-			umlText.add(indent+indent+":if (**timer**.nextTime(//t//<sub>i</sub>) == //t//<sub>i+1</sub>)\nactivate **timer**;");
+			umlText.add(indent+indent+":if (**timer**.nextTime(//t//<sub>i</sub>) == //t//<sub>i+1</sub>)\n"
+					   +indent+indent+"activate **timer**;");
 			umlText.add(indent+"endwhile");
 			umlText.add(indent+"while(for each //active// **timer**)");
 			writeProcessBlock(indent+indent,steps);
@@ -168,8 +173,96 @@ public class UMLGenerator {
 		}
 	}
 	
+	private void writeFunctionBlock(String indent,List<TwConfigurationAnalyser.ExecutionStep> funcs) {
+		umlText.add(indent+":some function;");
+	}
+	
+	// argument: a list of steps starting with a process
+	@SuppressWarnings("unchecked")
+	private void writeProcessLoop(String indent,List<TwConfigurationAnalyser.ExecutionStep> proc) {
+		List<TwConfigurationAnalyser.ExecutionStep> funcList = new ArrayList<>();
+		boolean arenaBlock = false;
+		for (TwConfigurationAnalyser.ExecutionStep step:proc) {
+			// this only occurs for the first item of this list
+			if (step.level==TwConfigurationAnalyser.ExecutionLevel.process) {
+				if (!funcList.isEmpty()) {
+					writeFunctionBlock(indent+indent,funcList);
+					funcList.clear();
+					if (!arenaBlock)
+						umlText.add(indent+"endwhile");
+				}
+				Collection<TreeGraphDataNode> apps = (Collection<TreeGraphDataNode>) get(step.node.edges(Direction.OUT),
+					selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
+					edgeListEndNodes());
+				String s = "";
+				for (TreeGraphDataNode tgdn:apps)
+					s += tgdn.id()+Categorized.CATEGORY_SEPARATOR;
+				if (!s.isEmpty())
+					s = s.substring(0,s.length()-1);
+				if (s.contains(Category.arena))
+					arenaBlock = true;
+				else {
+					umlText.add(indent+":"+proc.get(0).node.id()+";");
+					umlText.add(indent+"while (for each **"+s+"**)");
+				}
+			} else
+				funcList.add(step);
+		}
+		if (!funcList.isEmpty()) {
+			writeFunctionBlock(indent+indent,funcList);
+			if (!arenaBlock)
+				umlText.add(indent+"endwhile");
+		}
+	}
+	
 	private void writeProcessBlock(String indent,List<TwConfigurationAnalyser.ExecutionStep> procs) {
-		umlText.add(indent+":doSomething;");	
+		boolean depRankOpen = false;
+		int nproc = 0;
+		List<TwConfigurationAnalyser.ExecutionStep> procList = new ArrayList<>();
+		for (TwConfigurationAnalyser.ExecutionStep step:procs) {
+			if (step.level==TwConfigurationAnalyser.ExecutionLevel.dependencyRank) {
+				// this produces the process loop for the last process of the previous dependency rank
+				if (!procList.isEmpty()) {
+					writeProcessLoop(indent,procList);
+					procList.clear();
+				}
+				if (nproc>0)
+					umlText.add(indent+"split end");
+				nproc = 0;
+			}
+			else {
+				if (step.level==TwConfigurationAnalyser.ExecutionLevel.process) {
+					// this produces the process loop for the previous process
+					if (!procList.isEmpty()) {
+						writeProcessLoop(indent,procList);
+						procList.clear();
+						nproc++;
+					}
+					switch (step.looping) {
+					case parallel:
+						if (nproc==0) {
+							umlText.add(indent+"split");
+							depRankOpen = true;
+						}
+						else
+							umlText.add(indent+"split again");
+						break;
+					case sequential:
+					case unique:
+							depRankOpen = false;
+						break;
+					}
+				}
+				procList.add(step);
+			}
+		}
+		// this happens at the end of the procs list
+		if (!procList.isEmpty()) {
+			writeProcessLoop(indent,procList);
+//			procList.clear();
+		}
+		if (depRankOpen)
+			umlText.add(indent+"split end");
 	}
 
 }
