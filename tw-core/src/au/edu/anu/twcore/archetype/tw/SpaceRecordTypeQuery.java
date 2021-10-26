@@ -63,18 +63,20 @@ public class SpaceRecordTypeQuery extends QueryAdaptor {
 
 		if (!fields.isEmpty()) {
 			TreeGraphNode rec = (TreeGraphNode) fields.get(0).getParent();
-			List<Edge> ln = (List<Edge>) get(rec.edges(Direction.IN),
-					selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()), hasTheLabel(E_CONSTANTS.label()))));
-			if (ln.isEmpty()) {
-				String fieldNames = "";
-				for (TreeGraphNode n:fields)
-					fieldNames+=","+n.toShortString();
-				fieldNames = fieldNames.replaceFirst("'", "");
-				String[] msgs = TextTranslations.getSpaceRecordTypeQuery(fieldNames);
-				actionMsg = msgs[0];
-				errorMsg = msgs[1];
-//				actionMsg = "Set coordinate field(s) to belong to a record that is used as either a driver or contant.";
-//				errorMsg = "coordinate fields ["+fieldNames+"] must belong to a record used as drivers or constants but found none.";
+			// parent (rec) may be null during editing. If so, other queries must be
+			// addressed first by the user i.e. multiple roots.
+			if (rec != null) {
+				List<Edge> ln = (List<Edge>) get(rec.edges(Direction.IN),
+						selectZeroOrMany(orQuery(hasTheLabel(E_DRIVERS.label()), hasTheLabel(E_CONSTANTS.label()))));
+				if (ln.isEmpty()) {
+					String fieldNames = "";
+					for (TreeGraphNode n : fields)
+						fieldNames += "," + n.toShortString();
+					fieldNames = fieldNames.replaceFirst("'", "");
+					String[] msgs = TextTranslations.getSpaceRecordTypeQuery(fieldNames);
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+				}
 			}
 		}
 		return this;
