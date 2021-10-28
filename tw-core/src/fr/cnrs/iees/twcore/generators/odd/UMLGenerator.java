@@ -3,6 +3,7 @@ package fr.cnrs.iees.twcore.generators.odd;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -20,13 +21,10 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOneOrMany;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static au.edu.anu.rscs.aot.util.StringUtils.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_APPLIESTO;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
@@ -51,7 +49,18 @@ public class UMLGenerator {
 	public UMLGenerator() {
 		super();
 	}
+	
+	public List<String> umlText() {
+		return umlText;
+	}
 
+	public String umlString() {
+		StringBuilder sb = new StringBuilder();
+		for (String s:umlText)
+			sb.append(s).append('\n');
+		return sb.toString();
+	}
+	
 	/**
 	 * Generate an activity (=flow) diagram.
 	 * 
@@ -83,7 +92,6 @@ public class UMLGenerator {
 		for (String s:umlText)
 			System.out.println(s);
 	}
-	
 	
 	// get the category signature (without predefs) of an ElementType
 	private String getMeaningfulCategory(TreeGraphDataNode node) {		
@@ -183,24 +191,25 @@ public class UMLGenerator {
 	
 	// NB function types are sequential by default
 	// data trackers follow functions
-	// nb use an iterator rather than a foreach loop.
-	private void writeFunctionBlock(String indent,
-			List<TwConfigurationAnalyser.ExecutionStep> funcs,
+	// nb use an iterator rather than a foreach loop.	
+	@SuppressWarnings("unchecked")
+	private void writeFunctionBlock(String indent,List<TwConfigurationAnalyser.ExecutionStep> funcs,
 			String arenaName) {
-//		umlText.add(indent+":some function;");
-		List<TwConfigurationAnalyser.ExecutionStep> funcList = new ArrayList<>();
-		int nfunc = 0;
-		TwConfigurationAnalyser.ExecutionLevel lastLevel = null;
-		for (TwConfigurationAnalyser.ExecutionStep step:funcs) {
+		ListIterator<TwConfigurationAnalyser.ExecutionStep> looper = funcs.listIterator();
+		while (looper.hasNext()) {
+			TwConfigurationAnalyser.ExecutionStep step = looper.next();
 			if (step.level==TwConfigurationAnalyser.ExecutionLevel.functionType) {
 			}
 			else {
 				if (step.level==TwConfigurationAnalyser.ExecutionLevel.function) {
 					switch ((TwFunctionTypes)step.node.properties().getPropertyValue(P_FUNCTIONTYPE.key())) {
 					case ChangeCategoryDecision:
-						umlText.add(indent+"if ("+arenaName+step.node.id()+"(...)?) then (yes)");
-						// consequence
+						umlText.add(indent+"if ("+arenaName+uncap(step.node.id())+"(...)?) then (yes)");
 						umlText.add(indent+":change to next category in life cycle;");
+						if (looper.hasNext())
+							step = looper.next();
+						if (step.level==TwConfigurationAnalyser.ExecutionLevel.consequence)
+							umlText.add(indent+indent+":newComponent."+uncap(step.node.id())+"(oldComponent,...);");
 						umlText.add(indent+"else (no)");
 						umlText.add(indent+"endif");
 						break;
@@ -209,23 +218,34 @@ public class UMLGenerator {
 					case ChangeState:
 					case SetInitialState:
 					case SetOtherInitialState:
-						umlText.add(indent+":"+arenaName+step.node.id()+"(...);");
+						umlText.add(indent+":"+arenaName+uncap(step.node.id())+"(...);");
 						break;
 						
 					case CreateOtherDecision:
+						umlText.add(indent+"while(for i=0 to "+arenaName+uncap(step.node.id())+"(...))");
+						umlText.add(indent+indent+":create newBorn;"); // get category of newBorn?
+						if (looper.hasNext())
+							step = looper.next();
+						if (step.level==TwConfigurationAnalyser.ExecutionLevel.consequence)
+							umlText.add(indent+indent+":newBorn."+uncap(step.node.id())+"(parent,...);");
+						umlText.add(indent+"endwhile");
 						break;
 					
 					case DeleteDecision:
-						umlText.add(indent+"if ("+arenaName+step.node.id()+"(...)?) then (yes)");
-						// consequence
+						
+						umlText.add(indent+"if ("+arenaName+uncap(step.node.id())+"(...)?) then (yes)");
 						umlText.add(indent+":delete self;");
+						if (looper.hasNext())
+							step = looper.next();
+						if (step.level==TwConfigurationAnalyser.ExecutionLevel.consequence)
+							umlText.add(indent+indent+":component."+uncap(step.node.id())+"(other,...);");
 						umlText.add(indent+"else (no)");
 						umlText.add(indent+"endif");
 						break;
 					
 					case MaintainRelationDecision:
-						umlText.add(indent+"if ("+arenaName+step.node.id()+"(...)?) then (yes)");
-						// consequence
+						umlText.add(indent+"if ("+arenaName+uncap(step.node.id())+"(...)?) then (yes)");
+						// consequence?
 						umlText.add(indent+":keep relation;");
 						umlText.add(indent+"else (no)");
 						umlText.add(indent+":delete relation;");
@@ -233,26 +253,46 @@ public class UMLGenerator {
 						break;
 					
 					case RelateToDecision:
-						umlText.add(indent+"if ("+arenaName+step.node.id()+"(...)?) then (yes)");
-						// consequence
+						umlText.add(indent+"if ("+arenaName+uncap(step.node.id())+"(...)?) then (yes)");
+						// consequence?
 						umlText.add(indent+":establish relation;");
 						umlText.add(indent+"else (no)");
 						umlText.add(indent+"endif");
 						break;
 					default:
 						break;
-					
 					}
-					
-					
 				}
-				else if (step.level==TwConfigurationAnalyser.ExecutionLevel.dataTracker) {
-					// todo : better 
-					umlText.add(indent+":track **"+step.node.id()+"**;");
+				if (step.level==TwConfigurationAnalyser.ExecutionLevel.dataTracker) {
+					String s = ":output ";
+					List<TreeGraphDataNode> fields = (List<TreeGraphDataNode>) get(step.node.edges(Direction.OUT),
+						selectZeroOrMany(orQuery(hasTheLabel(E_TRACKFIELD.label()),hasTheLabel(E_TRACKTABLE.label()))),
+						edgeListEndNodes());
+					List<TreeGraphDataNode> widgets = (List<TreeGraphDataNode>) get(step.node.edges(Direction.IN),
+							selectZeroOrMany(hasTheLabel(E_TRACKSERIES.label())),
+							edgeListStartNodes());
+					if (fields.size()==0)
+						s += "data";
+					else {
+						for (TreeGraphDataNode f:fields)
+							s += "**"+f.id()+"**"+",";
+						s = s.substring(0,s.length()-1);
+					}
+					if ((fields.size()>1)||(widgets.size()>1)) 
+						s += indent+"\nto "; // to avoid too long lines
+					else
+						s += " to ";
+					if (widgets.size()==0)
+						s += "no one at the moment!";
+					else {
+						for (TreeGraphDataNode w:widgets)
+							s += "**"+w.id()+"**"+",";
+						s = s.substring(0,s.length()-1);
+					}
+					s += ";";
+					umlText.add(indent+s);
 				}
-
 			}
-			lastLevel = step.level;
 		}
 	}
 	

@@ -40,6 +40,7 @@
 		<dependency org="org.apache.odftoolkit" name="simple-odf" rev="0.8.2-incubating"/>
 		<dependency org="com.hp.hpl.jena" name="jena" rev="2.6.4"/>
 		<dependency org="org.apache.commons" name="commons-math3" rev="[3.6.1,)"/>
+		<dependency org="net.sourceforge.plantuml" name="plantuml" rev="[1.2021.12,)"/>
 	</dependencies>
 
 </ivy-module>
