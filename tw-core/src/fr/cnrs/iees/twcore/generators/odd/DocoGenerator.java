@@ -39,6 +39,7 @@ import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -58,6 +59,8 @@ import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.table.TableTemplate;
 import org.odftoolkit.simple.text.Paragraph;
+
+import com.google.common.io.Files;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
@@ -688,17 +691,23 @@ public class DocoGenerator {
 
 		doc.addParagraph("Process overview and scheduling").applyHeading(true, level);
 
-		// useless
-//		Paragraph paragraph = doc.addParagraph("");
-//		Textbox box = paragraph.addTextbox(new FrameRectangle(1, 1, 1, 2, SupportedLinearMeasure.CM));
-//		box.setTextContent("this is a text box");
-
-		Paragraph para1 = doc.addParagraph(getFlowChart());
-		Font font = para1.getFont();
-		font.setFamilyName("Liberation Mono");
-		font.setSize(10);
-		para1.setFont(font);
-
+		byte[] svg = DiagramGenerator.flowChart(cfg.root()).getBytes();
+		// save to file
+		File file = new File("tmp");
+		try {
+			Files.write(svg,file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		doc.newImage(file.toURI());
+//		Paragraph para1 = doc.addParagraph(getFlowChart());
+//		Font font = para1.getFont();
+//		font.setFamilyName("Liberation Mono");
+//		font.setSize(10);
+//		para1.setFont(font);
+//
 		doc.addParagraph("Figure " + (++figureNumber) + ". Flow chart");
 		doc.addParagraph("");
 
