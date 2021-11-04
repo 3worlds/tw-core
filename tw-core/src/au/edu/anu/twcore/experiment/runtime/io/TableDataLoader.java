@@ -95,13 +95,13 @@ public abstract class TableDataLoader
 	protected InputStream input = null;
 
 	public TableDataLoader (String idsp,String idst,String idsc,String idsr,String idmd,
-			int[] dimCols, Set<String> columnsToRead,InputStream input) {
+			int[] dimCols, Set<String> columnsToRead,InputStream input,Object...extraPars) {
 		// if a list of variable names is given, then only these ones will be read
 		this.columnsToRead = columnsToRead;
 		this.dimCols = dimCols;
 		this.input = input;
 		// now read the file (in descendants)
-		rawData = loadFromFile();
+		rawData = loadFromFile(extraPars);
 		if (rawData==null)
 			log.severe("No data could be read from resource "+input);
 		else {
@@ -128,7 +128,7 @@ public abstract class TableDataLoader
 		}
 	}
 	
-	protected abstract String[/*line*/][/*column*/] loadFromFile();
+	protected abstract String[/*line*/][/*column*/] loadFromFile(Object...pars);
 	
 	private String uniqueId(String[] dataLine) {
 		String id="";

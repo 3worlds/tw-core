@@ -48,6 +48,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.Factory;
 import fr.ens.biologie.generic.Singleton;
 
@@ -129,6 +130,13 @@ public abstract class ElementFactory<T extends DataElement>
 		this.isPermanent = permanent;
 	}
 
+	// local
+	
+	public SimplePropertyList propertyTemplate() {
+		return new SystemComponentPropertyListImpl(autoVarTemplate,
+			driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);
+	}
+	
 	// Singleton
 
 	@Override

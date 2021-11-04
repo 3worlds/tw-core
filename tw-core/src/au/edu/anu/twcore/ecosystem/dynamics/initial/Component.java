@@ -52,6 +52,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.experiment.DataSource;
+import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
 import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -85,6 +87,8 @@ public class Component
 	// containers matching category signatures
 	private int nComponentTypes = 0;
 	private int nInstances = 1;
+	// in case data is read from file
+	private List<MultipleDataLoader<SimplePropertyList>> loaders = new ArrayList<>();
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -96,10 +100,18 @@ public class Component
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
 		sealed = false;
+		// bring back read from files
+		List<DataSource> sources = (List<DataSource>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
+			edgeListEndNodes());
+		for (DataSource source:sources)
+			loaders.add(source.getInstance());
+		//
 		if (properties().hasProperty(P_COMPONENT_NINST.key()))
 			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
 		if (nInstances==0)
@@ -162,6 +174,11 @@ public class Component
 		if (!individuals.containsKey(id)) {
 			// the factory for components of this category
 			ComponentFactory factory = componentType.getInstance(id);
+			// read any information from file
+			for (MultipleDataLoader<SimplePropertyList> loader:loaders) {
+				Map<String, SimplePropertyList> loaded = new HashMap<>();
+				loader.load(loaded,factory.propertyTemplate());
+			}
 			List<SystemComponent> result = new ArrayList<>(nInstances);
 			// for as many instances as requested:
 			for (int i=0; i<nInstances; i++) {

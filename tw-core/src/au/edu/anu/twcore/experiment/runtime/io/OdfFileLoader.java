@@ -48,12 +48,12 @@ public class OdfFileLoader extends TableDataLoader {
 
 	public OdfFileLoader(String idsp, String idst, String idsc, String idsr, String idmd, int[] dimCols,
 			Set<String> columnsToRead, InputStream input, String sheet) {
-		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead, input);
-		this.sheet = sheet;
+		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead, input,sheet);		
 	}
 
 	@Override
-	protected String[][] loadFromFile() {
+	protected String[][] loadFromFile(Object...pars) {
+		this.sheet = (String) pars[0];
 		String[][] rawData = null;
 		try {
 			SpreadsheetDocument odf = SpreadsheetDocument.loadDocument(input);
