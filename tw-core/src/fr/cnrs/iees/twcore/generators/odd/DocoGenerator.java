@@ -700,7 +700,7 @@ public class DocoGenerator {
 
 		byte[] svg = DiagramGenerator.flowChart(cfg.root()).getBytes();
 		// save to file
-		File file = new File("tmp");
+		File file = new File("tmp.svg");
 		try {
 			Files.write(svg, file);
 		} catch (IOException e) {
