@@ -39,6 +39,8 @@ import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -52,6 +54,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
 
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
@@ -115,6 +120,8 @@ public class DocoGenerator {
 	private static int baseCT = 1; // the system
 	private static int baseRT = 2; // pre-def
 	private static int baseGT = 0;// just in case
+	// size of minimal config jar without .java files and manifest
+	private static long baseComplexity = 0;// TODO
 
 	private int nNodes;
 	private int nEdges;
@@ -695,12 +702,12 @@ public class DocoGenerator {
 		// save to file
 		File file = new File("tmp");
 		try {
-			Files.write(svg,file);
+			Files.write(svg, file);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		doc.newImage(file.toURI());
 //		Paragraph para1 = doc.addParagraph(getFlowChart());
 //		Font font = para1.getFont();
@@ -1016,8 +1023,9 @@ public class DocoGenerator {
 		doc.addParagraph(title).applyHeading(true, level);
 		List<String> entries = getMetricsDetails();
 		doc.addParagraph("Table " + (++tableNumber) + ". Configuration graph metrics");
-		writeTable(doc, entries, "Metric", "Value*");
-		doc.addParagraph("*obtained after subtracting the values of a minimal configuration.");
+		writeTable(doc, entries, "Metric", "Value");
+		doc.addParagraph(
+				"Values are calculated after subtracting the values of a minimal configuration.\nIf the descriptor is a table, the count is increased by the table size.");
 	}
 
 	private void writeGraphImages(TextDocument doc, String title, int level) {
@@ -1863,15 +1871,42 @@ public class DocoGenerator {
 		int lineCount = 0;
 		for (Map.Entry<String, List<String>> snp : snippetMap.entrySet()) {
 			for (String line : snp.getValue()) {
-				
+
 				if (!line.trim().startsWith("//") && !line.isBlank()) {
 					lineCount++;
 				}
-			}		
+			}
 		}
 		entries.add(new StringBuilder().append("11 #Lines of code").append(sep).append(lineCount).toString());
+		entries.add(new StringBuilder().append("12 #Complexity").append(sep).append(getComplexity()).toString());
 
 		return entries;
+	}
+
+	private long getComplexity() {
+		long result = 0;
+		File projectJarFile = Project.makeFile(cfg.root().id() + ".jar");
+		try {
+			JarInputStream projectJar = new JarInputStream(new FileInputStream(projectJarFile));
+			JarEntry inEntry;
+			while ((inEntry = projectJar.getNextJarEntry()) != null) {
+				String name = inEntry.getName();
+				if (name.endsWith(".class")) {
+					System.out.println(name+"\t cz:"+inEntry.getCompressedSize());
+					System.out.println(name+"\t c :"+inEntry.getSize());
+					result += inEntry.getSize();
+				}
+			}
+			projectJar.close();
+			return result;
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result;
+
 	}
 
 	// ------------------------------------- helpers
