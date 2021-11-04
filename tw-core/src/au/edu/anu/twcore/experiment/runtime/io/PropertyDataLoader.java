@@ -119,94 +119,96 @@ public class PropertyDataLoader implements DataLoader<SimplePropertyList> {
 						header = s[0];
 						headers[col] = s[1];
 					}
-					Class<?> dataType = data.getPropertyClass(header);
-					if (dataType == null)
-						throw new TwcoreException("No datatype found in " + data.getClass().getName()
-								+ " for column header " + header + ".");
-
-					// Primitives
-					if (dataType.isPrimitive()) {
-						if (dataType.equals(int.class))
-							data.setProperty(header, Integer.valueOf(input[row][col]));
-						else if (dataType.equals(long.class))
-							data.setProperty(header, Long.valueOf(input[row][col]));
-						else if (dataType.equals(float.class))
-							data.setProperty(header, Float.valueOf(input[row][col]));
-						else if (dataType.equals(double.class))
-							data.setProperty(header, Double.valueOf(input[row][col]));
-						else if (dataType.equals(boolean.class))
-							data.setProperty(header, Boolean.valueOf(input[row][col]));
-						else if (dataType.equals(short.class))
-							data.setProperty(header, Short.valueOf(input[row][col]));
-						else if (dataType.equals(byte.class))
-							data.setProperty(header, Byte.valueOf(input[row][col]));
-						else if (dataType.equals(char.class))
-							data.setProperty(header, input[row][col].charAt(0));
-						// String
-					} else if (dataType.equals(String.class))
-						data.setProperty(header, input[row][col]);
-					// Tables
-					else if (Table.class.isAssignableFrom(dataType)) {
-						int[] indexes = new int[dimCols.length];
-						for (int j = 0; j < indexes.length; j++) {
-							indexes[j] = Integer.valueOf(input[row][dimCols[j]]);
-						}
-						if (dataType.equals(DoubleTable.class))
-							((DoubleTable) data.getPropertyValue(header))
-								.setByInt(Double.valueOf(input[row][col]),indexes);
-						else if (dataType.equals(IntTable.class))
-							((IntTable) data.getPropertyValue(header))
-								.setByInt(Integer.valueOf(input[row][col]),indexes);
-						else if (dataType.equals(StringTable.class))
-							((StringTable) data.getPropertyValue(header))
-								.setByInt((input[row][col]), indexes);
-						else if (dataType.equals(LongTable.class))
-							((LongTable) data.getPropertyValue(header))
-								.setByInt(Long.valueOf(input[row][col]),indexes);
-						else if (dataType.equals(BooleanTable.class))
-							((BooleanTable) data.getPropertyValue(header))
-								.setByInt(Boolean.valueOf(input[row][col]),indexes);
-						else if (dataType.equals(FloatTable.class))
-							((FloatTable) data.getPropertyValue(header))
-								.setByInt(Float.valueOf(input[row][col]),indexes);
-						else if (dataType.equals(ShortTable.class))
-							((ShortTable) data.getPropertyValue(header))
-								.setByInt(Short.valueOf(input[row][col]),indexes);
-						else if (dataType.equals(ByteTable.class))
-							((ByteTable) data.getPropertyValue(header))
-								.setByInt(Byte.valueOf(input[row][col]),indexes);
-						else if (dataType.equals(CharTable.class))
-							((CharTable) data.getPropertyValue(header))
-								.setByInt(((String) (input[row][col])).charAt(0),indexes);
-						else if (dataType.equals(ObjectTable.class)) {
-							// TODO: load nested objects !!
-							throw new TwcoreException("loading of ObjectTable<T> not yet implemented");
-						}
-					} else {
-						// Primitive wrappers 
-						Object obj = input[row][col];
-						if (dataType.isAssignableFrom(obj.getClass()))
+					if (data.hasProperty(header)) { 
+						Class<?> dataType = data.getPropertyClass(header);
+						if (dataType == null)
+							throw new TwcoreException("No datatype found in " + data.getClass().getName()
+									+ " for column header " + header + ".");
+	
+						// Primitives
+						if (dataType.isPrimitive()) {
+							if (dataType.equals(int.class))
+								data.setProperty(header, Integer.valueOf(input[row][col]));
+							else if (dataType.equals(long.class))
+								data.setProperty(header, Long.valueOf(input[row][col]));
+							else if (dataType.equals(float.class))
+								data.setProperty(header, Float.valueOf(input[row][col]));
+							else if (dataType.equals(double.class))
+								data.setProperty(header, Double.valueOf(input[row][col]));
+							else if (dataType.equals(boolean.class))
+								data.setProperty(header, Boolean.valueOf(input[row][col]));
+							else if (dataType.equals(short.class))
+								data.setProperty(header, Short.valueOf(input[row][col]));
+							else if (dataType.equals(byte.class))
+								data.setProperty(header, Byte.valueOf(input[row][col]));
+							else if (dataType.equals(char.class))
+								data.setProperty(header, input[row][col].charAt(0));
+							// String
+						} else if (dataType.equals(String.class))
 							data.setProperty(header, input[row][col]);
-						else if (obj.getClass().equals(String.class)) {
-							String v = (String) obj;
-							if (dataType.equals(Double.class))
-								data.setProperty(header, Double.parseDouble(v));
-							else if (dataType.equals(Integer.class))
-								data.setProperty(header, Integer.parseInt(v));
-							else if (dataType.equals(Byte.class))
-								data.setProperty(header, Byte.parseByte(v));
-							else if (dataType.equals(Short.class))
-								data.setProperty(header, Short.parseShort(v));
-							else if (dataType.equals(Long.class))
-								data.setProperty(header, Long.parseLong(v));
-							else if (dataType.equals(Float.class))
-								data.setProperty(header, Float.parseFloat(v));
-							else if (dataType.equals(Boolean.class))
-								data.setProperty(header, Boolean.parseBoolean(v));
-							else if (dataType.equals(Character.class))
-								data.setProperty(header, v);// crash?
+						// Tables
+						else if (Table.class.isAssignableFrom(dataType)) {
+							int[] indexes = new int[dimCols.length];
+							for (int j = 0; j < indexes.length; j++) {
+								indexes[j] = Integer.valueOf(input[row][dimCols[j]]);
+							}
+							if (dataType.equals(DoubleTable.class))
+								((DoubleTable) data.getPropertyValue(header))
+									.setByInt(Double.valueOf(input[row][col]),indexes);
+							else if (dataType.equals(IntTable.class))
+								((IntTable) data.getPropertyValue(header))
+									.setByInt(Integer.valueOf(input[row][col]),indexes);
+							else if (dataType.equals(StringTable.class))
+								((StringTable) data.getPropertyValue(header))
+									.setByInt((input[row][col]), indexes);
+							else if (dataType.equals(LongTable.class))
+								((LongTable) data.getPropertyValue(header))
+									.setByInt(Long.valueOf(input[row][col]),indexes);
+							else if (dataType.equals(BooleanTable.class))
+								((BooleanTable) data.getPropertyValue(header))
+									.setByInt(Boolean.valueOf(input[row][col]),indexes);
+							else if (dataType.equals(FloatTable.class))
+								((FloatTable) data.getPropertyValue(header))
+									.setByInt(Float.valueOf(input[row][col]),indexes);
+							else if (dataType.equals(ShortTable.class))
+								((ShortTable) data.getPropertyValue(header))
+									.setByInt(Short.valueOf(input[row][col]),indexes);
+							else if (dataType.equals(ByteTable.class))
+								((ByteTable) data.getPropertyValue(header))
+									.setByInt(Byte.valueOf(input[row][col]),indexes);
+							else if (dataType.equals(CharTable.class))
+								((CharTable) data.getPropertyValue(header))
+									.setByInt(((String) (input[row][col])).charAt(0),indexes);
+							else if (dataType.equals(ObjectTable.class)) {
+								// TODO: load nested objects !!
+								throw new TwcoreException("loading of ObjectTable<T> not yet implemented");
+							}
+						} else {
+							// Primitive wrappers 
+							Object obj = input[row][col];
+							if (dataType.isAssignableFrom(obj.getClass()))
+								data.setProperty(header, input[row][col]);
+							else if (obj.getClass().equals(String.class)) {
+								String v = (String) obj;
+								if (dataType.equals(Double.class))
+									data.setProperty(header, Double.parseDouble(v));
+								else if (dataType.equals(Integer.class))
+									data.setProperty(header, Integer.parseInt(v));
+								else if (dataType.equals(Byte.class))
+									data.setProperty(header, Byte.parseByte(v));
+								else if (dataType.equals(Short.class))
+									data.setProperty(header, Short.parseShort(v));
+								else if (dataType.equals(Long.class))
+									data.setProperty(header, Long.parseLong(v));
+								else if (dataType.equals(Float.class))
+									data.setProperty(header, Float.parseFloat(v));
+								else if (dataType.equals(Boolean.class))
+									data.setProperty(header, Boolean.parseBoolean(v));
+								else if (dataType.equals(Character.class))
+									data.setProperty(header, v);// crash?
+							}
 						}
-					}
+					} // property exists in list - otherwise, just gently read nothing
 				} // col
 		} // row
 		return data;

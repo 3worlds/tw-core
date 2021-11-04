@@ -42,7 +42,7 @@ public class DiagramGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// The XML is stored into svg
+		// The UML is stored into svg
 		final String svg = new String(os.toByteArray(),Charset.forName("UTF-8"));
 		return svg;
 	}

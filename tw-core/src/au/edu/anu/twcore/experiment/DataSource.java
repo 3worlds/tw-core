@@ -107,29 +107,31 @@ public class DataSource
      		log.info("Data source "+id()+" initialised");
     	}
     	String loaderclass = (String) properties().getPropertyValue(P_DATASOURCE_SUBCLASS.key());
-		String idsp = (String) properties().getPropertyValue("idSpecies");
-		String idst = (String) properties().getPropertyValue("idStage");
-		String idsc = (String) properties().getPropertyValue("idComponent");
-		String idsr = (String) properties().getPropertyValue("idRelation");
-		String idmd = (String) properties().getPropertyValue("idVariable");
-		IntTable dimlist = (IntTable) properties().getPropertyValue("dim");
+		String idsp = (String) properties().getPropertyValue(P_DATASOURCE_IDLC.key());
+		String idst = (String) properties().getPropertyValue(P_DATASOURCE_IDGROUP.key());
+		String idsc = (String) properties().getPropertyValue(P_DATASOURCE_IDCOMPONENT.key());
+		String idsr = (String) properties().getPropertyValue(P_DATASOURCE_IDRELATION.key());
+		String idmd = (String) properties().getPropertyValue(P_DATASOURCE_IDVAR.key());
+		IntTable dimlist = (IntTable) properties().getPropertyValue(P_DATASOURCE_DIM.key());
 		int[] idDims = null;
 		if (dimlist!=null) {
 			idDims = new int[dimlist.size()];
 			for (int i=0; i<dimlist.size(); i++)
 				idDims[i] = dimlist.getWithFlatIndex(i);
 		}
-		StringTable readList = (StringTable) properties().getPropertyValue("read");
+		StringTable readList = (StringTable) properties().getPropertyValue(P_DATASOURCE_READ.key());
 		Set<String> columnsToRead = new HashSet<>();
 		if (readList!=null)
 			for (int i=0; i<readList.size(); i++)
 				columnsToRead.add(readList.getWithFlatIndex(i));
     	if (loaderclass.contains(CsvFileLoader.class.getSimpleName())) {
-    		String sep = (String) properties().getPropertyValue("separator");
+    		String sep = (String) properties().getPropertyValue(P_DATASOURCE_SEP.key());
+    		if (sep==null)
+    			sep = CsvFileLoader.defaultCsvSeparator;
     		dataLoader = new CsvFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,input,sep);
     	}
     	else if (loaderclass.contains(OdfFileLoader.class.getSimpleName())) {
-    		String sheet = (String) properties().getPropertyValue("sheet");
+    		String sheet = (String) properties().getPropertyValue(P_DATASOURCE_SHEET.key());
     		dataLoader = new OdfFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,input,sheet);
     	}
     	else if (loaderclass.contains(BOMWeatherLoader.class.getSimpleName()))

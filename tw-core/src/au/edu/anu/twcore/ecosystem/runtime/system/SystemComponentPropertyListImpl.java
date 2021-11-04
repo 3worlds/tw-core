@@ -145,7 +145,8 @@ public class SystemComponentPropertyListImpl implements SimplePropertyList {
 
 	@Override
 	public boolean hasProperty(String key) {
-		return properties[propertyMap.get(key)].hasProperty(key);
+//		return properties[propertyMap.get(key)].hasProperty(key);
+		return propertyMap.containsKey(key);
 	}
 
 	@Override

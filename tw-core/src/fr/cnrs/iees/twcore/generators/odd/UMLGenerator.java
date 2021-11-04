@@ -78,19 +78,15 @@ public class UMLGenerator {
 		}
 		umlText.add(umlBlockOpen);
 		umlText.add(flowChartStart);
-//		umlText.add("repeat");
-//		umlText.add(umlIndent+":initialisation;");
 		writeInitBlock(umlIndent,initflow);
-//		umlText.add(umlIndent+":simulation;");
 		umlText.add(umlIndent+"repeat"); // time loop
 		writeSimulBlock(umlIndent+umlIndent,simflow);
 		umlText.add(umlIndent+"repeatwhile (stoppingCondition?)"); // end time loop. todo: extract the stopping cd?
-//		umlText.add("repeatwhile (more runs?)");
 		umlText.add(flowChartStop);
 		umlText.add(umlBlockClose);
-		// debug
-		for (String s:umlText)
-			System.out.println(s);
+//		// debug
+//		for (String s:umlText)
+//			System.out.println(s);
 	}
 	
 	// get the category signature (without predefs) of an ElementType

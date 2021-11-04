@@ -158,6 +158,16 @@ public enum ConfigurationPropertyNames {
 	P_EXP_DEPLOYMENT			("deployment"),
 	P_EXP_NREPLICATES			("nReplicates"),
 	P_HLWIDGET_NLINES			("nLines"),
+	
+	P_DATASOURCE_IDLC			("idLifeCycle"),
+	P_DATASOURCE_IDGROUP		("idGroup"),
+	P_DATASOURCE_IDCOMPONENT	("idComponent"),
+	P_DATASOURCE_IDRELATION		("idRelation"),
+	P_DATASOURCE_IDVAR			("idVariable"),
+	P_DATASOURCE_DIM			("dim"),
+	P_DATASOURCE_READ			("read"),
+	P_DATASOURCE_SEP			("separator"),
+	P_DATASOURCE_SHEET			("sheet"),
 	;
 
 	private final String pname;

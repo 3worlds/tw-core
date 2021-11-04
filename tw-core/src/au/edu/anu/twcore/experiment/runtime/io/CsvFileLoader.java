@@ -94,18 +94,20 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  *
  */
 public class CsvFileLoader extends TableDataLoader {
+	
+	public static String defaultCsvSeparator = "\t"; 
 
 	/**the field separator used in this particular csv file */
 	private String fieldSeparator;
 
 	public CsvFileLoader(String idsp, String idst, String idsc, String idsr, String idmd, int[] dimCols,
 			Set<String> columnsToRead, InputStream input, String separator) {
-		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead, input);
-		fieldSeparator = separator;
+		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead, input,separator);
 	}
 
 	@Override
-	protected String[][] loadFromFile() {
+	protected String[][] loadFromFile(Object...pars) {
+		fieldSeparator = (String) pars[0];
 		String[][] rawData;
 		BufferedReader reader = null;
 		LinkedList<String> lines = new LinkedList<String>();
