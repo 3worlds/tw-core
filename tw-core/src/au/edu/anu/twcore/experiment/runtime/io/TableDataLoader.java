@@ -96,11 +96,11 @@ public abstract class TableDataLoader
 	protected InputStream input = null;
 	
 	public TableDataLoader (String idsp,String idst,String idsc,String idsr,String idmd,
-			int[] dimCols, Set<String> columnsToRead,InputStream input,Object...extraPars) {
+			int[] dimColss, Set<String> columnsToReadd,InputStream inputt,Object...extraPars) {
 		// if a list of variable names is given, then only these ones will be read
-		this.columnsToRead = columnsToRead;
-		this.dimCols = dimCols;
-		this.input = input;
+		this.columnsToRead = columnsToReadd;
+		this.dimCols = dimColss;
+		this.input = inputt;
 		// now read the file (in descendants)
 		rawData = loadFromFile(extraPars);
 		if (rawData==null)
@@ -127,31 +127,13 @@ public abstract class TableDataLoader
 					else if (fillIt) columnsToRead.add(var);
 			}
 			// warnings: id columns requested but not found in file.
-			if (!idsc.isBlank() && (!idcols.containsKey(P_DATASOURCE_IDCOMPONENT.key())))
-				log.warning(()->"Component Identifier '"+idsc+"' not found in data source");
+			if (idsc!=null)
+				if (!idsc.isBlank() && (!idcols.containsKey(P_DATASOURCE_IDCOMPONENT.key())))
+					log.warning(()->"Component Identifier '"+idsc+"' not found in data source");
 		}
 	}
 	
 	protected abstract String[/*line*/][/*column*/] loadFromFile(Object...pars);
-	
-//	private String uniqueId(String[] dataLine) {
-//		String id="";
-//		if (idcols.containsKey(P_DATASOURCE_IDLC.key()))
-//			id = dataLine[idcols.get(P_DATASOURCE_IDLC.key())];
-//		if (idcols.containsKey(P_DATASOURCE_IDGROUP.key()))
-//			id += SEP+dataLine[idcols.get(P_DATASOURCE_IDGROUP.key())];
-//		if (idcols.containsKey(P_DATASOURCE_IDCOMPONENT.key()))
-//			id += SEP+dataLine[idcols.get(P_DATASOURCE_IDCOMPONENT.key())];
-//		if (idcols.containsKey(P_DATASOURCE_IDRELATION.key()))
-//			id += SEP+dataLine[idcols.get(P_DATASOURCE_IDRELATION.key())];
-//		if (idcols.containsKey(P_DATASOURCE_IDVAR.key()))
-//			id += SEP+dataLine[idcols.get(P_DATASOURCE_IDVAR.key())];
-//		if (id.startsWith(SEP))
-//			id = id.substring(1);
-//		if (id.endsWith(SEP))
-//			id = id.substring(0,id.length()-1);
-//		return id;
-//	}
 	
 	private DataIdentifier getLineIds(String[] dataLine) {
 		String s1="",s2="",s3="";
@@ -171,9 +153,16 @@ public abstract class TableDataLoader
 		for (int i=1; i<rawData.length; i++) {
 			// get item unique id
 			DataIdentifier id = getLineIds(rawData[i]);
-			// if empty id, assume a componentId equal to line index, here 1
-			if (id.componentId().isEmpty())
-				id.setComponentId(String.valueOf(i));
+			// if empty id
+			if (id.componentId().isEmpty()) {
+				// case 1: no dimension column declared in data, every line is a different id
+				if (dimCols==null)
+					id.setComponentId(String.valueOf(i));
+				// case 2: dimensions declared, then all lines are assumed to belong to the same
+				// component, with id 0 as there is no way to know the id.
+				else
+					id.setComponentId("0");
+			}
 			SimplePropertyList data = null;
 			if (result.containsKey(id)) 
 				data = result.get(id);

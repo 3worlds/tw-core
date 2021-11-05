@@ -47,7 +47,7 @@ archetype 3wSA-CsvFileLoader
 		// of dimension 0 are in file column 1, dim. 1 in column 4 and dim.2 in column 3
 		// default: no dimensions
 		hasProperty CsvFileDimListSpec
-			hasName = String("dimList")
+			hasName = String("dim")
 			type = String("IntTable")
 			multiplicity = IntegerRange("0..1")
 		// list of column names to read as variables (default: read all variables found in the file)
