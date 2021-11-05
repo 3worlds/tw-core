@@ -38,10 +38,12 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -121,7 +123,7 @@ public class DocoGenerator {
 	private static int baseRT = 2; // pre-def
 	private static int baseGT = 0;// just in case
 	// size of minimal config jar without .java files and manifest
-	private static long baseComplexity = 0;// TODO
+	private static long baseClassByteCount = 0;// TODO
 
 	private int nNodes;
 	private int nEdges;
@@ -165,6 +167,9 @@ public class DocoGenerator {
 
 	private TreeGraph<TreeGraphDataNode, ALEdge> cfg;
 
+	private final File oddFile;
+	private final File flowChartFile;
+
 	private static final int level1 = 1;
 	private static final int level2 = 2;
 	private static final int level3 = 3;
@@ -207,6 +212,20 @@ public class DocoGenerator {
 
 	@SuppressWarnings("unchecked")
 	public DocoGenerator(TreeGraph<TreeGraphDataNode, ALEdge> cfg) {
+		File dir = Project.makeFile(ProjectPaths.RUNTIME);
+		dir.mkdirs();
+		LocalScope scope = new LocalScope("Files");
+		for (String fileName : dir.list()) {
+			int dotIndex = fileName.lastIndexOf('.');
+			fileName = (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
+			scope.newId(true, fileName);
+		}
+		String dirName = scope.newId(false, "documentation1").id();
+		oddFile = Project.makeFile(ProjectPaths.RUNTIME, dirName, cfg.root().id() + ".odt");
+		flowChartFile = Project.makeFile(ProjectPaths.RUNTIME, dirName, "flowChart.svg");
+
+		oddFile.getParentFile().mkdirs();
+
 //		startTime = System.currentTimeMillis();
 		this.cfg = cfg;
 		timerDesc = new HashMap<>();
@@ -440,17 +459,7 @@ public class DocoGenerator {
 				t.setWidth(t.getWidth());
 			}
 
-			File dir = Project.makeFile(ProjectPaths.RUNTIME);
-			LocalScope scope = new LocalScope("Files");
-			for (String fileName : dir.list()) {
-				int dotIndex = fileName.lastIndexOf('.');
-				fileName = (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
-				scope.newId(true, fileName);
-			}
-			String oddFileName = scope.newId(false, cfg.root().id() + "_0").id();
-
-			// String fileName = cfg.root().id() + ".odt"
-			document.save(Project.makeFile(ProjectPaths.RUNTIME, oddFileName + ".odt"));
+			document.save(oddFile);
 
 			// free resources
 			document.close();
@@ -700,21 +709,13 @@ public class DocoGenerator {
 
 		byte[] svg = DiagramGenerator.flowChart(cfg.root()).getBytes();
 		// save to file
-		File file = new File("tmp.svg");
 		try {
-			Files.write(svg, file);
+			Files.write(svg, flowChartFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		doc.newImage(file.toURI());
-//		Paragraph para1 = doc.addParagraph(getFlowChart());
-//		Font font = para1.getFont();
-//		font.setFamilyName("Liberation Mono");
-//		font.setSize(10);
-//		para1.setFont(font);
-//
+		doc.addParagraph("see: [" + flowChartFile.getName() + " - " + flowChartFile.getParent() + "]");
 		doc.addParagraph("Figure " + (++figureNumber) + ". Flow chart");
 		doc.addParagraph("");
 
@@ -1878,27 +1879,41 @@ public class DocoGenerator {
 			}
 		}
 		entries.add(new StringBuilder().append("11 #Lines of code").append(sep).append(lineCount).toString());
-		entries.add(new StringBuilder().append("12 #Complexity").append(sep).append(getComplexity()).toString());
+		entries.add(new StringBuilder().append("12 #Complexity").append(sep).append(getClassByteCount()).toString());
 
 		return entries;
 	}
 
-	private long getComplexity() {
+	private long getClassByteCount() {
+		/**
+		 * This has become a mess. I thought it just a matter of calling
+		 * entry.getCompressedSize() or even entry.getSize() - but no.
+		 * 
+		 * next try this 
+		 * https://www.codejava.net/java-se/file-io/programmatically-extract-a-zip-file-using-java
+		 */
+
 		long result = 0;
 		File projectJarFile = Project.makeFile(cfg.root().id() + ".jar");
 		try {
-			JarInputStream projectJar = new JarInputStream(new FileInputStream(projectJarFile));
-			JarEntry inEntry;
-			while ((inEntry = projectJar.getNextJarEntry()) != null) {
-				String name = inEntry.getName();
+			JarInputStream jis = new JarInputStream(new FileInputStream(projectJarFile));
+			JarEntry entry = null;
+			while ((entry = jis.getNextJarEntry()) != null) {
+				String name = entry.getName();
 				if (name.endsWith(".class")) {
-					System.out.println(name+"\t cz:"+inEntry.getCompressedSize());
-					System.out.println(name+"\t c :"+inEntry.getSize());
-					result += inEntry.getSize();
+//					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//					
+//					while (true) {
+//						int qwe = jis.read();
+//						if (qwe == -1)
+//							break;
+//						baos.write(qwe);
+//					}
+//					result += baos.toByteArray().length;
 				}
 			}
-			projectJar.close();
-			return result;
+			jis.close();
+			return result - baseClassByteCount;
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
