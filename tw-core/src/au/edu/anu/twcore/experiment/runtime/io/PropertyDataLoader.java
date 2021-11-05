@@ -108,6 +108,17 @@ public class PropertyDataLoader implements DataLoader<SimplePropertyList> {
 		this.dimCols = dimCols;
 	}
 
+	// single line loader - simpler.
+	public PropertyDataLoader(String[] input, String[] headers, Set<String> toRead, int[] dimCols) {
+		super();
+		this.input = new String[1][];
+		this.input[0] = input;
+		this.headers = headers;
+		this.toRead = new HashSet<String>();
+		this.toRead.addAll(toRead);
+		this.dimCols = dimCols;
+	}
+
 	@Override
 	public SimplePropertyList load(SimplePropertyList data) {
 		for (int row = 0; row < input.length; row++) {

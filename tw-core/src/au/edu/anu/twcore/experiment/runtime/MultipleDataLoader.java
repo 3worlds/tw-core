@@ -62,6 +62,6 @@ public interface MultipleDataLoader<T extends SimplePropertyList> {
      * @param dataModel - a T instance that will be cloned as many times as necessary to receive all 
      * data contained in the file. Clones are then put in the Map argument.
      **/
-    public void load(Map<String,T> result, T dataModel);    
+    public void load(Map<DataIdentifier,T> result, T dataModel);    
 	
 }

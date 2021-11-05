@@ -53,6 +53,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.experiment.DataSource;
+import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
 import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
@@ -174,11 +175,16 @@ public class Component
 		if (!individuals.containsKey(id)) {
 			// the factory for components of this category
 			ComponentFactory factory = componentType.getInstance(id);
+
+			// WIP
+
 			// read any information from file
-			for (MultipleDataLoader<SimplePropertyList> loader:loaders) {
-				Map<String, SimplePropertyList> loaded = new HashMap<>();
+			Map<DataIdentifier, SimplePropertyList> loaded = new HashMap<>();
+			for (MultipleDataLoader<SimplePropertyList> loader:loaders)
 				loader.load(loaded,factory.propertyTemplate());
-			}
+			
+			// WIP
+			
 			List<SystemComponent> result = new ArrayList<>(nInstances);
 			// for as many instances as requested:
 			for (int i=0; i<nInstances; i++) {

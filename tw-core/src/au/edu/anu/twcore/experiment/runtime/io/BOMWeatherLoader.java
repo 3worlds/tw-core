@@ -30,6 +30,7 @@ package au.edu.anu.twcore.experiment.runtime.io;
 
 import java.util.Map;
 
+import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
 import fr.cnrs.iees.properties.SimplePropertyList;
 
@@ -40,7 +41,7 @@ public class BOMWeatherLoader implements MultipleDataLoader<SimplePropertyList> 
 	}
 
 	@Override
-	public void load(Map<String, SimplePropertyList> result, SimplePropertyList dataModel) {
+	public void load(Map<DataIdentifier, SimplePropertyList> result, SimplePropertyList dataModel) {
 		// TODO Auto-generated method stub
 		
 	}

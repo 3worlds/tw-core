@@ -31,14 +31,15 @@ package au.edu.anu.twcore.experiment.runtime.io;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.utils.Logging;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
  * <p>Abstract ancestor for data loader dealing with data organized in tables (eg csv 
@@ -93,7 +94,7 @@ public abstract class TableDataLoader
 	private int[] dimCols = null;
 	
 	protected InputStream input = null;
-
+	
 	public TableDataLoader (String idsp,String idst,String idsc,String idsr,String idmd,
 			int[] dimCols, Set<String> columnsToRead,InputStream input,Object...extraPars) {
 		// if a list of variable names is given, then only these ones will be read
@@ -118,62 +119,73 @@ public abstract class TableDataLoader
 						if (dimCols[j]==i+1) 
 							dimFound = true;	
 				if (!dimFound)
-					if (var.equals(idsp)) idcols.put("idSpecies",i);
-					else if (var.equals(idst)) idcols.put("idStage",i);
-					else if (var.equals(idsc)) idcols.put("idComponent",i);
-					else if (var.equals(idsr)) idcols.put("idRelation",i);
-					else if (var.equals(idmd)) idcols.put("idVariable",i);
+					if (var.equals(idsp)) idcols.put(P_DATASOURCE_IDLC.key(),i);
+					else if (var.equals(idst)) idcols.put(P_DATASOURCE_IDGROUP.key(),i);
+					else if (var.equals(idsc)) idcols.put(P_DATASOURCE_IDCOMPONENT.key(),i);
+					else if (var.equals(idsr)) idcols.put(P_DATASOURCE_IDRELATION.key(),i);
+					else if (var.equals(idmd)) idcols.put(P_DATASOURCE_IDVAR.key(),i);
 					else if (fillIt) columnsToRead.add(var);
 			}
+			// warnings: id columns requested but not found in file.
+			if (!idsc.isBlank() && (!idcols.containsKey(P_DATASOURCE_IDCOMPONENT.key())))
+				log.warning(()->"Component Identifier '"+idsc+"' not found in data source");
 		}
 	}
 	
 	protected abstract String[/*line*/][/*column*/] loadFromFile(Object...pars);
 	
-	private String uniqueId(String[] dataLine) {
-		String id="";
-		if (idcols.containsKey("idSpecies"))
-			id = dataLine[idcols.get("idSpecies")];
-		if (idcols.containsKey("idStage"))
-			id += SEP+dataLine[idcols.get("idStage")];
-		if (idcols.containsKey("idComponent"))
-			id += SEP+dataLine[idcols.get("idComponent")];
-		if (idcols.containsKey("idRelation"))
-			id += SEP+dataLine[idcols.get("idRelation")];
-		if (idcols.containsKey("idVariable"))
-			id += SEP+dataLine[idcols.get("idVariable")];
-		if (id.startsWith(SEP))
-			id = id.substring(1);
-		if (id.endsWith(SEP))
-			id = id.substring(0,id.length()-1);
-		return id;
+//	private String uniqueId(String[] dataLine) {
+//		String id="";
+//		if (idcols.containsKey(P_DATASOURCE_IDLC.key()))
+//			id = dataLine[idcols.get(P_DATASOURCE_IDLC.key())];
+//		if (idcols.containsKey(P_DATASOURCE_IDGROUP.key()))
+//			id += SEP+dataLine[idcols.get(P_DATASOURCE_IDGROUP.key())];
+//		if (idcols.containsKey(P_DATASOURCE_IDCOMPONENT.key()))
+//			id += SEP+dataLine[idcols.get(P_DATASOURCE_IDCOMPONENT.key())];
+//		if (idcols.containsKey(P_DATASOURCE_IDRELATION.key()))
+//			id += SEP+dataLine[idcols.get(P_DATASOURCE_IDRELATION.key())];
+//		if (idcols.containsKey(P_DATASOURCE_IDVAR.key()))
+//			id += SEP+dataLine[idcols.get(P_DATASOURCE_IDVAR.key())];
+//		if (id.startsWith(SEP))
+//			id = id.substring(1);
+//		if (id.endsWith(SEP))
+//			id = id.substring(0,id.length()-1);
+//		return id;
+//	}
+	
+	private DataIdentifier getLineIds(String[] dataLine) {
+		String s1="",s2="",s3="";
+		if (idcols.containsKey(P_DATASOURCE_IDLC.key()))
+			s3 = dataLine[idcols.get(P_DATASOURCE_IDLC.key())];
+		if (idcols.containsKey(P_DATASOURCE_IDGROUP.key()))
+			s2 = dataLine[idcols.get(P_DATASOURCE_IDGROUP.key())];
+		if (idcols.containsKey(P_DATASOURCE_IDCOMPONENT.key()))
+			s1 = dataLine[idcols.get(P_DATASOURCE_IDCOMPONENT.key())];
+		return new DataIdentifier(s1,s2,s3);
 	}
 	
 	@Override
-	public final void load(Map<String, SimplePropertyList> result, SimplePropertyList dataModel) {
-		LinkedList<String[]> dataChunk = new LinkedList<String[]>();
-		// get item unique id
+	public final void load(Map<DataIdentifier, SimplePropertyList> result, SimplePropertyList dataModel) {
+//		LinkedList<String[]> dataChunk = new LinkedList<String[]>();
 		// start at 1 because rawData[0] is the headers line
-		String id = uniqueId(rawData[1]);
-		String previousId = id;
-		SimplePropertyList data = null;
 		for (int i=1; i<rawData.length; i++) {
-			id = uniqueId(rawData[i]);
-			if (i==rawData.length-1) dataChunk.add(rawData[i]);
-			if ((!id.equals(previousId))|(i==rawData.length-1)) {
-		    	data = find(previousId,result,dataModel);
-		    	String[][] ss = new String[dataChunk.size()][];
-				PropertyDataLoader dataLoader = new PropertyDataLoader(
-					dataChunk.toArray(ss),
-				    headers,
-				    columnsToRead,
-				    dimCols);
-				dataLoader.load(data);
-				result.put(id,data);
-				dataChunk.clear();
-			}
-			dataChunk.add(rawData[i]);
-			previousId = id;
+			// get item unique id
+			DataIdentifier id = getLineIds(rawData[i]);
+			// if empty id, assume a componentId equal to line index, here 1
+			if (id.componentId().isEmpty())
+				id.setComponentId(String.valueOf(i));
+			SimplePropertyList data = null;
+			if (result.containsKey(id)) 
+				data = result.get(id);
+			else
+				data = dataModel.clone();
+			PropertyDataLoader dataLoader = new PropertyDataLoader(
+			rawData[i],
+		    headers,
+		    columnsToRead,
+		    dimCols);
+			dataLoader.load(data);
+			result.put(id,data);
 		}
 	}
 
