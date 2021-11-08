@@ -46,7 +46,7 @@ public class OdfFileLoader extends TableDataLoader {
 	/**the sheet to read from this specific odf spreadsheet */
 	private String sheet = null;
 
-	public OdfFileLoader(String idsp, String idst, String idsc, String idsr, String idmd, int[] dimCols,
+	public OdfFileLoader(String idsp, String idst, String idsc, String idsr, String idmd, String[] dimCols,
 			Set<String> columnsToRead, InputStream input, String sheet) {
 		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead, input,sheet);		
 	}

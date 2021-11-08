@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment;
 
-import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
@@ -89,7 +88,6 @@ public class DataSource
 		FileType ft = (FileType) properties().getPropertyValue(P_DATASOURCE_FILE.key());
     	File file = ft.getFile();
     	String name = ft.getRelativePath();
-    	// TODO: CHECK ALL THIS !!!
     	if (file!=null)
 			try {
 				ips = new FileInputStream(file);
@@ -112,10 +110,10 @@ public class DataSource
 		String idsc = (String) properties().getPropertyValue(P_DATASOURCE_IDCOMPONENT.key());
 		String idsr = (String) properties().getPropertyValue(P_DATASOURCE_IDRELATION.key());
 		String idmd = (String) properties().getPropertyValue(P_DATASOURCE_IDVAR.key());
-		IntTable dimlist = (IntTable) properties().getPropertyValue(P_DATASOURCE_DIM.key());
-		int[] idDims = null;
+		StringTable dimlist = (StringTable) properties().getPropertyValue(P_DATASOURCE_DIM.key());
+		String[] idDims = null;
 		if (dimlist!=null) {
-			idDims = new int[dimlist.size()];
+			idDims = new String[dimlist.size()];
 			for (int i=0; i<dimlist.size(); i++)
 				idDims[i] = dimlist.getWithFlatIndex(i);
 		}

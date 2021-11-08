@@ -48,7 +48,7 @@ archetype 3wSA-OdfFileLoader
 		// default: no dimensions
 		hasProperty OdfFileDimListSpec
 			hasName = String("dim")
-			type = String("IntTable")
+			type = String("StringTable")
 			multiplicity = IntegerRange("0..1")
 		// list of column names to read as variables (default: read all variables found in the file)
 		hasProperty OdfFileReadSpec

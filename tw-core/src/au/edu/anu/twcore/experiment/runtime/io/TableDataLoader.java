@@ -96,10 +96,11 @@ public abstract class TableDataLoader
 	protected InputStream input = null;
 	
 	public TableDataLoader (String idsp,String idst,String idsc,String idsr,String idmd,
-			int[] dimColss, Set<String> columnsToReadd,InputStream inputt,Object...extraPars) {
+			String[] dimColss, Set<String> columnsToReadd,InputStream inputt,Object...extraPars) {
 		// if a list of variable names is given, then only these ones will be read
 		this.columnsToRead = columnsToReadd;
-		this.dimCols = dimColss;
+		if (dimColss.length>0)
+			this.dimCols = new int[dimColss.length];
 		this.input = inputt;
 		// now read the file (in descendants)
 		rawData = loadFromFile(extraPars);
@@ -116,8 +117,10 @@ public abstract class TableDataLoader
 				boolean dimFound = false;
 				if (dimCols!=null)
 					for (int j=0; j<dimCols.length; j++)
-						if (dimCols[j]==i+1) 
+						if (dimColss[j].equals(var)) {
+							dimCols[j]=i;
 							dimFound = true;	
+						}
 				if (!dimFound)
 					if (var.equals(idsp)) idcols.put(P_DATASOURCE_IDLC.key(),i);
 					else if (var.equals(idst)) idcols.put(P_DATASOURCE_IDGROUP.key(),i);

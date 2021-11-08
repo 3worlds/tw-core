@@ -137,6 +137,8 @@ hasNode dataSourceSpec
 		parameters = StringTable(([3]"subclass",+
 		"au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader",+
 		"3wSA-OdfFileLoader.ugt"))
+	mustSatisfyQuery dataSourceFileContentCheck
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileContentQuery")
 
 hasNode dataSinkSpec
 	isOfClass = String("dataSink")

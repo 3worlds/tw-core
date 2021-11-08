@@ -100,7 +100,7 @@ public class CsvFileLoader extends TableDataLoader {
 	/**the field separator used in this particular csv file */
 	private String fieldSeparator;
 
-	public CsvFileLoader(String idsp, String idst, String idsc, String idsr, String idmd, int[] dimCols,
+	public CsvFileLoader(String idsp, String idst, String idsc, String idsr, String idmd, String[] dimCols,
 			Set<String> columnsToRead, InputStream input, String separator) {
 		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead, input,separator);
 	}
