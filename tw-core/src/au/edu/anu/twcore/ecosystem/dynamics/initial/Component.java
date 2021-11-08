@@ -175,22 +175,37 @@ public class Component
 		if (!individuals.containsKey(id)) {
 			// the factory for components of this category
 			ComponentFactory factory = componentType.getInstance(id);
-
-			// WIP
-
-			// read any information from file
+			// read any information from file - thi is done for every simulator, which is not
+			// optimal, but it's because of the propertyTemplates that are impossible
+			// to setup in initialise().
 			Map<DataIdentifier, SimplePropertyList> loaded = new HashMap<>();
 			for (MultipleDataLoader<SimplePropertyList> loader:loaders)
 				loader.load(loaded,factory.propertyTemplate());
+			// This is wrong: only instances of the proper group should be loaded here !
+			// and of the proper life cycle
+			// so loading from file should be done at the end.
+			// but nInstances is unknown then...
+			// instead of a template, should use an ExtendablePropertyList and get everything by name
+			// then use PropertyList.copy()
+//			if (!loaded.isEmpty())
+//				nInstances = Math.max(loaded.size(),nInstances); 
+//			String groupId = null;
+//			String LifeCycleId = null;
+			// fill component with values from the 'loaded' table
+			if (!loaded.isEmpty()) {
+				// find lc and group ids ?
+				// we dont care about cp ids.
+			}
+
 			
-			// WIP
+			
 			
 			List<SystemComponent> result = new ArrayList<>(nInstances);
 			// for as many instances as requested:
 			for (int i=0; i<nInstances; i++) {
 				// instantiate component
 				SystemComponent sc = factory.newInstance();
-				// fill component with initial values (including coordinates)
+				// fill component with initial values (including coordinates) from the configuration file
 				for (TreeNode tn:getChildren()) {
 					if (tn instanceof VariableValues) {
 						// this copies all variables contained in Drivers but ignores automatc variables
@@ -242,6 +257,7 @@ public class Component
 					}
 					container.setCategorized(factory);
 				}
+				// prepare initial community
 				container.addInitialItem(sc);
 				sc.setContainer((ComponentContainer)container);
 				// add component instance into list of new instances

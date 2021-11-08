@@ -93,6 +93,8 @@ public class DataSource
 				ips = new FileInputStream(file);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
+				// NB normally this has been checked before by the queries.
+				// reaching here means a big problem (eg file moved while running...)
 				e.printStackTrace();
 			}
 		else
