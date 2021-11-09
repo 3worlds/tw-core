@@ -50,6 +50,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,6 +58,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
@@ -117,13 +119,16 @@ public class DocoGenerator {
 	private static int baseDrvs = 0;
 	private static int baseCnts = 0;
 	private static int baseDecs = 0;
-	private static int baseProps = 29;// to get a baseline we need one function which has 2 properties. Do we subtract
+	private static int baseProps = 28;
 										// these?
 	private static int baseCT = 1; // the system
-	private static int baseRT = 2; // pre-def
+	private static int baseRT = 0; // pre-def don't count unless used
 	private static int baseGT = 0;// just in case
-	// size of minimal config jar without .java files and manifest
-	private static long baseClassByteCount = 0;// TODO
+	// size of compressed .class files in a minimal config jar
+	private static long baseClassByteCount = 554;
+	
+	//import static java.lang.Math.*;
+	private static int baseLineCount = 1;
 
 	private int nNodes;
 	private int nEdges;
@@ -1025,8 +1030,9 @@ public class DocoGenerator {
 		List<String> entries = getMetricsDetails();
 		doc.addParagraph("Table " + (++tableNumber) + ". Configuration graph metrics");
 		writeTable(doc, entries, "Metric", "Value");
-		doc.addParagraph(
-				"Values are calculated after subtracting the values of a minimal configuration.\nIf the descriptor is a table, the count is increased by the table size.");
+		doc.addParagraph("Values are calculated after subtracting the values of a minimal configuration."
+				+ "\nIf the descriptor is a table, the count is increased by the table size."
+				+ "\nComplexity is the sum the compressed size of the user .class files.");
 	}
 
 	private void writeGraphImages(TextDocument doc, String title, int level) {
@@ -1869,7 +1875,8 @@ public class DocoGenerator {
 				.toString());
 		entries.add(new StringBuilder().append("10 #GroupTypes").append(sep).append((groupTypes.size() - baseGT))
 				.toString());
-		int lineCount = 0;
+		
+		int lineCount = -baseLineCount;
 		for (Map.Entry<String, List<String>> snp : snippetMap.entrySet()) {
 			for (String line : snp.getValue()) {
 
@@ -1879,45 +1886,30 @@ public class DocoGenerator {
 			}
 		}
 		entries.add(new StringBuilder().append("11 #Lines of code").append(sep).append(lineCount).toString());
-		entries.add(new StringBuilder().append("12 #Complexity").append(sep).append(getClassByteCount()).toString());
+		entries.add(new StringBuilder().append("12 #Complexity").append(sep).append(getClassCompressedByteCount())
+				.toString());
 
 		return entries;
 	}
 
-	private long getClassByteCount() {
-		/**
-		 * This has become a mess. I thought it just a matter of calling
-		 * entry.getCompressedSize() or even entry.getSize() - but no.
-		 * 
-		 * next try this 
-		 * https://www.codejava.net/java-se/file-io/programmatically-extract-a-zip-file-using-java
-		 */
-
+	private long getClassCompressedByteCount() {
 		long result = 0;
 		File projectJarFile = Project.makeFile(cfg.root().id() + ".jar");
+		JarFile jf;
 		try {
-			JarInputStream jis = new JarInputStream(new FileInputStream(projectJarFile));
-			JarEntry entry = null;
-			while ((entry = jis.getNextJarEntry()) != null) {
-				String name = entry.getName();
+			//NB: Don't use jar input streams. These will not contain the info required!
+			jf = new JarFile(projectJarFile.getAbsolutePath());
+			Enumeration e = jf.entries();
+			while (e.hasMoreElements()) {
+				JarEntry je = (JarEntry) e.nextElement();
+				String name = je.getName();
 				if (name.endsWith(".class")) {
-//					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//					
-//					while (true) {
-//						int qwe = jis.read();
-//						if (qwe == -1)
-//							break;
-//						baos.write(qwe);
-//					}
-//					result += baos.toByteArray().length;
+					result += je.getCompressedSize();
 				}
 			}
-			jis.close();
-			return result - baseClassByteCount;
-
-		} catch (IOException e) {
+		} catch (IOException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 
 		return result;
