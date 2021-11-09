@@ -34,7 +34,6 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DataElementType;
-import fr.ens.biologie.generic.Factory;
 import fr.ens.biologie.generic.Sealable;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
@@ -61,8 +60,7 @@ import au.edu.anu.twcore.InitialisableNode;
  */
 public class TableNode 
 		extends InitialisableNode 
-		// TODO (16/9/2020): get rid of the Factory interface, it's useless and dangerous here
-		implements Factory<Table>, Sealable {
+		implements Sealable {
 
 	private boolean sealed = false;
 	private Dimensioner[] dims = null;
@@ -116,10 +114,9 @@ public class TableNode
 			initialise();
 		return dims;
 	}
-
-	@Override
-	@Deprecated // we dont want to see this anymore - it must go. BUT please check where its being used before removing!
-	public Table newInstance() {
+	
+	// only to use as a template.
+	public Table templateInstance() {
 		if (!sealed)
 			initialise();
 		switch (dataType) {

@@ -37,7 +37,9 @@ import java.util.logging.Logger;
 
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.utils.Logging;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -90,17 +92,21 @@ public abstract class TableDataLoader
 	private String[/*line*/][/*column*/] rawData;
 	/** the identifier column names, sorted by target (species, stage, component, relation, variable) */
 	private Map<String,Integer> idcols = new HashMap<String,Integer>();
-	
+	/** the types of all fields and tables of the current model */
+	private Map<String,Object> colTemplates = null;
 	private int[] dimCols = null;
 	
 	protected InputStream input = null;
 	
 	public TableDataLoader (String idsp,String idst,String idsc,String idsr,String idmd,
-			String[] dimColss, Set<String> columnsToReadd,InputStream inputt,Object...extraPars) {
+			String[] dimColss, Set<String> columnsToReadd, Map<String,Object> colTemplates,
+			InputStream inputt,Object...extraPars) {
 		// if a list of variable names is given, then only these ones will be read
 		this.columnsToRead = columnsToReadd;
-		if (dimColss.length>0)
-			this.dimCols = new int[dimColss.length];
+		this.colTemplates = colTemplates;
+		if (dimColss!=null)
+			if (dimColss.length>0)
+				this.dimCols = new int[dimColss.length];
 		this.input = inputt;
 		// now read the file (in descendants)
 		rawData = loadFromFile(extraPars);
@@ -151,7 +157,6 @@ public abstract class TableDataLoader
 	
 	@Override
 	public final void load(Map<DataIdentifier, SimplePropertyList> result, SimplePropertyList dataModel) {
-//		LinkedList<String[]> dataChunk = new LinkedList<String[]>();
 		// start at 1 because rawData[0] is the headers line
 		for (int i=1; i<rawData.length; i++) {
 			// get item unique id
@@ -223,5 +228,42 @@ public abstract class TableDataLoader
 	public final String[] headers() {
 		return headers;
 	}
+	
+	@Override
+	public final void load(Map<DataIdentifier, SimplePropertyList> result) {
+		// start at 1 because rawData[0] is the headers line
+		for (int i=1; i<rawData.length; i++) {
+			// get item unique id
+			DataIdentifier id = getLineIds(rawData[i]);
+			// if empty id
+			if (id.componentId().isEmpty()) {
+				// case 1: no dimension column declared in data, every line is a different id
+				if (dimCols==null)
+					id.setComponentId(String.valueOf(i));
+				// case 2: dimensions declared, then all lines are assumed to belong to the same
+				// component, with id 0 as there is no way to know the id.
+				else
+					id.setComponentId("0");
+			}
+			SimplePropertyList data = null;
+			if (result.containsKey(id)) 
+				data = result.get(id);
+			else
+				data = new ExtendablePropertyListImpl();
+			// this will put all column names found in the file as new properties,
+			// except if they already exist. With their default value as per their type.
+			for (String col:headers)
+				if (colTemplates.containsKey(col))
+					((ExtendablePropertyList)data).addProperty(col,colTemplates.get(col));
+			PropertyDataLoader dataLoader = new PropertyDataLoader(
+			rawData[i],
+		    headers,
+		    columnsToRead,
+		    dimCols);
+			dataLoader.load(data);
+			result.put(id,data);
+		}
+	}
+
 	
 }

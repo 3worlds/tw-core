@@ -59,9 +59,22 @@ public interface MultipleDataLoader<T extends SimplePropertyList> {
 
     /** loads data into a Map of TwData (or other SimplePropertyList implementation, specified by T)
      * indexed by String identifier (typically names of nodes).
+     * 
+     * This will only read properties matching the dataModel argument
+     * 
      * @param dataModel - a T instance that will be cloned as many times as necessary to receive all 
      * data contained in the file. Clones are then put in the Map argument.
      **/
     public void load(Map<DataIdentifier,T> result, T dataModel);    
+    
+    /**
+     * Loads data into a Map of propertyLists. It uses internally an ExtendablePropertyList and
+     * will read all data found in the files, creating properties on demand.
+     * 
+     * This will read everything and put them in propertylists.
+     * 
+     * @param result
+     */
+    public void load(Map<DataIdentifier,T> result);    
 	
 }

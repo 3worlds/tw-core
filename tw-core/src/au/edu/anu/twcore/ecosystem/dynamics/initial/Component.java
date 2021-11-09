@@ -54,7 +54,6 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
-import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
 import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -88,8 +87,8 @@ public class Component
 	// containers matching category signatures
 	private int nComponentTypes = 0;
 	private int nInstances = 1;
-	// in case data is read from file
-	private List<MultipleDataLoader<SimplePropertyList>> loaders = new ArrayList<>();
+	// the list of components read from file that match this component (ie belong to proper group)
+	private List<SimplePropertyList> loadedData = new ArrayList<>();
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -106,17 +105,38 @@ public class Component
 	public void initialise() {
 		super.initialise();
 		sealed = false;
-		// bring back read from files
+		// this edge, if present, points to a Group node
+		Edge instof = (Edge) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
+		if (instof!=null)
+			group = (Group) instof.endNode();
+		// load data from files
+		Map<DataIdentifier, SimplePropertyList> loaded = new HashMap<>();
 		List<DataSource> sources = (List<DataSource>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
 			edgeListEndNodes());
 		for (DataSource source:sources)
-			loaders.add(source.getInstance());
-		//
+			source.getInstance().load(loaded);
+		// sort out which loaded data match this component.
+		// NB ok because group names are unique even across life cycles.
+		if (group!=null) {
+			for (DataIdentifier dif:loaded.keySet())
+				if (dif.groupId().equals(group.id()))
+					loadedData.add(loaded.get(dif));
+		}
+		else
+			loadedData.addAll(loaded.values());
+////		// debug
+//		for (DataIdentifier dif:loaded.keySet())
+//			System.out.println(loaded.get(dif).toString());
+//		//
 		if (properties().hasProperty(P_COMPONENT_NINST.key()))
 			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
 		if (nInstances==0)
 			nInstances=1;
+		// if data sources were used, ignore declaration of number of instances
+		if (loadedData.size()>0)
+			nInstances = loadedData.size();
 		// get total number of ComponentTypes declared in the structure subTree
 		// NB there may be no structure node, but in this case there will be no component node either
 		// so if we are here, struc!=null
@@ -126,11 +146,6 @@ public class Component
 		nComponentTypes = ((Collection<?>) get(struc, childTree(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label()))) ).size();
 		componentType = (ComponentType) getParent();
-		// this edge, if present, points to a Group node
-		Edge instof = (Edge) get(edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
-		if (instof!=null)
-			group = (Group) instof.endNode();
 		sealed = true;
 	}
 
@@ -175,31 +190,7 @@ public class Component
 		if (!individuals.containsKey(id)) {
 			// the factory for components of this category
 			ComponentFactory factory = componentType.getInstance(id);
-			// read any information from file - thi is done for every simulator, which is not
-			// optimal, but it's because of the propertyTemplates that are impossible
-			// to setup in initialise().
-			Map<DataIdentifier, SimplePropertyList> loaded = new HashMap<>();
-			for (MultipleDataLoader<SimplePropertyList> loader:loaders)
-				loader.load(loaded,factory.propertyTemplate());
-			// This is wrong: only instances of the proper group should be loaded here !
-			// and of the proper life cycle
-			// so loading from file should be done at the end.
-			// but nInstances is unknown then...
-			// instead of a template, should use an ExtendablePropertyList and get everything by name
-			// then use PropertyList.copy()
-//			if (!loaded.isEmpty())
-//				nInstances = Math.max(loaded.size(),nInstances); 
-//			String groupId = null;
-//			String LifeCycleId = null;
-			// fill component with values from the 'loaded' table
-			if (!loaded.isEmpty()) {
-				// find lc and group ids ?
-				// we dont care about cp ids.
-			}
 
-			
-			
-			
 			List<SystemComponent> result = new ArrayList<>(nInstances);
 			// for as many instances as requested:
 			for (int i=0; i<nInstances; i++) {
@@ -216,6 +207,13 @@ public class Component
 					else if (tn instanceof ConstantValues) {
 						((ConstantValues) tn).fill(sc.constants());
 					}
+				}
+				// fill component with initial values read from file - overtake the previous
+				if (!loadedData.isEmpty()) {
+					SimplePropertyList ldpl = loadedData.get(i);
+					for (String pkey:sc.properties().getKeysAsSet())
+						if (ldpl.hasProperty(pkey))
+							sc.properties().setProperty(pkey, ldpl.getPropertyValue(pkey));
 				}
 				// insert component into its container
 				ComponentContainer container = null;

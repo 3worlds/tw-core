@@ -32,9 +32,11 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import fr.cnrs.iees.properties.SimplePropertyList;
 
 /**
  * <p>A data loader to load a <em>csv</em> ("comma separated values") file into a 
@@ -101,8 +103,8 @@ public class CsvFileLoader extends TableDataLoader {
 	private String fieldSeparator;
 
 	public CsvFileLoader(String idsp, String idst, String idsc, String idsr, String idmd, String[] dimCols,
-			Set<String> columnsToRead, InputStream input, String separator) {
-		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead, input,separator);
+			Set<String> columnsToRead, Map<String,Object> colTemplates, InputStream input, String separator) {
+		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead, colTemplates, input,separator);
 	}
 
 	@Override
@@ -137,5 +139,6 @@ public class CsvFileLoader extends TableDataLoader {
 			}
 		return null;
 	}
+
 
 }

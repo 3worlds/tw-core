@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.experiment.runtime.io;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Set;
 
 import org.odftoolkit.simple.SpreadsheetDocument;
@@ -47,8 +48,8 @@ public class OdfFileLoader extends TableDataLoader {
 	private String sheet = null;
 
 	public OdfFileLoader(String idsp, String idst, String idsc, String idsr, String idmd, String[] dimCols,
-			Set<String> columnsToRead, InputStream input, String sheet) {
-		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead, input,sheet);		
+			Set<String> columnsToRead, Map<String,Object> colTemplates, InputStream input, String sheet) {
+		super(idsp, idst, idsc, idsr, idmd, dimCols, columnsToRead,colTemplates, input,sheet);		
 	}
 
 	@Override

@@ -30,14 +30,21 @@ package au.edu.anu.twcore.experiment;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.data.FieldNode;
+import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
 import au.edu.anu.twcore.experiment.runtime.io.BOMWeatherLoader;
 import au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader;
 import au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader;
+import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.FileType;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
@@ -45,12 +52,17 @@ import fr.ens.biologie.generic.utils.Logging;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -72,6 +84,10 @@ public class DataSource
 	private boolean sealed = false;
 	
 	private MultipleDataLoader<SimplePropertyList> dataLoader = null;
+	
+	/** a map of all properties found in the model graph, with an instance of each prop type
+	 * to clone real properties from */
+	private Map<String,Object> propTemplates = new HashMap<>();
 
 	public DataSource(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -81,9 +97,27 @@ public class DataSource
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
+		// construct the list of all properties (fields, tables) defined in the model
+		// ok because all must have a unique name by construct
+		TreeNode root = World.getRoot(this);
+		Collection<TreeGraphDataNode> props = (Collection<TreeGraphDataNode>) get(root,
+			childTree(),
+			selectZeroOrMany(orQuery(hasTheLabel(N_FIELD.label()),hasTheLabel(N_TABLE.label()))) );
+		for (TreeGraphDataNode tn:props) {
+			Object value = null;
+			if (tn instanceof FieldNode) {
+				DataElementType type = (DataElementType) tn.properties().getPropertyValue(P_FIELD_TYPE.key());
+				value = ValidPropertyTypes.getDefaultValue(type.className());
+			}
+			else if (tn instanceof TableNode)
+				value = ((TableNode)tn).templateInstance();
+			propTemplates.put(tn.id(),value);
+		}
+		// load data from file (once for all simulators)
 		InputStream ips = null;
 		FileType ft = (FileType) properties().getPropertyValue(P_DATASOURCE_FILE.key());
     	File file = ft.getFile();
@@ -128,11 +162,11 @@ public class DataSource
     		String sep = (String) properties().getPropertyValue(P_DATASOURCE_SEP.key());
     		if (sep==null)
     			sep = CsvFileLoader.defaultCsvSeparator;
-    		dataLoader = new CsvFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,input,sep);
+    		dataLoader = new CsvFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,propTemplates,input,sep);
     	}
     	else if (loaderclass.contains(OdfFileLoader.class.getSimpleName())) {
     		String sheet = (String) properties().getPropertyValue(P_DATASOURCE_SHEET.key());
-    		dataLoader = new OdfFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,input,sheet);
+    		dataLoader = new OdfFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,propTemplates,input,sheet);
     	}
     	else if (loaderclass.contains(BOMWeatherLoader.class.getSimpleName()))
     		dataLoader = new BOMWeatherLoader();

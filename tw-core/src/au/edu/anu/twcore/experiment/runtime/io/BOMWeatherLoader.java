@@ -46,4 +46,10 @@ public class BOMWeatherLoader implements MultipleDataLoader<SimplePropertyList> 
 		
 	}
 
+	@Override
+	public void load(Map<DataIdentifier, SimplePropertyList> result) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
