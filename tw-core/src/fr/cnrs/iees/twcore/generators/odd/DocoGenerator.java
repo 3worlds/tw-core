@@ -120,14 +120,14 @@ public class DocoGenerator {
 	private static int baseCnts = 0;
 	private static int baseDecs = 0;
 	private static int baseProps = 28;
-										// these?
+	// these?
 	private static int baseCT = 1; // the system
 	private static int baseRT = 0; // pre-def don't count unless used
 	private static int baseGT = 0;// just in case
 	// size of compressed .class files in a minimal config jar
 	private static long baseClassByteCount = 554;
-	
-	//import static java.lang.Math.*;
+
+	// import static java.lang.Math.*;
 	private static int baseLineCount = 1;
 
 	private int nNodes;
@@ -1875,7 +1875,7 @@ public class DocoGenerator {
 				.toString());
 		entries.add(new StringBuilder().append("10 #GroupTypes").append(sep).append((groupTypes.size() - baseGT))
 				.toString());
-		
+
 		int lineCount = -baseLineCount;
 		for (Map.Entry<String, List<String>> snp : snippetMap.entrySet()) {
 			for (String line : snp.getValue()) {
@@ -1897,7 +1897,7 @@ public class DocoGenerator {
 		File projectJarFile = Project.makeFile(cfg.root().id() + ".jar");
 		JarFile jf;
 		try {
-			//NB: Don't use jar input streams. These will not contain the info required!
+			// NB: Don't use jar input streams. These will not contain the info required!
 			jf = new JarFile(projectJarFile.getAbsolutePath());
 			Enumeration e = jf.entries();
 			while (e.hasMoreElements()) {
@@ -1912,7 +1912,7 @@ public class DocoGenerator {
 			e1.printStackTrace();
 		}
 
-		return result;
+		return result-baseClassByteCount;
 
 	}
 
