@@ -44,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -1860,23 +1861,23 @@ public class DocoGenerator {
 
 	private List<String> getMetricsDetails() {
 		List<String> entries = new ArrayList<>();
-		int configSize = (nNodes - baseNodes) + (nEdges - baseEdges) + (nProps - baseProps);
-		entries.add(new StringBuilder().append("1 #Nodes").append(sep).append((nNodes - baseNodes)).toString());
-		entries.add(new StringBuilder().append("2 #Edges").append(sep).append((nEdges - baseEdges)).toString());
-		entries.add(new StringBuilder().append("3 #Properties").append(sep).append((nProps - baseProps)).toString());
+		long configSize = (nNodes - baseNodes) + (nEdges - baseEdges) + (nProps - baseProps);
+		entries.add(new StringBuilder().append("1 #Nodes").append(sep).append(nf((nNodes - baseNodes))).toString());
+		entries.add(new StringBuilder().append("2 #Edges").append(sep).append(nf((nEdges - baseEdges))).toString());
+		entries.add(new StringBuilder().append("3 #Properties").append(sep).append(nf((nProps - baseProps))).toString());
 		entries.add(
-				new StringBuilder().append("4 configuration size (1+2+3)").append(sep).append((configSize)).toString());
-		entries.add(new StringBuilder().append("5 #Drivers").append(sep).append((nDrvs - baseDrvs)).toString());
-		entries.add(new StringBuilder().append("6 #Constants").append(sep).append((nCnts - baseCnts)).toString());
-		entries.add(new StringBuilder().append("7 #Decorators").append(sep).append((nDecs - baseDecs)).toString());
-		entries.add(new StringBuilder().append("8 #ComponentTypes").append(sep).append((compTypes.size() - baseCT))
+				new StringBuilder().append("4 configuration size (1+2+3)").append(sep).append(nf((configSize))).toString());
+		entries.add(new StringBuilder().append("5 #Drivers").append(sep).append(nf((nDrvs - baseDrvs))).toString());
+		entries.add(new StringBuilder().append("6 #Constants").append(sep).append(nf((nCnts - baseCnts))).toString());
+		entries.add(new StringBuilder().append("7 #Decorators").append(sep).append(nf((nDecs - baseDecs))).toString());
+		entries.add(new StringBuilder().append("8 #ComponentTypes").append(sep).append(nf((compTypes.size() - baseCT)))
 				.toString());
-		entries.add(new StringBuilder().append("9 #RelationTypes").append(sep).append((relTypes.size() - baseRT))
+		entries.add(new StringBuilder().append("9 #RelationTypes").append(sep).append(nf((relTypes.size() - baseRT)))
 				.toString());
-		entries.add(new StringBuilder().append("10 #GroupTypes").append(sep).append((groupTypes.size() - baseGT))
+		entries.add(new StringBuilder().append("10 #GroupTypes").append(sep).append((nf(groupTypes.size() - baseGT)))
 				.toString());
 
-		int lineCount = -baseLineCount;
+		long lineCount = -baseLineCount;
 		for (Map.Entry<String, List<String>> snp : snippetMap.entrySet()) {
 			for (String line : snp.getValue()) {
 
@@ -1885,14 +1886,17 @@ public class DocoGenerator {
 				}
 			}
 		}
-		entries.add(new StringBuilder().append("11 #Lines of code").append(sep).append(lineCount).toString());
+		entries.add(new StringBuilder().append("11 #Lines of code").append(sep).append(nf(lineCount)).toString());
 		entries.add(new StringBuilder().append("12 #Complexity").append(sep).append(getClassCompressedByteCount())
 				.toString());
 
 		return entries;
 	}
+	private static String nf(long n) {
+		return NumberFormat.getNumberInstance().format(n);
+	}
 
-	private long getClassCompressedByteCount() {
+	private String getClassCompressedByteCount() {
 		long result = 0;
 		File projectJarFile = Project.makeFile(cfg.root().id() + ".jar");
 		JarFile jf;
@@ -1912,7 +1916,7 @@ public class DocoGenerator {
 			e1.printStackTrace();
 		}
 
-		return result-baseClassByteCount;
+		return nf(result-baseClassByteCount);
 
 	}
 
