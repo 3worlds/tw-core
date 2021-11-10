@@ -241,9 +241,9 @@ public abstract class TableDataLoader
 				if (dimCols==null)
 					id.setComponentId(String.valueOf(i));
 				// case 2: dimensions declared, then all lines are assumed to belong to the same
-				// component, with id 0 as there is no way to know the id.
+				// component, with id for consistency with previous
 				else
-					id.setComponentId("0");
+					id.setComponentId("1");
 			}
 			SimplePropertyList data = null;
 			if (result.containsKey(id)) 

@@ -31,4 +31,8 @@ hasNode systemSpec
 		reference = String(categorySet:*organisation*)
 	mustSatisfyQuery exclusiveCategoryCheckForSystemSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
+	hasEdge arenaToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource:")
+		multiplicity = IntegerRange("0..*")
 

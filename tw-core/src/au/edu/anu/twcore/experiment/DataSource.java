@@ -158,6 +158,8 @@ public class DataSource
 		if (readList!=null)
 			for (int i=0; i<readList.size(); i++)
 				columnsToRead.add(readList.getWithFlatIndex(i));
+		// TODO: when a column header is for a table, then a dim property MUST (of proper dimensions) be present
+		// tricky to fix!
     	if (loaderclass.contains(CsvFileLoader.class.getSimpleName())) {
     		String sep = (String) properties().getPropertyValue(P_DATASOURCE_SEP.key());
     		if (sep==null)

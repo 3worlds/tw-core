@@ -38,12 +38,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -59,9 +55,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
-import java.util.jar.JarOutputStream;
-
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
 import org.odftoolkit.simple.table.Column;
@@ -125,7 +118,7 @@ public class DocoGenerator {
 	private static int baseRT = 0; // pre-def don't count unless used
 	private static int baseGT = 0;// just in case
 	// size of compressed .class files in a minimal config jar
-	private static long baseClassByteCount = 554;
+//	private static long baseClassByteCount = 554;
 	
 	//import static java.lang.Math.*;
 	private static int baseLineCount = 1;
@@ -1357,7 +1350,7 @@ public class DocoGenerator {
 		return entries;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	private String getFlowChart() {
 		SimulatorNode sim = (SimulatorNode) get(cfg.root().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())),
 				children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
@@ -1899,7 +1892,7 @@ public class DocoGenerator {
 		try {
 			//NB: Don't use jar input streams. These will not contain the info required!
 			jf = new JarFile(projectJarFile.getAbsolutePath());
-			Enumeration e = jf.entries();
+			Enumeration<JarEntry> e = jf.entries();
 			while (e.hasMoreElements()) {
 				JarEntry je = (JarEntry) e.nextElement();
 				String name = je.getName();

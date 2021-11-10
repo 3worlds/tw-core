@@ -503,7 +503,7 @@ hasNode spaceSpec
 // parameter values for a group as specified in groupSpec above
 hasNode constantValuesSpec
 	isOfClass = String("constantValues")
-	hasParent = StringTable(([3]"system:","group:","component:"))
+	hasParent = StringTable(([4]"system:","lifeCycle:","group:","component:"))
 	multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
 	// caution: if parameter values are associated to an atomic, it means it is unique in its
@@ -515,7 +515,7 @@ hasNode constantValuesSpec
 
 hasNode variableValuesSpec
 	isOfClass = String("variableValues")
-	hasParent = StringTable(([2]"system:","component:"))
+	hasParent = StringTable(([4]"system:","lifeCycle:","group:","component:"))
 	multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
 	mustSatisfyQuery variableValuesPropertiesMatchDefinitionQuery

@@ -30,11 +30,15 @@ package au.edu.anu.twcore.ecosystem;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.RuntimeGraphData;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.ConstantValues;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.VariableValues;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.ElementType;
+import au.edu.anu.twcore.experiment.DataSource;
+import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -55,7 +59,9 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Replacement for ecosystem node - maps to system This class always makes one
@@ -69,6 +75,8 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 
 	private boolean makeContainer = true;
 	private GraphDataTracker dataTracker;
+	// the data read from file for this arena
+	private SimplePropertyList loadedData = null;
 
 	// default constructor
 	public ArenaType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -92,6 +100,26 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 				notQuery(orQuery(hasTheLabel(N_CATEGORY.label()), hasTheLabel(N_CATEGORYSET.label())))));
 		if (nl == null || nl.isEmpty())
 			makeContainer = false;
+		// load data from configuration graph
+		SimplePropertyList plist = new ExtendablePropertyListImpl();
+		for (TreeNode tn:getChildren())
+			if (tn instanceof VariableValues)
+				((ExtendablePropertyList)plist).addProperties(((VariableValues)tn).properties());
+			else if (tn instanceof ConstantValues)
+				((ExtendablePropertyList)plist).addProperties(((ConstantValues)tn).properties());
+		// load data from files
+		Map<DataIdentifier, SimplePropertyList> loaded = new HashMap<>();
+		if (plist.size()>0)
+			loaded.put(new DataIdentifier("1","",""),plist);
+		List<DataSource> sources = (List<DataSource>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
+			edgeListEndNodes());
+		for (DataSource source:sources)
+			source.getInstance().load(loaded);
+		// sort out which loaded data match this group.
+		// there should be only one normally
+		if (!loaded.isEmpty())
+			loadedData = loaded.values().iterator().next();
 		seal();
 	}
 
@@ -119,13 +147,15 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 		}
 
 		if (setinit != null)
-			return new ArenaFactory(categories, /* categoryId(), */
+			return new ArenaFactory(categories,
 				autoVarTemplate, driverTemplate, decoratorTemplate, lifetimeConstantTemplate,
-				(SetInitialStateFunction) setinit.getInstance(id), makeContainer, id(), dataTracker,id);
+				(SetInitialStateFunction) setinit.getInstance(id), loadedData,
+				makeContainer, id(), dataTracker,id);
 		else
-			return new ArenaFactory(categories, /* categoryId(), */
-				autoVarTemplate, driverTemplate, decoratorTemplate, lifetimeConstantTemplate, null, makeContainer,
-				id(), dataTracker,id);
+			return new ArenaFactory(categories,
+				autoVarTemplate, driverTemplate, decoratorTemplate, lifetimeConstantTemplate, 
+				null, loadedData, 
+				makeContainer, id(), dataTracker,id);
 	}
 
 	public  GraphDataTracker getDataTracker() {

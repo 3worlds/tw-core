@@ -51,16 +51,19 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 	private ArenaComponent arena = null;
 	private boolean makeContainer = true;
 	protected String name = null;
+	private SimplePropertyList initialValues = null;
 
 	private GraphDataTracker dataTracker;
 
 	public ArenaFactory(Set<Category> categories, TwData auto, TwData drv, TwData dec,
-			TwData ltc, SetInitialStateFunction setinit, boolean makeContainer,
+			TwData ltc, SetInitialStateFunction setinit, SimplePropertyList initialValues,
+			boolean makeContainer,
 			String name, GraphDataTracker dt, int simulatorId) {
-		super(categories, /* categoryId, */ auto, drv, dec, ltc, setinit,true,simulatorId);
+		super(categories, auto, drv, dec, ltc, setinit,true,simulatorId);
 		this.makeContainer = makeContainer;
 		this.name = name;
 		this.dataTracker = dt;
+		this.initialValues = initialValues; // may be null
 	}
 
 	@Override
@@ -78,7 +81,11 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 					decoratorTemplate, lifetimeConstantTemplate, 2, propertyMap);
 			arena = (ArenaComponent) SCfactory.get(simId).makeNode(ArenaComponent.class, name, props);
 			arena.setCategorized(this);
-			arena.setDataTracker(dataTracker); // probably inaccessable under its runtime type
+			if (initialValues!=null)
+				for (String pkey:arena.properties().getKeysAsSet())
+					if (initialValues.hasProperty(pkey))
+						arena.properties().setProperty(pkey,initialValues.getPropertyValue(pkey));
+			arena.setDataTracker(dataTracker); // probably inaccessible under its runtime type
 			if (makeContainer) {
 				community.setData(arena);
 				arena.setContent(community);

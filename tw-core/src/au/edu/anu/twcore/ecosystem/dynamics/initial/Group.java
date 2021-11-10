@@ -36,6 +36,8 @@ import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import au.edu.anu.twcore.experiment.DataSource;
+import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -52,6 +54,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,6 +73,8 @@ public class Group
 	private GroupType groupType = null;
 	private LifeCycle lifeCycle = null;
 	private ComponentType groupOf = null;
+	// the data read from file for this group
+	private SimplePropertyList loadedData = null;
 
 	// default constructor
 	public Group(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -81,6 +86,7 @@ public class Group
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
@@ -93,8 +99,20 @@ public class Group
 		groupOf = (ComponentType) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
 			endNode());
-		// TODO (?): implement the possibility for groups to be nested within groups.
-		// PB: what do do with lifeCycles in this case ?
+		// load data from files
+		Map<DataIdentifier, SimplePropertyList> loaded = new HashMap<>();
+		List<DataSource> sources = (List<DataSource>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
+			edgeListEndNodes());
+		for (DataSource source:sources)
+			source.getInstance().load(loaded);
+		// sort out which loaded data match this group.
+		// there should be only one normally
+		for (DataIdentifier dif:loaded.keySet())
+			if (dif.groupId().equals(this.id())) {
+				loadedData = loaded.get(dif);
+				break;
+		}
 		sealed = true;
 	}
 
@@ -148,12 +166,17 @@ public class Group
 			}
 			GroupComponent gc = gf.newInstance(superContainer);
 			gc.connectParent(parent);
-			// fill group with initial values
+			// fill group with initial values from the configuration file
 			for (TreeNode tn:getChildren())
 				if (tn instanceof VariableValues)
 					((VariableValues)tn).fill(gc.currentState());
 				else if (tn instanceof ConstantValues)
 					((ConstantValues) tn).fill(gc.constants());
+			// fill group with initial values read from file - overtake the previous
+			if (loadedData!=null)
+				for (String pkey:gc.properties().getKeysAsSet())
+					if (loadedData.hasProperty(pkey))
+						gc.properties().setProperty(pkey,loadedData.getPropertyValue(pkey));
 			// if no components, then some more inits must be done
 			if (groupOf!=null) {
 				// set itemCategories
