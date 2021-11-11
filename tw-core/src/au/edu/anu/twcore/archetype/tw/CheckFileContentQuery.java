@@ -38,6 +38,7 @@ import org.assertj.core.util.Arrays;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
+import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
@@ -160,12 +161,13 @@ public class CheckFileContentQuery extends QueryAdaptor {
 									+"' or add '" +s+ "' column to file '"+file.getName()+"'";
 							}
 						}
+						// NB: rawdata is String and IntTable is int!
 						if (ds.properties().hasProperty(P_DATASOURCE_DIM.key())) {
-							StringTable st = (StringTable) ds.properties().getPropertyValue(P_DATASOURCE_DIM.key());
-							for (int i=0; i<st.size(); i++)
-								if (!Arrays.asList(rawData[0]).contains(st.getWithFlatIndex(i))) {
-									errorMsg = "Dimension column '"+st.getWithFlatIndex(i)+"' not found in file '"+file.getName()+"'";
-									actionMsg = "Add '" +st.getWithFlatIndex(i)+ "' column to file '"+file.getName()+"'";
+							IntTable it = (IntTable) ds.properties().getPropertyValue(P_DATASOURCE_DIM.key());
+							for (int i=0; i<it.size(); i++)
+								if (!Arrays.asList(rawData[0]).contains(it.getWithFlatIndex(i))) {
+									errorMsg = "Dimension column '"+it.getWithFlatIndex(i)+"' not found in file '"+file.getName()+"'";
+									actionMsg = "Add '" +it.getWithFlatIndex(i)+ "' column to file '"+file.getName()+"'";
 							}
 						}
 					}
@@ -176,15 +178,15 @@ public class CheckFileContentQuery extends QueryAdaptor {
 					// 1st data row
 					if (rawData[1]!=null) {
 						if (ds.properties().hasProperty(P_DATASOURCE_DIM.key())) {
-							StringTable st = (StringTable) ds.properties().getPropertyValue(P_DATASOURCE_DIM.key());
-							for (int i=0; i<st.size(); i++)
-								if (Arrays.asList(rawData[0]).contains(st.getWithFlatIndex(i))) {
+							IntTable it = (IntTable) ds.properties().getPropertyValue(P_DATASOURCE_DIM.key());
+							for (int i=0; i<it.size(); i++)
+								if (Arrays.asList(rawData[0]).contains(it.getWithFlatIndex(i))) {
 									try {
 										int index = Integer.valueOf(rawData[1][i]);
 									} catch (NumberFormatException e) {
-										errorMsg = "Dimension '"+st.getWithFlatIndex(i)
+										errorMsg = "Dimension '"+it.getWithFlatIndex(i)
 											+"' values in file '"+file.getName()+"' are not integers";
-										actionMsg = "Replace values for dimension '"+st.getWithFlatIndex(i)
+										actionMsg = "Replace values for dimension '"+it.getWithFlatIndex(i)
 											+"' in file '"+file.getName()+"' with integers";
 									}
 							}
