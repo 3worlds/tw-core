@@ -107,16 +107,29 @@ hasNode timePeriodSpec
 		toNode = String("stoppingCondition:")
 		multiplicity = IntegerRange("0..1")
 	// TODO Needs a query to make end>start
+	
+//-------------------------------------------------------------------------------------------
+// DATA SOURCE: Specification of a source of data to import to a model configuration
+// Currently supported: spreadsheet-type data in .csv or .ods formats
+//-------------------------------------------------------------------------------------------
 hasNode dataSourceSpec
 	isOfClass = String("dataSource")
 	hasParent =  StringTable(([1]"experiment:"))
 	multiplicity = IntegerRange("0..*")
+	
+	//
+	// name of the file represented by this source - this file must exist.
+	//
 	hasProperty dataSourceFileSpec
 		hasName = String("file")
 		type = String("FileType")
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery dataSourceFileExistenceQuery
 			className = String("au.edu.anu.twcore.archetype.tw.InputFileExistQuery")
+			
+	//
+	// type of file - at the moment, .csv or .ods - with matching sub-archetypes
+	//
 	hasProperty dataSourceSubclassPropertySpec
 		hasName = String("subclass")
 		type = String("String")
@@ -137,8 +150,71 @@ hasNode dataSourceSpec
 		parameters = StringTable(([3]"subclass",+
 		"au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader",+
 		"3wSA-OdfFileLoader.ugt"))
+		
+	//
+	// consistency checks that the file contains the variables listed in the properties below
+	//
 	mustSatisfyQuery dataSourceFileContentCheck
 		className = String("au.edu.anu.twcore.archetype.tw.CheckFileContentQuery")
+		
+	//
+	// list of column names to read (default: read all variables found in the file)
+	//
+	hasProperty CsvFileReadSpec
+		hasName = String("read")
+		type = String("StringTable")
+		multiplicity = IntegerRange("0..1")
+		
+	//
+	// name of the variable (spreadsheet column) containing a life cycle identifier (optional)
+	//
+	hasProperty CsvFileidSpeciesSpec
+		hasName = String("idLifeCycle")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+		
+	//
+	// name of the variable (spreadsheet column) containing a group identifier (optional)
+	//
+	hasProperty CsvFileidStageSpec
+		hasName = String("idGroup")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+	//
+	// name of the variable (spreadsheet column) containing a component identifier (optional)
+	//
+	hasProperty CsvFileidComponentSpec
+		hasName = String("idComponent")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+		
+	//
+	// name of the variable (spreadsheet column) containing a relation identifier (optional)
+	// (NB: this is disabled at the moment)
+	//
+	hasProperty CsvFileidRelationSpec
+		hasName = String("idRelation")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+		
+	//
+	// I dont remember what was that for ??
+	//
+	hasProperty CsvFileidVariableSpec
+		hasName = String("idVariable")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+		
+	// names of the variables (spreadsheet columns) containing a dimension identifier
+	// (for table data) - consistency rules apply
+	//
+	hasProperty CsvFileDimListSpec
+		hasName = String("dim")
+		type = String("StringTable")
+		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery dataSourceFileDimCheck
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileDimQuery")
+//-------------------------------------------------------------------------------------------
 
 hasNode dataSinkSpec
 	isOfClass = String("dataSink")

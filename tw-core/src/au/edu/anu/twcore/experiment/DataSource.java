@@ -167,7 +167,9 @@ public class DataSource
     		dataLoader = new CsvFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,propTemplates,input,sep);
     	}
     	else if (loaderclass.contains(OdfFileLoader.class.getSimpleName())) {
-    		String sheet = (String) properties().getPropertyValue(P_DATASOURCE_SHEET.key());
+    		String sheet = null;
+    		if (properties().hasProperty(P_DATASOURCE_SHEET.key()))
+    			sheet = (String) properties().getPropertyValue(P_DATASOURCE_SHEET.key());
     		dataLoader = new OdfFileLoader(idsp,idst,idsc,idsr,idmd,idDims,columnsToRead,propTemplates,input,sheet);
     	}
     	else if (loaderclass.contains(BOMWeatherLoader.class.getSimpleName()))

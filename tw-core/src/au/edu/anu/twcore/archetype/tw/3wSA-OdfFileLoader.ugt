@@ -13,47 +13,9 @@ archetype 3wSA-OdfFileLoader
 		isOfClass = String("dataSource")
 		hasParent = StringTable(([1]"experiment:"))
 		multiplicity = IntegerRange("0..*")
-		// sheet used in Odf file (no default)
+		// sheet used in Odf file (default: use the first sheet)
 		hasProperty OdfFileSheetSpec
 			hasName = String("sheet")
 			type = String("String")
-			multiplicity = IntegerRange("1..1")
-		// name of column with species ids (default: no species)
-		hasProperty OdfFileidSpeciesSpec
-			hasName = String("idLifeCycle")
-			type = String("String")
-			multiplicity = IntegerRange("0..1")
-		// name of column with stage ids (default: no stage)
-		hasProperty OdfFileidStageSpec
-			hasName = String("idGroup")
-			type = String("String")
-			multiplicity = IntegerRange("0..1")
-		// name of column with individual component ids (default: no component)
-		hasProperty OdfFileidComponentSpec
-			hasName = String("idComponent")
-			type = String("String")
-			multiplicity = IntegerRange("0..1")
-		// name fo column with individual relation ids (default: no relation)
-		hasProperty OdfFileidRelationSpec
-			hasName = String("idRelation")
-			type = String("String")
-			multiplicity = IntegerRange("0..1")
-		// ??
-		hasProperty OdfFileidVariableSpec
-			hasName = String("idVariable")
-			type = String("String")
-			multiplicity = IntegerRange("0..1")
-		// table of table dimension column ranks, ie dimList=[1,4,3] means values
-		// of dimension 0 are in file column 1, dim. 1 in column 4 and dim.2 in column 3
-		// default: no dimensions
-		hasProperty OdfFileDimListSpec
-			hasName = String("dim")
-		//	type = String("StringTable")
-			type = String("IntTable")
-			multiplicity = IntegerRange("0..1")
-		// list of column names to read as variables (default: read all variables found in the file)
-		hasProperty OdfFileReadSpec
-			hasName = String("read")
-			type = String("StringTable")
 			multiplicity = IntegerRange("0..1")
 			

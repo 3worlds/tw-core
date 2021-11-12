@@ -29,6 +29,8 @@
 package au.edu.anu.twcore.experiment.runtime.io;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,22 +57,34 @@ public class OdfFileLoader extends TableDataLoader {
 	@Override
 	protected String[][] loadFromFile(Object...pars) {
 		this.sheet = (String) pars[0];
-		String[][] rawData = null;
+		ArrayList<String[]> rawData = new ArrayList<>();
 		try {
 			SpreadsheetDocument odf = SpreadsheetDocument.loadDocument(input);
 			Table table = null;
 			if ((sheet==null)||(sheet.isEmpty()))
 				table = odf.getSheetByIndex(0);	
 			else
-				table = odf.getSheetByName(sheet);						
-			rawData = new String[table.getRowCount()][];
+				table = odf.getSheetByName(sheet);	
 			for (int row=0; row<table.getRowCount(); row++) {
-				rawData[row] = new String[table.getColumnCount()];
-				for (int col=0; col<table.getColumnCount(); col++) {
-					rawData[row][col] = table.getCellByPosition(col,row).getStringValue();
-				}
+				String[] rawLine = new String[table.getColumnCount()];
+				for (int col=0; col<table.getColumnCount(); col++)
+					rawLine[col] = table.getCellByPosition(col,row).getStringValue();
+				rawData.add(rawLine);
 			}
-			return rawData;			
+			// remove empty lines
+			Iterator<String[]> it = rawData.iterator();
+			while (it.hasNext()) {
+				String[] line = it.next();
+				String s = "";
+				for (int j=0; j<line.length; j++)
+					s += line[j];
+				if (s.isBlank())
+					it.remove();
+			}
+			String[][] rawData2 = new String[rawData.size()][];
+			for (int i=0; i<rawData2.length; i++)
+				rawData2[i] = rawData.get(i);
+			return rawData2;			
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			throw new TwcoreException("I/O error with odf file reader",e1);

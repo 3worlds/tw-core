@@ -32,9 +32,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
-import org.assertj.core.util.Arrays;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
@@ -42,24 +44,37 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 //import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader;
 import au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader;
+import au.edu.anu.twcore.root.World;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.FileType;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_TABLE;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_SIZEDBY;
 
 /**
- * Check that the content of a data file contains column headers required by a data source.
+ * Check that a dim propertry is present when the variables of the data file require dimensions
  * 
- * @author Jacques Gignoux - 8 nov. 2021
+ * @author Jacques Gignoux - 12 nov. 2021
  *
  */
-// quickly tested with simple cases, csv only - seems ok
+// TODO: if a variable is in a file where other variables request dims, then it must be an identifier
+// or have the same dims....
+// tested - seems ok
 // TODO: move messages to TextTranslations.
-public class CheckFileContentQuery extends QueryAdaptor {
+public class CheckFileDimQuery extends QueryAdaptor {
+	
+	private Map<String,Integer> tableDims = new HashMap<>();
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public Queryable submit(Object input) {  // input is a DataSource node
 		initInput(input);
@@ -68,8 +83,8 @@ public class CheckFileContentQuery extends QueryAdaptor {
 			String dstype = (String) ds.properties().getPropertyValue(P_DATASOURCE_SUBCLASS.key());
 			File file = ((FileType) ds.properties().getPropertyValue(P_DATASOURCE_FILE.key())).getFile();
 			if (file!=null) {
+				// read the 2 first lines of the file
 				LinkedList<String> lines = new LinkedList<String>();
-				
 				String[][] rawData = null;
 				int linesRead = 0;
 				// csv file
@@ -112,7 +127,8 @@ public class CheckFileContentQuery extends QueryAdaptor {
 						if ((sheet==null)||(sheet.isEmpty()))
 							table = odf.getSheetByIndex(0);	
 						else
-							table = odf.getSheetByName(sheet);						
+							table = odf.getSheetByName(sheet);
+						// NB only read two lines: header + 1st data line
 						rawData = new String[2][];
 						for (int row=0; row<2; row++) {
 							rawData[row] = new String[table.getColumnCount()];
@@ -125,78 +141,65 @@ public class CheckFileContentQuery extends QueryAdaptor {
 						actionMsg = "check and fix format of ods file '"+file.getName()+"'";
 					}
 				}
-				// now, the checks - what's in these data files ?
+				// get the list of all tables declared  in the model so far and their number of dims
+				TreeNode root = World.getRoot(ds);
+				Collection<TableNode> tables = (Collection<TableNode>) get(root,
+					childTree(),
+					selectZeroOrMany(hasTheLabel(N_TABLE.label())) );
+				for (TableNode table:tables) {
+					Collection<Edge> ldim = (Collection<Edge>) get(table.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_SIZEDBY.label())));
+					tableDims.put(table.id(), ldim.size());
+				}
+				// make sure there are as many dim properties in the datasource  as required by the 
+				// table variables found in the file
 				if (rawData!=null ) {
-					// headers
 					if (rawData[0]!=null) {
-						if (ds.properties().hasProperty(P_DATASOURCE_IDLC.key())) {
-							String s = (String) ds.properties().getPropertyValue(P_DATASOURCE_IDLC.key());
-							if (!Arrays.asList(rawData[0]).contains(s)) {
-								errorMsg = "Life cycle identifier column '"+s+"' not found in file '"+file.getName()+"'";
-								actionMsg = "Remove '" +s+ "' property from data source '"+ ds.id()
-									+"' or add '" +s+ "' column to file '"+file.getName()+"'";
+						boolean noTableFound = true;
+						for (String header:rawData[0]) {
+							// for headers matching table names, 
+							// 1st case: header matches table name, check that dim
+							// property is present and enough values have been set
+							if (tableDims.containsKey(header)) {
+								noTableFound = false;
+								int ndimrequested = tableDims.get(header);
+								int ndimfound = 0;
+								if (ds.properties().hasProperty(P_DATASOURCE_DIM.key()))
+									ndimfound = ((StringTable)ds.properties().getPropertyValue(P_DATASOURCE_DIM.key())).size();
+								int missing = ndimrequested-ndimfound;
+								// not enough dims
+								if (missing>0) {
+									if (missing==1) {
+										errorMsg = "Missing '"+P_DATASOURCE_DIM.key()
+											+"' property in '"+ds.id()+"' to read data file '"+file+"'";
+										actionMsg = "Add a '"+P_DATASOURCE_DIM.key()
+											+"' property value to '"+ds.id()+"' to read data file '"+file+"'";
+									}									
+									else {
+										errorMsg = "Missing "+missing+" '"+P_DATASOURCE_DIM.key()
+											+"' property values in '"+ds.id()+"' to read data file '"+file+"'";
+										actionMsg = "Add "+missing+" values to property '"+P_DATASOURCE_DIM.key()
+											+"' in '"+ds.id()+"' to read data file '"+file+"'";
+									}
+								}
+								// too many dims
+								else if (missing<0) {
+									errorMsg = "Too many '"+P_DATASOURCE_DIM.key()
+										+"' properties in '"+ds.id()+"' to read data file '"+file+"'";
+									actionMsg = "Remove "+(-missing)+" '"+P_DATASOURCE_DIM.key()
+										+"' property values from '"+ds.id()+"' to read data file '"+file+"'";
+								}
 							}
 						}
-						if (ds.properties().hasProperty(P_DATASOURCE_IDGROUP.key())) {
-							String s = (String) ds.properties().getPropertyValue(P_DATASOURCE_IDGROUP.key());
-							if (!Arrays.asList(rawData[0]).contains(s)) {
-								errorMsg = "Group identifier column '"+s+"' not found in file '"+file.getName()+"'";
-								actionMsg = "Remove '" +s+ "' property from data source '"+ ds.id()
-									+"' or add '" +s+ "' column to file '"+file.getName()+"'";
-							}
-						}
-						if (ds.properties().hasProperty(P_DATASOURCE_IDCOMPONENT.key())) {
-							String s = (String) ds.properties().getPropertyValue(P_DATASOURCE_IDCOMPONENT.key());
-							if (!Arrays.asList(rawData[0]).contains(s)) {
-								errorMsg = "Component identifier column '"+s+"' not found in file '"+file.getName()+"'";
-								actionMsg = "Remove '" +s+ "' property from data source '"+ ds.id()
-									+"' or add '" +s+ "' column to file '"+file.getName()+"'";
-							}
-						}
-						if (ds.properties().hasProperty(P_DATASOURCE_IDRELATION.key())) {
-							String s = (String) ds.properties().getPropertyValue(P_DATASOURCE_IDRELATION.key());
-							if (!Arrays.asList(rawData[0]).contains(s)) {
-								errorMsg = "Relation identifier column '"+s+"' not found in file '"+file.getName()+"'";
-								actionMsg = "Remove '" +s+ "' property from data source '"+ ds.id()
-									+"' or add '" +s+ "' column to file '"+file.getName()+"'";
-							}
-						}
-						// NB: rawdata is String and IntTable is int!
-						if (ds.properties().hasProperty(P_DATASOURCE_DIM.key())) {
-							StringTable it = (StringTable) ds.properties().getPropertyValue(P_DATASOURCE_DIM.key());
-							for (int i=0; i<it.size(); i++)
-								if (!Arrays.asList(rawData[0]).contains(it.getWithFlatIndex(i))) {
-									errorMsg = "Dimension column '"+it.getWithFlatIndex(i)+"' not found in file '"+file.getName()+"'";
-									actionMsg = "Add '" +it.getWithFlatIndex(i)+ "' column to file '"+file.getName()+"'";
-							}
-						}
-					}
-					else {
-						errorMsg = "Data file '"+file.getName()+"' does not contain enough data";
-						actionMsg = "Add 1 line of headers and 1 line of values to data file '"+file.getName()+"'";
-					}
-					// 1st data row
-					if (rawData[1]!=null) {
-						if (ds.properties().hasProperty(P_DATASOURCE_DIM.key())) {
-							StringTable it = (StringTable) ds.properties().getPropertyValue(P_DATASOURCE_DIM.key());
-							for (int i=0; i<it.size(); i++)
-								for (int j=0; j<rawData[0].length; j++)
-									if (rawData[0][j].equals(it.getWithFlatIndex(i))) {
-										try {
-											int index = Integer.valueOf(rawData[1][j]);
-										} catch (NumberFormatException e) {
-											errorMsg = "Dimension '"+it.getWithFlatIndex(i)
-												+"' values in file '"+file.getName()+"' are not integers";
-											actionMsg = "Replace values for dimension '"+it.getWithFlatIndex(i)
-												+"' in file '"+file.getName()+"' with integers";
-										}
-							}
+						// if no header matches a table, check that there is no dim property
+						if (noTableFound)
+							if (ds.properties().hasProperty(P_DATASOURCE_DIM.key())) {
+								errorMsg = "Property '"+P_DATASOURCE_DIM.key()
+									+"' not needed in '"+ds.id()+"' to read data file '"+file+"'";
+								actionMsg = "Remove the '"+P_DATASOURCE_DIM.key()
+									+"' property from '"+ds.id()+"' to read data file '"+file+"'";
 						}
 					}
-					else {
-						errorMsg = "Data file '"+file.getName()+"' does not contain enough data";
-						actionMsg = "Add 1 line of headers and 1 line of values to data file '"+file.getName()+"'";
-					} 
 				}
 			}
 		}
