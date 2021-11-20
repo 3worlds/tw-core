@@ -606,6 +606,7 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
+
 	public static String[] getIsBoundedIntervalQuery(Interval interval) {
 		String am;
 		String cm;
@@ -1302,6 +1303,20 @@ public class TextTranslations {
 		return result;
 	}
 
+	public static String[] getRscriptExists() {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Install 'R' on this computer.";
+			cm = "Expected 'R' to be installed but not found";
+		} else {// make sure default is English or Sanskrit users will get no messages!
+			am = "Install 'R' on this computer.";
+			cm = "Expected 'R' to be installed but not found";
+		}
+		String[] result = { am, cm };
+		return result;
+
+	}
 }
 
 // COPY AND PASTE THIS CONVENIENCE TEMPLATE

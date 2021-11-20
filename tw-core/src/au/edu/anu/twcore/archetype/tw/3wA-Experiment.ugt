@@ -38,6 +38,8 @@ hasNode designSpec
 	mustSatisfyQuery dimIsInRangeQuerySpec
 		className = String("au.edu.anu.twcore.archetype.tw.PropertyXorQuery")
 		proplist = StringTable(([2]file,type))
+	mustSatisfyQuery rScriptExitsQuery
+		className = String("au.edu.anu.twcore.archetype.tw.RscriptExistsQuery")
 
 
 hasNode treatmentSpec
