@@ -38,6 +38,7 @@ public enum ModelBuildErrors {
 	COMPILER_ERROR/*         */("Compile"), //
 	COMPILER_MISSING/*       */("Compile"), //
 	SPECIFICATION/*          */("Specification"), //
+	DEPLOY_RSCRIPT_MISSING/* */("Depoloyment"), //
 	DEPLOY_CLASS_MISSING/*   */("Deployment"), //
 	DEPLOY_CLASS_OUTOFDATE/* */("Deployment"), //
 	DEPLOY_FAIL/*            */("Deployment"), //
