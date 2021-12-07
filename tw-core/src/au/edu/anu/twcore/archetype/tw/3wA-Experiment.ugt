@@ -183,12 +183,25 @@ hasNode dataSourceSpec
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
 	//
+	// consistency check: if a component  is an instance of a group, then the data source must
+	// specify a groupId column
+	//
+	mustSatisfyQuery dataSourceFileGroupCheck
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileGroupQuery")
+
+	//
 	// name of the variable (spreadsheet column) containing a component identifier (optional)
 	//
 	hasProperty CsvFileidComponentSpec
 		hasName = String("idComponent")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
+	//
+	// consistency check: if a component is loaded from >1 data sources, then all data
+	// sources must have a component id column 
+	//
+	mustSatisfyQuery dataSourceFileComponentIdCheck
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileComponentQuery")
 		
 	//
 	// name of the variable (spreadsheet column) containing a relation identifier (optional)

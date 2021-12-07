@@ -61,7 +61,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_SIZEDBY;
 
 /**
- * Check that a dim propertry is present when the variables of the data file require dimensions
+ * Check that a dim property is present when the variables of the data file require dimensions
  * 
  * @author Jacques Gignoux - 12 nov. 2021
  *

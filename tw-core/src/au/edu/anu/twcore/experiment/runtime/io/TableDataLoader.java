@@ -40,6 +40,7 @@ import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.ens.biologie.generic.DataContainer;
 import fr.ens.biologie.generic.utils.Logging;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -248,13 +249,18 @@ public abstract class TableDataLoader
 			SimplePropertyList data = null;
 			if (result.containsKey(id)) 
 				data = result.get(id);
-			else
+			else {
 				data = new ExtendablePropertyListImpl();
-			// this will put all column names found in the file as new properties,
-			// except if they already exist. With their default value as per their type.
-			for (String col:headers)
-				if (colTemplates.containsKey(col))
-					((ExtendablePropertyList)data).addProperty(col,colTemplates.get(col));
+				// this will put all column names found in the file as new properties,
+				// except if they already exist. With their default value as per their type.
+				for (String col:headers)
+					if (colTemplates.containsKey(col)) {
+						Object o = colTemplates.get(col); 					
+						if (o instanceof DataContainer)
+							o = ((DataContainer)o).clone();
+						((ExtendablePropertyList)data).addProperty(col,o);
+				}
+			}
 			PropertyDataLoader dataLoader = new PropertyDataLoader(
 			rawData[i],
 		    headers,

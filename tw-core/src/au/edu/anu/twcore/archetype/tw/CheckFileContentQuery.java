@@ -55,7 +55,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  * @author Jacques Gignoux - 8 nov. 2021
  *
  */
-// quickly tested with simple cases, csv only - seems ok
 // TODO: move messages to TextTranslations.
 public class CheckFileContentQuery extends QueryAdaptor {
 
