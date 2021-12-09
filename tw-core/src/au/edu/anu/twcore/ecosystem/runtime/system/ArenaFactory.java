@@ -83,8 +83,21 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 			arena.setCategorized(this);
 			if (initialValues!=null)
 				for (String pkey:arena.properties().getKeysAsSet())
-					if (initialValues.hasProperty(pkey))
+					if (initialValues.hasProperty(pkey)) {
 						arena.properties().setProperty(pkey,initialValues.getPropertyValue(pkey));
+						// make sure the initial values are recorded in templates
+						// because templates are used to reset values before simulations
+						// cf ArenaComponent.preProcess()
+						if (driverTemplate!=null)
+							if (driverTemplate.hasProperty(pkey))
+								driverTemplate.setProperty(pkey,initialValues.getPropertyValue(pkey));
+						if (lifetimeConstantTemplate!=null)
+							if (lifetimeConstantTemplate.hasProperty(pkey))
+								lifetimeConstantTemplate.setProperty(pkey,initialValues.getPropertyValue(pkey));
+						if (autoVarTemplate!=null)
+							if (autoVarTemplate.hasProperty(pkey))
+								autoVarTemplate.setProperty(pkey,initialValues.getPropertyValue(pkey));
+					}
 			arena.setDataTracker(dataTracker); // probably inaccessible under its runtime type
 			if (makeContainer) {
 				community.setData(arena);
