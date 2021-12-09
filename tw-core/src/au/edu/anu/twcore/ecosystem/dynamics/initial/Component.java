@@ -126,10 +126,6 @@ public class Component
 		}
 		else
 			loadedData.addAll(loaded.values());
-////		// debug
-//		for (DataIdentifier dif:loaded.keySet())
-//			System.out.println(loaded.get(dif).toString());
-//		//
 		if (properties().hasProperty(P_COMPONENT_NINST.key()))
 			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
 		if (nInstances==0)
