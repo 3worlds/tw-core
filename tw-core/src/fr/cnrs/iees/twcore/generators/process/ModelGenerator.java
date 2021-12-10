@@ -521,8 +521,8 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 								mb.fullType = null;
 								if (mb.type.equals("Integer"))
 									mb.type = "int";
-								else {
-									log.info("set type of " + mb);
+								else if (!mb.type.equals("String")) {
+//									log.info("set type of " + mb);
 									mb.type = mb.type.substring(0, 1).toLowerCase() + mb.type.substring(1);
 								}
 							}

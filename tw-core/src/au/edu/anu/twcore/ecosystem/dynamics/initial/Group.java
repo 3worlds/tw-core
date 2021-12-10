@@ -108,11 +108,15 @@ public class Group
 			source.getInstance().load(loaded);
 		// sort out which loaded data match this group.
 		// there should be only one normally
-		for (DataIdentifier dif:loaded.keySet())
+		if (loaded.size()==1) {// no group id columns needed
+			loadedData = loaded.values().iterator().next(); 
+		}
+		else // group id column needed, otherwise garbage in - but this cannot be checked
+			for (DataIdentifier dif:loaded.keySet()) 
 			if (dif.groupId().equals(this.id())) {
 				loadedData = loaded.get(dif);
 				break;
-		}
+		} // issue a warning if loadedData==null despite loaded having a size >1 ?
 		sealed = true;
 	}
 

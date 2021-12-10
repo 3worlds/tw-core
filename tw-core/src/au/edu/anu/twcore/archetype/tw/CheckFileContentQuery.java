@@ -111,13 +111,19 @@ public class CheckFileContentQuery extends QueryAdaptor {
 						if ((sheet==null)||(sheet.isEmpty()))
 							table = odf.getSheetByIndex(0);	
 						else
-							table = odf.getSheetByName(sheet);						
-						rawData = new String[2][];
-						for (int row=0; row<2; row++) {
-							rawData[row] = new String[table.getColumnCount()];
-							for (int col=0; col<table.getColumnCount(); col++) {
-								rawData[row][col] = table.getCellByPosition(col,row).getStringValue();
+							table = odf.getSheetByName(sheet);	
+						if (table!=null) {
+							rawData = new String[2][];
+							for (int row=0; row<2; row++) {
+								rawData[row] = new String[table.getColumnCount()];
+								for (int col=0; col<table.getColumnCount(); col++) {
+									rawData[row][col] = table.getCellByPosition(col,row).getStringValue();
+								}
 							}
+						}
+						else {
+							errorMsg = "sheet '"+ sheet + "' not found in ods data file '"+file.getName()+"'";
+							actionMsg = "check and fix sheet name for ods file '"+file.getName()+"'";
 						}
 					} catch (Exception e) {
 						errorMsg = "ods data file '"+file.getName()+"' could not be read";
