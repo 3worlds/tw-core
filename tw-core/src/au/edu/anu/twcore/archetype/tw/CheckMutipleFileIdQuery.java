@@ -31,6 +31,12 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.List;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.experiment.DataSource;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -39,14 +45,14 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 /**
- * Check that a data source has a component identifier column if components are to be loaded
+ * Check that a data source has a identifier column if the objects to be loaded come 
  * from >1 dataSource
  * 
  * @author Jacques Gignoux - 7 dec. 2021
  *
  */
 // TODO: move messages to TextTranslations.
-public class CheckFileComponentQuery extends QueryAdaptor {
+public class CheckMutipleFileIdQuery extends QueryAdaptor {
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -54,22 +60,41 @@ public class CheckFileComponentQuery extends QueryAdaptor {
 		initInput(input);
 		if (input instanceof DataSource) {
 			TreeGraphDataNode ds = (TreeGraphDataNode) input;
-			// get components
-			List<TreeGraphDataNode> components = (List<TreeGraphDataNode>) get(ds,inEdges(),
+			// get objects to load (either component, group, lifecycle, componentType, groupType or lifeCycleType)
+			List<TreeGraphDataNode> objectsToLoad = (List<TreeGraphDataNode>) get(ds,inEdges(),
 				selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
 				edgeListStartNodes());
-			for (TreeGraphDataNode comp:components) {
-				List<TreeGraphDataNode> sources = (List<TreeGraphDataNode>) get(comp,outEdges(),
+			for (TreeGraphDataNode otl:objectsToLoad) {
+				List<TreeGraphDataNode> sources = (List<TreeGraphDataNode>) get(otl,outEdges(),
 					selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
 					edgeListEndNodes());
 				// if the component loads from multiple sources, then ds must have a componentId column
 				if (sources.size()>1) {
-					if (!ds.properties().hasProperty(P_DATASOURCE_IDCOMPONENT.key())) {
-						errorMsg = "data source '"+ds.id()+"' lacks a component identifier column ('"
-							+P_DATASOURCE_IDCOMPONENT.key()+"' property)";
-						actionMsg = "set the optional property '"+P_DATASOURCE_IDCOMPONENT.key()+"'"+
-							" in data source '"+ds.id()+"'";
+					if ((otl instanceof Component)||(otl instanceof ComponentType)) {
+						if (!ds.properties().hasProperty(P_DATASOURCE_IDCOMPONENT.key())) {
+							errorMsg = "data source '"+ds.id()+"' lacks a component identifier column ('"
+								+P_DATASOURCE_IDCOMPONENT.key()+"' property)";
+							actionMsg = "set the optional property '"+P_DATASOURCE_IDCOMPONENT.key()+"'"+
+								" in data source '"+ds.id()+"'";
+						}
 					}
+					else if ((otl instanceof Group)||(otl instanceof GroupType)) {
+						if (!ds.properties().hasProperty(P_DATASOURCE_IDGROUP.key())) {
+							errorMsg = "data source '"+ds.id()+"' lacks a group identifier column ('"
+								+P_DATASOURCE_IDGROUP.key()+"' property)";
+							actionMsg = "set the optional property '"+P_DATASOURCE_IDGROUP.key()+"'"+
+								" in data source '"+ds.id()+"'";
+						}
+					}
+					else if ((otl instanceof LifeCycle)||(otl instanceof LifeCycleType)) {
+						if (!ds.properties().hasProperty(P_DATASOURCE_IDLC.key())) {
+							errorMsg = "data source '"+ds.id()+"' lacks a life cycle identifier column ('"
+								+P_DATASOURCE_IDLC.key()+"' property)";
+							actionMsg = "set the optional property '"+P_DATASOURCE_IDLC.key()+"'"+
+								" in data source '"+ds.id()+"'";
+						}
+					}
+
 				}
 			}
 		}

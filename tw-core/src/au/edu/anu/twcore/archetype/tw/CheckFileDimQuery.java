@@ -28,26 +28,15 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
-import org.odftoolkit.simple.SpreadsheetDocument;
-import org.odftoolkit.simple.table.Table;
-
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-//import au.edu.anu.rscs.aot.collections.tables.IntTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.experiment.DataSource;
-import au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader;
-import au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader;
 import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -70,7 +59,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_SIZEDBY;
 // or have the same dims....
 // tested - seems ok
 // TODO: move messages to TextTranslations.
-public class CheckFileDimQuery extends QueryAdaptor {
+public class CheckFileDimQuery extends CheckDataFileQuery {
 	
 	private Map<String,Integer> tableDims = new HashMap<>();
 
@@ -80,67 +69,68 @@ public class CheckFileDimQuery extends QueryAdaptor {
 		initInput(input);
 		if (input instanceof DataSource) {
 			DataSource ds = (DataSource) input;
-			String dstype = (String) ds.properties().getPropertyValue(P_DATASOURCE_SUBCLASS.key());
+			String[][] rawData = loadFile(ds);
+//			String dstype = (String) ds.properties().getPropertyValue(P_DATASOURCE_SUBCLASS.key());
 			File file = ((FileType) ds.properties().getPropertyValue(P_DATASOURCE_FILE.key())).getFile();
 			if (file!=null) {
-				// read the 2 first lines of the file
-				LinkedList<String> lines = new LinkedList<String>();
-				String[][] rawData = null;
-				int linesRead = 0;
-				// csv file
-				if (dstype.contains(CsvFileLoader.class.getSimpleName())) {
-					BufferedReader reader = null;
-					try {
-						reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-					    String line = reader.readLine();
-					    // NB only read two lines: header + 1st data line
-					    while ((line!=null)&&(linesRead<2)) {
-							if (!line.trim().isEmpty()) { // skip empty lines wherever they are
-							    lines.add(line);
-							    linesRead++;
-							}
-							line = reader.readLine();
-					    }
-					    reader.close();
-					} catch (Exception e) {
-						errorMsg = "csv data file '"+file.getName()+"' could not be read";
-						actionMsg = "check and fix format of csv file '"+file.getName()+"'";
-					}
-					rawData = new String[lines.size()][];
-					int i=0;
-					String fieldSeparator = "\t";
-					if (ds.properties().hasProperty(P_DATASOURCE_SEP.key()))
-						fieldSeparator = (String) ds.properties().getPropertyValue(P_DATASOURCE_SEP.key());
-					for (String l:lines) {
-						String[] s = l.split(fieldSeparator);
-						rawData[i] = s;
-						i++;
-					}
-				}
-				// ods file
-				else if (dstype.contains(OdfFileLoader.class.getSimpleName())) {
-					SpreadsheetDocument odf;
-					try {
-						odf = SpreadsheetDocument.loadDocument(new FileInputStream(file));
-						Table table = null;
-						String sheet = (String) ds.properties().getPropertyValue(P_DATASOURCE_SHEET.key());
-						if ((sheet==null)||(sheet.isEmpty()))
-							table = odf.getSheetByIndex(0);	
-						else
-							table = odf.getSheetByName(sheet);
-						// NB only read two lines: header + 1st data line
-						rawData = new String[2][];
-						for (int row=0; row<2; row++) {
-							rawData[row] = new String[table.getColumnCount()];
-							for (int col=0; col<table.getColumnCount(); col++) {
-								rawData[row][col] = table.getCellByPosition(col,row).getStringValue();
-							}
-						}
-					} catch (Exception e) {
-						errorMsg = "ods data file '"+file.getName()+"' could not be read";
-						actionMsg = "check and fix format of ods file '"+file.getName()+"'";
-					}
-				}
+//				// read the 2 first lines of the file
+//				LinkedList<String> lines = new LinkedList<String>();
+////				String[][] rawData = null;
+//				int linesRead = 0;
+//				// csv file
+//				if (dstype.contains(CsvFileLoader.class.getSimpleName())) {
+//					BufferedReader reader = null;
+//					try {
+//						reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+//					    String line = reader.readLine();
+//					    // NB only read two lines: header + 1st data line
+//					    while ((line!=null)&&(linesRead<2)) {
+//							if (!line.trim().isEmpty()) { // skip empty lines wherever they are
+//							    lines.add(line);
+//							    linesRead++;
+//							}
+//							line = reader.readLine();
+//					    }
+//					    reader.close();
+//					} catch (Exception e) {
+//						errorMsg = "csv data file '"+file.getName()+"' could not be read";
+//						actionMsg = "check and fix format of csv file '"+file.getName()+"'";
+//					}
+//					rawData = new String[lines.size()][];
+//					int i=0;
+//					String fieldSeparator = "\t";
+//					if (ds.properties().hasProperty(P_DATASOURCE_SEP.key()))
+//						fieldSeparator = (String) ds.properties().getPropertyValue(P_DATASOURCE_SEP.key());
+//					for (String l:lines) {
+//						String[] s = l.split(fieldSeparator);
+//						rawData[i] = s;
+//						i++;
+//					}
+//				}
+//				// ods file
+//				else if (dstype.contains(OdfFileLoader.class.getSimpleName())) {
+//					SpreadsheetDocument odf;
+//					try {
+//						odf = SpreadsheetDocument.loadDocument(new FileInputStream(file));
+//						Table table = null;
+//						String sheet = (String) ds.properties().getPropertyValue(P_DATASOURCE_SHEET.key());
+//						if ((sheet==null)||(sheet.isEmpty()))
+//							table = odf.getSheetByIndex(0);	
+//						else
+//							table = odf.getSheetByName(sheet);
+//						// NB only read two lines: header + 1st data line
+//						rawData = new String[2][];
+//						for (int row=0; row<2; row++) {
+//							rawData[row] = new String[table.getColumnCount()];
+//							for (int col=0; col<table.getColumnCount(); col++) {
+//								rawData[row][col] = table.getCellByPosition(col,row).getStringValue();
+//							}
+//						}
+//					} catch (Exception e) {
+//						errorMsg = "ods data file '"+file.getName()+"' could not be read";
+//						actionMsg = "check and fix format of ods file '"+file.getName()+"'";
+//					}
+//				}
 				// get the list of all tables declared  in the model so far and their number of dims
 				TreeNode root = World.getRoot(ds);
 				Collection<TableNode> tables = (Collection<TableNode>) get(root,

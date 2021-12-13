@@ -195,7 +195,7 @@ public class Component
 				// fill component with initial values (including coordinates) from the configuration file
 				for (TreeNode tn:getChildren()) {
 					if (tn instanceof VariableValues) {
-						// this copies all variables contained in Drivers but ignores automatc variables
+						// this copies all variables contained in Drivers but ignores automatic variables
 						((VariableValues)tn).fill(sc.currentState());
 						// this copies automatic variables, if any
 						((VariableValues)tn).fill(sc.autoVar());

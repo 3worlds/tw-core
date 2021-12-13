@@ -188,6 +188,9 @@ hasNode dataSourceSpec
 	//
 	mustSatisfyQuery dataSourceFileGroupCheck
 		className = String("au.edu.anu.twcore.archetype.tw.CheckFileGroupQuery")
+	// if a group is loaded, then the data file may need to contain a groupId column
+	mustSatisfyQuery dataSourceFileIdCheck
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdQuery")
 
 	//
 	// name of the variable (spreadsheet column) containing a component identifier (optional)
@@ -201,7 +204,7 @@ hasNode dataSourceSpec
 	// sources must have a component id column 
 	//
 	mustSatisfyQuery dataSourceFileComponentIdCheck
-		className = String("au.edu.anu.twcore.archetype.tw.CheckFileComponentQuery")
+		className = String("au.edu.anu.twcore.archetype.tw.CheckMutipleFileIdQuery")
 		
 	//
 	// name of the variable (spreadsheet column) containing a relation identifier (optional)

@@ -167,6 +167,14 @@ hasNode groupTypeSpec
 		hasName = String("constantClass")
 		type =  String("String")
 		multiplicity = IntegerRange("0..1")
+	//
+	// many groups can be loaded from file for a groupType node
+	//		
+	hasEdge groupTypeToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource:")
+		multiplicity = IntegerRange("0..*")
+		
 //-------------------------------------------------------------------------------------------
 
 hasNode groupSpec
