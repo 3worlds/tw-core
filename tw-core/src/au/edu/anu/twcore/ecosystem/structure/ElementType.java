@@ -162,6 +162,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		return sealed;
 	}
 
+	// return a factory
 	@Override
 	public final T getInstance(int id) {
 		if (!sealed)

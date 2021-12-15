@@ -72,18 +72,13 @@ public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 	@Override
 	public void initialise() {
 		super.initialise();
+		sealed = false;
 		// containerData initialised in GroupFactory
+		sealed = true;
 	}
 
 	@Override
 	protected GroupFactory makeTemplate(int id) {
-		
-		// TODO:
-		// when data sources are present, 
-		// make a new factory for every group read, with 
-		// (1) the group name as the factory name argument 
-		// (2) the data loaded in the templates for initialisation of groups
-		
 		if (setinit!=null)
 			return new GroupFactory(categories,
 				autoVarTemplate,driverTemplate,decoratorTemplate,lifetimeConstantTemplate,

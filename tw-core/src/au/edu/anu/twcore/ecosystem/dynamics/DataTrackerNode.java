@@ -502,33 +502,43 @@ public class DataTrackerNode extends InitialisableNode
 				List<Category> groupCats = (List<Category>) get(group.getParent().edges(Direction.OUT),
 					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
 					edgeListEndNodes());
-				// if the process tracks group data, then track the group
-				if (groupCats.containsAll(processCategories))
-					ls.add(group.getInstance(index));
-				else {
-				// if the process tracks component data, then track the group SystemComponents
-					samplingPool = group.getInstance(index).content();
-					// in the groupType of this group's componentTypes, search the one
-					// which has the same categories as this process to know if the items are permanent
-					List<ComponentType> ctl = (List<ComponentType>) get(group.getParent().getChildren(), 
-						selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-					for (ComponentType ct:ctl) {
-						List<Category> componentCats = (List<Category>) get(ct.edges(Direction.OUT),
-							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
-							edgeListEndNodes());
-						// CAUTION: not sure this test works 100% - there may be ambiguities 
-						if (componentCats.containsAll(processCategories)) {
-							LifespanType lft = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
-							permanent = (lft==LifespanType.permanent);
-						}
-					}
-				}
+				
+				// WIP 15/12/2021 - code disabled
+				
+				System.out.println("Code temporarily disabled - group data cannot be tracked");
+				
+//				// if the process tracks group data, then track the group
+//				if (groupCats.containsAll(processCategories))
+//					ls.add(group.getInstance(index));
+//				else {
+//				// if the process tracks component data, then track the group SystemComponents
+//					samplingPool = group.getInstance(index).content();
+//					// in the groupType of this group's componentTypes, search the one
+//					// which has the same categories as this process to know if the items are permanent
+//					List<ComponentType> ctl = (List<ComponentType>) get(group.getParent().getChildren(), 
+//						selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+//					for (ComponentType ct:ctl) {
+//						List<Category> componentCats = (List<Category>) get(ct.edges(Direction.OUT),
+//							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+//							edgeListEndNodes());
+//						// CAUTION: not sure this test works 100% - there may be ambiguities 
+//						if (componentCats.containsAll(processCategories)) {
+//							LifespanType lft = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
+//							permanent = (lft==LifespanType.permanent);
+//						}
+//					}
+//				}
+				
 			}
 			else if (etype instanceof GroupType) {
-				List<Group> groups = (List<Group>) get(etype.getChildren(), 
-					selectOneOrMany(hasTheLabel(N_GROUP.label())));
-				for (Group g:groups)
-					ls.add(g.getInstance(index));
+				
+				// WIP 15/12/2021 - code disabled
+				System.out.println("Code temporarily disabled - group data cannot be tracked");
+				
+//				List<Group> groups = (List<Group>) get(etype.getChildren(), 
+//					selectOneOrMany(hasTheLabel(N_GROUP.label())));
+//				for (Group g:groups)
+//					ls.add(g.getInstance(index));
 			}
 		}
 		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {

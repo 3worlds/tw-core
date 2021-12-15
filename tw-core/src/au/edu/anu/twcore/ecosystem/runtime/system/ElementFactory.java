@@ -151,6 +151,12 @@ public abstract class ElementFactory<T extends DataElement>
 		throw new TwcoreException("This method should never be called");
 	}
 
+	/**
+	 * instantiate a new DataComponent
+	 *  
+	 * @param parentContainer the container under which this instance will be nested / stored
+	 * @return the new DataComponent
+	 */
 	public T newInstance(ComponentContainer parentContainer) {
 		this.parentContainer = parentContainer;
 		return newInstance();

@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
-import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.DefaultStrings;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
@@ -36,7 +36,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
-import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -45,36 +44,33 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.LimitedEdition;
-import fr.ens.biologie.generic.Sealable;
-
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
- * A class matching the "system/structure/groupType/group" node of the 3w configuration
+ * A class matching the "system/structure/groupType/group" node of the 3w configuration.
+ * 
+ * If a group points to dataSources, it may load more than one group.
+ * otherwise it matches only one group with the name = group id
  *
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
 public class Group
-		extends InitialisableNode
-		implements Sealable, LimitedEdition<GroupComponent> {
+		extends InitialElement<GroupComponent>
+		implements  DefaultStrings {
+//		extends InitialisableNode
+//		implements Sealable, LimitedEdition<GroupComponent> {
 
-	private boolean sealed = false;
-	private Map<Integer,GroupComponent> groups = new HashMap<>();
+//	private Map<Integer,GroupComponent> groups = new HashMap<>();
 	private static final int baseInitRank = N_GROUP.initRank();
 	private GroupType groupType = null;
 	private LifeCycle lifeCycle = null;
 	private ComponentType groupOf = null;
 	// the data read from file for this group
-	private SimplePropertyList loadedData = null;
+//	private SimplePropertyList loadedData = null;
 
 	// default constructor
 	public Group(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -86,11 +82,9 @@ public class Group
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
-		sealed = false;
 		groupType = (GroupType) getParent();
 		Edge cycle = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_CYCLE.label())));
@@ -99,25 +93,7 @@ public class Group
 		groupOf = (ComponentType) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
 			endNode());
-		// load data from files
-		Map<DataIdentifier, SimplePropertyList> loaded = new HashMap<>();
-		List<DataSource> sources = (List<DataSource>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
-			edgeListEndNodes());
-		for (DataSource source:sources)
-			source.getInstance().load(loaded);
-		// sort out which loaded data match this group.
-		// there should be only one normally
-		if (loaded.size()==1) {// no group id columns needed
-			loadedData = loaded.values().iterator().next(); 
-		}
-		else // group id column needed, otherwise garbage in - but this cannot be checked
-			for (DataIdentifier dif:loaded.keySet()) 
-			if (dif.groupId().equals(this.id())) {
-				loadedData = loaded.get(dif);
-				break;
-		} // issue a warning if loadedData==null despite loaded having a size >1 ?
-		sealed = true;
+		seal();
 	}
 
 	// this to call groups in proper dependency order, i.e. higher groups must be initialised first
@@ -132,64 +108,101 @@ public class Group
 		return initRank(this,baseInitRank);
 	}
 
-	@Override
-	public Sealable seal() {
-		sealed = true;
-		return this;
-	}
+//	@Override
+//	public GroupComponent getInstance(int id) {
+//		if (!sealed)
+//			initialise();
+//		if (!groups.containsKey(id)) {
+//			// instantiate GroupComponent (with container, and super container)
+//			// with this group's id as name
+//			groupType.getInstance(id).setName(id());
+//			GroupFactory gf = groupType.getInstance(id);
+//			// put group into container hierarchy
+//			ComponentContainer superContainer = null;
+//			LifeCycleComponent lcc = null;
+//			TreeNode parent = null;
+//			// 1st case: there is a lifeCycle
+//			if (lifeCycle!=null) {
+//				lcc = lifeCycle.getInstance(id);
+//				superContainer = (ComponentContainer) lcc.content();
+//				parent = lcc;
+//			}
+//			// 2nd case: there is no lifeCycle
+//			else {
+//				ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
+//				superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
+//				parent = system;
+//			}
+//			GroupComponent gc = gf.newInstance(superContainer);
+//			gc.connectParent(parent);
+//			// fill group with initial values from the configuration file
+//			for (TreeNode tn:getChildren())
+//				if (tn instanceof VariableValues)
+//					((VariableValues)tn).fill(gc.currentState());
+//				else if (tn instanceof ConstantValues)
+//					((ConstantValues) tn).fill(gc.constants());
+//			// fill group with initial values read from file - overtake the previous
+//			if (loadedData!=null)
+//				for (String pkey:gc.properties().getKeysAsSet())
+//					if (loadedData.hasProperty(pkey))
+//						gc.properties().setProperty(pkey,loadedData.getPropertyValue(pkey));
+//			// if no components, then some more inits must be done
+//			if (groupOf!=null) {
+//				// set itemCategories
+//				gc.content().setCategorized(groupOf.getInstance(id));
+//				gc.addGroupIntoLifeCycle();
+//			}
+//			groups.put(id,gc);
+//		}
+//		return groups.get(id);
+//	}
 
+	// what about the groupId ?
 	@Override
-	public boolean isSealed() {
-		return sealed;
-	}
-
-	@Override
-	public GroupComponent getInstance(int id) {
-		if (!sealed)
-			initialise();
-		if (!groups.containsKey(id)) {
-			// instantiate GroupComponent (with container, and super container)
-			// with this group's id as name
-			groupType.getInstance(id).setName(id());
-			GroupFactory gf = groupType.getInstance(id);
-			// put group into container hierarchy
-			ComponentContainer superContainer = null;
-			LifeCycleComponent lcc = null;
-			TreeNode parent = null;
-			// 1st case: there is a lifeCycle
-			if (lifeCycle!=null) {
-				lcc = lifeCycle.getInstance(id);
-				superContainer = (ComponentContainer) lcc.content();
-				parent = lcc;
-			}
-			// 2nd case: there is no lifeCycle
-			else {
-				ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
-				superContainer = (ComponentContainer)system.getInstance(id).getInstance().content();
-				parent = system;
-			}
-			GroupComponent gc = gf.newInstance(superContainer);
-			gc.connectParent(parent);
-			// fill group with initial values from the configuration file
-			for (TreeNode tn:getChildren())
-				if (tn instanceof VariableValues)
-					((VariableValues)tn).fill(gc.currentState());
-				else if (tn instanceof ConstantValues)
-					((ConstantValues) tn).fill(gc.constants());
-			// fill group with initial values read from file - overtake the previous
-			if (loadedData!=null)
-				for (String pkey:gc.properties().getKeysAsSet())
-					if (loadedData.hasProperty(pkey))
-						gc.properties().setProperty(pkey,loadedData.getPropertyValue(pkey));
-			// if no components, then some more inits must be done
-			if (groupOf!=null) {
-				// set itemCategories
-				gc.content().setCategorized(groupOf.getInstance(id));
-				gc.addGroupIntoLifeCycle();
-			}
-			groups.put(id,gc);
+	protected GroupComponent makeInitialComponent(int simId, 
+			DataIdentifier itemId, 
+			SimplePropertyList props) {
+		GroupFactory gf = groupType.getInstance(simId);
+		// put group into container hierarchy
+		ComponentContainer superContainer = null;
+		LifeCycleComponent lcc = null;
+		TreeNode parent = null;
+		// 1st case: there is a lifeCycle
+		if (lifeCycle!=null) {
+			lcc = lifeCycle.getInstance(simId);
+			superContainer = (ComponentContainer) lcc.content();
+			parent = lcc;
 		}
-		return groups.get(id);
+		// 2nd case: there is no lifeCycle
+		else {
+			ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
+			superContainer = (ComponentContainer)system.getInstance(simId).getInstance().content();
+			parent = system;
+		}
+		// (temporarily) set the group name to itemId so that the groupComponent is initialized with
+		// with proper name in container. Will handle case where itemId=null
+		if (itemId!=null)
+			groupType.getInstance(simId).setName(itemId.groupId());
+		else
+			groupType.getInstance(simId).setName(null);
+		GroupComponent gc = gf.newInstance(superContainer);
+		gc.connectParent(parent);
+		for (String pkey:gc.properties().getKeysAsSet())
+			if (props.hasProperty(pkey))
+				gc.properties().setProperty(pkey,props.getPropertyValue(pkey));
+		return gc;
+	}
+
+	@Override
+	protected DataIdentifier fullId() {
+		String groupId = id();
+		String componentId = "";
+		String LCId = "";		
+		Edge cycle = (Edge) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_CYCLE.label())));
+		if (cycle!=null)
+			LCId = cycle.endNode().id();
+		return new DataIdentifier(LCId,groupId,componentId);
 	}
 
 }

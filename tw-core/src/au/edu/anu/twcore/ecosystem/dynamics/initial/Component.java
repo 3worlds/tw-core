@@ -32,18 +32,12 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import au.edu.anu.twcore.DefaultStrings;
-import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
@@ -52,7 +46,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
-import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
@@ -62,8 +55,6 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.ens.biologie.generic.LimitedEdition;
-import fr.ens.biologie.generic.Sealable;
 
 /**
  *
@@ -71,12 +62,10 @@ import fr.ens.biologie.generic.Sealable;
  *
  */
 public class Component
-		extends InitialisableNode
-		implements Sealable, LimitedEdition<List<SystemComponent>>, DefaultStrings {
+		extends InitialElement<SystemComponent>
+		implements  DefaultStrings {
 
-	private boolean sealed = false;
 	private ComponentType componentType = null;
-	private Map<Integer,List<SystemComponent>> individuals = new HashMap<>();
 	// the container in which new components should be placeds
 	private ArenaType arena = null;
 	// the group instance this component is instance of
@@ -86,9 +75,9 @@ public class Component
 	// if >1, then even if no groups are declared, components must be stored in separate group
 	// containers matching category signatures
 	private int nComponentTypes = 0;
-	private int nInstances = 1;
+//	private int nInstances = 1;
 	// the list of components read from file that match this component (ie belong to proper group)
-	private List<SimplePropertyList> loadedData = new ArrayList<>();
+//	private List<SimplePropertyList> loadedData = new ArrayList<>();
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -100,39 +89,14 @@ public class Component
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
 		super.initialise();
-		sealed = false;
 		// this edge, if present, points to a Group node
 		Edge instof = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
 		if (instof!=null)
 			group = (Group) instof.endNode();
-		// load data from files
-		Map<DataIdentifier, SimplePropertyList> loaded = new HashMap<>();
-		List<DataSource> sources = (List<DataSource>) get(edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
-			edgeListEndNodes());
-		for (DataSource source:sources)
-			source.getInstance().load(loaded);
-		// sort out which loaded data match this component.
-		// NB ok because group names are unique even across life cycles.
-		if (group!=null) {
-			for (DataIdentifier dif:loaded.keySet())
-				if (dif.groupId().equals(group.id()))
-					loadedData.add(loaded.get(dif));
-		}
-		else
-			loadedData.addAll(loaded.values());
-		if (properties().hasProperty(P_COMPONENT_NINST.key()))
-			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
-		if (nInstances==0)
-			nInstances=1;
-		// if data sources were used, ignore declaration of number of instances
-		if (loadedData.size()>0)
-			nInstances = loadedData.size();
 		// get total number of ComponentTypes declared in the structure subTree
 		// NB there may be no structure node, but in this case there will be no component node either
 		// so if we are here, struc!=null
@@ -142,23 +106,12 @@ public class Component
 		nComponentTypes = ((Collection<?>) get(struc, childTree(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label()))) ).size();
 		componentType = (ComponentType) getParent();
-		sealed = true;
+		seal();
 	}
 
 	@Override
 	public int initRank() {
 		return N_COMPONENT.initRank();
-	}
-
-	@Override
-	public Sealable seal() {
-		sealed = true;
-		return this;
-	}
-
-	@Override
-	public boolean isSealed() {
-		return sealed;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -179,87 +132,170 @@ public class Component
 		return result;
 	}
 
-	@Override
-	public List<SystemComponent> getInstance(int id) {
-		if (!sealed)
-			initialise();
-		if (!individuals.containsKey(id)) {
-			// the factory for components of this category
-			ComponentFactory factory = componentType.getInstance(id);
-
-			List<SystemComponent> result = new ArrayList<>(nInstances);
-			// for as many instances as requested:
-			for (int i=0; i<nInstances; i++) {
-				// instantiate component
-				SystemComponent sc = factory.newInstance();
-				// fill component with initial values (including coordinates) from the configuration file
-				for (TreeNode tn:getChildren()) {
-					if (tn instanceof VariableValues) {
-						// this copies all variables contained in Drivers but ignores automatic variables
-						((VariableValues)tn).fill(sc.currentState());
-						// this copies automatic variables, if any
-						((VariableValues)tn).fill(sc.autoVar());
-					}
-					else if (tn instanceof ConstantValues) {
-						((ConstantValues) tn).fill(sc.constants());
-					}
-				}
-				// fill component with initial values read from file - overtake the previous
-				if (!loadedData.isEmpty()) {
-					SimplePropertyList ldpl = loadedData.get(i);
-					for (String pkey:sc.properties().getKeysAsSet())
-						if (ldpl.hasProperty(pkey))
-							sc.properties().setProperty(pkey, ldpl.getPropertyValue(pkey));
-				}
-				// insert component into its container
-				ComponentContainer container = null;
-				// find the proper container
-				// 1st case: there is a group and possibly a life cycle
-				if (group!=null) {
-					GroupComponent grp = group.getInstance(id);
-					container = (ComponentContainer)grp.content();
-					container.setCategorized(factory);
-					// this will add into lifeCycle only if it exists. otherwise does nothing
-					grp.addGroupIntoLifeCycle();
-				}
-				// 2nd case: there is no group (and no life cycle)
-				else {
-					ComponentContainer parentContainer =
-									// ArenaType	ArenaFactory	ArenaComponent	Container
-						(ComponentContainer)arena.getInstance(id).getInstance().content();
-					// if there is only one component type, then the arena must be the container
-					if (nComponentTypes==1)		
-						container = parentContainer;
-					// otherwise, a default group container per componentType is created, with no data
-					else { // group container must be created and inserted under arena
-						// JG 17/2/2021
-						// TODO (?): Alternative solution here is to use component id() as the
-						// group containerId. This way different containers can be generated for the
-						// same componentType - let's discuss this
-						String containerId = componentType.categoryId(); 
-						container = (ComponentContainer) parentContainer.subContainer(containerId);
-						// POSSIBLE FLAW HERE: there is no Group node matching this group factory
-						// That's fine - we dont need the group node as long as the factory and matching container are here
-						if (container==null) {
-							Set<Category>cats = generatedGroupCats();
-							GroupFactory gfac = new GroupFactory(cats,
-								null,null,null,null,null,
-								containerId,id);
-							GroupComponent gComp = gfac.newInstance(parentContainer);
-							container = (ComponentContainer)gComp.content();
-						}
-					}
-					container.setCategorized(factory);
-				}
-				// prepare initial community
-				container.addInitialItem(sc);
-				sc.setContainer((ComponentContainer)container);
-				// add component instance into list of new instances
-				result.add(sc);
+//	@Override
+//	public List<SystemComponent> getInstance(int id) {
+//		if (!sealed)
+//			initialise();
+//		if (!individuals.containsKey(id)) {
+//			// the factory for components of this category
+//			ComponentFactory factory = componentType.getInstance(id);
+//
+//			List<SystemComponent> result = new ArrayList<>(nInstances);
+//			// for as many instances as requested:
+//			for (int i=0; i<nInstances; i++) {
+//				// instantiate component
+//				SystemComponent sc = factory.newInstance();
+//				// fill component with initial values (including coordinates) from the configuration file
+//				for (TreeNode tn:getChildren()) {
+//					if (tn instanceof VariableValues) {
+//						// this copies all variables contained in Drivers but ignores automatic variables
+//						((VariableValues)tn).fill(sc.currentState());
+//						// this copies automatic variables, if any
+//						((VariableValues)tn).fill(sc.autoVar());
+//					}
+//					else if (tn instanceof ConstantValues) {
+//						((ConstantValues) tn).fill(sc.constants());
+//					}
+//				}
+//				// fill component with initial values read from file - overtake the previous
+//				if (!loadedData.isEmpty()) {
+//					SimplePropertyList ldpl = loadedData.get(i);
+//					for (String pkey:sc.properties().getKeysAsSet())
+//						if (ldpl.hasProperty(pkey))
+//							sc.properties().setProperty(pkey, ldpl.getPropertyValue(pkey));
+//				}
+//				// insert component into its container
+//				ComponentContainer container = null;
+//				// find the proper container
+//				// 1st case: there is a group and possibly a life cycle
+//				if (group!=null) {
+//					GroupComponent grp = group.getInstance(id);
+//					container = (ComponentContainer)grp.content();
+//					container.setCategorized(factory);
+//					// this will add into lifeCycle only if it exists. otherwise does nothing
+//					grp.addGroupIntoLifeCycle();
+//				}
+//				// 2nd case: there is no group (and no life cycle)
+//				else {
+//					ComponentContainer parentContainer =
+//									// ArenaType	ArenaFactory	ArenaComponent	Container
+//						(ComponentContainer)arena.getInstance(id).getInstance().content();
+//					// if there is only one component type, then the arena must be the container
+//					if (nComponentTypes==1)		
+//						container = parentContainer;
+//					// otherwise, a default group container per componentType is created, with no data
+//					else { // group container must be created and inserted under arena
+//						// JG 17/2/2021
+//						// TODO (?): Alternative solution here is to use component id() as the
+//						// group containerId. This way different containers can be generated for the
+//						// same componentType - let's discuss this
+//						String containerId = componentType.categoryId(); 
+//						container = (ComponentContainer) parentContainer.subContainer(containerId);
+//						// POSSIBLE FLAW HERE: there is no Group node matching this group factory
+//						// That's fine - we dont need the group node as long as the factory and matching container are here
+//						if (container==null) {
+//							Set<Category>cats = generatedGroupCats();
+//							GroupFactory gfac = new GroupFactory(cats,
+//								null,null,null,null,null,
+//								containerId,id);
+//							GroupComponent gComp = gfac.newInstance(parentContainer);
+//							container = (ComponentContainer)gComp.content();
+//						}
+//					}
+//					container.setCategorized(factory);
+//				}
+//				// prepare initial community
+//				container.addInitialItem(sc);
+//				sc.setContainer((ComponentContainer)container);
+//				// add component instance into list of new instances
+//				result.add(sc);
+//			}
+//			individuals.put(id,result);
+//		}
+//		return individuals.get(id);
+//	}
+	
+	private ComponentContainer getContainer(int simId,ComponentFactory factory) {
+		ComponentContainer container = null;
+		// find the proper container
+		// 1st case: there is a group and possibly a life cycle
+		if (group!=null) {
+			GroupComponent grp = null;
+			for (GroupComponent gc:group.getInstance(simId))
+				if (gc.name().equals(group.id())) {
+					grp = gc;
+					break;
 			}
-			individuals.put(id,result);
+			container = (ComponentContainer)grp.content();
+			container.setCategorized(factory);
+			// this will add into lifeCycle only if it exists. otherwise does nothing
+			grp.addGroupIntoLifeCycle();
 		}
-		return individuals.get(id);
+		// 2nd case: there is no group (and no life cycle)
+		else {
+			ComponentContainer parentContainer =
+							// ArenaType	ArenaFactory	ArenaComponent	Container
+				(ComponentContainer)arena.getInstance(simId).getInstance().content();
+			// if there is only one component type, then the arena must be the container
+			if (nComponentTypes==1)		
+				container = parentContainer;
+			// otherwise, a default group container per componentType is created, with no data
+			else { // group container must be created and inserted under arena
+				// JG 17/2/2021
+				// TODO (?): Alternative solution here is to use component id() as the
+				// group containerId. This way different containers can be generated for the
+				// same componentType - let's discuss this
+				String containerId = componentType.categoryId(); 
+				container = (ComponentContainer) parentContainer.subContainer(containerId);
+				// POSSIBLE FLAW HERE: there is no Group node matching this group factory
+				// That's fine - we dont need the group node as long as the factory and matching container are here
+				if (container==null) {
+					Set<Category>cats = generatedGroupCats();
+					GroupFactory gfac = new GroupFactory(cats,
+						null,null,null,null,null,
+						containerId,simId);
+					GroupComponent gComp = gfac.newInstance(parentContainer);
+					container = (ComponentContainer)gComp.content();
+				}
+			}
+			container.setCategorized(factory);
+		}
+		return container;
+	}
+
+	@Override
+	protected SystemComponent makeInitialComponent(int simId, 
+			DataIdentifier itemId, 
+			SimplePropertyList props) {
+		ComponentFactory factory = componentType.getInstance(simId);
+		SystemComponent sc = factory.newInstance();
+		// populate new instance with loaded data
+		for (String pkey:sc.properties().getKeysAsSet())
+			if (props.hasProperty(pkey))
+				sc.properties().setProperty(pkey,props.getPropertyValue(pkey));
+		// insert component into its container
+		ComponentContainer container = getContainer(simId,factory);
+		// prepare initial community
+		container.addInitialItem(sc);
+		sc.setContainer((ComponentContainer)container);
+		return sc;
+	}
+
+	@Override
+	protected DataIdentifier fullId() {
+		String groupId = "";
+		String componentId = id();
+		String LCId = "";		
+		Edge instof = (Edge) get(edges(Direction.OUT),
+			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
+		if (instof!=null) {
+			groupId = instof.endNode().id();
+			Edge cycle = (Edge) get(edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(E_CYCLE.label())));
+			if (cycle!=null)
+				LCId = cycle.endNode().id();
+		}
+		return new DataIdentifier(LCId,groupId,componentId);
 	}
 
 }
