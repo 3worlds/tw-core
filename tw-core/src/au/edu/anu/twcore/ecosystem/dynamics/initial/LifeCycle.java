@@ -94,11 +94,17 @@ public class LifeCycle
 			lifeCycleType.getInstance(id).setName(id());
 			LifeCycleComponent lcc = lifeCycleType.getInstance(id).newInstance();
 			// fill lifeCycle with initial values from the configuration file
-			for (TreeNode tn:getChildren())
-				if (tn instanceof VariableValues)
-					((VariableValues)tn).fill(lcc.currentState());
-				else if (tn instanceof ConstantValues)
-					((ConstantValues) tn).fill(lcc.constants());
+			for (TreeNode tn:getChildren()) {
+				// TODO: restore this
+				
+//				if (tn instanceof InitialValues)
+//					props.addProperties(((InitialValues)tn).readOnlyProperties());
+			}
+//			for (TreeNode tn:getChildren())
+//				if (tn instanceof VariableValues)
+//					((VariableValues)tn).fill(lcc.currentState());
+//				else if (tn instanceof InitialValues)
+//					((InitialValues) tn).fill(lcc.constants());
 			// fill group with initial values read from file - overtake the previous
 			if (loadedData!=null)
 				for (String pkey:lcc.properties().getKeysAsSet())

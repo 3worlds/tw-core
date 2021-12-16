@@ -26,51 +26,59 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.dynamics.initial;
+package au.edu.anu.twcore.archetype.tw;
 
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
+import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
+
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+
+import java.util.List;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 /**
- * A class matching the "ecosystem/dynamics/.../parameterValues" node of the 3W configuration tree.
+ * Check that either child nodes of a given label or out-edges of another label are present,
+ * but not both.
  * 
- * @author Jacques Gignoux - 17 juin 2019
+ * @author Jacques Gignoux - 16 déc. 2021
  *
  */
-public class ConstantValues extends InitialisableNode {
-
-	// default constructor
-	public ConstantValues(Identity id, SimplePropertyList props, GraphFactory gfactory) {
-		super(id, props, gfactory);
-	}
-
-	// constructor with no properties
-	public ConstantValues(Identity id, GraphFactory gfactory) {
-		super(id, new ExtendablePropertyListImpl(), gfactory);
-	}
-
-	@Override
-	public void initialise() {
-		super.initialise();
-//		TwData paramSet = null;
-//		paramSet = ((Parameterised)getParent()).getParameters();
-//		if ((paramSet!=null) && (properties()!=null) && (properties().size()>0))
-//			paramSet.setProperties(properties());
-	}
+public class ChildXorOutEdgeQuery extends QueryAdaptor {
 	
-	public void fill(TwData paramSet) {
-		if ((paramSet!=null) && (properties()!=null) && (properties().size()>0))
-			paramSet.setProperties(properties());
+	private final String childLabel;
+	private final String outEdgeLabel;
+
+	public ChildXorOutEdgeQuery(StringTable args) {
+		childLabel = args.getWithFlatIndex(0);
+		outEdgeLabel = args.getWithFlatIndex(1);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public int initRank() {
-		return N_CONSTANTVALUES.initRank();
+	public Queryable submit(Object input) { 
+		initInput(input);
+		if (input instanceof TreeGraphNode) {
+			TreeGraphNode localItem = (TreeGraphNode) input;
+			List<TreeGraphNode> children = (List<TreeGraphNode>) get(localItem.getChildren(),
+				selectZeroOrMany(hasTheLabel(childLabel)));
+			boolean childPresent = !children.isEmpty();
+			List<Edge> outNodes = (List<Edge>) get(localItem,
+				outEdges(), 
+				selectZeroOrMany(hasTheLabel(outEdgeLabel)));
+			boolean outNodePresent = !outNodes.isEmpty();
+			if (!(childPresent ^ outNodePresent)) {
+				String[] msgs = TextTranslations.getChildXorOutEdgeQuery(localItem.toShortString(),
+					childLabel,outEdgeLabel);
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+			}
+		}
+		return this;
 	}
 
 }

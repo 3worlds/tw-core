@@ -399,17 +399,34 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajouter soit la propriété '" + key + "', soit un lien vers un noeud de type '" + label + "'.";
-			cm = "Propriété '" + key + "' ou lien vers noeud de type '" + label
-					+ "' attendus, mais aucun des deux ou les deux ont été trouvés.]";
+			am = "Ajouter soit la propriété '" + key + "', soit un lien de type '" + label + "', mais pas les deux.";
+			cm = "Propriété '" + key + "' ou lien de type '" + label
+					+ "' attendus, mais aucun des deux ou les deux ont été trouvés.";
 		} else {// make sure default is English!
-			am = "Add either property '" + key + "' or an edge to node '" + label + "'.";
-			cm = "Expected either property '" + key + "' or edge to '" + label + "' but found neither or both.]";
+			am = "Add either property '" + key + "' or a '" + label + "' edge, but do not have both.";
+			cm = "Expected either property '" + key + "' or '" + label + "' edge but found neither or both.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
+	public static String[] getChildXorOutEdgeQuery(String item, String clab, String nlab) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Ajouter soit un ou plusieurs noeuds-enfants de type '" + clab 
+					+ "', soit un un ou plusieurs liens sortants de type '" + nlab + "', mais pas les deux.";
+			cm = "Noeuds-enfants de type '" + clab + "' ou liens sortants de type '" + nlab
+					+ "' attendus, mais aucun des deux ou les deux ont été trouvés.";
+		} else {// make sure default is English!
+			am = "Add either '" + clab + "' child nodes or '" + nlab + "' out-edges, but do not have both.";
+			cm = "Expected either '" + clab + "' child nodes or '" + nlab + "' out-edges but found neither or both.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	
 	public static String[] getEndNodeHasPropertyQuery(String item, String key) {
 		String am;
 		String cm;

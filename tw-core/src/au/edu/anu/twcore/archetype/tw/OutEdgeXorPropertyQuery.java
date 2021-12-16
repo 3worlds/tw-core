@@ -26,52 +26,55 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ecosystem.dynamics.initial;
+package au.edu.anu.twcore.archetype.tw;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
+import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
-import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.data.runtime.TwData;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import java.util.List;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 /**
- * A class matching the "ecosystem/dynamics/.../variableValues" node of the 3W configuration tree.
+ * Check that either at least one out edge or a property is present in a node, but not both. 
+ * Uses EDGE labels.
  * 
- * @author Jacques Gignoux - 2 juil. 2019
+ * @author Jacques Gignoux - 16 déc. 2021
  *
  */
-public class VariableValues extends InitialisableNode {
+public class OutEdgeXorPropertyQuery extends QueryAdaptor {
+	private final String edgeLabel;
+	private final String propertyName;
 
-	// default constructor
-	public VariableValues(Identity id, SimplePropertyList props, GraphFactory gfactory) {
-		super(id, props, gfactory);
+	public OutEdgeXorPropertyQuery(StringTable args) {
+		edgeLabel = args.getWithFlatIndex(0);
+		propertyName = args.getWithFlatIndex(1);
 	}
 
-	// constructor with no properties
-	public VariableValues(Identity id, GraphFactory gfactory) {
-		super(id, new ExtendablePropertyListImpl(), gfactory);
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
-	public void initialise() {
-		super.initialise();
-//		Individual i = (Individual)getParent();
-//		TwData variables = i.getVariables();
-//		if ((variables!=null) && (properties()!=null) && (properties().size()>0))
-//			variables.setProperties(properties());
-	}
-	
-	public void fill(TwData variables) {
-		if ((variables!=null) && (properties()!=null) && (properties().size()>0))
-			variables.setProperties(properties());
-	}
-
-	@Override
-	public int initRank() {
-		return N_VARIABLEVALUES.initRank();
+	public Queryable submit(Object input) {
+		initInput(input);
+		Node localItem = (Node) input;
+		boolean propertyPresent = false;
+		if (localItem instanceof ReadOnlyDataHolder)
+			propertyPresent = (((ReadOnlyDataHolder) localItem).properties().hasProperty(propertyName));
+		List<Edge> le = (List<Edge>) get(localItem, 
+			outEdges(), 
+			selectZeroOrMany(hasTheLabel(edgeLabel)));
+		boolean edgePresent = (!le.isEmpty());
+		if (!(propertyPresent ^ edgePresent)) {
+			String[] msgs = TextTranslations.getEdgeXorPropertyQuery(localItem.toShortString(),propertyName,edgeLabel);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+		}
+		return this;
 	}
 
 }

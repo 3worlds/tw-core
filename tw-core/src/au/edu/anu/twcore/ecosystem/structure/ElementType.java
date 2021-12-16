@@ -43,13 +43,13 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import au.edu.anu.twcore.ecosystem.dynamics.InitFunctionNode;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.ConstantValues;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.VariableValues;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialValues;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
 import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
@@ -125,8 +125,15 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 				if (!s.trim().isEmpty()) {
 					driverTemplate = loadDataClass(s);
 					for (TreeNode tn:getChildren())
-						if (tn instanceof VariableValues)
-							((VariableValues) tn).fill(driverTemplate);
+//						if (tn instanceof VariableValues)
+//							((VariableValues) tn).fill(driverTemplate);
+						if (tn instanceof InitialValues) {
+							ReadOnlyPropertyList iprops = ((InitialValues)tn).properties();
+							for (String key:driverTemplate.getKeysAsSet())
+								if ((iprops.hasProperty(key)) &&
+									(driverTemplate.getPropertyClass(key).equals(iprops.getPropertyClass(key))))
+									driverTemplate.setProperty(key,iprops.getPropertyValue(key));
+						}
 				}
 		}
 		if (properties().hasProperty(P_DECORATORCLASS.key())) {
@@ -141,8 +148,13 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 				if (!s.trim().isEmpty()) {
 					lifetimeConstantTemplate = loadDataClass(s);
 					for (TreeNode tn:getChildren())
-						if (tn instanceof ConstantValues)
-							((ConstantValues) tn).fill(lifetimeConstantTemplate);
+						if (tn instanceof InitialValues) {
+							ReadOnlyPropertyList iprops = ((InitialValues)tn).properties();
+							for (String key:lifetimeConstantTemplate.getKeysAsSet())
+								if ((iprops.hasProperty(key)) &&
+									(lifetimeConstantTemplate.getPropertyClass(key).equals(iprops.getPropertyClass(key))))
+									lifetimeConstantTemplate.setProperty(key,iprops.getPropertyValue(key));
+						}
 				}
 		}
 		// Find the setInitialState function

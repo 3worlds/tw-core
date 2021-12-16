@@ -74,10 +74,8 @@ public abstract class InitialElement<T extends DataElement>
 			DataIdentifier id = fullId();
 			ExtendablePropertyList props = new ExtendablePropertyListImpl();
 			for (TreeNode tn:getChildren()) {
-				if (tn instanceof VariableValues)
-					props.addProperties(((VariableValues)tn).readOnlyProperties());
-				else if (tn instanceof ConstantValues)
-					props.addProperties(((ConstantValues)tn).readOnlyProperties());
+				if (tn instanceof InitialValues)
+					props.addProperties(((InitialValues)tn).readOnlyProperties());
 			}
 			loadedData.put(id,props);
 			fromFiles = false;

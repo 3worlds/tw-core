@@ -28,40 +28,54 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
+
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
+import java.util.List;
+
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_INITIALVALUES;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_LOADFROM;
 
-public class EdgeXorPropertyQuery extends QueryAdaptor {
-	private final String nodeLabel;
-	private final String propertyName;
-
-	public EdgeXorPropertyQuery(StringTable args) {
-		nodeLabel = args.getWithFlatIndex(0);
-		propertyName = args.getWithFlatIndex(1);
-	}
-
+/**
+ * Check that a component, group, lifeCycle, or system node has either
+ * <ul>
+ * <li>a single initialValues node or</li>
+ * <li>one or more loadFrom edges</li>
+ * </ul>
+ * and
+ * <ul>
+ * <li>a setInitialState method or</li>
+ * <li>none of the above</li>
+ * </ul> 
+ * 
+ * @author Jacques Gignoux - 16 déc. 2021
+ *
+ */
+// TODO: move messages to TextTranslations
+public class DataSourceConsistencyQuery extends QueryAdaptor {
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public Queryable submit(Object input) {
+	public Queryable submit(Object input) { 
 		initInput(input);
-		Node localItem = (Node) input;
-		boolean propertyPresent = false;
-		if (localItem instanceof ReadOnlyDataHolder)
-			propertyPresent = (((ReadOnlyDataHolder) localItem).properties().hasProperty(propertyName));
-		Node n = (Node) get(localItem, outEdges(), edgeListEndNodes(), selectZeroOrOne(hasTheLabel(nodeLabel)));
-		boolean edgePresent = (n != null);
-		if (!(propertyPresent ^ edgePresent)) {
-			String[] msgs = TextTranslations.getEdgeXorPropertyQuery(localItem.toShortString(),propertyName,nodeLabel);
-			actionMsg = msgs[0];
-			errorMsg = msgs[1];
-//			errorMsg = "'" + localItem.toShortString() + "' must have either property '" + propertyName.toString()
-//					+ "' or edge to '" + nodeLabel + "'.]";
+		if (input instanceof TreeGraphNode) {
+			TreeGraphNode localItem = (TreeGraphNode) input;
+			List<TreeGraphNode> children = (List<TreeGraphNode>) get(localItem.getChildren(),
+				selectZeroOrMany(hasTheLabel(N_INITIALVALUES.label())));
+			List<Edge> outNodes = (List<Edge>) get(localItem,
+				outEdges(), 
+				selectZeroOrMany(hasTheLabel(E_LOADFROM.label())));
+			if ((children.size()>0)&&(outNodes.size()>0)) {
+				actionMsg = "Remove the '"+N_INITIALVALUES.label()+"' child node or all the '"+
+					E_LOADFROM.label()+"' edges from node '"+localItem.classId()+":"+localItem.id()+"'";
+				errorMsg = "A '"+localItem.classId()+"' node cannot have both an '"+
+					N_INITIALVALUES.label()+"' node and '"+E_LOADFROM.label()+"' edges";
+			}
 		}
 		return this;
 	}

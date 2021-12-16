@@ -26,54 +26,41 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype.tw;
+package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
-import java.util.List;
-
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import au.edu.anu.twcore.InitialisableNode;
 
 /**
- * @author Jacques Gignoux - 31/5/2019
+ * A class matching the "ecosystem/dynamics/.../parameterValues" node of the 3W configuration tree.
  * 
- *         Constraint: some nodes must have ONE of either a property or n child
- *         nodes of a given label
+ * @author Jacques Gignoux - 17 juin 2019
+ *
  */
+public class InitialValues extends InitialisableNode {
 
-public class ChildXorPropertyQuery extends QueryAdaptor {
-	private String nodeLabel;
-	private String propertyName;
-
-	public ChildXorPropertyQuery(StringTable args) {
-		nodeLabel = args.getWithFlatIndex(0);
-		propertyName = args.getWithFlatIndex(1);
+	// default constructor
+	public InitialValues(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+		super(id, props, gfactory);
 	}
 
-	@SuppressWarnings("unchecked")
+	// constructor with no properties
+	public InitialValues(Identity id, GraphFactory gfactory) {
+		super(id, new ExtendablePropertyListImpl(), gfactory);
+	}
+
 	@Override
-	public Queryable submit(Object input) {
-		initInput(input);
-		TreeNode localItem = (TreeNode) input;
-		boolean propertyPresent = false;
-		if (localItem instanceof ReadOnlyDataHolder)
-			propertyPresent = (((ReadOnlyDataHolder) localItem).properties().hasProperty(propertyName));
-		List<Node> ln = (List<Node>) get(localItem, children(), selectZeroOrMany(hasTheLabel(nodeLabel)));
-		boolean edgePresent = (!ln.isEmpty());
-		boolean ok = (propertyPresent ^ edgePresent);
-		if (!ok) {
-			String[] msgs = TextTranslations.getChildXorPropertyQuery(propertyName,nodeLabel);
-			actionMsg = msgs[0];
-			errorMsg = msgs[1];
-		}
-		return this;
+	public void initialise() {
+		super.initialise();
+	}
+
+	@Override
+	public int initRank() {
+		return N_INITIALVALUES.initRank();
 	}
 
 }

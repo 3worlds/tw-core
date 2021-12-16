@@ -30,8 +30,7 @@ package au.edu.anu.twcore.ecosystem;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.RuntimeGraphData;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.ConstantValues;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.VariableValues;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialValues;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
@@ -103,10 +102,8 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 		// load data from configuration graph
 		SimplePropertyList plist = new ExtendablePropertyListImpl();
 		for (TreeNode tn:getChildren())
-			if (tn instanceof VariableValues)
-				((ExtendablePropertyList)plist).addProperties(((VariableValues)tn).properties());
-			else if (tn instanceof ConstantValues)
-				((ExtendablePropertyList)plist).addProperties(((ConstantValues)tn).properties());
+			if (tn instanceof InitialValues)
+				((ExtendablePropertyList)plist).addProperties(((InitialValues)tn).properties());
 		// load data from files
 		Map<DataIdentifier, SimplePropertyList> loaded = new HashMap<>();
 		if (plist.size()>0)
