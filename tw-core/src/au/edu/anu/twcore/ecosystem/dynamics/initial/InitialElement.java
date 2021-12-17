@@ -82,7 +82,6 @@ public abstract class InitialElement<T extends DataElement>
 		}
 		else
 			fromFiles = true;
-//		loadedData = initialFilter(loadedData);
 		if (properties().hasProperty(P_COMPONENT_NINST.key()))
 			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
 		if (nInstances==0)
@@ -97,8 +96,6 @@ public abstract class InitialElement<T extends DataElement>
 			initialise();
 		if (!individuals.containsKey(id)) {
 			List<T> result = new ArrayList<>();
-//			ElementType<ElementFactory<T>,T> type = (ElementType<ElementFactory<T>, T>) getParent();
-//			ElementFactory<T> factory = type.getInstance(id);
 			if (fromFiles) 
 				for (DataIdentifier dif: loadedData.keySet()) {
 					SimplePropertyList iprops = loadedData.get(dif);
@@ -157,5 +154,5 @@ public abstract class InitialElement<T extends DataElement>
 	 * @return
 	 */
 	protected abstract DataIdentifier fullId();
-	
+		
 }

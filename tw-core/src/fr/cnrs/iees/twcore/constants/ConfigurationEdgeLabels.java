@@ -55,7 +55,6 @@ import au.edu.anu.twcore.ecosystem.dynamics.UseRNGEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.FedByEdge;
 
-import au.edu.anu.twcore.ecosystem.dynamics.initial.GroupOfEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.CycleEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InstanceOfEdge;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.LoadFromEdge;
@@ -90,7 +89,6 @@ public enum ConfigurationEdgeLabels {
 	E_DRIVERS		("drivers",			"drvs1",		DriverEdge.class),
 	E_DECORATORS	("decorators",		"decs1",		DecoratorEdge.class),
 	E_CONSTANTS		("constants",		"cnsts1",		ConstantsEdge.class),
-//	E_PARAMETERS	("parameters",		"pars1",		ParameterEdge.class), // should be deprecated
 	E_BELONGSTO		("belongsTo",		"bt1",			BelongsToEdge.class),
 	E_INITIALISEDBY	("initialisedBy",	"ib1",			InitialisedByEdge.class),
 	E_TOCATEGORY	("toCategory",		"to1",			ToCategoryEdge.class),
@@ -101,13 +99,12 @@ public enum ConfigurationEdgeLabels {
 	E_EFFECTEDBY	("effectedBy",		"effdBy1",		EffectedByEdge.class),
 	E_STOPSYSTEM	("stopSystem",		"stpSys1",		StopSystemEdge.class),
 	E_CONDITION		("condition",		"condOf1",		ConditionEdge.class),
-	E_GROUPOF		("groupOf",			"grpOf1",		GroupOfEdge.class),
+//	E_GROUPOF		("groupOf",			"grpOf1",		GroupOfEdge.class),
 	E_CYCLE			("cycle",			"cycl1",		CycleEdge.class),
 	E_INSTANCEOF	("instanceOf",		"instOf1",		InstanceOfEdge.class),
 	E_LOADFROM		("loadFrom",		"ldFrom1",		LoadFromEdge.class),
 	E_USERNG		("useRNG",			"uses1",		UseRNGEdge.class),
 	E_SPACE			("inSpace",			"in1",			ProcessSpaceEdge.class),
-//	E_LOCATION		("location",		"loc1",			LocationEdge.class),
 	E_FEDBY			("fedBy",			"fedBy1",		FedByEdge.class),// edge from function to EventQueue
 	// user interface
 	E_TRACKTIME		("trackTime",		"trks1",		TrackTimeEdge.class),
