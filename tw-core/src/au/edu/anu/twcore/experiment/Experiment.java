@@ -64,7 +64,7 @@ import java.util.logging.Logger;
 
 /**
  * Class matching the "experiment" node label in the 3Worlds configuration tree.
- * Has no properties. Returns a controller to communicate with simulators
+ * Has properties, nReps, output dir and precis. Returns a controller to communicate with simulators
  *
  * @author Jacques Gignoux - 27 mai 2019
  *

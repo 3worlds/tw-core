@@ -157,6 +157,9 @@ public enum ConfigurationPropertyNames {
 	
 	P_EXP_DEPLOYMENT			("deployment"),
 	P_EXP_NREPLICATES			("nReplicates"),
+	P_EXP_DIR					("directory"),
+	P_EXP_PRECIS				("precis"),
+	
 	P_HLWIDGET_NLINES			("nLines"),
 	
 	P_DATASOURCE_IDLC			("idLifeCycle"),

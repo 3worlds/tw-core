@@ -414,7 +414,7 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajouter soit un ou plusieurs noeuds-enfants de type '" + clab 
+			am = "Ajouter soit un ou plusieurs noeuds-enfants de type '" + clab
 					+ "', soit un un ou plusieurs liens sortants de type '" + nlab + "', mais pas les deux.";
 			cm = "Noeuds-enfants de type '" + clab + "' ou liens sortants de type '" + nlab
 					+ "' attendus, mais aucun des deux ou les deux ont été trouvés.";
@@ -426,7 +426,6 @@ public class TextTranslations {
 		return result;
 	}
 
-	
 	public static String[] getEndNodeHasPropertyQuery(String item, String key) {
 		String am;
 		String cm;
@@ -1333,6 +1332,20 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 
+	}
+
+	public static String[] getHasValidFileNameChars(String value) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Edit '"+value+"' to a valid file name";
+			cm = "Expected valid file name but found '"+value+"'.";			
+		} else {// make sure default is English or Sanskrit users will get no messages!
+			am = "Edit '"+value+"' to a valid file name";
+			cm = "Expected valid file name but found '"+value+"'.";			
+		}
+		String[] result = { am, cm };
+		return result;
 	}
 }
 

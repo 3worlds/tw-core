@@ -9,10 +9,19 @@ hasNode experimentSpec
 		multiplicity = IntegerRange("0..1") // Used to find the associated simulatorNode. Not required if only one system:
 	mustSatisfyQuery baselineQuery
 		className = String("au.edu.anu.twcore.archetype.tw.BaselineQuery")
-//	hasProperty experimentDeploymentType
-//		hasName = String("deployment")
-//		type = String("DeploymentType")
-//		multiplicity = IntegerRange("0..1")
+
+	hasProperty experimentDirPropSpec
+		hasName = String("directory")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+		mustSatisfyQuery baselineQuery
+			className = String("au.edu.anu.twcore.archetype.tw.HasValidFileNameChars")
+		
+	hasProperty experimentDescPropSpec
+		hasName = String("precis")
+		type = String("String")
+		multiplicity = IntegerRange("0..1")
+		
 	hasProperty experimentReplication
 		hasName = String("nReplicates")
 		type = String("Integer")
