@@ -123,6 +123,8 @@ hasNode componentSpec
 		parameters = StringTable(([2]"loadFrom","nInstances"))
 	mustSatisfyQuery componentHasInitialValuesXorLoadFromSpec
 		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
+	mustSatisfyQuery componentHasGroupIdSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
 
 //-------------------------------------------------------------------------------------------
 // GROUP TYPE: defined by categories
@@ -199,6 +201,8 @@ hasNode groupSpec
 		parameters = StringTable(([2]"loadFrom","nInstances"))
 	mustSatisfyQuery groupHasInitialValuesXorLoadFromSpec
 		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
+	mustSatisfyQuery groupHasLCIdSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
 	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
 		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
 	mustSatisfyQuery groupRequiresCycleEdge
@@ -208,12 +212,12 @@ hasNode groupSpec
 	// a ComponentType in order to know in which container components of this group are to
 	// be stored
 	//
-	hasEdge groupToComponentSpec
-		isOfClass = String("groupOf")
-		toNode = String("componentType:")
-		multiplicity = IntegerRange("0..1")
-	mustSatisfyQuery groupRequiresGroupOfEdge
-		className = String("au.edu.anu.twcore.archetype.tw.GroupComponentRequirementQuery")
+//	hasEdge groupToComponentSpec
+//		isOfClass = String("groupOf")
+//		toNode = String("componentType:")
+//		multiplicity = IntegerRange("0..1")
+//	mustSatisfyQuery groupRequiresGroupOfEdge
+//		className = String("au.edu.anu.twcore.archetype.tw.GroupComponentRequirementQuery")
 
 
 //-------------------------------------------------------------------------------------------
@@ -352,7 +356,8 @@ hasNode lifeCycleSpec
 		parameters = StringTable(([2]"loadFrom","nInstances"))
 	mustSatisfyQuery lifeCycleHasInitialValuesXorLoadFromSpec
 		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
-		
+	mustSatisfyQuery lifeCycleHasLCIdSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
 
 // initialisation functions
 hasNode initFunctionSpec

@@ -2,7 +2,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_LOADFROM;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_INITIALVALUES;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -17,7 +17,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialElement;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
-import au.edu.anu.twcore.ecosystem.structure.Structure;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
@@ -46,10 +46,11 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 			boolean requireComponentId = false;
 			boolean requireGroupId = false;
 			boolean requireLifeCycleId = false;
+			boolean isComponent = false;
+			boolean isGroup = false;
 			TreeGraphDataNode parent = (TreeGraphDataNode) inode.getParent();
-			if (parent instanceof Structure)
-				return this; // no need for ids
-			else if (parent instanceof ComponentType) {
+			if (parent instanceof ComponentType) {
+				isComponent = true;
 				if (parent.getParent() instanceof GroupType) {
 					requireComponentId = true;
 					requireGroupId = true;
@@ -58,6 +59,7 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 					requireLifeCycleId = true;
 			}
 			else if (parent instanceof GroupType) {
+				isGroup = true;
 				requireGroupId = true;
 				if (parent.getParent() instanceof LifeCycleType)
 					requireLifeCycleId = true;
@@ -66,32 +68,52 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 				requireLifeCycleId = true;
 			// node has an initialValues node to read its data from
 			if (!initNodes.isEmpty()) {
-				// TODO - check instanceOf and cycle edges
+				if (isComponent) {
+					if (requireGroupId) {
+						List<Edge> le = (List<Edge>) get(inode,outEdges(),
+							selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())));
+						if (le.isEmpty()) {
+							errorMsg = "Missing '"+E_INSTANCEOF.label()+"' edge for '"+inode.id()+"'";
+							actionMsg = "Add an '"+E_INSTANCEOF.label()
+								+"' edge to a 'group' node to '"+inode.id()+"'";
+						}
+					}
+				}
+				else if (isGroup) {
+					if (requireLifeCycleId) {
+						List<Edge> le = (List<Edge>) get(inode,outEdges(),
+							selectZeroOrMany(hasTheLabel(E_CYCLE.label())));
+						if (le.isEmpty()) {
+							errorMsg = "Missing '"+E_CYCLE.label()+"' edge for '"+inode.id()+"'";
+							actionMsg = "Add an '"+E_CYCLE.label()
+								+"' edge to a 'lifeCycle' node to '"+inode.id()+"'";
+						}
+					}
+				}
 			}
 			// node has dataSources to read from
-			if (!dataSources.isEmpty()) {
+			else if (!dataSources.isEmpty()) {
 				Map<TreeGraphDataNode,List<String>> missing = new HashMap<>();
 				for (TreeGraphDataNode ds:dataSources) {
 					missing.put(ds,new ArrayList<>());
-					if (!(requireLifeCycleId && ds.properties().hasProperty(P_DATASOURCE_IDLC.key())))
+					if (requireLifeCycleId && !ds.properties().hasProperty(P_DATASOURCE_IDLC.key()))
 						missing.get(ds).add(P_DATASOURCE_IDLC.key());
-					if (!(requireGroupId && ds.properties().hasProperty(P_DATASOURCE_IDGROUP.key())))
+					if (requireGroupId && !ds.properties().hasProperty(P_DATASOURCE_IDGROUP.key()))
 						missing.get(ds).add(P_DATASOURCE_IDGROUP.key());
-					if (!(requireComponentId && ds.properties().hasProperty(P_DATASOURCE_IDCOMPONENT.key())))
+					if (requireComponentId && !ds.properties().hasProperty(P_DATASOURCE_IDCOMPONENT.key()))
 						missing.get(ds).add(P_DATASOURCE_IDCOMPONENT.key());
 				}
 				String error = "";
-				String action = "";
 				for (TreeGraphDataNode ds:missing.keySet())
 					if (!missing.get(ds).isEmpty()) {
 						for (String miss:missing.get(ds))
 							error += miss+", ";
 						error += "in dataSource '"+ds.id()+"'; ";
 					}
-				if (!error.isBlank())
+				if (!error.isBlank()) {
 					errorMsg = "Missing properties "+error;
-				if (!action.isBlank())
 					actionMsg = "Add properties "+error;
+				}
 			}
 		}
 		return this;

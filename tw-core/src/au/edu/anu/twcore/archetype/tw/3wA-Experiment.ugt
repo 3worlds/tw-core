@@ -195,11 +195,9 @@ hasNode dataSourceSpec
 	// consistency check: if a component  is an instance of a group, then the data source must
 	// specify a groupId column
 	//
-	mustSatisfyQuery dataSourceFileGroupCheck
-		className = String("au.edu.anu.twcore.archetype.tw.CheckFileGroupQuery")
 	// if a group is loaded, then the data file may need to contain a groupId column
-	mustSatisfyQuery dataSourceFileIdCheck
-		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdQuery")
+//	mustSatisfyQuery dataSourceFileIdCheck
+//		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdQuery")
 
 	//
 	// name of the variable (spreadsheet column) containing a component identifier (optional)

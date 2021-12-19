@@ -30,6 +30,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
  * @author Jacques Gignoux - 13 déc. 2021
  *
  */
+@Deprecated
 public class CheckFileIdQuery extends QueryAdaptor {
 	
 	private void lackGroupId(String dsid) {

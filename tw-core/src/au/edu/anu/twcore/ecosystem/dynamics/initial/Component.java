@@ -75,9 +75,6 @@ public class Component
 	// if >1, then even if no groups are declared, components must be stored in separate group
 	// containers matching category signatures
 	private int nComponentTypes = 0;
-//	private int nInstances = 1;
-	// the list of components read from file that match this component (ie belong to proper group)
-//	private List<SimplePropertyList> loadedData = new ArrayList<>();
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -215,6 +212,24 @@ public class Component
 //		return individuals.get(id);
 //	}
 	
+//	private GroupComponent getGroup(int simId) {
+//		GroupComponent grp = null;
+//		// 1 there is a instanceOf edge to a group
+//		if (group!=null) {
+//			for (GroupComponent gc:group.getInstance(simId))
+//				if (gc.name().equals(group.id())) {
+//					grp = gc;
+//					break;
+//			}
+//		} 
+//		// groups are read from files
+//		else {
+//			
+//		}
+//		return grp;
+//	}
+	
+	// TODO: refactor this - the search for the group is wrong if datasources are here
 	private ComponentContainer getContainer(int simId,ComponentFactory factory) {
 		ComponentContainer container = null;
 		// find the proper container

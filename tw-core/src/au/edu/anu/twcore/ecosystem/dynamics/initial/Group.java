@@ -34,7 +34,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
-import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import fr.cnrs.iees.graph.Direction;
@@ -48,6 +47,8 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
+import java.util.List;
 
 /**
  * A class matching the "system/structure/groupType/group" node of the 3w configuration.
@@ -68,9 +69,7 @@ public class Group
 	private static final int baseInitRank = N_GROUP.initRank();
 	private GroupType groupType = null;
 	private LifeCycle lifeCycle = null;
-	private ComponentType groupOf = null;
-	// the data read from file for this group
-//	private SimplePropertyList loadedData = null;
+//	private ComponentType groupOf = null;
 
 	// default constructor
 	public Group(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -90,9 +89,9 @@ public class Group
 			selectZeroOrOne(hasTheLabel(E_CYCLE.label())));
 		if (cycle!=null)
 			lifeCycle = (LifeCycle) cycle.endNode();
-		groupOf = (ComponentType) get(edges(Direction.OUT),
-			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
-			endNode());
+//		groupOf = (ComponentType) get(edges(Direction.OUT),
+//			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
+//			endNode());
 		seal();
 	}
 
@@ -158,6 +157,7 @@ public class Group
 //	}
 
 	// what about the groupId ?
+	// TODO: refactor this - the search for the life cycle is wrong
 	@Override
 	protected GroupComponent makeInitialComponent(int simId, 
 			DataIdentifier itemId, 
@@ -169,7 +169,8 @@ public class Group
 		TreeNode parent = null;
 		// 1st case: there is a lifeCycle
 		if (lifeCycle!=null) {
-			lcc = lifeCycle.getInstance(simId);
+			List<LifeCycleComponent> llcc = lifeCycle.getInstance(simId);
+			lcc = llcc.get(0);
 			superContainer = (ComponentContainer) lcc.content();
 			parent = lcc;
 		}
@@ -182,9 +183,9 @@ public class Group
 		// (temporarily) set the group name to itemId so that the groupComponent is initialized with
 		// with proper name in container. Will handle case where itemId=null
 		if (itemId!=null)
-			groupType.getInstance(simId).setName(itemId.groupId());
+			gf.setName(itemId.groupId());
 		else
-			groupType.getInstance(simId).setName(null);
+			gf.setName(null);
 		GroupComponent gc = gf.newInstance(superContainer);
 		gc.connectParent(parent);
 		for (String pkey:gc.properties().getKeysAsSet())
