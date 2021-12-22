@@ -64,7 +64,7 @@ public class TableNode
 
 	private boolean sealed = false;
 	private Dimensioner[] dims = null;
-	private DataElementType dataType = null;
+	private Table tableTemplate = null;
 	
 	public TableNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -93,9 +93,43 @@ public class TableNode
 			int i=0;
 			for (int j:ld.keySet())
 				dims[i++] = ld.get(j).getInstance();
-			// get data type
-			if (properties().hasProperty(P_DATAELEMENTTYPE.key()))
-				dataType = (DataElementType) properties().getPropertyValue(P_DATAELEMENTTYPE.key());
+			// make template for easy cloning
+			if (properties().hasProperty(P_DATAELEMENTTYPE.key())) {
+				DataElementType dataType = (DataElementType) properties().getPropertyValue(P_DATAELEMENTTYPE.key());
+				switch (dataType) {
+					case Byte:
+						tableTemplate = new ByteTable(dims);
+					case Char:
+						tableTemplate = new CharTable(dims);
+					case Short:
+						tableTemplate = new ShortTable(dims);
+					case Integer:
+						tableTemplate = new IntTable(dims);
+					case Long:
+						tableTemplate = new LongTable(dims);
+					case Float:
+						tableTemplate = new FloatTable(dims);
+					case Double:
+						tableTemplate = new DoubleTable(dims);
+					case Boolean:
+						tableTemplate = new BooleanTable(dims);
+					case String:
+						tableTemplate = new StringTable(dims);
+					default:;
+				}
+			}
+			else if (properties().hasProperty(P_TWDATACLASS.key())) {
+				// FLAW: this cannot work as the class is unavailable in this code.
+				// There is no way to instantiate a template from here.
+				Class<?> tclass;
+				try {
+					tclass = Class.forName((String)properties().getPropertyValue(P_TWDATACLASS.key()));
+					tableTemplate = (Table) tclass.getConstructor().newInstance();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			sealed = true;
 		}
 	}
@@ -119,28 +153,7 @@ public class TableNode
 	public Table templateInstance() {
 		if (!sealed)
 			initialise();
-		switch (dataType) {
-			case Byte:
-				return new ByteTable(dims);
-			case Char:
-				return new CharTable(dims);
-			case Short:
-				return new ShortTable(dims);
-			case Integer:
-				return new IntTable(dims);
-			case Long:
-				return new LongTable(dims);
-			case Float:
-				return new FloatTable(dims);
-			case Double:
-				return new DoubleTable(dims);
-			case Boolean:
-				return new BooleanTable(dims);
-			case String:
-				return new StringTable(dims);
-			default:;
-		}
-		return null;
+		return tableTemplate;
 	}
 
 	@Override

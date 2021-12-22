@@ -297,7 +297,7 @@ public class CodeGenerator {
 				if (!newValue.equals(oldValue)) {
 					elementType.properties().setProperty(dataGroup, newValue);
 					GraphState.setChanged(); // Seems to be secret French business so we won't look
-												// rhaa! it's jsut telling the graph the property value has changed!
+								// rhaa! it's just telling the graph the property value has changed!
 				}
 			} else {
 				// set the properties driverClass, constantClass, etc. if they didnt exist

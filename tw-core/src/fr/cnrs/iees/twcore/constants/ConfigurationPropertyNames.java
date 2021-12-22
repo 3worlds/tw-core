@@ -80,7 +80,7 @@ public enum ConfigurationPropertyNames {
 	
 	P_GROUP_NINST				("nInstances"),
 	
-	P_PARAMETERCLASS			("parameterClass"),
+//	P_PARAMETERCLASS			("parameterClass"),
 	P_DRIVERCLASS				("driverClass"),
 	P_DECORATORCLASS			("decoratorClass"),
 	P_CONSTANTCLASS				("constantClass"),
@@ -90,7 +90,7 @@ public enum ConfigurationPropertyNames {
 	P_FUNCTIONSNIPPET			("functionSnippet"),
 	P_FUNCTIONCLASS				("userClassName"),
 	
-	P_INITIALISERCLASS			("userClassName"),
+	P_TWDATACLASS				("generatedClassName"),
 	P_DATAELEMENTTYPE			("dataElementType"),
 	
 	P_TABLE_DESCRIPTION			("description"),

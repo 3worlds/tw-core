@@ -49,12 +49,14 @@ import java.util.logging.Logger;
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.IntTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.ens.biologie.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
@@ -97,12 +99,15 @@ public abstract class HierarchicalDataGenerator
 
 	@SuppressWarnings("unchecked")
 	private final String generateRecordCode(TreeGraphDataNode spec) {
-		String cn = null;
-		if (spec.properties().hasProperty("generatedClassName"))
-			cn = (String)spec.properties().getPropertyValue("generatedClassName");
-		else
-			cn = spec.id();
-		cn = validJavaName(initialUpperCase(wordUpperCaseName(cn)));
+		String cnn = null;
+		if (spec.properties().hasProperty(P_TWDATACLASS.key()))
+			cnn = (String)spec.properties().getPropertyValue(P_TWDATACLASS.key());
+		else {
+			cnn = spec.id();
+			((ExtendablePropertyList)spec.properties()).addProperty(
+				new Property(P_TWDATACLASS.key(),cnn) );
+		}
+		String cn = validJavaName(initialUpperCase(wordUpperCaseName(cnn)));
 		log.info("Generating data class '"+cn+"'");
 		String comment = comment(general,classComment(cn),generatedCode(false,modelName, ""));
 		Iterable<TreeNode> childrenList = null;
@@ -233,6 +238,11 @@ public abstract class HierarchicalDataGenerator
 				selectOne(hasTheLabel(N_RECORD.label())));
 			generateRecordCode(rec);
 			ftype = validJavaName(initialUpperCase(wordUpperCaseName(spec.id())));
+			if (spec.properties().hasProperty(P_TWDATACLASS.key()))
+				spec.properties().setProperty(P_TWDATACLASS.key(),ftype);
+			else
+				((ExtendablePropertyList)spec.properties()).addProperty(
+					new Property(P_TWDATACLASS.key(),ftype) );
 			log.info("    generating file "+ftype+".java ...");
 			fpack = packageName+"."+ftype;
 			String contentType = validJavaName(initialUpperCase(wordUpperCaseName(rec.id())));

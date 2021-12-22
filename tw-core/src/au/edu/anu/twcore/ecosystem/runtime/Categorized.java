@@ -30,10 +30,9 @@ package au.edu.anu.twcore.ecosystem.runtime;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_BELONGSTO;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_DRIVERS;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_RECORD;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DYNAMIC;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
@@ -204,7 +203,7 @@ public interface Categorized<T extends Identity> {
 			mergedRoot = roots.iterator().next();
 			factory = mergedRoot.factory();
 			((ExtendablePropertyList)mergedRoot.properties()).addProperty(
-				new Property("generatedClassName",mergedRoot.id()) );
+				new Property(P_TWDATACLASS.key(),mergedRoot.id()) );
 		}
 		// if more than one root present, generate new name and merge all record fields into one record
 		if (roots.size() > 1) {
@@ -216,7 +215,7 @@ public interface Categorized<T extends Identity> {
 			// make a single root record and merge data requirements into it
 			mergedRoot = (TreeGraphDataNode) factory.makeNode(Record.class,mergedRootName.toString());
 			((ExtendablePropertyList)mergedRoot.properties()).addProperty(
-				new Property("generatedClassName",mergedRootName.toString())) ;
+				new Property(P_TWDATACLASS.key(),mergedRootName.toString())) ;
 			for (TreeGraphDataNode n:roots)
 				// root content is a record
 				if (n.classId().equals(N_RECORD.label())) {
