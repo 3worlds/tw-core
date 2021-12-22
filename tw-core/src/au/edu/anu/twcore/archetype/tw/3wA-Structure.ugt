@@ -205,8 +205,8 @@ hasNode groupSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
 	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
 		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
-	mustSatisfyQuery groupRequiresCycleEdge
-		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleInstanceRequirementQuery")
+//	mustSatisfyQuery groupRequiresCycleEdge
+//		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleInstanceRequirementQuery")
 	//
 	// if there is no Component belonging to this group, then the Group must point to
 	// a ComponentType in order to know in which container components of this group are to

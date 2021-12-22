@@ -14,7 +14,7 @@ hasNode experimentSpec
 		hasName = String("directory")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
-		mustSatisfyQuery baselineQuery
+		mustSatisfyQuery baselineQuery2
 			className = String("au.edu.anu.twcore.archetype.tw.HasValidFileNameChars")
 		
 	hasProperty experimentDescPropSpec

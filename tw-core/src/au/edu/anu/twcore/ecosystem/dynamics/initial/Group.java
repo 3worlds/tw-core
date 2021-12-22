@@ -34,12 +34,13 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -48,7 +49,9 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A class matching the "system/structure/groupType/group" node of the 3w configuration.
@@ -70,6 +73,9 @@ public class Group
 	private GroupType groupType = null;
 	private LifeCycle lifeCycle = null;
 //	private ComponentType groupOf = null;
+	private boolean hasLifeCycle = false;
+	// helper list to retrieve already created LifeCycleComponents (integer for simId)(String for lcId)
+	private Map<Integer,Map<String,LifeCycleComponent>> alreadyMadeLCs = new HashMap<>();
 
 	// default constructor
 	public Group(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -85,13 +91,14 @@ public class Group
 	public void initialise() {
 		super.initialise();
 		groupType = (GroupType) getParent();
+		// find if this group belongs to a life cycle or directly depends on Arena
+		hasLifeCycle = groupType.getParent() instanceof LifeCycleType;
+		// this edge, if present, points to a lifeCycle node
+		// NB: if lifecycles were loaded from files, then lifeCycle = null here
 		Edge cycle = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_CYCLE.label())));
 		if (cycle!=null)
 			lifeCycle = (LifeCycle) cycle.endNode();
-//		groupOf = (ComponentType) get(edges(Direction.OUT),
-//			selectZeroOrOne(hasTheLabel(E_GROUPOF.label())),
-//			endNode());
 		seal();
 	}
 
@@ -156,6 +163,49 @@ public class Group
 //		return groups.get(id);
 //	}
 
+	private ComponentContainer getContainer(int simId,String lcId,GroupFactory factory) {
+		ComponentContainer container = null;
+		// 1st case: there is a lifeCycle
+		if (hasLifeCycle) {
+			LifeCycleComponent lcc = null;
+			// this means life cycles were loaded from file
+			if (lifeCycle==null) {
+				LifeCycleType lct = (LifeCycleType) getParent().getParent();
+				LifeCycleFactory lcf = lct.getInstance(simId);
+				Map<String,LifeCycleComponent> llcc = null;
+				if (alreadyMadeLCs.containsKey(simId)) 
+					llcc = alreadyMadeLCs.get(simId);
+				else {
+					llcc = new HashMap<>();
+					alreadyMadeLCs.put(simId,llcc);
+				}
+				if (llcc.containsKey(lcId)) {
+					lcc = llcc.get(lcId);
+				}
+				else {
+					lcf.setName(lcId);
+					lcc = lcf.getInstance();
+					llcc.put(lcId,lcc);
+				}
+				container = (ComponentContainer) lcc.content();
+//				container.setCategorized(factory.); // cannot be called?
+			}
+			// this means life cycle was pointed to with a cycle edge
+			else {
+				List<LifeCycleComponent> llcc = lifeCycle.getInstance(simId);
+				lcc = llcc.get(0);
+				container = (ComponentContainer) lcc.content();
+			}
+		}
+		// 2nd case: there is no lifeCycle
+		else {
+			ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
+			container = (ComponentContainer)system.getInstance(simId).getInstance().content();
+		}
+		return container;
+	}
+	
+	
 	// what about the groupId ?
 	// TODO: refactor this - the search for the life cycle is wrong
 	@Override
@@ -164,30 +214,15 @@ public class Group
 			SimplePropertyList props) {
 		GroupFactory gf = groupType.getInstance(simId);
 		// put group into container hierarchy
-		ComponentContainer superContainer = null;
-		LifeCycleComponent lcc = null;
-		TreeNode parent = null;
-		// 1st case: there is a lifeCycle
-		if (lifeCycle!=null) {
-			List<LifeCycleComponent> llcc = lifeCycle.getInstance(simId);
-			lcc = llcc.get(0);
-			superContainer = (ComponentContainer) lcc.content();
-			parent = lcc;
-		}
-		// 2nd case: there is no lifeCycle
-		else {
-			ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
-			superContainer = (ComponentContainer)system.getInstance(simId).getInstance().content();
-			parent = system;
-		}
+		ComponentContainer superContainer = getContainer(simId,itemId.lifeCycleId(),gf);
 		// (temporarily) set the group name to itemId so that the groupComponent is initialized with
 		// with proper name in container. Will handle case where itemId=null
 		if (itemId!=null)
 			gf.setName(itemId.groupId());
 		else
-			gf.setName(null);
+			gf.setName(null); // dead code ???
 		GroupComponent gc = gf.newInstance(superContainer);
-		gc.connectParent(parent);
+		gc.connectParent(superContainer.descriptors());
 		for (String pkey:gc.properties().getKeysAsSet())
 			if (props.hasProperty(pkey))
 				gc.properties().setProperty(pkey,props.getPropertyValue(pkey));

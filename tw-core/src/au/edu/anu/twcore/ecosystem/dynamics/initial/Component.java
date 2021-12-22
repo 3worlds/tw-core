@@ -32,8 +32,11 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -46,6 +49,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
@@ -75,6 +79,11 @@ public class Component
 	// if >1, then even if no groups are declared, components must be stored in separate group
 	// containers matching category signatures
 	private int nComponentTypes = 0;
+	
+	private boolean hasGroup = false;
+	// helper list to retrieve already created GroupComponents (integer for simId)(String for groupId)
+	private Map<Integer,Map<String,GroupComponent>> alreadyMadeGroups = new HashMap<>();
+	
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -89,7 +98,11 @@ public class Component
 	@Override
 	public void initialise() {
 		super.initialise();
+		componentType = (ComponentType) getParent();
+		// find if this component belongs to a group or directly depends on Arena
+		hasGroup = componentType.getParent() instanceof GroupType; 
 		// this edge, if present, points to a Group node
+		// NB: if groups were loaded from files, then group = null here
 		Edge instof = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
 		if (instof!=null)
@@ -102,7 +115,6 @@ public class Component
 			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label()))); 
 		nComponentTypes = ((Collection<?>) get(struc, childTree(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label()))) ).size();
-		componentType = (ComponentType) getParent();
 		seal();
 	}
 
@@ -229,22 +241,44 @@ public class Component
 //		return grp;
 //	}
 	
-	// TODO: refactor this - the search for the group is wrong if datasources are here
-	private ComponentContainer getContainer(int simId,ComponentFactory factory) {
+	private ComponentContainer getContainer(int simId,String groupId,ComponentFactory factory) {
 		ComponentContainer container = null;
 		// find the proper container
 		// 1st case: there is a group and possibly a life cycle
-		if (group!=null) {
+		if (hasGroup) {
 			GroupComponent grp = null;
-			for (GroupComponent gc:group.getInstance(simId))
-				if (gc.name().equals(group.id())) {
-					grp = gc;
-					break;
+			// this means groups were loaded from file
+			if (group==null) {
+				GroupType gt = (GroupType) getParent().getParent();
+				GroupFactory gf = gt.getInstance(simId);
+				Map<String,GroupComponent> lgc = null;
+				if (alreadyMadeGroups.containsKey(simId))
+					lgc = alreadyMadeGroups.get(simId);
+				else {
+					lgc = new HashMap<>();
+					alreadyMadeGroups.put(simId,lgc);
+				}
+				if (lgc.containsKey(groupId))
+					grp = lgc.get(groupId);
+				else {
+					gf.setName(groupId);
+					grp = gf.getInstance();
+					lgc.put(groupId,grp);
+				}
+			}
+			// this means group was pointed to with a instanceOf edge
+			else {
+				for (GroupComponent gc:group.getInstance(simId))
+					if (gc.name().equals(group.id())) {
+						grp = gc;
+						break;
+				}
 			}
 			container = (ComponentContainer)grp.content();
 			container.setCategorized(factory);
 			// this will add into lifeCycle only if it exists. otherwise does nothing
 			grp.addGroupIntoLifeCycle();
+
 		}
 		// 2nd case: there is no group (and no life cycle)
 		else {
@@ -289,7 +323,7 @@ public class Component
 			if (props.hasProperty(pkey))
 				sc.properties().setProperty(pkey,props.getPropertyValue(pkey));
 		// insert component into its container
-		ComponentContainer container = getContainer(simId,factory);
+		ComponentContainer container = getContainer(simId,itemId.groupId(),factory);
 		// prepare initial community
 		container.addInitialItem(sc);
 		sc.setContainer((ComponentContainer)container);

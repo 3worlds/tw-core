@@ -50,6 +50,7 @@ import fr.cnrs.iees.graph.Direction;
  * @author J. Gignoux - 22 déc. 2020
  *
  */
+@Deprecated
 public class LifeCycleInstanceRequirementQuery extends QueryAdaptor {
 
 	@Override
