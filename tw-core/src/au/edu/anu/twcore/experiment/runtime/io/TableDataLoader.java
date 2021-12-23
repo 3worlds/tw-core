@@ -253,14 +253,28 @@ public abstract class TableDataLoader
 				data = new ExtendablePropertyListImpl();
 			// this will put all column names found in the file as new properties,
 			// except if they already exist. With their default value as per their type.
-			for (String col:headers)
-				if (!data.hasProperty(col)) {
+			for (String col:headers) {
+				// complex case: a field nested in a table
+				if (col.contains(SEP)) {
+					String[] ss = col.split(SEP);
+					if (!data.hasProperty(ss[0])) {
+						if (colTemplates.containsKey(ss[0])) {
+							Object o = colTemplates.get(ss[0]); 					
+							if (o instanceof DataContainer)
+								o = ((DataContainer)o).clone();
+							((ExtendablePropertyList)data).addProperty(ss[0],o);
+						}
+					}
+				}
+				// simple case: just a field or a table
+				else if (!data.hasProperty(col)) {
 					if (colTemplates.containsKey(col)) {
 						Object o = colTemplates.get(col); 					
 						if (o instanceof DataContainer)
 							o = ((DataContainer)o).clone();
 						((ExtendablePropertyList)data).addProperty(col,o);
 					}
+				}
 			}
 			PropertyDataLoader dataLoader = new PropertyDataLoader(
 			rawData[i],

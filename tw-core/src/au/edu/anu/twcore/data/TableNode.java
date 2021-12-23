@@ -31,6 +31,7 @@ package au.edu.anu.twcore.data;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DataElementType;
@@ -94,45 +95,116 @@ public class TableNode
 			for (int j:ld.keySet())
 				dims[i++] = ld.get(j).getInstance();
 			// make template for easy cloning
+			// tables of primitives
 			if (properties().hasProperty(P_DATAELEMENTTYPE.key())) {
 				DataElementType dataType = (DataElementType) properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 				switch (dataType) {
 					case Byte:
 						tableTemplate = new ByteTable(dims);
+						break;
 					case Char:
 						tableTemplate = new CharTable(dims);
+						break;
 					case Short:
 						tableTemplate = new ShortTable(dims);
+						break;
 					case Integer:
 						tableTemplate = new IntTable(dims);
+						break;
 					case Long:
 						tableTemplate = new LongTable(dims);
+						break;
 					case Float:
 						tableTemplate = new FloatTable(dims);
+						break;
 					case Double:
 						tableTemplate = new DoubleTable(dims);
+						break;
 					case Boolean:
 						tableTemplate = new BooleanTable(dims);
+						break;
 					case String:
 						tableTemplate = new StringTable(dims);
+						break;
 					default:;
 				}
 			}
+			// tables of records - use tables of propertylists
+			// ok because no table can be root of a data hierarchy
+			// TODO: only works with 1 level of nesting, ie record within table
 			else if (properties().hasProperty(P_TWDATACLASS.key())) {
-				// FLAW: this cannot work as the class is unavailable in this code.
-				// There is no way to instantiate a template from here.
-				Class<?> tclass;
-				try {
-					tclass = Class.forName((String)properties().getPropertyValue(P_TWDATACLASS.key()));
-					tableTemplate = (Table) tclass.getConstructor().newInstance();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				Record record = (Record) get(getChildren(),
+					selectZeroOrOne(hasTheLabel(N_RECORD.label())));
+				List<FieldNode> fields = (List<FieldNode>) get(record.getChildren(),
+					selectOneOrMany(hasTheLabel(N_FIELD.label())));
+				ExtendablePropertyList props = new ExtendablePropertyListImpl();
+				for (FieldNode field:fields) {
+					DataElementType dataType = (DataElementType) 
+						field.properties().getPropertyValue(P_FIELD_TYPE.key());
+					switch (dataType) {
+						case Byte:
+							Byte b = 0;
+							props.addProperty(field.id(),b);
+							break;
+						case Char:
+							Character c = 0;
+							props.addProperty(field.id(),c);
+							break;
+						case Short:
+							Short s = 0;
+							props.addProperty(field.id(),s);
+							break;
+						case Integer:
+							Integer ii = 0;
+							props.addProperty(field.id(),ii);
+							break;
+						case Long:
+							Long l = 0L;
+							props.addProperty(field.id(),l);
+							break;
+						case Float:
+							Float f = 0.0F;
+							props.addProperty(field.id(),f);
+							break;
+						case Double:
+							Double d = 0.0;
+							props.addProperty(field.id(),d);
+							break;
+						case Boolean:
+							Boolean bo = false;
+							props.addProperty(field.id(),bo);
+							break;
+						case String:
+							String ss = "";
+							props.addProperty(field.id(),ss);
+							break;
+						default:;
+					}
+					
 				}
+				tableTemplate = new ObjectTable<SimplePropertyList>(dims);
+//				tableTemplate.fillWith(props.clone()); // NO! this is copying the SAME prop in every cell !
+				for (int k=0; k<tableTemplate.size(); k++)
+					((ObjectTable<SimplePropertyList>)tableTemplate).setWithFlatIndex(props.clone(),k);
+//				// FLAW: this cannot work as the class is unavailable in this code.
+//				// There is no way to instantiate a template from here.
+//				Class<?> tclass;
+//				try {
+//					tclass = Class.forName((String)properties().getPropertyValue(P_TWDATACLASS.key()));
+//					tableTemplate = (Table) tclass.getConstructor().newInstance();
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			}
 			sealed = true;
 		}
 	}
+	
+//	private Table getNestedDataStructure() {
+//		Table result = null;
+//		return result;
+//	}
 
 	@Override
 	public int initRank() {

@@ -79,6 +79,7 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			String tname = table.id();
 			String ttype = null;
 			String tpack = null;
+			// table of primitives
 			if (table.properties().hasProperty(P_DATAELEMENTTYPE.key())) {
 				DataElementType det = (DataElementType) table.properties().getPropertyValue(P_DATAELEMENTTYPE.key());
 				String t = det.name();
@@ -91,6 +92,12 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 					tpack = Table.class.getPackageName()+"."+ttype;
 				}
 			}
+			// table of records that has its own type
+			else if (table.properties().hasProperty(P_TWDATACLASS.key())){
+				ttype = (String) table.properties().getPropertyValue(P_TWDATACLASS.key());
+				tpack = "";
+			}
+			// this should never be entered
 			else {
 //				TreeGraphDataNode childRec = (TreeGraphDataNode) get(table,
 //					children(),
@@ -105,7 +112,8 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			cg.setMethod("get"+tname, m);
 			// no setter
 			// import for the table class
-			cg.setImport(tpack);
+			if (!tpack.isBlank())
+				cg.setImport(tpack);
 		}
 		log.info("    generating file "+className+".java ...");
 		File file = new File(packagePath+File.separator+className+".java");

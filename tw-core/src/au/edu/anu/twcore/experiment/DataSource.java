@@ -109,13 +109,21 @@ public class DataSource
 			selectZeroOrMany(orQuery(hasTheLabel(N_FIELD.label()),hasTheLabel(N_TABLE.label()))) );
 		for (TreeGraphDataNode tn:props) {
 			Object value = null;
+			String propName = tn.id();
 			if (tn instanceof FieldNode) {
 				DataElementType type = (DataElementType) tn.properties().getPropertyValue(P_FIELD_TYPE.key());
 				value = ValidPropertyTypes.getDefaultValue(type.className());
+				// case of records declared within tables
+				if (tn.getParent().getParent() instanceof TableNode)
+					propName = tn.getParent().getParent().id()+":"+tn.id();
+				else
+					propName = tn.id();
 			}
-			else if (tn instanceof TableNode)
+			else if (tn instanceof TableNode) {
+				propName = tn.id();
 				value = ((TableNode)tn).templateInstance();
-			propTemplates.put(tn.id(),value);
+			}
+			propTemplates.put(propName,value);
 		}
 		// load data from file (once for all simulators)
 		InputStream ips = null;

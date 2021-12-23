@@ -63,6 +63,7 @@ public abstract class InitialElement<T extends DataElement>
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialise() {
+		super.initialise();
 		// read data from data sources
 		List<DataSource> sources = (List<DataSource>) get(edges(Direction.OUT),
 			selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),

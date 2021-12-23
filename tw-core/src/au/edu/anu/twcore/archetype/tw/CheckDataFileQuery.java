@@ -49,7 +49,10 @@ public abstract class CheckDataFileQuery extends QueryAdaptor {
 					errorMsg = "csv data file '"+file.getName()+"' could not be read";
 					actionMsg = "check and fix format of csv file '"+file.getName()+"'";
 				}
-				rawData = new String[lines.size()][];
+				if (lines.isEmpty())
+					rawData = null;
+				else
+					rawData = new String[lines.size()][];
 				int i=0;
 				String fieldSeparator = "\t";
 				if (ds.properties().hasProperty(P_DATASOURCE_SEP.key()))

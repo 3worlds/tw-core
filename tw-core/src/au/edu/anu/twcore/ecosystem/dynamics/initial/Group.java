@@ -184,7 +184,7 @@ public class Group
 				}
 				else {
 					lcf.setName(lcId);
-					lcc = lcf.getInstance();
+					lcc = lcf.newInstance();
 					llcc.put(lcId,lcc);
 				}
 				container = (ComponentContainer) lcc.content();

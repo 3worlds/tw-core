@@ -262,7 +262,7 @@ public class Component
 					grp = lgc.get(groupId);
 				else {
 					gf.setName(groupId);
-					grp = gf.getInstance();
+					grp = gf.newInstance();
 					lgc.put(groupId,grp);
 				}
 			}
