@@ -61,49 +61,56 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 // checked ok 24/9/2019
 // refactored 11/12/2020 to point to functions rather than processes
 // refactored 9/2/2021 to allow for multiple from or to categories
+// refactored 24/12/21 to prevent crashes when graph not finished
 public class ValidLifeCycleProcessQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
-		TwFunctionTypes requiredFunc = null;
-		String s = null;
-		if (input instanceof Produce) {
-			requiredFunc = TwFunctionTypes.CreateOtherDecision; // category function, not relation
-			s = "produce";
-		} else if (input instanceof Recruit) {
-			requiredFunc = TwFunctionTypes.ChangeCategoryDecision; // category function, not relation
-			s = "recruit";
-		}
-		TreeGraphNode pnode = (TreeGraphNode) input;
-		FunctionNode func = (FunctionNode) get(pnode.edges(Direction.OUT), selectOne(hasTheLabel(E_EFFECTEDBY.label())),
+		if ((input instanceof Produce)||(input instanceof Recruit)) {
+			TwFunctionTypes requiredFunc = null;
+			String s = null;
+			if (input instanceof Produce) {
+				requiredFunc = TwFunctionTypes.CreateOtherDecision; // category function, not relation
+				s = "produce";
+			} else if (input instanceof Recruit) {
+				requiredFunc = TwFunctionTypes.ChangeCategoryDecision; // category function, not relation
+				s = "recruit";
+			}
+			TreeGraphNode pnode = (TreeGraphNode) input;
+			FunctionNode func = (FunctionNode) get(pnode.edges(Direction.OUT), 
+				selectZeroOrOne(hasTheLabel(E_EFFECTEDBY.label())),
 				endNode());
-		ProcessNode proc = (ProcessNode) func.getParent();
-		// 1 make sure the process categories contain the produce node ones
-		List<Node> apps = (List<Node>) get(proc.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes());
-		List<Category> fromprod = (List<Category>) get(pnode.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())), edgeListEndNodes());
-		if (!apps.containsAll(fromprod)) {
-			String cats = " ";
-			for (Category c : fromprod)
-				cats += c.id() + " ";
-			String[] msgs = TextTranslations.getValidLifeCycleProcessQuery1(s,cats,proc.toShortString());
-			actionMsg = msgs[0];
-			errorMsg = msgs[1];
-
-//			errorMsg = s + " node fromCategories {" + cats + "} not all found in process '" + proc.id() + "'";
-			return this;
+			if (func!=null) {
+				ProcessNode proc = (ProcessNode) func.getParent();
+				if (proc!=null) {
+					// 1 make sure the process categories contain the produce/recruit node ones
+					List<Node> apps = (List<Node>) get(proc.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), 
+						edgeListEndNodes());
+					List<Category> fromprod = (List<Category>) get(pnode.edges(Direction.OUT),
+						selectZeroOrMany(hasTheLabel(E_FROMCATEGORY.label())), 
+						edgeListEndNodes());
+					if (!apps.containsAll(fromprod)) {
+						String cats = " ";
+						for (Category c : fromprod)
+							cats += c.id() + " ";
+						String[] msgs = TextTranslations.getValidLifeCycleProcessQuery1(s,cats,proc.toShortString());
+						actionMsg = msgs[0];
+						errorMsg = msgs[1];
+						return this;
+					}
+					// 2 make sure the process has a function of the proper type
+					if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key()).equals(requiredFunc))
+						return this;
+			//		if ((message==null) && (!satisfied)) // means we didnt fall into the previous trap
+					String[] msgs = TextTranslations.getValidLifeCycleProcessQuery2(requiredFunc.name(),proc.toShortString());
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+				}
+			}
 		}
-		// 2 make sure the process has a function of the proper type
-		if (func.properties().getPropertyValue(P_FUNCTIONTYPE.key()).equals(requiredFunc))
-			return this;
-//		if ((message==null) && (!satisfied)) // means we didnt fall into the previous trap
-		String[] msgs = TextTranslations.getValidLifeCycleProcessQuery2(requiredFunc.name(),proc.toShortString());
-		actionMsg = msgs[0];
-		errorMsg = msgs[1];
-//		errorMsg = "missing '" + requiredFunc + "' function type in process '" + proc.id() + "'";
 		return this;
 	}
 
