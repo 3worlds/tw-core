@@ -318,7 +318,7 @@ public class SearchProcess
 	// set the context information, ie group, othergroup, lifecycle, otherlifecycle
 	private void setContext(SystemComponent focal, SystemComponent other) {
 		HierarchicalComponent hc = focal.container().descriptors();
-		focal.container().change();
+		focal.container().changeStructure();
 		if (hc!=null) {
 			if (hc instanceof GroupComponent) {
 				focalGroup = hc;
@@ -331,7 +331,7 @@ public class SearchProcess
 				focalGroup = null;
 		}
 		hc = other.container().descriptors();
-		other.container().change();
+		other.container().changeStructure();
 		if (hc!=null) {
 			if (hc instanceof GroupComponent) {
 				otherGroup = hc;

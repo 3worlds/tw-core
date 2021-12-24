@@ -176,13 +176,14 @@ public class RelationContainer
 	}
 
 	@Override
-	public boolean changed() {
+	public boolean structureChanged() {
 		return changed;
 	}
 
 	@Override
-	public void change() {
+	public RelationContainer changeStructure() {
 		changed = true;
+		return this;
 	}
 
 	public boolean isPermanent() {

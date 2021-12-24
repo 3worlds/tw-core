@@ -48,7 +48,7 @@ public class ComponentContainer
 
 	/** things which track changes in this container, eg spaces */
 	private Set<DynamicGraphObserver<SystemComponent,SystemRelation>> observers = new HashSet<>();
-
+	
 	public ComponentContainer(String proposedId,
 			ComponentContainer parent,
 			HierarchicalComponent data,
@@ -62,7 +62,7 @@ public class ComponentContainer
 			return ((SystemComponent)item).clone();
 		return null;
 	}
-
+	
 	/**
 	 * Advances state of all SystemComponents contained in this container only.
 	 */
@@ -79,7 +79,10 @@ public class ComponentContainer
 	 * sub-containers (recursive).
 	 */
 	public void stepAll() {
-		step();
+		if (stateChanged()) {
+			step();
+			resetStateChange();
+		}
 		for (CategorizedContainer<SystemComponent> sc : subContainers())
 			((ComponentContainer) sc).stepAll();
 	}
@@ -112,7 +115,7 @@ public class ComponentContainer
 		if (hv.decorators()!=null) {
 			hv.decorators().clear();
 		}
-		if (changed()) {
+		if (structureChanged()) {
 			resetCounters();
 			for (SystemComponent item:items()) {
 				if (item.decorators()!=null) {
@@ -154,7 +157,7 @@ public class ComponentContainer
 			parentContainer.removeItem(item);
 		// effectAllChanges() is recursive so don't use here.
 		parentContainer.effectChanges((Collection<SystemComponent>[])null);// counters are handled here
-		parentContainer.clearVariables();
+		parentContainer.resetStateChange();
 	}
 
 	@SuppressWarnings("unchecked")

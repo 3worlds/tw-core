@@ -75,10 +75,19 @@ public interface DynamicContainer<T> extends Container {
 	 *
 	 * @return true if changed since last effectChanges()
 	 */
-	public boolean changed();
+	public boolean structureChanged();
 
 	/**
 	 * Sets the changed flag to true
 	 */
-	public void change();
+	public DynamicContainer<T> changeStructure();
+	
+	public default boolean stateChanged() {
+		return false;
+	}
+	
+	public default DynamicContainer<T> changeState() {
+		return this;
+	}
+	
 }

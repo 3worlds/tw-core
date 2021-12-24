@@ -156,7 +156,7 @@ public class RelationProcess extends AbstractRelationProcess {
 					else
 						otherLifeCycle = null;
 				}
-				other.container().change();
+				other.container().changeStructure();
 				// TODO: fix this:
 				executeFunctions(t,dt,focal,other,sr);
 			}
@@ -184,7 +184,7 @@ public class RelationProcess extends AbstractRelationProcess {
 			// execute function on contained items, if any, and of proper categories
 			if (component.content().itemCategorized()!=null) // if null, means all content is in subcontainers
 				if (component.content().itemCategorized().belongsTo(focalCategories)) {
-					component.content().change();
+					component.content().changeStructure();
 					for (SystemComponent sc:component.content().items())
 						loopOnOthers(t, dt, sc);
 				}

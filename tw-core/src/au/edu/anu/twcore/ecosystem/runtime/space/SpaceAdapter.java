@@ -272,16 +272,6 @@ public abstract class SpaceAdapter
 		return id.id();
 	}
 
-	@Override
-	public final boolean changed() {
-		return changed;
-	}
-
-	@Override
-	public final void change() {
-		changed = true;
-	}
-
 	// class needed by the minDist(...) method below
 	private class distLoc {
 		double dist;
@@ -500,6 +490,17 @@ public abstract class SpaceAdapter
 	@Override
 	public Collection<SystemComponent> outOfSpaceItems() {
 		return outOfSpace;
+	}
+
+	@Override
+	public boolean structureChanged() {
+		return changed;
+	}
+
+	@Override
+	public SpaceAdapter changeStructure() {
+		changed = true;
+		return this;
 	}
 
 }

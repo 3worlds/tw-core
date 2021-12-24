@@ -202,6 +202,8 @@ public class EcosystemGraph
 			// this may possibly remove relations set just before
 			components.effectAllChanges(newComponents);
 			// Second, graph state changes (recursive)
+			// FLAW: this is WRONG. eg: when 1st causal step does not call changeState() on some objects,
+			// then their zero values are set to new values ! this cant be correct.
 			components.stepAll(); // must be done after -> no need to step dead ones + need to init newborns properly
 		}
 		if (arena.getDataTracker()!=null) {

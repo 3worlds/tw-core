@@ -38,6 +38,7 @@ import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
+import au.edu.anu.twcore.ecosystem.runtime.containers.DynamicContainer;
 import au.edu.anu.twcore.ecosystem.runtime.containers.NestedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.containers.NestedDynamicContainer;
 import au.edu.anu.twcore.ecosystem.runtime.containers.ResettableContainer;
@@ -106,7 +107,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	// data for housework
 	protected Set<String> itemsToRemove = new HashSet<>();
 	protected Set<T> itemsToAdd = new HashSet<>();
-	private boolean changed = false;
+	private boolean structureChanged = false;
+	private boolean stateChanged = false;
 	private Categorized<T> itemCategories = null;
 
 	public CategorizedContainer(String proposedId,
@@ -404,12 +406,11 @@ public abstract class CategorizedContainer<T extends Identity>
 	@SuppressWarnings("unchecked")
 	@Override
 	public void effectChanges(Collection<T>...changedLists) {
-		changed = false;
+		structureChanged = false;
 	}
 
-//	@Override
-	public void clearVariables() {
-		changed = false;
+	protected final void resetStateChange() {
+		stateChanged = false;
 	}
 
 
@@ -512,13 +513,26 @@ public abstract class CategorizedContainer<T extends Identity>
 	}
 
 	@Override
-	public boolean changed() {
-		return changed;
+	public final boolean structureChanged() {
+		return structureChanged;
 	}
 
 	@Override
-	public void change() {
-		changed = true;
+	public final CategorizedContainer<T> changeStructure() {
+		structureChanged = true;
+		return this;
+	}
+
+
+	@Override
+	public final boolean stateChanged() {
+		return stateChanged;
+	}
+
+	@Override
+	public final DynamicContainer<T> changeState() {
+		stateChanged = true;
+		return this;
 	}
 
 }

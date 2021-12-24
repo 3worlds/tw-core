@@ -133,7 +133,7 @@ public class ComponentProcess
 			// execute function on contained items, if any, and of proper categories
 			if (component.content().itemCategorized()!=null) // if null, means all content is in subcontainers
 				if (component.content().itemCategorized().belongsTo(focalCategories)) {
-					component.content().change();
+					component.content().changeStructure().changeState();
 					for (SystemComponent sc:component.content().items())
 						executeFunctions(t, dt, sc);
 				}

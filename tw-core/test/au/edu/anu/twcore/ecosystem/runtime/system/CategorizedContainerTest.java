@@ -90,9 +90,6 @@ class CategorizedContainerTest {
 			throw new TwcoreException ("Renaming of '"+this.getClass().getSimpleName()+"' is not implemented.");
 		}
 		@Override
-		public void clearVariables() {
-		}
-		@Override
 		@SafeVarargs
 		public final void effectChanges(Collection<Identity>... changedLists) {
 		}
