@@ -47,9 +47,13 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
+import au.edu.anu.twcore.ecosystem.structure.Structure;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.Direction;
@@ -241,8 +245,12 @@ public class Component
 //		return grp;
 //	}
 	
+	// a bit clumsy - could probably be simplified by grouping cases properly
 	private ComponentContainer getContainer(int simId,String groupId,ComponentFactory factory) {
 		ComponentContainer container = null;
+		ComponentContainer arenaContainer =
+						// ArenaType	ArenaFactory	ArenaComponent	Container
+			(ComponentContainer)arena.getInstance(simId).getInstance().content();
 		// find the proper container
 		// 1st case: there is a group and possibly a life cycle
 		if (hasGroup) {
@@ -262,11 +270,28 @@ public class Component
 					grp = lgc.get(groupId);
 				else {
 					gf.setName(groupId);
-					grp = gf.newInstance();
+					// get supercontainer for group
+					if (gt.getParent() instanceof Structure) {
+						if (arenaContainer.findContainer(groupId)==null)
+							grp = gf.newInstance(arenaContainer);
+						else
+							grp = (GroupComponent) ((ComponentContainer)arenaContainer
+								.findContainer(groupId)).descriptors();
+					}
+					else if (gt.getParent() instanceof LifeCycleType) {
+						// Pb: how to get the supercontainer of group container ?
+						LifeCycleFactory lcf = ((LifeCycleType)gt.getParent()).getInstance(simId);
+						// in this case the group must have a LC id.... otherwise cant do anything
+						// TODO
+						grp = gf.newInstance();
+						throw new TwcoreException("not implemented yet");
+					}
+//					grp = gf.newInstance();
 					lgc.put(groupId,grp);
 				}
 			}
 			// this means group was pointed to with a instanceOf edge
+			// which also means this group has a group container properly attached
 			else {
 				for (GroupComponent gc:group.getInstance(simId))
 					if (gc.name().equals(group.id())) {
@@ -282,12 +307,9 @@ public class Component
 		}
 		// 2nd case: there is no group (and no life cycle)
 		else {
-			ComponentContainer parentContainer =
-							// ArenaType	ArenaFactory	ArenaComponent	Container
-				(ComponentContainer)arena.getInstance(simId).getInstance().content();
 			// if there is only one component type, then the arena must be the container
 			if (nComponentTypes==1)		
-				container = parentContainer;
+				container = arenaContainer;
 			// otherwise, a default group container per componentType is created, with no data
 			else { // group container must be created and inserted under arena
 				// JG 17/2/2021
@@ -295,7 +317,7 @@ public class Component
 				// group containerId. This way different containers can be generated for the
 				// same componentType - let's discuss this
 				String containerId = componentType.categoryId(); 
-				container = (ComponentContainer) parentContainer.subContainer(containerId);
+				container = (ComponentContainer) arenaContainer.subContainer(containerId);
 				// POSSIBLE FLAW HERE: there is no Group node matching this group factory
 				// That's fine - we dont need the group node as long as the factory and matching container are here
 				if (container==null) {
@@ -303,7 +325,7 @@ public class Component
 					GroupFactory gfac = new GroupFactory(cats,
 						null,null,null,null,null,
 						containerId,simId);
-					GroupComponent gComp = gfac.newInstance(parentContainer);
+					GroupComponent gComp = gfac.newInstance(arenaContainer);
 					container = (ComponentContainer)gComp.content();
 				}
 			}

@@ -79,6 +79,8 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 		group.setCategorized(this);
 		container.setData(group);
 		group.setContent(container);
+		if (parentContainer!=null)
+			group.connectParent(parentContainer.descriptors());
 		return group;
 	}
 
