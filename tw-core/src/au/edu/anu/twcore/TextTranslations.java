@@ -403,7 +403,7 @@ public class TextTranslations {
 			cm = "Propriété '" + key + "' ou lien de type '" + label
 					+ "' attendus, mais aucun des deux ou les deux ont été trouvés.";
 		} else {// make sure default is English!
-			am = "Add either property '" + key + "' or a '" + label + "' edge, but do not have both.";
+			am = "Add either property '" + key + "' or a '" + label + "' edge.";
 			cm = "Expected either property '" + key + "' or '" + label + "' edge but found neither or both.";
 		}
 		String[] result = { am, cm };
