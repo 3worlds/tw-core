@@ -35,6 +35,7 @@ import java.util.List;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.project.Project;
+import fr.cnrs.iees.io.parsing.CloneableProperty;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.ens.biologie.generic.utils.Duple;
 
@@ -43,8 +44,14 @@ import fr.ens.biologie.generic.utils.Duple;
  *
  * Date 28 Jan. 2019
  */
-public class FileType {
+public class FileType implements CloneableProperty{
 	private String relativePath = "";
+	@Override
+	public Object clone() {
+		FileType clone = new FileType();
+		clone.relativePath= relativePath;
+		return clone;
+	}
 
 	public String getRelativePath() {
 		return relativePath;
