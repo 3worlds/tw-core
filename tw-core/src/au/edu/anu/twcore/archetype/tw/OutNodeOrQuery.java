@@ -48,16 +48,16 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
  *
  */
 
-public class OutNodeXorQuery extends QueryAdaptor {
+public class OutNodeOrQuery extends QueryAdaptor {
 	private String nodeLabel1 = null;
 	private String nodeLabel2 = null;
 
-	public OutNodeXorQuery(String nodeLabel1, String nodeLabel2) {
+	public OutNodeOrQuery(String nodeLabel1, String nodeLabel2) {
 		this.nodeLabel1 = nodeLabel1;
 		this.nodeLabel2 = nodeLabel2;
 	}
 
-	public OutNodeXorQuery(ObjectTable<?> table) {
+	public OutNodeOrQuery(ObjectTable<?> table) {
 		super();
 		nodeLabel1 = (String) table.getWithFlatIndex(0);
 		nodeLabel2 = (String) table.getWithFlatIndex(1);
@@ -68,8 +68,8 @@ public class OutNodeXorQuery extends QueryAdaptor {
 		initInput(input);
 		Node localItem = (Node) input;
 		Duple<List<Node>, List<Node>> nodeLists = getNodeLists(localItem, nodeLabel1, nodeLabel2);
-		if(!((nodeLists.getFirst().size() > 0) ^ (nodeLists.getSecond().size() > 0))){
-			String[] msgs = TextTranslations.getOutNodeXorQuery(nodeLabel1,nodeLabel2);
+		if(!((nodeLists.getFirst().size() > 0) || (nodeLists.getSecond().size() > 0))){
+			String[] msgs = TextTranslations.getOutNodeOrQuery(nodeLabel1,nodeLabel2,nodeLists.getFirst(),nodeLists.getSecond());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 		};

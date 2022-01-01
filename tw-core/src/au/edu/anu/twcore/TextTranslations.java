@@ -29,6 +29,7 @@
 package au.edu.anu.twcore;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import au.edu.anu.omhtk.Language;
 import au.edu.anu.rscs.aot.collections.tables.Table;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.userProject.UserProjectLink;
+import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.ens.biologie.generic.utils.Interval;
@@ -860,6 +862,7 @@ public class TextTranslations {
 		String am;
 		String cm;
 		// TODO: msg possibly incorrect
+		// TODO: List what was found
 		if (Language.French()) {
 			am = "Add at least one of " + Arrays.toString(edgeLabel1) + " edges.";
 			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
@@ -874,6 +877,7 @@ public class TextTranslations {
 	}
 
 	public static String[] getOutEdgeXorQuery(String[] edgeLabel1, String[] edgeLabel2) {
+		// TODO: List what was found
 		String am;
 		String cm;
 		if (Language.French()) {
@@ -890,13 +894,14 @@ public class TextTranslations {
 	}
 
 	public static String[] getOutNodeXorQuery(String nodeLabel1, String nodeLabel2) {
+		// TODO: List what was found
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add edge to a node labelled '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":'.";
+			am = "Add edge to a node labelled either '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":' but not both.";
 			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "'.";
 		} else {// make sure default is English!
-			am = "Add edge to a node labelled '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":'.";
+			am = "Add edge to a node labelled either '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":' but not both.";
 			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "'.";
 		}
 		String[] result = { am, cm };
@@ -1343,6 +1348,27 @@ public class TextTranslations {
 		} else {// make sure default is English or Sanskrit users will get no messages!
 			am = "Edit '"+value+"' to a valid file name";
 			cm = "Expected valid file name but found '"+value+"'.";			
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	public static String[] getOutNodeOrQuery(String nodeLabel1, String nodeLabel2, List<Node> lstNode1,
+			List<Node> lstNode2) {		
+		String am;
+		String cm;
+		List<String> lst = new ArrayList<>();
+		for (Node n:lstNode1)
+			lst.add(n.toShortString());
+		for (Node n:lstNode2)
+			lst.add(n.toShortString());
+		
+		if (Language.French()) {
+			am = "Add at least one edge to a node labelled '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":'.";
+			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "' but found "+lst+".";
+		} else {// make sure default is English!
+			am = "Add at least one edge to a node labelled '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":'.";
+			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "' but found "+lst+".";
 		}
 		String[] result = { am, cm };
 		return result;

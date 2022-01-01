@@ -14,24 +14,16 @@ archetype 3wSA-EventTimer
 		hasParent = StringTable(([1]"timeline:"))
 		multiplicity = IntegerRange("0..*")
 
-		hasEdge EventTimeerFedByEdgeSpec
+		hasEdge EventTimeerFedByEdgeToFunctionSpec
 			isOfClass = String("fedBy")
 			toNode = String("function:")
 			multiplicity = IntegerRange("0..*")
-		// this to start an event timer with an event at t=0
-		// I think this (1..1) is wrong. An event can be sent by another system driven by a clock timer
 		hasEdge EventTimerFedByInitFunctionEdgeSpec
 			isOfClass = String("fedBy")
 			toNode = String("initFunction:")
 			multiplicity = IntegerRange("0..1")
-//		mustSatisfyQuery AtLeastOneFedByEdgeQuery
-//			className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
-//			nodeLabel1 = String("initFunction")
-//			nodeLabel2 = String("function")
+		mustSatisfyQuery AtLeastOneFedByEdgeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.OutNodeOrQuery")
+			nodeLabel1 = String("initFunction")
+			nodeLabel2 = String("function")
 
-			//The index by which this queue is accessed by user code
-			// So the function knows how to choose which queue to post to.
-//			hasProperty fedByIndexrSpec
-//				hasName = String("index")
-//				type = String("Integer")
-//				multiplicity = IntegerRange("1..1")
