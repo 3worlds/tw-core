@@ -61,9 +61,14 @@ public class SpaceDimensionConsistencyQuery extends QueryAdaptor {
 		int dimension = spt.dimensions();
 		List<Edge> coordEdges = (List<Edge>) get(spn.edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(E_COORDMAPPING.label())));
+		// The edge multiplicity is 1..* so if the list is empty another query will flag
+		// this. Best not to have 2 queries for what seems like the same (or similar)
+		// problem.
+		if (coordEdges.isEmpty())
+			return this;
 		if (coordEdges.size() != dimension) {
 			int dif = dimension - coordEdges.size();
-			String[] msgs = TextTranslations.getSpaceDimensionConsistencyQuery(dif,dimension, E_COORDMAPPING.label());
+			String[] msgs = TextTranslations.getSpaceDimensionConsistencyQuery(dif, dimension, E_COORDMAPPING.label());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 //			if (dif > 0)
