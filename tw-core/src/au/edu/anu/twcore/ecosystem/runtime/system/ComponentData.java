@@ -94,10 +94,21 @@ public class ComponentData extends TwData {
 
 	// generic methods inherited from TwData
 
+	// CAUTION here: age is a Long variable but initial values may be given as doubles
 	@Override
 	public ComponentData setProperty(String key, Object value) {
-		if (key.equals("age")) age = (Long)value;
-		if (key.equals("birthDate")) birthDate = (Long)value;
+		if (key.equals("age")) {
+			if (value instanceof Long)
+				age = (Long)value;
+			else if (value instanceof Double)
+				age = ((Double)value).longValue();
+		}
+		if (key.equals("birthDate")) {
+			if (value instanceof Long)
+				birthDate = (Long)value;
+			else if (value instanceof Double)
+				birthDate = ((Double)value).longValue();
+		}
 		if (key.equals("name")) name = (String)value;
 		return this;
 	}
