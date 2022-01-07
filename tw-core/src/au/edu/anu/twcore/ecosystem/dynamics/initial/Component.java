@@ -47,6 +47,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
@@ -88,6 +89,8 @@ public class Component
 	// helper list to retrieve already created GroupComponents (integer for simId)(String for groupId)
 	private Map<Integer,Map<String,GroupComponent>> alreadyMadeGroups = new HashMap<>();
 	
+	private boolean hasLifeCycle = false;
+	private LifeCycle lifeCycle = null;
 
 	// default constructor
 	public Component(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -104,13 +107,20 @@ public class Component
 		super.initialise();
 		componentType = (ComponentType) getParent();
 		// find if this component belongs to a group or directly depends on Arena
-		hasGroup = componentType.getParent() instanceof GroupType; 
+		hasGroup = componentType.getParent() instanceof GroupType;
+		// find if group belongs to a life cycle or directly depends on Arena
+		hasLifeCycle = componentType.getParent().getParent() instanceof LifeCycleType;
 		// this edge, if present, points to a Group node
 		// NB: if groups were loaded from files, then group = null here
 		Edge instof = (Edge) get(edges(Direction.OUT),
 			selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
-		if (instof!=null)
+		if (instof!=null) {
 			group = (Group) instof.endNode();
+			Edge cycle = (Edge) get(group.edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(E_INSTANCEOF.label())));
+			if (cycle!=null)
+				lifeCycle = (LifeCycle) cycle.endNode();
+		}
 		// get total number of ComponentTypes declared in the structure subTree
 		// NB there may be no structure node, but in this case there will be no component node either
 		// so if we are here, struc!=null
@@ -246,7 +256,7 @@ public class Component
 //	}
 	
 	// a bit clumsy - could probably be simplified by grouping cases properly
-	private ComponentContainer getContainer(int simId,String groupId,ComponentFactory factory) {
+	private ComponentContainer getContainer(int simId,String groupId,String lcId,ComponentFactory factory) {
 		ComponentContainer container = null;
 		ComponentContainer arenaContainer =
 						// ArenaType	ArenaFactory	ArenaComponent	Container
@@ -271,6 +281,7 @@ public class Component
 				else {
 					gf.setName(groupId);
 					// get supercontainer for group
+					// no life cycle --> arena container
 					if (gt.getParent() instanceof Structure) {
 						if (arenaContainer.findContainer(groupId)==null)
 							grp = gf.newInstance(arenaContainer);
@@ -278,12 +289,8 @@ public class Component
 							grp = (GroupComponent) ((ComponentContainer)arenaContainer
 								.findContainer(groupId)).descriptors();
 					}
+					// life cycle --> get the proper life cycle container
 					else if (gt.getParent() instanceof LifeCycleType) {
-						// Pb: how to get the supercontainer of group container ?
-						LifeCycleFactory lcf = ((LifeCycleType)gt.getParent()).getInstance(simId);
-						// in this case the group must have a LC id.... otherwise cant do anything
-						// TODO
-						grp = gf.newInstance();
 						throw new TwcoreException("not implemented yet");
 					}
 //					grp = gf.newInstance();
@@ -293,10 +300,20 @@ public class Component
 			// this means group was pointed to with a instanceOf edge
 			// which also means this group has a group container properly attached
 			else {
-				for (GroupComponent gc:group.getInstance(simId))
+				for (GroupComponent gc:group.getInstance(simId)) {
 					if (gc.name().equals(group.id())) {
 						grp = gc;
 						break;
+					}
+//					if (hasLifeCycle) {
+//						LifeCycleComponent lcc = null;
+//						if (lifeCycle==null) {
+//							
+//						}
+//						else {
+//							for (LifeCycleComponent lcc)
+//						}
+//					}
 				}
 			}
 			container = (ComponentContainer)grp.content();
@@ -345,7 +362,7 @@ public class Component
 			if (props.hasProperty(pkey))
 				sc.properties().setProperty(pkey,props.getPropertyValue(pkey));
 		// insert component into its container
-		ComponentContainer container = getContainer(simId,itemId.groupId(),factory);
+		ComponentContainer container = getContainer(simId,itemId.groupId(),itemId.lifeCycleId(),factory);
 		// prepare initial community
 		container.addInitialItem(sc);
 		sc.setContainer((ComponentContainer)container);

@@ -215,12 +215,10 @@ public class Group
 		GroupFactory gf = groupType.getInstance(simId);
 		// put group into container hierarchy
 		ComponentContainer superContainer = getContainer(simId,itemId.lifeCycleId(),gf);
-		// (temporarily) set the group name to itemId so that the groupComponent is initialized with
+		// (temporarily) set the group name to itemId so that the groupComponent is initialized 
 		// with proper name in container. Will handle case where itemId=null
 		if (itemId!=null)
 			gf.setName(itemId.groupId());
-		else
-			gf.setName(null); // dead code ???
 		GroupComponent gc = gf.newInstance(superContainer);
 		gc.connectParent(superContainer.descriptors());
 		for (String pkey:gc.properties().getKeysAsSet())
