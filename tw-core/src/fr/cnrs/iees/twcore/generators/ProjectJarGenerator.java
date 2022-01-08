@@ -63,9 +63,12 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.FileType;
 
 public class ProjectJarGenerator {
-	public static String mainClass = "au.edu.anu.twuifx.mr.MRmain";
+	private static String mainClass = null;
 	public static final String userCodeRunnerSrc = "UserCodeRunner.java";
 	public static final String userCodeRunnerCls = "UserCodeRunner.class";
+	public static void setModelRunnerClass(Class<?> klass) {
+		mainClass = klass.getName();
+	}
 
 	@SuppressWarnings("unchecked")
 	public void generate(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
