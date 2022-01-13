@@ -162,6 +162,50 @@ public class Group
 //		}
 //		return groups.get(id);
 //	}
+	
+	protected static ComponentContainer getContainingGroup(Component comp) {
+//		ComponentContainer container = null;
+//		// 1st case: there is a lifeCycle
+//		if (hasLifeCycle) {
+//			LifeCycleComponent lcc = null;
+//			// this means life cycles were loaded from file
+//			if (lifeCycle==null) {
+//				LifeCycleType lct = (LifeCycleType) getParent().getParent();
+//				LifeCycleFactory lcf = lct.getInstance(simId);
+//				Map<String,LifeCycleComponent> llcc = null;
+//				if (alreadyMadeLCs.containsKey(simId)) 
+//					llcc = alreadyMadeLCs.get(simId);
+//				else {
+//					llcc = new HashMap<>();
+//					alreadyMadeLCs.put(simId,llcc);
+//				}
+//				if (llcc.containsKey(lcId)) {
+//					lcc = llcc.get(lcId);
+//				}
+//				else {
+//					lcf.setName(lcId);
+//					lcc = lcf.newInstance();
+//					llcc.put(lcId,lcc);
+//				}
+//				container = (ComponentContainer) lcc.content();
+////				container.setCategorized(factory.); // cannot be called?
+//			}
+//			// this means life cycle was pointed to with a cycle edge
+//			else {
+//				List<LifeCycleComponent> llcc = lifeCycle.getInstance(simId);
+//				lcc = llcc.get(0);
+//				container = (ComponentContainer) lcc.content();
+//			}
+//		}
+//		// 2nd case: there is no lifeCycle
+//		else {
+//			ArenaType system = (ArenaType) get(this,parent(isClass(ArenaType.class)));
+//			container = (ComponentContainer)system.getInstance(simId).getInstance().content();
+//		}
+//		return container;
+//
+		return null;
+	}
 
 	private ComponentContainer getContainer(int simId,String lcId,GroupFactory factory) {
 		ComponentContainer container = null;
