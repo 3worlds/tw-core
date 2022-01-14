@@ -31,8 +31,8 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,15 +95,15 @@ public abstract class CategorizedContainer<T extends Identity>
 	private boolean sealed = false;
 
 	// items contained at this level (owned)
-	protected Map<String, T> items = new HashMap<>();
+	protected Map<String, T> items = new LinkedHashMap<>();
 	// items contained at lower levels
-	protected Map<String, CategorizedContainer<T>> subContainers = new HashMap<>();
+	protected Map<String, CategorizedContainer<T>> subContainers = new LinkedHashMap<>();
 	// my container, if any
 	protected CategorizedContainer<T> superContainer = null;
 	// initial state
 	protected Set<T> initialItems = new HashSet<>();
 	// a map of runtime item ids to initial items
-	protected Map<String, T> itemsToInitials = new HashMap<>();
+	protected Map<String, T> itemsToInitials = new LinkedHashMap<>();
 	// data for housework
 	protected Set<String> itemsToRemove = new HashSet<>();
 	protected Set<T> itemsToAdd = new HashSet<>();

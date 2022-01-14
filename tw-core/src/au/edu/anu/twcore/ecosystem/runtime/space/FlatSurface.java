@@ -29,7 +29,8 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+//import java.util.HashMap;
 import java.util.Map;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
@@ -58,7 +59,7 @@ public class FlatSurface extends SpaceAdapter {
 	private static final int ndim = SpaceType.continuousFlatSurface.dimensions();
 
 	// Locations for this space - just a 2D Point
-	private Map<SystemComponent,Point> locatedItems = new HashMap<>();
+	private Map<SystemComponent,Point> locatedItems = new LinkedHashMap<>();
 
 	private LimitedPrecisionIndexingTree<SystemComponent> indexer;
 
