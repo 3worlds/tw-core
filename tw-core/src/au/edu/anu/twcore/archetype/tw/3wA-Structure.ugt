@@ -99,6 +99,15 @@ hasNode componentTypeSpec
 	mustSatisfyQuery hasOneCategoryOfLifeSpanSpec
 		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
 		reference = String(categorySet:*lifespan*)
+		
+	// NEW - INITIAL STATE - moved here from Component
+	hasEdge instanceOfToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource:")
+		multiplicity = IntegerRange("0..*")
+	mustSatisfyQuery componentHasGroupIdSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
+		
 //-------------------------------------------------------------------------------------------
 
 // initial state for an atomic component instance of a ComponentType
@@ -106,24 +115,30 @@ hasNode componentSpec
 	isOfClass = String("component")
 	hasParent = StringTable(([1]"componentType:"))
 	multiplicity = IntegerRange("0..*")
-	hasProperty numberOfInstancesSpec
+	// dep
+	hasProperty numberOfInstancesSpecDEP
 		hasName = String("nInstances")
 		type = String("Integer")
 		multiplicity = IntegerRange("0..1")
-	hasEdge componentToGroupSpec
+	// delete
+	hasEdge componentToGroupSpecDEP
 		isOfClass = String("instanceOf")
 		toNode = String("group:")
 		multiplicity = IntegerRange("0..1") // optional - only requierd if groups are present
-	hasEdge instanceOfToSourceLoadFromSpec
+	// dep
+	hasEdge instanceOfToSourceLoadFromSpecDEP
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
-	mustSatisfyQuery componentHasNinstanceXORloadFromSpec
+	// delete
+	mustSatisfyQuery componentHasNinstanceXORloadFromSpecDEP
 		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorPropertyQuery")
 		parameters = StringTable(([2]"loadFrom","nInstances"))
-	mustSatisfyQuery componentHasInitialValuesXorLoadFromSpec
+	// delete
+	mustSatisfyQuery componentHasInitialValuesXorLoadFromSpecDEP
 		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
-	mustSatisfyQuery componentHasGroupIdSpec
+	// dep
+	mustSatisfyQuery componentHasGroupIdSpecDEP
 		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
 
 //-------------------------------------------------------------------------------------------
@@ -533,32 +548,15 @@ hasNode spaceSpec
 // parameter values for a group as specified in groupSpec above
 hasNode initialValuesSpec
 	isOfClass = String("initialValues")
-	hasParent = StringTable(([4]"system:","lifeCycle:","group:","component:"))
+	hasParent = StringTable(([4]"system:","lifeCycle:","group:","componentType:"))
 	multiplicity = IntegerRange("0..1")
+	hasProperty numberOfInstancesSpec
+		hasName = String("nInstances")
+		type = String("Integer")
+		multiplicity = IntegerRange("0..1")
 	// then provide property (name,value) pairs - of course names must match category definitions
 	// caution: if parameter values are associated to an atomic, it means it is unique in its
 	// category, its parameters are specific to it and no other atomic with the same values
 	// will ever exist. NO CHECK is performed that the variable name is correct - if it doesnt match
 	// a field or table in the dataDefinitions, it is simply ignored.
-
-//hasNode constantValuesSpec
-//	isOfClass = String("constantValues")
-//	hasParent = StringTable(([4]"system:","lifeCycle:","group:","component:"))
-//	multiplicity = IntegerRange("0..1")
-//	// then provide property (name,value) pairs - of course names must match category definitions
-//	// caution: if parameter values are associated to an atomic, it means it is unique in its
-//	// category, its parameters are specific to it and no other atomic with the same values
-//	// will ever exist. Shared parameter values must be set at the group level
-//	mustSatisfyQuery constantValuesPropertiesMatchDefinitionQuery
-//		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
-//		values = StringTable(([1]constants))
-
-//hasNode variableValuesSpec
-//	isOfClass = String("variableValues")
-//	hasParent = StringTable(([4]"system:","lifeCycle:","group:","component:"))
-//	multiplicity = IntegerRange("0..1")
-//	// then provide property (name,value) pairs - of course names must match category definitions
-//	mustSatisfyQuery variableValuesPropertiesMatchDefinitionQuery
-//		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery")
-//		values = StringTable(([1]"drivers"))
 

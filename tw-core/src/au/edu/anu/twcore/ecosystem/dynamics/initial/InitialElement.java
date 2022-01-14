@@ -1,8 +1,5 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_LOADFROM;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_COMPONENT_NINST;
 
 import java.util.ArrayList;
@@ -13,13 +10,10 @@ import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
-import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
-import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
@@ -34,6 +28,7 @@ import fr.ens.biologie.generic.Sealable;
  *
  * @param <T>
  */
+@Deprecated // all this to be moved to ElementType descendants
 public abstract class InitialElement<T extends DataElement> 
 		extends InitialisableNode 
 		implements Sealable, LimitedEdition<List<T>> {
