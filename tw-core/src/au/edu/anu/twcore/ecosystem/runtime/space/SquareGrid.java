@@ -30,9 +30,9 @@ package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,7 +66,7 @@ public class SquareGrid extends SpaceAdapter {
 	private int ny = 0;
 	private double cellSize = 0.0;
 
-	private Map<SystemComponent,int[]> locatedItems = new HashMap<>();
+	private Map<SystemComponent,int[]> locatedItems = new LinkedHashMap<>();
 //	private Map<SystemComponent,Location> unclearableItems = new HashMap<>();
 	private Set<SystemComponent> grid[][];
 	// precomputed inverted table of distances vs table indices
