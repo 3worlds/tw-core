@@ -15,7 +15,6 @@ import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialElement;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
-import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import fr.cnrs.iees.graph.Edge;
@@ -33,9 +32,9 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Queryable submit(Object input) {  // input is a componentType, groupType or lifeCycleType node
+	public Queryable submit(Object input) {  // input is a component, group or lifeCycle node
 		initInput(input);
-		if (input instanceof ElementType) {
+		if (input instanceof InitialElement) {
 			TreeGraphDataNode inode = (TreeGraphDataNode) input;
 			List<TreeGraphNode> initNodes = (List<TreeGraphNode>) get(inode.getChildren(),
 				selectZeroOrMany(hasTheLabel(N_INITIALVALUES.label())));

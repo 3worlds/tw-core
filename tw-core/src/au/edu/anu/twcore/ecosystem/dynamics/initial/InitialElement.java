@@ -1,5 +1,8 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_LOADFROM;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_COMPONENT_NINST;
 
 import java.util.ArrayList;
@@ -10,10 +13,13 @@ import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
+import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
@@ -28,7 +34,6 @@ import fr.ens.biologie.generic.Sealable;
  *
  * @param <T>
  */
-@Deprecated // all this to be moved to ElementType descendants
 public abstract class InitialElement<T extends DataElement> 
 		extends InitialisableNode 
 		implements Sealable, LimitedEdition<List<T>> {
@@ -60,28 +65,24 @@ public abstract class InitialElement<T extends DataElement>
 	public void initialise() {
 		super.initialise();
 		// read data from data sources
-		InitialDataLoading.loadFromDataSources(this,loadedData);
-//		List<DataSource> sources = (List<DataSource>) get(edges(Direction.OUT),
-//			selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
-//			edgeListEndNodes());
-//		for (DataSource source:sources)
-//			source.getInstance().load(loadedData);
+		List<DataSource> sources = (List<DataSource>) get(edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_LOADFROM.label())),
+			edgeListEndNodes());
+		for (DataSource source:sources)
+			source.getInstance().load(loadedData);
 		// read data direct from config tree - will NOT be read if data sources are used
-		
-//		if (sources.isEmpty()) {
-//			DataIdentifier id = fullId();
-//			ExtendablePropertyList props = new ExtendablePropertyListImpl();
-		// NB This will have to be refactored
+		if (sources.isEmpty()) {
+			DataIdentifier id = fullId();
+			ExtendablePropertyList props = new ExtendablePropertyListImpl();
 			for (TreeNode tn:getChildren()) {
 				if (tn instanceof InitialValues)
-					InitialDataLoading.loadFromConfigTree((InitialValues)tn,loadedData);
-//					props.addProperties(((InitialValues)tn).readOnlyProperties());
+					props.addProperties(((InitialValues)tn).readOnlyProperties());
 			}
-//			loadedData.put(id,props);
+			loadedData.put(id,props);
 			fromFiles = false;
-//		}
-//		else
-//			fromFiles = true;
+		}
+		else
+			fromFiles = true;
 		if (properties().hasProperty(P_COMPONENT_NINST.key()))
 			nInstances = (int) properties().getPropertyValue(P_COMPONENT_NINST.key());
 		if (nInstances==0)
