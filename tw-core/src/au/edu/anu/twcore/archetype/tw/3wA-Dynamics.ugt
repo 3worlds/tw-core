@@ -169,10 +169,7 @@ hasNode functionSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveChildPropertyValueQuery")
 		propertyName = String("type")
 		propertyValues = StringTable(([1]"RelateToDecision"))
-	//--------- check that createOtherDecision and changeCategoryDecision functions are linked to a life cycle
-	mustSatisfyQuery FunctionHasLifeCycleEdgeSpec
-		className = String("au.edu.anu.twcore.archetype.tw.FunctionHasLifeCycleEdgeQuery")
-	
+
 hasNode consequenceFunctionSpec
 	isOfClass = String("function")
 	hasParent = StringTable(([1]"process:/function:"))

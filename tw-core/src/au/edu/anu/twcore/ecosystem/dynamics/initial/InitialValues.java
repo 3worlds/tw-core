@@ -34,7 +34,6 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 
 /**
  * A class matching the "ecosystem/dynamics/.../parameterValues" node of the 3W configuration tree.
@@ -64,16 +63,4 @@ public class InitialValues extends InitialisableNode {
 		return N_INITIALVALUES.initRank();
 	}
 
-	/**
-	 * Work out fullId at init time, ie this is called from initialise()
-	 * 
-	 * TEMPORARY!
-	 * 
-	 * @return
-	 */
-	protected DataIdentifier fullId() {
-		return ((InitialElement) getParent()).fullId();
-	}
-
-	
 }
