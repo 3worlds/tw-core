@@ -79,7 +79,6 @@ import fr.ens.biologie.generic.utils.Logging;
  * @author Jacques Gignoux - 29 août 2019
  *
  */
-// a dumm change in initial
 public class Simulator implements Resettable {
 
 	// CLASSES

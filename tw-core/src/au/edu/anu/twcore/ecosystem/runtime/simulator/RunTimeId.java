@@ -36,7 +36,6 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
  *
  * @date 21 Feb 2020
  */
-// A dummy change in master branch
 public class RunTimeId {
 	private RunTimeId() {
 	};
