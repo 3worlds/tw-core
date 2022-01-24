@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -101,12 +102,12 @@ public abstract class CategorizedContainer<T extends Identity>
 	// my container, if any
 	protected CategorizedContainer<T> superContainer = null;
 	// initial state
-	protected Set<T> initialItems = new HashSet<>();
+	protected Set<T> initialItems = new LinkedHashSet<>();
 	// a map of runtime item ids to initial items
 	protected Map<String, T> itemsToInitials = new LinkedHashMap<>();
 	// data for housework
-	protected Set<String> itemsToRemove = new HashSet<>();
-	protected Set<T> itemsToAdd = new HashSet<>();
+	protected Set<String> itemsToRemove = new LinkedHashSet<>();
+	protected Set<T> itemsToAdd = new LinkedHashSet<>();
 	private boolean structureChanged = false;
 	private boolean stateChanged = false;
 	private Categorized<T> itemCategories = null;
