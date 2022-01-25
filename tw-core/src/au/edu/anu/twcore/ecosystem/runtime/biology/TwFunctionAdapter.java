@@ -161,7 +161,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 				this.rng = gen.getRandom();
 			else {
 				gen = RngFactory.newInstance(defRngName+":"+index, 0, RngResetType.NEVER,
-					RngSeedSourceType.PSEUDO,RngAlgType.XSRANDOM);
+					RngSeedSourceType.RANDOM,RngAlgType.PCG32);
 				this.rng = gen.getRandom();
 			}
 		}

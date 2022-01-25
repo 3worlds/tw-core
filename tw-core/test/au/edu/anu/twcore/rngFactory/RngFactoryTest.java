@@ -72,11 +72,11 @@ class RngFactoryTest {
 	@Test
 	void test() {
 
-		Generator rngJava = RngFactory.newInstance("Random", 0, RngResetType.ONRUNSTART, RngSeedSourceType.CONSTANT, RngAlgType.JAVA);
-		Generator rngXSRandom = RngFactory.newInstance("XSRandom", 0, RngResetType.ONRUNSTART, RngSeedSourceType.CONSTANT, RngAlgType.XSRANDOM);
-		Generator rngPCG = RngFactory.newInstance("PCGRandom", 0, RngResetType.ONRUNSTART, RngSeedSourceType.CONSTANT,RngAlgType.PCG32);
+		Generator rngJava = RngFactory.newInstance("Random", 0, RngResetType.ONRUNSTART, RngSeedSourceType.TABLE, RngAlgType.JAVA);
+		Generator rngXSRandom = RngFactory.newInstance("XSRandom", 0, RngResetType.ONRUNSTART, RngSeedSourceType.TABLE, RngAlgType.XSRANDOM);
+		Generator rngPCG = RngFactory.newInstance("PCGRandom", 0, RngResetType.ONRUNSTART, RngSeedSourceType.TABLE,RngAlgType.PCG32);
 		
-		Generator crap = RngFactory.newInstance("CRAP", 0, RngResetType.NEVER, RngSeedSourceType.PSEUDO, RngAlgType.JAVA);
+		Generator crap = RngFactory.newInstance("CRAP", 0, RngResetType.NEVER, RngSeedSourceType.RANDOM, RngAlgType.JAVA);
 		System.out.println(crap.getRandom().nextDouble());
 				
 

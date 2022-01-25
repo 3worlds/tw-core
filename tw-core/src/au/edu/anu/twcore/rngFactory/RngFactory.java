@@ -163,10 +163,7 @@ public class RngFactory {
 	 *                  numbers to act as seeds for resetting.
 	 * @param resetType type of reset method (NEVER, ONRUNSTART)
 	 * 
-	 * @param source    Method of creating the random number seed (TABLE, RANDOM,
-	 *                  CONSTANT (0L - except for XSRANDOM which cannot be started
-	 *                  from 0L and uses 1L)
-	 * @param rns       random number generator.
+	 
 	 */
 	public static Generator newInstance(String name, int seedIndex, RngResetType resetType, RngSeedSourceType source,
 			RngAlgType algType) {
@@ -189,17 +186,17 @@ public class RngFactory {
 		if (rngs.containsKey(name))
 			throw new TwcoreException("Attempt to create random number generator with duplicate name: [" + name + "]");
 
-		if (source.equals(RngSeedSourceType.NATURAL))
+		if (source.equals(RngSeedSourceType.TABLE))
 			if (seedIndex < 0 || seedIndex >= RandomSeeds.nSeeds())
 				throw new TwcoreException(
 						"SeedIndex is out of range [0.." + (RandomSeeds.nSeeds() - 1) + "] found: " + seedIndex);
 		long seed;
 		switch (source) {
-		case NATURAL: {
+		case TABLE: {
 			seed = RandomSeeds.getSeed(seedIndex);
 			break;
 		}
-		case PSEUDO: {
+		default: {
 			// 'very likely distinct' seed based on time to the nanosecond
 			seed = new Random().nextLong();
 			if (currentRandomSeeds.contains(seed))
@@ -207,12 +204,12 @@ public class RngFactory {
 			currentRandomSeeds.add(seed);
 			break;
 		}
-		default: {// CONSTANT
-			if (rns instanceof XSRandom)
-				seed = 1L;
-			else
-				seed = 0L;
-		}
+//		default: {// CONSTANT
+//			if (rns instanceof XSRandom)
+//				seed = 1L;
+//			else
+//				seed = 0L;
+//		}
 		}
 		
 		Generator rng = new Generator(name, seed, resetType, rns);
