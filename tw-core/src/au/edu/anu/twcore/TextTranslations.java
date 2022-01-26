@@ -1284,7 +1284,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Add at least one 'function:' node to a process in the 'dynamics:' sub-tree.";
 			cm = "Expected at least one 'function:' node but found none.";
-		} else {// make sure default is English or Sanskrit users will get no messages!
+		} else {// make sure default is English !
 			am = "Add at least one 'function:' node to a process in the 'dynamics:' sub-tree.";
 			cm = "Expected at least one 'function:' node but found none.";
 		}
@@ -1301,7 +1301,7 @@ public class TextTranslations {
 					+ "'.";
 			cm = "Valeur de '" + edgeName + "#" + key + "[" + i + "]' de type , '" + dataType + "' attendue, type '"
 					+ entry + "' trouvé.";
-		} else {// make sure default is English or Sanskrit users will get no messages!
+		} else {// make sure default is English!
 			am = "Edit '" + edgeName + "#" + key + "[" + i + "]' to a '" + dataType + "' type value.";
 			cm = "Expected '" + edgeName + "#" + key + "[" + i + "]' to be of type '" + dataType + "' but found '"
 					+ entry + "'.";
@@ -1316,7 +1316,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Ajouter au moins une valeur à la variable '" + edgeName + "#" + key + "'.";
 			cm = "La variable '" + edgeName + "#" + key + "' ne contient aucune valeur utilisable.";
-		} else {// make sure default is English or Sanskrit users will get no messages!
+		} else {// make sure default is English!
 			am = "Add at least one value to '" + edgeName + "#" + key + "'.";
 			cm = "Expected '" + edgeName + "#" + key + "' to contain at least one value, but found none.";
 		}
@@ -1324,13 +1324,14 @@ public class TextTranslations {
 		return result;
 	}
 
+	@Deprecated
 	public static String[] getRscriptExists() {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Install 'R' on this computer.";
 			cm = "Expected 'R' to be installed but not found";
-		} else {// make sure default is English or Sanskrit users will get no messages!
+		} else {// make sure default is English!
 			am = "Install 'R' on this computer.";
 			cm = "Expected 'R' to be installed but not found";
 		}
@@ -1343,32 +1344,48 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Edit '"+value+"' to a valid file name";
-			cm = "Expected valid file name but found '"+value+"'.";			
-		} else {// make sure default is English or Sanskrit users will get no messages!
-			am = "Edit '"+value+"' to a valid file name";
-			cm = "Expected valid file name but found '"+value+"'.";			
+			am = "Edit '" + value + "' to a valid file name";
+			cm = "Expected valid file name but found '" + value + "'.";
+		} else {// make sure default is English!
+			am = "Edit '" + value + "' to a valid file name";
+			cm = "Expected valid file name but found '" + value + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
 	public static String[] getOutNodeOrQuery(String nodeLabel1, String nodeLabel2, List<Node> lstNode1,
-			List<Node> lstNode2) {		
+			List<Node> lstNode2) {
 		String am;
 		String cm;
 		List<String> lst = new ArrayList<>();
-		for (Node n:lstNode1)
+		for (Node n : lstNode1)
 			lst.add(n.toShortString());
-		for (Node n:lstNode2)
+		for (Node n : lstNode2)
 			lst.add(n.toShortString());
-		
+
 		if (Language.French()) {
 			am = "Add at least one edge to a node labelled '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":'.";
-			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "' but found "+lst+".";
+			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "' but found " + lst
+					+ ".";
 		} else {// make sure default is English!
 			am = "Add at least one edge to a node labelled '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":'.";
-			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "' but found "+lst+".";
+			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "' but found " + lst
+					+ ".";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	public static String[] getTreatmentExistsQuery(String edt, String label) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Add a '" + label + "' node for '" + edt + "' experiments.";
+			cm = "Expected '"+edt+"' experiments to have one '"+label+"' node but found none.";
+		} else {// make sure default is English!
+			am = "Add a '" + label + "' node for '" + edt + "' experiments.";
+			cm = "Expected '"+edt+"' experiments to have one '"+label+"' node but found none.";
 		}
 		String[] result = { am, cm };
 		return result;
@@ -1382,7 +1399,7 @@ public class TextTranslations {
 //if (Language.French()) {
 //	am = "";
 //	cm = "";
-//} else {// make sure default is English or Sanskrit users will get no messages!
+//} else {// make sure default is English or other language users will get no messages!!
 //	am = "";
 //	cm = "";
 //}
