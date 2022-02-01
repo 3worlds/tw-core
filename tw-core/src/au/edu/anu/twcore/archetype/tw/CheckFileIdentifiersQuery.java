@@ -33,8 +33,16 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Queryable submit(Object input) {  // input is a component, group or lifeCycle node
+		
+// TODO: future version when data loading is fully refactored		
+//	public Queryable submit(Object input) {  // input is a componentType, groupType or lifeCycleType node
+		
 		initInput(input);
 		if (input instanceof InitialElement) {
+// TODO: future version when data loading is fully refactored					
+//		if (input instanceof ElementType) {
+			
+			
 			TreeGraphDataNode inode = (TreeGraphDataNode) input;
 			List<TreeGraphNode> initNodes = (List<TreeGraphNode>) get(inode.getChildren(),
 				selectZeroOrMany(hasTheLabel(N_INITIALVALUES.label())));

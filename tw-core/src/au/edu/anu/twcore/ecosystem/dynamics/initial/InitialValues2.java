@@ -26,64 +26,54 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.archetype.tw;
+package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-
-import java.util.Collection;
-
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import au.edu.anu.twcore.InitialisableNode;
+import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 
 /**
- * Checks that a multiplicity is 0 if a certain condition is met, 1 otherwise.
- * At the moment only applicable to properties and child nodes, but could be
- * adapted to other cases by adding parameters or putting syntax in.
- *
- * @author J. Gignoux - 14 juil. 2020
+ * A class matching the "ecosystem/dynamics/.../parameterValues" node of the 3W configuration tree.
+ * 
+ * @author Jacques Gignoux - 17 juin 2019
  *
  */
-public class ConditionalMultiplicityQuery extends QueryAdaptor{
-	//args = StringTable(([2]"fixedPoints","space"))
-	//nMin = Integer(2)
+public class InitialValues2 extends InitialisableNode {
 
-	private final String property;
-	private final String nodeLabel;
-	private final int nMin;
-
-	public ConditionalMultiplicityQuery(StringTable args, Integer nMin) {
-		super();
-		property = args.getWithFlatIndex(0);
-		nodeLabel = args.getWithFlatIndex(1);
-		this.nMin = nMin;
+	// default constructor
+	public InitialValues2(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+		super(id, props, gfactory);
 	}
 
-	public ConditionalMultiplicityQuery(Integer nMin, StringTable args) {
-		this(args,nMin);
+	// constructor with no properties
+	public InitialValues2(Identity id, GraphFactory gfactory) {
+		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
 
-	/**		args = StringTable(([2]"fixedPoints","space"))
-			nMin = Integer(2)
-	*/
 	@Override
-	public Queryable submit(Object input) {
-		initInput(input);
-		TreeNode localItem = (TreeNode) input;
-		ReadOnlyDataHolder rodh = (ReadOnlyDataHolder) input;
-		Collection<?> l = (Collection<?>) get(localItem.getChildren(),
-			selectZeroOrMany(hasTheLabel(nodeLabel)));
-		boolean ok= (((l.size()>=nMin) && (rodh.properties().hasProperty(property))) ||
-			(l.size()<nMin)) ;
-		if (!ok) {
-			actionMsg = "I don't know what to do!!";
-			errorMsg = "Well I must say!"+getClass().getSimpleName()+" but I don't know what to say!";
-		}
-		return this;
+	public void initialise() {
+		super.initialise();
 	}
 
+	@Override
+	public int initRank() {
+		return N_INITIALVALUES.initRank();
+	}
+
+	/**
+	 * Work out fullId at init time, ie this is called from initialise()
+	 * 
+	 * TEMPORARY!
+	 * 
+	 * @return
+	 */
+	protected DataIdentifier fullId() {
+		return ((InitialElement) getParent()).fullId();
+	}
+
+	
 }
