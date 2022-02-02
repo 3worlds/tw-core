@@ -70,6 +70,7 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
+@Deprecated
 public class Component
 		extends InitialElement<SystemComponent>
 		implements  DefaultStrings {

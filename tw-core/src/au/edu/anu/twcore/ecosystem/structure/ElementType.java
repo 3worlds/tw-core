@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +50,14 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import au.edu.anu.twcore.ecosystem.dynamics.InitFunctionNode;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialDataLoading;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialValues;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
 import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.exceptions.TwcoreException;
+import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -85,6 +88,9 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 	SimplePropertyList properties = null;
 	protected InitFunctionNode setinit = null;
 	protected boolean isPermanent = true;
+
+	// the table of all initial data available to make instances of this type
+	private Map<DataIdentifier, SimplePropertyList> initialData = new HashMap<>();
 
 	// default constructor
 	public ElementType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -158,7 +164,13 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 				}
 		}
 		// Find the setInitialState function
-		setinit = (InitFunctionNode) get(getChildren(),selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+		setinit = (InitFunctionNode) get(getChildren(),
+			selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+		// load initial data
+		InitialDataLoading.loadFromDataSources(this,initialData);
+		for (TreeNode tn:getChildren())
+			if (tn instanceof InitialValues)
+				InitialDataLoading.loadFromConfigTree((InitialValues)tn,initialData);
 		sealed = true; // important - next statement access this class methods
 		categoryId = buildCategorySignature();
 	}
@@ -207,6 +219,10 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 			return isPermanent;
 		else
 			throw new TwcoreException("attempt to access uninitialised data");
+	}
+	
+	public Map<DataIdentifier, SimplePropertyList> initialItems() {
+		return Collections.unmodifiableMap(initialData);
 	}
 
 }

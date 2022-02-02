@@ -147,50 +147,50 @@ hasNode componentTypeSpec
 	mustSatisfyQuery hasOneCategoryOfLifeSpanSpec
 		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
 		reference = String(categorySet:*lifespan*)
-
-//	// TODO: reimplement this
-//		NEW - INITIAL STATE - moved here from Component
-//	hasEdge instanceOfToSourceLoadFromSpec
-//		isOfClass = String("loadFrom")
-//		toNode = String("dataSource:")
-//		multiplicity = IntegerRange("0..*")
-//	mustSatisfyQuery componentHasGroupIdSpec
-//		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
+	//
+	//	Cross-link to data sources to create initial components
+	//
+	hasEdge instanceOfToSourceLoadFromSpec
+		isOfClass = String("loadFrom")
+		toNode = String("dataSource:")
+		multiplicity = IntegerRange("0..*")
+	mustSatisfyQuery componentHasGroupIdSpec
+		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
 		
 //-------------------------------------------------------------------------------------------
 
 		
 // TODO: remove the component node in the end.
 // initial state for an atomic component instance of a ComponentType
-hasNode componentSpec
-	isOfClass = String("component")
-	hasParent = StringTable(([1]"componentType:"))
-	multiplicity = IntegerRange("0..*")
-	// dep
-	hasProperty numberOfInstancesSpecDEP
-		hasName = String("nInstances")
-		type = String("Integer")
-		multiplicity = IntegerRange("0..1")
-	// delete
-	hasEdge componentToGroupSpecDEP
-		isOfClass = String("instanceOf")
-		toNode = String("group:")
-		multiplicity = IntegerRange("0..1") // optional - only requierd if groups are present
-	// dep
-	hasEdge instanceOfToSourceLoadFromSpecDEP
-		isOfClass = String("loadFrom")
-		toNode = String("dataSource:")
-		multiplicity = IntegerRange("0..*")
-	// delete
-	mustSatisfyQuery componentHasNinstanceXORloadFromSpecDEP
-		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorPropertyQuery")
-		parameters = StringTable(([2]"loadFrom","nInstances"))
-	// delete
-	mustSatisfyQuery componentHasInitialValuesXorLoadFromSpecDEP
-		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
-	// dep
-	mustSatisfyQuery componentHasGroupIdSpecDEP
-		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
+//hasNode componentSpec
+//	isOfClass = String("component")
+//	hasParent = StringTable(([1]"componentType:"))
+//	multiplicity = IntegerRange("0..*")
+//	// dep
+//	hasProperty numberOfInstancesSpecDEP
+//		hasName = String("nInstances")
+//		type = String("Integer")
+//		multiplicity = IntegerRange("0..1")
+//	// delete
+//	hasEdge componentToGroupSpecDEP
+//		isOfClass = String("instanceOf")
+//		toNode = String("group:")
+//		multiplicity = IntegerRange("0..1") // optional - only requierd if groups are present
+//	// dep
+//	hasEdge instanceOfToSourceLoadFromSpecDEP
+//		isOfClass = String("loadFrom")
+//		toNode = String("dataSource:")
+//		multiplicity = IntegerRange("0..*")
+//	// delete
+//	mustSatisfyQuery componentHasNinstanceXORloadFromSpecDEP
+//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorPropertyQuery")
+//		parameters = StringTable(([2]"loadFrom","nInstances"))
+//	// delete
+//	mustSatisfyQuery componentHasInitialValuesXorLoadFromSpecDEP
+//		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
+//	// dep
+//	mustSatisfyQuery componentHasGroupIdSpecDEP
+//		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
 
 //-------------------------------------------------------------------------------------------
 // GROUP TYPE: defined by categories
@@ -599,16 +599,18 @@ hasNode spaceSpec
 // parameter values for a group as specified in groupSpec above
 hasNode initialValuesSpec
 	isOfClass = String("initialValues")
-	hasParent = StringTable(([4]"system:","lifeCycle:","group:","component:"))
-// TODO: reimplement this	
-//	hasParent = StringTable(([4]"system:","lifeCycle:","group:","componentType:"))
+//	hasParent = StringTable(([4]"system:","lifeCycle:","group:","component:"))
+	hasParent = StringTable(([4]"system:","lifeCycle:","group:","componentType:"))
 	multiplicity = IntegerRange("0..1")
-	
-// TODO: reimplement this	
-//	hasProperty numberOfInstancesSpec
-//		hasName = String("nInstances")
-//		type = String("Integer")
-//		multiplicity = IntegerRange("0..1")
+	hasProperty numberOfInstancesSpec
+		hasName = String("nInstances")
+		type = String("Integer")
+		multiplicity = IntegerRange("0..1")
+// TODO		
+//	hasEdge componentToGroupSpecDEP
+//		isOfClass = String("instanceOf")
+//		toNode = String("group:")
+//		multiplicity = IntegerRange("0..1") // optional - only requierd if groups are present
 
 	
 	// then provide property (name,value) pairs - of course names must match category definitions

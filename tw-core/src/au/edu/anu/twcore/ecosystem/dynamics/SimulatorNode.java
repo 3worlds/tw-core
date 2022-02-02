@@ -28,11 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
+import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
@@ -58,8 +58,6 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.ArenaType;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
@@ -68,11 +66,21 @@ import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
-import au.edu.anu.twcore.ecosystem.structure.ElementType;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.ecosystem.structure.Structure;
+import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.root.World;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
@@ -131,12 +139,14 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 
 	@SuppressWarnings("unchecked")
 	private Simulator makeSimulator(int index) {
+		
 		// *** TimeModel --> Timer
 		List<TimerNode> timeModels = (List<TimerNode>) get(timeLine.getChildren(),
 				selectOneOrMany(hasTheLabel(N_TIMER.label())));
 		List<Timer> timers = new ArrayList<>();
 		for (TimerNode tm : timeModels)
 			timers.add(tm.getInstance(index));
+		
 		// *** StoppingConditionNode --> StoppingCondition
 		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
 				selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
@@ -155,6 +165,7 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 		// when there is only one stopping condition, then it is used
 		else
 			rootStop = scnodes.get(0).getInstance(index);
+		
 		// *** ProcessNode --> Process
 		Map<Integer, List<List<TwProcess>>> pco = new HashMap<>();
 		for (Map.Entry<Integer, List<List<ProcessNode>>> e : processCallingOrder.entrySet()) {
@@ -167,12 +178,86 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 			}
 			pco.put(e.getKey(), nllp);
 		}
+		
 		// *** Initial community
-//		ComponentContainer comm = (ComponentContainer)((Ecosystem) getParent()).getInstance(index);
+		// arena is always present
 		ArenaComponent arena = ((ArenaType) getParent()).getInstance(index).getInstance();
-		setInitialCommunity(index);
+		// everything else is optional
+		Structure str = (Structure) get(getParent(), 
+			children(), 
+			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+		if (str!=null) {
+			// for each of these, the problem is to find the container
+			// hence we start at the top, with lifecycles, then groups, etc.
+			// pb: if no initial data has been loaded, there will be no instantation here
+			// although lower levels might require one.
+			List<LifeCycleType> lctl = (List<LifeCycleType>) get(str.subTree(),
+				selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label()))); 
+			for (LifeCycleType lct:lctl) {
+				LifeCycleFactory lcf = lct.getInstance(index);
+				for (DataIdentifier itemId:lct.initialItems().keySet()) {
+					ComponentContainer parentContainer = (ComponentContainer)arena.content();
+					lcf.setName(itemId.lifeCycleId());
+					LifeCycleComponent lcc = lcf.newInstance(parentContainer);
+					initComponentData(lcc,lct.initialItems().get(itemId));
+				}
+			}
+			List<GroupType> gtl = (List<GroupType>) get(str.subTree(),
+				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+			for (GroupType gt:gtl) {
+				GroupFactory gf = gt.getInstance(index);
+				for (DataIdentifier itemId:gt.initialItems().keySet()) {
+					ComponentContainer parentContainer = (ComponentContainer)arena.content();
+					if ((itemId.lifeCycleId()!=null)&&(!itemId.lifeCycleId().isBlank())) {
+						String lcId = itemId.lifeCycleId();						
+						parentContainer = (ComponentContainer) arena.content().findContainer(lcId);
+						if (parentContainer==null)
+							// create the lifecycle container with no data (otherwise it was found before)
+							
+							;
+					}
+					gf.setName(itemId.groupId());
+					GroupComponent gc = gf.newInstance(parentContainer);
+					initComponentData(gc,gt.initialItems().get(itemId));
+				}
+			}
+			List<ComponentType> ctl = (List<ComponentType>) get(str.subTree(),
+				selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+			for (ComponentType ct:ctl) {
+				ComponentFactory cf = ct.getInstance(index);
+				for (DataIdentifier itemId:ct.initialItems().keySet()) {
+					ComponentContainer parentContainer = (ComponentContainer)arena.content();
+					ComponentContainer grandParentContainer = (ComponentContainer)arena.content();
+					if ((itemId.lifeCycleId()!=null)&&(!itemId.lifeCycleId().isBlank())) {
+						String lcId = itemId.lifeCycleId();						
+						grandParentContainer = (ComponentContainer) arena.content().findContainer(lcId);
+						if (parentContainer==null)
+							;
+					}
+					if ((itemId.groupId()!=null)&&(!itemId.groupId().isBlank())) {
+						String gId = itemId.groupId();						
+						parentContainer = (ComponentContainer) arena.content().findContainer(gId);
+						if (parentContainer==null) {
+							if (ct.getParent() instanceof GroupType) {
+								GroupType gt = (GroupType) ct.getParent();
+								GroupFactory gf = gt.getInstance(index);
+								gf.setName(gId);
+								GroupComponent gc = gf.newInstance(grandParentContainer);
+								parentContainer = (ComponentContainer)gc.content();
+							}
+							// else ? no groupType --> must be arena ? or an arbitrary group if >1 componentType ?
+						}
+					}
+					SystemComponent sc = cf.newInstance(parentContainer);
+					initComponentData(sc,ct.initialItems().get(itemId));
+					parentContainer.addInitialItem(sc);
+					sc.setContainer((ComponentContainer)parentContainer); // is this really needed?
+
+				}
+			}
+		}
+		
 		// *** ecosystem graph
-		Structure str = (Structure) get(getParent(), children(), selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		EcosystemGraph ecosystem = null;
 		SpaceOrganiser spo = null;// presume can be null for non-spatial models?
 		Map<String,RelationContainer> relconts = new HashMap<>();
@@ -193,50 +278,19 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 		} else {
 			ecosystem = new EcosystemGraph(arena);
 		}
+		
 		// *** finally, instantiate simulator
 		Simulator sim = new Simulator(index, rootStop, timeLine, timeModels, timers, timeModelMasks.clone(), pco, spo,
-				ecosystem,scnodes.isEmpty());
+			ecosystem,scnodes.isEmpty());
 		rootStop.attachSimulator(sim);
 		return sim;
 	}
-
-//	@SuppressWarnings("unchecked")
-//	private void scanSubGroups(Group group,int index) {
-//		group.getInstance(index);
-//		List<Component> li = (List<Component>) get(group.getChildren(),
-//			selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-//		for (Component i:li)
-//			i.getInstance(index);
-//		List<Group> lg = (List<Group>) get(group.getChildren(),
-//			selectZeroOrMany(hasTheLabel(N_GROUP.label())));
-//		for (Group g:lg)
-//			scanSubGroups(g,index);
-//	}
-
-	private void setInitialCommunity(int index) {
-		TreeGraphNode struc = (TreeGraphNode) get(getParent(), children(),
-			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
-		if (struc != null)
-//			for (TreeNode c : struc.getChildren()) {
-//				if (c instanceof ElementType<?, ?>)
-//					for (TreeNode cc : c.subTree())
-//						if (cc instanceof Component) {
-//							// this instantiates the SystemComponent and puts it into the right container
-//							((Component) cc).getInstance(index);
-//						}
-//			}
-			for (TreeNode c : struc.subTree()) {
-				if (c instanceof ElementType<?, ?>)
-					for (TreeNode cc : c.getChildren()) {
-						if (cc instanceof Component)
-							// this instantiates the SystemComponent and puts it into the right container
-							((Component) cc).getInstance(index);
-						// this in case a group doesnt have initial components
-						if (cc instanceof Group) {
-							((Group) cc).getInstance(index);
-						}
-					}
-			}
+	
+	// helper for previous method
+	private void initComponentData(DataHolder dh, ReadOnlyPropertyList ropl) {
+		for (String pkey:dh.properties().getKeysAsSet())
+			if (ropl.hasProperty(pkey))
+				dh.properties().setProperty(pkey,ropl.getPropertyValue(pkey));
 	}
 
 	@Override
