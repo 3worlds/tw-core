@@ -47,7 +47,7 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
  */
 public class GroupType extends ElementType<GroupFactory,GroupComponent> {
 
-	private static final int baseInitRank = N_GROUP.initRank();
+	private static final int baseInitRank = N_GROUPTYPE.initRank();
 
 	public GroupType(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);

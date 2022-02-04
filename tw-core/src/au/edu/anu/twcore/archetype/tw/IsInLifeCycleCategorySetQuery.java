@@ -59,7 +59,7 @@ public class IsInLifeCycleCategorySetQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Queryable submit(Object input) {
+	public Queryable submit(Object input) { // input is produce or recruit node
 		initInput(input);
 		TreeGraphNode node = (TreeGraphNode) input;
 		LifeCycleType lifecycleType = (LifeCycleType) node.getParent();
@@ -87,16 +87,16 @@ public class IsInLifeCycleCategorySetQuery extends QueryAdaptor {
 				nToCats++;
 		
 		if (nFromCats == 0) {
-			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery1(nToCats, nFromCats, E_TOCATEGORY.label(),
-					E_FROMCATEGORY.label());
+			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery1(nToCats, nFromCats, 
+				E_TOCATEGORY.label(),E_FROMCATEGORY.label());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 //			actionMsg = "What should I do?";
 //			errorMsg = " Missing life cycle category for the 'from' link.";
 			return this;
 		} else if (nFromCats > 1) {
-			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery2(nToCats, nFromCats, E_TOCATEGORY.label(),
-					E_FROMCATEGORY.label());
+			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery2(nToCats, nFromCats, 
+				E_TOCATEGORY.label(),E_FROMCATEGORY.label());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 //			actionMsg = "What should I do?";
@@ -104,16 +104,16 @@ public class IsInLifeCycleCategorySetQuery extends QueryAdaptor {
 			return this;
 		}
 		if (nToCats == 0) {
-			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery3(nToCats, nFromCats, E_TOCATEGORY.label(),
-					E_FROMCATEGORY.label());
+			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery3(nToCats, nFromCats, 
+				E_TOCATEGORY.label(),E_FROMCATEGORY.label());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 //			actionMsg = "What should I do?";
 //			errorMsg = " Missing life cycle category for the 'to' link.";
 			return this;
 		} else if (nToCats > 1) {
-			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery4(nToCats, nFromCats, E_TOCATEGORY.label(),
-					E_FROMCATEGORY.label());
+			String[] msgs = TextTranslations.getIsInLifeCycleCategorySetQuery4(nToCats, nFromCats, 
+				E_TOCATEGORY.label(),E_FROMCATEGORY.label());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 //			actionMsg = "What should I do?";

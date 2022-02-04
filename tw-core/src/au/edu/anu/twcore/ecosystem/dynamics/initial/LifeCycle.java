@@ -6,6 +6,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
@@ -21,6 +22,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
  * @author J. Gignoux - 8 déc. 2020
  *
  */
+@Deprecated
 public class LifeCycle
 		extends InitialElement<LifeCycleComponent>
 		implements DefaultStrings {
@@ -61,7 +63,8 @@ public class LifeCycle
 
 	@Override
 	public int initRank() {
-		return N_LIFECYCLE.initRank();
+		throw new TwcoreException("obsolete code");
+//		return N_LIFECYCLE.initRank();
 	}
 
 //	@Override

@@ -66,8 +66,10 @@ import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleOrStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
+import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
+import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
@@ -76,6 +78,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
@@ -149,7 +152,7 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 		
 		// *** StoppingConditionNode --> StoppingCondition
 		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
-				selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
+			selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
 		StoppingCondition rootStop = null;
 		// when there is no stopping condition, the default one is used (runs to
 		// infinite time)
@@ -187,74 +190,18 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 			children(), 
 			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		if (str!=null) {
-			// for each of these, the problem is to find the container
-			// hence we start at the top, with lifecycles, then groups, etc.
-			// pb: if no initial data has been loaded, there will be no instantation here
-			// although lower levels might require one.
 			List<LifeCycleType> lctl = (List<LifeCycleType>) get(str.subTree(),
 				selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label()))); 
-			for (LifeCycleType lct:lctl) {
-				LifeCycleFactory lcf = lct.getInstance(index);
-				for (DataIdentifier itemId:lct.initialItems().keySet()) {
-					ComponentContainer parentContainer = (ComponentContainer)arena.content();
-					lcf.setName(itemId.lifeCycleId());
-					LifeCycleComponent lcc = lcf.newInstance(parentContainer);
-					initComponentData(lcc,lct.initialItems().get(itemId));
-				}
-			}
+			for (LifeCycleType lct:lctl)
+				initComponent(lct,index,arena);
 			List<GroupType> gtl = (List<GroupType>) get(str.subTree(),
 				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
-			for (GroupType gt:gtl) {
-				GroupFactory gf = gt.getInstance(index);
-				for (DataIdentifier itemId:gt.initialItems().keySet()) {
-					ComponentContainer parentContainer = (ComponentContainer)arena.content();
-					if ((itemId.lifeCycleId()!=null)&&(!itemId.lifeCycleId().isBlank())) {
-						String lcId = itemId.lifeCycleId();						
-						parentContainer = (ComponentContainer) arena.content().findContainer(lcId);
-						if (parentContainer==null)
-							// create the lifecycle container with no data (otherwise it was found before)
-							
-							;
-					}
-					gf.setName(itemId.groupId());
-					GroupComponent gc = gf.newInstance(parentContainer);
-					initComponentData(gc,gt.initialItems().get(itemId));
-				}
-			}
+			for (GroupType gt:gtl)
+				initComponent(gt,index,arena);
 			List<ComponentType> ctl = (List<ComponentType>) get(str.subTree(),
 				selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-			for (ComponentType ct:ctl) {
-				ComponentFactory cf = ct.getInstance(index);
-				for (DataIdentifier itemId:ct.initialItems().keySet()) {
-					ComponentContainer parentContainer = (ComponentContainer)arena.content();
-					ComponentContainer grandParentContainer = (ComponentContainer)arena.content();
-					if ((itemId.lifeCycleId()!=null)&&(!itemId.lifeCycleId().isBlank())) {
-						String lcId = itemId.lifeCycleId();						
-						grandParentContainer = (ComponentContainer) arena.content().findContainer(lcId);
-						if (parentContainer==null)
-							;
-					}
-					if ((itemId.groupId()!=null)&&(!itemId.groupId().isBlank())) {
-						String gId = itemId.groupId();						
-						parentContainer = (ComponentContainer) arena.content().findContainer(gId);
-						if (parentContainer==null) {
-							if (ct.getParent() instanceof GroupType) {
-								GroupType gt = (GroupType) ct.getParent();
-								GroupFactory gf = gt.getInstance(index);
-								gf.setName(gId);
-								GroupComponent gc = gf.newInstance(grandParentContainer);
-								parentContainer = (ComponentContainer)gc.content();
-							}
-							// else ? no groupType --> must be arena ? or an arbitrary group if >1 componentType ?
-						}
-					}
-					SystemComponent sc = cf.newInstance(parentContainer);
-					initComponentData(sc,ct.initialItems().get(itemId));
-					parentContainer.addInitialItem(sc);
-					sc.setContainer((ComponentContainer)parentContainer); // is this really needed?
-
-				}
-			}
+			for (ComponentType ct:ctl)
+				initComponent(ct,index,arena);
 		}
 		
 		// *** ecosystem graph
@@ -286,11 +233,85 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 		return sim;
 	}
 	
-	// helper for previous method
+	// helper for makeSimulator(...)
 	private void initComponentData(DataHolder dh, ReadOnlyPropertyList ropl) {
 		for (String pkey:dh.properties().getKeysAsSet())
 			if (ropl.hasProperty(pkey))
 				dh.properties().setProperty(pkey,ropl.getPropertyValue(pkey));
+	}
+	
+	// helper for makeSimulator(...)
+	private void initComponent(ElementType<?,?> et, 
+			int simId, 
+			ArenaComponent arena) {
+		ElementFactory<?> ef = et.getInstance(simId);
+		for (DataIdentifier itemId:et.initialItems().keySet()) {
+			ComponentContainer parentContainer = getParentContainer(et,simId,arena,itemId);
+			if (ef instanceof ComponentFactory) {
+				ComponentFactory cf = (ComponentFactory) ef;
+				SystemComponent sc = cf.newInstance(parentContainer);
+				initComponentData(sc,et.initialItems().get(itemId));
+				parentContainer.addInitialItem(sc);
+				sc.setContainer((ComponentContainer)parentContainer);
+				// set the SystemComponent categories in parent container
+				// NB this can only be done once.
+				parentContainer.setCategorized(cf);
+			}
+			else {
+				HierarchicalComponent hc = null;
+				if (ef instanceof LifeCycleFactory) {
+					LifeCycleFactory lcf = (LifeCycleFactory) ef;
+					lcf.setName(itemId.lifeCycleId());
+					hc = lcf.newInstance(parentContainer);
+				}
+				else if (ef instanceof GroupFactory) {
+					GroupFactory gf = (GroupFactory) ef;
+					gf.setName(itemId.groupId());
+					hc = gf.newInstance(parentContainer);
+				}
+				initComponentData(hc,et.initialItems().get(itemId));
+			}
+		}
+	}
+	
+	// helper for initComponent(...) (recursive)
+	private ComponentContainer getParentContainer(ElementType<?,?> et, 
+			int simId, 
+			ArenaComponent arena,
+			DataIdentifier itemId) {
+		// default parent container is the arena
+		ComponentContainer parentContainer = (ComponentContainer)arena.content();
+		// case of ComponentType: parent is a GroupType, search for the matching container
+		if (et.getParent() instanceof GroupType) {
+			if ((itemId.groupId()!=null)&&(!itemId.groupId().isBlank())) {
+				// if a groupContainer with this groupId has already been created, get it 
+				String gId = itemId.groupId();						
+				parentContainer = (ComponentContainer) arena.content().findContainer(gId);
+				// if not, create it (with no data as if it had some, it would have been found before)
+				if (parentContainer==null) {
+					GroupType gt = (GroupType) et.getParent();
+					GroupFactory gf = gt.getInstance(simId);
+					gf.setName(gId);
+					GroupComponent gc = gf.newInstance(getParentContainer(gt,simId,arena,itemId));
+					parentContainer = (ComponentContainer)gc.content();
+				}
+			}
+		}
+		// case of GroupType: parent is a LifeCycleType, search for the matching container
+		else if (et.getParent() instanceof LifeCycleType) {
+			if ((itemId.lifeCycleId()!=null)&&(!itemId.lifeCycleId().isBlank())) {
+				String lcId = itemId.lifeCycleId();						
+				parentContainer = (ComponentContainer) arena.content().findContainer(lcId);
+				if (parentContainer==null) {
+					LifeCycleType lct = (LifeCycleType) et.getParent();
+					LifeCycleFactory lcf = lct.getInstance(simId);
+					lcf.setName(lcId);
+					LifeCycleComponent lcc = lcf.newInstance(getParentContainer(lct,simId,arena,itemId));
+					parentContainer = (ComponentContainer)lcc.content();
+				}
+			}
+		}
+		return parentContainer;
 	}
 
 	@Override

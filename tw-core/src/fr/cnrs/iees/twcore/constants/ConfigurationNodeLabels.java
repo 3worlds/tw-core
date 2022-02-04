@@ -74,9 +74,9 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 				N_DATATRACKER 	("dataTracker",		"trk1",			DataTrackerNode.class,			0),//
 				N_STOPPINGCONDITION("stoppingCondition","stCd1",	StoppingConditionNode.class,SIMBASE), // before Simulator
 				N_INITFUNCTION 	("initFunction",	"init1",		InitFunctionNode.class,		CATEGORYBASE+20), // after relation
-				N_LIFECYCLE 	("lifeCycle",		"lfcy1",		LifeCycle.class,			ECOBASE+10),	// after Ecosystem
-				N_GROUP 		("group",			"grp1",			Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
-				N_COMPONENT 	("component",		"cmp1",			Component.class,			CATEGORYBASE+30), // after Group
+//				N_LIFECYCLE 	("lifeCycle",		"lfcy1",		LifeCycle.class,			ECOBASE+10),	// after Ecosystem
+//				N_GROUP 		("group",			"grp1",			Group.class,				CATEGORYBASE+20), // after LifeCycle and SystemFactory
+//				N_COMPONENT 	("component",		"cmp1",			Component.class,			CATEGORYBASE+30), // after Group
 				N_INITIALVALUES ("initialValues",	"initVals1",	InitialValues.class,		CATEGORYBASE+40), // after InitialState, Group and Individual
 
 			N_STRUCTURE 		("structure",		"struc1",		Structure.class,			0),//

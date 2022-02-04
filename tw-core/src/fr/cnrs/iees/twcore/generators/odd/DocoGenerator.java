@@ -111,6 +111,8 @@ import org.odftoolkit.simple.style.StyleTypeDefinitions;
  *
  * @date 13 Jul 2020
  */
+// JG 4/2/2022 CAUTION: I hav disabled all code relying on the Component nodes because these have 
+// been deprecated. So this code needs revision.
 public class DocoGenerator {
 	/**
 	 * Minimal config baseline
@@ -198,13 +200,13 @@ public class DocoGenerator {
 		countedNodes.add(N_TIMER.label());
 		countedNodes.add(N_PROCESS.label());
 		countedNodes.add(N_FUNCTION.label());
-		countedNodes.add(N_LIFECYCLE.label());
+//		countedNodes.add(N_LIFECYCLE.label());
 		countedNodes.add(N_RECRUIT.label());
 		countedNodes.add(N_PRODUCE.label());
 		countedNodes.add(N_INITFUNCTION.label());
-		countedNodes.add(N_GROUP.label());
+//		countedNodes.add(N_GROUP.label());
 		countedNodes.add(N_GROUPTYPE.label());
-		countedNodes.add(N_COMPONENT.label());
+//		countedNodes.add(N_COMPONENT.label());
 		countedNodes.add(N_STRUCTURE.label());
 		countedNodes.add(N_CATEGORYSET.label());
 		countedNodes.add(N_CATEGORY.label());
@@ -283,18 +285,18 @@ public class DocoGenerator {
 				}
 			} else if (n.classId().equals(N_COMPONENTTYPE.label())) {
 				compTypes.add(n);
-				List<TreeGraphDataNode> components = (List<TreeGraphDataNode>) get(n.getChildren(),
-						selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-				for (TreeGraphDataNode cmp : components)
-					if (cmp.properties().hasProperty(P_COMPONENT_NINST.key()))
-						if (((Integer) cmp.properties().getPropertyValue(P_COMPONENT_NINST.key())) > 0)
-							instanceComponents.add(cmp);
+//				List<TreeGraphDataNode> components = (List<TreeGraphDataNode>) get(n.getChildren(),
+//						selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+//				for (TreeGraphDataNode cmp : components)
+//					if (cmp.properties().hasProperty(P_COMPONENT_NINST.key()))
+//						if (((Integer) cmp.properties().getPropertyValue(P_COMPONENT_NINST.key())) > 0)
+//							instanceComponents.add(cmp);
 
 				if (get(n.edges(Direction.OUT), selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes(),
 						selectZeroOrOne(hasTheName(ephemeral.id()))) != null) {
-					List<TreeGraphDataNode> cmps = (List<TreeGraphDataNode>) get(n.getChildren(),
-							selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-					ephemeralComponents.addAll(cmps);
+//					List<TreeGraphDataNode> cmps = (List<TreeGraphDataNode>) get(n.getChildren(),
+//							selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+//					ephemeralComponents.addAll(cmps);
 				}
 			} else if (n.classId().equals(N_RELATIONTYPE.label())) {
 				Collection<ALEdge> ate = (Collection<ALEdge>) get(n.edges(Direction.IN),
@@ -1216,13 +1218,13 @@ public class DocoGenerator {
 					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes(),
 					selectZeroOrOne(hasTheName(ConfigurationReservedNodeId.ephemeral.id())));
 			if (eph != null) {
-				List<TreeGraphDataNode> comps = (List<TreeGraphDataNode>) get(ct.getChildren(),
-						selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-				for (TreeGraphDataNode comp : comps) {
-					String c2 = comp.id();
-					entries.add(new StringBuilder().append(c1).append(sep).append(c2).toString());
-					c1 = "";
-				}
+//				List<TreeGraphDataNode> comps = (List<TreeGraphDataNode>) get(ct.getChildren(),
+//						selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+//				for (TreeGraphDataNode comp : comps) {
+//					String c2 = comp.id();
+//					entries.add(new StringBuilder().append(c1).append(sep).append(c2).toString());
+//					c1 = "";
+//				}
 			}
 		}
 
@@ -1619,15 +1621,15 @@ public class DocoGenerator {
 		// One could list all the categories this component belongs to but it will be a
 		// long string and make the flow chart messy.
 		for (TreeGraphDataNode ct : cmpTypes) {
-			List<TreeNode> cmps = (List<TreeNode>) get(ct.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-			// if have components then mention them in preference to the componentType
-			if (!cmps.isEmpty()) {
-				for (TreeNode cmp : cmps) {
-					sb.append(", ").append(cmp.id());
-				}
-			} else
-				sb.append(", ").append(ct.id());
+//			List<TreeNode> cmps = (List<TreeNode>) get(ct.getChildren(),
+//					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+//			// if have components then mention them in preference to the componentType
+//			if (!cmps.isEmpty()) {
+//				for (TreeNode cmp : cmps) {
+//					sb.append(", ").append(cmp.id());
+//				}
+//			} else
+//				sb.append(", ").append(ct.id());
 		}
 		// need a better string here. from/to but this depends on the function type
 		if (relationType != null) {
@@ -1677,8 +1679,8 @@ public class DocoGenerator {
 			List<TreeGraphDataNode> drivers = new ArrayList<>();
 			List<TreeGraphDataNode> timers = new ArrayList<>();
 			List<TreeGraphDataNode> spaces = new ArrayList<>();
-			List<TreeGraphDataNode> comps = (List<TreeGraphDataNode>) get(ct.getChildren(),
-					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+//			List<TreeGraphDataNode> comps = (List<TreeGraphDataNode>) get(ct.getChildren(),
+//					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
 			List<TreeGraphDataNode> cats = (List<TreeGraphDataNode>) get(ct.edges(Direction.OUT),
 					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes());
 
@@ -1707,11 +1709,11 @@ public class DocoGenerator {
 			String c2 = sb.toString();
 
 			sb = new StringBuilder();
-			for (int i = 0; i < comps.size(); i++) {
-				sb.append(comps.get(i).id());
-				if (i != comps.size() - 1)
-					sb.append("\n");
-			}
+//			for (int i = 0; i < comps.size(); i++) {
+//				sb.append(comps.get(i).id());
+//				if (i != comps.size() - 1)
+//					sb.append("\n");
+//			}
 			String c3 = sb.toString();
 			if (c3.isBlank())
 				c3 = "none";

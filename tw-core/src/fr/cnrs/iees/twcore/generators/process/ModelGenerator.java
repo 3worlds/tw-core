@@ -809,16 +809,17 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		return result;
 	}
 
-	public boolean hasLifeCycle(Set<Category> cats) {
-		for (Category cat : cats) {
-			CategorySet cs = (CategorySet) cat.getParent();
-			LifeCycleType lc = (LifeCycleType) get(cs.edges(Direction.IN), selectZeroOrOne(hasTheLabel(N_LIFECYCLE.label())),
-					startNode());
-			if (lc != null)
-				return true;
-		}
-		return false;
-	}
+//	public boolean hasLifeCycle(Set<Category> cats) {
+//		for (Category cat : cats) {
+//			CategorySet cs = (CategorySet) cat.getParent();
+//			LifeCycleType lc = (LifeCycleType) get(cs.edges(Direction.IN), 
+//				selectZeroOrOne(hasTheLabel(N_LIFECYCLE.label())),
+//				startNode());
+//			if (lc != null)
+//				return true;
+//		}
+//		return false;
+//	}
 
 	/**
 	 * This method works out the comment to add to generated files regarding Timer information.

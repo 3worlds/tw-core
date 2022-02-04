@@ -47,8 +47,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
-import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
-import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
@@ -135,7 +133,8 @@ public class Component
 
 	@Override
 	public int initRank() {
-		return N_COMPONENT.initRank();
+		throw new TwcoreException("obsolete code");
+//		return N_COMPONENT.initRank();
 	}
 
 	@SuppressWarnings("unchecked")

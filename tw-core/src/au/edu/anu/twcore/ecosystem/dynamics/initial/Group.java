@@ -37,6 +37,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
+import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -62,6 +63,7 @@ import java.util.Map;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
+@Deprecated
 public class Group
 		extends InitialElement<GroupComponent>
 		implements  DefaultStrings {
@@ -69,7 +71,7 @@ public class Group
 //		implements Sealable, LimitedEdition<GroupComponent> {
 
 //	private Map<Integer,GroupComponent> groups = new HashMap<>();
-	private static final int baseInitRank = N_GROUP.initRank();
+//	private static final int baseInitRank = N_GROUP.initRank();
 	private GroupType groupType = null;
 	private LifeCycle lifeCycle = null;
 //	private ComponentType groupOf = null;
@@ -111,7 +113,8 @@ public class Group
 
 	@Override
 	public int initRank() {
-		return initRank(this,baseInitRank);
+		throw new TwcoreException("obsolete code");
+//		return initRank(this,baseInitRank);
 	}
 
 //	@Override
