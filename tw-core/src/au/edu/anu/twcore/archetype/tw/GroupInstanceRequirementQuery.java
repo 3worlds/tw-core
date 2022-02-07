@@ -30,23 +30,25 @@ package au.edu.anu.twcore.archetype.tw;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_CYCLE;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_GROUPTYPE;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
+import au.edu.anu.twcore.ecosystem.structure.Category;
+import au.edu.anu.twcore.ecosystem.structure.CategorySet;
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import fr.cnrs.iees.graph.Direction;
 
 /**
- * Checks that a lifeCycle instance has exactly one Group of each of its LifeCycleType
- * GroupTypes (repeat ten times and then ask).
+ * Checks that a lifeCycleType has exactly one GroupType matching each of its appliesTo CategorySet
+ * (repeat ten times and then ask).
  *
  * @author J. Gignoux - 22 déc. 2020
  *
@@ -55,30 +57,50 @@ public class GroupInstanceRequirementQuery extends QueryAdaptor{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Queryable submit(Object input) {
+	public Queryable submit(Object input) { // input is a lifeCycleType
 		initInput(input);
-		LifeCycle lifeCycle = (LifeCycle) input;
-		LifeCycleType lct = (LifeCycleType) lifeCycle.getParent();
-		Collection<GroupType> gts = (Collection<GroupType>) get(lct.getChildren(),
-			selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
-		Collection<Group> gs = (Collection<Group>) get(lifeCycle.edges(Direction.IN),
-			selectZeroOrMany(hasTheLabel(E_CYCLE.label())),
-			edgeListStartNodes());
-		boolean ok = true;
-		// lists must be of the same length
-		if (gs.size()!=gts.size())
-			ok = false;
-		// for each group, check its grouptype is in the grouptype list by removing it
-		// from the list
-		for (Group g:gs)
-			ok &= gts.remove(g.getParent());
-		// if there was no error (ie exactly one group per grouptype) then the list should be empty:
-		ok &= gts.isEmpty();
-		if (!ok) {
-			String[] msgs = TextTranslations.getGroupInstanceRequirementQuery();
-			actionMsg = msgs[0];
-			errorMsg = msgs[1];
-//			errorMsg = "LifeCycle must have exactly one instance of Group per GroupType of its LifeCycleType.";
+		if (input instanceof LifeCycleType) {
+			LifeCycleType lct = (LifeCycleType) input;
+			// get all the group type declared under this lifecycletype
+			Collection<GroupType> gts = (Collection<GroupType>) get(lct.getChildren(),
+				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+			// get the category set defining the stages of the life cycle
+			// NB possible flaw: if the graph has >1 category set at this point
+			// but MM should guarantee this will never happen
+			CategorySet lccatset = (CategorySet) get(lct.edges(Direction.OUT),
+				selectZeroOrOne(hasTheLabel(E_APPLIESTO.label())),
+				endNode());
+			if (lccatset!=null) {
+				Collection<Category> lccats = (Collection<Category>) lccatset.getChildren();
+				// 1st condition: number of group types = number of stage categories
+				if (lccats.size()!=gts.size()) {
+					actionMsg = "Please provide exactly "+lccats.size()+" GroupTypes to LifeCycleType '"
+						+ lct.id()+ "' to match all the categories of CategorySet '"+lccatset.id()+"'";
+					errorMsg = "A LifeCycleType must define a GroupType for each of the categories of its CategorySet";
+					return this;
+				}
+				// 2nd condition: each GroupType ComponentType must match one of the categories
+				Collection<GroupType> testSet = new LinkedList<>();
+				for (Category cat:lccats) {
+					for (GroupType gt:gts) {
+						Collection<ComponentType> cts = (Collection<ComponentType>) get(gt,
+							children(),
+							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						for (ComponentType ct:cts) {
+							Collection<Category> ctcats = (Collection<Category>) get(ct.edges(Direction.OUT),
+								selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+								edgeListEndNodes());
+							if (ctcats.contains(cat))
+								testSet.add(gt);
+						}
+					}
+				}
+				if (lccats.size()!=testSet.size()) {
+					String[] msgs = TextTranslations.getGroupInstanceRequirementQuery();
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
+				}
+			}
 		}
 		return this;
 	}

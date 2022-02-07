@@ -58,6 +58,7 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.ArenaType;
+import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.TwProcess;
@@ -275,6 +276,7 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 	}
 	
 	// helper for initComponent(...) (recursive)
+	@SuppressWarnings("unchecked")
 	private ComponentContainer getParentContainer(ElementType<?,?> et, 
 			int simId, 
 			ArenaComponent arena,
@@ -293,6 +295,10 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 					GroupFactory gf = gt.getInstance(simId);
 					gf.setName(gId);
 					GroupComponent gc = gf.newInstance(getParentContainer(gt,simId,arena,itemId));
+					// this sets itemCategories in gc.content
+					gc.content().setCategorized((Categorized<SystemComponent>) et.getInstance(simId));
+					// this sets groups in parent lifeCycelComponent - must be done after itemCategories have been set
+					gc.addGroupIntoLifeCycle();
 					parentContainer = (ComponentContainer)gc.content();
 				}
 			}

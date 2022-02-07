@@ -13,11 +13,11 @@ import java.util.Map;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialElement;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
-import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
@@ -32,17 +32,9 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Queryable submit(Object input) {  // input is a component, group or lifeCycle node
-		
-// TODO: future version when data loading is fully refactored		
-//	public Queryable submit(Object input) {  // input is a componentType, groupType or lifeCycleType node
-		
+	public Queryable submit(Object input) {  // input is a componentType, groupType or lifeCycleType node
 		initInput(input);
-		if (input instanceof InitialElement) {
-// TODO: future version when data loading is fully refactored					
-//		if (input instanceof ElementType) {
-			
-			
+		if (input instanceof ElementType<?,?>) {
 			TreeGraphDataNode inode = (TreeGraphDataNode) input;
 			List<TreeGraphNode> initNodes = (List<TreeGraphNode>) get(inode.getChildren(),
 				selectZeroOrMany(hasTheLabel(N_INITIALVALUES.label())));
@@ -74,33 +66,59 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 			}
 			else if (parent instanceof LifeCycleType)
 				requireLifeCycleId = true;
-			// node has an initialValues node to read its data from
-			if (!initNodes.isEmpty()) {
-				if (isComponent) {
-					if (requireGroupId) {
-						List<Edge> le = (List<Edge>) get(inode,outEdges(),
-							selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())));
-						if (le.isEmpty()) {
-							errorMsg = "Missing '"+E_INSTANCEOF.label()+"' edge for '"+inode.id()+"'";
-							actionMsg = "Add an '"+E_INSTANCEOF.label()
-								+"' edge to a 'group' node to '"+inode.id()+"'";
-						}
-					}
+			// node has initialValues node to read its data from
+			for (TreeGraphNode initNode:initNodes) {
+				if (isComponent && requireGroupId) {
+					if (initNode instanceof ReadOnlyDataHolder)
+						if (((ReadOnlyDataHolder) initNode).properties().hasProperty(P_DATASOURCE_IDGROUP.key()))
+							break;
+					errorMsg = "Missing property '"+P_DATASOURCE_IDGROUP.key()
+						+"' in node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";;
+					actionMsg = "Add property '"+P_DATASOURCE_IDGROUP.key()
+						+"' to node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";
 				}
-				else if (isGroup) {
-					if (requireLifeCycleId) {
-						List<Edge> le = (List<Edge>) get(inode,outEdges(),
-							selectZeroOrMany(hasTheLabel(E_CYCLE.label())));
-						if (le.isEmpty()) {
-							errorMsg = "Missing '"+E_CYCLE.label()+"' edge for '"+inode.id()+"'";
-							actionMsg = "Add an '"+E_CYCLE.label()
-								+"' edge to a 'lifeCycle' node to '"+inode.id()+"'";
-						}
-					}
+				else if (isGroup && requireLifeCycleId) {
+					if (initNode instanceof ReadOnlyDataHolder)
+						if (((ReadOnlyDataHolder) initNode).properties().hasProperty(P_DATASOURCE_IDLC.key()))
+							break;
+					errorMsg = "Missing property '"+P_DATASOURCE_IDLC.key()
+						+"' in node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";;
+					actionMsg = "Add property '"+P_DATASOURCE_IDLC.key()
+						+"' to node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";
 				}
 			}
+//			if (!initNodes.isEmpty()) {
+//				if (isComponent) {
+//					if (requireGroupId) {
+//						for (TreeGraphNode cpNode:initNodes) {
+//							if (cpNode instanceof TreeGraphDataNode)
+//							if (cpNode.properties().hasProperty());
+//						}
+//						throw new TwcoreException("not implemented yet");
+////						List<Edge> le = (List<Edge>) get(inode,outEdges(),
+////							selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())));
+////						if (le.isEmpty()) {
+////							errorMsg = "Missing '"+E_INSTANCEOF.label()+"' edge for '"+inode.id()+"'";
+////							actionMsg = "Add an '"+E_INSTANCEOF.label()
+////								+"' edge to a 'group' node to '"+inode.id()+"'";
+////						}
+//					}
+//				}
+//				else if (isGroup) {
+//					if (requireLifeCycleId) {
+//						throw new TwcoreException("not implemented yet");
+////						List<Edge> le = (List<Edge>) get(inode,outEdges(),
+////							selectZeroOrMany(hasTheLabel(E_CYCLE.label())));
+////						if (le.isEmpty()) {
+////							errorMsg = "Missing '"+E_CYCLE.label()+"' edge for '"+inode.id()+"'";
+////							actionMsg = "Add an '"+E_CYCLE.label()
+////								+"' edge to a 'lifeCycle' node to '"+inode.id()+"'";
+////						}
+//					}
+//				}
+//			}
 			// node has dataSources to read from
-			else if (!dataSources.isEmpty()) {
+			if (!dataSources.isEmpty()) {
 				Map<TreeGraphDataNode,List<String>> missing = new HashMap<>();
 				for (TreeGraphDataNode ds:dataSources) {
 					missing.put(ds,new ArrayList<>());

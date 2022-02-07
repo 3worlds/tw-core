@@ -50,8 +50,8 @@ public class InitialDataLoading {
 	public static void loadFromConfigTree(TreeGraphDataNode node,
 			Map<DataIdentifier, SimplePropertyList> loadedData) {
 		for (TreeNode tn:node.getChildren()) {
-			if (tn instanceof InitialValues2) {
-				InitialValues2 dataNode = (InitialValues2)tn;
+			if (tn instanceof InitialValues) {
+				InitialValues dataNode = (InitialValues)tn;
 				ExtendablePropertyList props = new ExtendablePropertyListImpl();
 				DataIdentifier id = dataNode.fullId();
 				props.addProperties(dataNode.readOnlyProperties());

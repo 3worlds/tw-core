@@ -31,25 +31,24 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
- * A Query to test that a node, edge or treenode has either of two properties, but not both
+ * A Query to test that a node, edge or treenode doest not have two properties together
  * @author gignoux - 22 nov. 2016
  *
  */
-public class PropertyXorQuery extends QueryAdaptor {
+public class PropertyNotAndQuery extends QueryAdaptor {
 	
 	private final String name1;
 	private final String name2;
 
-	public PropertyXorQuery(String name1, String name2) {
+	public PropertyNotAndQuery(String name1, String name2) {
 		this.name1 = name1;
 		this.name2 = name2;
 	}
 
-	public PropertyXorQuery(StringTable ot) {
+	public PropertyNotAndQuery(StringTable ot) {
 		name1 = ot.getWithFlatIndex(0);
 		name2 = ot.getWithFlatIndex(1);
 	}
@@ -59,10 +58,13 @@ public class PropertyXorQuery extends QueryAdaptor {
 		initInput(input);
 		if (input instanceof ReadOnlyDataHolder) {
 			ReadOnlyDataHolder e = (ReadOnlyDataHolder) input;
-			if (!(e.properties().hasProperty(name1) ^ e.properties().hasProperty(name2))) {
-				String[] msgs = TextTranslations.getPropertyXorQuery(name1,name2);
-				actionMsg = msgs[0];
-				errorMsg = msgs[1];
+			// This is only false when both properties are present
+			if (e.properties().hasProperty(name1) && e.properties().hasProperty(name2)) {
+	//			String[] msgs = TextTranslations.getPropertyXorQuery(name1,name2);
+				actionMsg =  "Remove at least one of the properties '"
+					+name1+"' and '"+name2+"'";
+				errorMsg = "Element '"+e.toString()+"' cannot have both properties '"
+					+name1+"' and '"+name2+"'";
 			}
 		}
 		return this;

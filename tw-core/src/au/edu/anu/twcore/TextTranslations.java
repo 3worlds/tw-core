@@ -549,11 +549,11 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "LifeCycle must have exactly one instance of Group per GroupType of its LifeCycleType.";
-			cm = "LifeCycle must have exactly one instance of Group per GroupType of its LifeCycleType.";
+			am = "Make sure that the GroupTypes define under a LifeCycleType have ComponentTypes which categories match those of the LifeCycleType CategorySet.";
+			cm = "All categories of a LifeCycleType category set must be present in its GroupType's ComponentTypes";
 		} else {// make sure default is English!
-			am = "LifeCycle must have exactly one instance of Group per GroupType of its LifeCycleType.";
-			cm = "LifeCycle must have exactly one instance of Group per GroupType of its LifeCycleType.";
+			am = "Make sure that the GroupTypes define under a LifeCycleType have ComponentTypes which categories match those of the LifeCycleType CategorySet.";
+			cm = "All categories of a LifeCycleType category set must be present in its GroupType's ComponentTypes";
 		}
 		String[] result = { am, cm };
 		return result;
