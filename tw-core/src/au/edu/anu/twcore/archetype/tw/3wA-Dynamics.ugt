@@ -41,20 +41,6 @@ hasNode timeModelSpec
 	isOfClass = String("timer")
 	hasParent = StringTable(([1]"timeline:"))
 	multiplicity = IntegerRange("1..*")
-//	hasProperty timeUnitPropertySpec
-//		hasName = String("timeUnit")
-//		type =  String("TimeUnits")
-//		multiplicity = IntegerRange("1..1")
-//	mustSatisfyQuery timeUnitTimeUnitValidityQuery
-//		className = String("au.edu.anu.twcore.archetype.tw.TimeUnitValidityQuery")
-//		values = StringTable(([2]"timeUnit","scale"))
-//	hasProperty
-//		hasName = String("nTimeUnits")
-//		type = String("Integer")
-//		multiplicity = IntegerRange("1..1")
-//		mustSatisfyQuery nTimeUnitsIsInRangeQuery
-//			className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
-//			interval = IntTable(([2]1,2147483647))      // Integer.MAX_VALUE = 2^31-1 = 2147483647
 	hasProperty timeModelSubclassPropertySpec
 		hasName = String("subclass")
 		type = String("String")
@@ -208,15 +194,9 @@ hasNode consequenceFunctionSpec
 	// TODO: specific to 	ChangeOtherStateFunction when consequence of DeleteDecision:
 	// must specify to which other item data should be returned...
 
-//hasNode snippet
-//	isOfClass = String("snippet")
-//	hasParent = StringTable(([3]"function:","initFunction:","process:/function:"))
-//	multiplicity = IntegerRange("0..*")
-//	hasProperty snippetProp
-//		hasName = String("javaCode")
-//		type = String("StringTable")
-//		multiplicity = IntegerRange("1..1")
-
+//-------------------------------------------------------------------------------------------
+// DATA TRACKERS: specifies methods for tracking data for output to the user interface
+//-------------------------------------------------------------------------------------------
 hasNode dataTrackerSpec
 	isOfClass = String("dataTracker")
 	hasParent = StringTable(([1]"process:"))
@@ -231,15 +211,26 @@ hasNode dataTrackerSpec
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D",+
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerXY",+
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D"))
+	//
+	// specify how to aggregate data from multiple system components
+	//
 	hasProperty SatisticsSpec
 		hasName = String("statistics")
 		type = String("StatisticalAggregatesSet")
 		multiplicity = IntegerRange("0..1")
+	//
+	// specify how to aggregate tabular data
+	//
 	hasProperty tableSatisticsSpec
 		hasName = String("tableStatistics")
 		type = String("StatisticalAggregatesSet")
 		multiplicity = IntegerRange("0..1")
-	// these two properties are only needed if there is a trackComponent edge
+	//
+	// specify how to track ephemeral components:
+	// 		- samplingMode indicate how to sample (first items, random, etc...)
+	//		- sampleSize indicates how many items to sample, from 1 to all within their group
+	// these two properties are required if tracking a ComponentType
+	//
 	hasProperty samplingModeSpec
 		hasName = String("samplingMode")
 		type = String("SamplingMode")
@@ -248,8 +239,9 @@ hasNode dataTrackerSpec
 		hasName = String("sampleSize")
 		type = String("String") // valid values: any >0 number, or "ALL" - defaults to 1
 		multiplicity = IntegerRange("1..1")
-
+	//
 	// tracking of data fields
+	//
 	hasEdge trackFieldEdgeSpec
 		isOfClass = String("trackField")
 		toNode = String("field:")
@@ -263,8 +255,9 @@ hasNode dataTrackerSpec
 			multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery indexInTableDimRangeFieldSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IndexDimensionQuery")
-
+	//
 	// tracking of table data
+	//
 	hasEdge trackTableEdgeSpec
 		isOfClass = String("trackTable")
 		toNode = String("table:")
@@ -280,33 +273,65 @@ hasNode dataTrackerSpec
 			multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery indexInTableDimRangeTableSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IndexDimensionQuery")
-
-	// tracking of components (use with trackField and trackTable)
+	// 
+	// tracking of System Components (use with trackField and trackTable)
+	// A SystemComponent cannot be directly identified. It must be found by
+	// its life cycle and group ids (if present), plus a sampling mode.
+	// This because SystemComponent ids change at every simulation.
+	//
 	hasEdge trackComponentEdgeSpec // track an initial list of components
-		// todo: check this component is of the proper category?
-		// also check all components are under the same group
 		isOfClass = String("trackComponent")
-		toNode = String("component:")
+		toNode = String("componentType:")
 		multiplicity = IntegerRange("0..*")
-	hasEdge trackComponentGroupEdgeSpec // track any components from this group
+		hasProperty trackedComponentLCIdSpec
+			hasName = String("idLifeCycle")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+		hasProperty trackedComponentGroupIdSpec
+			hasName = String("idGroup")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+	//
+	// tracking of life cycles
+	//
+	hasEdge trackComponentLCEdgeSpec // track any components from this group
 		// todo: check this group is of the proper category?
 		isOfClass = String("trackComponent")
-		toNode = String("group:")
+		toNode = String("lifeCycleType:")
 		multiplicity = IntegerRange("0..1")
+		hasProperty trackedLCLCIdSpec
+			hasName = String("idLifeCycle")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+	//
+	// tracking of the arena
+	//
 	hasEdge trackComponentEcosystemEdgeSpec // track any components at the ecosystem level
 		// todo: check this component is of the proper category?
 		isOfClass = String("trackComponent")
-		toNode = String("system:") // was: initialState
+		toNode = String("system:")
 		multiplicity = IntegerRange("0..1")
+	//
+	// tracking of groups
+	//
 	hasEdge trackComponentGroupTypeEdgeSpec // track any components at the ecosystem level
 		// todo: check this component is of the proper category?
 		isOfClass = String("trackComponent")
-		toNode = String("groupType:") // was: initialState
+		toNode = String("groupType:")
 		multiplicity = IntegerRange("0..1")
+		hasProperty trackedGroupGroupIdSpec
+			hasName = String("idGroup")
+			type = String("String")
+			multiplicity = IntegerRange("0..1")
+	//
+	// check that whenever a component is tracked, then there is an edge to fields or tables too
+	//
 	mustSatisfyQuery ifComponentMustHaveEitherFieldOrTableEdge
 		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
 		edgeLabel1 = String("trackComponent")
 		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
+	// TODO: more consistency checks ? eg on categories ?
+//-------------------------------------------------------------------------------------------
 
 hasNode stoppingConditionSpec
 	isOfClass = String("stoppingCondition")

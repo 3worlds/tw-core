@@ -13,6 +13,7 @@ import fr.cnrs.iees.graph.TreeNode;
  * @author Jacques Gignoux - 8 févr. 2022
  *
  */
+// tested 8/2/2022 - looks OK
 public class PropertyMatchGrandParentQuery extends QueryAdaptor {
 	
 	private String parentClass = null;
