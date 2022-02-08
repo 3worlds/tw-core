@@ -8,12 +8,12 @@ import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
- * Check the presence of a certain property depending on parent type.
+ * Check the presence of a certain property depending on parent' parent type.
  * 
  * @author Jacques Gignoux - 8 févr. 2022
  *
  */
-public class PropertyMatchParentQuery extends QueryAdaptor {
+public class PropertyMatchGrandParentQuery extends QueryAdaptor {
 	
 	private String parentClass = null;
 	private String propName = null;
@@ -24,7 +24,7 @@ public class PropertyMatchParentQuery extends QueryAdaptor {
 	 * @param args a StringTable of dimension 2: 1st value is the parent class name, 2nd value
 	 * is the required matching property in the child node
 	 */
-	public PropertyMatchParentQuery(StringTable args) {
+	public PropertyMatchGrandParentQuery(StringTable args) {
 		super();
 		if (args.size()==2) {
 			parentClass = args.getWithFlatIndex(0);
@@ -40,15 +40,19 @@ public class PropertyMatchParentQuery extends QueryAdaptor {
 		if (input instanceof TreeNode) {
 			TreeNode tn = (TreeNode) input;
 			TreeNode parent = tn.getParent();
-			if (parent!=null) // only possible if tree is broken due to edition
-				if (parent.classId().equals(parentClass)) {
-					if (tn instanceof ReadOnlyDataHolder) {
-						if (((ReadOnlyDataHolder)tn).properties().hasProperty(propName))
-							return this;
+			if (parent!=null) { // only possible if tree is broken due to edition
+				TreeNode grandParent = parent.getParent();
+				if (grandParent!=null) {
+					if (grandParent.classId().equals(parentClass)) {
+						if (tn instanceof ReadOnlyDataHolder) {
+							if (((ReadOnlyDataHolder)tn).properties().hasProperty(propName))
+								return this;
+						}
+						actionMsg = "Add the '"+propName+"' property to node '"+tn.toString()+"'.";
+						errorMsg = "Node '"+tn.toString()+"' requires a '"+propName+"' property to match its '"
+							+parent.toString()+"' parent.";
+					}
 				}
-				actionMsg = "Add the '"+propName+"' property to node '"+tn.toString()+"'.";
-				errorMsg = "Node '"+tn.toString()+"' requires a '"+propName+"' property to match its '"
-					+parent.toString()+"' parent.";
 			}
 		}
 		return this;

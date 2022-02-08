@@ -78,8 +78,6 @@ import au.edu.anu.twcore.data.runtime.OutputXYData;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.ecosystem.ArenaType;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
@@ -492,44 +490,44 @@ public class DataTrackerNode extends InitialisableNode
 		for (TreeGraphNode etype:trackedComponents) {
 			if (etype instanceof ArenaType)
 				ls.add((CategorizedComponent)((ArenaType)etype).getInstance(index).getInstance());
-			else if (etype instanceof Component) {
-				// CAUTION: this is adding the INITIAL components, not the RUNTIME ones
-				ls.addAll(((Component)etype).getInstance(index));
-				permanent = ((ComponentType) etype.getParent()).isPermanent();
-			}
-			else if (etype instanceof Group) {
-				Group group = (Group) etype;
-				List<Category> groupCats = (List<Category>) get(group.getParent().edges(Direction.OUT),
-					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
-					edgeListEndNodes());
-				
-				// WIP 15/12/2021 - code disabled
-				
-				System.out.println("Code temporarily disabled - group data cannot be tracked");
-				
-//				// if the process tracks group data, then track the group
-//				if (groupCats.containsAll(processCategories))
-//					ls.add(group.getInstance(index));
-//				else {
-//				// if the process tracks component data, then track the group SystemComponents
-//					samplingPool = group.getInstance(index).content();
-//					// in the groupType of this group's componentTypes, search the one
-//					// which has the same categories as this process to know if the items are permanent
-//					List<ComponentType> ctl = (List<ComponentType>) get(group.getParent().getChildren(), 
-//						selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-//					for (ComponentType ct:ctl) {
-//						List<Category> componentCats = (List<Category>) get(ct.edges(Direction.OUT),
-//							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
-//							edgeListEndNodes());
-//						// CAUTION: not sure this test works 100% - there may be ambiguities 
-//						if (componentCats.containsAll(processCategories)) {
-//							LifespanType lft = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
-//							permanent = (lft==LifespanType.permanent);
-//						}
-//					}
-//				}
-				
-			}
+//			else if (etype instanceof Component) {
+//				// CAUTION: this is adding the INITIAL components, not the RUNTIME ones
+//				ls.addAll(((Component)etype).getInstance(index));
+//				permanent = ((ComponentType) etype.getParent()).isPermanent();
+//			}
+//			else if (etype instanceof Group) {
+//				Group group = (Group) etype;
+//				List<Category> groupCats = (List<Category>) get(group.getParent().edges(Direction.OUT),
+//					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+//					edgeListEndNodes());
+//				
+//				// WIP 15/12/2021 - code disabled
+//				
+//				System.out.println("Code temporarily disabled - group data cannot be tracked");
+//				
+////				// if the process tracks group data, then track the group
+////				if (groupCats.containsAll(processCategories))
+////					ls.add(group.getInstance(index));
+////				else {
+////				// if the process tracks component data, then track the group SystemComponents
+////					samplingPool = group.getInstance(index).content();
+////					// in the groupType of this group's componentTypes, search the one
+////					// which has the same categories as this process to know if the items are permanent
+////					List<ComponentType> ctl = (List<ComponentType>) get(group.getParent().getChildren(), 
+////						selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+////					for (ComponentType ct:ctl) {
+////						List<Category> componentCats = (List<Category>) get(ct.edges(Direction.OUT),
+////							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+////							edgeListEndNodes());
+////						// CAUTION: not sure this test works 100% - there may be ambiguities 
+////						if (componentCats.containsAll(processCategories)) {
+////							LifespanType lft = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
+////							permanent = (lft==LifespanType.permanent);
+////						}
+////					}
+////				}
+//				
+//			}
 			else if (etype instanceof GroupType) {
 				
 				// WIP 15/12/2021 - code disabled

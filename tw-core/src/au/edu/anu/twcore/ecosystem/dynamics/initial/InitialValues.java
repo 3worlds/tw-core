@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
@@ -73,20 +74,20 @@ public class InitialValues extends InitialisableNode {
 	// REMINDER: this is called from within ElementType.initialise() (ie graph is valid)
 	public DataIdentifier fullId() {
 		// the ElementType parent of this node
-		ElementType<?,?> eType = (ElementType<?, ?>) getParent();
+		TreeNode eType = getParent();
 		String[] dif = new String[3]; // component index = 0, group = 1, life cycle = 2
 		if (eType instanceof ComponentType) {
 			dif[0] = this.id();
 			// the ElementType parent - always != null
-			ElementType<?,?> peType = (ElementType<?, ?>) eType.getParent();
+			TreeNode peType = eType.getParent();
 			if (peType instanceof GroupType) {
 				dif[1] = (String)this.properties().getPropertyValue(P_DATASOURCE_IDGROUP.key());
-				ElementType<?,?> gpeType = (ElementType<?, ?>) peType.getParent(); // non null
+				TreeNode gpeType = peType.getParent(); // caution: may be the structure node
 				// get the life cycle id from what has been loaded from the file
 				// normally this has been done before since SimulatorNode initialises from
 				// LifeCycle down to Component
 				if (gpeType instanceof LifeCycleType)
-					for (DataIdentifier gif:peType.initialItems().keySet())
+					for (DataIdentifier gif:((ElementType<?,?>)peType).initialItems().keySet())
 						if (gif.groupId().equals(dif[1])) {
 							dif[2] = gif.lifeCycleId();
 							break;

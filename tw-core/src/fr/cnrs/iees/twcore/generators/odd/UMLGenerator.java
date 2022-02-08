@@ -8,14 +8,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import au.edu.anu.twcore.ecosystem.ArenaType;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.ecosystem.structure.ComponentType;
-import au.edu.anu.twcore.ecosystem.structure.GroupType;
-import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -121,9 +115,9 @@ public class UMLGenerator {
 				result = eltype.id();
 				arenaId = result;
 			}
-			if ( ((eltype instanceof LifeCycleType)&&(theChild instanceof LifeCycle)) ||
-				((eltype instanceof GroupType)&&(theChild instanceof Group)) ||
-				((eltype instanceof ComponentType)&&(theChild instanceof Component)) )
+//			if ( ((eltype instanceof LifeCycleType)&&(theChild instanceof LifeCycle)) ||
+//				((eltype instanceof GroupType)&&(theChild instanceof Group)) ||
+//				((eltype instanceof ComponentType)&&(theChild instanceof Component)) )
 				result = theChild.id();
 		}
 		return result;

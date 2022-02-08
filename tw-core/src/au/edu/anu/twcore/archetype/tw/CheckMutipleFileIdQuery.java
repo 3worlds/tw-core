@@ -31,9 +31,6 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.List;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
@@ -70,7 +67,7 @@ public class CheckMutipleFileIdQuery extends QueryAdaptor {
 					edgeListEndNodes());
 				// if the component loads from multiple sources, then ds must have a componentId column
 				if (sources.size()>1) {
-					if ((otl instanceof Component)||(otl instanceof ComponentType)) {
+					if (otl instanceof ComponentType) {
 						if (!ds.properties().hasProperty(P_DATASOURCE_IDCOMPONENT.key())) {
 							errorMsg = "data source '"+ds.id()+"' lacks a component identifier column ('"
 								+P_DATASOURCE_IDCOMPONENT.key()+"' property)";
@@ -78,7 +75,7 @@ public class CheckMutipleFileIdQuery extends QueryAdaptor {
 								" in data source '"+ds.id()+"'";
 						}
 					}
-					else if ((otl instanceof Group)||(otl instanceof GroupType)) {
+					else if (otl instanceof GroupType) {
 						if (!ds.properties().hasProperty(P_DATASOURCE_IDGROUP.key())) {
 							errorMsg = "data source '"+ds.id()+"' lacks a group identifier column ('"
 								+P_DATASOURCE_IDGROUP.key()+"' property)";
@@ -86,7 +83,7 @@ public class CheckMutipleFileIdQuery extends QueryAdaptor {
 								" in data source '"+ds.id()+"'";
 						}
 					}
-					else if ((otl instanceof LifeCycle)||(otl instanceof LifeCycleType)) {
+					else if (otl instanceof LifeCycleType) {
 						if (!ds.properties().hasProperty(P_DATASOURCE_IDLC.key())) {
 							errorMsg = "data source '"+ds.id()+"' lacks a life cycle identifier column ('"
 								+P_DATASOURCE_IDLC.key()+"' property)";

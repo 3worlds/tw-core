@@ -337,7 +337,6 @@ hasNode lifeCycleTypeSpec
 	//
 	mustSatisfyQuery lifeCycleRequiresAllGroups
 		className = String("au.edu.anu.twcore.archetype.tw.GroupInstanceRequirementQuery")
-		
 	//
 	//	Cross-link to data sources to create life cycle components
 	//
@@ -630,11 +629,11 @@ hasNode initialValuesSpec
 	// Check that the proper id property is present as per parent type
 	//
 	mustSatisfyQuery checkGroupHasLCIdSpec
-		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchParentQuery")
-		args = StringTable(([2]"LifeCycleType","idLifeCycle"))
+		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchGrandParentQuery")
+		args = StringTable(([2]"lifeCycleType","idLifeCycle"))
 	mustSatisfyQuery checkComponentHasGroupIdSpec
-		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchParentQuery")
-		args = StringTable(([2]"GroupType","idGroup"))
+		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchGrandParentQuery")
+		args = StringTable(([2]"groupType","idGroup"))
 	
 	
 	// then provide property (name,value) pairs - of course names must match category definitions

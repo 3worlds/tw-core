@@ -30,13 +30,9 @@ package au.edu.anu.twcore.archetype.tw;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_CYCLE;
-
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Group;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.LifeCycle;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import fr.cnrs.iees.graph.Direction;
@@ -54,28 +50,28 @@ public class LifeCycleSubGroupsQuery extends QueryAdaptor {
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
-		Group localItem = (Group) input;
-		LifeCycle lc = (LifeCycle) get(localItem.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
-				endNode());
-		if (lc == null)
-			return this;
-		else {
-			LifeCycleType lct = (LifeCycleType) lc.getParent();
-			GroupType gt = (GroupType) localItem.getParent();
-			if (gt.getParent() != null) {
-				if (!gt.getParent().equals(lct)) {//??????
-					String[] msgs = TextTranslations.getLifeCycleSubGroupsQuery();
-					actionMsg = msgs[0];
-					errorMsg = msgs[1];
-//					actionMsg = "Reconfigure GroupType to have at least one child group belonging to each category of it's categorySet.";
-//					errorMsg = "A life cycle group must have at least one child group "
-//							+ "belonging to each category of it's categorySet.";
-//					errorMsg = "Expected life cycle group to have at least one child group to belong to each category of it's categorySet but found none.";
-					return this;
-				}
-			}
-		}
-//		LifeCycleType lc = (LifeCycleType) get(localItem.edges(Direction.OUT),
+//		Group localItem = (Group) input;
+//		LifeCycle lc = (LifeCycle) get(localItem.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
+//				endNode());
+//		if (lc == null)
+//			return this;
+//		else {
+//			LifeCycleType lct = (LifeCycleType) lc.getParent();
+//			GroupType gt = (GroupType) localItem.getParent();
+//			if (gt.getParent() != null) {
+//				if (!gt.getParent().equals(lct)) {//??????
+//					String[] msgs = TextTranslations.getLifeCycleSubGroupsQuery();
+//					actionMsg = msgs[0];
+//					errorMsg = msgs[1];
+////					actionMsg = "Reconfigure GroupType to have at least one child group belonging to each category of it's categorySet.";
+////					errorMsg = "A life cycle group must have at least one child group "
+////							+ "belonging to each category of it's categorySet.";
+////					errorMsg = "Expected life cycle group to have at least one child group to belong to each category of it's categorySet but found none.";
+//					return this;
+//				}
+//			}
+//		}
+////		LifeCycleType lc = (LifeCycleType) get(localItem.edges(Direction.OUT),
 //			selectZeroOrOne(hasTheLabel(E_CYCLE.label())),
 //			endNode());
 //		if (lc==null)

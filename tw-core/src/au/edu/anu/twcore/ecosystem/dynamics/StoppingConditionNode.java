@@ -53,7 +53,6 @@ import java.util.Map;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.ArenaType;
-import au.edu.anu.twcore.ecosystem.dynamics.initial.Component;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.InRangeStoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition;
@@ -110,9 +109,9 @@ public class StoppingConditionNode
 		if (stopSystemNode instanceof ArenaType)
 			system = ((ElementType<ArenaFactory, ArenaComponent>) stopSystemNode)
 				.getInstance(id).getInstance().readOnlyProperties();
-		else if (stopSystemNode instanceof Component) {
-			// TODO !
-		}
+//		else if (stopSystemNode instanceof Component) {
+//			// TODO !
+//		}
 		return system;
 	}
 	
