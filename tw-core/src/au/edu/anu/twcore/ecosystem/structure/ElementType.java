@@ -168,9 +168,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 			selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
 		// load initial data
 		InitialDataLoading.loadFromDataSources(this,initialData);
-		for (TreeNode tn:getChildren())
-			if (tn instanceof InitialValues)
-				InitialDataLoading.loadFromConfigTree((InitialValues)tn,initialData);
+		InitialDataLoading.loadFromConfigTree(this,initialData);
 		sealed = true; // important - next statement access this class methods
 		categoryId = buildCategorySignature();
 	}

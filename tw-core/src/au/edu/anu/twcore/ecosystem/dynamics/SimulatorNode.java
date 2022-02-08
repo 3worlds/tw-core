@@ -242,6 +242,7 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 	}
 	
 	// helper for makeSimulator(...)
+	@SuppressWarnings("unchecked")
 	private void initComponent(ElementType<?,?> et, 
 			int simId, 
 			ArenaComponent arena) {
@@ -269,6 +270,21 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 					GroupFactory gf = (GroupFactory) ef;
 					gf.setName(itemId.groupId());
 					hc = gf.newInstance(parentContainer);
+					// this occurs when no SystemComponent has been instantiated
+					// and only a group id was found in initial data
+					if (hc.content().itemCategorized()==null) {
+						List<ComponentType> itemTypes = (List<ComponentType>) get(et,
+							children(),
+							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						if (itemTypes.size()==1)
+							hc.content().setCategorized(itemTypes.get(0).getInstance(simId));
+						else {
+							// TODO: tricky to get the proper one
+							// others may have been declared already with
+							
+						}
+						((GroupComponent)hc).addGroupIntoLifeCycle();	
+					}
 				}
 				initComponentData(hc,et.initialItems().get(itemId));
 			}

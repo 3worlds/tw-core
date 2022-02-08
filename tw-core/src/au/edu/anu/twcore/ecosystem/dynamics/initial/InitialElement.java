@@ -34,6 +34,7 @@ import fr.ens.biologie.generic.Sealable;
  *
  * @param <T>
  */
+@Deprecated
 public abstract class InitialElement<T extends DataElement> 
 		extends InitialisableNode 
 		implements Sealable, LimitedEdition<List<T>> {

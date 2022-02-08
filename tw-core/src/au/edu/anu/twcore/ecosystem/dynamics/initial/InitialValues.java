@@ -29,18 +29,13 @@
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
@@ -75,31 +70,43 @@ public class InitialValues extends InitialisableNode {
 		return N_INITIALVALUES.initRank();
 	}
 	
-	// FLAW? how can we recover the fullId when part of the data is loaded from data sources ?
-	// should we use a matching character, ie '*' to tell as per found in data file ?
-	// NB ElementType have the initialItems()  ready if initialise has been called
+	// REMINDER: this is called from within ElementType.initialise() (ie graph is valid)
 	public DataIdentifier fullId() {
+		// the ElementType parent of this node
 		ElementType<?,?> eType = (ElementType<?, ?>) getParent();
-		String[] dif = new String[3]; // component index = 0
-		if (eType!=null) {
-			if (eType instanceof ComponentType) {
-				dif[0] = this.id();
-				if (eType.properties().hasProperty(P_DATASOURCE_IDGROUP.key()))
-					dif[1] = (String)eType.properties().getPropertyValue(P_DATASOURCE_IDGROUP.key());
-				else
-					// todo: ask the grouptype ?
-					;
-				// TODO: search for lifecycle
+		String[] dif = new String[3]; // component index = 0, group = 1, life cycle = 2
+		if (eType instanceof ComponentType) {
+			dif[0] = this.id();
+			// the ElementType parent - always != null
+			ElementType<?,?> peType = (ElementType<?, ?>) eType.getParent();
+			if (peType instanceof GroupType) {
+				dif[1] = (String)this.properties().getPropertyValue(P_DATASOURCE_IDGROUP.key());
+				ElementType<?,?> gpeType = (ElementType<?, ?>) peType.getParent(); // non null
+				// get the life cycle id from what has been loaded from the file
+				// normally this has been done before since SimulatorNode initialises from
+				// LifeCycle down to Component
+				if (gpeType instanceof LifeCycleType)
+					for (DataIdentifier gif:peType.initialItems().keySet())
+						if (gif.groupId().equals(dif[1])) {
+							dif[2] = gif.lifeCycleId();
+							break;
+				}
+				// if gpeType == arena, no need for a lcId
 			}
-			else if (eType instanceof GroupType) {
-				dif[1] = this.id();
-				if (eType.properties().hasProperty(P_DATASOURCE_IDLC.key()))
-					dif[2] = (String)eType.properties().getPropertyValue(P_DATASOURCE_IDLC.key());
-				else
-					// todo: ask the life cycle type if any data was loaded ?
-					;
-			}
+			// if peType == arena, no need for a groupId
 		}
+		else if (eType instanceof GroupType) {
+			dif[1] = this.id();
+			// the ElementType parent - always != null
+			ElementType<?,?> peType = (ElementType<?, ?>) eType.getParent();
+			if (peType instanceof LifeCycleType)
+				dif[2] = (String)this.properties().getPropertyValue(P_DATASOURCE_IDLC.key());
+			// if not a life cycle type, then peType == arena, no need for a lcid
+		}
+		else if (eType instanceof LifeCycleType) {
+			dif[2] = this.id();
+		}
+		// if eType==arena, no need for anything
 		return new DataIdentifier(dif);
 	}
 

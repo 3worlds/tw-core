@@ -626,6 +626,16 @@ hasNode initialValuesSpec
 		className = String("au.edu.anu.twcore.archetype.tw.PropertyNotAndQuery")
 		prop1 = String("idGroup")
 		prop2 = String("idLifeCycle")
+	//
+	// Check that the proper id property is present as per parent type
+	//
+	mustSatisfyQuery checkGroupHasLCIdSpec
+		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchParentQuery")
+		args = StringTable(([2]"LifeCycleType","idLifeCycle"))
+	mustSatisfyQuery checkComponentHasGroupIdSpec
+		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchParentQuery")
+		args = StringTable(([2]"GroupType","idGroup"))
+	
 	
 	// then provide property (name,value) pairs - of course names must match category definitions
 	// caution: if parameter values are associated to an atomic, it means it is unique in its
