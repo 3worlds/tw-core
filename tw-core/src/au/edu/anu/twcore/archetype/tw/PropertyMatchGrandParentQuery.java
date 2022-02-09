@@ -14,6 +14,7 @@ import fr.cnrs.iees.graph.TreeNode;
  *
  */
 // tested 8/2/2022 - looks OK
+// 9/2/2022 - Not in use anymore - duplicates CheckFileIdentifiersQuery
 public class PropertyMatchGrandParentQuery extends QueryAdaptor {
 	
 	private String parentClass = null;

@@ -13,6 +13,7 @@ import java.util.Map;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialValues;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
@@ -46,11 +47,11 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 			boolean requireComponentId = false;
 			boolean requireGroupId = false;
 			boolean requireLifeCycleId = false;
-			boolean isComponent = false;
-			boolean isGroup = false;
+//			boolean isComponent = false;
+//			boolean isGroup = false;
 			TreeGraphDataNode parent = (TreeGraphDataNode) inode.getParent();
 			if (parent instanceof ComponentType) {
-				isComponent = true;
+//				isComponent = true;
 				if (parent.getParent() instanceof GroupType) {
 					requireComponentId = true;
 					requireGroupId = true;
@@ -59,67 +60,41 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 					requireLifeCycleId = true;
 			}
 			else if (parent instanceof GroupType) {
-				isGroup = true;
+//				isGroup = true;
 				requireGroupId = true;
 				if (parent.getParent() instanceof LifeCycleType)
 					requireLifeCycleId = true;
 			}
 			else if (parent instanceof LifeCycleType)
 				requireLifeCycleId = true;
+			// list of 
+			Map<TreeGraphNode,List<String>> missing = new HashMap<>();
 			// node has initialValues node to read its data from
 			for (TreeGraphNode initNode:initNodes) {
-				if (isComponent && requireGroupId) {
+				missing.put(initNode,new ArrayList<>());
+				if (requireGroupId) {
 					if (initNode instanceof ReadOnlyDataHolder)
 						if (((ReadOnlyDataHolder) initNode).properties().hasProperty(P_DATASOURCE_IDGROUP.key()))
 							break;
-					errorMsg = "Missing property '"+P_DATASOURCE_IDGROUP.key()
-						+"' in node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";;
-					actionMsg = "Add property '"+P_DATASOURCE_IDGROUP.key()
-						+"' to node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";
+					missing.get(initNode).add(P_DATASOURCE_IDGROUP.key());
+//					errorMsg = "Missing property '"+P_DATASOURCE_IDGROUP.key()
+//						+"' in node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";;
+//					actionMsg = "Add property '"+P_DATASOURCE_IDGROUP.key()
+//						+"' to node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";
 				}
-				else if (isGroup && requireLifeCycleId) {
+				else if (requireLifeCycleId) {
 					if (initNode instanceof ReadOnlyDataHolder)
 						if (((ReadOnlyDataHolder) initNode).properties().hasProperty(P_DATASOURCE_IDLC.key()))
 							break;
-					errorMsg = "Missing property '"+P_DATASOURCE_IDLC.key()
-						+"' in node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";;
-					actionMsg = "Add property '"+P_DATASOURCE_IDLC.key()
-						+"' to node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";
+					missing.get(initNode).add(P_DATASOURCE_IDLC.key());
+//					errorMsg = "Missing property '"+P_DATASOURCE_IDLC.key()
+//						+"' in node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";;
+//					actionMsg = "Add property '"+P_DATASOURCE_IDLC.key()
+//						+"' to node '"+N_INITIALVALUES.label()+":"+initNode.id()+"'";
 				}
 			}
-//			if (!initNodes.isEmpty()) {
-//				if (isComponent) {
-//					if (requireGroupId) {
-//						for (TreeGraphNode cpNode:initNodes) {
-//							if (cpNode instanceof TreeGraphDataNode)
-//							if (cpNode.properties().hasProperty());
-//						}
-//						throw new TwcoreException("not implemented yet");
-////						List<Edge> le = (List<Edge>) get(inode,outEdges(),
-////							selectZeroOrMany(hasTheLabel(E_INSTANCEOF.label())));
-////						if (le.isEmpty()) {
-////							errorMsg = "Missing '"+E_INSTANCEOF.label()+"' edge for '"+inode.id()+"'";
-////							actionMsg = "Add an '"+E_INSTANCEOF.label()
-////								+"' edge to a 'group' node to '"+inode.id()+"'";
-////						}
-//					}
-//				}
-//				else if (isGroup) {
-//					if (requireLifeCycleId) {
-//						throw new TwcoreException("not implemented yet");
-////						List<Edge> le = (List<Edge>) get(inode,outEdges(),
-////							selectZeroOrMany(hasTheLabel(E_CYCLE.label())));
-////						if (le.isEmpty()) {
-////							errorMsg = "Missing '"+E_CYCLE.label()+"' edge for '"+inode.id()+"'";
-////							actionMsg = "Add an '"+E_CYCLE.label()
-////								+"' edge to a 'lifeCycle' node to '"+inode.id()+"'";
-////						}
-//					}
-//				}
-//			}
 			// node has dataSources to read from
 			if (!dataSources.isEmpty()) {
-				Map<TreeGraphDataNode,List<String>> missing = new HashMap<>();
 				for (TreeGraphDataNode ds:dataSources) {
 					missing.put(ds,new ArrayList<>());
 					if (requireLifeCycleId && !ds.properties().hasProperty(P_DATASOURCE_IDLC.key()))
@@ -129,17 +104,21 @@ public class CheckFileIdentifiersQuery extends QueryAdaptor {
 					if (requireComponentId && !ds.properties().hasProperty(P_DATASOURCE_IDCOMPONENT.key()))
 						missing.get(ds).add(P_DATASOURCE_IDCOMPONENT.key());
 				}
-				String error = "";
-				for (TreeGraphDataNode ds:missing.keySet())
-					if (!missing.get(ds).isEmpty()) {
-						for (String miss:missing.get(ds))
-							error += miss+", ";
+			}
+			// formatting error message
+			String error = "";
+			for (TreeGraphNode ds:missing.keySet())
+				if (!missing.get(ds).isEmpty()) {
+					for (String miss:missing.get(ds))
+						error += miss+", ";
+					if (ds instanceof InitialValues)
+						error += "in initialValues '"+ds.id()+"'; ";
+					else
 						error += "in dataSource '"+ds.id()+"'; ";
-					}
-				if (!error.isBlank()) {
-					errorMsg = "Missing properties "+error;
-					actionMsg = "Add properties "+error;
 				}
+			if (!error.isBlank()) {
+				errorMsg = "Missing properties "+error;
+				actionMsg = "Add properties "+error;
 			}
 		}
 		return this;

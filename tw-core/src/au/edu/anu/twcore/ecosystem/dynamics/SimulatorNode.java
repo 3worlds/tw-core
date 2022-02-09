@@ -40,6 +40,7 @@ import fr.ens.biologie.generic.Sealable;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +59,7 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.ArenaType;
+import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialValues;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
@@ -272,6 +274,7 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 					hc = gf.newInstance(parentContainer);
 					// this occurs when no SystemComponent has been instantiated
 					// and only a group id was found in initial data
+					// this is quite brittle
 					if (hc.content().itemCategorized()==null) {
 						List<ComponentType> itemTypes = (List<ComponentType>) get(et,
 							children(),
@@ -279,9 +282,15 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 						if (itemTypes.size()==1)
 							hc.content().setCategorized(itemTypes.get(0).getInstance(simId));
 						else {
-							// TODO: tricky to get the proper one
-							// others may have been declared already with
-							
+							for (ComponentType ct:itemTypes) {
+								List<InitialValues> ivs = (List<InitialValues>) get(ct,
+									children(),
+									selectOneOrMany(hasTheLabel(N_INITIALVALUES.label())));
+								for (InitialValues iv:ivs) {
+									if (itemId.groupId().equals(iv.properties().getPropertyValue(P_DATASOURCE_IDGROUP.key())))
+										hc.content().setCategorized(ct.getInstance(simId));
+								}
+							}
 						}
 						((GroupComponent)hc).addGroupIntoLifeCycle();	
 					}

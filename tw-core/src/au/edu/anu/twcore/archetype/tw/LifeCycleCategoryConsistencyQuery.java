@@ -34,11 +34,16 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
@@ -53,7 +58,7 @@ import fr.cnrs.iees.graph.Direction;
  * @author J. Gignoux - 22 déc. 2020
  *
  */
-public class GroupInstanceRequirementQuery extends QueryAdaptor{
+public class LifeCycleCategoryConsistencyQuery extends QueryAdaptor{
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -74,32 +79,67 @@ public class GroupInstanceRequirementQuery extends QueryAdaptor{
 				Collection<Category> lccats = (Collection<Category>) lccatset.getChildren();
 				// 1st condition: number of group types = number of stage categories
 				if (lccats.size()!=gts.size()) {
-					actionMsg = "Please provide exactly "+lccats.size()+" GroupTypes to LifeCycleType '"
+					actionMsg = "Provide exactly "+lccats.size()+" GroupTypes to LifeCycleType '"
 						+ lct.id()+ "' to match all the categories of CategorySet '"+lccatset.id()+"'";
 					errorMsg = "A LifeCycleType must define a GroupType for each of the categories of its CategorySet";
 					return this;
 				}
-				// 2nd condition: each GroupType ComponentType must match one of the categories
+				// 2nd condition: each GroupType ComponentTypes must match one of the categories
 				Collection<GroupType> testSet = new LinkedList<>();
-				for (Category cat:lccats) {
-					for (GroupType gt:gts) {
-						Collection<ComponentType> cts = (Collection<ComponentType>) get(gt,
-							children(),
-							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-						for (ComponentType ct:cts) {
-							Collection<Category> ctcats = (Collection<Category>) get(ct.edges(Direction.OUT),
-								selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
-								edgeListEndNodes());
-							if (ctcats.contains(cat))
+				Map<GroupType,Set<Category>> catsPerGroup = new HashMap<>();
+				for (GroupType gt:gts) {
+					catsPerGroup.put(gt,new HashSet<>());
+					Collection<ComponentType> cts = (Collection<ComponentType>) get(gt,
+						children(),
+						selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+					// 3rd condition there must be at least one component type per grouptype
+					if (cts.size()<1) {
+						errorMsg = "GroupType '"+gt.id()+"' must have at least one child ComponentType matching one of "
+							+"its LifeCycleType 'appliesTo' categories";
+						actionMsg = "Make at least one ComponentType child of GroupType '"+gt.id()+"', belonging to one of the "
+							+"'appliesTo' categories of LifeCycleType '"+lct.id()+"'";
+						return this;
+					}
+					for (ComponentType ct:cts) {
+						Collection<Category> ctcats = (Collection<Category>) get(ct.edges(Direction.OUT),
+							selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())),
+							edgeListEndNodes());
+						// 6th condition: each ComponentType must have one category of the lifecycle
+						Set<Category> a = new HashSet<>();
+						a.addAll(ctcats);
+						Set<Category> b = new HashSet<>();
+						b.addAll(lccats);
+						if (Sets.intersection(a,b).isEmpty()) {
+							errorMsg = "ComponentType '"+ct.id()+"' child of GroupType '"+gt.id()+"' must belong to one category of LifeCycleType '"
+								+lct.id()+"' 'appliesTo' CategorySet";
+							actionMsg = "Add membership to one category of LifeCycleType '"
+								+lct.id()+"' 'appliesTo' CategorySet to ComponentType '"+ct.id()+"'";
+							return this;
+						}
+						for (Category cat:lccats) {
+							if (ctcats.contains(cat)) {
 								testSet.add(gt);
+								catsPerGroup.get(gt).add(cat);
+							}							
 						}
 					}
 				}
-				if (lccats.size()!=testSet.size()) {
-					String[] msgs = TextTranslations.getGroupInstanceRequirementQuery();
-					actionMsg = msgs[0];
-					errorMsg = msgs[1];
-				}
+//				// 4th condition: all grouptypes must contain component types of a different category of the life cycle set
+//				if (lccats.size()!=testSet.size()) {
+//					actionMsg = "Make sure that each GroupType defined under LifeCycleType '"+lct.id()
+//						+"' has ComponentTypes which categories match each of those the 'appliesTo' CategorySet.";
+//					errorMsg = "All categories of LifeCycleType '"+lct.id()+"' category set must be present in its GroupType's ComponentTypes";
+//					return this;
+//				}
+				// 5th condition: all componentTypes of a group type must have the same life cycle category
+				for (GroupType gt:catsPerGroup.keySet())
+					if (catsPerGroup.get(gt).size()>1) {
+						errorMsg = "ComponentTypes children of GroupType '"+gt.id()+"' must all belong to a same category of LifeCycleType '"
+							+lct.id()+"' 'appliesTo' CategorySet";
+						actionMsg = "Make sure that ComponentTypes children of GroupType '"+gt.id()+"' all belong to a same category of LifeCycleType '"
+							+lct.id()+"' 'appliesTo' CategorySet";
+						return this;
+					}
 			}
 		}
 		return this;

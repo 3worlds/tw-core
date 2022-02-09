@@ -225,50 +225,59 @@ hasNode groupTypeSpec
 		multiplicity = IntegerRange("0..*")
 	mustSatisfyQuery groupHasLCIdSpec
 		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
+	//
+	// If a GroupType has more than one ComponentType, then each of its ComponentTypes
+	// must have a InitValues node (possibly with no instances) with a groupId that tells
+	// in which group components of each ComponentType must go.
+	//
+	mustSatisfyQuery groupTypeComponentsHaveInitValuesSpec
+		className = String("au.edu.anu.twcore.archetype.tw.GroupComponentCategoryQuery")
+
+		
 		
 //-------------------------------------------------------------------------------------------
 
-hasNode groupSpec
-	isOfClass = String("group")
-	hasParent = StringTable(([1]"groupType:"))
-	multiplicity = IntegerRange("0..*")
-	hasProperty numberOfInstancesSpec2
-		hasName = String("nInstances")
-		type = String("Integer")
-		multiplicity = IntegerRange("0..1")
-	//
-	// if the groupType is under a LifeCycleType, then the Group must refer to a matching LifeCycle
-	//
-	hasEdge groupToLifeCycleSpec
-		isOfClass = String("cycle")
-		toNode = String("lifeCycle:")
-		multiplicity = IntegerRange("0..1")
-//	hasEdge groupToSourceLoadFromSpec
-//		isOfClass = String("loadFrom")
-//		toNode = String("dataSource:")
-//		multiplicity = IntegerRange("0..*")
-	mustSatisfyQuery groupHasNinstanceXORloadFromSpec
-		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorPropertyQuery")
-		parameters = StringTable(([2]"loadFrom","nInstances"))
-	mustSatisfyQuery groupHasInitialValuesXorLoadFromSpec
-		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
-//	mustSatisfyQuery groupHasLCIdSpec
-//		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
-	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
-		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
-//	mustSatisfyQuery groupRequiresCycleEdge
-//		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleInstanceRequirementQuery")
-	//
-	// if there is no Component belonging to this group, then the Group must point to
-	// a ComponentType in order to know in which container components of this group are to
-	// be stored
-	//
-//	hasEdge groupToComponentSpec
-//		isOfClass = String("groupOf")
-//		toNode = String("componentType:")
+//hasNode groupSpec
+//	isOfClass = String("group")
+//	hasParent = StringTable(([1]"groupType:"))
+//	multiplicity = IntegerRange("0..*")
+//	hasProperty numberOfInstancesSpec2
+//		hasName = String("nInstances")
+//		type = String("Integer")
 //		multiplicity = IntegerRange("0..1")
-//	mustSatisfyQuery groupRequiresGroupOfEdge
-//		className = String("au.edu.anu.twcore.archetype.tw.GroupComponentRequirementQuery")
+//	//
+//	// if the groupType is under a LifeCycleType, then the Group must refer to a matching LifeCycle
+//	//
+//	hasEdge groupToLifeCycleSpec
+//		isOfClass = String("cycle")
+//		toNode = String("lifeCycle:")
+//		multiplicity = IntegerRange("0..1")
+////	hasEdge groupToSourceLoadFromSpec
+////		isOfClass = String("loadFrom")
+////		toNode = String("dataSource:")
+////		multiplicity = IntegerRange("0..*")
+//	mustSatisfyQuery groupHasNinstanceXORloadFromSpec
+//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorPropertyQuery")
+//		parameters = StringTable(([2]"loadFrom","nInstances"))
+//	mustSatisfyQuery groupHasInitialValuesXorLoadFromSpec
+//		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
+////	mustSatisfyQuery groupHasLCIdSpec
+////		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
+//	mustSatisfyQuery lifeCycleMustHaveSubGroupsOfProperCategories
+//		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleSubGroupsQuery")
+////	mustSatisfyQuery groupRequiresCycleEdge
+////		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleInstanceRequirementQuery")
+//	//
+//	// if there is no Component belonging to this group, then the Group must point to
+//	// a ComponentType in order to know in which container components of this group are to
+//	// be stored
+//	//
+////	hasEdge groupToComponentSpec
+////		isOfClass = String("groupOf")
+////		toNode = String("componentType:")
+////		multiplicity = IntegerRange("0..1")
+////	mustSatisfyQuery groupRequiresGroupOfEdge
+////		className = String("au.edu.anu.twcore.archetype.tw.GroupComponentRequirementQuery")
 
 
 //-------------------------------------------------------------------------------------------
@@ -333,10 +342,11 @@ hasNode lifeCycleTypeSpec
 		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneChildLabelOfQuery")
 		labels = StringTable(([2]"recruit","produce"))
 	//
-	// must have a child GroupType for every category of its appliesTo categorySet
+	// must have a child GroupType for every category of its appliesTo categorySet, with
+	// ComponentTypes matching a single category in each GroupType (5 checks)
 	//
 	mustSatisfyQuery lifeCycleRequiresAllGroups
-		className = String("au.edu.anu.twcore.archetype.tw.GroupInstanceRequirementQuery")
+		className = String("au.edu.anu.twcore.archetype.tw.LifeCycleCategoryConsistencyQuery")
 	//
 	//	Cross-link to data sources to create life cycle components
 	//
@@ -407,23 +417,23 @@ hasNode produceSpec
 //-------------------------------------------------------------------------------------------
 // LIFE CYCLE: specifies instances of LIFE CYCLE TYPE to create at system initialisation
 //-------------------------------------------------------------------------------------------
-hasNode lifeCycleSpec
-	isOfClass = String("lifeCycle")
-	hasParent = StringTable(([1]"lifeCycleType:"))
-	multiplicity = IntegerRange("0..*")
-//	hasEdge lifeCycleToSourceLoadFromSpec
-//		isOfClass = String("loadFrom")
-//		toNode = String("dataSource:")
-//		multiplicity = IntegerRange("0..*")
-//	mustSatisfyQuery lifeCycleRequiresAllGroups
-//		className = String("au.edu.anu.twcore.archetype.tw.GroupInstanceRequirementQuery")
-	mustSatisfyQuery lifeCycleHasNinstanceXORloadFromSpec
-		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorPropertyQuery")
-		parameters = StringTable(([2]"loadFrom","nInstances"))
-	mustSatisfyQuery lifeCycleHasInitialValuesXorLoadFromSpec
-		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
-//	mustSatisfyQuery lifeCycleHasLCIdSpec
-//		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
+//hasNode lifeCycleSpec
+//	isOfClass = String("lifeCycle")
+//	hasParent = StringTable(([1]"lifeCycleType:"))
+//	multiplicity = IntegerRange("0..*")
+////	hasEdge lifeCycleToSourceLoadFromSpec
+////		isOfClass = String("loadFrom")
+////		toNode = String("dataSource:")
+////		multiplicity = IntegerRange("0..*")
+////	mustSatisfyQuery lifeCycleRequiresAllGroups
+////		className = String("au.edu.anu.twcore.archetype.tw.GroupInstanceRequirementQuery")
+//	mustSatisfyQuery lifeCycleHasNinstanceXORloadFromSpec
+//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorPropertyQuery")
+//		parameters = StringTable(([2]"loadFrom","nInstances"))
+//	mustSatisfyQuery lifeCycleHasInitialValuesXorLoadFromSpec
+//		className = String("au.edu.anu.twcore.archetype.tw.DataSourceConsistencyQuery")
+////	mustSatisfyQuery lifeCycleHasLCIdSpec
+////		className = String("au.edu.anu.twcore.archetype.tw.CheckFileIdentifiersQuery")
 
 // initialisation functions
 hasNode initFunctionSpec
@@ -617,24 +627,29 @@ hasNode initialValuesSpec
 		hasName = String("idLifeCycle")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
-	//
-	// Check that only one of the two above properties is present
-	// [Q: is this really needed ?]
-	//
-	mustSatisfyQuery checkOnlyOneParentIdPropertySpec
-		className = String("au.edu.anu.twcore.archetype.tw.PropertyNotAndQuery")
-		prop1 = String("idGroup")
-		prop2 = String("idLifeCycle")
-	//
-	// Check that the proper id property is present as per parent type
-	//
-	mustSatisfyQuery checkGroupHasLCIdSpec
-		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchGrandParentQuery")
-		args = StringTable(([2]"lifeCycleType","idLifeCycle"))
-	mustSatisfyQuery checkComponentHasGroupIdSpec
-		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchGrandParentQuery")
-		args = StringTable(([2]"groupType","idGroup"))
-	
+	hasEdge groupOfComponentSpec
+		isOfClass = String("groupOf")
+		toNode = String("ComponentType:")
+		multiplicity = IntegerRange("0..1")
+		
+//	//
+//	// Check that only one of the two above properties is present
+//	// [Q: is this really needed ?]
+//	//
+//	mustSatisfyQuery checkOnlyOneParentIdPropertySpec
+//		className = String("au.edu.anu.twcore.archetype.tw.PropertyNotAndQuery")
+//		prop1 = String("idGroup")
+//		prop2 = String("idLifeCycle")
+//	//
+//	// Check that the proper id property is present as per parent type
+//	//
+//	mustSatisfyQuery checkGroupHasLCIdSpec
+//		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchGrandParentQuery")
+//		args = StringTable(([2]"lifeCycleType","idLifeCycle"))
+//	mustSatisfyQuery checkComponentHasGroupIdSpec
+//		className = String("au.edu.anu.twcore.archetype.tw.PropertyMatchGrandParentQuery")
+//		args = StringTable(([2]"groupType","idGroup"))
+//	
 	
 	// then provide property (name,value) pairs - of course names must match category definitions
 	// caution: if parameter values are associated to an atomic, it means it is unique in its
