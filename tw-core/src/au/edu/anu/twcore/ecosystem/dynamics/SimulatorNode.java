@@ -37,6 +37,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
+import fr.ens.biologie.generic.utils.Logging;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
@@ -51,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -103,6 +105,8 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
  */
 public class SimulatorNode extends InitialisableNode implements LimitedEdition<Simulator>, Sealable {
 
+	private static Logger log = Logging.getLogger(SimulatorNode.class);
+	
 	private boolean sealed = false;
 	private Timeline timeLine = null;
 	private Map<Integer, Simulator> simulators = new HashMap<>();
@@ -291,6 +295,19 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 										hc.content().setCategorized(ct.getInstance(simId));
 								}
 							}
+							// TODO: Poor code. fix this one day.
+							// safety because this cannot be tested by the archetype at the moment
+							// (we would have to check that the idGroup property matches an existing InitValues id, this
+							// is a real pain in the neck hence this fix. The case is probably rare enough anyway.
+							if (hc.content().itemCategorized()==null) {
+								log.severe("Unable to instantiate a valid container for group '"+itemId.groupId()
+									+"' (in GroupType>initialValues); this is likely due to misspelling it in the 'idGroup' property of one of its "
+									+"GroupType>ComponentTypes. Fix it in ModelMaker and re-deploy."
+									+" Please refer to the 3Worlds developers if you encounter this issue.");
+								log.severe("modelRunner will halt.");
+								System.exit(1);
+							}
+							// end poor code
 						}
 						((GroupComponent)hc).addGroupIntoLifeCycle();	
 					}
