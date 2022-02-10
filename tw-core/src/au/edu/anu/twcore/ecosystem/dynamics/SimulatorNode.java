@@ -176,19 +176,6 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 		else
 			rootStop = scnodes.get(0).getInstance(index);
 		
-		// *** ProcessNode --> Process
-		Map<Integer, List<List<TwProcess>>> pco = new HashMap<>();
-		for (Map.Entry<Integer, List<List<ProcessNode>>> e : processCallingOrder.entrySet()) {
-			List<List<TwProcess>> nllp = new ArrayList<>();
-			for (List<ProcessNode> lp : e.getValue()) {
-				List<TwProcess> nlp = new ArrayList<>();
-				for (ProcessNode pn : lp)
-					nlp.add(pn.getInstance(index));
-				nllp.add(nlp);
-			}
-			pco.put(e.getKey(), nllp);
-		}
-		
 		// *** Initial community
 		// arena is always present
 		ArenaComponent arena = ((ArenaType) getParent()).getInstance(index).getInstance();
@@ -231,6 +218,21 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 			spo = str.spaceOrganiser.getInstance(index);
 		} else {
 			ecosystem = new EcosystemGraph(arena);
+		}
+		
+		// *** ProcessNode --> Process
+		// this must be done after community because we need properly setup containers
+		// (for data trackers)
+		Map<Integer, List<List<TwProcess>>> pco = new HashMap<>();
+		for (Map.Entry<Integer, List<List<ProcessNode>>> e : processCallingOrder.entrySet()) {
+			List<List<TwProcess>> nllp = new ArrayList<>();
+			for (List<ProcessNode> lp : e.getValue()) {
+				List<TwProcess> nlp = new ArrayList<>();
+				for (ProcessNode pn : lp)
+					nlp.add(pn.getInstance(index));
+				nllp.add(nlp);
+			}
+			pco.put(e.getKey(), nllp);
 		}
 		
 		// *** finally, instantiate simulator

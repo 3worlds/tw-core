@@ -41,12 +41,13 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
-import fr.cnrs.iees.twcore.constants.LifespanType;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
 import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.utils.Interval;
+import fr.ens.biologie.generic.utils.Logging;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
@@ -62,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.IndexString;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
@@ -79,8 +81,13 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.containers.Described;
+import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.DescribedContainer;
+import au.edu.anu.twcore.ecosystem.runtime.system.HierarchicalComponent;
+import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerXY;
@@ -88,7 +95,10 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
+import au.edu.anu.twcore.ecosystem.structure.Structure;
+import au.edu.anu.twcore.root.World;
 import au.edu.anu.twcore.ui.TrackTableEdge;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 
@@ -126,6 +136,8 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
 public class DataTrackerNode extends InitialisableNode
 		implements LimitedEdition<DataTracker<?, ? extends Metadata>>, Sealable, DefaultStrings {
 
+	private static Logger log = Logging.getLogger(DataTrackerNode.class);
+	
 	// a class to collect metadata on fields, ie min, max, precision, units etc.
 	private class TrackMeta {
 //		IndexedDataLabel label = null;
@@ -151,8 +163,8 @@ public class DataTrackerNode extends InitialisableNode
 	private Map<String, int[]> tableDims = new HashMap<>();
 	private Map<String, TrackMeta> expandedTrackList = new HashMap<>();
 	// target objects of tracking: groups or systemComponents
-	private List<TreeGraphNode> trackedComponents = new ArrayList<>();
-	private List<Category> processCategories = null;
+	private List<Edge> trackedComponents = new ArrayList<>();
+//	private List<Category> processCategories = null;
 	private DataLabel fullTableLabel = null;
 
 	public DataTrackerNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -333,6 +345,8 @@ public class DataTrackerNode extends InitialisableNode
 			if (ln.get(0) instanceof RelationType) {
 				// TODO: implement code for relation data trackers
 				// when there are data in relations (not yet)
+				log.warning("DataTrackers cannot track relation data so far. Request to track the '"
+					+ln.get(0).id()+"' RelationType ignored.");
 			}
 			// category variables
 			else {
@@ -399,9 +413,8 @@ public class DataTrackerNode extends InitialisableNode
 			}
 		
 		// Objects to track
-		trackedComponents.addAll((List<TreeGraphNode>)get(edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())),
-			edgeListEndNodes()));
+		trackedComponents.addAll((List<Edge>)get(edges(Direction.OUT),
+			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label()))));
 	}
 
 	private void setFieldMetadata(TrackMeta tm, String trackName) {
@@ -431,9 +444,9 @@ public class DataTrackerNode extends InitialisableNode
 			super.initialise();
 			// record process categories (= trackable data)
 			// NB only category processes can have a data tracker. Hence:
-			processCategories = (List<Category>) get(getParent().edges(Direction.OUT),
-				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
-				edgeListEndNodes());
+//			processCategories = (List<Category>) get(getParent().edges(Direction.OUT),
+//				selectOneOrMany(hasTheLabel(E_APPLIESTO.label())),
+//				edgeListEndNodes());
 			// required properties
 			if (properties().hasProperty(P_DATATRACKER_SAMPLESIZE.key())) {
 				String s = (String) properties().getPropertyValue(P_DATATRACKER_SAMPLESIZE.key());
@@ -443,13 +456,12 @@ public class DataTrackerNode extends InitialisableNode
 					sampleSize = -1;
 				else
 					sampleSize = Integer.valueOf(s);
-			} else
+			} 
+			else
 				sampleSize = -1;
+			// optional properties
 			if (properties().hasProperty(P_DATATRACKER_SELECT.key()))
 				selection = (SamplingMode) properties().getPropertyValue(P_DATATRACKER_SELECT.key());
-//			else
-//				selection = SamplingMode.defaultValue();
-			// optional properties
 			if (properties().hasProperty(P_DATATRACKER_STATISTICS.key()))
 				stats = (StatisticalAggregatesSet) properties().getPropertyValue(P_DATATRACKER_STATISTICS.key());
 			if (properties().hasProperty(P_DATATRACKER_TABLESTATS.key()))
@@ -481,68 +493,117 @@ public class DataTrackerNode extends InitialisableNode
 		return sealed;
 	}
 
+	// CAUTION: This methos assumes the Arena containers and components have been initialised
+	// BEFORE the data trackers.
 	@SuppressWarnings({ "unchecked" })
 	private DataTracker<?, ?> makeDataTracker(int index) {
 		AbstractDataTracker<?, ?> result = null;
 		List<CategorizedComponent> ls = new ArrayList<>();
 		DescribedContainer<? extends CategorizedComponent> samplingPool = null;
 		boolean permanent = true;
-		for (TreeGraphNode etype:trackedComponents) {
+		// get the arena to search for containers.
+		TreeNode root = World.getRoot(this);
+		ArenaType anode = (ArenaType) get(root,children(),selectOne(hasTheLabel(N_SYSTEM.label())));
+		ArenaComponent arena = anode.getInstance(index).getInstance();
+		// NB trackedComponents now contains a list of trackComponent Edges to ElementType objects.
+		for (Edge etrack:trackedComponents) {
+			TreeGraphNode etype = (TreeGraphNode)etrack.endNode();
+			// tracking the arena - easy
 			if (etype instanceof ArenaType)
 				ls.add((CategorizedComponent)((ArenaType)etype).getInstance(index).getInstance());
-//			else if (etype instanceof Component) {
-//				// CAUTION: this is adding the INITIAL components, not the RUNTIME ones
-//				ls.addAll(((Component)etype).getInstance(index));
-//				permanent = ((ComponentType) etype.getParent()).isPermanent();
-//			}
-//			else if (etype instanceof Group) {
-//				Group group = (Group) etype;
-//				List<Category> groupCats = (List<Category>) get(group.getParent().edges(Direction.OUT),
-//					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
-//					edgeListEndNodes());
+			// tracking components - means a sample of them
+			else if (etype instanceof ComponentType) {
+				if (etype.getParent() instanceof Structure) {
+					// no group, no lifecycle - container = arena
+					ls.addAll(arena.content().getInitialItems());
+					samplingPool = arena.content();
+					permanent = ((ComponentType)etype).isPermanent();
+				}
+				else if (etype.getParent() instanceof GroupType) {
+					String theGroup = (String) ((ReadOnlyDataHolder)etrack).properties()
+						.getPropertyValue(P_DATASOURCE_IDGROUP.key());
+					if (etype.getParent().getParent() instanceof LifeCycleType) {
+						String theLC = (String) ((ReadOnlyDataHolder)etrack).properties()
+							.getPropertyValue(P_DATASOURCE_IDLC.key());
+						CategorizedContainer<SystemComponent> theLCCont = arena.content().findContainer(theLC);
+						samplingPool = (DescribedContainer<? extends CategorizedComponent>) theLCCont.findContainer(theGroup);
+					}
+					else
+						samplingPool = (DescribedContainer<? extends CategorizedComponent>) 
+							arena.content().findContainer(theGroup);
+					ls.addAll(samplingPool.getInitialItems()); // ??? check this
+				}
+			}
+			// tracking a group - means permanent GroupComponents
+			else if (etype instanceof GroupType) {
+				String theGroup = (String) ((ReadOnlyDataHolder)etrack).properties()
+					.getPropertyValue(P_DATASOURCE_IDGROUP.key()); // always present
+				if (etype.getParent() instanceof Structure)
+					// no lifecycle - container = arena
+					ls.add(((Described<HierarchicalComponent>)arena.content().subContainer(theGroup)).descriptors());
+				else if (etype.getParent() instanceof LifeCycleType) {
+					// container is a lifeCycle.
+					for (CategorizedContainer<SystemComponent> cont:arena.content().subContainers()) {
+						CategorizedContainer<SystemComponent> theCont = cont.findContainer(theGroup);
+						if (theCont!=null)
+							ls.add(((Described<HierarchicalComponent>)theCont).descriptors());
+					}
+				}
+			}
+			// tracking a life cycle - means permanent LifeCycleComponents
+			else if (etype instanceof LifeCycleType) {
+				String theLC = (String) ((ReadOnlyDataHolder)etrack).properties()
+					.getPropertyValue(P_DATASOURCE_IDLC.key()); // always present
+				ls.add(((Described<HierarchicalComponent>)arena.content().subContainer(theLC)).descriptors());
+			}
+////			else if (etype instanceof Group) {
+////				Group group = (Group) etype;
+////				List<Category> groupCats = (List<Category>) get(group.getParent().edges(Direction.OUT),
+////					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+////					edgeListEndNodes());
+////				
+////				// WIP 15/12/2021 - code disabled
+////				
+////				System.out.println("Code temporarily disabled - group data cannot be tracked");
+////				
+//////				// if the process tracks group data, then track the group
+//////				if (groupCats.containsAll(processCategories))
+//////					ls.add(group.getInstance(index));
+//////				else {
+//////				// if the process tracks component data, then track the group SystemComponents
+//////					samplingPool = group.getInstance(index).content();
+//////					// in the groupType of this group's componentTypes, search the one
+//////					// which has the same categories as this process to know if the items are permanent
+//////					List<ComponentType> ctl = (List<ComponentType>) get(group.getParent().getChildren(), 
+//////						selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+//////					for (ComponentType ct:ctl) {
+//////						List<Category> componentCats = (List<Category>) get(ct.edges(Direction.OUT),
+//////							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
+//////							edgeListEndNodes());
+//////						// CAUTION: not sure this test works 100% - there may be ambiguities 
+//////						if (componentCats.containsAll(processCategories)) {
+//////							LifespanType lft = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
+//////							permanent = (lft==LifespanType.permanent);
+//////						}
+//////					}
+//////				}
+////				
+////			}
+//			else if (etype instanceof GroupType) {
 //				
 //				// WIP 15/12/2021 - code disabled
-//				
 //				System.out.println("Code temporarily disabled - group data cannot be tracked");
 //				
-////				// if the process tracks group data, then track the group
-////				if (groupCats.containsAll(processCategories))
-////					ls.add(group.getInstance(index));
-////				else {
-////				// if the process tracks component data, then track the group SystemComponents
-////					samplingPool = group.getInstance(index).content();
-////					// in the groupType of this group's componentTypes, search the one
-////					// which has the same categories as this process to know if the items are permanent
-////					List<ComponentType> ctl = (List<ComponentType>) get(group.getParent().getChildren(), 
-////						selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-////					for (ComponentType ct:ctl) {
-////						List<Category> componentCats = (List<Category>) get(ct.edges(Direction.OUT),
-////							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
-////							edgeListEndNodes());
-////						// CAUTION: not sure this test works 100% - there may be ambiguities 
-////						if (componentCats.containsAll(processCategories)) {
-////							LifespanType lft = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
-////							permanent = (lft==LifespanType.permanent);
-////						}
-////					}
-////				}
-//				
+////				List<Group> groups = (List<Group>) get(etype.getChildren(), 
+////					selectOneOrMany(hasTheLabel(N_GROUP.label())));
+////				for (Group g:groups)
+////					ls.add(g.getInstance(index));
 //			}
-			else if (etype instanceof GroupType) {
-				
-				// WIP 15/12/2021 - code disabled
-				System.out.println("Code temporarily disabled - group data cannot be tracked");
-				
-//				List<Group> groups = (List<Group>) get(etype.getChildren(), 
-//					selectOneOrMany(hasTheLabel(N_GROUP.label())));
-//				for (Group g:groups)
-//					ls.add(g.getInstance(index));
-			}
 		}
 		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
 			if (samplingPool!=null)
 				result = new DataTracker0D(index,stats, tstats, selection, sampleSize,
-					((DescribedContainer<CategorizedComponent>) samplingPool).items(),
+					((DescribedContainer<CategorizedComponent>) samplingPool).itemListPointerUseWithCaution(),
 					samplingPool.fullId(),permanent,
 					ls,expandedTrackList.keySet(),fieldMetadata);
 			else
@@ -572,8 +633,8 @@ public class DataTrackerNode extends InitialisableNode
 		else if (dataTrackerClass.equals(DataTrackerXY.class.getName())) {
 			if (samplingPool!=null)
 				result = new DataTrackerXY(index,selection,
-					((DescribedContainer<CategorizedComponent>) samplingPool).items(), ls,
-					expandedTrackList.keySet(),fieldMetadata);
+					((DescribedContainer<CategorizedComponent>) samplingPool).itemListPointerUseWithCaution(), 
+					ls,expandedTrackList.keySet(),fieldMetadata);
 			else
 				result = new DataTrackerXY(index,selection, null,ls,expandedTrackList.keySet(),
 					fieldMetadata);

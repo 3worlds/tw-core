@@ -218,6 +218,21 @@ public abstract class CategorizedContainer<T extends Identity>
 	public Collection<T> items() {
 		return Collections.unmodifiableCollection(items.values());
 	}
+	
+	
+	/**
+	 * CAUTION: this method exposes the item list without protection (as items() does). This is
+	 * for objects that need to manipulate the list of items without changing it, but require
+	 * that the list can change by itself between calls. In other words, for objects that just keep
+	 * a pointer to the list in read-only mode. Unfortunately there is no such thing as a read-only
+	 * collecion in java.
+	 * 
+	 * @return the address of the item list.
+	 */
+	public final Collection<T> itemListPointerUseWithCaution() {
+		return items.values();
+	}
+
 
 	/**
 	 * Gets the sub-container matching the id passed as an argument. Only searches

@@ -302,7 +302,7 @@ hasNode dataTrackerSpec
 		hasProperty trackedLCLCIdSpec
 			hasName = String("idLifeCycle")
 			type = String("String")
-			multiplicity = IntegerRange("0..1")
+			multiplicity = IntegerRange("1..1")
 	//
 	// tracking of the arena
 	//
@@ -322,7 +322,7 @@ hasNode dataTrackerSpec
 		hasProperty trackedGroupGroupIdSpec
 			hasName = String("idGroup")
 			type = String("String")
-			multiplicity = IntegerRange("0..1")
+			multiplicity = IntegerRange("1..1")
 	//
 	// check that whenever a component is tracked, then there is an edge to fields or tables too
 	//
