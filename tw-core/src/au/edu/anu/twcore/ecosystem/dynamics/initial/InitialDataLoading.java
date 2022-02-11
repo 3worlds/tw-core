@@ -3,12 +3,17 @@ package au.edu.anu.twcore.ecosystem.dynamics.initial;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_LOADFROM;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_COMPONENT_NINST;
 import java.util.List;
 import java.util.Map;
 
+import au.edu.anu.twcore.ecosystem.structure.ComponentType;
+import au.edu.anu.twcore.ecosystem.structure.GroupType;
+import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
@@ -52,10 +57,31 @@ public class InitialDataLoading {
 		for (TreeNode tn:node.getChildren()) {
 			if (tn instanceof InitialValues) {
 				InitialValues dataNode = (InitialValues)tn;
-				ExtendablePropertyList props = new ExtendablePropertyListImpl();
-				DataIdentifier id = dataNode.fullId();
-				props.addProperties(dataNode.readOnlyProperties());
-				loadedData.put(id,props);
+				if (dataNode instanceof ReadOnlyDataHolder) {
+					if (dataNode.properties().hasProperty(P_COMPONENT_NINST.key())) {
+						int nInst = (int)dataNode.properties().getPropertyValue(P_COMPONENT_NINST.key());
+						if (nInst==1 ) {
+							DataIdentifier id = dataNode.fullId();
+							ExtendablePropertyList props = new ExtendablePropertyListImpl();
+							props.addProperties(dataNode.readOnlyProperties());
+							loadedData.put(id,props);
+						}
+						else
+							for (int i=0; i<nInst; i++) {
+								DataIdentifier id = dataNode.fullId();
+								ExtendablePropertyList props = new ExtendablePropertyListImpl();
+								if (node instanceof ComponentType)
+									id.setComponentId(id.componentId()+i);
+								else if (node instanceof GroupType)
+									id = new DataIdentifier(id.componentId(),id.groupId()+i,id.lifeCycleId());
+								else if (node instanceof LifeCycleType)
+									id = new DataIdentifier(id.componentId(),id.groupId(),id.lifeCycleId()+i);
+								props.addProperties(dataNode.readOnlyProperties());
+								loadedData.put(id,props);							
+						}
+					}
+				}
+				
 			}
 		}
 		
