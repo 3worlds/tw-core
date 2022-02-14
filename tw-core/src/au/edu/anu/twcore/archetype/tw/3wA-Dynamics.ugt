@@ -338,15 +338,15 @@ hasNode dataTrackerSpec
 //		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
 	//
 	// Check that at most 1 edge of one of the four previous types is present
-	// NodeAtLeastOneOutEdgeLabelOfQuery
+	// 
 	mustSatisfyQuery atMostOneElementTypeIsTrackedEdge
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveOutEdgeQuery")
 		edgeLabels = StringTable(([4]"sampleArena","sampleLifeCycle","sampleGroup","sampleComponent"))
 	//
 	// Check that at least 1 edge of type "trackField","trackTable"
-	// NodeAtLeastOneOutEdgeLabelOfQuery
+	// 
 	mustSatisfyQuery atLeastOneFieldOrTableIsTrackedEdge
-		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveOutEdgeQuery")
+		className = String("au.edu.anu.twcore.archetype.tw.NodeAtLeastOneOutEdgeLabelOfQuery")
 		edgeLabels = StringTable(([2]"trackField","trackTable"))
 	
 	// TODO: more consistency checks ? eg on categories ?
