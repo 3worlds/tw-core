@@ -1093,7 +1093,7 @@ public class DocoGenerator {
 
 			List<TreeGraphDataNode> comps = (List<TreeGraphDataNode>) get(t.edges(Direction.OUT),
 //					selectZeroOrMany(orQuery(hasTheLabel(E_TRACKCOMPONENT.label()), hasTheLabel(E_TRACKPOP.label()))),
-					selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())), edgeListEndNodes());
+					selectZeroOrMany(hasTheLabel(E_SAMPLECOMPONENT.label())), edgeListEndNodes());
 
 			sb = new StringBuilder();
 			for (TreeGraphDataNode comp : comps)

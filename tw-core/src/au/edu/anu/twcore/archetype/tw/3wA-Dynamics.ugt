@@ -280,7 +280,7 @@ hasNode dataTrackerSpec
 	// This because SystemComponent ids change at every simulation.
 	//
 	hasEdge trackComponentEdgeSpec // track an initial list of components
-		isOfClass = String("trackComponent")
+		isOfClass = String("sampleComponent")
 		toNode = String("componentType:")
 		multiplicity = IntegerRange("0..*")
 		hasProperty trackedComponentLCIdSpec
@@ -291,45 +291,64 @@ hasNode dataTrackerSpec
 			hasName = String("idGroup")
 			type = String("String")
 			multiplicity = IntegerRange("0..1")
-	//
-	// tracking of life cycles
-	//
-	hasEdge trackComponentLCEdgeSpec // track any components from this group
-		// todo: check this group is of the proper category?
-		isOfClass = String("trackComponent")
-		toNode = String("lifeCycleType:")
-		multiplicity = IntegerRange("0..1")
-		hasProperty trackedLCLCIdSpec
-			hasName = String("idLifeCycle")
-			type = String("String")
-			multiplicity = IntegerRange("1..1")
-	//
-	// tracking of the arena
-	//
-	hasEdge trackComponentEcosystemEdgeSpec // track any components at the ecosystem level
-		// todo: check this component is of the proper category?
-		isOfClass = String("trackComponent")
-		toNode = String("system:")
-		multiplicity = IntegerRange("0..1")
+//	mustSatisfyQuery ifComponentMustHaveEitherFieldOrTableEdge
+//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
+//		edgeLabel1 = String("sampleComponent")
+//		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
 	//
 	// tracking of groups
 	//
-	hasEdge trackComponentGroupTypeEdgeSpec // track any components at the ecosystem level
-		// todo: check this component is of the proper category?
-		isOfClass = String("trackComponent")
+	hasEdge trackGroupTypeEdgeSpec 
+		isOfClass = String("sampleGroup")
 		toNode = String("groupType:")
 		multiplicity = IntegerRange("0..1")
 		hasProperty trackedGroupGroupIdSpec
 			hasName = String("idGroup")
-			type = String("String")
+			type = String("StringTable")
 			multiplicity = IntegerRange("1..1")
+//	mustSatisfyQuery ifGroupMustHaveEitherFieldOrTableEdge
+//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
+//		edgeLabel1 = String("sampleGroup")
+//		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
 	//
-	// check that whenever a component is tracked, then there is an edge to fields or tables too
+	// tracking of life cycles
 	//
-	mustSatisfyQuery ifComponentMustHaveEitherFieldOrTableEdge
-		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
-		edgeLabel1 = String("trackComponent")
-		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
+	hasEdge trackComponentLCEdgeSpec 
+		isOfClass = String("sampleLifeCycle")
+		toNode = String("lifeCycleType:")
+		multiplicity = IntegerRange("0..1")
+		hasProperty trackedLCLCIdSpec
+			hasName = String("idLifeCycle")
+			type = String("StringTable")
+			multiplicity = IntegerRange("1..1")
+//	mustSatisfyQuery ifLifeCycleMustHaveEitherFieldOrTableEdge
+//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
+//		edgeLabel1 = String("sampleLifeCycle")
+//		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
+	//
+	// tracking of the arena
+	//
+	hasEdge trackComponentEcosystemEdgeSpec
+		isOfClass = String("sampleArena")
+		toNode = String("system:")
+		multiplicity = IntegerRange("0..1")
+//	mustSatisfyQuery ifArenaMustHaveEitherFieldOrTableEdge
+//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
+//		edgeLabel1 = String("sampleArena")
+//		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
+	//
+	// Check that at most 1 edge of one of the four previous types is present
+	// NodeAtLeastOneOutEdgeLabelOfQuery
+	mustSatisfyQuery atMostOneElementTypeIsTrackedEdge
+		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveOutEdgeQuery")
+		edgeLabels = StringTable(([4]"sampleArena","sampleLifeCycle","sampleGroup","sampleComponent"))
+	//
+	// Check that at least 1 edge of type "trackField","trackTable"
+	// NodeAtLeastOneOutEdgeLabelOfQuery
+	mustSatisfyQuery atLeastOneFieldOrTableIsTrackedEdge
+		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveOutEdgeQuery")
+		edgeLabels = StringTable(([2]"trackField","trackTable"))
+	
 	// TODO: more consistency checks ? eg on categories ?
 //-------------------------------------------------------------------------------------------
 

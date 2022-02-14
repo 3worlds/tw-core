@@ -6,7 +6,7 @@ import fr.cnrs.iees.graph.TreeNode;
 
 /**
  * Checks that a node is the only one of its kind in its parent's children for a particular
- * parent type (enables to eimplement conditional multiplicity of child in parent)
+ * parent type (enables to implement conditional multiplicity of child in parent)
  * 
  * @author Jacques Gignoux - 4 févr. 2022
  *

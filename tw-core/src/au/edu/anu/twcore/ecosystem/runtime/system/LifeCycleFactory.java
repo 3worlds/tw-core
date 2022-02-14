@@ -69,6 +69,8 @@ public class LifeCycleFactory extends ElementFactory<LifeCycleComponent> {
 		else
 			container = new ComponentContainer(lifeCycleTypeName,parentContainer,null,simId);
 		autoVarTemplate = new ContainerData(container);
+		for (String autoName : autoVarTemplate.getKeysAsSet())
+			propertyMap.put(autoName, SystemComponentPropertyListImpl.AUTO);
 		SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
 		driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);
 		lifeCycle = (LifeCycleComponent) SCfactory.get(simId).makeNode(LifeCycleComponent.class,container.id(),props);

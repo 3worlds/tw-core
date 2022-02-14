@@ -30,19 +30,24 @@ package au.edu.anu.twcore.ui;
 
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 
 /**
- * Edge for tracking a space for its output data
+ * Edge for sampling components for output data
  * 
- * @author gignoux
+ * @author Jacques Gignoux - 3 déc. 2019
  *
  */
-public class TrackSpaceEdge extends ALEdge {
+public class SampleComponentEdge extends ALDataEdge {
 
-	public TrackSpaceEdge(Identity id, Node start, Node end, EdgeFactory graph) {
-		super(id, start, end, graph);
+	public SampleComponentEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
+		super(id, start, end, props, graph);
 	}
 
+	public SampleComponentEdge(Identity id, Node start, Node end, EdgeFactory graph) {
+		super(id, start, end, new ExtendablePropertyListImpl(), graph);
+	}
 }

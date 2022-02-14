@@ -36,18 +36,18 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 
 /**
+ * Edge for sampling Groups for output data
  * 
  * @author Jacques Gignoux - 13 nov. 2019
  *
  */
-@Deprecated
-public class TrackPopulationEdge extends ALDataEdge {
+public class SampleGroupEdge extends ALDataEdge {
 
-	public TrackPopulationEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
+	public SampleGroupEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
 		super(id, start, end, props, graph);
 	}
 
-	public TrackPopulationEdge(Identity id, Node start, Node end, EdgeFactory graph) {
+	public SampleGroupEdge(Identity id, Node start, Node end, EdgeFactory graph) {
 		super(id, start, end, new ExtendablePropertyListImpl(), graph);
 	}
 

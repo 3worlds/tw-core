@@ -73,6 +73,8 @@ public class GroupFactory extends ElementFactory<GroupComponent> {
 		else
 			container = new ComponentContainer(groupTypeName,parentContainer,null,simId);
 		autoVarTemplate = new ContainerData(container);
+		for (String autoName : autoVarTemplate.getKeysAsSet())
+			propertyMap.put(autoName, SystemComponentPropertyListImpl.AUTO);
 		SimplePropertyList props = new SystemComponentPropertyListImpl(autoVarTemplate,
 		driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);
 		group = (GroupComponent) SCfactory.get(simId).makeNode(GroupComponent.class,container.id(),props);

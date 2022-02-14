@@ -130,7 +130,7 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 	protected ArenaFactory makeTemplate(int id) {
 
 		List<Edge> listeners = (List<Edge>) get(edges(Direction.IN),
-			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label())));
+			selectZeroOrMany(hasTheLabel(E_SAMPLEARENA.label())));
 
 		if (!listeners.isEmpty()) {
 			// attach time metadata to data tracker - we will need a time from the simulator

@@ -28,49 +28,58 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.TreeNode;
 
-public class NodeAtLeastOneChildLabelOfQuery extends QueryAdaptor {
-	private List<String> labels = new LinkedList<String>();
+/**
+ * 
+ * @author gignoux
+ *
+ */
+public class NodeAtLeastOneChildLabelOfQuery extends RequiredLabelQuery {
+	
+	public NodeAtLeastOneChildLabelOfQuery(String... lab) {
+		super(lab);
+	}
 
-	public NodeAtLeastOneChildLabelOfQuery(StringTable table) {
-		super();
-		for (int i = 0; i < table.size(); i++)
-			labels.add(table.getWithFlatIndex(i).trim());
+	public NodeAtLeastOneChildLabelOfQuery(StringTable el) {
+		super(el);
 	}
 
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
-		TreeNode node = (TreeNode) input;
-		Iterable<? extends TreeNode> children = node.getChildren();
-		boolean ok = false;
-		for (String label : labels) {
-			for (TreeNode child : children) {
-				if (child.classId().equals(label)) {
-					ok = true;
-					return this;
-				}
+		if (input instanceof TreeNode) {
+			int count = countLabels(((TreeNode)input).getChildren());
+			if (count==0) {
+				String[] msgs = TextTranslations.getNodeAtLeastOneChildLabelOfQuery(requiredLabels);
+				actionMsg = msgs[0];
+				errorMsg = msgs[1];
+			}
+			else if (count<0) {
+				errorMsg = "Count is negative - How did you manage to do that?";
+				actionMsg = "You should get some pills, a lot of rest, and come back to work later.";
 			}
 		}
-		if (!ok) {
-			String[] msgs = TextTranslations.getNodeAtLeastOneChildLabelOfQuery(labels);
-			actionMsg = msgs[0];
-			errorMsg = msgs[1];
-//			
-//			errorMsg = "Expected at least one child labelled '"
-//					+ labels.toString() + "' but found none.";
-//			
-//			actionMsg = "Add child that is one of '"+labels.toString()+"'.";
-		}
-		
+// former code
+//		TreeNode node = (TreeNode) input;
+//		Iterable<? extends TreeNode> children = node.getChildren();
+//		boolean ok = false;
+//		for (String label : labels) {
+//			for (TreeNode child : children) {
+//				if (child.classId().equals(label)) {
+//					ok = true;
+//					return this;
+//				}
+//			}
+//		}
+//		if (!ok) {
+//			String[] msgs = TextTranslations.getNodeAtLeastOneChildLabelOfQuery(labels);
+//			actionMsg = msgs[0];
+//			errorMsg = msgs[1];
+//		}
 		return this;
 	}
 

@@ -30,23 +30,20 @@ package au.edu.anu.twcore.ui;
 
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALDataEdge;
+import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+
 
 /**
+ * Edge for tracking the arena data
  * 
- * @author Jacques Gignoux - 3 déc. 2019
+ * @author gignoux 14/2/2022
  *
  */
-public class TrackComponentEdge extends ALDataEdge {
+public class SampleSystemEdge extends ALEdge {
 
-	public TrackComponentEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
-		super(id, start, end, props, graph);
+	public SampleSystemEdge(Identity id, Node start, Node end, EdgeFactory graph) {
+		super(id, start, end, graph);
 	}
 
-	public TrackComponentEdge(Identity id, Node start, Node end, EdgeFactory graph) {
-		super(id, start, end, new ExtendablePropertyListImpl(), graph);
-	}
 }

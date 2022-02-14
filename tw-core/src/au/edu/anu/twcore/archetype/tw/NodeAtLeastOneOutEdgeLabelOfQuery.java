@@ -26,23 +26,45 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-package au.edu.anu.twcore.ui;
+package au.edu.anu.twcore.archetype.tw;
 
-import fr.cnrs.iees.graph.EdgeFactory;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.Queryable;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.identity.Identity;
 
 /**
- * Edge for tracking a space for its output data
+ * Check that a node has at least one out edge of a given set of labels
  * 
  * @author gignoux
  *
  */
-public class TrackSpaceEdge extends ALEdge {
+public class NodeAtLeastOneOutEdgeLabelOfQuery extends RequiredLabelQuery {
+	
+	public NodeAtLeastOneOutEdgeLabelOfQuery(String... lab) {
+		super(lab);
+	}
 
-	public TrackSpaceEdge(Identity id, Node start, Node end, EdgeFactory graph) {
-		super(id, start, end, graph);
+	public NodeAtLeastOneOutEdgeLabelOfQuery(StringTable el) {
+		super(el);
+	}
+
+	@Override
+	public Queryable submit(Object input) {
+		initInput(input);
+		if (input instanceof Node) {
+			int count = countLabels(((Node)input).edges(Direction.OUT));
+			if (count==0) {
+				actionMsg = "Add out-edge of one type among " + requiredLabels.toString() + "to node '"+input.toString()+"'.";
+				errorMsg = "Expected at least one out-edge labelled " + requiredLabels.toString() +" for node '"
+					+ input.toString() + "' but found none.";
+			}
+			else if (count<0) {
+				errorMsg = "Count is negative - How did you manage to do that?";
+				actionMsg = "You should get some pills, a lot of rest, and come back to work later.";
+			}
+		}
+		return this;
 	}
 
 }

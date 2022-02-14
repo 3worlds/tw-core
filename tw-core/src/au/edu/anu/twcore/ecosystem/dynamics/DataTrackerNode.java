@@ -414,7 +414,8 @@ public class DataTrackerNode extends InitialisableNode
 		
 		// Objects to track
 		trackedComponents.addAll((List<Edge>)get(edges(Direction.OUT),
-			selectZeroOrMany(hasTheLabel(E_TRACKCOMPONENT.label()))));
+			selectZeroOrMany(orQuery(hasTheLabel(E_SAMPLECOMPONENT.label()),hasTheLabel(E_SAMPLEGROUP.label()),
+									hasTheLabel(E_SAMPLELIFECYCLE.label()),hasTheLabel(E_SAMPLEARENA.label())) ) ));
 	}
 
 	private void setFieldMetadata(TrackMeta tm, String trackName) {
@@ -536,69 +537,36 @@ public class DataTrackerNode extends InitialisableNode
 			}
 			// tracking a group - means permanent GroupComponents
 			else if (etype instanceof GroupType) {
-				String theGroup = (String) ((ReadOnlyDataHolder)etrack).properties()
+				StringTable theGroups = (StringTable) ((ReadOnlyDataHolder)etrack).properties()
 					.getPropertyValue(P_DATASOURCE_IDGROUP.key()); // always present
 				if (etype.getParent() instanceof Structure)
 					// no lifecycle - container = arena
-					ls.add(((Described<HierarchicalComponent>)arena.content().subContainer(theGroup)).descriptors());
+					for (int i=0; i<theGroups.size(); i++) {
+						CategorizedContainer<SystemComponent> theCont = arena.content().findContainer(theGroups.getWithFlatIndex(i));
+						if (theCont!=null)
+							ls.add(((Described<HierarchicalComponent>)theCont).descriptors());
+					}
 				else if (etype.getParent() instanceof LifeCycleType) {
 					// container is a lifeCycle.
 					for (CategorizedContainer<SystemComponent> cont:arena.content().subContainers()) {
-						CategorizedContainer<SystemComponent> theCont = cont.findContainer(theGroup);
-						if (theCont!=null)
-							ls.add(((Described<HierarchicalComponent>)theCont).descriptors());
+						for (int i=0; i<theGroups.size(); i++) {
+							CategorizedContainer<SystemComponent> theCont = cont.findContainer(theGroups.getWithFlatIndex(i));
+							if (theCont!=null)
+								ls.add(((Described<HierarchicalComponent>)theCont).descriptors());
+						}
 					}
 				}
 			}
 			// tracking a life cycle - means permanent LifeCycleComponents
 			else if (etype instanceof LifeCycleType) {
-				String theLC = (String) ((ReadOnlyDataHolder)etrack).properties()
+				StringTable theLCs = (StringTable) ((ReadOnlyDataHolder)etrack).properties()
 					.getPropertyValue(P_DATASOURCE_IDLC.key()); // always present
-				ls.add(((Described<HierarchicalComponent>)arena.content().subContainer(theLC)).descriptors());
+				for (int i=0; i<theLCs.size(); i++) {
+					CategorizedContainer<SystemComponent> theCont = arena.content().findContainer(theLCs.getWithFlatIndex(i));
+					if (theCont!=null)
+						ls.add(((Described<HierarchicalComponent>)theCont).descriptors());
+				}
 			}
-////			else if (etype instanceof Group) {
-////				Group group = (Group) etype;
-////				List<Category> groupCats = (List<Category>) get(group.getParent().edges(Direction.OUT),
-////					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
-////					edgeListEndNodes());
-////				
-////				// WIP 15/12/2021 - code disabled
-////				
-////				System.out.println("Code temporarily disabled - group data cannot be tracked");
-////				
-//////				// if the process tracks group data, then track the group
-//////				if (groupCats.containsAll(processCategories))
-//////					ls.add(group.getInstance(index));
-//////				else {
-//////				// if the process tracks component data, then track the group SystemComponents
-//////					samplingPool = group.getInstance(index).content();
-//////					// in the groupType of this group's componentTypes, search the one
-//////					// which has the same categories as this process to know if the items are permanent
-//////					List<ComponentType> ctl = (List<ComponentType>) get(group.getParent().getChildren(), 
-//////						selectOneOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-//////					for (ComponentType ct:ctl) {
-//////						List<Category> componentCats = (List<Category>) get(ct.edges(Direction.OUT),
-//////							selectOneOrMany(hasTheLabel(E_BELONGSTO.label())),
-//////							edgeListEndNodes());
-//////						// CAUTION: not sure this test works 100% - there may be ambiguities 
-//////						if (componentCats.containsAll(processCategories)) {
-//////							LifespanType lft = (LifespanType) ct.properties().getPropertyValue(P_COMPONENT_LIFESPAN.key());
-//////							permanent = (lft==LifespanType.permanent);
-//////						}
-//////					}
-//////				}
-////				
-////			}
-//			else if (etype instanceof GroupType) {
-//				
-//				// WIP 15/12/2021 - code disabled
-//				System.out.println("Code temporarily disabled - group data cannot be tracked");
-//				
-////				List<Group> groups = (List<Group>) get(etype.getChildren(), 
-////					selectOneOrMany(hasTheLabel(N_GROUP.label())));
-////				for (Group g:groups)
-////					ls.add(g.getInstance(index));
-//			}
 		}
 		if (dataTrackerClass.equals(DataTracker0D.class.getName())) {
 			if (samplingPool!=null)
