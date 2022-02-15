@@ -75,21 +75,34 @@ public class FindCommonCategoryQuery extends QueryAdaptor {
 		if (ln.get(0) instanceof Category) {
 			ok = false;
 			for (Node cat : ln) {
-				Record topRec = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
-						endNode());
-
+				Record topRec = (Record) get(cat.edges(Direction.OUT), 
+					selectZeroOrOne(hasTheLabel(E_DRIVERS.label())),
+					endNode());
 				if (topRec != null)
 					ok = matchTopRec(topRec, end);
 				if (!ok) {
-					topRec = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
-							endNode());
+					topRec = (Record) get(cat.edges(Direction.OUT), 
+						selectZeroOrOne(hasTheLabel(E_DECORATORS.label())),
+						endNode());
 					if (topRec != null)
 						ok = matchTopRec(topRec, end);
 					if (!ok) {
-						topRec = (Record) get(cat.edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
-								endNode());
+						topRec = (Record) get(cat.edges(Direction.OUT), 
+							selectZeroOrOne(hasTheLabel(E_AUTOVAR.label())),
+							endNode());
 						if (topRec != null)
 							ok = matchTopRec(topRec, end);
+						if (!ok) {
+							// constants cannot be tracked.
+							topRec = (Record) get(cat.edges(Direction.OUT), 
+								selectZeroOrOne(hasTheLabel(E_CONSTANTS.label())),
+								endNode());
+								if (topRec != null) {
+									actionMsg = "Remove edge '"+input.toString()+"'."; 
+									errorMsg = "Constants cannot be tracked.";
+									return this;
+								}
+						}
 					}
 				}
 				if (ok)

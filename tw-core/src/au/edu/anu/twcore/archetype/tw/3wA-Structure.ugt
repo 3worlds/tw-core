@@ -613,12 +613,12 @@ hasNode spaceSpec
 //-------------------------------------------------------------------------------------------
 hasNode initialValuesSpec
 	isOfClass = String("initialValues")
-	hasParent = StringTable(([4]"system:","lifeCycleType:","groupType:","componentType:"))
+	hasParent = StringTable(([3]"lifeCycleType:","groupType:","componentType:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty numberOfInstancesSpec
 		hasName = String("nInstances")
 		type = String("Integer")
-		multiplicity = IntegerRange("0..1")
+		multiplicity = IntegerRange("1..1")
 	hasProperty groupIdSpec
 		hasName = String("idGroup")
 		type = String("String")
@@ -627,10 +627,17 @@ hasNode initialValuesSpec
 		hasName = String("idLifeCycle")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
-	hasEdge groupOfComponentSpec
-		isOfClass = String("groupOf")
-		toNode = String("ComponentType:")
-		multiplicity = IntegerRange("0..1")
+//	hasEdge groupOfComponentSpec
+//		isOfClass = String("groupOf")
+//		toNode = String("ComponentType:")
+//		multiplicity = IntegerRange("0..1")
+
+hasNode initialValuesForArenaSpec
+	isOfClass = String("initialValues")
+	hasParent = StringTable(([1]"system:"))
+	multiplicity = IntegerRange("0..*")
+		
+		
 		
 //	//
 //	// Check that only one of the two above properties is present

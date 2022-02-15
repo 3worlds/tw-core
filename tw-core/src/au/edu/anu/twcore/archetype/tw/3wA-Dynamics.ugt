@@ -291,10 +291,6 @@ hasNode dataTrackerSpec
 			hasName = String("idGroup")
 			type = String("String")
 			multiplicity = IntegerRange("0..1")
-//	mustSatisfyQuery ifComponentMustHaveEitherFieldOrTableEdge
-//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
-//		edgeLabel1 = String("sampleComponent")
-//		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
 	//
 	// tracking of groups
 	//
@@ -306,10 +302,6 @@ hasNode dataTrackerSpec
 			hasName = String("idGroup")
 			type = String("StringTable")
 			multiplicity = IntegerRange("1..1")
-//	mustSatisfyQuery ifGroupMustHaveEitherFieldOrTableEdge
-//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
-//		edgeLabel1 = String("sampleGroup")
-//		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
 	//
 	// tracking of life cycles
 	//
@@ -321,10 +313,6 @@ hasNode dataTrackerSpec
 			hasName = String("idLifeCycle")
 			type = String("StringTable")
 			multiplicity = IntegerRange("1..1")
-//	mustSatisfyQuery ifLifeCycleMustHaveEitherFieldOrTableEdge
-//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
-//		edgeLabel1 = String("sampleLifeCycle")
-//		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
 	//
 	// tracking of the arena
 	//
@@ -332,10 +320,6 @@ hasNode dataTrackerSpec
 		isOfClass = String("sampleArena")
 		toNode = String("system:")
 		multiplicity = IntegerRange("0..1")
-//	mustSatisfyQuery ifArenaMustHaveEitherFieldOrTableEdge
-//		className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery")
-//		edgeLabel1 = String("sampleArena")
-//		edgeLabel2 = StringTable(([2]"trackField","trackTable"))
 	//
 	// Check that at most 1 edge of one of the four previous types is present
 	// 

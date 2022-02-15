@@ -55,16 +55,19 @@ public class BoxInSpaceDimensionQuery extends QueryAdaptor {
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
-		SpaceNode spn = (SpaceNode) input;
-		SpaceType stype = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
-		// no problem if no Box property
-		if (spn.properties().hasProperty(propName)) {
-			Box prop = (Box) spn.properties().getPropertyValue(propName);
-			if (prop.dim() != stype.dimensions()) {
-				String[] msgs = TextTranslations.getBoxInSpaceDimensionQuery(propName, spn.toShortString(),
-						stype.dimensions(), prop.dim());
-				actionMsg = msgs[0];
-				errorMsg = msgs[1];
+		if (input instanceof SpaceNode) {
+			SpaceNode spn = (SpaceNode) input;
+			SpaceType stype = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
+			// no problem if no Box property
+			if (spn.properties().hasProperty(propName)) {
+				Box prop = (Box) spn.properties().getPropertyValue(propName);
+				if (prop!=null)
+					if (prop.dim() != stype.dimensions()) {
+						String[] msgs = TextTranslations.getBoxInSpaceDimensionQuery(propName, spn.toShortString(),
+								stype.dimensions(), prop.dim());
+						actionMsg = msgs[0];
+						errorMsg = msgs[1];
+				}
 			}
 		}
 		return this;

@@ -39,6 +39,7 @@ import fr.cnrs.iees.identity.Identity;
  * @author Jacques Gignoux - 2 juil. 2019
  *
  */
+@Deprecated
 public class GroupOfEdge extends ALEdge {
 
 	public GroupOfEdge(Identity id, Node start, Node end, EdgeFactory graph) {
