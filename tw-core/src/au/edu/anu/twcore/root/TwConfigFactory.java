@@ -105,7 +105,11 @@ public class TwConfigFactory extends TreeGraphFactory implements EditableFactory
 	public PropertyListFactory nodePropertyFactory() {
 		return plf;
 	}
-
+	
+	@Override
+	public PropertyListFactory edgePropertyFactory() {
+		return plf;
+	}
 	@Override
 	public void expungeNode(Node node) {
 		scope.removeId(node.id());
