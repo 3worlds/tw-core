@@ -64,11 +64,16 @@ hasNode treatmentSpec
 			hasName = String("rank")
 			type = String("Integer")
 			multiplicity = IntegerRange("1..1")
-		hasProperty edgeTreatmentValuesSpec		
+		hasProperty edgeTreatmentValuesSpec
 			hasName = String("values")
 			type =  String("StringTable")
 			multiplicity = IntegerRange("1..1")
 		
+		hasProperty edgeTreatmentValueNamesSpec
+			hasName = String("valueNames")
+			type =  String("StringTable")
+			multiplicity = IntegerRange("1..1")
+
 		mustSatisfyQuery TreatmentTableQuerySpec
 			className = String("au.edu.anu.twcore.archetype.tw.TreatmentTableQuery")
 	mustSatisfyQuery dimRanksAreDifferentQuery

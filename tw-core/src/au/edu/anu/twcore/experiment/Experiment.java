@@ -58,6 +58,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -79,6 +80,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	/** class constant = number of simulators in this running session */
 	private static int N_SIMULATORS = 0;
 	private final List<List<Property>> treatmentList;
+	private final Map<String,ExpFactor> factors;
 	private final Map<String, Object> baseline;
 
 	// default constructor
@@ -86,6 +88,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 		super(id, props, gfactory);
 		baseline = new HashMap<>();
 		treatmentList = new ArrayList<>();
+		factors = new LinkedHashMap<>();
 	}
 
 	// constructor with no properties
@@ -93,6 +96,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 		baseline = new HashMap<>();
 		treatmentList = new ArrayList<>();
+		factors = new LinkedHashMap<>();
 	}
 
 	@Override
@@ -190,6 +194,11 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 			buildTreatmentList(getDesignType());
 		return treatmentList;
 	}
+	public Map<String,ExpFactor> getFactors(){
+		if (factors.isEmpty())
+			buildTreatmentList(getDesignType());
+		return factors;
+	}
 
 	public Map<String, Object> getBaseline() {
 		return baseline;
@@ -208,6 +217,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	private void buildTreatmentList(ExperimentDesignType edt) {
 		// should only be called for sa or factorial
 		treatmentList.clear();
+		factors.clear();
 		if (get(this.getChildren(),selectZeroOrOne(hasTheLabel(N_TREATMENT.label())))==null)
 			return;
 		Treatment treatment = (Treatment) get(this.getChildren(), selectOne(hasTheLabel(N_TREATMENT.label())));
@@ -224,8 +234,11 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 		Collections.sort(rankings);
 
 		List<List<Property>> settings = new ArrayList<>();
-		for (int i = 0; i < treats.size(); i++)
+		List<ExpFactor> orderedFactors = new ArrayList<>();
+		for (int i = 0; i < treats.size(); i++) {
 			settings.add(new ArrayList<Property>());
+			orderedFactors.add(null);
+		}
 
 		for (ALDataEdge e : treats) {
 			StringTable values = (StringTable) e.properties().getPropertyValue(P_TREAT_VALUES.key());
@@ -233,8 +246,15 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 			DataElementType type = (DataElementType) endNode.properties().getPropertyValue(P_FIELD_TYPE.key());
 			int order = rankings.indexOf(e.properties().getPropertyValue(P_TREAT_RANK.key()));
 			List<Property> props = getAsProperties(endNode.id(), type, values);
+			StringTable valueNames = (StringTable) (e.properties().getPropertyValue(P_TREAT_VALUENAMES.key()));
 			settings.set(order, props);
+			orderedFactors.set(order, new ExpFactor(e.id(),props,valueNames));
 		}
+		for (int i = 0; i<orderedFactors.size();i++) {
+			String key = settings.get(i).get(0).getKey();
+			factors.put(key, orderedFactors.get(i));
+		}
+		
 
 		// assume order is normalized and packed 0..n(??)
 		switch (edt) {
