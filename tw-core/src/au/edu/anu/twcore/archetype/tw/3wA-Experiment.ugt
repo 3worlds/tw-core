@@ -73,9 +73,14 @@ hasNode treatmentSpec
 			hasName = String("valueNames")
 			type =  String("StringTable")
 			multiplicity = IntegerRange("1..1")
+			
+		mustSatisfyQuery TableDimsMustMatchQuery
+			className = String("au.edu.anu.twcore.archetype.tw.TableDimsMustMatchQuery")
+			tables = StringTable(([2]"values","valueNames"))
 
 		mustSatisfyQuery TreatmentTableQuerySpec
 			className = String("au.edu.anu.twcore.archetype.tw.TreatmentTableQuery")
+
 	mustSatisfyQuery dimRanksAreDifferentQuery
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
 		parameters = StringTable(([2]"treats","rank"))
