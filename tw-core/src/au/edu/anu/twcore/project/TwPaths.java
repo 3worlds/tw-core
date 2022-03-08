@@ -39,9 +39,9 @@ import java.io.File;
 // Don't add anything here on speculation. Wait until it's needed.
 public interface TwPaths {
 	public static String USER_ROOT/*       */ = System.getProperty("user.home");
-	public static String TW /*             */ = ".3w";
+	public static String TW /*             */ = "3w";
 	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
-	public static String TW_DEP_JAR /*     */ = "tw-dep.jar";
+	public static String TW_DEP_JAR /*     */ = "tw.jar";
 	
 	/** Jacques: we need to talk as I think these are redundant cf ProjectPaths */
 	/** the directory for all generated code */

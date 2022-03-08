@@ -74,9 +74,9 @@ import fr.ens.biologie.generic.utils.Logging;
  */
 // NB to fix possible problems in the future: there was a bug due to the one-by-one compiling
 // of java classes. eg, this command:
-// javac ./Subtable.java -classpath ~/.3w/tw-dep.jar
+// javac ./Subtable.java -classpath ~/3w/tw.jar
 // fails because dependent classes are not compiled, where as this command:
-// javac *.java -classpath ~/.3w/tw-dep.jar
+// javac *.java -classpath ~/3w/tw.jar
 // works, because javac manages the dependencies of all classes in the directory
 // ALL the java compiling code has been moved to CodeGenerator.generate()
 public abstract class HierarchicalDataGenerator
