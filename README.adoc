@@ -1,0 +1,12 @@
+= The TW-CORE library
+
+*tw-core* is the core of the 3Worlds software. It contains the base classes to design ecosystems and the simulator.
+
+See the https://3worlds.github.io/tw-core/tw-core/javadoc/index.html[javadoc]
+
+Depends on: https://github.com/3worlds/omhtk[omhtk], 
+https://github.com/3worlds/omugi[omugi], 
+https://github.com/3worlds/rvgrid[rvgrid], 
+https://github.com/3worlds/uit[uit], 
+https://github.com/3worlds/qgraph[qgraph], 
+https://github.com/3worlds/aot[aot]
