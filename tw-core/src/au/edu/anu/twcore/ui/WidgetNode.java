@@ -126,6 +126,7 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 					ExtendablePropertyListImpl p = (ExtendablePropertyListImpl) properties().clone();
 					p.addProperty(P_DESIGN_TYPE.key(), edt);
 					p.addProperty("TreatmentList", exp.getTreatmentList());
+					p.addProperty("Factors",exp.getFactors());
 					p.addProperty("Baseline", exp.getBaseline());
 					p.addProperty(P_EXP_NREPLICATES.key(), exp.properties().getPropertyValue(P_EXP_NREPLICATES.key()));
 					p.addProperty(P_EXP_DIR.key(),expDir);

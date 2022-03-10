@@ -26,27 +26,57 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
+package au.edu.anu.twcore.archetype.tw;
 
-package au.edu.anu.twcore.project;
-
-import java.io.File;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.twcore.TextTranslations;
+import fr.cnrs.iees.graph.DataHolder;
+import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date Dec 12, 2018
+ * @date 7 Mar 2022
  */
-// Don't add anything here on speculation. Wait until it's needed.
-public interface TwPaths {
-	public static String USER_ROOT/*       */ = System.getProperty("user.home");
-	public static String TW /*             */ = "3w";
-	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
-	public static String TW_DEP_JAR /*     */ = "tw.jar";
-	
-	/** Jacques: we need to talk as I think these are redundant cf ProjectPaths */
-	/** the directory for all generated code */
-	
-	//public static final String TW_CODE 			= "code";
-	/** the directory for all user-specific data (eg csv files and others stuff) */
-	//public static final String TW_DATA 			= "data";
+
+/**
+ * Constraint: String tables of given property keys must have the same
+ * dimensions.
+ * 
+ * Input is dataHolder
+ */
+public class TableDimsMustMatchQuery extends QueryAdaptor {
+	private String key1;
+	private String key2;
+
+	public TableDimsMustMatchQuery(StringTable args) {
+		key1 = args.getWithFlatIndex(0);
+		key2 = args.getWithFlatIndex(1);
+	}
+
+	@Override
+	public Queryable submit(Object input) {
+		initInput(input);
+		DataHolder dh = (DataHolder) input;
+		StringTable t1;
+		StringTable t2;
+		if (dh.properties().hasProperty(key1))
+			t1 = (StringTable) dh.properties().getPropertyValue(key1);
+		else
+			return this;
+		if (dh.properties().hasProperty(key2))
+			t2 = (StringTable) dh.properties().getPropertyValue(key2);
+		else
+			return this;
+		if (!t1.sameDimensionsAs(t2)){
+			String[] msgs = TextTranslations.getTableDimsMustMatch(key1,key2);
+			actionMsg = msgs[0];
+			errorMsg = msgs[1];
+		}
+		
+		return this;
+	}
+
 }

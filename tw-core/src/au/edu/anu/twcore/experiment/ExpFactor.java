@@ -26,27 +26,37 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
+package au.edu.anu.twcore.experiment;
 
-package au.edu.anu.twcore.project;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.File;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.graph.property.Property;
 
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date Dec 12, 2018
+ * @date 5 Mar 2022
  */
-// Don't add anything here on speculation. Wait until it's needed.
-public interface TwPaths {
-	public static String USER_ROOT/*       */ = System.getProperty("user.home");
-	public static String TW /*             */ = "3w";
-	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
-	public static String TW_DEP_JAR /*     */ = "tw.jar";
+public class ExpFactor {
+	private final String name;
+	private final List<Property> values;
+	private final List<String> valueNames;
+	public ExpFactor (String name, List<Property> values, StringTable valueNames) {
+		this.name = name;
+		this.values = values;
+		this.valueNames = new ArrayList<>();
+		for (int i = 0;i<valueNames.size();i++)
+			this.valueNames.add(valueNames.getByInt(i));
+	}
 	
-	/** Jacques: we need to talk as I think these are redundant cf ProjectPaths */
-	/** the directory for all generated code */
-	
-	//public static final String TW_CODE 			= "code";
-	/** the directory for all user-specific data (eg csv files and others stuff) */
-	//public static final String TW_DATA 			= "data";
+	public String getName () {
+		return name;
+	}
+	public String getValueName (Property p) {
+		return valueNames.get(values.indexOf(p));
+	}
+	// Given a List<Property> 
+
 }

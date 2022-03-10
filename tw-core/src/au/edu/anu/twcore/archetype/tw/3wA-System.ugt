@@ -1,19 +1,20 @@
 tree
+
+//-------------------------------------------------------------------------------------------
+// SYSTEM: the sub-tree specifying the simulated system 
+//-------------------------------------------------------------------------------------------
 hasNode systemSpec
 	isOfClass = String("system")
 	hasParent = StringTable(([1]"3worlds:"))
 	// not sure how many systems will work out? - IDD
 	multiplicity = IntegerRange("1..*")
-	hasProperty systemParameterSpec
-		hasName = String("parameterClass")
-		type =  String("String")
-		multiplicity = IntegerRange("0..1")
 	// TODO: check this category is not used by Systems, ie lifeCycle categories and system
 	// categories should be completely separate
 	hasEdge systemCategoryBelongsToSpec
 		isOfClass = String("belongsTo")
 		toNode = String("category:")
 		multiplicity = IntegerRange("0..*")
+// TODO: resurrect this one day...		
 //	hasProperty memorySpec
 //		hasName = String("memory")
 //		type = String("Integer")
@@ -28,11 +29,11 @@ hasNode systemSpec
 		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery arenaHasOneCategoryOforganisationSpec
 		className = String("au.edu.anu.twcore.archetype.tw.EdgeToOneChildOfQuery")
-		reference = String(categorySet:*organisation*)
+		reference = String("categorySet:*organisation*")
 	mustSatisfyQuery exclusiveCategoryCheckForSystemSpec
 		className = String("au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery")
 	hasEdge arenaToSourceLoadFromSpec
 		isOfClass = String("loadFrom")
 		toNode = String("dataSource:")
 		multiplicity = IntegerRange("0..*")
-
+//-------------------------------------------------------------------------------------------

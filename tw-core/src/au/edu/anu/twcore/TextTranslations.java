@@ -1390,6 +1390,21 @@ public class TextTranslations {
 		String[] result = { am, cm };
 		return result;
 	}
+
+	public static String[] getTableDimsMustMatch(String key1, String key2) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Set the number of elements of the tables '"+key1+"' and '"+key2+"' to be the same.";
+			cm = "Expected tables '"+key1+"' and '"+key2+"' to have identical dimensions and size but found they differ.";
+		} else {// make sure default is English or other language users will get no messages!!
+			am = "Set the number of elements of the tables '"+key1+"' and '"+key2+"' to be the same.";
+			cm = "Expected tables '"+key1+"' and '"+key2+"' to have identical dimensions and size but found they differ.";
+// and i can't be bothered telling you how they differ.
+		}
+		String[] result = { am, cm };
+		return result;
+	}
 }
 
 // COPY AND PASTE THIS CONVENIENCE TEMPLATE
