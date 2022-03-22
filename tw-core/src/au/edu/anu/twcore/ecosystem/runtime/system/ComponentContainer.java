@@ -115,7 +115,7 @@ public class ComponentContainer
 		if (hv.decorators()!=null) {
 			hv.decorators().clear();
 		}
-		if (structureChanged()) {
+//		if (stateChanged()) {
 			resetCounters();
 			for (SystemComponent item:items()) {
 				if (item.decorators()!=null) {
@@ -124,7 +124,7 @@ public class ComponentContainer
 				else
 					break; // since all items in a SystemContainer have the same categories
 			}
-		}
+//		}
 	}
 
 	/**
