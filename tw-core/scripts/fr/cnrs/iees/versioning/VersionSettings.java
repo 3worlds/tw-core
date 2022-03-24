@@ -87,7 +87,7 @@ public class VersionSettings {
 			{"au.edu.anu.rscs.aot", "qgraph", "[0.2.0,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.2.0,)", null},
 			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.1.0,)", null},
-			{"fr.cnrs.iees.uit", "uit", "[0.4.0,)", null},
+			{"fr.cnrs.iees.uit", "uit", "[0.4.1,)", null},
 			{"org.apache.commons", "commons-text", "[1,)", null},
 			// removed as twsetup is now in separate lib.
 			//{"org.apache.ivy", "ivy", "2.2.0", null},
