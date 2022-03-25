@@ -91,6 +91,7 @@ public class ProjectJarGenerator {
 		if (UserProjectLink.haveUserProject()) {
 			Set<String> libraryExclusions = new HashSet<>();
 			libraryExclusions.add(TwPaths.TW_DEP_JAR);
+			libraryExclusions.add(TwPaths.TW_FX_DEP_JAR);
 			userLibraries = copyUserLibraries(UserProjectLink.getUserLibraries(libraryExclusions));
 			pullAllCodeFiles();
 			pullAllResources();

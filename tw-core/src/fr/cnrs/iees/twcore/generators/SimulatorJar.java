@@ -79,6 +79,7 @@ public class SimulatorJar extends Jars{
 
 		// dependencies
 		addDependencyOnJar(".." + Jars.separator + TwPaths.TW_DEP_JAR);
+		addDependencyOnJar(".." + Jars.separator + TwPaths.TW_FX_DEP_JAR);
 		for (String userLibrary : userLibraries)
 			addDependencyOnJar(userLibrary);
 	}
