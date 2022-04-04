@@ -14,9 +14,14 @@ treegraph
 			component myAgent
 				lifeSpan = fr.cnrs.iees.twcore.constants.LifespanType(permanent)
 		dynamics emptyDynamics
+			timeline tmLn1
+				longestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(UNSPECIFIED)
+				scale = fr.cnrs.iees.twcore.constants.TimeScaleType(ARBITRARY)
+				shortestTimeUnit = fr.cnrs.iees.twcore.constants.TimeUnits(UNSPECIFIED)
+				timeOrigin = fr.cnrs.iees.twcore.constants.DateTimeType(0)
 			stoppingCondition A
 				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition")
-				endTime = Long(1200)
+				endTime = fr.cnrs.iees.twcore.constants.DateTimeType(1200)
 			stoppingCondition B
 				subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.ValueStoppingCondition")
 				stopVariable = String("x")
@@ -29,7 +34,7 @@ treegraph
 					stopVariable = String("y")
 				stoppingCondition E
 					subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.SimpleStoppingCondition")
-					endTime = Long(375)
+					endTime = fr.cnrs.iees.twcore.constants.DateTimeType(375)
 					stopVariable = String("z")
 				stoppingCondition F
 					subclass = String("au.edu.anu.twcore.ecosystem.runtime.stop.MultipleAndStoppingCondition")

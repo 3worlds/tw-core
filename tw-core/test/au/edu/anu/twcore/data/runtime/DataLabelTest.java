@@ -46,7 +46,7 @@ class DataLabelTest {
 	@Test
 	final void testValueOf() {
 		DataLabel dl = DataLabel.valueOf("x>tab[1:2]>y>gru[3|]");
-		System.out.println(dl);
+//		System.out.println(dl);
 		assertEquals(dl.toString(),"x>tab[1:2]>y>gru[3|]");
 	}
 
@@ -59,20 +59,20 @@ class DataLabelTest {
 		map.put("tab",dim1);
 		map.put("gru",dim2);
 		List<IndexedDataLabel> list = IndexedDataLabel.expandIndexes(dl,map);
-		for (DataLabel d:list)
-			System.out.println(d);
+//		for (DataLabel d:list)
+//			System.out.println(d);
 		assertEquals(list.size(),16);
 		dl = DataLabel.valueOf("ref");
 		map.clear();
 		map.put("ref",dim1);
 		list = IndexedDataLabel.expandIndexes(dl,map);
-		for (DataLabel d:list)
-			System.out.println(d);
+//		for (DataLabel d:list)
+//			System.out.println(d);
 		assertEquals(list.size(),4);
 		map.clear();
 		list = IndexedDataLabel.expandIndexes(dl,null);
-		for (DataLabel d:list)
-			System.out.println(d);
+//		for (DataLabel d:list)
+//			System.out.println(d);
 		assertEquals(list.size(),1);
 	}
 

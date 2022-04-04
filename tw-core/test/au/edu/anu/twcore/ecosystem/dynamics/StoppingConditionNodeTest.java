@@ -60,11 +60,13 @@ class StoppingConditionNodeTest {
 	@Test
 	final void testInitialise() {
 		// this should call initialise in proper order
+		//TODO initialisation of SC requires timeline exists to determine the units of time..
+		// Need to update this utg test file
 		for (TreeGraphNode nn:specs.nodes()) {
 			InitialisableNode n = (InitialisableNode) nn;
 			if (n instanceof StoppingConditionNode) {
 				assertNotNull(((StoppingConditionNode)n).getInstance(0));
-				System.out.println(((StoppingConditionNode)n).getInstance(0).toString());
+//				System.out.println(((StoppingConditionNode)n).getInstance(0).toString());
 			}
 		}
 	}
@@ -73,7 +75,7 @@ class StoppingConditionNodeTest {
 	final void testInitRank() {
 		for (TreeGraphNode nn:specs.nodes()) {
 			InitialisableNode n = (InitialisableNode) nn;
-			System.out.println(n.classId()+":"+n.id()+":"+n.initRank());
+//			System.out.println(n.classId()+":"+n.id()+":"+n.initRank());
 			if (n.id().equals("A"))
 				assertEquals(n.initRank(),10);
 			if (n.id().equals("C"))

@@ -48,22 +48,23 @@ class TwarchetypeTest {
 
 	@Test
 	void test() {
+//		TODO: needs updatig with chnages to the arch
 		EnumProperties.recordEnums();
 		ValidPropertyTypes.listTypes();
 		TreeGraph<?,?> specs = (TreeGraph<?, ?>) GraphImporter.importGraph("testSpecs2.ugt",this.getClass());
-		for (Node n: specs.nodes()) {
-			System.out.println(n.id()+", "+n.getClass().getName());
-			
-		}
+//		for (Node n: specs.nodes()) {
+//			System.out.println(n.id()+", "+n.getClass().getName());
+//			
+//		}
 		Iterable<ErrorMessagable> errors = TWA.checkSpecifications(specs);
-		if (errors!=null) {
-			System.out.println("There were errors in specifications: ");
-			for (ErrorMessagable m:errors)
-				System.out.println(m.toString()+"\n");
-		}
-		else 
-			System.out.println("Specifications checked with no error.");
-		System.out.println(specs.toDetailedString());
+//		if (errors!=null) {
+//			System.out.println("There were errors in specifications: ");
+//			for (ErrorMessagable m:errors)
+//				System.out.println(m.toString()+"\n");
+//		}
+//		else 
+//			System.out.println("Specifications checked with no error.");
+//		System.out.println(specs.toDetailedString());
 		assertNull(errors);
 	}
 
