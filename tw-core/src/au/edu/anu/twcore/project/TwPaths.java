@@ -42,7 +42,8 @@ public interface TwPaths {
 	public static String TW /*             */ = "3w";
 	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
 	public static String TW_DEP_JAR /*     */ = "tw.jar";
-	public static String TW_FX_DEP_JAR/*    */= "twfx.jar";
+// This wont work without modules. Going to modules will take ages.	
+//	public static String TW_FX_DEP_JAR/*    */= "twfx.jar";
 	
 	/** Jacques: we need to talk as I think these are redundant cf ProjectPaths */
 	/** the directory for all generated code */
