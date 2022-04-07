@@ -54,6 +54,7 @@ class SimulationSessionTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	final void testSimulationSession() {
+		//TODO update testSpecs.utg
 		assertTrue(TWA.validArchetype());
 		TreeGraph<TreeGraphNode,ALEdge> specs = (TreeGraph<TreeGraphNode,ALEdge>) 
 			GraphImporter.importGraph("testSpecs.utg",this.getClass());

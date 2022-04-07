@@ -50,6 +50,7 @@ class CodeGeneratorTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	final void testGenerate1() {
+		//TODO update *.utg files
 		GraphState.initialise(null);
 		Project.create("test1");
 		//This won't crash because of changes in THIS utg file cf below.
@@ -59,6 +60,7 @@ class CodeGeneratorTest {
 		gen.generate();
 		Project.close();
 		assertFalse(Project.isOpen()); // if there are problems, we wont reach this point
+		// TODO Clean up test projects
 	}
 
 	@SuppressWarnings("unchecked")

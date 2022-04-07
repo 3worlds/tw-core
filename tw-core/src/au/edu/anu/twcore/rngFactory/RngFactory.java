@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import au.edu.anu.omhtk.rng.Pcg32;
@@ -81,6 +82,9 @@ import fr.ens.biologie.generic.utils.Logging;
 public class RngFactory {
 
 	private static Logger log = Logging.getLogger(RngFactory.class);
+	static {
+		log.setLevel(Level.OFF);
+	}
 	private static Set<Long> currentRandomSeeds = new HashSet<>();
 
 	public final static class Generator {

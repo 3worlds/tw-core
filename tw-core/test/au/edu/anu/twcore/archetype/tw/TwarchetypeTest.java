@@ -49,7 +49,7 @@ class TwarchetypeTest {
 	@Test
 	void test() {
 //		TODO: needs updatig with chnages to the arch
-		EnumProperties.recordEnums();
+//		EnumProperties.recordEnums();
 		ValidPropertyTypes.listTypes();
 		TreeGraph<?,?> specs = (TreeGraph<?, ?>) GraphImporter.importGraph("testSpecs2.ugt",this.getClass());
 //		for (Node n: specs.nodes()) {

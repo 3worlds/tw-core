@@ -51,7 +51,7 @@ class RngFactoryTest {
 			sum += rng.nextDouble();
 		long e = System.nanoTime();
 		double mean = sum / (double) trials;
-		System.out.println(rng.getClass().getSimpleName()+ " mean ="+mean);
+//		System.out.println(rng.getClass().getSimpleName()+ " mean ="+mean);
 		assertTrue(mean > 0.4999);
 		assertTrue(mean < 0.5001);
 		return e - s;
@@ -77,7 +77,7 @@ class RngFactoryTest {
 		Generator rngPCG = RngFactory.newInstance("PCGRandom", 0, RngResetType.ONRUNSTART, RngSeedSourceType.TABLE,RngAlgType.PCG32);
 		
 		Generator crap = RngFactory.newInstance("CRAP", 0, RngResetType.NEVER, RngSeedSourceType.RANDOM, RngAlgType.JAVA);
-		System.out.println(crap.getRandom().nextDouble());
+//		System.out.println(crap.getRandom().nextDouble());
 				
 
 		Random random = rngJava.getRandom();
@@ -100,11 +100,11 @@ class RngFactoryTest {
 		assertEquals(v2, xsRandom.nextDouble());
 		assertEquals(v3, pcgRandom.nextDouble());
 
-		System.out.println("Range check Random");
+//		System.out.println("Range check Random");
 		checkRange(random);
-		System.out.println("Range check XSRandom");
+//		System.out.println("Range check XSRandom");
 		checkRange(xsRandom);
-		System.out.println("Range check PCGRandom");
+//		System.out.println("Range check PCGRandom");
 		checkRange(pcgRandom);
 
 //		rngJava.resetRun();
@@ -112,14 +112,14 @@ class RngFactoryTest {
 //		rngPCG.resetRun();
 		RngFactory.resetRun();
 
-		System.out.println("Time trial Random");
-		double t1 = timing(random);
-		System.out.println("Time trial XSRandom");
-		double t2 = timing(xsRandom);
-		System.out.println("Time trial PCGRandom");
-		double t3 = timing(pcgRandom);
-		System.out.println(("xsRandom is: " + (1 - t2 / t1) * 100) + " % faster than Java.util.Random");
-		System.out.println(("pcgRandom is: " + (1 - t3 / t1) * 100) + " % faster than Java.util.Random");
+//		System.out.println("Time trial Random");
+//		double t1 = timing(random);
+//		System.out.println("Time trial XSRandom");
+//		double t2 = timing(xsRandom);
+//		System.out.println("Time trial PCGRandom");
+//		double t3 = timing(pcgRandom);
+//		System.out.println(("xsRandom is: " + (1 - t2 / t1) * 100) + " % faster than Java.util.Random");
+//		System.out.println(("pcgRandom is: " + (1 - t3 / t1) * 100) + " % faster than Java.util.Random");
 	}
 
 
