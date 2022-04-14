@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
 import org.odftoolkit.simple.SpreadsheetDocument;
@@ -64,7 +65,7 @@ public abstract class CheckDataFileQuery extends QueryAdaptor {
 			if (dstype.contains(CsvFileLoader.class.getSimpleName())) {
 				BufferedReader reader = null;
 				try {
-					reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+					reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),StandardCharsets.UTF_8));
 				    String line = reader.readLine();
 				    while (line!=null) {
 						if (!line.trim().isEmpty()) { // skip empty lines wherever they are

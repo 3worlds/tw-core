@@ -31,6 +31,7 @@ package au.edu.anu.twcore.experiment.runtime.io;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -114,7 +115,7 @@ public class CsvFileLoader extends TableDataLoader {
 		BufferedReader reader = null;
 		LinkedList<String> lines = new LinkedList<String>();
 		try {
-		    reader = new BufferedReader(new InputStreamReader(input));
+		    reader = new BufferedReader(new InputStreamReader(input,StandardCharsets.UTF_8));
 		    String line = reader.readLine();
 		    while (line!=null) {
 				if (!line.trim().isEmpty()) // skip empty lines wherever they are
