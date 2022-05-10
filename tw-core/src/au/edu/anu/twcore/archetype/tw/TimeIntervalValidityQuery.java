@@ -34,6 +34,7 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
+import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.TimeScaleType;
@@ -132,7 +133,15 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 						foundTimeUnitsMin = timerTimeUnitsMin;
 					if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
 						foundTimeUnitsMax = timerTimeUnits;
-				}
+				} // EventTimers always run at the shortest time unit
+				else if (timer.properties().getPropertyValue(P_TIMEMODEL_SUBCLASS.key())
+					.equals(EventTimer.class.getName())){
+					TimeUnits timerTimeUnits = shortestTimeUnit;
+					if (timerTimeUnits.compareTo(foundTimeUnitsMin) < 0)
+						foundTimeUnitsMin = timerTimeUnits;
+					if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
+						foundTimeUnitsMax = timerTimeUnits;
+				}				
 			}
 //			if (foundTimeUnitsMin.compareTo(shortestTimeUnit) > 0) {
 			if (foundTimeUnitsMin.compareTo(shortestTimeUnit) != 0) {
