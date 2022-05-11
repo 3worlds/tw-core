@@ -117,14 +117,15 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 					/**
 					 * if has an offset, allow a finer time unit
 					 * 
-					 * 1) offset must round to at least 1 of the next smaller unit. I don't like
-					 * this. It should be an integer with no need to round. E.g. if year is the time
-					 * unit then offset should be expressed in a number of months.
+					 * 1) The next smaller unit must be whole number multiples of the
+					 * unit in question.
 					 * 
 					 * 2) Offset not allowed for ARBITRARY or MONO_UNIT
 					 * 
 					 * 3) Maybe we can eventually get rid of this - is it useful anymore since the
 					 * causal loop has changed?
+					 * 
+					 * Yes we should get rid of it - but wait.
 					 */
 					if (timer.properties().hasProperty(P_TIMEMODEL_OFFSET.key()))
 						timerTimeUnitsMin = TimeScaleType.getPrev(timeScaleType, timerTimeUnits);
@@ -134,14 +135,15 @@ public class TimeIntervalValidityQuery extends QueryAdaptor {
 					if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
 						foundTimeUnitsMax = timerTimeUnits;
 				} // EventTimers always run at the shortest time unit
-				else if (timer.properties().getPropertyValue(P_TIMEMODEL_SUBCLASS.key())
-					.equals(EventTimer.class.getName())){
+				// This shouldn't be necessary because event timers don't have the TU property?
+				else /*if (timer.properties().getPropertyValue(P_TIMEMODEL_SUBCLASS.key())
+						.equals(EventTimer.class.getName())) */{
 					TimeUnits timerTimeUnits = shortestTimeUnit;
 					if (timerTimeUnits.compareTo(foundTimeUnitsMin) < 0)
 						foundTimeUnitsMin = timerTimeUnits;
 					if (timerTimeUnits.compareTo(foundTimeUnitsMax) > 0)
 						foundTimeUnitsMax = timerTimeUnits;
-				}				
+				}
 			}
 //			if (foundTimeUnitsMin.compareTo(shortestTimeUnit) > 0) {
 			if (foundTimeUnitsMin.compareTo(shortestTimeUnit) != 0) {
