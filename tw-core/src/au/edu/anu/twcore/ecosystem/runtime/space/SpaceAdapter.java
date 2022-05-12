@@ -29,6 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -489,7 +490,15 @@ public abstract class SpaceAdapter
 
 	@Override
 	public Collection<SystemComponent> outOfSpaceItems() {
-		return outOfSpace;
+		return Collections.unmodifiableCollection(outOfSpace);
+	}
+	
+	@Override
+	public void removeOutOfSpaceItems() {
+		toDelete.removeAll(outOfSpace);
+		toInsert.removeAll(outOfSpace);
+		toMove.removeAll(outOfSpace);
+		outOfSpace.clear();
 	}
 
 	@Override

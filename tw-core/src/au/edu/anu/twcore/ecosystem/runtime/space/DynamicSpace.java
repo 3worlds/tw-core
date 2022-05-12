@@ -89,4 +89,13 @@ public interface DynamicSpace<T extends Locatable>
 		return Collections.emptyList();
 	}
 
+	/**
+	 * When items have jumpbed out of space, they may also have been inserted or deleted
+	 * simultaneously. This makes sure they are removed from all temporary lists in case
+	 * they left the space.
+	 * 
+	 */
+	public void removeOutOfSpaceItems();
+
+	
 }
