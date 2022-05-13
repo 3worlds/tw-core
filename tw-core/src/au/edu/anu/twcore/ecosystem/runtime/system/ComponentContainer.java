@@ -251,6 +251,10 @@ public class ComponentContainer
 		}
 		for (SystemComponent item:items.values()) {
 			setInitialState(arena,lifeCycle,group,item);
+			// Pb here: initial coordinates (and drivers) are in the current data and we want them in next
+			// hence
+			if (item.nextState()!=null)
+				item.nextState().setProperties(item.currentState());
 			for (DynamicGraphObserver<SystemComponent,SystemRelation> o:observers)
 				if (item.isInSpace((ObserverDynamicSpace) o))
 					o.onNodeAdded(item);
