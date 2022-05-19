@@ -579,6 +579,15 @@ public class DataTrackerNode extends InitialisableNode
 					null, null, permanent, ls, expandedTrackList.keySet(),fieldMetadata);
 		}
 		else if (dataTrackerClass.equals(DataTracker2D.class.getName())) {
+			// JG 19/5/2022 - THIS iS WRONG!
+			// trackfield/tracktable should be replaced by trackVar trackMap, ie edge type depends on 
+			// data tracker type.
+			// because in the general case a table may be within a record and reciproc.
+			// so if 0D tracker : trackvar and search for indices etc, leaf track value is a single field or table cell
+			// if 2D tracker same, but leaf track value is (1) a 2D table or (2) a field in a 2D table
+			// That's the ideal case.
+			// Temp. fix: impose that 2D datatracker can only track a plain 2D table with no fields
+			// --- flawed code hereafter ---
 			// This happens only if trackTable was selected
 			// trackTable has multiplicity 0..1 after dynamics.utg
 			// to there must be only one item in the tableDims map.

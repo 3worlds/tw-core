@@ -334,6 +334,12 @@ hasNode dataTrackerSpec
 		edgeLabels = StringTable(([2]"trackField","trackTable"))
 	
 	// TODO: more consistency checks ? eg on categories ?
+	// Temporary constraint to fix flawed behaviour of 2D tracker:
+	// a 2D tracker MUST only have 1 TrackTable edge to a table of primitives with exactly 2 dimensions
+	// This may be improved in the future but requires significant coding
+	mustSatisfyQuery onlyTrack2DTableForMapsEdge
+		className = String("au.edu.anu.twcore.archetype.tw.Tmp2DMapQuery")
+		
 //-------------------------------------------------------------------------------------------
 
 hasNode stoppingConditionSpec
