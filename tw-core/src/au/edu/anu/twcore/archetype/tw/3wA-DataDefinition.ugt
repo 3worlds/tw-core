@@ -91,6 +91,9 @@ hasNode tableSpec
 	mustSatisfyQuery NumberTableUnitsSpecCondition
 		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
 		conditions = StringTable(([8]"units","dataElementType","Double","Float","Integer","Long","Short","Byte"))
+	mustSatisfyQuery NumberTableDescriptionSpecCondition
+		className = String("au.edu.anu.twcore.archetype.tw.RequirePropertyQuery")
+		conditions = StringTable(([12]"description","dataElementType","Double","Float","Integer","Long","Short","Byte","Boolean","Char","String","Object"))
 	hasProperty RealNumberTablePrecSpec
 		hasName = String("precision")
 		type = String("Double")
@@ -127,7 +130,7 @@ hasNode recordFieldSpec
 	hasProperty fieldDescriptionSpec
 		hasName = String("description")
 		type = String("String")
-		multiplicity = IntegerRange("0..1")
+		multiplicity = IntegerRange("1..1")
 	hasProperty NumberFieldUnitsSpec
 		hasName = String("units")
 		type = String("String")
