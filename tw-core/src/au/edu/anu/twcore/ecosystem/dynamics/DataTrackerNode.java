@@ -494,8 +494,9 @@ public class DataTrackerNode extends InitialisableNode
 		return sealed;
 	}
 
-	// CAUTION: This methos assumes the Arena containers and components have been initialised
+	// CAUTION: This method assumes the Arena containers and components have been initialised
 	// BEFORE the data trackers.
+	// which is TRUE! (debugging 27/5/2022) when here, arena has all the containers properly setup
 	@SuppressWarnings({ "unchecked" })
 	private DataTracker<?, ?> makeDataTracker(int index) {
 		AbstractDataTracker<?, ?> result = null;

@@ -291,6 +291,8 @@ hasNode dataTrackerSpec
 			hasName = String("idGroup")
 			type = String("String")
 			multiplicity = IntegerRange("0..1")
+		mustSatisfyQuery idPropertyMustContainValidGroupAndLifeCycle
+			className = String("au.edu.anu.twcore.archetype.tw.ValidElementTrackNameQuery")
 	//
 	// tracking of groups
 	//
@@ -302,6 +304,8 @@ hasNode dataTrackerSpec
 			hasName = String("idGroup")
 			type = String("StringTable")
 			multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery idPropertyMustContainValidGroup
+			className = String("au.edu.anu.twcore.archetype.tw.ValidElementTrackNameQuery")
 	//
 	// tracking of life cycles
 	//
@@ -313,6 +317,8 @@ hasNode dataTrackerSpec
 			hasName = String("idLifeCycle")
 			type = String("StringTable")
 			multiplicity = IntegerRange("1..1")
+		mustSatisfyQuery idPropertyMustContainValidLifeCycle
+			className = String("au.edu.anu.twcore.archetype.tw.ValidElementTrackNameQuery")
 	//
 	// tracking of the arena
 	//
