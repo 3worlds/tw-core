@@ -574,6 +574,8 @@ hasNode initialValuesSpec
 		hasName = String("idLifeCycle")
 		type = String("String")
 		multiplicity = IntegerRange("0..1")
+	mustSatisfyQuery initialValuesMustHaveIdProperties
+		className = String("au.edu.anu.twcore.archetype.tw.CheckNodeIdPropertiesQuery")
 		// then provide property (name,value) pairs - of course names must match category definitions
 		// caution: if parameter values are associated to an atomic, it means it is unique in its
 		// category, its parameters are specific to it and no other atomic with the same values

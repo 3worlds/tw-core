@@ -275,6 +275,7 @@ hasNode dataTrackerSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IndexDimensionQuery")
 	// 
 	// tracking of System Components (use with trackField and trackTable)
+	//
 	// A SystemComponent cannot be directly identified. It must be found by
 	// its life cycle and group ids (if present), plus a sampling mode.
 	// This because SystemComponent ids change at every simulation.
@@ -291,10 +292,15 @@ hasNode dataTrackerSpec
 			hasName = String("idGroup")
 			type = String("String")
 			multiplicity = IntegerRange("0..1")
+		mustSatisfyQuery sampleComponentMustHaveIdProperties
+			className = String("au.edu.anu.twcore.archetype.tw.CheckEdgeIdPropertiesQuery")
 		mustSatisfyQuery idPropertyMustContainValidGroupAndLifeCycle
 			className = String("au.edu.anu.twcore.archetype.tw.ValidElementTrackNameQuery")
 	//
 	// tracking of groups
+	//
+	// Each group is identified by a name either found in initValues nodes
+	// children of the groupType or in some dataSource
 	//
 	hasEdge trackGroupTypeEdgeSpec 
 		isOfClass = String("sampleGroup")
@@ -308,6 +314,9 @@ hasNode dataTrackerSpec
 			className = String("au.edu.anu.twcore.archetype.tw.ValidElementTrackNameQuery")
 	//
 	// tracking of life cycles
+	//
+	// Each life cycle is identified by a name either found in initValues nodes
+	// children of the lifeCycleType or in some dataSource
 	//
 	hasEdge trackComponentLCEdgeSpec 
 		isOfClass = String("sampleLifeCycle")
