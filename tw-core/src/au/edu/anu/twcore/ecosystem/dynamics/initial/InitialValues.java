@@ -38,7 +38,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
-import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
@@ -87,7 +86,7 @@ public class InitialValues extends InitialisableNode {
 				// normally this has been done before since SimulatorNode initialises from
 				// LifeCycle down to Component
 				if (gpeType instanceof LifeCycleType)
-					for (DataIdentifier gif:((ElementType<?,?>)peType).initialItems().keySet())
+					for (DataIdentifier gif:((GroupType)peType).initialItems().keySet())
 						if (gif.groupId().equals(dif[1])) {
 							dif[2] = gif.lifeCycleId();
 							break;
@@ -99,7 +98,7 @@ public class InitialValues extends InitialisableNode {
 		else if (eType instanceof GroupType) {
 			dif[1] = this.id();
 			// the ElementType parent - always != null
-			ElementType<?,?> peType = (ElementType<?, ?>) eType.getParent();
+			TreeNode peType = eType.getParent();
 			if (peType instanceof LifeCycleType)
 				dif[2] = (String)this.properties().getPropertyValue(P_DATASOURCE_IDLC.key());
 			// if not a life cycle type, then peType == arena, no need for a lcid
