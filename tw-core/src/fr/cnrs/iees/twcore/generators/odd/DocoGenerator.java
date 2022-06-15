@@ -481,6 +481,10 @@ public class DocoGenerator {
 
 	}
 
+	public File getODDFile() {
+		return oddFile;
+	}
+
 	private void writeTitle(TextDocument doc, String heading, int level) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(heading);
@@ -1866,9 +1870,10 @@ public class DocoGenerator {
 		long configSize = (nNodes - baseNodes) + (nEdges - baseEdges) + (nProps - baseProps);
 		entries.add(new StringBuilder().append("1 #Nodes").append(sep).append(nf((nNodes - baseNodes))).toString());
 		entries.add(new StringBuilder().append("2 #Edges").append(sep).append(nf((nEdges - baseEdges))).toString());
-		entries.add(new StringBuilder().append("3 #Properties").append(sep).append(nf((nProps - baseProps))).toString());
 		entries.add(
-				new StringBuilder().append("4 configuration size (1+2+3)").append(sep).append(nf((configSize))).toString());
+				new StringBuilder().append("3 #Properties").append(sep).append(nf((nProps - baseProps))).toString());
+		entries.add(new StringBuilder().append("4 configuration size (1+2+3)").append(sep).append(nf((configSize)))
+				.toString());
 		entries.add(new StringBuilder().append("5 #Drivers").append(sep).append(nf((nDrvs - baseDrvs))).toString());
 		entries.add(new StringBuilder().append("6 #Constants").append(sep).append(nf((nCnts - baseCnts))).toString());
 		entries.add(new StringBuilder().append("7 #Decorators").append(sep).append(nf((nDecs - baseDecs))).toString());
@@ -1894,6 +1899,7 @@ public class DocoGenerator {
 
 		return entries;
 	}
+
 	private static String nf(long n) {
 		return NumberFormat.getNumberInstance().format(n);
 	}
@@ -1918,7 +1924,7 @@ public class DocoGenerator {
 			e1.printStackTrace();
 		}
 
-		return nf(result-baseClassByteCount);
+		return nf(result - baseClassByteCount);
 
 	}
 
