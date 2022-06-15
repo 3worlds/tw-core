@@ -481,8 +481,9 @@ public class DocoGenerator {
 
 	}
 
-	public File getODDFile() {
-		return oddFile;
+	public File[] getArtifactFiles() {
+		File[] result = { oddFile, flowChartFile };
+		return result;
 	}
 
 	private void writeTitle(TextDocument doc, String heading, int level) {
