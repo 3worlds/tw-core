@@ -38,12 +38,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -53,16 +49,11 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
-import java.util.jar.JarOutputStream;
-
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.style.Font;
 import org.odftoolkit.simple.table.Column;
@@ -75,9 +66,6 @@ import com.google.common.io.Files;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.data.Record;
-import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
-import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
-import au.edu.anu.twcore.ecosystem.dynamics.StoppingConditionNode;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
@@ -166,7 +154,7 @@ public class DocoGenerator {
 	private List<TreeGraphDataNode> rootStoppingConditions;
 	private List<TreeGraphDataNode> initTypes;
 	private List<TreeGraphDataNode> trackerTypes;
-	private List<TreeGraphDataNode> ephemeralComponents;
+//	private List<TreeGraphDataNode> ephemeralComponents;
 	private List<TreeGraphDataNode> instanceComponents;
 	private List<TreeGraphDataNode> rngs;
 	private Map<TreeGraphDataNode, Map<TreeGraphDataNode, List<TreeGraphDataNode>>> ctFuncLookup;
@@ -252,7 +240,7 @@ public class DocoGenerator {
 		decTypes = new ArrayList<>();
 		cnstTypes = new ArrayList<>();
 		rngs = new ArrayList<>();
-		ephemeralComponents = new ArrayList<>();
+//		ephemeralComponents = new ArrayList<>();
 		instanceComponents = new ArrayList<>();
 		trackerTypes = new ArrayList<>();
 		tableNumber = 0;
@@ -1212,13 +1200,13 @@ public class DocoGenerator {
 		return entries;
 	}
 
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	private List<String> getAgentsIndividualsDetails() {
 		List<String> entries = new ArrayList<>();
 		// any component whose type is ephemeral - list the components, constants and
 		// drivers.
 		for (TreeGraphDataNode ct : compTypes) {
-			String c1 = ct.id();
+//			String c1 = ct.id();
 			TreeGraphDataNode eph = (TreeGraphDataNode) get(ct.edges(Direction.OUT),
 					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListEndNodes(),
 					selectZeroOrOne(hasTheName(ConfigurationReservedNodeId.ephemeral.id())));
@@ -1365,200 +1353,200 @@ public class DocoGenerator {
 		return entries;
 	}
 
-	@SuppressWarnings("unchecked")
-	private String getFlowChart() {
-		SimulatorNode sim = (SimulatorNode) get(cfg.root().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())),
-				children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
-		Map<Integer, List<List<ProcessNode>>> pco = sim.getProcessCallingOrder();
-
-		/*-
-		 * initialise
-		 * for each time event
-		 * 	if (stopping condition)
-		 * 		for each (a,b,c) (belonging to category with decs)
-		 * 			assign decs  ← zero
-		 * 		if time for time1
-		 * 			with (entities) cf JG: for entities string desc see getProcessAppliesToDesc()
-		 * 				if (decision)
-		 * 					functions
-		 * 						consequence function
-		 *  	etc...
-		 *  	advance time
-		 *  	create/destroy ephemeral relations and components
-		 * 		assign next drivers  ← current values 	
-		 * 
-		 * */
-		StringBuilder flowChart = new StringBuilder();
-		// Stopping conditions
-
-		// initialisation
-		for (TreeGraphDataNode init : initTypes)
-			flowChart.append(funcDesc.get(init)).append("\n");
-
-		flowChart.append("for each time event\n");
-		if (!rootStoppingConditions.isEmpty()) {
-			StringBuilder sb = new StringBuilder().append("\tif ");
-			// TODO: build a better string when we have examples of complex stopping
-			// conditions. All sc that are children of Dynamics are implicitly "OR"
-			for (TreeGraphDataNode sc : rootStoppingConditions) {
-				StoppingConditionNode stpCond = (StoppingConditionNode) sc;
-				sb.append(stpCond.getInstance(0).toString()).append(" or ");
-			}
-			sb.replace(sb.length() - 4, sb.length(), " then\n");
-			sb.append("\t\tend simulation\n");
-
-			flowChart.append(sb.toString());
-		}
-		// init decorators
-		for (TreeGraphDataNode dec : decTypes) {
-			TreeGraphDataNode cat = (TreeGraphDataNode) get(dec.edges(Direction.IN),
-					selectOne(hasTheLabel(E_DECORATORS.label())), startNode());
-			List<TreeGraphDataNode> targets = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
-					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes());
-			String actors = "";
-			for (TreeGraphDataNode target : targets)
-				actors += ", " + target.id();
-			actors = actors.replaceFirst(", ", "");
-			flowChart.append("\tfor each(").append(actors).append(")\n");
-			Map<String, List<String>> details = getDataTreeDetails(dec);
-			for (Map.Entry<String, List<String>> entry : details.entrySet())
-				// we need the element class here assign boolean <- false etc...
-				flowChart.append(sep).append("\tassign ").append(entry.getKey()).append(" ← zero\n");
-		}
-
-		// get dependsOn orders
-		Map<Integer, List<TreeNode>> timerCombos = new HashMap<>();
-
-		for (Map.Entry<Integer, List<List<ProcessNode>>> combo : pco.entrySet()) {
-			List<TreeNode> timerList = new ArrayList<>();
-			timerCombos.put(combo.getKey(), timerList);
-			for (List<ProcessNode> lst : combo.getValue()) {
-				TreeNode timer = lst.get(0).getParent();
-				if (!timerList.contains(timer))
-					timerList.add(timer);
-			}
-		}
-
-		boolean first = true;
-		String procIndent = "\t";
-		for (Map.Entry<Integer, List<TreeNode>> timerCombo : timerCombos.entrySet()) {
-			StringBuilder sb = new StringBuilder();
-			if (timerCombos.size() > 1) {
-				procIndent = "\t\t";
-				if (first) {
-					sb.append("\tif time for (");
-					first = false;
-				} else
-					sb.append("\telse if time for (");
-				for (TreeNode timer : timerCombo.getValue()) {
-					sb.append(timer.id()).append(" & ");
-				}
-				sb.replace(sb.length() - 3, sb.length(), "");
-				sb.append(")\n");
-				flowChart.append(sb.toString());
-			}
-			String funcIndent = procIndent + "\t";
-			List<List<ProcessNode>> pSeq = pco.get(timerCombo.getKey());
-			for (List<ProcessNode> procs : pSeq) {
-				for (ProcessNode proc : procs) {
-					flowChart.append(procIndent).append("with each (").append(getProcessAppliesToDesc(proc))
-							.append(")\n");
-
-					List<TreeNode> funcs = new ArrayList<>();
-					List<TreeNode> trackers = new ArrayList<>();
-					for (TreeNode c : proc.getChildren()) {
-						if (c.classId().equals(N_FUNCTION.label()))
-							funcs.add(c);
-						else if (c.classId().equals(N_DATATRACKER.label()))
-							trackers.add(c);
-					}
-
-					// cf: comments for this method
-					funcs = orderFunc(funcs);
-					Iterator<TreeNode> iter = funcs.iterator();
-					while (iter.hasNext()) {
-						TreeNode func = iter.next();
-						if (hasConsequence(func)) {
-							flowChart.append(funcIndent).append("if ").append(funcDesc.get(func)).append("\n");
-							appendConsequences(funcIndent + "\t", flowChart, func);
-						} else if (isDecisionFunc((TreeGraphDataNode) func)) {
-							if (negationFunc((TreeGraphDataNode) func))
-								flowChart.append(funcIndent).append("if not ").append(funcDesc.get(func))
-										.append(" then\n");
-							else
-								flowChart.append(funcIndent).append("if ").append(funcDesc.get(func)).append(" then\n");
-
-							flowChart.append(funcIndent).append(sep)
-									.append(getDecisionConsequence((TreeGraphDataNode) func)).append("\n");
-						} else {
-							flowChart.append(funcIndent).append(funcDesc.get(func)).append("\n");
-						}
-					}
-
-					// Do trackers last
-					for (TreeNode tracker : trackers) {
-						flowChart.append(funcIndent).append("record ")
-								.append(getTrackedDesc((TreeGraphDataNode) tracker));
-					}
-
-				}
-			}
-		}
-		/**
-		 * TODO Don't know what to do here? How do i know that a relation is ephemeral?
-		 * 
-		 * 1. if either of the to/from cats belongsTo ephemeral category?
-		 * 
-		 * 2. if their processes are located in space?
-		 * 
-		 * TODO: state updates for structure and attributes.
-		 */
-//		boolean haveEphemeralRelations = false;
-//		flowChart.append("\tadvance time\n");
-//		if (haveEphemeralRelations) {
-//			flowChart.append("\tremove old relations\n");
-//			flowChart.append("\tcreate new relations\n");
+//	@SuppressWarnings("unchecked")
+//	private String getFlowChart() {
+//		SimulatorNode sim = (SimulatorNode) get(cfg.root().getChildren(), selectOne(hasTheLabel(N_SYSTEM.label())),
+//				children(), selectOne(hasTheLabel(N_DYNAMICS.label())));
+//		Map<Integer, List<List<ProcessNode>>> pco = sim.getProcessCallingOrder();
+//
+//		/*-
+//		 * initialise
+//		 * for each time event
+//		 * 	if (stopping condition)
+//		 * 		for each (a,b,c) (belonging to category with decs)
+//		 * 			assign decs  ← zero
+//		 * 		if time for time1
+//		 * 			with (entities) cf JG: for entities string desc see getProcessAppliesToDesc()
+//		 * 				if (decision)
+//		 * 					functions
+//		 * 						consequence function
+//		 *  	etc...
+//		 *  	advance time
+//		 *  	create/destroy ephemeral relations and components
+//		 * 		assign next drivers  ← current values 	
+//		 * 
+//		 * */
+//		StringBuilder flowChart = new StringBuilder();
+//		// Stopping conditions
+//
+//		// initialisation
+//		for (TreeGraphDataNode init : initTypes)
+//			flowChart.append(funcDesc.get(init)).append("\n");
+//
+//		flowChart.append("for each time event\n");
+//		if (!rootStoppingConditions.isEmpty()) {
+//			StringBuilder sb = new StringBuilder().append("\tif ");
+//			// TODO: build a better string when we have examples of complex stopping
+//			// conditions. All sc that are children of Dynamics are implicitly "OR"
+//			for (TreeGraphDataNode sc : rootStoppingConditions) {
+//				StoppingConditionNode stpCond = (StoppingConditionNode) sc;
+//				sb.append(stpCond.getInstance(0).toString()).append(" or ");
+//			}
+//			sb.replace(sb.length() - 4, sb.length(), " then\n");
+//			sb.append("\t\tend simulation\n");
+//
+//			flowChart.append(sb.toString());
+//		}
+//		// init decorators
+//		for (TreeGraphDataNode dec : decTypes) {
+//			TreeGraphDataNode cat = (TreeGraphDataNode) get(dec.edges(Direction.IN),
+//					selectOne(hasTheLabel(E_DECORATORS.label())), startNode());
+//			List<TreeGraphDataNode> targets = (List<TreeGraphDataNode>) get(cat.edges(Direction.IN),
+//					selectOneOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes());
+//			String actors = "";
+//			for (TreeGraphDataNode target : targets)
+//				actors += ", " + target.id();
+//			actors = actors.replaceFirst(", ", "");
+//			flowChart.append("\tfor each(").append(actors).append(")\n");
+//			Map<String, List<String>> details = getDataTreeDetails(dec);
+//			for (Map.Entry<String, List<String>> entry : details.entrySet())
+//				// we need the element class here assign boolean <- false etc...
+//				flowChart.append(sep).append("\tassign ").append(entry.getKey()).append(" ← zero\n");
 //		}
 //
-//		for (TreeGraphDataNode cmp : ephemeralComponents) {
-//			flowChart.append("\tremove old ").append(cmp.id()).append("\n");
-//			flowChart.append("\tcreate new ").append(cmp.id()).append("\n");
+//		// get dependsOn orders
+//		Map<Integer, List<TreeNode>> timerCombos = new HashMap<>();
+//
+//		for (Map.Entry<Integer, List<List<ProcessNode>>> combo : pco.entrySet()) {
+//			List<TreeNode> timerList = new ArrayList<>();
+//			timerCombos.put(combo.getKey(), timerList);
+//			for (List<ProcessNode> lst : combo.getValue()) {
+//				TreeNode timer = lst.get(0).getParent();
+//				if (!timerList.contains(timer))
+//					timerList.add(timer);
+//			}
 //		}
 //
-//		if (!driverTypes.isEmpty())
-//			flowChart.append("\tassign drivers  ← newly computed values\n");
+//		boolean first = true;
+//		String procIndent = "\t";
+//		for (Map.Entry<Integer, List<TreeNode>> timerCombo : timerCombos.entrySet()) {
+//			StringBuilder sb = new StringBuilder();
+//			if (timerCombos.size() > 1) {
+//				procIndent = "\t\t";
+//				if (first) {
+//					sb.append("\tif time for (");
+//					first = false;
+//				} else
+//					sb.append("\telse if time for (");
+//				for (TreeNode timer : timerCombo.getValue()) {
+//					sb.append(timer.id()).append(" & ");
+//				}
+//				sb.replace(sb.length() - 3, sb.length(), "");
+//				sb.append(")\n");
+//				flowChart.append(sb.toString());
+//			}
+//			String funcIndent = procIndent + "\t";
+//			List<List<ProcessNode>> pSeq = pco.get(timerCombo.getKey());
+//			for (List<ProcessNode> procs : pSeq) {
+//				for (ProcessNode proc : procs) {
+//					flowChart.append(procIndent).append("with each (").append(getProcessAppliesToDesc(proc))
+//							.append(")\n");
+//
+//					List<TreeNode> funcs = new ArrayList<>();
+//					List<TreeNode> trackers = new ArrayList<>();
+//					for (TreeNode c : proc.getChildren()) {
+//						if (c.classId().equals(N_FUNCTION.label()))
+//							funcs.add(c);
+//						else if (c.classId().equals(N_DATATRACKER.label()))
+//							trackers.add(c);
+//					}
+//
+//					// cf: comments for this method
+//					funcs = orderFunc(funcs);
+//					Iterator<TreeNode> iter = funcs.iterator();
+//					while (iter.hasNext()) {
+//						TreeNode func = iter.next();
+//						if (hasConsequence(func)) {
+//							flowChart.append(funcIndent).append("if ").append(funcDesc.get(func)).append("\n");
+//							appendConsequences(funcIndent + "\t", flowChart, func);
+//						} else if (isDecisionFunc((TreeGraphDataNode) func)) {
+//							if (negationFunc((TreeGraphDataNode) func))
+//								flowChart.append(funcIndent).append("if not ").append(funcDesc.get(func))
+//										.append(" then\n");
+//							else
+//								flowChart.append(funcIndent).append("if ").append(funcDesc.get(func)).append(" then\n");
+//
+//							flowChart.append(funcIndent).append(sep)
+//									.append(getDecisionConsequence((TreeGraphDataNode) func)).append("\n");
+//						} else {
+//							flowChart.append(funcIndent).append(funcDesc.get(func)).append("\n");
+//						}
+//					}
+//
+//					// Do trackers last
+//					for (TreeNode tracker : trackers) {
+//						flowChart.append(funcIndent).append("record ")
+//								.append(getTrackedDesc((TreeGraphDataNode) tracker));
+//					}
+//
+//				}
+//			}
+//		}
+//		/**
+//		 * TODO Don't know what to do here? How do i know that a relation is ephemeral?
+//		 * 
+//		 * 1. if either of the to/from cats belongsTo ephemeral category?
+//		 * 
+//		 * 2. if their processes are located in space?
+//		 * 
+//		 * TODO: state updates for structure and attributes.
+//		 */
+////		boolean haveEphemeralRelations = false;
+////		flowChart.append("\tadvance time\n");
+////		if (haveEphemeralRelations) {
+////			flowChart.append("\tremove old relations\n");
+////			flowChart.append("\tcreate new relations\n");
+////		}
+////
+////		for (TreeGraphDataNode cmp : ephemeralComponents) {
+////			flowChart.append("\tremove old ").append(cmp.id()).append("\n");
+////			flowChart.append("\tcreate new ").append(cmp.id()).append("\n");
+////		}
+////
+////		if (!driverTypes.isEmpty())
+////			flowChart.append("\tassign drivers  ← newly computed values\n");
+//
+//		return flowChart.toString();
+//	}
 
-		return flowChart.toString();
-	}
+//	private String getDecisionConsequence(TreeGraphDataNode func) {
+//		String result = "";
+//		TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+//		switch (ft) {
+//		case MaintainRelationDecision: {
+//			return "deleteRelation";
+//		}
+//		case RelateToDecision: {
+//			return "setRelation (" + getProcessAppliesToDesc((ProcessNode) func.getParent()) + ")";
+//		}
+//		case DeleteDecision: {
+//			return "deleteComponent";
+//		}
+//		default: {
+//			return result;
+//		}
+//		}
+//	}
 
-	private String getDecisionConsequence(TreeGraphDataNode func) {
-		String result = "";
-		TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-		switch (ft) {
-		case MaintainRelationDecision: {
-			return "deleteRelation";
-		}
-		case RelateToDecision: {
-			return "setRelation (" + getProcessAppliesToDesc((ProcessNode) func.getParent()) + ")";
-		}
-		case DeleteDecision: {
-			return "deleteComponent";
-		}
-		default: {
-			return result;
-		}
-		}
-	}
-
-	private boolean negationFunc(TreeGraphDataNode func) {
-		TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-		return ft.equals(TwFunctionTypes.MaintainRelationDecision);
-	}
-
-	private boolean isDecisionFunc(TreeGraphDataNode func) {
-		TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-		return ft.returnType().equals("boolean");
-	}
+//	private boolean negationFunc(TreeGraphDataNode func) {
+//		TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+//		return ft.equals(TwFunctionTypes.MaintainRelationDecision);
+//	}
+//
+//	private boolean isDecisionFunc(TreeGraphDataNode func) {
+//		TwFunctionTypes ft = (TwFunctionTypes) func.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+//		return ft.returnType().equals("boolean");
+//	}
 
 	/**
 	 * ComponentProcess.execute
@@ -1581,72 +1569,72 @@ public class DocoGenerator {
 	 * 
 	 * 4. Others to come...
 	 */
-	private List<TreeNode> orderFunc(List<TreeNode> funcs) {
-		// TODO: for now we just trust to the order of the enums?
-		funcs.sort(new Comparator<TreeNode>() {
+//	private List<TreeNode> orderFunc(List<TreeNode> funcs) {
+//		// TODO: for now we just trust to the order of the enums?
+//		funcs.sort(new Comparator<TreeNode>() {
+//
+//			@Override
+//			public int compare(TreeNode o1, TreeNode o2) {
+//				TreeGraphDataNode n1 = (TreeGraphDataNode) o1;
+//				TreeGraphDataNode n2 = (TreeGraphDataNode) o2;
+//				TwFunctionTypes ft1 = (TwFunctionTypes) n1.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+//				TwFunctionTypes ft2 = (TwFunctionTypes) n2.properties().getPropertyValue(P_FUNCTIONTYPE.key());
+//				return ft1.compareTo(ft2);
+//			}
+//
+//		});
+//		return funcs;
+//	}
 
-			@Override
-			public int compare(TreeNode o1, TreeNode o2) {
-				TreeGraphDataNode n1 = (TreeGraphDataNode) o1;
-				TreeGraphDataNode n2 = (TreeGraphDataNode) o2;
-				TwFunctionTypes ft1 = (TwFunctionTypes) n1.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-				TwFunctionTypes ft2 = (TwFunctionTypes) n2.properties().getPropertyValue(P_FUNCTIONTYPE.key());
-				return ft1.compareTo(ft2);
-			}
-
-		});
-		return funcs;
-	}
-
-	@SuppressWarnings("unchecked")
-	private String getProcessAppliesToDesc(ProcessNode proc) {
-
-		// JG: This is where I need your help.
-		List<TreeGraphDataNode> categories = (List<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes(),
-				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
-		TreeGraphDataNode relationType = (TreeGraphDataNode) get(proc.edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes(),
-				selectZeroOrOne(hasTheLabel(N_RELATIONTYPE.label())));
-
-		// is this selectOne? must a category that has proc applying to it belong to
-		// just
-		// one componentType?
-		StringBuilder sb = new StringBuilder();
-		// TODO: well this is only a start
-		Set<TreeGraphDataNode> cmpTypes = new HashSet<>();
-		for (TreeGraphDataNode category : categories) {
-			List<TreeGraphDataNode> ct_sys = (List<TreeGraphDataNode>) get(category.edges(Direction.IN),
-					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes());
-			// many categories can belong to the same componentType of course so collect in
-			// a set
-			for (TreeGraphDataNode ct : ct_sys)
-				cmpTypes.add(ct);
-		}
-		// One could list all the categories this component belongs to but it will be a
-		// long string and make the flow chart messy.
-		for (TreeGraphDataNode ct : cmpTypes) {
-//			List<TreeNode> cmps = (List<TreeNode>) get(ct.getChildren(),
-//					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
-//			// if have components then mention them in preference to the componentType
-//			if (!cmps.isEmpty()) {
-//				for (TreeNode cmp : cmps) {
-//					sb.append(", ").append(cmp.id());
-//				}
-//			} else
-//				sb.append(", ").append(ct.id());
-		}
-		// need a better string here. from/to but this depends on the function type
-		if (relationType != null) {
-			Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>> fromToCats = getFromToComponentTypes(relationType);
-			String fromStr = getIdList(fromToCats.getFirst());
-			String toStr = getIdList(fromToCats.getSecond());
-			sb.append(", ").append(relationType.id()).append(" (").append(fromStr).append("→").append(toStr)
-					.append(")");
-		}
-
-		return sb.toString().replaceFirst(", ", "");
-	}
+//	@SuppressWarnings("unchecked")
+//	private String getProcessAppliesToDesc(ProcessNode proc) {
+//
+//		// JG: This is where I need your help.
+//		List<TreeGraphDataNode> categories = (List<TreeGraphDataNode>) get(proc.edges(Direction.OUT),
+//				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes(),
+//				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+//		TreeGraphDataNode relationType = (TreeGraphDataNode) get(proc.edges(Direction.OUT),
+//				selectZeroOrMany(hasTheLabel(E_APPLIESTO.label())), edgeListEndNodes(),
+//				selectZeroOrOne(hasTheLabel(N_RELATIONTYPE.label())));
+//
+//		// is this selectOne? must a category that has proc applying to it belong to
+//		// just
+//		// one componentType?
+//		StringBuilder sb = new StringBuilder();
+//		// TODO: well this is only a start
+//		Set<TreeGraphDataNode> cmpTypes = new HashSet<>();
+//		for (TreeGraphDataNode category : categories) {
+//			List<TreeGraphDataNode> ct_sys = (List<TreeGraphDataNode>) get(category.edges(Direction.IN),
+//					selectZeroOrMany(hasTheLabel(E_BELONGSTO.label())), edgeListStartNodes());
+//			// many categories can belong to the same componentType of course so collect in
+//			// a set
+//			for (TreeGraphDataNode ct : ct_sys)
+//				cmpTypes.add(ct);
+//		}
+//		// One could list all the categories this component belongs to but it will be a
+//		// long string and make the flow chart messy.
+//		for (TreeGraphDataNode ct : cmpTypes) {
+////			List<TreeNode> cmps = (List<TreeNode>) get(ct.getChildren(),
+////					selectZeroOrMany(hasTheLabel(N_COMPONENT.label())));
+////			// if have components then mention them in preference to the componentType
+////			if (!cmps.isEmpty()) {
+////				for (TreeNode cmp : cmps) {
+////					sb.append(", ").append(cmp.id());
+////				}
+////			} else
+////				sb.append(", ").append(ct.id());
+//		}
+//		// need a better string here. from/to but this depends on the function type
+//		if (relationType != null) {
+//			Duple<List<TreeGraphDataNode>, List<TreeGraphDataNode>> fromToCats = getFromToComponentTypes(relationType);
+//			String fromStr = getIdList(fromToCats.getFirst());
+//			String toStr = getIdList(fromToCats.getSecond());
+//			sb.append(", ").append(relationType.id()).append(" (").append(fromStr).append("→").append(toStr)
+//					.append(")");
+//		}
+//
+//		return sb.toString().replaceFirst(", ", "");
+//	}
 
 	private String getIdList(List<TreeGraphDataNode> l) {
 		String result = "";
@@ -1657,23 +1645,23 @@ public class DocoGenerator {
 		return result.replaceFirst(", ", "");
 	}
 
-	private void appendConsequences(String indent, StringBuilder flowChart, TreeNode parent) {
-		for (TreeNode c : parent.getChildren()) {
-			if (hasConsequence(c)) {
-				flowChart.append(indent).append("if ").append(funcDesc.get(c)).append("\n");
-				appendConsequences(indent + "\t", flowChart, c);
-			} else if (c.classId().equals(N_FUNCTION.label()))
-				flowChart.append(indent).append(funcDesc.get(c)).append("\n");
-		}
-	}
+//	private void appendConsequences(String indent, StringBuilder flowChart, TreeNode parent) {
+//		for (TreeNode c : parent.getChildren()) {
+//			if (hasConsequence(c)) {
+//				flowChart.append(indent).append("if ").append(funcDesc.get(c)).append("\n");
+//				appendConsequences(indent + "\t", flowChart, c);
+//			} else if (c.classId().equals(N_FUNCTION.label()))
+//				flowChart.append(indent).append(funcDesc.get(c)).append("\n");
+//		}
+//	}
 
-	@SuppressWarnings("unchecked")
-	private boolean hasConsequence(TreeNode c) {
-		if (!c.classId().equals(N_FUNCTION.label()))
-			return false;
-		List<TreeNode> lst = (List<TreeNode>) get(c.getChildren(), selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
-		return !lst.isEmpty();
-	}
+//	@SuppressWarnings("unchecked")
+//	private boolean hasConsequence(TreeNode c) {
+//		if (!c.classId().equals(N_FUNCTION.label()))
+//			return false;
+//		List<TreeNode> lst = (List<TreeNode>) get(c.getChildren(), selectZeroOrMany(hasTheLabel(N_FUNCTION.label())));
+//		return !lst.isEmpty();
+//	}
 
 	@SuppressWarnings("unchecked")
 	private List<String> getEntityDetails() {
@@ -1912,7 +1900,7 @@ public class DocoGenerator {
 		try {
 			// NB: Don't use jar input streams. These will not contain the info required!
 			jf = new JarFile(projectJarFile.getAbsolutePath());
-			Enumeration e = jf.entries();
+			Enumeration<JarEntry> e = jf.entries();
 			while (e.hasMoreElements()) {
 				JarEntry je = (JarEntry) e.nextElement();
 				String name = je.getName();
@@ -1921,7 +1909,6 @@ public class DocoGenerator {
 				}
 			}
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 

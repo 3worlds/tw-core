@@ -33,7 +33,6 @@ import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.DataHolder;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
  * @author Ian Davies

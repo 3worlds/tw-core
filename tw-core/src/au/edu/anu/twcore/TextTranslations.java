@@ -46,6 +46,9 @@ import fr.ens.biologie.generic.utils.Interval;
  * @author Ian Davies
  *
  * @date 14 Mar. 2021
+ * 
+ *       Ensure default is English otherwise unhandled languages will not
+ *       produce message.
  */
 public class TextTranslations {
 
@@ -1324,21 +1327,21 @@ public class TextTranslations {
 		return result;
 	}
 
-	@Deprecated
-	public static String[] getRscriptExists() {
-		String am;
-		String cm;
-		if (Language.French()) {
-			am = "Install 'R' on this computer.";
-			cm = "Expected 'R' to be installed but not found";
-		} else {// make sure default is English!
-			am = "Install 'R' on this computer.";
-			cm = "Expected 'R' to be installed but not found";
-		}
-		String[] result = { am, cm };
-		return result;
-
-	}
+//	@Deprecated
+//	public static String[] getRscriptExists() {
+//		String am;
+//		String cm;
+//		if (Language.French()) {
+//			am = "Install 'R' on this computer.";
+//			cm = "Expected 'R' to be installed but not found";
+//		} else {// make sure default is English!
+//			am = "Install 'R' on this computer.";
+//			cm = "Expected 'R' to be installed but not found";
+//		}
+//		String[] result = { am, cm };
+//		return result;
+//
+//	}
 
 	public static String[] getHasValidFileNameChars(String value) {
 		String am;
@@ -1382,10 +1385,10 @@ public class TextTranslations {
 		String cm;
 		if (Language.French()) {
 			am = "Add a '" + label + "' node for '" + edt + "' experiments.";
-			cm = "Expected '"+edt+"' experiments to have one '"+label+"' node but found none.";
+			cm = "Expected '" + edt + "' experiments to have one '" + label + "' node but found none.";
 		} else {// make sure default is English!
 			am = "Add a '" + label + "' node for '" + edt + "' experiments.";
-			cm = "Expected '"+edt+"' experiments to have one '"+label+"' node but found none.";
+			cm = "Expected '" + edt + "' experiments to have one '" + label + "' node but found none.";
 		}
 		String[] result = { am, cm };
 		return result;
@@ -1395,12 +1398,30 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Set the number of elements of the tables '"+key1+"' and '"+key2+"' to be the same.";
-			cm = "Expected tables '"+key1+"' and '"+key2+"' to have identical dimensions and size but found they differ.";
-		} else {// make sure default is English or other language users will get no messages!!
-			am = "Set the number of elements of the tables '"+key1+"' and '"+key2+"' to be the same.";
-			cm = "Expected tables '"+key1+"' and '"+key2+"' to have identical dimensions and size but found they differ.";
+			am = "Set the number of elements of the tables '" + key1 + "' and '" + key2 + "' to be the same.";
+			cm = "Expected tables '" + key1 + "' and '" + key2
+					+ "' to have identical dimensions and size but found they differ.";
+		} else {// make sure default is English!
+			am = "Set the number of elements of the tables '" + key1 + "' and '" + key2 + "' to be the same.";
+			cm = "Expected tables '" + key1 + "' and '" + key2
+					+ "' to have identical dimensions and size but found they differ.";
 // and i can't be bothered telling you how they differ.
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	public static String[] getCheckConstantTrackingQuery(String edgeName, String fieldOrTable) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Delete '" + edgeName + "'. Constants cannot be tracked.";
+			cm = "Expected '" + edgeName + "' to track a driver or decorator but found data '" + fieldOrTable
+					+ "' to be a constant.";
+		} else {// ensure default is English or unhandled languages will produce no message.
+			am = "Delete '" + edgeName + "'. Constants cannot be tracked.";
+			cm = "Expected '" + edgeName + "' to track a driver or decorator but found data '" + fieldOrTable
+					+ "' to be a constant.";
 		}
 		String[] result = { am, cm };
 		return result;
@@ -1414,7 +1435,7 @@ public class TextTranslations {
 //if (Language.French()) {
 //	am = "";
 //	cm = "";
-//} else {// make sure default is English or other language users will get no messages!!
+//} else {// make sure default is English!
 //	am = "";
 //	cm = "";
 //}

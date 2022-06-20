@@ -81,7 +81,7 @@ public abstract class AggregatorDataTracker<T>
 	// the part of the data channel label describing the variable/constant tracked
 	private Map<CategorizedComponent,DataLabel> itemChannels = new HashMap<>();
 	// the mapping of tracked item to display channels
-	private Map<DataLabel,Integer> channelIndex = new HashMap<>();
+//	private Map<DataLabel,Integer> channelIndex = new HashMap<>();
 	private DataLabel containerLabel = null;
 	private Metadata singletonMD = null;
 	protected int metadataType = -1;

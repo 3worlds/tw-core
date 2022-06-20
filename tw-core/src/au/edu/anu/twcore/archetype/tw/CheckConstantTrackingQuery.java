@@ -28,47 +28,57 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.TreeNode;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 /**
- * @author Ian Davies
- *
- * @date 19 Dec 2021
+ * @author Ian Davies 19 June 2022
  */
-/**
- * Checks that chars in a string can form a valid file name under the current OS
- * Input is a property
- */
-public class HasValidFileNameChars extends QueryAdaptor {
+public class CheckConstantTrackingQuery extends QueryAdaptor {
+	/**
+	 * Prohibits tracking constant data. Why? Might be useful?
+	 * 
+	 * Input is an edge between a datatracker (start) and a field or table (end)
+	 */
 
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
-		Property localItem = (Property) input;
-//		String tmpdir = System.getProperty("java.io.tmpdir");
-		String fileName = (String) localItem.getValue();
-//		File file = null;
-//		if (tmpdir != null)
-//			file = new File(tmpdir + File.separator + fileName);
-//		else
-//			file = new File(fileName);
-		try {
-			FileWriter fw = new FileWriter(fileName);
-			fw.close();
-			new File(fileName).delete();
-		} catch (IOException e) {
-			String[] msgs = TextTranslations.getHasValidFileNameChars(fileName);
-			actionMsg = msgs[0];
-			errorMsg = msgs[1];
+		TreeNode end = (TreeNode) ((Edge) input).endNode();
+		if (!propose(end)) {
+			String[] msg = TextTranslations.getCheckConstantTrackingQuery(((Edge) input).toShortString(),
+					end.toShortString());
+			actionMsg = msg[0];
+			errorMsg = msg[1];
 		}
 		return this;
+	}
+
+	public static boolean propose(TreeNode fieldOrTable) {
+		TreeNode parent = fieldOrTable.getParent();
+		while (parent != null) {
+			if (parent.classId().equals(N_RECORD.label())) {
+				if (get(parent.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_CONSTANTS.label()))) != null)
+					return false;
+				// stop when/if data role is defined. This means if not defined no fields/tables
+				// will show in the menus.
+				else if (get(parent.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_DRIVERS.label()))) != null)
+					return true;
+				else if (get(parent.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_DECORATORS.label()))) != null)
+					return true;
+			}
+			parent = parent.getParent();
+		}
+		return false;
+
 	}
 
 }

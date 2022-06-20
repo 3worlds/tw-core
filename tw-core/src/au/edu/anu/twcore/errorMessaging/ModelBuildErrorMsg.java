@@ -149,20 +149,20 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			debugMsg += "\nJava runtime version: " + System.getProperty("java.runtime.version");
 			break;
 		}
-		case DEPLOY_RSCRIPT_MISSING: {
-			String[] msgs = TextTranslations.getRscriptExists();
-			String actionStr = msgs[0];
-			String constraintStr = msgs[1];
-			actionsMsg = category() + actionStr;
-			detailsMsg = "\nAction: " + actionStr;
-			detailsMsg += "\nConstraint: " + constraintStr;
-
-			debugMsg = detailsMsg;
-			debugMsg += "\nCategory: " + category();
-			debugMsg += "\nMessage Class: " + msgType;
-			debugMsg += "\nJava runtime version: " + System.getProperty("java.runtime.version");		
-			break;
-		}
+//		case DEPLOY_RSCRIPT_MISSING: {
+//			String[] msgs = TextTranslations.getRscriptExists();
+//			String actionStr = msgs[0];
+//			String constraintStr = msgs[1];
+//			actionsMsg = category() + actionStr;
+//			detailsMsg = "\nAction: " + actionStr;
+//			detailsMsg += "\nConstraint: " + constraintStr;
+//
+//			debugMsg = detailsMsg;
+//			debugMsg += "\nCategory: " + category();
+//			debugMsg += "\nMessage Class: " + msgType;
+//			debugMsg += "\nJava runtime version: " + System.getProperty("java.runtime.version");		
+//			break;
+//		}
 		case DEPLOY_CLASS_MISSING: {
 			File cls = (File) args[0];
 			File src = (File) args[1];

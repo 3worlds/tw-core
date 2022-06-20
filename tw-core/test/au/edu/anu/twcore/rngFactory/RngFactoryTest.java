@@ -44,18 +44,18 @@ class RngFactoryTest {
 	private final static int trials = 100_000_000;
 
 
-	private long timing(Random rng) {
-		long s = System.nanoTime();
-		double sum = 0;
-		for (int i = 0; i < trials; i++)
-			sum += rng.nextDouble();
-		long e = System.nanoTime();
-		double mean = sum / (double) trials;
-//		System.out.println(rng.getClass().getSimpleName()+ " mean ="+mean);
-		assertTrue(mean > 0.4999);
-		assertTrue(mean < 0.5001);
-		return e - s;
-	}
+//	private long timing(Random rng) {
+//		long s = System.nanoTime();
+//		double sum = 0;
+//		for (int i = 0; i < trials; i++)
+//			sum += rng.nextDouble();
+//		long e = System.nanoTime();
+//		double mean = sum / (double) trials;
+////		System.out.println(rng.getClass().getSimpleName()+ " mean ="+mean);
+//		assertTrue(mean > 0.4999);
+//		assertTrue(mean < 0.5001);
+//		return e - s;
+//	}
 
 	private void checkRange(Random rng) {
 		double min = Double.MAX_VALUE;
@@ -76,7 +76,7 @@ class RngFactoryTest {
 		Generator rngXSRandom = RngFactory.newInstance("XSRandom", 0, RngResetType.ONRUNSTART, RngSeedSourceType.TABLE, RngAlgType.XSRANDOM);
 		Generator rngPCG = RngFactory.newInstance("PCGRandom", 0, RngResetType.ONRUNSTART, RngSeedSourceType.TABLE,RngAlgType.PCG32);
 		
-		Generator crap = RngFactory.newInstance("CRAP", 0, RngResetType.NEVER, RngSeedSourceType.RANDOM, RngAlgType.JAVA);
+//		Generator crap = RngFactory.newInstance("CRAP", 0, RngResetType.NEVER, RngSeedSourceType.RANDOM, RngAlgType.JAVA);
 //		System.out.println(crap.getRandom().nextDouble());
 				
 

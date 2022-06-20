@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -192,8 +193,8 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		List<String> localLines = null;
 		List<String> remoteLines = null;
 		try {
-			localLines = Files.readAllLines(localSrc.toPath());
-			remoteLines = Files.readAllLines(remoteSrc.toPath());
+			localLines = Files.readAllLines(localSrc.toPath(),StandardCharsets.UTF_8);
+			remoteLines = Files.readAllLines(remoteSrc.toPath(),StandardCharsets.UTF_8);
 			String strLocal = stripLines(localLines);
 			String strRemote = stripLines(remoteLines);
 			strLocal = strLocal.replaceAll(stripCommentRegex, "");
