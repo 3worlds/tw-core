@@ -74,6 +74,8 @@ public class CheckConstantTrackingQuery extends QueryAdaptor {
 					return true;
 				else if (get(parent.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_DECORATORS.label()))) != null)
 					return true;
+				else if (get(parent.edges(Direction.IN), selectZeroOrOne(hasTheLabel(E_AUTOVAR.label()))) != null)
+					return true;
 			}
 			parent = parent.getParent();
 		}
