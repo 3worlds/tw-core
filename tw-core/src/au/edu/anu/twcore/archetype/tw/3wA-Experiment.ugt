@@ -55,7 +55,7 @@ hasNode designSpec
 hasNode treatmentSpec
 	isOfClass = String("treatment")
 	hasParent =  StringTable(([1]"experiment:"))
-	multiplicity = IntegerRange("0..*")
+	multiplicity = IntegerRange("0..1")
 	hasEdge  fieldEdgeSpec
 		isOfClass = String("treats")
 		toNode = String("field:")
