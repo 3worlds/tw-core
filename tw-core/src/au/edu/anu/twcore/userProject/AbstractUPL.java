@@ -319,7 +319,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 			String contents = ucrStr.replace(ppph, Project.getProjectFile().getName());
 			BufferedWriter outfile;
 			try {
-				outfile = new BufferedWriter(new FileWriter(ucrFile));
+				outfile = new BufferedWriter(new FileWriter(ucrFile,StandardCharsets.UTF_8));
 				outfile.write(contents);
 				outfile.close();
 			} catch (IOException e) {

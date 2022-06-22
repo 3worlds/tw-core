@@ -31,6 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
@@ -60,7 +61,7 @@ public class HasValidFileNameChars extends QueryAdaptor {
 //		else
 //			file = new File(fileName);
 		try {
-			FileWriter fw = new FileWriter(fileName);
+			FileWriter fw = new FileWriter(fileName,StandardCharsets.UTF_8);
 			fw.close();
 			new File(fileName).delete();
 		} catch (IOException e) {
