@@ -32,8 +32,9 @@ package fr.cnrs.iees.twcore.generators.resources;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -160,10 +161,10 @@ public class CentralResourceGenerator {
 		// output file
 		File out = new File(DOC_DIR + File.separator + "ArchetypeDoc-" + nodeSheet.getTableName() + ".adoc");
 		try {
-			PrintStream outp = new PrintStream(out);
+			PrintStream outp = new PrintStream(out,StandardCharsets.UTF_8);
 			outp.println(output.toString());
 			outp.close();
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -396,10 +397,10 @@ public class CentralResourceGenerator {
 		// output file
 		File out = new File(CONSTANTS_DIR + File.separator + propName + ".java");
 		try {
-			PrintStream outp = new PrintStream(out);
+			PrintStream outp = new PrintStream(out,StandardCharsets.UTF_8);
 			outp.println(output.toString());
 			outp.close();
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -432,10 +433,10 @@ public class CentralResourceGenerator {
 		File out = new File(
 				DOC_DIR + File.separator + "ArchetypeDoc-" + nodeSheet.getTableName() + "-" + propType + ".adoc");
 		try {
-			PrintStream outp = new PrintStream(out);
+			PrintStream outp = new PrintStream(out,StandardCharsets.UTF_8);
 			outp.println(output.toString());
 			outp.close();
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -531,10 +532,10 @@ public class CentralResourceGenerator {
 					// output file
 					File out = new File(CONSTANTS_DIR + File.separator + propType + "Set.java");
 					try {
-						PrintStream outp = new PrintStream(out);
+						PrintStream outp = new PrintStream(out,StandardCharsets.UTF_8);
 						outp.println(output.toString());
 						outp.close();
-					} catch (FileNotFoundException e) {
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				} // big if

@@ -30,6 +30,7 @@ package au.edu.anu.twcore.userProject;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class SnippetReader {
 		c[0] = Character.toLowerCase(c[0]);
 		String rootName = new String(c);
 		try {
-			List<String> lines = Files.readAllLines(f.toPath());
+			List<String> lines = Files.readAllLines(f.toPath(),StandardCharsets.UTF_8);
 			for (String line : lines) {
 				// stop
 				if (line.contains(Comments.importInsertEnd)) {
