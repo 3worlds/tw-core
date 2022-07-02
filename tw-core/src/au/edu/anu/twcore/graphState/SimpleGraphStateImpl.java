@@ -32,9 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Ian Davies
- *
- * @date 1 Aug 2019
+ * @author Ian Davies - 1 Aug 2019
  */
 public class SimpleGraphStateImpl implements IGraphState{
 

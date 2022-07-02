@@ -29,6 +29,8 @@
 package au.edu.anu.twcore.experiment.runtime;
 
 import fr.cnrs.iees.properties.SimplePropertyList;
+import au.edu.anu.twcore.data.runtime.*;
+
 
 /**
  * <p>A DataLoader is a class that loads data from a <em>single</em> source (usually
@@ -36,7 +38,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  * The data source is usually a chunk of a file extracted by a MultipleDataLoader. In other 
  * words:</p>
  * 
- * 1 file chunk <---> 1 DataLoader <---> 1 SimplePropertyList (actually {@linkplain TwData})
+ * 1 file chunk {@literal <}--{@literal >} 1 DataLoader {@literal <}---{@literal >} 1 SimplePropertyList (actually {@linkplain TwData})
  * 
  * <p>A new DataLoader class should be defined for any new file format
  * used to input data into 3Worlds. The descendant class must link to the data source in its constructor.

@@ -53,21 +53,23 @@ import fr.ens.biologie.generic.Factory;
 import fr.ens.biologie.generic.Singleton;
 
 /**
- * A factory for any system element type - ancestor to SystemFactory, LifeCycle factory, GroupFactory etc.
+ * A factory for any system element type - ancestor to SystemFactory, LifeCycle
+ * factory, GroupFactory etc.
  *
- * <p>CAUTION: an element factory is conceptually 1..1 with an element type. When components must
- * be instantiated, they are often associated with a container which has a 1..1 relation with
- * an element type instance node (Group, LifeCycle, COmponent)., which have a 1..* relation
- * with element type. </p>
+ * <p>
+ * CAUTION: an element factory is conceptually 1..1 with an element type. When
+ * components must be instantiated, they are often associated with a container
+ * which has a 1..1 relation with an element type instance node (Group,
+ * LifeCycle, COmponent)., which have a 1..* relation with element type.
+ * </p>
  *
  * @author J. Gignoux - 23 avr. 2020
  *
  */
-public abstract class ElementFactory<T extends DataElement>
-		implements Factory<T>, Categorized<T>, Singleton<T> {
+public abstract class ElementFactory<T extends DataElement> implements Factory<T>, Categorized<T>, Singleton<T> {
 
 	// the factory for SystemComponents and SystemRelations
-	protected static Map<Integer,GraphFactory> SCfactory = new TreeMap<>();
+	protected static Map<Integer, GraphFactory> SCfactory = new TreeMap<>();
 	protected Integer simId;
 
 	/** Categorized */
@@ -88,36 +90,44 @@ public abstract class ElementFactory<T extends DataElement>
 	// temporary variables
 	protected ComponentContainer parentContainer = null;
 
+	 
 	/**
 	 * basic constructor
+	 * 
 	 * @param categories
-	 * @param categoryId
+	 * @param auto        Automatic variables data structure (e.g. age, birth date
+	 *                    etc).
+	 * @param drv         Driver data structure.
+	 * @param dec         Decorator data structure.
+	 * @param ltc         Constants data structure.
+	 * @param setinit     Initialisation function.
+	 * @param permanent   true if a permanent category and not ephemeral.
+	 * @param simulatorId a unique id for the calling simulator.
 	 */
-	public ElementFactory(Set<Category> categories,
-			TwData auto, TwData drv, TwData dec, TwData ltc,
-			SetInitialStateFunction setinit, boolean permanent,int simulatorId) {
+	public ElementFactory(Set<Category> categories, TwData auto, TwData drv, TwData dec, TwData ltc,
+			SetInitialStateFunction setinit, boolean permanent, int simulatorId) {
 		super();
 		simId = simulatorId;
-		if (SCfactory.get(simId)==null)
-			SCfactory.put(simId,new TwGraphFactory(simId));
+		if (SCfactory.get(simId) == null)
+			SCfactory.put(simId, new TwGraphFactory(simId));
 		this.categories.addAll(categories);
 //		this.categoryId = categoryId;
 		this.categoryId = buildCategorySignature();
 		categoryNames = new ArrayList<>(categories.size());
-		for (Category c:categories)
+		for (Category c : categories)
 			categoryNames.add(c.id()); // order is maintained
-		if (auto!=null)
+		if (auto != null)
 			autoVarTemplate = auto.clone();
-		if (drv!=null)
+		if (drv != null)
 			driverTemplate = drv.clone();
-		if (dec!=null)
+		if (dec != null)
 			decoratorTemplate = dec.clone();
-		if (ltc!=null)
+		if (ltc != null)
 			lifetimeConstantTemplate = ltc.clone();
 		if (driverTemplate != null)
 			for (String key : driverTemplate.getKeysAsSet())
 				propertyMap.put(key, DRIVERS);
-		if (autoVarTemplate!=null)
+		if (autoVarTemplate != null)
 			for (String key : ComponentData.keySet)
 				propertyMap.put(key, AUTO);
 		if (decoratorTemplate != null)
@@ -131,12 +141,12 @@ public abstract class ElementFactory<T extends DataElement>
 	}
 
 	// local
-	
+
 	public SimplePropertyList propertyTemplate() {
-		return new SystemComponentPropertyListImpl(autoVarTemplate,
-			driverTemplate,decoratorTemplate,lifetimeConstantTemplate,2,propertyMap);
+		return new SystemComponentPropertyListImpl(autoVarTemplate, driverTemplate, decoratorTemplate,
+				lifetimeConstantTemplate, 2, propertyMap);
 	}
-	
+
 	// Singleton
 
 	@Override
@@ -153,8 +163,9 @@ public abstract class ElementFactory<T extends DataElement>
 
 	/**
 	 * instantiate a new DataComponent
-	 *  
-	 * @param parentContainer the container under which this instance will be nested / stored
+	 * 
+	 * @param parentContainer the container under which this instance will be nested
+	 *                        / stored
 	 * @return the new DataComponent
 	 */
 	public T newInstance(ComponentContainer parentContainer) {
@@ -184,7 +195,7 @@ public abstract class ElementFactory<T extends DataElement>
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName()+simId+" for "+categoryId;
+		return getClass().getSimpleName() + simId + " for " + categoryId;
 	}
 
 }

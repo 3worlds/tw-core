@@ -56,7 +56,7 @@ public interface DynamicContainer<T> extends Container {
 	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
 	 * container state consistent over time in discrete time simulations.
 	 *
-	 * @param id the id of the item to remove
+	 * @param item the item to remove
 	 */
 	public void removeItem(T item);
 

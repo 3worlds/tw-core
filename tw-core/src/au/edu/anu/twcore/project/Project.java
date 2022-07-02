@@ -47,14 +47,6 @@ import fr.ens.biologie.generic.utils.Logging;
 
 import java.util.logging.Logger;
 
-//import org.apache.commons.text.WordUtils;
-
-/**
- * Author Ian Davies
- *
- * Date 12 Dec. 2018
- */
-
 /**
  * {@code Project} is a singleton static class containing the directory path
  * ({@link java.io.File}) of the 3Worlds project in current use. All project
@@ -79,9 +71,7 @@ import java.util.logging.Logger;
  * by editing directory names.
  * <p>
  * 
- * @author Author Ian Davies
- * 
- *         Date 12 Dec. 2018
+ * @author Author Ian Davies - Date 12 Dec. 2018
  */
 // tested OK with version 0.1.1 on 21/5/2019
 public class Project implements ProjectPaths, TwPaths {

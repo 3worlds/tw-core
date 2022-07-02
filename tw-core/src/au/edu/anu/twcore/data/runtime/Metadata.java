@@ -30,8 +30,11 @@ package au.edu.anu.twcore.data.runtime;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.properties.*;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import au.edu.anu.twcore.ecosystem.runtime.*;
+import au.edu.anu.twcore.ui.runtime.*;
+import fr.ens.biologie.generic.*;
 
 /**
  * <p>
@@ -89,7 +92,6 @@ public class Metadata extends OutputData {
 	 * data records to this metadata instance. This id is accessible through the
 	 * type() method.
 	 * 
-	 * @param status     the status of the DataTracker
 	 * @param senderId   the id of the DataTracker
 	 * @param properties all the metadata as a property list
 	 */
@@ -115,7 +117,7 @@ public class Metadata extends OutputData {
 	 * This method adds all the properties of the argument to the metadata property
 	 * list.
 	 * 
-	 * @param props {@linkplain PropertyList}s to add to the metadata
+	 * @param props {@linkplain ReadOnlyPropertyList}s to add to the metadata
 	 */
 	public void addProperties(ReadOnlyPropertyList... props) {
 		for (ReadOnlyPropertyList pl : props)

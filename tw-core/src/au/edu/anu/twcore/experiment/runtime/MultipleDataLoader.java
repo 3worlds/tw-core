@@ -31,6 +31,8 @@ package au.edu.anu.twcore.experiment.runtime;
 import java.util.Map;
 
 import fr.cnrs.iees.properties.SimplePropertyList;
+import au.edu.anu.twcore.data.runtime.TwData;
+import au.edu.anu.twcore.experiment.runtime.io.*;
 
 /**
  * <p>A MultipleDataLoader is a class that loads data from a <em>single</em> source (usually 
@@ -38,7 +40,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  * hierarchy (usually {@linkplain TwData}).
  * The results are grouped in a map of objects by String identifiers. In other words:</p>
  * 
- * 1 file <---> 1 MultipleDataLoader <---> 1 Map<String,SimplePropertyList descendant> ---> <em>n</em> TwData
+ * 1 file {@literal<}--{@literal >} 1 MultipleDataLoader {@literal <}--{@literal >} 1 Map{@literal <}String,SimplePropertyList descendant{@literal >} ---{@literal >} <em>n</em> TwData
  * 
  * <p>A new MultipleDataLoader class should be defined for any new file format
  * used to input data into 3Worlds. The implementing class must link to the data source in its constructor.

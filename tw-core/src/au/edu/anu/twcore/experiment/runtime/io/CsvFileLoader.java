@@ -38,6 +38,7 @@ import java.util.Set;
 
 import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import au.edu.anu.twcore.data.runtime.TwData;
 
 /**
  * <p>A data loader to load a <em>csv</em> ("comma separated values") file into a 
@@ -52,7 +53,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  * <li>Text data must not be quoted.</li>
  * <li>The first data line of the file must contain column headers. They must match
  * field names as defined in the 3Worlds specification dsl file.</li>
- *
+ *</ul>
  * <p>Since we do not allow for empty cells in the file, this means that complex {@link SimplePropertyList}
  * constructs may have to be loaded from different files. In particular, a different file
  * per set of table dimensions should be used. The match between different files is based
@@ -96,6 +97,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
  * @see TableDataLoader
  *
  */
+// NB switch off doclint: -Xdoclint:none
 public class CsvFileLoader extends TableDataLoader {
 	
 	public static String defaultCsvSeparator = "\t"; 

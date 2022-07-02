@@ -29,21 +29,37 @@
 
 package au.edu.anu.twcore.ui.runtime;
 
-/**
- * @author Ian Davies
- *
- * @date 2 Sep 2019
- */
+import au.edu.anu.omhtk.preferences.Preferences;
 
-// Inherited by widgets with a UI
+/**
+ * Implemented by widgets with a graphic user interface.
+ * 
+ * @author Ian Davies - 2 Sep 2019
+ */
 public interface WidgetGUI extends Widget {
 
+	/**
+	 * Method in which implementations create GUI controls.
+	 * 
+	 * @return implementation-specific root container of the GUI.
+	 */
 	public Object getUserInterfaceContainer();
 
+	/**
+	 * Get the menu (optional) to be place in the main menu bar for this widget.
+	 * 
+	 * @return root object containing any menu items for this widget (can be null).
+	 */
 	public Object getMenuContainer();
 
+	/**
+	 * Put the widget's control settings in the {@link Preferences} system.
+	 */
 	public void putUserPreferences();
 
+	/**
+	 * Get the widget's control settings from the {@link Preferences} system.
+	 */
 	public void getUserPreferences();
 
 }

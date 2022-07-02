@@ -29,15 +29,24 @@
 package au.edu.anu.twcore.ui.runtime;
 
 import fr.cnrs.iees.properties.SimplePropertyList;
+import au.edu.anu.twcore.ui.*;
 
 /**
- * @author Ian Davies
- *
- * @date 19 Sep 2019
+ * Interface for run-time widgets that have no GUI (must be children of {@link UIHeadless}).
+ * 
+ * @author Ian Davies -19 Sep 2019
  */
-// a widget that runs without a UI
+
 public interface Widget {
 
+	/**
+	 * Provides access to the properties in the {@link WidgetNode}.
+	 * 
+	 * @param id         Widgets id. This is unique with the scope of the graph and
+	 *                   can be made use of for file naming.
+	 * @param properties Property list of the {@link WidgetNode}. Additional
+	 *                   properties may be added at construction time.
+	 */
 	public void setProperties(String id, SimplePropertyList properties);
 
 }

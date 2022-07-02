@@ -39,10 +39,13 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.ens.biologie.generic.utils.Logging;
+import au.edu.anu.twcore.ui.runtime.*;
+import au.edu.anu.twcore.ecosystem.structure.*;
+import au.edu.anu.twcore.ecosystem.dynamics.*;
 
 /**
  * <p>A data tracker for spatial data. It sends change data to whoever is listening (usually a 
- * {@link Widget} understanding {@link SpaceData} messages). Messages consist in a time stamp and a list
+ * {@link WidgetGUI} or {@link Widget} understanding {@link SpaceData} messages). Messages consist in a time stamp and a list
  * of changes to the previous state of the space (deletion/creation/move of points and lines).</p>
  *
  * <p>The metadata are the space properties, namely:</p> 

@@ -82,10 +82,8 @@ import fr.ens.biologie.generic.Sealable;
  *
  */
 // Tested OK with version 0.1.3 on 1/7/2019
-public abstract class CategorizedContainer<T extends Identity>
-		implements NestedContainer<T>, NestedDynamicContainer<T>, ResettableContainer<T>,
-		SimpleContainer<T>,
-		Resettable, Sealable {
+public abstract class CategorizedContainer<T extends Identity> implements NestedContainer<T>, NestedDynamicContainer<T>,
+		ResettableContainer<T>, SimpleContainer<T>, Resettable, Sealable {
 
 	private Identity id = null;
 	private String[] fullId = null;
@@ -111,15 +109,13 @@ public abstract class CategorizedContainer<T extends Identity>
 	private boolean stateChanged = false;
 	private Categorized<T> itemCategories = null;
 
-	public CategorizedContainer(String proposedId,
-			CategorizedContainer<T> parent,
-			int simulatorId) {
+	public CategorizedContainer(String proposedId, CategorizedContainer<T> parent, int simulatorId) {
 		super();
 		scope = new scopes();
 		scope.setSimId(simulatorId);
-		if (scope.getContainerScope(simulatorId)==null)
-			scope.setContainerScope(simulatorId, new ResettableLocalScope(containerScopeName+"-"+simulatorId));
-		id = scope().newId(true,proposedId);
+		if (scope.getContainerScope(simulatorId) == null)
+			scope.setContainerScope(simulatorId, new ResettableLocalScope(containerScopeName + "-" + simulatorId));
+		id = scope().newId(true, proposedId);
 		if (parent != null) {
 			superContainer = parent;
 			superContainer.subContainers.put(id(), this);
@@ -135,7 +131,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * CAUTION: can be set only once, ideally just after construction
 	 */
 	public final void setCategorized(Categorized<T> cats) {
-		if (itemCategories==null)
+		if (itemCategories == null)
 			itemCategories = cats;
 	}
 
@@ -188,13 +184,12 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * {@code effectAllChanges()} is called thereafter. This enables one to keep the
 	 * container state consistent over time in discrete time simulations.
 	 *
-	 * @param id the id of the item to remove
+	 * @param item the item to remove
 	 */
 	@Override
 	public void removeItem(T item) {
 		itemsToRemove.add(item.id());
 	}
-
 
 	/**
 	 * Gets the item matching the id passed as argument. Only searches this
@@ -218,21 +213,19 @@ public abstract class CategorizedContainer<T extends Identity>
 	public Collection<T> items() {
 		return Collections.unmodifiableCollection(items.values());
 	}
-	
-	
+
 	/**
-	 * CAUTION: this method exposes the item list without protection (as items() does). This is
-	 * for objects that need to manipulate the list of items without changing it, but require
-	 * that the list can change by itself between calls. In other words, for objects that just keep
-	 * a pointer to the list in read-only mode. Unfortunately there is no such thing as a read-only
-	 * collecion in java.
+	 * CAUTION: this method exposes the item list without protection (as items()
+	 * does). This is for objects that need to manipulate the list of items without
+	 * changing it, but require that the list can change by itself between calls. In
+	 * other words, for objects that just keep a pointer to the list in read-only
+	 * mode. Unfortunately there is no such thing as a read-only collecion in java.
 	 * 
 	 * @return the address of the item list.
 	 */
 	public final Collection<T> itemListPointerUseWithCaution() {
 		return items.values();
 	}
-
 
 	/**
 	 * Gets the sub-container matching the id passed as an argument. Only searches
@@ -305,7 +298,7 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	// Recursive
 	private void addItems(QuickListOfLists<T> result, CategorizedContainer<T> container, Set<Category> requestedCats) {
-		if (container.itemCategorized()!=null)
+		if (container.itemCategorized() != null)
 			if (container.itemCategorized().belongsTo(requestedCats))
 				result.addList(container.items());
 		for (CategorizedContainer<T> sc : container.subContainers.values())
@@ -344,8 +337,8 @@ public abstract class CategorizedContainer<T extends Identity>
 	 * Returns the initial item from which an item is a copy, null if it's not a
 	 * copy.
 	 *
-	 * @param item
-	 * @return
+	 * @param id The unique item id.
+	 * @return the item from which a copy was made (null if not a copy)
 	 */
 	@Override
 	public T initialForItem(String id) {
@@ -359,7 +352,7 @@ public abstract class CategorizedContainer<T extends Identity>
 	 */
 	@SafeVarargs
 	// Recursive
-	public final void effectAllChanges(Collection<T>...changedLists) {
+	public final void effectAllChanges(Collection<T>... changedLists) {
 		effectChanges(changedLists);
 		for (CategorizedContainer<T> c : subContainers())
 			c.effectAllChanges(changedLists);
@@ -367,7 +360,7 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	@Override
 	public int depth() {
-		if (depth==-1) {
+		if (depth == -1) {
 			depth = 0;
 			CategorizedContainer<?> superC = this;
 			while (superC != null) {
@@ -420,14 +413,13 @@ public abstract class CategorizedContainer<T extends Identity>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void effectChanges(Collection<T>...changedLists) {
+	public void effectChanges(Collection<T>... changedLists) {
 		structureChanged = false;
 	}
 
 	protected final void resetStateChange() {
 		stateChanged = false;
 	}
-
 
 	@Override
 	public String toString() {
@@ -497,10 +489,9 @@ public abstract class CategorizedContainer<T extends Identity>
 		return id.id();
 	}
 
-
 	@Override
 	public String[] fullId() {
-		if (fullId==null) {
+		if (fullId == null) {
 			fullId = new String[depth()];
 			int i = fullId.length;
 			CategorizedContainer<?> superC = this;
@@ -513,12 +504,13 @@ public abstract class CategorizedContainer<T extends Identity>
 		return fullId;
 	}
 
-	// NB: this will return a valid hierarchical id even if the item is not yet in the container
+	// NB: this will return a valid hierarchical id even if the item is not yet in
+	// the container
 	// use with caution.
 	@Override
 	public String[] itemId(String itid) {
-		String[] result = Arrays.copyOf(fullId(),fullId().length+1);
-		result[result.length-1] = itid;
+		String[] result = Arrays.copyOf(fullId(), fullId().length + 1);
+		result[result.length - 1] = itid;
 		return result;
 	}
 
@@ -537,7 +529,6 @@ public abstract class CategorizedContainer<T extends Identity>
 		structureChanged = true;
 		return this;
 	}
-
 
 	@Override
 	public final boolean stateChanged() {

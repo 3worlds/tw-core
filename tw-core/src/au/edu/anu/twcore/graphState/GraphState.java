@@ -30,9 +30,7 @@
 package au.edu.anu.twcore.graphState;
 
 /**
- * @author Ian Davies
- *
- *         Date May 6, 2019
+ * @author Ian Davies -  May 6, 2019
  */
 public class GraphState {
 	private static IGraphState impl;

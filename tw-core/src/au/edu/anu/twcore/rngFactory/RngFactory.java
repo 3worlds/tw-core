@@ -47,11 +47,6 @@ import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
- * Author Ian Davies
- *
- * Date Dec 5, 2018
- */
-/**
  * <p>
  * Simple random number stream factory that manages resetting seeds in various
  * ways.
@@ -77,7 +72,8 @@ import fr.ens.biologie.generic.utils.Logging;
  * unique instance of the native java Random algorithm.
  * </p>
  * 
- * 
+  * Author Ian Davies - Dec 5, 2018
+* 
  */
 public class RngFactory {
 
@@ -160,7 +156,7 @@ public class RngFactory {
 	 * good quality</li>
 	 * </ol>
 	 * 
-	 * The choice is really between 3 (faster) & 4 (better quality).
+	 * The choice is really between 3 (faster) and 4 (better quality).
 	 * 
 	 * @param name      unique name
 	 * @param seedIndex index into array[0..999] of naturally generated random

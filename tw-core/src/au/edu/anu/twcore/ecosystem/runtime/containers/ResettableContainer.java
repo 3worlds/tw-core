@@ -91,7 +91,7 @@ public interface ResettableContainer<T> extends Container {
 	 * This method finds the initial item of which its argument is the clone (if still present - at
 	 * runtime, items may come and go).
 	 *
-	 * @param item the runtime item
+	 * @param id the unique id of the runtime item
 	 * @return the initial item of which the previous is the clone, null if nothing found
 	 */
 	public T initialForItem(String id);

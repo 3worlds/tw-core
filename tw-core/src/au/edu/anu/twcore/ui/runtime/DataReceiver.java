@@ -29,23 +29,39 @@
 package au.edu.anu.twcore.ui.runtime;
 
 import fr.cnrs.iees.rvgrid.observer.Observer;
+import au.edu.anu.twcore.ecosystem.runtime.simulator.*;
+import au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorStates;
 
 /**
- * An interface for objects able to receive data from a DataTracker.
- * Descendants of this class must call addRendezvous with the proper  message type
- * in their constructor
+ * An interface for objects able to receive data from a DataTracker. Descendants
+ * of this class must call addRendezvous with the proper message type in their
+ * constructor.
+ * <p>
+ * T: the type of data understood by this receiver
+ * </p>
+ * <p>
+ * M: the type of metadata understood by this receiver
  * 
  * @author Jacques Gignoux - 3 sept. 2019
- * 
- * T the type of data understood by this receiver
- * M the type of metadata understood by this receiver
  *
  */
-public interface DataReceiver<T,M> extends Observer {
+public interface DataReceiver<T, M> extends Observer {
 
-	/** process received data, whatever this means */
+	/**
+	 * Process implemented by all widgets to process the data.
+	 * 
+	 * @param data The data.
+	 */
 	public void onDataMessage(T data);
-	
+
+	/**
+	 * Process metadata before a simulation starts. It is called when
+	 * {@link Simulator} is in the {@link SimulatorStates#waiting waiting} state.
+	 * Implementations may need to avoid reprocessing the metadata on re-running the
+	 * simulation in the same session.
+	 * 
+	 * @param meta The metadata.
+	 */
 	public void onMetaDataMessage(M meta);
-	
+
 }

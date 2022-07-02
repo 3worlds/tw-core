@@ -41,7 +41,7 @@ public interface EventQueueWriteable {
 	/**
 	 * Post an TimeEvent to an class (EventTimer). The time will be converted to the
 	 * classe's time units (aka the Shortest time unit of the timeline). An
-	 * exception is thrown if, after conversion, the currentTime < time.
+	 * exception is thrown if, after conversion, the currentTime {@literal <} time.
 	 * We need to test the case of currentTime==time. Maybe this can be allowed
 	 *
 	 * @param cTime Current time of the calling function

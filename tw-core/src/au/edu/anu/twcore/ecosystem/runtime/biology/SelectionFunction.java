@@ -38,11 +38,14 @@ public interface SelectionFunction {
 
 	/**
 	 * A function to make a selection based on a set of weights. It draws a random number
-	 * and returns the index i such that weights[i-1]<=proba<weights[i]
+	 * and returns the index i such that weights[i-1] {@literal <}= proba<weights[i]
 	 * It may be used by end-users in their code, e.g.:
 	 *
-	 * @param proba the probability of the decision
-	 * @return true with probability = proba
+	 * TODO comments make no sense
+	 */
+	/**
+	 * @param weights
+	 * @return
 	 */
 	public int select(double...weights);
 

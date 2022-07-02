@@ -36,6 +36,7 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
+import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -47,7 +48,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
 
 /**
- * CreateOtherDecision & ChangeCategoryDecision must have an incoming edge from a Recruit or Produce node
+ * CreateOtherDecision and ChangeCategoryDecision must have an incoming edge from a Recruit or Produce node
  * 
  * @author gignoux 14/1/2022
  *

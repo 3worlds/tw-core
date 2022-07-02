@@ -39,11 +39,7 @@ import au.edu.anu.twcore.InitialisableNode;
 /**
  * Class matching the "headless" node label in the 3Worlds configuration tree.
  * 
- */
-/**
- * @author Ian Davies
- *
- * @date 23 Feb 2020
+ * @author Ian Davies - 23 Feb 2020
  */
 public class UIHeadless extends InitialisableNode {
 

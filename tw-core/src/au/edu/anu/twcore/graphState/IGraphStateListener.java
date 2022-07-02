@@ -30,9 +30,7 @@ package au.edu.anu.twcore.graphState;
 
 
 /**
- * @author Ian Davies
- *
- * @date 1 Aug 2019
+ * @author Ian Davies - 1 Aug 2019
  */
 public interface IGraphStateListener {
 	public void onStateChange(boolean state);

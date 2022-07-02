@@ -37,9 +37,6 @@ import au.edu.anu.twcore.exceptions.TwcoreException;
 /**
  *
  * @author gignoux 28 sept. 2020
- *
- * @param <T>
- * @param <U>
  */
 public class DescribedContainer<T extends CategorizedComponent>
 		extends CategorizedContainer<T>

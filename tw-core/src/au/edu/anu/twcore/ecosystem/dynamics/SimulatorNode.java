@@ -106,13 +106,12 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
 public class SimulatorNode extends InitialisableNode implements LimitedEdition<Simulator>, Sealable {
 
 	private static Logger log = Logging.getLogger(SimulatorNode.class);
-	
+
 	private boolean sealed = false;
 	private Timeline timeLine = null;
 	private Map<Integer, Simulator> simulators = new HashMap<>();
 	private int[] timeModelMasks; // bit pattern for every timeModel
 	private Map<Integer, List<List<ProcessNode>>> processCallingOrder;
-
 
 	public SimulatorNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -149,17 +148,17 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 
 	@SuppressWarnings("unchecked")
 	private Simulator makeSimulator(int index) {
-		
+
 		// *** TimeModel --> Timer
 		List<TimerNode> timeModels = (List<TimerNode>) get(timeLine.getChildren(),
 				selectOneOrMany(hasTheLabel(N_TIMER.label())));
 		List<Timer> timers = new ArrayList<>();
 		for (TimerNode tm : timeModels)
 			timers.add(tm.getInstance(index));
-		
+
 		// *** StoppingConditionNode --> StoppingCondition
 		List<StoppingConditionNode> scnodes = (List<StoppingConditionNode>) get(getChildren(),
-			selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
+				selectZeroOrMany(hasTheLabel(N_STOPPINGCONDITION.label())));
 		StoppingCondition rootStop = null;
 		// when there is no stopping condition, the default one is used (runs to
 		// infinite time)
@@ -175,51 +174,47 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 		// when there is only one stopping condition, then it is used
 		else
 			rootStop = scnodes.get(0).getInstance(index);
-		
+
 		// *** Initial community
 		// arena is always present
 		ArenaComponent arena = ((ArenaType) getParent()).getInstance(index).getInstance();
 		// everything else is optional
-		Structure str = (Structure) get(getParent(), 
-			children(), 
-			selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
-		if (str!=null) {
+		Structure str = (Structure) get(getParent(), children(), selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+		if (str != null) {
 			List<LifeCycleType> lctl = (List<LifeCycleType>) get(str.subTree(),
-				selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label()))); 
-			for (LifeCycleType lct:lctl)
-				initComponent(lct,index,arena);
+					selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label())));
+			for (LifeCycleType lct : lctl)
+				initComponent(lct, index, arena);
 			List<GroupType> gtl = (List<GroupType>) get(str.subTree(),
-				selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
-			for (GroupType gt:gtl)
-				initComponent(gt,index,arena);
+					selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+			for (GroupType gt : gtl)
+				initComponent(gt, index, arena);
 			List<ComponentType> ctl = (List<ComponentType>) get(str.subTree(),
-				selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-			for (ComponentType ct:ctl)
-				initComponent(ct,index,arena);
+					selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+			for (ComponentType ct : ctl)
+				initComponent(ct, index, arena);
 		}
-		
+
 		// *** ecosystem graph
 		EcosystemGraph ecosystem = null;
 		SpaceOrganiser spo = null;// presume can be null for non-spatial models?
-		Map<String,RelationContainer> relconts = new HashMap<>();
+		Map<String, RelationContainer> relconts = new HashMap<>();
 		// add predefined relation containers
-		Collection<RelationType> predefrels = (Collection<RelationType>) get(World.getRoot(this),
-			children(),
-			selectOne(hasTheLabel(N_PREDEFINED.label())),
-			children(),
-			selectZeroOrMany(hasTheLabel(N_RELATIONTYPE.label())));
-		for (RelationType reltype:predefrels)
-			relconts.put(reltype.id(),reltype.getInstance(index));
+		Collection<RelationType> predefrels = (Collection<RelationType>) get(World.getRoot(this), children(),
+				selectOne(hasTheLabel(N_PREDEFINED.label())), children(),
+				selectZeroOrMany(hasTheLabel(N_RELATIONTYPE.label())));
+		for (RelationType reltype : predefrels)
+			relconts.put(reltype.id(), reltype.getInstance(index));
 		// add user defined relation containers
 		if (str != null) {
 			relconts.putAll(str.relationContainers.getInstance(index));
-			ecosystem = new EcosystemGraph(arena,relconts);
+			ecosystem = new EcosystemGraph(arena, relconts);
 			// *** spaceOrganiser
 			spo = str.spaceOrganiser.getInstance(index);
 		} else {
 			ecosystem = new EcosystemGraph(arena);
 		}
-		
+
 		// *** ProcessNode --> Process
 		// this must be done after community because we need properly setup containers
 		// (for data trackers)
@@ -234,130 +229,129 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 			}
 			pco.put(e.getKey(), nllp);
 		}
-		
+
 		// *** finally, instantiate simulator
 		Simulator sim = new Simulator(index, rootStop, timeLine, timeModels, timers, timeModelMasks.clone(), pco, spo,
-			ecosystem,scnodes.isEmpty());
+				ecosystem, scnodes.isEmpty());
 		rootStop.attachSimulator(sim);
 		return sim;
 	}
-	
+
 	// helper for makeSimulator(...)
 	private void initComponentData(DataHolder dh, ReadOnlyPropertyList ropl) {
-		for (String pkey:dh.properties().getKeysAsSet())
+		for (String pkey : dh.properties().getKeysAsSet())
 			if (ropl.hasProperty(pkey))
-				dh.properties().setProperty(pkey,ropl.getPropertyValue(pkey));
+				dh.properties().setProperty(pkey, ropl.getPropertyValue(pkey));
 	}
-	
+
 	// helper for makeSimulator(...)
 	@SuppressWarnings("unchecked")
-	private void initComponent(ElementType<?,?> et, 
-			int simId, 
-			ArenaComponent arena) {
+	private void initComponent(ElementType<?, ?> et, int simId, ArenaComponent arena) {
 		ElementFactory<?> ef = et.getInstance(simId);
-		for (DataIdentifier itemId:et.initialItems().keySet()) {
-			ComponentContainer parentContainer = getParentContainer(et,simId,arena,itemId);
+		for (DataIdentifier itemId : et.initialItems().keySet()) {
+			ComponentContainer parentContainer = getParentContainer(et, simId, arena, itemId);
 			if (ef instanceof ComponentFactory) {
 				ComponentFactory cf = (ComponentFactory) ef;
 				SystemComponent sc = cf.newInstance(parentContainer);
-				initComponentData(sc,et.initialItems().get(itemId));
+				initComponentData(sc, et.initialItems().get(itemId));
 				parentContainer.addInitialItem(sc);
-				sc.setContainer((ComponentContainer)parentContainer);
+				sc.setContainer((ComponentContainer) parentContainer);
 				// set the SystemComponent categories in parent container
 				// NB this can only be done once.
 				parentContainer.setCategorized(cf);
-			}
-			else {
+			} else {
 				HierarchicalComponent hc = null;
 				if (ef instanceof LifeCycleFactory) {
 					LifeCycleFactory lcf = (LifeCycleFactory) ef;
 					lcf.setName(itemId.lifeCycleId());
 					hc = lcf.newInstance(parentContainer);
-				}
-				else if (ef instanceof GroupFactory) {
+				} else if (ef instanceof GroupFactory) {
 					GroupFactory gf = (GroupFactory) ef;
 					gf.setName(itemId.groupId());
 					hc = gf.newInstance(parentContainer);
 					// this occurs when no SystemComponent has been instantiated
 					// and only a group id was found in initial data
 					// this is quite brittle
-					if (hc.content().itemCategorized()==null) {
-						List<ComponentType> itemTypes = (List<ComponentType>) get(et,
-							children(),
-							selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-						if (itemTypes.size()==1)
+					if (hc.content().itemCategorized() == null) {
+						List<ComponentType> itemTypes = (List<ComponentType>) get(et, children(),
+								selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+						if (itemTypes.size() == 1)
 							hc.content().setCategorized(itemTypes.get(0).getInstance(simId));
 						else {
-							for (ComponentType ct:itemTypes) {
-								List<InitialValues> ivs = (List<InitialValues>) get(ct,
-									children(),
-									selectOneOrMany(hasTheLabel(N_INITIALVALUES.label())));
-								for (InitialValues iv:ivs) {
-									if (itemId.groupId().equals(iv.properties().getPropertyValue(P_DATASOURCE_IDGROUP.key())))
+							for (ComponentType ct : itemTypes) {
+								List<InitialValues> ivs = (List<InitialValues>) get(ct, children(),
+										selectOneOrMany(hasTheLabel(N_INITIALVALUES.label())));
+								for (InitialValues iv : ivs) {
+									if (itemId.groupId()
+											.equals(iv.properties().getPropertyValue(P_DATASOURCE_IDGROUP.key())))
 										hc.content().setCategorized(ct.getInstance(simId));
 								}
 							}
 							// TODO: Poor code. fix this one day.
 							// safety because this cannot be tested by the archetype at the moment
-							// (we would have to check that the idGroup property matches an existing InitValues id, this
-							// is a real pain in the neck hence this fix. The case is probably rare enough anyway.
-							if (hc.content().itemCategorized()==null) {
-								log.severe("Unable to instantiate a valid container for group '"+itemId.groupId()
-									+"' (in GroupType>initialValues); this is likely due to misspelling it in the 'idGroup' property of one of its "
-									+"GroupType>ComponentTypes. Fix it in ModelMaker and re-deploy."
-									+" Please refer to the 3Worlds developers if you encounter this issue.");
+							// (we would have to check that the idGroup property matches an existing
+							// InitValues id, this
+							// is a real pain in the neck hence this fix. The case is probably rare enough
+							// anyway.
+							if (hc.content().itemCategorized() == null) {
+								log.severe("Unable to instantiate a valid container for group '" + itemId.groupId()
+										+ "' (in GroupType>initialValues); this is likely due to misspelling it in the 'idGroup' property of one of its "
+										+ "GroupType>ComponentTypes. Fix it in ModelMaker and re-deploy."
+										+ " Please refer to the 3Worlds developers if you encounter this issue.");
 								log.severe("modelRunner will halt.");
 								System.exit(1);
 							}
 							// end poor code
 						}
-						((GroupComponent)hc).addGroupIntoLifeCycle();	
+						((GroupComponent) hc).addGroupIntoLifeCycle();
 					}
 				}
-				initComponentData(hc,et.initialItems().get(itemId));
+				initComponentData(hc, et.initialItems().get(itemId));
 			}
 		}
 	}
-	
+
 	// helper for initComponent(...) (recursive)
 	@SuppressWarnings("unchecked")
-	private ComponentContainer getParentContainer(ElementType<?,?> et, 
-			int simId, 
-			ArenaComponent arena,
+	private ComponentContainer getParentContainer(ElementType<?, ?> et, int simId, ArenaComponent arena,
 			DataIdentifier itemId) {
 		// default parent container is the arena
-		ComponentContainer parentContainer = (ComponentContainer)arena.content();
-		// case of ComponentType: parent is a GroupType, search for the matching container
+		ComponentContainer parentContainer = (ComponentContainer) arena.content();
+		// case of ComponentType: parent is a GroupType, search for the matching
+		// container
 		if (et.getParent() instanceof GroupType) {
-			if ((itemId.groupId()!=null)&&(!itemId.groupId().isBlank())) {
-				// if a groupContainer with this groupId has already been created, get it 
-				String gId = itemId.groupId();						
+			if ((itemId.groupId() != null) && (!itemId.groupId().isBlank())) {
+				// if a groupContainer with this groupId has already been created, get it
+				String gId = itemId.groupId();
 				parentContainer = (ComponentContainer) arena.content().findContainer(gId);
-				// if not, create it (with no data as if it had some, it would have been found before)
-				if (parentContainer==null) {
+				// if not, create it (with no data as if it had some, it would have been found
+				// before)
+				if (parentContainer == null) {
 					GroupType gt = (GroupType) et.getParent();
 					GroupFactory gf = gt.getInstance(simId);
 					gf.setName(gId);
-					GroupComponent gc = gf.newInstance(getParentContainer(gt,simId,arena,itemId));
+					GroupComponent gc = gf.newInstance(getParentContainer(gt, simId, arena, itemId));
 					// this sets itemCategories in gc.content
 					gc.content().setCategorized((Categorized<SystemComponent>) et.getInstance(simId));
-					// this sets groups in parent lifeCycelComponent - must be done after itemCategories have been set
+					// this sets groups in parent lifeCycelComponent - must be done after
+					// itemCategories have been set
 					gc.addGroupIntoLifeCycle();
-					parentContainer = (ComponentContainer)gc.content();
+					parentContainer = (ComponentContainer) gc.content();
 				}
 			}
 		}
-		// case of GroupType: parent is a LifeCycleType, search for the matching container
+		// case of GroupType: parent is a LifeCycleType, search for the matching
+		// container
 		else if (et.getParent() instanceof LifeCycleType) {
-			if ((itemId.lifeCycleId()!=null)&&(!itemId.lifeCycleId().isBlank())) {
-				String lcId = itemId.lifeCycleId();						
+			if ((itemId.lifeCycleId() != null) && (!itemId.lifeCycleId().isBlank())) {
+				String lcId = itemId.lifeCycleId();
 				parentContainer = (ComponentContainer) arena.content().findContainer(lcId);
-				if (parentContainer==null) {
+				if (parentContainer == null) {
 					LifeCycleType lct = (LifeCycleType) et.getParent();
 					LifeCycleFactory lcf = lct.getInstance(simId);
 					lcf.setName(lcId);
-					LifeCycleComponent lcc = lcf.newInstance(getParentContainer(lct,simId,arena,itemId));
-					parentContainer = (ComponentContainer)lcc.content();
+					LifeCycleComponent lcc = lcf.newInstance(getParentContainer(lct, simId, arena, itemId));
+					parentContainer = (ComponentContainer) lcc.content();
 				}
 			}
 		}
@@ -427,14 +421,14 @@ public class SimulatorNode extends InitialisableNode implements LimitedEdition<S
 	}
 
 	/**
-	 * computes the order of process calls for any combination of time models
+	 * Computes the order of process calls for any combination of time models
 	 * possibly occurring simultaneously. Results are stored in processCallingOrder,
 	 * which contains a map of lists of (simultaneous) processes index by execution
 	 * rank. Process lists are executed by order of execution rank. Within a list,
 	 * order doesnt matter (and process execution could in theory be parallelized
 	 * here).
-	 *
-	 * Code checked & tested with procesRankingTest.dsl.
+	 * <p>
+	 * This code has been checked {@literal &} tested with procesRankingTest.dsl.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
 	public void hierarchiseProcesses(List<TimerNode> timerList) {
