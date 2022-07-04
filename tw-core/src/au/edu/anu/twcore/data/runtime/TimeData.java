@@ -34,9 +34,7 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 /**
  * This class simply sends the current time of a simulator, as a long.
  *
- * @author Ian Davies
- *
- * @date 19 Sep 2019
+ * @author Ian Davies - 19 Sep 2019
  */
 public class TimeData extends OutputData {
 	/* ensure a known uninitialized value */

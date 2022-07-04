@@ -37,30 +37,33 @@ import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.TreeNode;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import au.edu.anu.twcore.ui.*;
 
 /**
- * @author Ian Davies
- *
- * @date 27 Sep 2019
+ * A query to constrain the multiplicity between {@linkplain UITab},
+ * {@linkplain UIContainer} and {@linkplain WidgetNode}.
+ * <p>
+ * Input is either a {@linkplain UITab} or a {@linkplain UIContainer}.
+ * </p>
+ * <p>
+ * Constraint: Either 1 or 2 of widgets or just 2 containers for
+ * {@linkplain UITab} and {@linkplain UIContainer}s in the GUI.
+ * </p>
+ * <p>
  * 
- *       input is either a Tab or a Container.
- * 
- *       Constraint: Either 1 or 2 of nodeLabel1 or just 2 nodelabel2 - for tabs
- *       and containers in the UI
- * 
- *       Cannot have just one container(node label2) Cannot have nothing Cannot
- *       have more that 2 in total
+ * Cannot have: just one container; nothing; or, more that 2 of either in total.
  * 
  * 
- *       1) 1 widget OR
+ * <li>1 widget OR
  * 
- *       3) 1 widget and 1 container OR
+ * <li>1 widget and 1 container OR
  * 
- *       4) 2 widgets OR
+ * <li>2 widgets OR
  * 
- *       5) 2 containers
+ * <li>2 containers
+ * 
+ * @author Ian Davies - 27 Sep 2019
  */
-// Great name!
 public class ChildAtLeastOneOfOneOrTwoOfTwoQuery extends QueryAdaptor {
 	private final String widgetLabel;
 	private final String containerLabel;

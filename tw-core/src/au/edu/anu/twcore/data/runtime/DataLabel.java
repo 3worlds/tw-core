@@ -53,9 +53,7 @@ import static fr.ens.biologie.generic.SaveableAsText.*;
  * 
  * Will try and see
  * 
- * @author Ian Davies
- *
- * @date 19 July 2021
+ * @author Ian Davies -19 July 2021
  */
 // 
 public class DataLabel implements Comparable<DataLabel>, Cloneable {
@@ -119,21 +117,21 @@ public class DataLabel implements Comparable<DataLabel>, Cloneable {
 		return sb.toString();
 	}
 
-	/**
-	 * Replace all parts of the label with length>1 with ellipsis. e.g. if l = 2 abc
-	 * = ab... where the ellipsis is one char
-	 */
-	@Deprecated // TODO I don't think this is needed any longer
-	public String toAbbreviatedString(int l) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < label.size(); i++) {
-			sb.append(StringUtils.abbreviate(label.get(i), l));
-			if (i < label.size() - 1)
-				if (i < label.size() - 1)
-					sb.append(HIERARCHY_DOWN);
-		}
-		return sb.toString();
-	}
+//	/**
+//	 * Replace all parts of the label with length>1 with ellipsis. e.g. if l = 2 abc
+//	 * = ab... where the ellipsis is one char
+//	 */
+//	@Deprecated // TODO I don't think this is needed any longer
+//	public String toAbbreviatedString(int l) {
+//		StringBuilder sb = new StringBuilder();
+//		for (int i = 0; i < label.size(); i++) {
+//			sb.append(StringUtils.abbreviate(label.get(i), l));
+//			if (i < label.size() - 1)
+//				if (i < label.size() - 1)
+//					sb.append(HIERARCHY_DOWN);
+//		}
+//		return sb.toString();
+//	}
 
 	@Override
 	public String toString() {

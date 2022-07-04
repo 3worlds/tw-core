@@ -78,8 +78,7 @@ import fr.ens.biologie.generic.utils.Logging;
 import fr.cnrs.iees.properties.ResizeablePropertyList;
 
 /**
- * @author Ian Davies
- * @date 27 Dec. 2017
+ * @author Ian Davies - 27 Dec. 2017
  *
  *       Refactoring of Jacques code to transfer artifacts between generated
  *       code and a linked user project

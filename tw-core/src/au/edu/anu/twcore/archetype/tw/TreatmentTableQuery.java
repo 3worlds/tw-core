@@ -39,9 +39,7 @@ import fr.cnrs.iees.twcore.constants.DataElementType;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * @author Ian Davies
- *
- * @date 23 July 2021
+ * @author Ian Davies - 23 July 2021
  */
 
 public class TreatmentTableQuery extends QueryAdaptor {

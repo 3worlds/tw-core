@@ -40,9 +40,7 @@ import java.util.Map;
 import fr.ens.biologie.codeGeneration.Comments;
 
 /**
- * @author Ian Davies
- *
- * @date 12 July 2021
+ * @author Ian Davies -  12 July 2021
  */
 public class SnippetReader {
 	private SnippetReader() {

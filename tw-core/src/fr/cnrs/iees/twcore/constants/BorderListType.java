@@ -33,9 +33,7 @@ import au.edu.anu.rscs.aot.collections.tables.*;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
 /**
- * @author Ian Davies
- *
- * @date 24 Sep 2020
+ * @author Ian Davies - 24 Sep 2020
  */
 public class BorderListType extends StringTable {
 	

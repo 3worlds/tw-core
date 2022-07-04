@@ -52,11 +52,8 @@ import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 /**
  * Class matching the "RngNode" node label in the 3Worlds configuration tree.
  * Has the "rng" property.
-  */
-/**
- * @author Ian Davies
- *
- * @date 13 Dec 2019
+ * 
+ * @author Ian Davies - 13 Dec 2019
  */
 public class RngNode extends InitialisableNode implements LimitedEdition<Random>, Sealable {
 
@@ -112,8 +109,8 @@ public class RngNode extends InitialisableNode implements LimitedEdition<Random>
 			Random rng = null;
 			Generator gen = RngFactory.find(key);
 			if (gen != null)// should be an error otherwise this is sharing an rng with something else
-				//rng = gen.getRandom();
-				throw new TwcoreException("A random number generator called '"+key+"' already exists.");
+				// rng = gen.getRandom();
+				throw new TwcoreException("A random number generator called '" + key + "' already exists.");
 			else {
 				gen = RngFactory.newInstance(key, tableIndex, reset, seedSrc, alg);
 				rng = gen.getRandom();

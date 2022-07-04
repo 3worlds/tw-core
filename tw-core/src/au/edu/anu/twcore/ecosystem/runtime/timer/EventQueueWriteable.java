@@ -31,9 +31,7 @@ package au.edu.anu.twcore.ecosystem.runtime.timer;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 
 /**
- * @author Ian Davies
- *
- * @date 14 May 2020
+ * @author Ian Davies -14 May 2020
  */
 
 public interface EventQueueWriteable {

@@ -32,21 +32,11 @@ package au.edu.anu.twcore.ecosystem.runtime.simulator;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
- * @author Ian Davies
- *
- * @date 21 Feb 2020
+ * @author Ian Davies -21 Feb 2020
  */
 public class RunTimeId {
 	private RunTimeId() {
 	};
-
-	/**
-	 * Maybe I'm wrong about all this. Maybe MR should not be the unit of OpenMole
-	 * simulation. Maybe some exp design for Openmole generates all the artifacts
-	 * required for submitting to OM either by hand or remotely through some account
-	 * with OM. I'm not sure what the workflow would look like - especially for exp
-	 * alg such as Genetic Alg etc
-	 */
 
 	private static int runTimeId = Integer.MIN_VALUE;
 

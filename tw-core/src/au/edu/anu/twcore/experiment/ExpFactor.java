@@ -35,9 +35,7 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
 
 /**
- * @author Ian Davies
- *
- * @date 5 Mar 2022
+ * @author Ian Davies - 5 Mar 2022
  */
 public class ExpFactor {
 	private final String name;

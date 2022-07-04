@@ -32,15 +32,26 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 
 /**
- * @author Ian Davies
- *
- * @date 16 Aug 2019
+ * This interface provides a means to completely remove element ids when edition
+ * a graph.
+ * 
+ * @author Ian Davies - 16 Aug 2019
  */
 public interface EditableFactory {
-	/* removes any traces of a node, its id along with the ids of any edges from a factory*/
+	/* */
+	/**
+	 * Removes any traces of a {@linkplain Node} from a factory: its id along with the ids of any
+	 * {@linkplain Edge}s
+	 * 
+	 * @param node The {@link Node} to remove.
+	 */
 	public void expungeNode(Node node);
-	/* removes edge id from a factory*/
+
+	/**
+	 * Removes edge id from a factory
+	 * 
+	 * @param edge The {@link Edge} to remove.
+	 */
 	public void expungeEdge(Edge edge);
-	
 
 }

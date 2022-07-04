@@ -42,9 +42,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 
 /**
- * @author Ian Davies
- *
- * @date 20 Dec. 2020
+ * @author Ian Davies - 20 Dec. 2020
  */
 
 /**

@@ -30,9 +30,7 @@
 package au.edu.anu.twcore.archetype;
 
 /**
- * @author Ian Davies
- *
- * @date 8 Aug 2019
+ * @author Ian Davies - 8 Aug 2019
  */
 /*
  * See about naming conventions as this develops. Refactoring is easy. For the

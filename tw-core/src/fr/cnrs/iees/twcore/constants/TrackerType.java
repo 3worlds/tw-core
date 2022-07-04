@@ -33,9 +33,7 @@ import au.edu.anu.rscs.aot.collections.tables.*;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
 /**
- * @author Ian Davies
- *
- * @date 12 Oct 2019
+ * @author Ian Davies - 12 Oct 2019
  */
 public class TrackerType extends StringTable {
 

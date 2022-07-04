@@ -29,9 +29,7 @@
 package fr.cnrs.iees.twcore.constants;
 
 /**
- * @author Ian Davies
- *
- * @date 20 May 2020
+ * @author Ian Davies - 20 May 2020
  */
 public enum ConfigurationReservedEdgeLabels {
 	autoVar(ConfigurationEdgeLabels.E_AUTOVAR.label()),//

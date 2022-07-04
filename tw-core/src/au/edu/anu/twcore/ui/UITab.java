@@ -42,7 +42,6 @@ import au.edu.anu.twcore.InitialisableNode;
  * @author Jacques Gignoux - 14 juin 2019
  *
  */
-
 public class UITab extends InitialisableNode {
 
 	// default constructor

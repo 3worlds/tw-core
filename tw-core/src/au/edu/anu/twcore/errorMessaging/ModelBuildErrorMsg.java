@@ -46,9 +46,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
- * @author Ian Davies
- *
- * @date 23 Nov 2019
+ * @author Ian Davies -23 Nov 2019
  */
 public class ModelBuildErrorMsg implements ErrorMessagable {
 

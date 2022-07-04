@@ -39,9 +39,7 @@ import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
 
 /**
- * @author Ian Davies
- *
- * @date 19 Dec 2021
+ * @author Ian Davies - 19 Dec 2021
  */
 /**
  * Checks that chars in a string can form a valid file name under the current OS

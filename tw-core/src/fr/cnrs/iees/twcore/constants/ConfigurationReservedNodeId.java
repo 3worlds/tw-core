@@ -33,9 +33,7 @@ import java.util.Map;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 
 /**
- * @author Ian Davies
- *
- * @date 20 May 2020
+ * @author Ian Davies - 20 May 2020
  */
 public enum ConfigurationReservedNodeId {
 	parentTo("*parentTo*"),//

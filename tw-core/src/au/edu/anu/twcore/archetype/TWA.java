@@ -44,9 +44,7 @@ import fr.ens.biologie.generic.utils.Logging;
 /**
  * Global singleton instance of the 3Warchetype: thread safe and lazy load
  * 
- * @author Ian Davies
- *
- * @date 20 Jul 2019
+ * @author Ian Davies - 20 Jul 2019
  */
 public class TWA {
 

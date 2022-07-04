@@ -45,13 +45,8 @@ import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
- * @author Ian Davies
- *
- * @date 3 Dec. 2020
- */
-
-/**
- *
+ * @author Ian Davies - 3 Dec. 2020
+  *
  * A class to deploy any number [0..inf] of simulators using a work-stealing
  * pool policy.
  * 

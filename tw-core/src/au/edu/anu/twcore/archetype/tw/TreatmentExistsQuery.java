@@ -41,9 +41,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * @author Ian Davies
- *
- * @date 27 Jan 2022
+ * @author Ian Davies - 27 Jan 2022
  */
 public class TreatmentExistsQuery extends QueryAdaptor {
 

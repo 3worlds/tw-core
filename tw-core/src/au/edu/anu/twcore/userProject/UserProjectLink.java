@@ -36,9 +36,7 @@ import java.util.Set;
 
 // static singleton class for java IDE-independent info
 /**
- * @author Ian Davies
- *
- * @date 29 Sep 2019
+ * @author Ian Davies - 29 Sep 2019
  */
 public class UserProjectLink {
 	private UserProjectLink() {

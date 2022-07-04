@@ -40,9 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Ian Davies
- *
- * @date 9 Apr. 2021
+ * @author Ian Davies - 9 Apr. 2021
  */
 
 /** Check that each simulator has at least one function. */

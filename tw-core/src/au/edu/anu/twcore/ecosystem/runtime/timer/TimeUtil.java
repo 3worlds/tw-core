@@ -43,8 +43,7 @@ import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 
 /**
- * @author Ian Davies
- * @date 22 Jan. 2018
+ * @author Ian Davies -22 Jan. 2018
  * 
  *       Updated with non exact time conversion based on Gregorian calendar (new
  *       java.time architecture)

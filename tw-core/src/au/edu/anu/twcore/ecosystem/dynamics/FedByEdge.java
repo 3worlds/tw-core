@@ -34,9 +34,7 @@ import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.identity.Identity;
 
 /**
- * @author Ian Davies
- *
- * @date 14 May 2020
+ * @author Ian Davies - 14 May 2020
  */
 public class FedByEdge extends ALEdge {
 

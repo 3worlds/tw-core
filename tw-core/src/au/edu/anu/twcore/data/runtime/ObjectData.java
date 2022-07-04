@@ -31,9 +31,7 @@ package au.edu.anu.twcore.data.runtime;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
- * @author Ian Davies
- *
- * @date 19 Sep 2019
+ * @author Ian Davies - 19 Sep 2019
  */
 // Question: what's the use case for this class ? LabelValuePairData could do the same job (except
 // for time)

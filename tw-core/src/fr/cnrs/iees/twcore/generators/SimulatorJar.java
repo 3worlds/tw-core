@@ -38,9 +38,7 @@ import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
 
 /**
- * @author Ian Davies
- *
- * @date 25 Aug 2019
+ * @author Ian Davies - 25 Aug 2019
  */
 public class SimulatorJar extends Jars{
 	public SimulatorJar(String mainClass,Set<File> dataFiles, Set<File> codeFiles, Set<File> resFiles,Set<String> userLibraries) {

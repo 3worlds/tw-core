@@ -36,9 +36,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 
 /**
- * @author Ian Davies
- *
- * @date 3 Jan. 2021
+ * @author Ian Davies - 3 Jan. 2021
  */
 
 /** Edge for linking Treatment to fields and tables */

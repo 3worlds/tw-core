@@ -40,9 +40,7 @@ import java.util.Set;
 import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
- * @author Ian Davies
- *
- * @date 23 Aug 2019
+ * @author Ian Davies - 23 Aug 2019
  */
 public class UPLEclipse extends AbstractUPL{
 	File srcDir;

@@ -95,9 +95,7 @@ import org.odftoolkit.simple.style.StyleTypeDefinitions;
 /**
  * ODD generator
  * 
- * @author Ian Davies
- *
- * @date 13 Jul 2020
+ * @author Ian Davies - 13 Jul 2020
  */
 // JG 4/2/2022 CAUTION: I hav disabled all code relying on the Component nodes because these have 
 // been deprecated. So this code needs revision.

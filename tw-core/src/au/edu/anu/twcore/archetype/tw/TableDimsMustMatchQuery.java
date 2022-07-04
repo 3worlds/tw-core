@@ -35,9 +35,7 @@ import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.DataHolder;
 
 /**
- * @author Ian Davies
- *
- * @date 7 Mar 2022
+ * @author Ian Davies - 7 Mar 2022
  */
 
 /**

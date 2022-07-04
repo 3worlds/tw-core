@@ -32,9 +32,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.EcosystemGraph;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
- * @author Ian Davies
- *
- * @date 29 Jun 2020
+ * @author Ian Davies - 29 Jun 2020
  */
 public class RuntimeGraphData extends LabelledItemData {
 

@@ -35,9 +35,7 @@ import au.edu.anu.twcore.TextTranslations;
 import fr.ens.biologie.generic.utils.Interval;
 
 /**
- * @author Ian Davies
- *
- * @date 4 Oct 2021
+ * @author Ian Davies - 4 Oct 2021
  * 
  * Checks that inf() and sup() are not infinite
  */

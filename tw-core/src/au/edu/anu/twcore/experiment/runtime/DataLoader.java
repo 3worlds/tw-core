@@ -38,7 +38,7 @@ import au.edu.anu.twcore.data.runtime.*;
  * The data source is usually a chunk of a file extracted by a MultipleDataLoader. In other 
  * words:</p>
  * 
- * 1 file chunk {@literal <}--{@literal >} 1 DataLoader {@literal <}---{@literal >} 1 SimplePropertyList (actually {@linkplain TwData})
+ * 1 file chunk {@literal <--->} 1 DataLoader {@literal <--->} 1 SimplePropertyList (actually {@linkplain TwData})
  * 
  * <p>A new DataLoader class should be defined for any new file format
  * used to input data into 3Worlds. The descendant class must link to the data source in its constructor.

@@ -57,9 +57,7 @@ import fr.ens.biologie.codeGeneration.Comments;
 import static au.edu.anu.rscs.aot.util.StringUtils.ELLIPSIS;
 
 /**
- * @author Ian Davies
- *
- * @date 29 Sep 2019
+ * @author Ian Davies - 29 Sep 2019
  */
 public abstract class AbstractUPL implements IUserProjectLink {
 	public static String extOrig = ".orig";

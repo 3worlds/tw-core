@@ -29,16 +29,13 @@
 package au.edu.anu.twcore.errorMessaging;
 
 /**
- * @author Ian Davies
- *
- * @date 23 Nov 2019
+ * @author Ian Davies - 23 Nov 2019
  */
 public enum ModelBuildErrors {
 	MODEL_FILE_BACKUP/*      */("Compile"), //
 	COMPILER_ERROR/*         */("Compile"), //
 	COMPILER_MISSING/*       */("Compile"), //
 	SPECIFICATION/*          */("Specification"), //
-//	DEPLOY_RSCRIPT_MISSING/* */("Depoloyment"), //
 	DEPLOY_CLASS_MISSING/*   */("Deployment"), //
 	DEPLOY_CLASS_OUTOFDATE/* */("Deployment"), //
 	DEPLOY_FAIL/*            */("Deployment"), //

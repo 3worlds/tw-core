@@ -43,9 +43,7 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
- * @author Ian Davies
- *
- * @date 24 Feb. 2021
+ * @author Ian Davies - 24 Feb. 2021
  * 
  *       Test case for syntax for revised query system.
  */

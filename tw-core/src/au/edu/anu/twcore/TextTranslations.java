@@ -43,12 +43,10 @@ import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.ens.biologie.generic.utils.Interval;
 
 /**
- * @author Ian Davies
- *
- * @date 14 Mar. 2021
+ * @author Ian Davies - 14 Mar. 2021
  * 
  *       Ensure default is English otherwise unhandled languages will not
- *       produce message.
+ *       produce a message.
  */
 public class TextTranslations {
 
