@@ -630,10 +630,10 @@ public class TextTranslations {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Set to be bounded.";
+			am = "Set interval to be bounded at both ends.";
 			cm = "Expected interval to be bounded but found '" + interval + "'.";
 		} else {// make sure default is English!
-			am = "Set to be bounded.";
+			am = "Set interval to be bounded at both ends.";
 			cm = "Expected interval to be bounded but found '" + interval + "'.";
 		}
 		String[] result = { am, cm };

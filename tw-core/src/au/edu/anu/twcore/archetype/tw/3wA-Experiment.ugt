@@ -158,10 +158,10 @@ hasNode dataSourceSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
-			values = StringTable(([3]+
+			values = StringTable(([2]+
 			"au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader",+
-			"au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader",+
-			"au.edu.anu.twcore.experiment.runtime.io.BOMWeatherLoader"))
+			"au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader"))
+			//"au.edu.anu.twcore.experiment.runtime.io.BOMWeatherLoader"))
 	mustSatisfyQuery CheckSubArchetypeQueryCsvFile
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
 		parameters = StringTable(([3]"subclass",+

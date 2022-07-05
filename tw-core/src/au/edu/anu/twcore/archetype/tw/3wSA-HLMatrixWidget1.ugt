@@ -1,0 +1,53 @@
+tree
+	scope =            String("3W-archetype")
+	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+
+archetype 3wSA-HLMatrixWidget1
+// -------------------------------------------------
+//  A headless widget to save tif images of a matrix.
+//  Ian Davies - 5 July 2022
+// --------------------------------------------------
+	hasNode HLMatrixWidget1Spec
+		isOfClass = String("widget")
+		hasParent = StringTable(([1]"headless:"))
+		multiplicity = IntegerRange("0..*")
+		mustSatisfyQuery SenderInRangeQuery
+			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
+		
+		hasEdge HLMatrixWidget1DataTrackerEdgeSpec
+			isOfClass = String("trackSeries")
+			toNode = String("dataTracker:")
+			multiplicity = IntegerRange("1..1")
+		
+		hasProperty HLMatrixWidget1zRangeProperty
+			hasName = String("defaultZRange")
+			type = String("Interval")
+			multiplicity = IntegerRange("1..1")
+			mustSatisfyQuery ZRangeBoundedQuery
+				className = String("au.edu.anu.twcore.archetype.tw.IsBoundedIntervalQuery")
+				
+		hasProperty HLMatrixWidgetAsAverageProperty
+			hasName = String("asAverage")
+			type = String("Boolean")
+			multiplicity = IntegerRange("1..1")
+			
+		hasProperty HLMatrixWidget1SampleTimesProperty
+			hasName = String("sampleTimes")
+			type = String("IntTable")
+			multiplicity = IntegerRange("1..1")
+			
+		hasProperty HLMatrixWidget1MagnifiyProperty
+			hasName = String("imageMagnify")
+			type = String ("Integer")
+			multiplicity = IntegerRange("1..1")
+			
+		mustSatisfyQuery HLMatrixWidget1ParentClassQuery
+			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
+			parentLabels = StringTable(([1]"headless"))
+			
+			
+			

@@ -48,17 +48,23 @@ import au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorStates;
 public interface DataReceiver<T, M> extends Observer {
 
 	/**
-	 * Process implemented by all widgets to process the data.
+	 * Simulation data sent to all observers (usually {@link Widget} or
+	 * {@link WidgetGUI}) whenever new data is available.
 	 * 
 	 * @param data The data.
 	 */
 	public void onDataMessage(T data);
 
 	/**
-	 * Process metadata before a simulation starts. It is called when
-	 * {@link Simulator} is in the {@link SimulatorStates#waiting waiting} state.
+	 * Metadata sent to all observer widgets (usually {@link Widget} or
+	 * {@link WidgetGUI}) before a simulation starts to provide the opportunity to
+	 * set aspects of their state that will not change during a simulation. It is
+	 * called when {@link Simulator} is in the {@link SimulatorStates#waiting
+	 * waiting} state.
+	 * <p>
 	 * Implementations may need to avoid reprocessing the metadata on re-running the
-	 * simulation in the same session.
+	 * simulation in the same session or when multiple simulators are sending
+	 * identical information.
 	 * 
 	 * @param meta The metadata.
 	 */

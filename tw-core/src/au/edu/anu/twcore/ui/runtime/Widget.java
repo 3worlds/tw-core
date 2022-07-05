@@ -32,7 +32,8 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import au.edu.anu.twcore.ui.*;
 
 /**
- * Interface for run-time widgets that have no GUI (must be children of {@link UIHeadless}).
+ * Interface for run-time widgets that have no GUI (must be children of
+ * {@link UIHeadless}).
  * 
  * @author Ian Davies -19 Sep 2019
  */
@@ -40,7 +41,8 @@ import au.edu.anu.twcore.ui.*;
 public interface Widget {
 
 	/**
-	 * Provides access to the properties in the {@link WidgetNode}.
+	 * Provides access to the properties in the {@link WidgetNode}. This method is
+	 * called at run-time, immediately after construction
 	 * 
 	 * @param id         Widgets id. This is unique with the scope of the graph and
 	 *                   can be made use of for file naming.

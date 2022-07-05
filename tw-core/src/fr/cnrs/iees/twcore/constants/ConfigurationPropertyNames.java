@@ -155,7 +155,9 @@ public enum ConfigurationPropertyNames {
 	P_WIDGET_FIRSTSENDER		("firstSender"),
 	P_WIDGET_NSENDERS			("nSenders"),
 	P_WIDGET_DEFAULT_Z_RANGE	("defaultZRange"),
-	
+	P_WIDGET_ASAVERAGE			("asAverage"),
+	P_WIDGET_SAMPLETIMES		("sampleTimes"),
+	P_WIDGET_IMAGEMAGNIFICATION	("imageMagnify"	),
 	P_EXP_DEPLOYMENT			("deployment"),
 	P_EXP_NREPLICATES			("nReplicates"),
 	P_EXP_DIR					("directory"),
