@@ -118,19 +118,19 @@ public class WidgetNode extends InitialisableNode implements Singleton<Widget>, 
 					String expDir = "exp0";
 					if (exp.properties().hasProperty(P_EXP_DIR.key()))
 						expDir = (String) exp.properties().getPropertyValue(P_EXP_DIR.key());
-					String expPrecis = ""	;
+					String expPrecis = "";
 					if (exp.properties().hasProperty(P_EXP_PRECIS.key()))
 						expPrecis = (String) exp.properties().getPropertyValue(P_EXP_PRECIS.key());
-				
+
 					ExperimentDesignType edt = exp.getDesignType();
 					ExtendablePropertyListImpl p = (ExtendablePropertyListImpl) properties().clone();
 					p.addProperty(P_DESIGN_TYPE.key(), edt);
 					p.addProperty("TreatmentList", exp.getTreatmentList());
-					p.addProperty("Factors",exp.getFactors());
+					p.addProperty("Factors", exp.getFactors());
 					p.addProperty("Baseline", exp.getBaseline());
 					p.addProperty(P_EXP_NREPLICATES.key(), exp.properties().getPropertyValue(P_EXP_NREPLICATES.key()));
-					p.addProperty(P_EXP_DIR.key(),expDir);
-					p.addProperty(P_EXP_PRECIS.key(),expPrecis);
+					p.addProperty(P_EXP_DIR.key(), expDir);
+					p.addProperty(P_EXP_PRECIS.key(), expPrecis);
 					widget.setProperties(id(), p);
 				} else
 					widget.setProperties(id(), properties());

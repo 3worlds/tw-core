@@ -41,20 +41,41 @@ public class ExpFactor {
 	private final String name;
 	private final List<Property> values;
 	private final List<String> valueNames;
-	public ExpFactor (String name, List<Property> values, StringTable valueNames) {
+
+	public ExpFactor(String name, List<Property> values, StringTable valueNames) {
 		this.name = name;
 		this.values = values;
 		this.valueNames = new ArrayList<>();
-		for (int i = 0;i<valueNames.size();i++)
+		for (int i = 0; i < valueNames.size(); i++)
 			this.valueNames.add(valueNames.getByInt(i));
 	}
-	
-	public String getName () {
+
+	public String getName() {
 		return name;
 	}
-	public String getValueName (Property p) {
+
+	public String getValueName(Property p) {
 		return valueNames.get(values.indexOf(p));
 	}
-	// Given a List<Property> 
+
+	public int nLevels() {
+		return values.size();
+	}
+
+	@Override
+	public String toString() {
+		// name[2:short(true),long(false)]{
+		StringBuilder result = new StringBuilder().append(name).append("[").append(values.size()).append(":");
+		for (int i = 0; i < values.size(); i++) {
+			String label = valueNames.get(i);
+			String value = values.get(i).getValue().toString();
+			if (i != 0)
+				result.append(",");
+			result.append(label).append("(").append(value).append(")");
+		}
+		result.append("]");
+
+		return result.toString();
+	}
 
 }
