@@ -38,6 +38,7 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
+import fr.cnrs.iees.twcore.constants.FileType;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.Singleton;
 import fr.ens.biologie.generic.utils.Logging;
@@ -51,21 +52,21 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployable;
+import au.edu.anu.twcore.experiment.runtime.ExperimentDesignDetails;
 import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
  * Class matching the "experiment" node label in the 3Worlds configuration tree.
- * Has properties, nReps, output dir and precis. Returns a controller to communicate with simulators
+ * Has properties, nReps, output dir and precis. Returns a controller to
+ * communicate with simulators
  *
  * @author Jacques Gignoux - 27 mai 2019
  *
@@ -79,24 +80,25 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	private Deployable deployer = null;
 	/** class constant = number of simulators in this running session */
 	private static int N_SIMULATORS = 0;
-	private final List<List<Property>> treatmentList;
-	private final Map<String,ExpFactor> factors;
-	private final Map<String, Object> baseline;
+//	private final List<List<Property>> treatmentList;
+//	private final Map<String,ExpFactor> factors;
+//	private final Map<String, Object> baseline;
+	private ExperimentDesignDetails edd;
 
 	// default constructor
 	public Experiment(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
-		baseline = new HashMap<>();
-		treatmentList = new ArrayList<>();
-		factors = new LinkedHashMap<>();
+//		baseline = new HashMap<>();
+//		treatmentList = new ArrayList<>();
+//		factors = new LinkedHashMap<>();
 	}
 
 	// constructor with no properties
 	public Experiment(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
-		baseline = new HashMap<>();
-		treatmentList = new ArrayList<>();
-		factors = new LinkedHashMap<>();
+//		baseline = new HashMap<>();
+//		treatmentList = new ArrayList<>();
+//		factors = new LinkedHashMap<>();
 	}
 
 	@Override
@@ -104,32 +106,33 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 		if (!sealed) {
 			super.initialise();
 
-			SimulatorNode baselineSimulator = null;
+			SimulatorNode simulatorNode = null;
 			Design dsgn = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
 			if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key())) {
 				if (get(edges(Direction.OUT), selectZeroOrOne(hasTheLabel(E_BASELINE.label()))) != null) {
 					// multiple systems
-					baselineSimulator = (SimulatorNode) get(edges(Direction.OUT),
+					simulatorNode = (SimulatorNode) get(edges(Direction.OUT),
 							selectOne(hasTheLabel(E_BASELINE.label())), endNode(), children(),
 							selectOne(hasTheLabel(N_DYNAMICS.label())));
 				} else {
 					// single system -NB baseline is now [0..1]
-					baselineSimulator = (SimulatorNode) get(getParent().getChildren(),
+					simulatorNode = (SimulatorNode) get(getParent().getChildren(),
 							selectOne(hasTheLabel(N_SYSTEM.label())), children(),
 							selectOne(hasTheLabel(N_DYNAMICS.label())));
 				}
 
-				int nReps = getNReps();
 
-				ExperimentDesignType expDesignType = getDesignType();
-				if (expDesignType != null)
-					switch (expDesignType) {
+				edd = new ExperimentDesignDetails(getDefaultPrecis(),
+						getDefaultnReplicates(), getDesignType(), getDesignFile(), getDefaultExpDir());
+				
+				if (edd.getEdt() != null)
+					switch (edd.getEdt()) {
 					case singleRun: {
 						deployer = new ParallelDeployer();
 
-						for (int i = 0; i < nReps; i++) {
-							Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
-							sim.applyTreatmentValues(baseline,null);
+						for (int i = 0; i < edd.nReplicates(); i++) {
+							Simulator sim = simulatorNode.getInstance(N_SIMULATORS++);
+							sim.applyTreatmentValues(edd.baseline(), null);
 							deployer.attachSimulator(sim);
 						}
 						break;
@@ -138,27 +141,27 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 						// CAUTION: Limited protecting queries!
 						// 1) Only Fields that are constants associated with the arena
 						//
-						buildTreatmentList(expDesignType);
+						buildTreatmentList(edd.getEdt());
 
 						deployer = new ParallelDeployer();
 
-						for (int r = 0; r < nReps; r++)
-							for (int t = 0; t < treatmentList.size(); t++) {
-								Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
-								sim.applyTreatmentValues(baseline,getTreatmentList().get(t));
+						for (int r = 0; r < edd.nReplicates(); r++)
+							for (int t = 0; t < edd.treatments().size(); t++) {
+								Simulator sim = simulatorNode.getInstance(N_SIMULATORS++);
+								sim.applyTreatmentValues(edd.baseline(), edd.treatments().get(t));
 								deployer.attachSimulator(sim);
 							}
 						break;
 					}
 					case sensitivityAnalysis: {
-						buildTreatmentList(expDesignType);
+						buildTreatmentList(edd.getEdt());
 
 						deployer = new ParallelDeployer();
 
-						for (int r = 0; r < nReps; r++)
-							for (int t = 0; t < treatmentList.size(); t++) {
-								Simulator sim = baselineSimulator.getInstance(N_SIMULATORS++);
-								sim.applyTreatmentValues(baseline,getTreatmentList().get(t));
+						for (int r = 0; r < edd.nReplicates(); r++)
+							for (int t = 0; t < edd.treatments().size(); t++) {
+								Simulator sim = simulatorNode.getInstance(N_SIMULATORS++);
+								sim.applyTreatmentValues(edd.baseline(), edd.treatments().get(t));
 								deployer.attachSimulator(sim);
 							}
 						break;
@@ -182,29 +185,33 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 	}
 
-	public int getNReps() {
+	public ExperimentDesignDetails getExperimentDesignDetails() {
+		return edd;
+	}
+
+	private int getDefaultnReplicates() {
 		int result = 1;
 		if (properties().hasProperty(P_EXP_NREPLICATES.key()))
 			result = (Integer) properties().getPropertyValue(P_EXP_NREPLICATES.key());
 		return result;
 	}
 
-	public List<List<Property>> getTreatmentList() {
-		if (treatmentList.isEmpty())
-			buildTreatmentList(getDesignType());
-		return treatmentList;
-	}
-	public Map<String,ExpFactor> getFactors(){
-		if (factors.isEmpty())
-			buildTreatmentList(getDesignType());
-		return factors;
+	private String getDefaultPrecis() {
+		String precis = null;
+		if (properties().hasProperty(P_EXP_PRECIS.key()))
+			precis = (String) properties().getPropertyValue(P_EXP_PRECIS.key());
+		return precis;
 	}
 
-	public Map<String, Object> getBaseline() {
-		return baseline;
+	private String getDefaultExpDir() {
+		String expDir = "exp0";
+		if (properties().hasProperty(P_EXP_DIR.key()))
+			expDir = (String) properties().getPropertyValue(P_EXP_DIR.key());
+		return expDir;
 	}
 
-	public ExperimentDesignType getDesignType() {
+
+	private ExperimentDesignType getDesignType() {
 		Design dsgn = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
 		ExperimentDesignType result = null;
 		if (dsgn.properties().hasProperty(P_DESIGN_TYPE.key()))
@@ -213,12 +220,25 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 	}
 
+	private File getDesignFile() {
+		Design dsgn = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
+		FileType result = null;
+		if (dsgn.properties().hasProperty(P_DESIGN_FILE.key())) {
+			result = (FileType) dsgn.properties().getPropertyValue(P_DESIGN_FILE.key());
+		}
+		if (result != null)
+			return result.getFile();
+		return null;
+
+	}
+	//
+
 	@SuppressWarnings("unchecked")
 	private void buildTreatmentList(ExperimentDesignType edt) {
 		// should only be called for sa or factorial
-		treatmentList.clear();
-		factors.clear();
-		if (get(this.getChildren(),selectZeroOrOne(hasTheLabel(N_TREATMENT.label())))==null)
+//		treatmentList.clear();
+//		factors.clear();
+		if (get(this.getChildren(), selectZeroOrOne(hasTheLabel(N_TREATMENT.label()))) == null)
 			return;
 		Treatment treatment = (Treatment) get(this.getChildren(), selectOne(hasTheLabel(N_TREATMENT.label())));
 		List<ALDataEdge> treats = (List<ALDataEdge>) get(treatment.edges(Direction.OUT),
@@ -248,13 +268,12 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 			List<Property> props = getAsProperties(endNode.id(), type, values);
 			StringTable valueNames = (StringTable) (e.properties().getPropertyValue(P_TREAT_VALUENAMES.key()));
 			settings.set(order, props);
-			orderedFactors.set(order, new ExpFactor(e.id(),props,valueNames));
+			orderedFactors.set(order, new ExpFactor(e.id(), props, valueNames));
 		}
-		for (int i = 0; i<orderedFactors.size();i++) {
+		for (int i = 0; i < orderedFactors.size(); i++) {
 			String key = settings.get(i).get(0).getKey();
-			factors.put(key, orderedFactors.get(i));
+			edd.factors().put(key, orderedFactors.get(i));
 		}
-		
 
 		// assume order is normalized and packed 0..n(??)
 		switch (edt) {
@@ -264,16 +283,16 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 			for (int i = 0; i < settings.size(); i++)
 				maxIndex[i] = settings.get(i).size() - 1;
 
-			buildTreatments(settings, indices, maxIndex, treatmentList);
+			buildTreatments(settings, indices, maxIndex, edd.treatments());
 			break;
 		}
 		case sensitivityAnalysis: {
-			treatmentList.clear();
+//			treatmentList.clear();
 			for (List<Property> lst : settings) {
 				for (Property p : lst) {
 					List<Property> l = new ArrayList<>();
 					l.add(p);
-					treatmentList.add(l);
+					edd.treatments().add(l);
 				}
 			}
 			break;

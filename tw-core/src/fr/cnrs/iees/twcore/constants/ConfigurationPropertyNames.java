@@ -162,6 +162,7 @@ public enum ConfigurationPropertyNames {
 	P_EXP_NREPLICATES			("nReplicates"),
 	P_EXP_DIR					("directory"),
 	P_EXP_PRECIS				("precis"),
+	P_EXP_DETAILS				("experimentDetails"),
 	
 	P_HLWIDGET_NLINES			("nLines"),
 	

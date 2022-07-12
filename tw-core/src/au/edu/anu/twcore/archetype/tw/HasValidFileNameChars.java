@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
@@ -51,23 +52,35 @@ public class HasValidFileNameChars extends QueryAdaptor {
 	public Queryable submit(Object input) {
 		initInput(input);
 		Property localItem = (Property) input;
-//		String tmpdir = System.getProperty("java.io.tmpdir");
 		String fileName = (String) localItem.getValue();
-//		File file = null;
-//		if (tmpdir != null)
-//			file = new File(tmpdir + File.separator + fileName);
-//		else
-//			file = new File(fileName);
-		try {
-			FileWriter fw = new FileWriter(fileName,StandardCharsets.UTF_8);
-			fw.close();
-			new File(fileName).delete();
-		} catch (IOException e) {
+		if (!isValid(fileName)) {
 			String[] msgs = TextTranslations.getHasValidFileNameChars(fileName);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 		}
 		return this;
+	}
+
+	// https://www.baeldung.com/java-validate-filename
+	private static final Character[] INVALID_WINDOWS_SPECIFIC_CHARS = { '"', '*', '<', '>', '?', '|' };
+	private static final Character[] INVALID_UNIX_SPECIFIC_CHARS = { '\000','/' };
+
+	private static boolean isValid(String fileName) {
+		if (fileName == null || fileName.isEmpty() || fileName.length() > 255) {
+			return false;
+		}
+		return Arrays.stream(getInvalidCharsByOS()).noneMatch(ch -> fileName.contains(ch.toString()));
+	}
+
+	private static Character[] getInvalidCharsByOS() {
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.contains("win")) {
+			return INVALID_WINDOWS_SPECIFIC_CHARS;
+		} else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+			return INVALID_UNIX_SPECIFIC_CHARS;
+		} else {
+			return new Character[] {};
+		}
 	}
 
 }
