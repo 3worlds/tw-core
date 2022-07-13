@@ -30,6 +30,7 @@ package au.edu.anu.twcore.experiment.runtime;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 /**
  * @author Ian Davies - 11 July 2022
  */
-public final class ExperimentDesignDetails {
+public final class ExperimentDesignDetails implements IEdd {
 	private final List<List<Property>> treatments;
 	private final Map<String, ExpFactor> factors;
 	private final Map<String, Object> baseline;
@@ -51,7 +52,7 @@ public final class ExperimentDesignDetails {
 	private final File designFile;
 	private final String expDir;
 
-	public ExperimentDesignDetails(String precis, int nReplicates, ExperimentDesignType edt, File designFile,
+	private ExperimentDesignDetails(String precis, int nReplicates, ExperimentDesignType edt, File designFile,
 			String expDir) {
 		this.edt = edt;
 		this.precis = precis;
@@ -64,32 +65,27 @@ public final class ExperimentDesignDetails {
 
 	}
 
-	// rw
+	@Override
 	public List<List<Property>> treatments() {
 		return treatments;
 	}
 
-	// rw
+	@Override
 	public Map<String, ExpFactor> factors() {
 		return factors;
 	}
 
-	// rw
+	@Override
 	public Map<String, Object> baseline() {
 		return baseline;
 	}
 
-	// r
-	public int nReplicates() {
-		return nReplicates;
-	}
-
-	// r
-	public ExperimentDesignType getEdt() {
+	@Override
+	public ExperimentDesignType getType() {
 		return edt;
 	}
 
-	// r
+	@Override
 	public String getExpDir() {
 		return expDir;
 	}
@@ -98,7 +94,7 @@ public final class ExperimentDesignDetails {
 		return edt == null ? true : false;
 	}
 
-	// r
+	@Override
 	public String toDetailString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Type\t");
@@ -156,6 +152,32 @@ public final class ExperimentDesignDetails {
 		});
 
 		return sb.toString();
+	}
+
+	@Override
+	public int getReplicateCount() {
+		return nReplicates;
+	}
+
+	@Override
+	public Map<String, ExpFactor> getFactors() {
+		return Collections.unmodifiableMap(factors);
+	}
+
+	@Override
+	public List<List<Property>> getTreatments() {
+		return Collections.unmodifiableList(treatments);
+	}
+
+	@Override
+	public Map<String, Object> getBaseline() {
+		return Collections.unmodifiableMap(baseline);
+	}
+
+	public static IEdd makeDetails(String precis, int nReplicates, ExperimentDesignType edt,
+			File designFile, String expDir) {
+		return new ExperimentDesignDetails(precis, nReplicates, edt, designFile, expDir);
+
 	}
 
 }

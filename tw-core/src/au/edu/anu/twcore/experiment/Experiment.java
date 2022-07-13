@@ -52,7 +52,9 @@ import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployable;
+import au.edu.anu.twcore.experiment.runtime.EddReadable;
 import au.edu.anu.twcore.experiment.runtime.ExperimentDesignDetails;
+import au.edu.anu.twcore.experiment.runtime.IEdd;
 import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
@@ -83,7 +85,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 //	private final List<List<Property>> treatmentList;
 //	private final Map<String,ExpFactor> factors;
 //	private final Map<String, Object> baseline;
-	private ExperimentDesignDetails edd;
+	private IEdd edd;
 
 	// default constructor
 	public Experiment(Identity id, SimplePropertyList props, GraphFactory gfactory) {
@@ -122,15 +124,15 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 				}
 
 
-				edd = new ExperimentDesignDetails(getDefaultPrecis(),
+				edd = ExperimentDesignDetails.makeDetails(getDefaultPrecis(),
 						getDefaultnReplicates(), getDesignType(), getDesignFile(), getDefaultExpDir());
 				
-				if (edd.getEdt() != null)
-					switch (edd.getEdt()) {
+				if (edd.getType() != null)
+					switch (edd.getType()) {
 					case singleRun: {
 						deployer = new ParallelDeployer();
 
-						for (int i = 0; i < edd.nReplicates(); i++) {
+						for (int i = 0; i < edd.getReplicateCount(); i++) {
 							Simulator sim = simulatorNode.getInstance(N_SIMULATORS++);
 							sim.applyTreatmentValues(edd.baseline(), null);
 							deployer.attachSimulator(sim);
@@ -141,11 +143,11 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 						// CAUTION: Limited protecting queries!
 						// 1) Only Fields that are constants associated with the arena
 						//
-						buildTreatmentList(edd.getEdt());
+						buildTreatmentList(edd.getType());
 
 						deployer = new ParallelDeployer();
 
-						for (int r = 0; r < edd.nReplicates(); r++)
+						for (int r = 0; r < edd.getReplicateCount(); r++)
 							for (int t = 0; t < edd.treatments().size(); t++) {
 								Simulator sim = simulatorNode.getInstance(N_SIMULATORS++);
 								sim.applyTreatmentValues(edd.baseline(), edd.treatments().get(t));
@@ -154,11 +156,11 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 						break;
 					}
 					case sensitivityAnalysis: {
-						buildTreatmentList(edd.getEdt());
+						buildTreatmentList(edd.getType());
 
 						deployer = new ParallelDeployer();
 
-						for (int r = 0; r < edd.nReplicates(); r++)
+						for (int r = 0; r < edd.getReplicateCount(); r++)
 							for (int t = 0; t < edd.treatments().size(); t++) {
 								Simulator sim = simulatorNode.getInstance(N_SIMULATORS++);
 								sim.applyTreatmentValues(edd.baseline(), edd.treatments().get(t));
@@ -185,7 +187,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 
 	}
 
-	public ExperimentDesignDetails getExperimentDesignDetails() {
+	public EddReadable getExperimentDesignDetails() {
 		return edd;
 	}
 
