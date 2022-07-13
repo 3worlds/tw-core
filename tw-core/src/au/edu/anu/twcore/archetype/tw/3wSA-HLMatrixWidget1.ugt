@@ -45,6 +45,12 @@ archetype 3wSA-HLMatrixWidget1
 			type = String ("Integer")
 			multiplicity = IntegerRange("1..1")
 			
+		hasProperty HLMatrixWidget1PaletteProperty
+			hasName = String("palette")
+			type = String("PaletteTypes")
+			multiplicity = IntegerRange("1..1")
+		
+			
 		mustSatisfyQuery HLMatrixWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([1]"headless"))

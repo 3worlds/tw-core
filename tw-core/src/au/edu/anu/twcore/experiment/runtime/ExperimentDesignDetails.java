@@ -109,15 +109,23 @@ public final class ExperimentDesignDetails implements IEdd {
 
 		sb.append("Replicates\t").append(nReplicates);
 		sb.append("\n");
-		if (!isCustom() && edt.equals(ExperimentDesignType.crossFactorial)) {
+		if (!isCustom()) {
+			if (edt.equals(ExperimentDesignType.crossFactorial)) {
 
-			sb.append(nReplicates);
-			factors.forEach((k, v) -> {
-				sb.append(" x ").append(k).append("(").append(v.nLevels()).append(")");
-			});
-			sb.append("=").append(treatments.size() * nReplicates).append("\n");
+				sb.append(nReplicates);
+				factors.forEach((k, v) -> {
+					sb.append(" x ").append(k).append("(").append(v.nLevels()).append(")");
+				});
+				sb.append("=").append(treatments.size() * nReplicates).append("\n");
 
-		} // TODO OThers
+			} else if (edt.equals(ExperimentDesignType.sensitivityAnalysis)) {
+				sb.append(nReplicates).append(" x (");
+				factors.forEach((k, v) -> {
+					sb.append(" + ").append(k).append("(").append(v.nLevels()).append(")");
+				});
+				sb.append(") =").append(treatments.size() * nReplicates).append("\n");
+			}
+		}
 		sb.append("\n");
 
 		sb.append("Baseline\n");
@@ -174,8 +182,8 @@ public final class ExperimentDesignDetails implements IEdd {
 		return Collections.unmodifiableMap(baseline);
 	}
 
-	public static IEdd makeDetails(String precis, int nReplicates, ExperimentDesignType edt,
-			File designFile, String expDir) {
+	public static IEdd makeDetails(String precis, int nReplicates, ExperimentDesignType edt, File designFile,
+			String expDir) {
 		return new ExperimentDesignDetails(precis, nReplicates, edt, designFile, expDir);
 
 	}
