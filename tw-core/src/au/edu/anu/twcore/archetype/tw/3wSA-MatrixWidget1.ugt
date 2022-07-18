@@ -19,7 +19,10 @@ archetype 3wSA-MatrixWidget1
 		mustSatisfyQuery MatrixWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
-		
+		// DefaultPalette
+		// DefaultResolution
+		// DefaultPrecision
+		// DefaultMissingValues
 		hasProperty MatrixWidget1FirstSenderProperty
 			hasName = String("firstSender")
 			type = String("Integer")

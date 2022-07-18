@@ -27,7 +27,8 @@ archetype 3wSA-SimpleTimeSeriesWidget
 			mustSatisfyQuery SimpleTimeWidgetMaxAxesInRangeQuery
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]1,10))
-		
+		// DefaultShowLegend
+		// DefaultLegendPosition.
 		hasProperty SimpleTimeSeriesWidgetBufferSizeProperty
 			hasName = String("bufferSize")
 			type = String("Integer")

@@ -97,7 +97,7 @@ public final class ExperimentDesignDetails implements IEdd {
 	@Override
 	public String toDetailString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Type\t");
+		sb.append("Type \t");
 		if (isCustom())
 			sb.append(designFile);
 		else {
@@ -135,30 +135,31 @@ public final class ExperimentDesignDetails implements IEdd {
 		});
 		sb.append("\n");
 
-		sb.append("Treatments (parallel deployment)\n");
-		sb.append("SimId\tTreatment\n");
-		int simId = 0;
-		for (int i = 0; i < nReplicates; i++) {
-			for (int j = 0; j < treatments.size(); j++) {
-				sb.append(simId++).append("\t");
-				List<Property> properties = treatments.get(j);
-				for (Property p : properties) {
-					ExpFactor f = factors.get(p.getKey());
-					String vn = f.getValueName(p);
-					sb.append(f.getName()).append("(").append(vn).append(")\t");
+		if (!treatments.isEmpty()) {
+			sb.append("Treatments (parallel deployment)\n");
+			sb.append("SimId\tTreatment\n");
+			int simId = 0;
+			for (int i = 0; i < nReplicates; i++) {
+				for (int j = 0; j < treatments.size(); j++) {
+					sb.append(simId++).append("\t");
+					List<Property> properties = treatments.get(j);
+					for (Property p : properties) {
+						ExpFactor f = factors.get(p.getKey());
+						String vn = f.getValueName(p);
+						sb.append(f.getName()).append("(").append(vn).append(")\t");
+					}
+					sb.append("\n");
+
 				}
-				sb.append("\n");
-
 			}
+
+			sb.append("\n");
+			sb.append("Factors\n");
+			factors.forEach((k, v) -> {
+				sb.append(v).append("\n");
+
+			});
 		}
-
-		sb.append("\n");
-		sb.append("Factors\n");
-		factors.forEach((k, v) -> {
-			sb.append(v).append("\n");
-
-		});
-
 		return sb.toString();
 	}
 

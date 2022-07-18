@@ -149,6 +149,7 @@ public enum ConfigurationPropertyNames {
 	P_SPACE_OBSWINDOW			("observationWindow"),
 	
 	P_WIDGET_SENDER				("sender"),
+	P_WIDGET_PALETTE			("palette"),
 	P_WIDGET_MAXAXES			("maxAxes"),
 	P_WIDGET_BUFFERSIZE			("bufferSize"),
 	P_WIDGET_REFRESHRATE		("refreshRate"),

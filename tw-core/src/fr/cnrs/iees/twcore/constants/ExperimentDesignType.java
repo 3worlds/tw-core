@@ -33,13 +33,13 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 public enum ExperimentDesignType {
 
 // singleRun: An ‘experiment’ consisting of a single simulation run
-	singleRun ("An ‘experiment’ consisting of a single simulation run"),
+	singleRun ("An ‘experiment’ consisting of a single simulation run."),
 
 // crossFactorial: A fully crossed design to examine the effect on response variables of any number of factors and their interactions
-	crossFactorial ("A fully crossed design to examine the effect on response variables of any number of factors and their interactions"),
+	crossFactorial ("A fully crossed design to examine the effect on response variables of any number of factors and their interactions."),
 
 // sensitivityAnalysis: An examination of the sensitivity of a response variable to factors without factor interactions
-	sensitivityAnalysis ("An examination of the sensitivity of a response variable to factors without factor interactions");
+	sensitivityAnalysis ("An examination of the sensitivity of a response variable to factors without factor interactions.");
 	
 	private final String description;
 

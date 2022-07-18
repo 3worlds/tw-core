@@ -22,6 +22,8 @@ archetype 3wSA-SpaceWidget1
 			isOfClass = String("trackSpace")
 			toNode = String("space:")
 			multiplicity = IntegerRange("1..1")
+			
+		// DefaultelementSize 0.9
 
 		hasProperty SpaceWidget1ViewsProperty
 			hasName = String("nViews")
