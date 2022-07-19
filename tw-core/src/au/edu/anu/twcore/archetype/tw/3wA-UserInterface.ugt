@@ -29,13 +29,13 @@ hasNode HLwidgetSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
 			values = StringTable(([4]+
 			"au.edu.anu.twuifx.widgets.headless.HLProgressWidget1",+
-			"au.edu.anu.twuifx.widgets.headless.HLExperimentWidget1",+
+			"au.edu.anu.twuifx.widgets.headless.HLTimeSeriesAnalysisWidget1",+
 			"au.edu.anu.twuifx.widgets.headless.HLMatrixWidget1",+
 			"au.edu.anu.twuifx.widgets.headless.HLControlWidget1"))
 
-	mustSatisfyQuery CheckSubArchetypeQueryHLExperimentWidget1
+	mustSatisfyQuery CheckSubArchetypeQueryHLTimeSeriesAnalysisWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")
-		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLExperimentWidget1","3wSA-HLExperimentWidget1.ugt"))
+		parameters = StringTable(([3]"subclass","au.edu.anu.twuifx.widgets.headless.HLTimeSeriesAnalysisWidget1","3wSA-HLTimeSeriesAnalysisWidget1.ugt"))
 
 	mustSatisfyQuery CheckSubArchetypeQueryHLMatrixWidget1
 		className = String("au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery")

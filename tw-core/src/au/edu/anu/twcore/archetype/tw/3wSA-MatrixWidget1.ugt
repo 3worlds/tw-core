@@ -19,8 +19,6 @@ archetype 3wSA-MatrixWidget1
 		mustSatisfyQuery MatrixWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab", "container"))
-		// DefaultPalette
-		// DefaultResolution
 		// DefaultPrecision
 		// DefaultMissingValues
 		hasProperty MatrixWidget1FirstSenderProperty
@@ -30,11 +28,16 @@ archetype 3wSA-MatrixWidget1
 			mustSatisfyQuery MatrixWidget1firstSenderInRangeQuery1
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]0,2147483647))
+				
+		hasProperty HLMatrixWidget1PaletteProperty
+			hasName = String("palette")
+			type = String("PaletteTypes")
+			multiplicity = IntegerRange("0..1")
 		
 		hasProperty MatrixWidget1DefaultZRangeProperty
 			hasName = String("defaultZRange")
 			type = String("Interval")
-			multiplicity = IntegerRange("1..1")
+			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery ZRangeBoundedQuery
 				className = String("au.edu.anu.twcore.archetype.tw.IsBoundedIntervalQuery")
 

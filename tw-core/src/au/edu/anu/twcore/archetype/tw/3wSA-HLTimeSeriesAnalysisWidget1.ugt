@@ -6,21 +6,21 @@ tree
 	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
 	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
 
-archetype 3wSA-HLExperimentWidget1
+archetype 3wSA-HLTimeSeriesAnalysisWidget1
 
-	hasNode HLExperimentWidget1Spec
+	hasNode HLTimeSeriesAnalysisWidget1Spec
 		isOfClass = String("widget")
 		hasParent = StringTable(([1]"headless:"))
 		multiplicity = IntegerRange("0..*")
 		mustSatisfyQuery SenderInRangeQuery
 			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 		
-		hasEdge HLExperimentWidget1DataTrackerEdgeSpec
+		hasEdge HLTimeSeriesAnalysisWidget1DataTrackerEdgeSpec
 			isOfClass = String("trackSeries")
 			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
 		
-		hasProperty HLExperimentWidget1nLinesProperty
+		hasProperty HLTimeSeriesAnalysisWidget1nLinesProperty
 			hasName = String("nLines")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
@@ -28,7 +28,7 @@ archetype 3wSA-HLExperimentWidget1
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]1,2147483647))
 			
-		mustSatisfyQuery HLExperimentWidget1ParentClassQuery
+		mustSatisfyQuery HLTimeSeriesAnalysisWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([1]"headless"))
 			
