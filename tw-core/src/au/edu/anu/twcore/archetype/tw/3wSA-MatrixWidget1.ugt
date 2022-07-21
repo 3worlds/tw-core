@@ -22,7 +22,7 @@ archetype 3wSA-MatrixWidget1
 		// DefaultPrecision
 		// DefaultMissingValues
 		hasProperty MatrixWidget1FirstSenderProperty
-			hasName = String("firstSender")
+			hasName = String("leastSimId")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery MatrixWidget1firstSenderInRangeQuery1
@@ -35,24 +35,40 @@ archetype 3wSA-MatrixWidget1
 			multiplicity = IntegerRange("0..1")
 		
 		hasProperty MatrixWidget1DefaultZRangeProperty
-			hasName = String("defaultZRange")
+			hasName = String("zRange")
 			type = String("Interval")
 			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery ZRangeBoundedQuery
 				className = String("au.edu.anu.twcore.archetype.tw.IsBoundedIntervalQuery")
 
 		hasProperty MatrixWidget1NSendersProperty
-			hasName = String("nSenders")
+			hasName = String("nSims")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery MatrixWidget1NSendersInRangeQuery2
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]1,2147483647))
 						
-		hasProperty HLMatrixWidget1MagnifiyProperty
+		hasProperty MatrixWidget1MagnifiyProperty
 			hasName = String("imageMagnify")
 			type = String ("Integer")
 			multiplicity = IntegerRange("0..1")
+		
+		hasProperty MatrixWidget1MagnifiyProperty
+			hasName = String("missingValueColour")
+			type = String ("MissingValueColour")
+			multiplicity = IntegerRange("0..1")
+			
+		hasProperty MatrixWidget1MissingValueOptionProperty
+			hasName = String("missingValueMethod")
+			type = String ("IsMissingValue")
+			multiplicity = IntegerRange("0..1")
+					
+		hasProperty MatrixWidget1PrecisionProperty
+			hasName = String("zPrecision")
+			type = String ("Integer")
+			multiplicity = IntegerRange("0..1")
+
 
 		hasProperty MatrixWidget1ViewsProperty
 			hasName = String("nViews")

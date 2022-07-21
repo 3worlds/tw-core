@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.util.StringUtils;
-
 import static fr.ens.biologie.generic.SaveableAsText.*;
 
 /**

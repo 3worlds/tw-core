@@ -14,7 +14,7 @@ archetype 3wSA-TableWidget1
 		multiplicity = IntegerRange("0..*")
 
 		hasProperty TableWidget1FirstSenderProperty
-			hasName = String("firstSender")
+			hasName = String("leastSimId")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery TableWidget1firstSenderInRangeQuery1
@@ -22,7 +22,7 @@ archetype 3wSA-TableWidget1
 				interval = IntTable(([2]0,2147483647))
 
 		hasProperty TableWidget1NSendersProperty
-			hasName = String("nSenders")
+			hasName = String("nSims")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery TableWidget11NSendersInRangeQuery2

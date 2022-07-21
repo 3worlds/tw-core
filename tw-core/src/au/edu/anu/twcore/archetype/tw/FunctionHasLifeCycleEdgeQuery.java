@@ -36,8 +36,6 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
-import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.List;

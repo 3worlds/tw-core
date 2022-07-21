@@ -13,7 +13,7 @@ archetype 3wSA-SimpleWidget
 		hasParent = StringTable(([4]"tab:","container:","top:","bottom:"))
 		multiplicity = IntegerRange("0..*")
 		hasProperty SimpleWidgetSenderProperty
-			hasName = String("sender")
+			hasName = String("simId")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
 			

@@ -20,7 +20,7 @@ archetype 3wSA-SimpleTimeWidget
 			toNode = String("dynamics:")
 			multiplicity = IntegerRange("1..1")
 		hasProperty TestwidgetSenderProperty
-			hasName = String("sender")
+			hasName = String("simId")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery SimpleTimeWidgetParentClassQuery

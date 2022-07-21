@@ -34,21 +34,24 @@ import fr.cnrs.iees.uit.space.Point;
 import fr.cnrs.iees.uit.space.Sphere;
 
 /**
- * A class to initialise user-defined properties - must be called before any use of ValidProperties
- * is attempted
+ * A class to initialize user-defined properties - must be called before any use
+ * of ValidProperties is attempted
+ * 
  * @author Jacques Gignoux - 8 août 2019
  *
  */
 public class EnumProperties {
 
-	private EnumProperties() {}
+	private EnumProperties() {
+	}
 
-	// these references trigger the static block intialisation of all these classes,
-	// which record them in ValidPropertyTypes
-	// this method must be called early in application setup
-	// TODO: a cleaner coding by scanning the directory, finding all the class names
-	// and invoking any method but this seems non trivial
-	// Its possible that compiler optimisation will prevent calling these statements - check.
+	/**
+	 * These references trigger the static block initialization of all these
+	 * classes, which then record their details in {@link ValidPropertyTypes}. This method must be
+	 * called early in application setup.
+	 * <p>
+	 * TODO: There may be a better way (Services??)
+	 */
 	public static void recordEnums() {
 		DataElementType.defaultValue();
 		DateTimeType.defaultValue();
@@ -78,19 +81,16 @@ public class EnumProperties {
 
 	// register geometric classes so they can be used as properties
 	static {
-		// TODO: Caution: the real implemented class must be used. Here, IT'S NOT GOING TO WORK
+		// TODO: Caution: the real implemented class must be used. Here, IT'S NOT GOING
+		// TO WORK
 		// because there are many point subclasses.
 		// code must be changed in ValidPropertyType to handle subclassing.
-		ValidPropertyTypes.recordPropertyType(Point.class.getSimpleName(),
-			Point.class.getName(),
-			Point.newPoint(0.0));
+		ValidPropertyTypes.recordPropertyType(Point.class.getSimpleName(), Point.class.getName(), Point.newPoint(0.0));
 		// Caution: the real implemented class must be used. Here, BoxImpl
-		ValidPropertyTypes.recordPropertyType(Box.class.getSimpleName(),
-			Box.class.getName(),
-			Box.boundingBox(Point.newPoint(0.0),Point.newPoint(0.0)));
+		ValidPropertyTypes.recordPropertyType(Box.class.getSimpleName(), Box.class.getName(),
+				Box.boundingBox(Point.newPoint(0.0), Point.newPoint(0.0)));
 		// Caution: the real implemented class must be used. Here, SphereImpl
-		ValidPropertyTypes.recordPropertyType(Sphere.class.getSimpleName(),
-			Sphere.class.getName(),
-			Sphere.newSphere(Point.newPoint(0.0),0.0));
+		ValidPropertyTypes.recordPropertyType(Sphere.class.getSimpleName(), Sphere.class.getName(),
+				Sphere.newSphere(Point.newPoint(0.0), 0.0));
 	}
 }

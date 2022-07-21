@@ -15,7 +15,7 @@ archetype 3wSA-GraphWidget1
 		mustSatisfyQuery GraphWidget1SenderInRangeQuery
 			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 		hasProperty GraphWidget1SenderProperty
-			hasName = String("sender")
+			hasName = String("simId")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
 		mustSatisfyQuery GraphWidget1ParentClassQuery

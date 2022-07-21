@@ -38,7 +38,6 @@ import static fr.ens.biologie.generic.utils.NameUtils.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;

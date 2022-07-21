@@ -24,7 +24,7 @@ archetype 3wSA-HLMatrixWidget1
 			multiplicity = IntegerRange("1..1")
 		
 		hasProperty HLMatrixWidget1zRangeProperty
-			hasName = String("defaultZRange")
+			hasName = String("zRange")
 			type = String("Interval")
 			multiplicity = IntegerRange("1..1")
 			mustSatisfyQuery ZRangeBoundedQuery

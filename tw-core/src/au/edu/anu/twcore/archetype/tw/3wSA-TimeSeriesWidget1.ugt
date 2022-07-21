@@ -16,7 +16,7 @@ archetype 3wSA-TimeSeriesWidget1
 			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 
 		hasProperty TimeSeriesWidget1FirstSenderProperty
-			hasName = String("firstSender")
+			hasName = String("leastSimId")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery TimeSeriesWidget1firstSenderInRangeQuery1
@@ -24,7 +24,7 @@ archetype 3wSA-TimeSeriesWidget1
 				interval = IntTable(([2]0,2147483647))
 
 		hasProperty TimeSeriesWidget1NSendersProperty
-			hasName = String("nSenders")
+			hasName = String("nSims")
 			type = String("Integer")
 			multiplicity = IntegerRange("0..1")
 			mustSatisfyQuery TimeSeriesWidget1NSendersInRangeQuery2

@@ -28,10 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
