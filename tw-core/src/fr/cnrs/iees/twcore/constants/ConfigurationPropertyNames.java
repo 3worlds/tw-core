@@ -172,6 +172,7 @@ public enum ConfigurationPropertyNames {
 	P_EXP_DETAILS				("experimentDetails"),
 	
 	P_HLWIDGET_NLINES			("nLines"),
+	P_HLWIDGET_ZERO_MIN			("isZeroMinMeansPlot"),
 	
 	P_DATASOURCE_IDLC			("idLifeCycle"),
 	P_DATASOURCE_IDGROUP		("idGroup"),

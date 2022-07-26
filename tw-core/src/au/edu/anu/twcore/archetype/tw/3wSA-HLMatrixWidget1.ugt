@@ -8,7 +8,7 @@ tree
 
 archetype 3wSA-HLMatrixWidget1
 // -------------------------------------------------
-//  A headless widget to save tif images of a matrix.
+//  A headless widget to save a 2d matrix as tif images.
 //  Ian Davies - 5 July 2022
 // --------------------------------------------------
 	hasNode HLMatrixWidget1Spec
@@ -50,7 +50,17 @@ archetype 3wSA-HLMatrixWidget1
 			type = String("PaletteTypes")
 			multiplicity = IntegerRange("1..1")
 		
-			
+
+		hasProperty HLMatrixWidget1MagnifiyProperty
+			hasName = String("missingValueColour")
+			type = String ("MissingValueColour")
+			multiplicity = IntegerRange("0..1")
+					
+		hasProperty HLMatrixWidget1MissingValueOptionProperty
+			hasName = String("missingValueMethod")
+			type = String ("IsMissingValue")
+			multiplicity = IntegerRange("0..1")
+
 		mustSatisfyQuery HLMatrixWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([1]"headless"))

@@ -58,14 +58,31 @@ public class ExpFactor {
 		return valueNames.get(values.indexOf(p));
 	}
 
+	public int getValueLevel(String level) {
+		return valueNames.indexOf(level);
+	}
+
 	public int nLevels() {
 		return values.size();
 	}
 
+	public String toShortString() {
+		// dd[short,long]
+		StringBuilder result = new StringBuilder().append(name).append("[");
+		for (int i = 0; i < valueNames.size(); i++) {
+			String vn = valueNames.get(i);
+			if (i != 0)
+				result.append(",");
+			result.append(vn);
+		}
+		result.append("]");
+		return result.toString();
+	}
+
 	@Override
 	public String toString() {
-		// name[2:short(true),long(false)]{
-		StringBuilder result = new StringBuilder().append(name).append("[").append(values.size()).append(":");
+		// name[short(true),long(false)]{
+		StringBuilder result = new StringBuilder().append(name).append("[");
 		for (int i = 0; i < values.size(); i++) {
 			String label = valueNames.get(i);
 			String value = values.get(i).getValue().toString();

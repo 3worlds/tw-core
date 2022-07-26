@@ -27,6 +27,11 @@ archetype 3wSA-HLTimeSeriesAnalysisWidget1
 			mustSatisfyQuery HLExperimentWidget1nLinesPropertyInRangeQuery1
 				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
 				interval = IntTable(([2]1,2147483647))
+						
+		hasProperty HLTimeSeriesAnalysisWidget1nisZeroMinMeansPlotProperty
+			hasName = String("isZeroMinMeansPlot")
+			type = String("Boolean")
+			multiplicity = IntegerRange("0..1")
 			
 		mustSatisfyQuery HLTimeSeriesAnalysisWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
