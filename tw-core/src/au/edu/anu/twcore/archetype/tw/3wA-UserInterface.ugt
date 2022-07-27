@@ -56,7 +56,7 @@ hasNode topSpec
 	// must have at least one child widget
 	mustSatisfyQuery coordinateRanksAreDifferentQuery1
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
-		parameters = StringTable(([2]"_CHILD","order"))
+		parameters = StringTable(([2]"_CHILD","layoutOrder"))
 
 hasNode bottomSpec
 	isOfClass = String("bottom")
@@ -65,7 +65,7 @@ hasNode bottomSpec
 	// must have at least one child widget
 	mustSatisfyQuery coordinateRanksAreDifferentQuery2
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
-		parameters = StringTable(([2]"_CHILD","order"))
+		parameters = StringTable(([2]"_CHILD","layoutOrder"))
 
 // tab is, effectively, the root container
 hasNode tabSpec
@@ -82,7 +82,7 @@ hasNode tabSpec
 		nodeLabel2 = String("container")
 	mustSatisfyQuery coordinateRanksAreDifferentQuery3
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
-		parameters = StringTable(([2]"_CHILD","order"))
+		parameters = StringTable(([2]"_CHILD","layoutOrder"))
 
 hasNode containerSpec
 	isOfClass = String("container")
@@ -93,7 +93,7 @@ hasNode containerSpec
 		type = String("UIContainerOrientation")
 		multiplicity = IntegerRange("1..1")
 	hasProperty containerOrder
-		hasName = String("order")
+		hasName = String("layoutOrder")
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
 	mustSatisfyQuery ContainerChildAtLeastOneOfOneOrTwoOfTwoQuery
@@ -102,7 +102,7 @@ hasNode containerSpec
 		nodeLabel2 = String("container")
 	mustSatisfyQuery coordinateRanksAreDifferentQuery4
 		className = String("au.edu.anu.twcore.archetype.tw.RankingPropertyQuery")
-		parameters = StringTable(([2]"_CHILD","order"))
+		parameters = StringTable(([2]"_CHILD","layoutOrder"))
 
 
 hasNode widgetSpec
@@ -110,7 +110,7 @@ hasNode widgetSpec
 	hasParent = StringTable(([4]"bottom:","top:","tab:","container:"))
 	multiplicity = IntegerRange("0..*")
 	hasProperty widgetOrder
-		hasName = String("order")
+		hasName = String("layoutOrder")
 		type = String("Integer")
 		multiplicity = IntegerRange("1..1")
 	hasProperty widgetClass
