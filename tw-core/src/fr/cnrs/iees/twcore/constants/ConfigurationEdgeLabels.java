@@ -111,10 +111,10 @@ public enum ConfigurationEdgeLabels {
 	E_TRACKSERIES	("trackSeries",		"trks1",		TrackTimeSeriesEdge.class),
 	E_TRACKFIELD	("trackField",		"trks1",		TrackFieldEdge.class),
 	E_TRACKTABLE	("trackTable",		"trks1",		TrackTableEdge.class),
-	E_SAMPLECOMPONENT("sampleComponent",	"trks1",	SampleComponentEdge.class),
-	E_SAMPLEGROUP	("sampleGroup",	"trks1",		SampleGroupEdge.class),
-	E_SAMPLELIFECYCLE("sampleLifeCycle",	"trks1",	SampleLifeCycleEdge.class),
-	E_SAMPLEARENA	("sampleArena",	"trks1",			SampleSystemEdge.class),
+	E_SAMPLECOMPONENT("sampleComponent","trks1",		SampleComponentEdge.class),
+	E_SAMPLEGROUP	("sampleGroup",		"trks1",		SampleGroupEdge.class),
+	E_SAMPLELIFECYCLE("sampleLifeCycle","trks1",		SampleLifeCycleEdge.class),
+	E_SAMPLEARENA	("sampleArena",		"trks1",		SampleSystemEdge.class),
 	E_TRACKSPACE	("trackSpace",		"trks1",		TrackSpaceEdge.class),
 	// Utility - in some cases one may save a child node as an out node with a specific label
 	E_CHILD			("_CHILD",			"child",		Edge.class)

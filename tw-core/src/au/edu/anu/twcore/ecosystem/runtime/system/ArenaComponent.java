@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.ArenaDataTracker;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -46,7 +46,7 @@ import fr.ens.biologie.generic.Resettable;
  */
 public class ArenaComponent extends HierarchicalComponent implements Resettable {
 
-	private GraphDataTracker dataTracker;
+	private ArenaDataTracker dataTracker;
 
 	public ArenaComponent(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -96,11 +96,11 @@ public class ArenaComponent extends HierarchicalComponent implements Resettable 
 		return (ArenaFactory) membership();
 	}
 
-	public void setDataTracker(GraphDataTracker dt) {
+	public void setDataTracker(ArenaDataTracker dt) {
 		dataTracker = dt;
 	}
 
-	public GraphDataTracker getDataTracker() {
+	public ArenaDataTracker getDataTracker() {
 		return dataTracker;
 	}
 

@@ -36,12 +36,11 @@ import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
-// TODO Rename to ArenaDataTracker??
-public class GraphDataTracker extends AbstractDataTracker<RuntimeGraphData, Metadata> {
+public class ArenaDataTracker extends AbstractDataTracker<RuntimeGraphData, Metadata> {
 	private Metadata metadata;
 	private long currentTime;
 
-	public GraphDataTracker(int simId, ReadOnlyPropertyList meta) {
+	public ArenaDataTracker(int simId, ReadOnlyPropertyList meta) {
 		super(DataMessageTypes.RUNTIMEGRAPH, simId);
 		metadata = new Metadata(simId, meta);
 		setInitialTime();

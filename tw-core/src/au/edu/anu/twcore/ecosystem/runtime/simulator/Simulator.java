@@ -60,7 +60,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.ArenaDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
@@ -222,7 +222,7 @@ public class Simulator implements Resettable {
 						}
 				}
 		// system (arena) GraphDataTracker
-		GraphDataTracker gdt = ecosystem.arena().getDataTracker();
+		ArenaDataTracker gdt = ecosystem.arena().getDataTracker();
 		if (gdt != null)
 			trackers.put(gdt, gdt.getInstance());
 		// space data trackers

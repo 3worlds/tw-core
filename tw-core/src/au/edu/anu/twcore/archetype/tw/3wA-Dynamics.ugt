@@ -207,10 +207,11 @@ hasNode dataTrackerSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery validDataTrackerSubClassSpec
 			className = String("au.edu.anu.twcore.archetype.tw.IsInValueSetQuery")
-			values = StringTable(([3]+
+			values = StringTable(([4]+
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker0D",+
 			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTrackerXY",+
-			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D"))
+			"au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D",+
+			"au.edu.anu.twcore.ecosystem.runtime.tracking.ArenaDataTracker"))
 	//
 	// specify how to aggregate data from multiple system components
 	//

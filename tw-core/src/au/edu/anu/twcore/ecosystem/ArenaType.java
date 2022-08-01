@@ -34,7 +34,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialValues;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ArenaFactory;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.ArenaDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
@@ -73,7 +73,7 @@ import java.util.Map;
 public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 
 	private boolean makeContainer = true;
-	private GraphDataTracker dataTracker;
+	private ArenaDataTracker dataTracker;
 	// the data read from file for this arena
 	private SimplePropertyList loadedData = null;
 
@@ -140,7 +140,7 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 			ExtendablePropertyList l = new ExtendablePropertyListImpl();
 			l.addProperties(timeLine.properties());
 			l.addProperties(properties());
-			dataTracker = new GraphDataTracker(id, l);
+			dataTracker = new ArenaDataTracker(id, l);
 		}
 
 		if (setinit != null)
@@ -155,7 +155,7 @@ public class ArenaType extends ElementType<ArenaFactory, ArenaComponent> {
 				makeContainer, id(), dataTracker,id);
 	}
 
-	public  GraphDataTracker getDataTracker() {
+	public  ArenaDataTracker getDataTracker() {
 		return dataTracker;
 	}
 

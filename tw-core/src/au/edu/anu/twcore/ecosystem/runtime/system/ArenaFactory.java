@@ -34,7 +34,7 @@ import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.RuntimeGraphData;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.GraphDataTracker;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.ArenaDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -53,12 +53,12 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 	protected String name = null;
 	private SimplePropertyList initialValues = null;
 
-	private GraphDataTracker dataTracker;
+	private ArenaDataTracker dataTracker;
 
 	public ArenaFactory(Set<Category> categories, TwData auto, TwData drv, TwData dec,
 			TwData ltc, SetInitialStateFunction setinit, SimplePropertyList initialValues,
 			boolean makeContainer,
-			String name, GraphDataTracker dt, int simulatorId) {
+			String name, ArenaDataTracker dt, int simulatorId) {
 		super(categories, auto, drv, dec, ltc, setinit,true,simulatorId);
 		this.makeContainer = makeContainer;
 		this.name = name;
@@ -107,7 +107,7 @@ public class ArenaFactory extends ElementFactory<ArenaComponent> {
 		return arena;
 	}
 
-	public final GraphDataTracker dataTracker() {
+	public final ArenaDataTracker dataTracker() {
 		return dataTracker;
 	}
 

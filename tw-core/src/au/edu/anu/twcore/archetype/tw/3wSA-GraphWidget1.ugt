@@ -21,8 +21,12 @@ archetype 3wSA-GraphWidget1
 		mustSatisfyQuery GraphWidget1ParentClassQuery
 			className = String("au.edu.anu.twcore.archetype.tw.ParentLabelQuery")
 			parentLabels = StringTable(([2]"tab","container"))
-		hasEdge GraphWidget1ToSystemEdgeSpec
-			isOfClass = String("trackSystem")
-			toNode = String("system:")
+//		hasEdge GraphWidget1ToSystemEdgeSpec
+//			isOfClass = String("sampleArena")
+//			toNode = String("system:")
+//			multiplicity = IntegerRange("1..1")
+		hasEdge GraphWidget1DataTrackerEdgeSpec
+			isOfClass = String("trackSeries")
+			toNode = String("dataTracker:")
 			multiplicity = IntegerRange("1..1")
-
+// we need NodeHasPropertyValueQuery subClass = type of class allowed
