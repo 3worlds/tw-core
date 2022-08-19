@@ -39,12 +39,14 @@ import java.io.File;
 
 // Don't add anything here on speculation. Wait until it's needed.
 public interface ProjectPaths {
-	public static String PROJECT_DIR_PREFIX /*  */ = "project";
-	public static String LOCAL /*       */ = "local";
-	public static String LOCALJAVA /*         */ = LOCAL + File.separator + "java";
-
+	public static String PROJECT_DIR_PREFIX /*	*/ = "project";
+	public static String LOCAL /*				*/ = "local";
+	public static String JAVA /*				*/ = "java";
+	public static String LOCALJAVA /*			*/ = LOCAL + File.separator + JAVA;
+	public static String LOCALJAVA_PKG/*		*/ = LOCAL+"."+JAVA;
 	/* dir root for generated code */
-	public static String CODE/*               */ = "code";
+	public static String CODE/*					*/ = "code";
+
 /*
 	 * generated code for a project regardless of the existence of a linked user
 	 * project. The sub dir is organised as system.id() which themselves don't need
