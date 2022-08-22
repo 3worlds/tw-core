@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.experiment.ExpFactor;
@@ -59,7 +60,7 @@ public final class ExperimentDesignDetails implements IEdd {
 		this.nReplicates = nReplicates;
 		this.treatments = new ArrayList<>();
 		this.factors = new HashMap<>();
-		this.baseline = new HashMap<>();
+		this.baseline = new TreeMap<>();
 		this.designFile = designFile;
 		this.expDir = expDir;
 
