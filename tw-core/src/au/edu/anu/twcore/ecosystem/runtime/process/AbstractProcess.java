@@ -146,13 +146,13 @@ public abstract class AbstractProcess
 //				space.dataTracker().closeTimeRecord(); // this sends the message to the widget
 	}
 
-	/**
-	 * For use in descendant Process classes. This method fixes the user-computed coordinates
-	 * according to space edge effect corrections and relocates a formerly located point
-	 * to its new location
-	 *
-	 * @param sc the SystemComponent to relocate
-	 */
+//	/**
+//	 * For use in descendant Process classes. This method fixes the user-computed coordinates
+//	 * according to space edge effect corrections and relocates a formerly located point
+//	 * to its new location
+//	 *
+//	 * @param sc the SystemComponent to relocate
+//	 */
 //	protected void relocate(SystemComponent sc) {
 //		if (sc.mobile()) { // doesnt make sense for fixed items
 //			double[] oldLoc = sc.locationData().coordinates(); 	// always non null
@@ -180,14 +180,14 @@ public abstract class AbstractProcess
 //		}
 //	}
 
-	/**
-	 * For use in descendant Process classes. This method the user-computed coordinates
-	 * according to space edge effect corrections. This method is called at creation of
-	 * a SystemComponent only, so coordinates may be constants or driver values.
-	 *
-	 * @param sc the SystemComponent to locate
-	 * @param cont the component container, to compute its label
-	 */
+//	/**
+//	 * For use in descendant Process classes. This method the user-computed coordinates
+//	 * according to space edge effect corrections. This method is called at creation of
+//	 * a SystemComponent only, so coordinates may be constants or driver values.
+//	 *
+//	 * @param sc the SystemComponent to locate
+//	 * @param cont the component container, to compute its label
+//	 */
 //	protected void locate(SystemComponent sc, ComponentContainer cont) {
 //		double[] oldLoc, newLoc;
 //		if (sc.mobile())

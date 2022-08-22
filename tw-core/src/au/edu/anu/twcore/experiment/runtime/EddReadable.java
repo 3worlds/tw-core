@@ -67,7 +67,7 @@ public interface EddReadable {
 	 * the edge Id between the Treatment node and the Field being manipulated in the
 	 * configuration graph.
 	 * 
-	 * @return an Immutable map of {@link ExpFactors}.
+	 * @return an Immutable map of {@link ExpFactor}.
 	 */
 	public Map<String, ExpFactor> getFactors();
 

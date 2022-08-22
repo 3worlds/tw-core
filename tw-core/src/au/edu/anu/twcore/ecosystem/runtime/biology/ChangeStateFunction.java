@@ -59,7 +59,6 @@ public abstract class ChangeStateFunction extends TwFunctionAdapter {
 	 * @param group the group component of this focal component, if any
 	 * @param focal the focal component (may be the arena, a group or lifecycle component)
 	 * @param space the space attached to the parent process, if any
-	 * @param nextFocalLoc the new location of the focal component, if the parent process is using a space
 	 */
 	public abstract void changeState(double t, double dt,
 		CategorizedComponent arena,

@@ -61,8 +61,6 @@ public abstract class ChangeRelationStateFunction extends TwFunctionAdapter {
 	 * @param otherGroup the group component of the other component, if any
 	 * @param other the other component (may be the arena, a group or lifecycle component)
 	 * @param space the space attached to the parent process, if any
-	 * @param nextFocalLoc the new location of the focal component, if the parent process is using a space
-	 * @param nextOtherLoc the new location of the other component, if the parent process is using a space
 	 */
 	public abstract void changeRelationState(
 		double t,

@@ -616,7 +616,7 @@ public class TimeUtil {
 	 * @param time
 	 * @param from
 	 * @param to
-	 * @param baseTime
+	 * @param startDateTime
 	 * @return
 	 */
 	public static double convertTime(double time, TimeUnits from, TimeUnits to, LocalDateTime startDateTime) {

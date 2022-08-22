@@ -169,7 +169,7 @@ public class Simulator implements Resettable {
 	 * @param timeModelMasks
 	 * @param processCallingOrder
 	 * @param ecosystem
-	 * @param haveStoppingConditions
+	 * @param noStoppingConditions
 	 */
 	@SuppressWarnings("unchecked")
 	public Simulator(int id, StoppingCondition stoppingCondition, Timeline refTimer, List<TimerNode> timeModels,
