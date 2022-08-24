@@ -82,15 +82,13 @@ public class VersionSettings {
 	 *
 	 */
 	protected static String[][] DEPS = {
-			{"fr.ens.biologie", "generics", "[0.3.1,)", null},
+			{"fr.ens.biologie", "generics", "[0.4.0,)", null},
 			{"au.edu.anu.rscs.aot", "omugi", "[0.5.0,)", null},
 			{"au.edu.anu.rscs.aot", "qgraph", "[0.2.0,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.2.0,)", null},
 			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.1.0,)", null},
 			{"fr.cnrs.iees.uit", "uit", "[0.4.1,)", null},
 			{"org.apache.commons", "commons-text", "[1,)", null},
-			// removed as twsetup is now in separate lib.
-			//{"org.apache.ivy", "ivy", "2.2.0", null},
 			{"org.apache.odftoolkit","simple-odf","0.8.2-incubating", null},
 			{"com.hp.hpl.jena","jena","2.6.4", null},
 			{"org.apache.commons","commons-math3","[3.6.1,)",null},
