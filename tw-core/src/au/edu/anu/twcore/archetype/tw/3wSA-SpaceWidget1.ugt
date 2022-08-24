@@ -23,7 +23,7 @@ archetype 3wSA-SpaceWidget1
 			toNode = String("space:")
 			multiplicity = IntegerRange("1..1")
 			
-		hasProperty SpaceWidget1ViewsProperty
+		hasProperty SpaceWidget1elementSizeProperty
 			hasName = String("elementSize")
 			type = String("Double")
 			multiplicity = IntegerRange("0..1")

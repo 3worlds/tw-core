@@ -51,7 +51,7 @@ archetype 3wSA-HLMatrixWidget1
 			multiplicity = IntegerRange("1..1")
 		
 
-		hasProperty HLMatrixWidget1MagnifiyProperty
+		hasProperty HLMatrixWidget1MissingValueColourProperty
 			hasName = String("missingValueColour")
 			type = String ("MissingValueColour")
 			multiplicity = IntegerRange("0..1")

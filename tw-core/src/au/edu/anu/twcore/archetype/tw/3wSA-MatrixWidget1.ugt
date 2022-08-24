@@ -54,7 +54,7 @@ archetype 3wSA-MatrixWidget1
 			type = String ("Integer")
 			multiplicity = IntegerRange("0..1")
 		
-		hasProperty MatrixWidget1MagnifiyProperty
+		hasProperty MatrixWidget1MissingValueColourProperty
 			hasName = String("missingValueColour")
 			type = String ("MissingValueColour")
 			multiplicity = IntegerRange("0..1")
