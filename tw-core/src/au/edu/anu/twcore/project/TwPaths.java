@@ -38,10 +38,10 @@ import java.io.File;
  */
 // Don't add anything here on speculation. Wait until it's needed.
 public interface TwPaths {
-	public static String USER_ROOT/*       */ = System.getProperty("user.home");
-	public static String TW /*             */ = "3w";
-	public static String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
-	public static String TW_DEP_JAR /*     */ = "tw.jar";
+	public static final String USER_ROOT/*       */ = System.getProperty("user.home");
+	public static final String TW /*             */ = "3w";
+	public static final String TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
+	public static final String TW_DEP_JAR /*     */ = getDepJarName();
 // This wont work without modules. Going to modules will take ages.	
 //	public static String TW_FX_DEP_JAR/*    */= "twfx.jar";
 	
@@ -51,4 +51,12 @@ public interface TwPaths {
 	//public static final String TW_CODE 			= "code";
 	/** the directory for all user-specific data (eg csv files and others stuff) */
 	//public static final String TW_DATA 			= "data";
+	private static String getDepJarName() {
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.contains("mac"))
+				return "tw-mac.jar";
+		if (os.contains("win"))
+			return "tw-win.jar";
+		return "tw-linux.jar";
+	}
 }
