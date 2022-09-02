@@ -32,7 +32,6 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Described;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  *
@@ -103,7 +102,7 @@ public class DescribedContainer<T extends CategorizedComponent>
 	 * @param item
 	 */
 	public void removeItemNow(T item) {
-		throw new TwcoreException("This method should never be called");
+		throw new UnsupportedOperationException("This method should never be called");
 	}
 
 	@Override

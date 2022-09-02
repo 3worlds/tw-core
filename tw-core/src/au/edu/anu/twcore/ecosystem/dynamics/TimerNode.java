@@ -34,7 +34,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -122,7 +121,7 @@ public class TimerNode
 	public Timeline timeLine() {
 		if (sealed)
 			return timeLine;
-		throw new TwcoreException("attempt to access uninitialised data");
+		throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 	@Override

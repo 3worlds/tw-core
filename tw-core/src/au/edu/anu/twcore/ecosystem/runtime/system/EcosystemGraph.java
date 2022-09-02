@@ -39,7 +39,6 @@ import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
@@ -100,17 +99,17 @@ public class EcosystemGraph
 
 	@Override
 	public NodeFactory nodeFactory() {
-		throw new TwcoreException("Forbidden: SystemComponents cannot be instantiated by EcosystemGraph");
+		throw new UnsupportedOperationException("Forbidden: SystemComponents cannot be instantiated by EcosystemGraph");
 	}
 
 	@Override
 	public void addNode(SystemComponent node) {
-		throw new TwcoreException("Forbidden: SystemComponents cannot be added to EcosystemGraph");
+		throw new UnsupportedOperationException("Forbidden: SystemComponents cannot be added to EcosystemGraph");
 	}
 
 	@Override
 	public void removeNode(SystemComponent node) {
-		throw new TwcoreException("Forbidden: SystemComponents cannot be removed from EcosystemGraph");
+		throw new UnsupportedOperationException("Forbidden: SystemComponents cannot be removed from EcosystemGraph");
 	}
 
 	@Override
@@ -140,7 +139,7 @@ public class EcosystemGraph
 
 	@Override
 	public EdgeFactory edgeFactory() {
-		throw new TwcoreException("Forbidden: SystemRelationss cannot be instantiated by EcosystemGraph");
+		throw new UnsupportedOperationException("Forbidden: SystemRelationss cannot be instantiated by EcosystemGraph");
 	}
 
 	@Override

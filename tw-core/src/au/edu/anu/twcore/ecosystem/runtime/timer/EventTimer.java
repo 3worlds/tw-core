@@ -34,7 +34,6 @@ import java.util.Queue;
 
 import au.edu.anu.twcore.ecosystem.dynamics.Timeline;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 
 /**
@@ -127,8 +126,9 @@ public class EventTimer extends AbstractTimer implements EventQueueWriteable {
 		long eventTime = Math.round(TimeUtil.convertTime(time, tu, timeUnit, startDateTime));
 		if (eventTime < currentTime) {
 			// issue an error message to end user saying his code is crap.
-//			log.severe("Next time event (t="+eventTime+") occuring earlier than current time (t="+currentTime+")");
-			throw new TwcoreException("Attempt to set time backwards: current time = "+currentTime+"; event time = "+eventTime);
+//			log.severe("Next time event (t="+eventTime+") occurring earlier than current time (t="+currentTime+")");
+			//IllegalArgumentException
+			throw new IllegalArgumentException("Attempt to set time backwards: current time = "+currentTime+"; event time = "+eventTime);
 			// fix the problem by settingeventTime to the minimal acceptable difference of 1 time grain
 //			eventTime = currentTime+1;
 		}

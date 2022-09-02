@@ -38,7 +38,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.containers.DynamicContainer;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
@@ -104,7 +103,7 @@ public class RelationContainer
 
 	@Override
 	public void addItem(SystemRelation item) {
-		throw new TwcoreException("Relations cannot be directly added to relation container "
+		throw new UnsupportedOperationException("Relations cannot be directly added to relation container "
 			+ "- must be a pair of Components");
 	}
 

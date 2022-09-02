@@ -30,7 +30,6 @@ package au.edu.anu.twcore.ecosystem.runtime.stop;
 
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.ens.biologie.generic.Sealable;
 
 /**
@@ -55,7 +54,7 @@ public abstract class AbstractStoppingCondition implements StoppingCondition, Se
 		if (isSealed())
 			return sim;
 		else
-			throw new TwcoreException("Attempt to access unsealed data");
+			throw new IllegalStateException("Attempt to access unsealed data");
 	}
 
 	@Override

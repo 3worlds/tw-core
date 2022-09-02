@@ -53,7 +53,6 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.LifeCycleFactory;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
@@ -171,7 +170,7 @@ public class LifeCycleType
 		if (sealed)
 			return lifeCycleGraph;
 		else
-			throw new TwcoreException("attempt to access uninitialised data");
+			throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 

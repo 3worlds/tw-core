@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * A container for SystemComponents
@@ -139,7 +138,7 @@ public class ComponentContainer
 
 	@Override
 	public void rename(String oldId, String newId) {
-		throw new TwcoreException("Renaming of '" + this.getClass().getSimpleName() + "' is not implemented.");
+		throw new UnsupportedOperationException("Renaming of '" + this.getClass().getSimpleName() + "' is not implemented.");
 	}
 	/**
 	 * Recursively clears all container items and variables (if any). Used in

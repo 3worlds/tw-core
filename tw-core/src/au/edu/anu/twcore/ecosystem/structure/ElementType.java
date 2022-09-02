@@ -56,7 +56,6 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.system.DataElement;
 import au.edu.anu.twcore.ecosystem.runtime.system.ElementFactory;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -201,7 +200,7 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		if (sealed)
 			return categories;
 		else
-			throw new TwcoreException("attempt to access uninitialised data");
+			throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 	@Override
@@ -209,14 +208,14 @@ public abstract class ElementType<T extends ElementFactory<U>,U extends DataElem
 		if (sealed)
 			return categoryId;
 		else
-			throw new TwcoreException("attempt to access uninitialised data");
+			throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 	public final boolean isPermanent() {
 		if (sealed)
 			return isPermanent;
 		else
-			throw new TwcoreException("attempt to access uninitialised data");
+			throw new IllegalStateException("attempt to access uninitialised data");
 	}
 	
 	public Map<DataIdentifier, SimplePropertyList> initialItems() {

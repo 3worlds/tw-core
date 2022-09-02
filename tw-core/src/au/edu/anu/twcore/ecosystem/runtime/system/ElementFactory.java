@@ -46,7 +46,6 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.Factory;
@@ -151,14 +150,14 @@ public abstract class ElementFactory<T extends DataElement> implements Factory<T
 
 	@Override
 	public T getInstance() {
-		throw new TwcoreException("This method should never be called");
+		throw new UnsupportedOperationException("This method should never be called");
 	}
 
 	// Factory
 
 	@Override
 	public T newInstance() {
-		throw new TwcoreException("This method should never be called");
+		throw new UnsupportedOperationException("This method should never be called");
 	}
 
 	/**

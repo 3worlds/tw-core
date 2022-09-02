@@ -33,7 +33,6 @@ import au.edu.anu.twcore.experiment.*;
 import au.edu.anu.twcore.ui.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
 import au.edu.anu.twcore.predefined.*;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.*;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.*;
@@ -138,6 +137,6 @@ public enum ConfigurationNodeLabels implements InitialisationRanks {
 			if (lbl.label.equals(label))
 				return lbl;
 		}
-		throw new TwcoreException("'"+label+"' not found in "+ConfigurationNodeLabels.class.getSimpleName());
+		throw new IllegalStateException("'"+label+"' not found in "+ConfigurationNodeLabels.class.getSimpleName());
 	}
 }

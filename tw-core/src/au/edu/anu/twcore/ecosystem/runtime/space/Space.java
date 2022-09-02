@@ -29,7 +29,6 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
@@ -207,7 +206,7 @@ public interface Space<T extends Locatable> {
 	 */
 	public default boolean equalLocation(double[] reference, double[] candidate) {
 		if (reference.length!=candidate.length)
-			throw new TwcoreException("Attempt to compare locations of different dimensions");
+			throw new IllegalArgumentException("Attempt to compare locations of different dimensions");
 		for (int i=0; i<reference.length; i++)
 			if (Math.abs(reference[i]-candidate[i])>precision())
 				return false;

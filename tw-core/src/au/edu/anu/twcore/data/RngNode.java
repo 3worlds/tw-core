@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.Random;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 
@@ -110,7 +109,7 @@ public class RngNode extends InitialisableNode implements LimitedEdition<Random>
 			Generator gen = RngFactory.find(key);
 			if (gen != null)// should be an error otherwise this is sharing an rng with something else
 				// rng = gen.getRandom();
-				throw new TwcoreException("A random number generator called '" + key + "' already exists.");
+				throw new IllegalArgumentException("A random number generator called '" + key + "' already exists.");
 			else {
 				gen = RngFactory.newInstance(key, tableIndex, reset, seedSrc, alg);
 				rng = gen.getRandom();

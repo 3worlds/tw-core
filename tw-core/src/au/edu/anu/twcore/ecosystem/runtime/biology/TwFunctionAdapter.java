@@ -39,7 +39,6 @@ import au.edu.anu.twcore.ecosystem.runtime.process.AbstractProcess;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueue;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueAdapter;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventQueueWriteable;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
@@ -109,7 +108,7 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	// this to prevent end-users to mess up with the internal code
 	public final void setRng(Random arng) {
 		if (arng == null)
-			throw new TwcoreException("valid random number generator expected");
+			throw new NullPointerException("random number generator expected");
 		if (rng==null)
 			rng = arng;
 	}
@@ -119,12 +118,12 @@ public abstract class TwFunctionAdapter implements TwFunction {
 	public final void setEventQueue(EventQueueWriteable queue, String queueName) {
 		if (fType==TwFunctionTypes.SetInitialState) {
 //			if (eventQueuesToInit.contains(queue))
-//				throw new TwcoreException("attempt to set event queue more than once");
+//				throw new something("attempt to set event queue more than once");
 //			eventQueuesToInit.add(queue);
 		}
 		else
 			if (eventQueues.containsKey(queueName))
-				throw new TwcoreException("attempt to set event queue more than once");
+				throw new IllegalArgumentException("attempt to set event queue more than once");
 			eventQueues.put(queueName, new EventQueueAdapter(queue,this));
 	}
 

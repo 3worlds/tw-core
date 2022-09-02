@@ -31,7 +31,6 @@ package au.edu.anu.twcore.experiment.runtime;
 import java.util.Collection;
 
 import au.edu.anu.twcore.data.runtime.DataLabel;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * A class to generate temporary identifier for data loaded from files. 
@@ -55,7 +54,7 @@ public class DataIdentifier extends DataLabel {
 			for (String lab : labelParts)
 				label.add(lab);
 		else
-			throw new TwcoreException("A DataIdentifier must have three label parts");
+			throw new IllegalArgumentException("A DataIdentifier must have three label parts");
 	}
 
 	public DataIdentifier(Collection<String> labelParts) {
@@ -64,7 +63,7 @@ public class DataIdentifier extends DataLabel {
 			for (String lab : labelParts)
 				label.add(lab);
 		else
-			throw new TwcoreException("A DataIdentifier must have three label parts");
+			throw new IllegalArgumentException("A DataIdentifier must have three label parts");
 	}
 
 	public String componentId() {

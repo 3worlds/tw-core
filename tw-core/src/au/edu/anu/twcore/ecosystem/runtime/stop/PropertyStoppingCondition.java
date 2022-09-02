@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.stop;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 
 /**
@@ -48,13 +47,13 @@ public abstract class PropertyStoppingCondition extends AbstractStoppingConditio
 		pname = stopVariable;
 		plist = system;
 		if (plist==null)
-			throw new TwcoreException("This stopping condition requires a non-null system to track");
+			throw new NullPointerException("This stopping condition requires a non-null system to track");
 	}
 
 	protected double getVariable() {
 		if (plist==null) {
 			// TODO! find the property list in which to search !
-			throw new TwcoreException("This stopping condition requires a non-null system to track");
+			throw new NullPointerException("This stopping condition requires a non-null system to track");
 		}
 		if (plist.getPropertyClass(pname).equals(Double.class))
 			return (double) plist.getPropertyValue(pname);
@@ -70,7 +69,7 @@ public abstract class PropertyStoppingCondition extends AbstractStoppingConditio
 			return 1.0*(short) plist.getPropertyValue(pname);
 		else if (plist.getPropertyClass(pname).equals(Byte.class))
 			return 1.0*(byte) plist.getPropertyValue(pname);
-		throw new TwcoreException("The stopping property type is not compatible with doubles");
+		throw new UnsupportedOperationException("The stopping property type is not compatible with doubles");
 	}
 	
 }

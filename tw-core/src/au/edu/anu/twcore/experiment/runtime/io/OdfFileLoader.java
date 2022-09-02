@@ -37,8 +37,6 @@ import java.util.Set;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
-
 /**
  * 
  * @author Jacques Gignoux - 2/6/2017 refactored 10 oct. 2019
@@ -85,10 +83,10 @@ public class OdfFileLoader extends TableDataLoader {
 			for (int i=0; i<rawData2.length; i++)
 				rawData2[i] = rawData.get(i);
 			return rawData2;			
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			throw new TwcoreException("I/O error with odf file reader",e1);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 }

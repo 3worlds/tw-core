@@ -35,8 +35,6 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
-
 class ProjectTest {
 
 	@Test
@@ -52,19 +50,19 @@ class ProjectTest {
 		try {
 			Project.getProjectUserName();
 			fail("Closed but getProjectName() succeeded");
-		} catch (TwcoreException e) {
+		} catch (Exception e) {
 			assertTrue(true);
 		}
 		try {
 			Project.close();
 			fail("Closed and already closed Project");
-		} catch (TwcoreException e) {
+		} catch (Exception e) {
 			assertTrue(true);
 		}
 		try {
 			Project.getProjectDateTime();
 			fail("Datetime of closed Project");
-		} catch (TwcoreException e) {
+		} catch (Exception e) {
 			assertTrue(true);
 		}
 		try {
@@ -72,7 +70,7 @@ class ProjectTest {
 				Project.create("quick");
 				Project.close();
 			}
-		} catch (TwcoreException e) {
+		} catch (Exception e) {
 			assertTrue(true);
 		}
 
@@ -84,7 +82,7 @@ class ProjectTest {
 				Project.open(f);
 				Project.close();
 				assertTrue(true);
-			} catch (TwcoreException e) {
+			} catch (Exception e) {
 				fail("Failed to open " + Project.getProjectDirectory());
 			}
 		}
@@ -95,7 +93,7 @@ class ProjectTest {
 		try {
 			Project.create("([{*~!'_^)");
 			fail("Should not have created project ([{*~!'_^)");
-		} catch (TwcoreException e) {
+		} catch (Exception e) {
 			assertTrue(true);
 		}
 

@@ -40,7 +40,6 @@ import java.util.logging.Logger;
 import au.edu.anu.omhtk.rng.Pcg32;
 import au.edu.anu.omhtk.rng.RandomSeeds;
 import au.edu.anu.omhtk.rng.XSRandom;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.twcore.constants.RngAlgType;
 import fr.cnrs.iees.twcore.constants.RngResetType;
 import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
@@ -184,11 +183,11 @@ public class RngFactory {
 		}
 
 		if (rngs.containsKey(name))
-			throw new TwcoreException("Attempt to create random number generator with duplicate name: [" + name + "]");
+			throw new IllegalStateException("Attempt to create random number generator with duplicate name: [" + name + "]");
 
 		if (source.equals(RngSeedSourceType.TABLE))
 			if (seedIndex < 0 || seedIndex >= RandomSeeds.nSeeds())
-				throw new TwcoreException(
+				throw new IndexOutOfBoundsException(
 						"SeedIndex is out of range [0.." + (RandomSeeds.nSeeds() - 1) + "] found: " + seedIndex);
 		long seed;
 		switch (source) {
@@ -200,7 +199,7 @@ public class RngFactory {
 			// 'very likely distinct' seed based on time to the nanosecond
 			seed = new Random().nextLong();
 			if (currentRandomSeeds.contains(seed))
-				throw new TwcoreException("Duplicate random seed for '" + name + "'.");
+				throw new IllegalArgumentException("Duplicate random seed for '" + name + "'.");
 			currentRandomSeeds.add(seed);
 			break;
 		}

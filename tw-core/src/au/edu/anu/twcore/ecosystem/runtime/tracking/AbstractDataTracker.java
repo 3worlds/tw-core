@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import au.edu.anu.twcore.ecosystem.runtime.DataTracker;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.rngFactory.RngFactory;
 import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
@@ -118,7 +117,7 @@ public abstract class AbstractDataTracker<T, M>
 			RVMessage dataMessage = new RVMessage(DataMessageTypes.METADATA, meta, this, gn);
 			gn.callRendezvous(dataMessage);
 		} else
-			throw new TwcoreException("Attempt to send metadata msg to unobserved receiver. " + gn);
+			throw new IllegalArgumentException("Attempt to send metadata msg to unobserved receiver. " + gn);
 	}
 
 	@Override

@@ -33,7 +33,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.io.parsing.CloneableProperty;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
@@ -77,7 +76,7 @@ public class FileType implements CloneableProperty{
 
 	public File getFile() {
 		if (!Project.isOpen())
-			throw new TwcoreException("Project must be open.");
+			throw new IllegalStateException("Project must be open.");
 		if (relativePath.equals(""))
 			return null;
 		else

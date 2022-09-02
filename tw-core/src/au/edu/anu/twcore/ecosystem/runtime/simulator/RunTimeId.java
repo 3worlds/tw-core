@@ -29,8 +29,6 @@
 
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
-
 /**
  * @author Ian Davies -21 Feb 2020
  */
@@ -43,14 +41,14 @@ public class RunTimeId {
 	/* set once from the cmd line when MR starts */
 	public static void setRunTimeId(int id) {
 		if (runTimeId != Integer.MIN_VALUE)
-			throw new TwcoreException("Attempt to reinitialise RunTimeId.");
+			throw new IllegalStateException("Attempt to reinitialise RunTimeId.");
 		runTimeId = id;
 	}
 
 	/* obtained by anything that wants to know - file i/o etc */
 	public static int runTimeId() {
 		if (runTimeId == Integer.MIN_VALUE)
-			throw new TwcoreException("Attempt to access uninitialised RunTimeId.");
+			throw new IllegalStateException("Attempt to access uninitialised RunTimeId.");
 		return runTimeId;
 	}
 }

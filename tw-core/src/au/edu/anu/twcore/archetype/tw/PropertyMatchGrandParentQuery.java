@@ -31,7 +31,6 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
 
@@ -61,7 +60,7 @@ public class PropertyMatchGrandParentQuery extends QueryAdaptor {
 			propName = args.getWithFlatIndex(1);
 		}
 		else
-			throw new TwcoreException("Archetype error: PropertyMatchParentQuery requires a StringTable[2] argument");
+			throw new IllegalArgumentException("Archetype error: PropertyMatchParentQuery requires a StringTable[2] argument");
 	}
 
 	@Override

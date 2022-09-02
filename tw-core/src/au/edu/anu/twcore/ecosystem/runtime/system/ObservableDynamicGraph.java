@@ -28,7 +28,6 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.rvgrid.observer.Observable;
@@ -48,7 +47,7 @@ public interface ObservableDynamicGraph<N extends Node,E extends Edge>
 
 	@Override
 	default void sendMessage(int msgType, Object payload) {
-		throw new TwcoreException("Never call this method");
+		throw new UnsupportedOperationException("Never call this method");
 	}
 
 }

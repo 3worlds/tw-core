@@ -18,7 +18,6 @@ au.edu.anu.twcore.ecosystem.runtime.timer
 au.edu.anu.twcore.ecosystem.runtime.tracking
 au.edu.anu.twcore.ecosystem.structure
 au.edu.anu.twcore.errorMessaging
-au.edu.anu.twcore.exceptions
 au.edu.anu.twcore.experiment
 au.edu.anu.twcore.experiment.runtime
 au.edu.anu.twcore.experiment.runtime.deployment

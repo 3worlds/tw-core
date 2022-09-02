@@ -37,7 +37,6 @@ import java.util.List;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
 import au.edu.anu.twcore.TextTranslations;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -264,11 +263,13 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			detailsMsg = category() + errorName() + "ModelRunner has errors.\n" + //
 					"Log=" + sb.toString() + //
 					"Project=" + project.getAbsoluteFile();
-			throw new TwcoreException("Message type not handled [" + msgType + "]");
-//			break;
+
+			throw new UnsupportedOperationException("Message type not handled [" + msgType + "]");
+
 		}
 		default: {
-			throw new TwcoreException("Message type not handled [" + msgType + "]");
+
+			throw new UnsupportedOperationException("Message type not handled [" + msgType + "]");
 		}
 		}
 

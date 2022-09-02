@@ -43,7 +43,6 @@ import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
 import au.edu.anu.rscs.aot.collections.tables.ShortTable;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.collections.tables.Table;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import au.edu.anu.twcore.experiment.runtime.DataLoader;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.utils.Logging;
@@ -138,7 +137,7 @@ public class PropertyDataLoader implements DataLoader<SimplePropertyList> {
 					if (data.hasProperty(header)) { 
 						Class<?> dataType = data.getPropertyClass(header);
 						if (dataType == null)
-							throw new TwcoreException("No datatype found in " + data.getClass().getName()
+							throw new NullPointerException("No datatype found in " + data.getClass().getName()
 									+ " for column header " + header + ".");
 	
 						try {
@@ -202,7 +201,7 @@ public class PropertyDataLoader implements DataLoader<SimplePropertyList> {
 										((ObjectTable<?>)data.getPropertyValue(header)).getByInt(indexes);
 									Class<?> recdataType = recdata.getPropertyClass(subHeader);
 									if (recdataType == null)
-										throw new TwcoreException("No datatype found in " + data.getClass().getName()
+										throw new NullPointerException("No datatype found in " + data.getClass().getName()
 											+ " for column header " + headers[col]+ ".");
 									// NB these are always wrapper classes, being in a property list
 									if (recdataType.equals(Integer.class))
@@ -224,7 +223,7 @@ public class PropertyDataLoader implements DataLoader<SimplePropertyList> {
 									else if (recdataType.equals(String.class))
 										recdata.setProperty(subHeader,input[row][col]);
 									else {
-										throw new TwcoreException("Cannot load data of type '" + recdataType + "'" 
+										throw new IllegalArgumentException("Cannot load data of type '" + recdataType + "'" 
 											+ " for column header " + headers[col]+ " - unmanaged data type.");
 									}
 								}

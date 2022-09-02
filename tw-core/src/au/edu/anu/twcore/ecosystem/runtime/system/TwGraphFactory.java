@@ -30,7 +30,6 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Map;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALGraphFactory;
@@ -59,7 +58,7 @@ public class TwGraphFactory extends ALGraphFactory {
 
 	@Override
 	public SystemComponent makeNode() {
-		throw new TwcoreException("SystemComponents cannot be instantiated without a property list");
+		throw new UnsupportedOperationException("SystemComponents cannot be instantiated without a property list");
 	}
 
 	// use this to quickly instantiate SystemComponents
@@ -75,12 +74,12 @@ public class TwGraphFactory extends ALGraphFactory {
 
 	@Override
 	public SystemComponent makeNode(Class<? extends Node> nodeClass) {
-		throw new TwcoreException("SystemComponents cannot be instantiated without a property list");
+		throw new UnsupportedOperationException("SystemComponents cannot be instantiated without a property list");
 	}
 
 	@Override
 	public SystemComponent makeNode(String proposedId) {
-		throw new TwcoreException("SystemComponents cannot be instantiated without a property list");
+		throw new UnsupportedOperationException("SystemComponents cannot be instantiated without a property list");
 	}
 
 	@Override
@@ -96,19 +95,19 @@ public class TwGraphFactory extends ALGraphFactory {
 
 	@Override
 	public SystemComponent makeNode(Class<? extends Node> nodeClass, String proposedId) {
-		throw new TwcoreException("SystemComponents cannot be instantiated without a property list");
+		throw new UnsupportedOperationException("SystemComponents cannot be instantiated without a property list");
 	}
 
 	// EdgeFactory
 
 	@Override
 	public SystemRelation makeEdge(Node start, Node end, String proposedId) {
-		throw new TwcoreException("SystemRelations cannot be instantiated without a property list");
+		throw new UnsupportedOperationException("SystemRelations cannot be instantiated without a property list");
 	}
 
 	@Override
 	public SystemRelation makeEdge(Node start, Node end) {
-		throw new TwcoreException("SystemRelations cannot be instantiated without a property list");
+		throw new UnsupportedOperationException("SystemRelations cannot be instantiated without a property list");
 	}
 
 	@Override
@@ -123,7 +122,7 @@ public class TwGraphFactory extends ALGraphFactory {
 
 	@Override
 	public SystemRelation makeEdge(Class<? extends Edge> edgeClass, Node start, Node end) {
-		throw new TwcoreException("SystemRelations cannot be instantiated without a property list");
+		throw new UnsupportedOperationException("SystemRelations cannot be instantiated without a property list");
 	}
 
 	@Override
@@ -139,7 +138,7 @@ public class TwGraphFactory extends ALGraphFactory {
 
 	@Override
 	public SystemRelation makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, String proposedId) {
-		throw new TwcoreException("SystemRelations cannot be instantiated without a property list");
+		throw new UnsupportedOperationException("SystemRelations cannot be instantiated without a property list");
 	}
 
 }

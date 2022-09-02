@@ -45,7 +45,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.timer.TimeUtil;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * Time line common to all time models within a simulation. Internally time is
@@ -115,37 +114,37 @@ public class Timeline extends InitialisableNode implements Sealable {
 	public LocalDateTime getTimeOrigin() {
 		if (sealed)
 			return startDateTime;
-		throw new TwcoreException("attempt to access uninitialised data");
+		throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 	public long getTimeOriginAsLong() {
 		if (sealed)
 			return timeOrigin;
-		throw new TwcoreException("attempt to access uninitialised data");
+		throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 	public final TimeScaleType getTimeScale() {
 		if (sealed)
 			return timeScale;
-		throw new TwcoreException("attempt to access uninitialised data");
+		throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 	public final Set<TimeUnits> timeUnits() {
 		if (sealed)
 			return timeUnits;
-		throw new TwcoreException("attempt to access uninitialised data");
+		throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 	public final TimeUnits shortestTimeUnit() {
 		if (sealed)
 			return timeUnits.first();
-		throw new TwcoreException("attempt to access uninitialised data");
+		throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 	public final TimeUnits longestTimeUnit() {
 		if (sealed)
 			return timeUnits.last();
-		throw new TwcoreException("attempt to access uninitialised data");
+		throw new IllegalStateException("attempt to access uninitialised data");
 	}
 
 }

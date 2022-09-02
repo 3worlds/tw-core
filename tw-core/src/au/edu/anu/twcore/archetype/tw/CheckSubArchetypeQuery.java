@@ -33,7 +33,6 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
@@ -99,9 +98,9 @@ public class CheckSubArchetypeQuery extends QueryAdaptor{
 			}
 			else
 				if (tree.root()!=null)
-					throw new TwcoreException("Sub-archetype '"+tree.root().toShortString()+"' is not a valid archetype");
+					throw new IllegalArgumentException("Sub-archetype '"+tree.root().toShortString()+"' is not a valid archetype");
 				else
-					throw new TwcoreException("Sub-archetype '"+tree.toShortString()+"' is not a valid archetype");
+					throw new IllegalArgumentException("Sub-archetype '"+tree.toShortString()+"' is not a valid archetype");
 
 		}
 		return this;

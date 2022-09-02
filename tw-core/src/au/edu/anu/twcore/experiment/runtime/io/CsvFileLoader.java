@@ -36,7 +36,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import au.edu.anu.twcore.data.runtime.TwData;
 
@@ -127,7 +126,7 @@ public class CsvFileLoader extends TableDataLoader {
 		    reader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-		    throw new TwcoreException("I/O error with csv file reader",e);
+		   // throw new something("I/O error with csv file reader",e);
 		}
 		String topline = lines.getFirst();
 		if (topline!=null) {

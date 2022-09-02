@@ -37,8 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
-
 /**
  * @author Ian Davies - 23 Aug 2019
  */
@@ -91,7 +89,7 @@ public class UPLEclipse extends AbstractUPL{
 							path = path.replace("\t", "");
 							File libFile = new File(path);
 							if (!libFile.exists())
-								throw new TwcoreException("Attempting to add non-existent library: " + libFile);
+								throw new IllegalArgumentException("Attempting to add non-existent library: " + libFile);
 							fileList.add(new File(path));
 						}
 				}

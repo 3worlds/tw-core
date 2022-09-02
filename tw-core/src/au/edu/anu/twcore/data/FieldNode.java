@@ -38,7 +38,6 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.exceptions.TwcoreException;
 
 /**
  * Class matching the "field" node label in the 3Worlds configuration tree. Has
@@ -97,7 +96,7 @@ public class FieldNode extends InitialisableNode {
 		case String:
 			return "";
 		default:
-			throw new TwcoreException("Unable to instantiate " + dt);
+			throw new IllegalArgumentException("Unable to instantiate " + dt);
 		}
 	}
 

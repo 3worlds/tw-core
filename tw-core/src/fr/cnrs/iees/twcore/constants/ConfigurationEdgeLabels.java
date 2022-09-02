@@ -28,8 +28,6 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.constants;
 
-import au.edu.anu.twcore.exceptions.TwcoreException;
-
 import au.edu.anu.twcore.data.SizedByEdge;
 import au.edu.anu.twcore.experiment.BaseLineEdge;
 import au.edu.anu.twcore.experiment.ModelSetupEdge;
@@ -146,6 +144,6 @@ public enum ConfigurationEdgeLabels {
 			if (lbl.label.equals(label))
 				return lbl;
 		}
-		throw new TwcoreException("'"+label+"' not found in "+ConfigurationEdgeLabels.class.getSimpleName());
+		throw new IllegalStateException("'"+label+"' not found in "+ConfigurationEdgeLabels.class.getSimpleName());
 	}
 }
