@@ -205,6 +205,7 @@ public class DocoGenerator {
 //	private long startTime;
 
 	@SuppressWarnings("unchecked")
+	//public DocoGenerator(TreeGraph<TreeGraphDataNode, ALEdge> cfg, TreeGraphDataNode system)
 	public DocoGenerator(TreeGraph<TreeGraphDataNode, ALEdge> cfg) {
 		File dir = Project.makeFile(ProjectPaths.RUNTIME);
 		dir.mkdirs();

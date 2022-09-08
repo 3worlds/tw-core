@@ -143,7 +143,7 @@ public class TwConfigurationAnalyser {
 	 * @param configRoot the root node of a 3Worlds configuration graph
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<ExecutionStep> getExecutionFlow(TreeGraphDataNode configRoot) {
+	public static List<ExecutionStep> getExecutionFlow(TreeGraphDataNode configRoot, TreeGraphDataNode system) {
 		TwConfigurationAnalyser analyser = new TwConfigurationAnalyser();
 		if (configRoot!=null) {
 			

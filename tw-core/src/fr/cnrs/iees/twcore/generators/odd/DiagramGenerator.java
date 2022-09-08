@@ -28,14 +28,29 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators.odd;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.childTree;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOne;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_SYSTEM;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import au.edu.anu.twcore.ecosystem.ArenaType;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
+
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
  * A class to generate diagrams from 3w config and code.
@@ -56,8 +71,34 @@ public class DiagramGenerator {
 	 * @return a String of svg instructions for later use, eg as a file.
 	 */
 	public static String flowChart(TreeGraphDataNode configRoot) {
+//		List<TreeGraphDataNode> systems = (List<TreeGraphDataNode>) get(configRoot,
+//				children(),
+//				selectOneOrMany(hasTheLabel(N_SYSTEM.label())));
+//		Map<String,String> result = new HashMap<>();
+//		for (TreeGraphDataNode system:systems) {
+//			UMLGenerator umlg = new UMLGenerator();
+//			umlg.activityDiagram(TwConfigurationAnalyser.getExecutionFlow(configRoot,system));
+//			String diag = umlg.umlString();
+//			SourceStringReader reader = new SourceStringReader(diag);
+//			final ByteArrayOutputStream os = new ByteArrayOutputStream();
+//			// Write the first image to "os"
+//			try {			
+////				String desc = reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
+//				reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
+//				os.close();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			// The UML is stored into svg
+//			final String svg = new String(os.toByteArray(),Charset.forName("UTF-8"));
+//			result.put(system.id(),svg);
+//
+//		}
+//		return result;
+		
 		UMLGenerator umlg = new UMLGenerator();
-		umlg.activityDiagram(TwConfigurationAnalyser.getExecutionFlow(configRoot));
+		umlg.activityDiagram(TwConfigurationAnalyser.getExecutionFlow(configRoot,null));
 		String diag = umlg.umlString();
 		SourceStringReader reader = new SourceStringReader(diag);
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();

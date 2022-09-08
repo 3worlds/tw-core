@@ -192,7 +192,7 @@ public class CodeGenerator {
 				generateDataCode(systemNode, systemNode.id());
 
 			// generate user modifiable model class file
-			modelgen = new ModelGenerator(graph.root(), systemNode.id());
+			modelgen = new ModelGenerator(graph.root(), systemNode);
 			// generate TwFunction classes
 			// NB expected multiplicities are 1..1 and 1..* but keeping 0..1 and 0..*
 			// enables to run tests on incomplete specs
