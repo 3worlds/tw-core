@@ -98,13 +98,13 @@ public class ComponentData extends TwData {
 	public ComponentData setProperty(String key, Object value) {
 		if (key.equals("age")) {
 			if (value instanceof Long)
-				age = (Long)value;
+				age = (long)value;
 			else if (value instanceof Double)
 				age = ((Double)value).longValue();
 		}
 		if (key.equals("birthDate")) {
 			if (value instanceof Long)
-				birthDate = (Long)value;
+				birthDate = (long)value;
 			else if (value instanceof Double)
 				birthDate = ((Double)value).longValue();
 		}

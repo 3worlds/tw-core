@@ -34,8 +34,6 @@ import java.util.Set;
 
 import au.edu.anu.omhtk.jars.Jars;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.project.TwPaths;
 
 /**
  * @author Ian Davies - 25 Aug 2019
@@ -57,7 +55,7 @@ public class SimulatorJar extends Jars{
 			addFile(s.getAbsolutePath(), resourceName);
 		}
 		// code files
-		String codeRoot = Project.makeFile(ProjectPaths.LOCALJAVA).getAbsolutePath();
+		String codeRoot = Project.makeFile(Project.LOCAL_JAVA).getAbsolutePath();
 		for (File file : codeFiles) {// both java and class files
 			String fileName = file.getAbsolutePath();
 			String jarDirectory = file.getAbsolutePath().replace(codeRoot, "");
@@ -66,7 +64,7 @@ public class SimulatorJar extends Jars{
 			addFile(fileName, jarDirectory);
 		}
 		// resources
-		String resRoot = Project.makeFile(ProjectPaths.LOCALJAVARES).getAbsolutePath();
+		String resRoot = Project.makeFile(Project.LOCAL_JAVA_RES).getAbsolutePath();
 		for (File file : resFiles) {
 			String fileName = file.getAbsolutePath();
 			String jarDirectory = file.getAbsolutePath().replace(resRoot, "");
@@ -76,7 +74,7 @@ public class SimulatorJar extends Jars{
 		}
 
 		// dependencies
-		addDependencyOnJar(".." + Jars.separator + TwPaths.TW_DEP_JAR);
+		addDependencyOnJar(".." + Jars.separator + Project.TW_DEP_JAR);
 //		addDependencyOnJar(".." + Jars.separator + TwPaths.TW_FX_DEP_JAR);
 		for (String userLibrary : userLibraries)
 			addDependencyOnJar(userLibrary);

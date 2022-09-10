@@ -70,7 +70,6 @@ import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ScenarioTimer;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.userProject.SnippetReader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
@@ -207,7 +206,7 @@ public class DocoGenerator {
 	@SuppressWarnings("unchecked")
 	//public DocoGenerator(TreeGraph<TreeGraphDataNode, ALEdge> cfg, TreeGraphDataNode system)
 	public DocoGenerator(TreeGraph<TreeGraphDataNode, ALEdge> cfg) {
-		File dir = Project.makeFile(ProjectPaths.RUNTIME);
+		File dir = Project.makeFile(Project.RUNTIME);
 		dir.mkdirs();
 		LocalScope scope = new LocalScope("Files");
 		for (String fileName : dir.list()) {
@@ -216,8 +215,8 @@ public class DocoGenerator {
 			scope.newId(true, fileName);
 		}
 		String dirName = scope.newId(false, "documentation1").id();
-		oddFile = Project.makeFile(ProjectPaths.RUNTIME, dirName, cfg.root().id() + ".odt");
-		flowChartFile = Project.makeFile(ProjectPaths.RUNTIME, dirName, "flowChart.svg");
+		oddFile = Project.makeFile(Project.RUNTIME, dirName, cfg.root().id() + ".odt");
+		flowChartFile = Project.makeFile(Project.RUNTIME, dirName, "flowChart.svg");
 
 		oddFile.getParentFile().mkdirs();
 
@@ -324,7 +323,7 @@ public class DocoGenerator {
 		 * TODO: Assume one system for now!
 		 */
 
-		File f = Project.makeFile(ProjectPaths.LOCALJAVACODE, system.id(), cfg.root().id() + ".java");
+		File f = Project.makeFile(Project.LOCAL_JAVA_CODE, system.id(), cfg.root().id() + ".java");
 		snippetMap = SnippetReader.readSnippetsFromFile(f);
 
 		// Count drivers, constants and decorators

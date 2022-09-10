@@ -31,8 +31,6 @@ package fr.cnrs.iees.twcore.generators;
 import java.io.File;
 
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.project.TwPaths;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.ens.biologie.generic.JavaGenerator;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
@@ -84,7 +82,7 @@ import static fr.ens.biologie.generic.utils.NameUtils.*;
  *
  */
 public abstract class TwCodeGenerator 
-	implements ProjectPaths, TwPaths, JavaGenerator {
+	implements  JavaGenerator {
 	
 	protected TreeGraphDataNode spec = null;
 	
@@ -98,16 +96,16 @@ public abstract class TwCodeGenerator
 	}
 	
 	protected File getModelCodeDir(String modelRoot) {
-		File result = Project.makeFile(LOCALJAVACODE,makeModelJavaName(modelRoot));
+		File result = Project.makeFile(Project.LOCAL_JAVA_CODE,makeModelJavaName(modelRoot));
 		return result;
 	}
 
 	protected File getModelGlueCodeDir(String modelRoot) {
-		File result = Project.makeFile(LOCALJAVACODE,makeModelJavaName(modelRoot),GENERATED);
+		File result = Project.makeFile(Project.LOCAL_JAVA_CODE,makeModelJavaName(modelRoot),Project.GENERATED);
 		return result;
 	}
 	
 	protected File getModelDataDir(String modelRoot) {
-		return Project.makeFile(LOCALJAVARES,makeModelJavaName(modelRoot));
+		return Project.makeFile(Project.LOCAL_JAVA_RES,makeModelJavaName(modelRoot));
 	}
 }

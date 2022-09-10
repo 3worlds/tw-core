@@ -64,7 +64,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.ContainerData;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
@@ -209,7 +208,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		ctGeneratedCodeDir.mkdirs();
 		String ctmodel = validJavaName(wordUpperCaseName(model));
 //		packageName = ProjectPaths.CODE.replace(File.separator,".")+"."+ctmodel;
-		packageName = ProjectPaths.CODE.replace(File.separator,".")+"."+ctmodel+"."+ProjectPaths.GENERATED;
+		packageName = Project.CODE.replace(File.separator,".")+"."+ctmodel+"."+Project.GENERATED;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(false, model, ""));
 		ClassGenerator generator = new ClassGenerator(packageName, comment, name, false, null, ancestorClassName);
@@ -300,7 +299,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 //					mg.setStatement(s);
 		}
 //		generator.setRawMethodCode(inClassCode);
-		File file = Project.makeFile(LOCALJAVACODE,ctmodel,GENERATED, name + ".java");
+		File file = Project.makeFile(Project.LOCAL_JAVA_CODE,ctmodel,Project.GENERATED, name + ".java");
 		writeFile(generator, file);
 		generatedClassName = packageName + "." + name;
 		log.info("  done.");

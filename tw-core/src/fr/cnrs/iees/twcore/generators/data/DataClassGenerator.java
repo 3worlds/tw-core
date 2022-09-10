@@ -31,7 +31,7 @@ package fr.cnrs.iees.twcore.generators.data;
 import static fr.ens.biologie.generic.utils.NameUtils.validJavaName;
 import static fr.ens.biologie.generic.utils.NameUtils.wordUpperCaseName;
 
-import au.edu.anu.twcore.project.ProjectPaths;
+import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 
@@ -41,8 +41,7 @@ import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
  *
  */
 public abstract class DataClassGenerator 
-		extends TwCodeGenerator
-		implements ProjectPaths{
+		extends TwCodeGenerator{
 
 	/** the model name (matching the ecology node name */
 	protected String modelName = null;
@@ -54,7 +53,7 @@ public abstract class DataClassGenerator
 	protected DataClassGenerator(String modelName,TreeGraphDataNode spec) {
 		super(spec);
 		this.modelName = modelName;
-		packageName =CODE+"."+ validJavaName(wordUpperCaseName(modelName))+"."+GENERATED;
+		packageName =Project.CODE+"."+ validJavaName(wordUpperCaseName(modelName))+"."+Project.GENERATED;
 //		packagePath = Project.makeFile(LOCALJAVACODE,validJavaName(wordUpperCaseName(modelName))).getAbsolutePath();
 		packagePath = getModelGlueCodeDir(modelName).getAbsolutePath();
 	}

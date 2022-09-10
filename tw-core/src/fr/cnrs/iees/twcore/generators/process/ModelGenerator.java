@@ -82,7 +82,6 @@ import au.edu.anu.twcore.ecosystem.structure.Produce;
 import au.edu.anu.twcore.ecosystem.structure.Recruit;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -200,7 +199,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		className = validJavaName(wordUpperCaseName(initialUpperCase(root3w.id())));
 //		modelName = modelDir;
 		modelName = systemNode.id();
-		packageName = ProjectPaths.CODE.replace(File.separator, ".") + "." + systemNode.id();
+		packageName = Project.CODE.replace(File.separator, ".") + "." + systemNode.id();
 		generatedClassName = packageName + "." + className;
 		// package comment - standard
 		packageComment = comment(general, license, separatingLine);
@@ -209,7 +208,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// method comments:
 		// working explanations
 
-		packagePath = Project.makeFile(LOCALJAVACODE, validJavaName(wordUpperCaseName(systemNode.id()))).getAbsolutePath();
+		packagePath = Project.makeFile(Project.LOCAL_JAVA_CODE, validJavaName(wordUpperCaseName(systemNode.id()))).getAbsolutePath();
 
 		// Collect user defined imports (def is static java.lang.Math.*)
 		StringTable tblImport = (StringTable) root3w.properties().getPropertyValue(P_MODEL_IMPORTSNIPPET.key());
@@ -220,7 +219,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 				userImports.add(line);
 		}
 		//imports.add("static java.lang.Math.*");
-		generatedImports.add(packageName+"."+GENERATED+".*");
+		generatedImports.add(packageName+"."+Project.GENERATED+".*");
 		// get all nodes susceptible to require generated data:
 		// system/arena, lifecycle, group, component, space
 		// NB these nodes may also have setInitialState functions
@@ -1346,7 +1345,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		log.info("    generating file " + className + ".java ...");
 		File ctGeneratedCodeDir = getModelCodeDir(modelName);
 		ctGeneratedCodeDir.mkdirs();
-		File file = Project.makeFile(LOCALJAVACODE, modelName, className + ".java");
+		File file = Project.makeFile(Project.LOCAL_JAVA_CODE, modelName, className + ".java");
 		writeFile(this, file);
 //		generatedClassName = packageName + "." + className;
 		log.info("  done.");

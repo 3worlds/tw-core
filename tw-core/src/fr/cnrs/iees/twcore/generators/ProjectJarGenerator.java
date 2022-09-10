@@ -53,8 +53,6 @@ import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.userProject.AbstractUPL;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -90,7 +88,7 @@ public class ProjectJarGenerator {
 		}
 		if (UserProjectLink.haveUserProject()) {
 			Set<String> libraryExclusions = new HashSet<>();
-			libraryExclusions.add(TwPaths.TW_DEP_JAR);
+			libraryExclusions.add(Project.TW_DEP_JAR);
 //			libraryExclusions.add(TwPaths.TW_FX_DEP_JAR);
 			userLibraries = copyUserLibraries(UserProjectLink.getUserLibraries(libraryExclusions));
 			pullAllCodeFiles();
@@ -112,7 +110,7 @@ public class ProjectJarGenerator {
 		 * be referenced in the simulator.jar
 		 */
 
-		File localDir = Project.makeFile(ProjectPaths.LOCALJAVALIB);
+		File localDir = Project.makeFile(Project.LOCAL_JAVA_LIB);
 		localDir.mkdirs();
 		Set<String> result = new HashSet<>();
 		String relativePath = "." + localDir.getAbsolutePath().replace(Project.makeFile().getAbsolutePath(), "");
@@ -134,10 +132,7 @@ public class ProjectJarGenerator {
 	}
 
 	private void pullAllCodeFiles() {
-		// if we search on .class files we can ignore unpaired ones as they will be
-		// inner classes
-		// File localDir = Project.makeFile(ProjectPaths.LOCALCODE);
-		File localDir = Project.makeFile(ProjectPaths.LOCALJAVA);
+		File localDir = Project.makeFile(Project.LOCAL_JAVA);
 		String[] srcExtensions = new String[] { "java" };
 		List<File> remoteSrcFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), srcExtensions, true);
 		for (File remoteSrcFile : remoteSrcFiles) {
@@ -182,7 +177,7 @@ public class ProjectJarGenerator {
 	}
 
 	private void pullAllResources() {
-		File localDir = Project.makeFile(Project.LOCALJAVARES);
+		File localDir = Project.makeFile(Project.LOCAL_JAVA_RES);
 		List<File> remoteFiles = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), null, true);
 		for (File remoteFile : remoteFiles) {
 			String name = remoteFile.getName();
@@ -200,8 +195,8 @@ public class ProjectJarGenerator {
 	}
 
 	private void loadModelCode(Set<File> srcFiles, Set<File> resFiles) {
-		File srcRoot = Project.makeFile(ProjectPaths.LOCALJAVACODE);
-		File resRoot = Project.makeFile(ProjectPaths.LOCALJAVARES);
+		File srcRoot = Project.makeFile(Project.LOCAL_JAVA_CODE);
+		File resRoot = Project.makeFile(Project.LOCAL_JAVA_RES);
 		if (srcRoot.exists())
 			srcFiles.addAll(FileUtils.listFiles(srcRoot, null, true));
 		if (resRoot.exists())

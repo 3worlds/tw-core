@@ -36,6 +36,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -74,8 +75,8 @@ import java.util.logging.Logger;
  * @author Author Ian Davies - Date 12 Dec. 2018
  */
 // tested OK with version 0.1.1 on 21/5/2019
-public class Project implements ProjectPaths, TwPaths {
-	// TODO Needs cleaning up. There are two types of methods: those that operate
+public class Project {
+	// There are two types of methods: those that operate
 	// only on an open project and those that can operate on a given 3w project
 	// directory file. So we should start with File[] getAllProjectFiles and decide
 	// what public methods can do with this: basically returning the short name(s),
@@ -85,16 +86,84 @@ public class Project implements ProjectPaths, TwPaths {
 	 * DateTime format - no blanks - it is effectively a unique id. Avoid ":" as it
 	 * is a forbidden char in OSX and Windows
 	 */
-	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
-	private static File projectDirectory;
-	private static final String sep = "_";
-//	private static final char sepch = '_';
-	private static final String klassName = Project.class.getName();
-	private static Logger log = Logging.getLogger(Project.class);
+	/**
+	 * User's home directory name.
+	 */
+	public static final String USER_ROOT/*       */ = System.getProperty("user.home");
+	/**
+	 * 3Worlds project root directory name
+	 */
+	public static final String TW /*             */ = "3w";
+	/**
+	 * 3Worlds project directory name in the user's home.
+	 */
+	public static final String USER_ROOT_TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
+	/**
+	 * The OS specific 3Worlds jar file.
+	 */
+	public static final String TW_DEP_JAR /*     */ = getDepJarName();
+	/**
+	 * Prefix for all 3Worlds projects.
+	 */
+	public static final String PROJECT_DIR_PREFIX /*	*/ = "project";
+	/**
+	 * Name of the local directory within a 3Worlds project (possibly redundant
+	 * now).
+	 */
+	public static final String LOCAL /*				*/ = "local";
+	public static final String JAVA /*				*/ = "java";
+	/**
+	 * Name of the Java directory within the Local directory.
+	 */
+	public static final String LOCAL_JAVA /*			*/ = LOCAL + File.separator + JAVA;
+	/**
+	 * Package name of the Java directory within the Local directory.
+	 */
+	public static final String LOCAL_JAVA_PKG/*		*/ = LOCAL + "." + JAVA;
+	/**
+	 * User linked project jar files. It will be empty if there is no linked project
+	 */
+	public static String LOCAL_JAVA_LIB /*                 */ = LOCAL_JAVA + File.separator + "lib";
 
-	// prevent instantiation
+	/**
+	 * Name of root directory for Java code generation
+	 */
+	public static final String CODE/*					*/ = "code";
+
+	/**
+	 * Generated code for a project regardless of the existence of a linked user
+	 * project. The sub dir is organised as system.id() which themselves don't need
+	 * further subdirs (i.e /code
+	 */
+	public static final String LOCAL_JAVA_CODE /*                */ = LOCAL_JAVA + File.separator + CODE;
+
+	/**
+	 * Data files for a project regardless of the existence of a linked user
+	 * project.
+	 */
+	public static final String LOCAL_JAVA_RES /*                 */ = LOCAL_JAVA + File.separator + "res";
+
+	/**
+	 * root of runtime model. Has runtime preferences and any data files, startup
+	 * files and generated filrs
+	 */
+	public static final String RUNTIME /*             */ = LOCAL + File.separator + "runTime";
+
+	public static final String LOGS /*                  */ = LOCAL + File.separator + "logs";
+
+	/** for generated 'glue' code, ie code the user does not edit. */
+	public static final String GENERATED = "generated";
+
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
+	private static final String sep = "_";
+	private static final String klassName = Project.class.getName();
+	private static final Logger log = Logging.getLogger(Project.class);
+
+	/** Project is open if this is not null */
+	private static File projectDirectory = null;
+
 	private Project() {
-	};
+	};// prevent instantiation
 
 	/**
 	 * @param name any string.
@@ -102,53 +171,45 @@ public class Project implements ProjectPaths, TwPaths {
 	 *         with any whitespace characters then removed. The first character, if
 	 *         alphabetic, will be made lower case to conform with package name
 	 *         conventions.
-	 * 
-	 * @throws IllegalStateException if a project is open | there are no valid characters
-	 *                         | the directory cannot be made | directory already
-	 *                         exists | duplicate directories exist.
+	 *         <p>
+	 *         Throws IllegalStateException if a project is open | there are no
+	 *         valid characters | the directory cannot be made | directory already
+	 *         exists | duplicate directories exist.
 	 */
 	public static String create(String name) {
 		log.entering(klassName, "create");
 
 		checkUniqueness();
-		if (isOpen()) {
-			String msg = "Cannot create project " + name + ". Project is open: " + projectDirectory.getName();
-
-			throw new IllegalStateException(msg);
-		}
-
+		if (isOpen())
+			throw new IllegalStateException(
+					"Cannot create project " + name + ". Project is open: " + projectDirectory.getName());
 		try {
 			File f = new File(name);
 			f.getCanonicalFile();
 		} catch (IOException e) {
-			 e.printStackTrace();
+			e.printStackTrace();
 		}
-
 		String creationDateTime = createDateTime();
 
 		projectDirectory = new File(
-				TW_ROOT + File.separator + PROJECT_DIR_PREFIX + sep + name + sep + creationDateTime);
+				USER_ROOT_TW_ROOT + File.separator + PROJECT_DIR_PREFIX + sep + name + sep + creationDateTime);
 		if (projectDirectory.exists()) {
 			File f = projectDirectory;
 			close();
-			String msg = "Project directory already exists: " + f.getAbsolutePath();
-			log.severe(msg);
-			throw new IllegalStateException(msg);
+			throw new IllegalStateException("Project directory already exists: " + f.getAbsolutePath());
 		}
-		if (!projectDirectory.mkdirs()) {
-			String msg = "Unable to create project directory: " + projectDirectory.getAbsolutePath();
-			log.severe(msg);
-			throw new IllegalStateException(msg);
-		}
-		// pScope.newId(true, projectDirectory.getName().split(sep)[1]);
+		if (!projectDirectory.mkdirs())
+			throw new IllegalStateException(
+					"Unable to create project directory: " + projectDirectory.getAbsolutePath());
+
 		log.exiting(klassName, "create");
 		return name;
 	}
 
 	/**
 	 * Closes the project
-	 * 
-	 * @throws IllegalStateException if not open
+	 * <p>
+	 * Throws IllegalStateException if not open
 	 */
 	public static void close() {
 		log.entering(klassName, "Close");
@@ -160,8 +221,9 @@ public class Project implements ProjectPaths, TwPaths {
 
 	/**
 	 * @param directory full path of 3Worlds project directory
-	 * @throws IllegalStateException when a project is already open | the path is not a
-	 *                         valid 3Worlds project path.
+	 *                  <p>
+	 *                  Throws IllegalStateException if: a project is already open |
+	 *                  the path is not a valid 3Worlds project path.
 	 */
 	public static void open(File directory) {
 		log.entering(klassName, "Open");
@@ -206,8 +268,9 @@ public class Project implements ProjectPaths, TwPaths {
 	/**
 	 * @return The project name part of the project directory. This is used as a
 	 *         java package name in generated java files for this project. It is
-	 *         also used as the name of the 3Worlds configuration graph root
-	 * @throws IllegalStateException if Project is closed
+	 *         also used as the name of the 3Worlds configuration graph root.
+	 *         <p>
+	 *         Throws IllegalStateException if Project is closed
 	 */
 	public static String getProjectUserName() {
 		if (!isOpen())
@@ -225,7 +288,8 @@ public class Project implements ProjectPaths, TwPaths {
 
 	/**
 	 * @return String containing the unique date and time of project creation.
-	 * @throws IllegalStateException if project is not open
+	 *         <p>
+	 *         Throws IllegalStateException if project is not open
 	 */
 	public static String getProjectDateTime() {
 		if (!isOpen())
@@ -236,7 +300,8 @@ public class Project implements ProjectPaths, TwPaths {
 	/**
 	 * @param pathElements
 	 * @return new file with path elements appended to project path.
-	 * @throws IllegalStateException if project is not open
+	 *         <p>
+	 *         Throws IllegalStateException if project is not open
 	 */
 	public static File makeFile(String... pathElements) {
 		if (!isOpen())
@@ -248,46 +313,38 @@ public class Project implements ProjectPaths, TwPaths {
 	}
 
 	/**
-	 * TODO
 	 * 
-	 * @return
+	 * @return The file path of the ModelMaker preferences file.
 	 */
 	public static File makeProjectPreferencesFile() {
 		return makeFile("MM.xml");
 	}
 
+	/**
+	 * @return The file path of the ModelRunner preferences file.
+	 */
 	public static File makeRuntimePreferencesFile() {
-		return makeFile(ProjectPaths.RUNTIME, "MR.xml");
+		return makeFile(RUNTIME, "MR.xml");
 	}
 
 	/**
-	 * TODO
-	 * 
 	 * @return array of all valid 3Worlds projects
 	 */
 	public static File[] getAllProjectPaths() {
-		String repos = TW_ROOT;
+		String repos = USER_ROOT_TW_ROOT;
 		File folder = new File(repos);
 		if (!folder.exists())
 			folder.mkdirs();
 		File[] result = folder.listFiles(new ProjectFilter());
-		// sort by date
-		Arrays.parallelSort(result, new Comparator<File>() {
-
-			@Override
-			public int compare(File o1, File o2) {
-				return o1.getName().compareTo(o2.getName());
-//				Long m1 = o1.lastModified();
-//				Long m2 = o2.lastModified();
-//				return m2.compareTo(m1);
-			}
-
-		});
+		// sort by file name
+		Arrays.sort(result, (f1, f2) -> f1.getName().compareTo(f2.getName()));
 		return result;
 	}
 
 	/**
-	 * TODO Used to filter directories
+	 * Test for a valid 3Worlds project directory. It must have three parts
+	 * separated with '_', starting with project and ending with a valid time
+	 * format.
 	 * 
 	 * @param directory
 	 * @return true if this directory is a valid 3Worlds project directory
@@ -308,11 +365,12 @@ public class Project implements ProjectPaths, TwPaths {
 		} catch (Exception e) {
 			return false;
 		}
-//		if (!WordUtils.uncapitalize(items[1]).equals(items[1]))
-//			return false;
 		return true;
 	}
 
+	/**
+	 * @return a project file path with the correct extension for TreeGraphs.
+	 */
 	public static File makeConfigurationFile() {
 		String name = Project.getProjectUserName();
 		// Its a string of several extensions
@@ -320,20 +378,28 @@ public class Project implements ProjectPaths, TwPaths {
 	}
 
 	/**
-	 * TODO
 	 * 
-	 * @return
+	 * @return Path to a layout file which contains information about the visual
+	 *         appearence of the configuration graph in ModelMaker.
 	 */
 	public static File makeLayoutFile() {
 		return makeFile(".layout" + GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
 	}
 
 // used for menu creation
+	/**
+	 * @param directory
+	 * @return The project name without the "project" prefix
+	 */
 	public static String extractDisplayName(File directory) {
 		String[] items = parseProjectName(directory);
 		return items[1] + " (" + items[2] + ")";
 	}
 
+	/**
+	 * @param directory
+	 * @return The date part of the full project name.
+	 */
 	public static String extractDateTime(File directory) {
 		String[] items = parseProjectName(directory);
 		return items[2];
@@ -355,7 +421,9 @@ public class Project implements ProjectPaths, TwPaths {
 		String name = file.getName();
 		String[] items = name.split(sep);
 		if (!(items.length == 3)) {
-			throw new IllegalArgumentException(name + " is not a project name. Must have Project_<name>_<dateTime>. Found: "+Arrays.deepToString(items));
+			throw new IllegalArgumentException(
+					name + " is not a project name. Must have Project_<name>_<dateTime>. Found: "
+							+ Arrays.deepToString(items));
 		}
 		if (!items[0].equals(PROJECT_DIR_PREFIX))
 			throw new IllegalArgumentException(name + " is not a project name. Must start with key work 'Project'");
@@ -394,4 +462,13 @@ public class Project implements ProjectPaths, TwPaths {
 		return result;
 	}
 
+	private static String getDepJarName() {
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.contains("mac"))
+			return "tw-mac.jar";
+		if (os.contains("win"))
+			return "tw-win.jar";
+		return "tw-linux.jar";
+
+	}
 }

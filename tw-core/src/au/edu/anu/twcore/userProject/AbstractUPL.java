@@ -49,7 +49,6 @@ import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
@@ -97,9 +96,9 @@ public abstract class AbstractUPL implements IUserProjectLink {
 		List<File> clsCurrentLocalFiles = getFileTree(root, "class");
 
 		// Get local and remote paths as strings to use as find/replace
-		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + ProjectPaths.CODE;
-		String remoteClsPath = this.classRoot().getAbsolutePath() + File.separator + ProjectPaths.CODE;
-		String localPath = root.getAbsolutePath() + File.separator + ProjectPaths.CODE;
+		String remoteSrcPath = this.srcRoot().getAbsolutePath() + File.separator + Project.CODE;
+		String remoteClsPath = this.classRoot().getAbsolutePath() + File.separator + Project.CODE;
+		String localPath = root.getAbsolutePath() + File.separator + Project.CODE;
 
 		/**
 		 * The Main Model Class (MMC) is the only file that is edited by both MM and
@@ -140,7 +139,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 	public List<String> pullDependentTree(File mainModelClass) {
 		// TODO: This assumes only one model main class and therefore one system node since this file is within the system.id dir!
 		List<File> fileList = getFileTree(new File(mainModelClass.getParentFile().getParent()), "java");
-		String genStr = mainModelClass.getParent() + File.separator + ProjectPaths.GENERATED;
+		String genStr = mainModelClass.getParent() + File.separator + Project.GENERATED;
 		String modStr = mainModelClass.getAbsolutePath();
 
 		List<File> remoteFiles = new ArrayList<>();
@@ -151,7 +150,7 @@ public abstract class AbstractUPL implements IUserProjectLink {
 
 		List<String> result = new ArrayList<>();
 		String remotePath = mainModelClass.getParentFile().getParent();
-		String localPath = Project.makeFile(ProjectPaths.LOCALJAVACODE).getAbsolutePath();
+		String localPath = Project.makeFile(Project.LOCAL_JAVA_CODE).getAbsolutePath();
 		for (File remoteFile : remoteFiles) {
 			File toFile = copyOver(remoteFile, remotePath, localPath);
 			String s = remoteFile.getAbsolutePath().replace(remotePath, ELLIPSIS) + " -> "

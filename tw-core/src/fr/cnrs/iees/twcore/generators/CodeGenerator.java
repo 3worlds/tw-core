@@ -63,7 +63,6 @@ import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -112,12 +111,14 @@ public class CodeGenerator {
 		 * 
 		 * <localCodeRoot>/code/system:<name>/<twRootNodeName>
 		 */
-		File localCodeRoot = Project.makeFile(ProjectPaths.LOCALJAVA);
+		File localCodeRoot = Project.makeFile(Project.LOCAL_JAVA);
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
 		for (TreeGraphDataNode sys : systemNodes) {
-			File localGeneratedFiles = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, sys.id(),
-					ProjectPaths.GENERATED);
+//			File localGeneratedFiles = Project.makeFile(Project.LOCAL_JAVA, Project.CODE, sys.id(),
+//					Project.GENERATED);
+			File localGeneratedFiles = Project.makeFile(Project.LOCAL_JAVA_CODE, sys.id(),
+					Project.GENERATED);
 			if (localGeneratedFiles.exists()) {
 				try {
 					FileUtilities.deleteFileTree(localGeneratedFiles);
@@ -127,7 +128,7 @@ public class CodeGenerator {
 			}
 			if (UserProjectLink.haveUserProject()) {
 				File remoteGeneratedFiles = new File(UserProjectLink.srcRoot().getAbsoluteFile() + File.separator
-						+ ProjectPaths.CODE + File.separator + sys.id() + File.separator + ProjectPaths.GENERATED);
+						+ Project.CODE + File.separator + sys.id() + File.separator + Project.GENERATED);
 				if (remoteGeneratedFiles.exists()) {
 					try {
 						FileUtilities.deleteFileTree(remoteGeneratedFiles);
@@ -138,7 +139,7 @@ public class CodeGenerator {
 				}
 				// import deps to local
 				File remoteMainModelClass = new File(UserProjectLink.srcRoot().getAbsoluteFile() + File.separator
-						+ ProjectPaths.CODE + File.separator + sys.id() + File.separator + graph.root().id() + ".java");
+						+ Project.CODE + File.separator + sys.id() + File.separator + graph.root().id() + ".java");
 				// It won't exist the first time (i.e.upon newly connecting to a project)
 				if (remoteMainModelClass.exists())
 					UserProjectLink.pullDependentTree(remoteMainModelClass);
@@ -151,7 +152,7 @@ public class CodeGenerator {
 			 * TODO : There may be much to do if we have more than one system.
 			 */
 			// wordUpperCaseName: aka "camelBack" format used for java package names
-			File systemDir = Project.makeFile(ProjectPaths.LOCALJAVACODE, wordUpperCaseName(systemNode.id()));
+			File systemDir = Project.makeFile(Project.LOCAL_JAVA_CODE, wordUpperCaseName(systemNode.id()));
 			systemDir.mkdirs();
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(systemNode.getChildren(),
 					selectOne(hasTheLabel(N_DYNAMICS.label())));
