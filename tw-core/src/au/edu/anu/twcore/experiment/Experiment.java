@@ -56,6 +56,8 @@ import au.edu.anu.twcore.experiment.runtime.EddReadable;
 import au.edu.anu.twcore.experiment.runtime.ExperimentDesignDetails;
 import au.edu.anu.twcore.experiment.runtime.IEdd;
 import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
+import au.edu.anu.twcore.root.World;
+
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
@@ -107,6 +109,14 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
+			@SuppressWarnings("unchecked")
+			List<SimulatorNode> simulatorNodes=new ArrayList<>();
+			List<TreeGraphDataNode> systems = (List<TreeGraphDataNode>) get(this.getParent().getChildren(),
+					selectOneOrMany(hasTheLabel(N_SYSTEM.label())));
+			for (TreeGraphDataNode system:systems) {
+				SimulatorNode sn = (SimulatorNode)get(system.getChildren(),selectOne(hasTheLabel(N_DYNAMICS.label())));
+				simulatorNodes.add(sn);
+			}
 
 			SimulatorNode simulatorNode = null;
 			Design dsgn = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));
@@ -118,24 +128,24 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 							selectOne(hasTheLabel(N_DYNAMICS.label())));
 				} else {
 					// single system -NB baseline is now [0..1]
-					simulatorNode = (SimulatorNode) get(getParent().getChildren(),
-							selectOne(hasTheLabel(N_SYSTEM.label())), children(),
-							selectOne(hasTheLabel(N_DYNAMICS.label())));
+					simulatorNode = simulatorNodes.get(0);
 				}
 
+				edd = ExperimentDesignDetails.makeDetails(getDefaultPrecis(), getDefaultnReplicates(), getDesignType(),
+						getDesignFile(), getDefaultExpDir());
 
-				edd = ExperimentDesignDetails.makeDetails(getDefaultPrecis(),
-						getDefaultnReplicates(), getDesignType(), getDesignFile(), getDefaultExpDir());
-				
 				if (edd.getType() != null)
 					switch (edd.getType()) {
 					case singleRun: {
+
 						deployer = new ParallelDeployer();
 
 						for (int i = 0; i < edd.getReplicateCount(); i++) {
-							Simulator sim = simulatorNode.getInstance(N_SIMULATORS++);
-							sim.applyTreatmentValues(edd.baseline(), null);
-							deployer.attachSimulator(sim);
+							for (SimulatorNode sn : simulatorNodes) {
+								Simulator sim = sn.getInstance(N_SIMULATORS++);
+								sim.applyTreatmentValues(edd.baseline(), null);
+								deployer.attachSimulator(sim);
+							}
 						}
 						break;
 					}
@@ -211,7 +221,6 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 			expDir = (String) properties().getPropertyValue(P_EXP_DIR.key());
 		return expDir;
 	}
-
 
 	private ExperimentDesignType getDesignType() {
 		Design dsgn = (Design) get(getChildren(), selectOne(hasTheLabel(N_DESIGN.label())));

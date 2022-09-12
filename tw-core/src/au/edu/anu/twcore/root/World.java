@@ -71,5 +71,12 @@ public class World extends InitialisableNode {
 			result = (InitialisableNode)result.getParent();
 		return result;
 	}
+	public static final InitialisableNode getSystemRoot(InitialisableNode from) {
+		InitialisableNode result = from;
+		while (result.classId()!=N_SYSTEM.label())
+			result = (InitialisableNode)result.getParent();
+		return result;
+		
+	}
 
 }

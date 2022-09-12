@@ -30,6 +30,7 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
+import au.edu.anu.twcore.root.World;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -67,12 +68,10 @@ public class InitFunctionNode extends FunctionNode implements LimitedEdition<TwF
 	@Override
 	public void initialise() {
 		super.initialise();
-		TreeNode root = this;
-		while (root.getParent()!=null)
-			root = root.getParent();
-		TreeGraphDataNode timeLine = (TreeGraphDataNode) get(root.getChildren(),
-			selectOne(hasTheLabel(N_SYSTEM.label())),
-			children(),
+		TreeNode systemRoot = World.getSystemRoot(this);
+		TreeGraphDataNode timeLine = (TreeGraphDataNode) get(systemRoot.getChildren(),
+//			selectOne(hasTheLabel(N_SYSTEM.label())),
+//			children(),
 			selectOne(hasTheLabel(N_DYNAMICS.label())),
 			children(),
 			selectOne(hasTheLabel(N_TIMELINE.label())));

@@ -142,178 +142,344 @@ public class TwConfigurationAnalyser {
 	 * </pre>
 	 * @param configRoot the root node of a 3Worlds configuration graph
 	 */
-	@SuppressWarnings("unchecked")
-	public static List<ExecutionStep> getExecutionFlow(TreeGraphDataNode configRoot, TreeGraphDataNode system) {
+	public static List<ExecutionStep> getSystemExecutionFlow(TreeGraphDataNode system) {
 		TwConfigurationAnalyser analyser = new TwConfigurationAnalyser();
-		if (configRoot!=null) {
-			
-			// get all component types who have an initFunction
-			ArenaType arena = (ArenaType) get(configRoot,
-				childTree(),
-				selectOne(hasTheLabel(N_SYSTEM.label())));
-			// arena
-			InitFunctionNode ifunc = null;
-			ifunc = (InitFunctionNode) get(arena.getChildren(),
+		InitFunctionNode iFunc = (InitFunctionNode) get(system.getChildren(),
 				selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
-			if (ifunc!=null)
-				analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.unique,arena,false);
-			// other types with init functions - down the structure tree, if any
-			TreeGraphDataNode struc = (TreeGraphDataNode) get(arena,
-				children(),
+		if (iFunc != null)
+			analyser.addNewStep(iFunc, ExecutionLevel.init, LoopingMode.unique, system, false);
+		TreeGraphDataNode struc = (TreeGraphDataNode) get(system, children(),
 				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
-			if (struc!=null) {
-				// life cycle types
-				Collection<TreeGraphDataNode> llct = (Collection<TreeGraphDataNode>) get(struc,
-					children(),selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label())));
-				for (TreeGraphDataNode lct:llct) {
-					ifunc = (InitFunctionNode) get(lct.getChildren(),
-						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
-					if (ifunc!=null)
-						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
-							lct,llct.size()==1);
-					// group types under life cycle types
-					Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(lct,
-						children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
-					for (TreeGraphDataNode gt:lgt) {
-						ifunc = (InitFunctionNode) get(gt.getChildren(),
-							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
-						if (ifunc!=null)
-							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
-								gt,lgt.size()==1);
-						// component types under group types
-						Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
-							children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
-						for (TreeGraphDataNode cpt:lcpt) {
-							ifunc = (InitFunctionNode) get(cpt.getChildren(),
-								selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
-							if (ifunc!=null)
-								analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
-									cpt,lcpt.size()==1);
-						}
-					}
-				}
-				// group types under arena type
-				Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(struc,
+		if (struc!=null) {
+			// life cycle types
+			@SuppressWarnings("unchecked")
+			Collection<TreeGraphDataNode> llct = (Collection<TreeGraphDataNode>) get(struc,
+				children(),selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label())));
+			for (TreeGraphDataNode lct:llct) {
+				iFunc = (InitFunctionNode) get(lct.getChildren(),
+					selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+				if (iFunc!=null)
+					analyser.addNewStep(iFunc,ExecutionLevel.init,LoopingMode.parallel,
+						lct,llct.size()==1);
+				// group types under life cycle types
+				@SuppressWarnings("unchecked")
+				Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(lct,
 					children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
 				for (TreeGraphDataNode gt:lgt) {
-					ifunc = (InitFunctionNode) get(gt.getChildren(),
+					iFunc = (InitFunctionNode) get(gt.getChildren(),
 						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
-					if (ifunc!=null)
-						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+					if (iFunc!=null)
+						analyser.addNewStep(iFunc,ExecutionLevel.init,LoopingMode.parallel,
 							gt,lgt.size()==1);
 					// component types under group types
 					Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
 						children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 					for (TreeGraphDataNode cpt:lcpt) {
-						ifunc = (InitFunctionNode) get(cpt.getChildren(),
+						iFunc = (InitFunctionNode) get(cpt.getChildren(),
 							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
-						if (ifunc!=null)
-							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+						if (iFunc!=null)
+							analyser.addNewStep(iFunc,ExecutionLevel.init,LoopingMode.parallel,
 								cpt,lcpt.size()==1);
 					}
 				}
-				// component types under arena
-				Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(struc,
+			}
+			// group types under arena type
+			@SuppressWarnings("unchecked")
+			Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(struc,
+				children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+			for (TreeGraphDataNode gt:lgt) {
+				iFunc = (InitFunctionNode) get(gt.getChildren(),
+					selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+				if (iFunc!=null)
+					analyser.addNewStep(iFunc,ExecutionLevel.init,LoopingMode.parallel,
+						gt,lgt.size()==1);
+				// component types under group types
+				@SuppressWarnings("unchecked")
+				Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
 					children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 				for (TreeGraphDataNode cpt:lcpt) {
-					ifunc = (InitFunctionNode) get(cpt.getChildren(),
+					iFunc = (InitFunctionNode) get(cpt.getChildren(),
 						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
-					if (ifunc!=null)
-						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+					if (iFunc!=null)
+						analyser.addNewStep(iFunc,ExecutionLevel.init,LoopingMode.parallel,
 							cpt,lcpt.size()==1);
 				}
 			}
-			
-			// get all timers for the loop on timers
-			List<TimerNode> timers = (List<TimerNode>) get(configRoot,
-				childTree(),
-				selectZeroOrMany(hasTheLabel(N_TIMER.label())));
-			for (TreeGraphDataNode timer:timers)
-				analyser.addNewStep(timer,
-					ExecutionLevel.timer,
-					LoopingMode.parallel,
-					null,
-					timers.size()==1);
-			// get all processes
-			SimulatorNode sim = (SimulatorNode) get(configRoot,
-				childTree(),
-				selectZeroOrOne(hasTheLabel(N_DYNAMICS.label())));
-			if (sim!=null) {
-				sim.hierarchiseProcesses(timers);
-				Map<Integer, List<List<ProcessNode>>> processCallingOrder = sim.getProcessCallingOrder();
-				// NB for simplicity, we only present process ordering for the combination
-				// of all timers, which means that the Integer index is maximal (it's a mask
-				// with 1s when a timer is in, starting left, so the max value in the map
-				// corresponds to the combination with the largest number of timers).
-				int allTimers = Collections.max(processCallingOrder.keySet());
-				// loop on process dependency rank in the case of maximal complexity (all 
-				// timers simultaneously activated)
-				for (List<ProcessNode> lproc:processCallingOrder.get(allTimers)) {
-					analyser.addNewStep(null, 
-						ExecutionLevel.dependencyRank, 
-						LoopingMode.sequential, 
-						null,
-						processCallingOrder.get(allTimers).size()==1);
-					// loop on all processes within a dependency rank
-					for (ProcessNode proc:lproc) {
-						analyser.addNewStep(proc, 
-							ExecutionLevel.process, 
-							LoopingMode.parallel, 
-							null,
-							lproc.size()==1);
-						// get all functions of a process, per function type in proper order
-						// component process
-						Collection<FunctionNode> lfunc = (Collection<FunctionNode>) get(proc,children(),
-							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
-							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeState)) ));
-						analyser.addFunctionSteps(lfunc);
-						lfunc = (Collection<FunctionNode>) get(proc,children(),
-							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
-							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.DeleteDecision)) ));
-						analyser.addFunctionSteps(lfunc);
-						lfunc = (Collection<FunctionNode>) get(proc,children(),
-							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
-							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.CreateOtherDecision)) ));
-						analyser.addFunctionSteps(lfunc);
-						lfunc = (Collection<FunctionNode>) get(proc,children(),
-							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
-							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeCategoryDecision)) ));
-						analyser.addFunctionSteps(lfunc);
-						// relation process
-						lfunc = (Collection<FunctionNode>) get(proc,children(),
-							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
-							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeOtherState)) ));
-						analyser.addFunctionSteps(lfunc);
-						lfunc = (Collection<FunctionNode>) get(proc,children(),
-							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
-							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.MaintainRelationDecision)) ));
-						analyser.addFunctionSteps(lfunc);
-						lfunc = (Collection<FunctionNode>) get(proc,children(),
-							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
-							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeRelationState)) ));
-						analyser.addFunctionSteps(lfunc);
-						// search process
-						lfunc = (Collection<FunctionNode>) get(proc,children(),
-							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
-							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.RelateToDecision)) ));
-						analyser.addFunctionSteps(lfunc);
-						// get all data trackers of a process
-						Collection<DataTrackerNode> ldt = (Collection<DataTrackerNode>) get(proc,
-							children(),
-							selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
-						for (DataTrackerNode dt:ldt)
-							analyser.addNewStep(dt, 
-								ExecutionLevel.dataTracker, 
-								LoopingMode.parallel, 
-								null,
-								ldt.size()==1);
-					}
-				}
+			// component types under arena
+			@SuppressWarnings("unchecked")
+			Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(struc,
+				children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+			for (TreeGraphDataNode cpt:lcpt) {
+				iFunc = (InitFunctionNode) get(cpt.getChildren(),
+					selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+				if (iFunc!=null)
+					analyser.addNewStep(iFunc,ExecutionLevel.init,LoopingMode.parallel,
+						cpt,lcpt.size()==1);
 			}
 		}
 		
-		return analyser.executionFlow;
+		// get all timers for the loop on timers
+		List<TimerNode> timers = (List<TimerNode>) get(system,
+			childTree(),
+			selectZeroOrMany(hasTheLabel(N_TIMER.label())));
+		for (TreeGraphDataNode timer:timers)
+			analyser.addNewStep(timer,
+				ExecutionLevel.timer,
+				LoopingMode.parallel,
+				null,
+				timers.size()==1);
+		// get all processes
+		SimulatorNode sim = (SimulatorNode) get(system,
+			childTree(),
+			selectZeroOrOne(hasTheLabel(N_DYNAMICS.label())));
+		if (sim!=null) {
+			sim.hierarchiseProcesses(timers);
+			Map<Integer, List<List<ProcessNode>>> processCallingOrder = sim.getProcessCallingOrder();
+			// NB for simplicity, we only present process ordering for the combination
+			// of all timers, which means that the Integer index is maximal (it's a mask
+			// with 1s when a timer is in, starting left, so the max value in the map
+			// corresponds to the combination with the largest number of timers).
+			int allTimers = Collections.max(processCallingOrder.keySet());
+			// loop on process dependency rank in the case of maximal complexity (all 
+			// timers simultaneously activated)
+			for (List<ProcessNode> lproc:processCallingOrder.get(allTimers)) {
+				analyser.addNewStep(null, 
+					ExecutionLevel.dependencyRank, 
+					LoopingMode.sequential, 
+					null,
+					processCallingOrder.get(allTimers).size()==1);
+				// loop on all processes within a dependency rank
+				for (ProcessNode proc:lproc) {
+					analyser.addNewStep(proc, 
+						ExecutionLevel.process, 
+						LoopingMode.parallel, 
+						null,
+						lproc.size()==1);
+					// get all functions of a process, per function type in proper order
+					// component process
+					Collection<FunctionNode> lfunc = (Collection<FunctionNode>) get(proc,children(),
+						selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+						hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeState)) ));
+					analyser.addFunctionSteps(lfunc);
+					lfunc = (Collection<FunctionNode>) get(proc,children(),
+						selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+						hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.DeleteDecision)) ));
+					analyser.addFunctionSteps(lfunc);
+					lfunc = (Collection<FunctionNode>) get(proc,children(),
+						selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+						hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.CreateOtherDecision)) ));
+					analyser.addFunctionSteps(lfunc);
+					lfunc = (Collection<FunctionNode>) get(proc,children(),
+						selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+						hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeCategoryDecision)) ));
+					analyser.addFunctionSteps(lfunc);
+					// relation process
+					lfunc = (Collection<FunctionNode>) get(proc,children(),
+						selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+						hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeOtherState)) ));
+					analyser.addFunctionSteps(lfunc);
+					lfunc = (Collection<FunctionNode>) get(proc,children(),
+						selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+						hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.MaintainRelationDecision)) ));
+					analyser.addFunctionSteps(lfunc);
+					lfunc = (Collection<FunctionNode>) get(proc,children(),
+						selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+						hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeRelationState)) ));
+					analyser.addFunctionSteps(lfunc);
+					// search process
+					lfunc = (Collection<FunctionNode>) get(proc,children(),
+						selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+						hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.RelateToDecision)) ));
+					analyser.addFunctionSteps(lfunc);
+					// get all data trackers of a process
+					Collection<DataTrackerNode> ldt = (Collection<DataTrackerNode>) get(proc,
+						children(),
+						selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
+					for (DataTrackerNode dt:ldt)
+						analyser.addNewStep(dt, 
+							ExecutionLevel.dataTracker, 
+							LoopingMode.parallel, 
+							null,
+							ldt.size()==1);
+				}
+			}
+		}
+		return analyser.executionFlow;		
 	}
+
+//	@SuppressWarnings("unchecked")
+//	public static List<ExecutionStep> getExecutionFlow(TreeGraphDataNode configRoot, TreeGraphDataNode system) {
+//		TwConfigurationAnalyser analyser = new TwConfigurationAnalyser();
+//		// can't be null here
+//		if (configRoot!=null) {
+//			
+//			// get all component types who have an initFunction - but only for this system!
+//			ArenaType arena = (ArenaType) get(configRoot,
+//				childTree(),
+//				selectOne(hasTheLabel(N_SYSTEM.label())));
+//			// arena
+//			InitFunctionNode ifunc = null;
+//			ifunc = (InitFunctionNode) get(arena.getChildren(),
+//				selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+//			if (ifunc!=null)
+//				analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.unique,arena,false);
+//			// other types with init functions - down the structure tree, if any
+//			TreeGraphDataNode struc = (TreeGraphDataNode) get(arena,
+//				children(),
+//				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+//			if (struc!=null) {
+//				// life cycle types
+//				Collection<TreeGraphDataNode> llct = (Collection<TreeGraphDataNode>) get(struc,
+//					children(),selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label())));
+//				for (TreeGraphDataNode lct:llct) {
+//					ifunc = (InitFunctionNode) get(lct.getChildren(),
+//						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+//					if (ifunc!=null)
+//						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+//							lct,llct.size()==1);
+//					// group types under life cycle types
+//					Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(lct,
+//						children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+//					for (TreeGraphDataNode gt:lgt) {
+//						ifunc = (InitFunctionNode) get(gt.getChildren(),
+//							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+//						if (ifunc!=null)
+//							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+//								gt,lgt.size()==1);
+//						// component types under group types
+//						Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
+//							children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+//						for (TreeGraphDataNode cpt:lcpt) {
+//							ifunc = (InitFunctionNode) get(cpt.getChildren(),
+//								selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+//							if (ifunc!=null)
+//								analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+//									cpt,lcpt.size()==1);
+//						}
+//					}
+//				}
+//				// group types under arena type
+//				Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(struc,
+//					children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
+//				for (TreeGraphDataNode gt:lgt) {
+//					ifunc = (InitFunctionNode) get(gt.getChildren(),
+//						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+//					if (ifunc!=null)
+//						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+//							gt,lgt.size()==1);
+//					// component types under group types
+//					Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
+//						children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+//					for (TreeGraphDataNode cpt:lcpt) {
+//						ifunc = (InitFunctionNode) get(cpt.getChildren(),
+//							selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+//						if (ifunc!=null)
+//							analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+//								cpt,lcpt.size()==1);
+//					}
+//				}
+//				// component types under arena
+//				Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(struc,
+//					children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
+//				for (TreeGraphDataNode cpt:lcpt) {
+//					ifunc = (InitFunctionNode) get(cpt.getChildren(),
+//						selectZeroOrOne(hasTheLabel(N_INITFUNCTION.label())));
+//					if (ifunc!=null)
+//						analyser.addNewStep(ifunc,ExecutionLevel.init,LoopingMode.parallel,
+//							cpt,lcpt.size()==1);
+//				}
+//			}
+//			
+//			// get all timers for the loop on timers
+//			List<TimerNode> timers = (List<TimerNode>) get(configRoot,
+//				childTree(),
+//				selectZeroOrMany(hasTheLabel(N_TIMER.label())));
+//			for (TreeGraphDataNode timer:timers)
+//				analyser.addNewStep(timer,
+//					ExecutionLevel.timer,
+//					LoopingMode.parallel,
+//					null,
+//					timers.size()==1);
+//			// get all processes
+//			SimulatorNode sim = (SimulatorNode) get(configRoot,
+//				childTree(),
+//				selectZeroOrOne(hasTheLabel(N_DYNAMICS.label())));
+//			if (sim!=null) {
+//				sim.hierarchiseProcesses(timers);
+//				Map<Integer, List<List<ProcessNode>>> processCallingOrder = sim.getProcessCallingOrder();
+//				// NB for simplicity, we only present process ordering for the combination
+//				// of all timers, which means that the Integer index is maximal (it's a mask
+//				// with 1s when a timer is in, starting left, so the max value in the map
+//				// corresponds to the combination with the largest number of timers).
+//				int allTimers = Collections.max(processCallingOrder.keySet());
+//				// loop on process dependency rank in the case of maximal complexity (all 
+//				// timers simultaneously activated)
+//				for (List<ProcessNode> lproc:processCallingOrder.get(allTimers)) {
+//					analyser.addNewStep(null, 
+//						ExecutionLevel.dependencyRank, 
+//						LoopingMode.sequential, 
+//						null,
+//						processCallingOrder.get(allTimers).size()==1);
+//					// loop on all processes within a dependency rank
+//					for (ProcessNode proc:lproc) {
+//						analyser.addNewStep(proc, 
+//							ExecutionLevel.process, 
+//							LoopingMode.parallel, 
+//							null,
+//							lproc.size()==1);
+//						// get all functions of a process, per function type in proper order
+//						// component process
+//						Collection<FunctionNode> lfunc = (Collection<FunctionNode>) get(proc,children(),
+//							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+//							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeState)) ));
+//						analyser.addFunctionSteps(lfunc);
+//						lfunc = (Collection<FunctionNode>) get(proc,children(),
+//							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+//							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.DeleteDecision)) ));
+//						analyser.addFunctionSteps(lfunc);
+//						lfunc = (Collection<FunctionNode>) get(proc,children(),
+//							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+//							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.CreateOtherDecision)) ));
+//						analyser.addFunctionSteps(lfunc);
+//						lfunc = (Collection<FunctionNode>) get(proc,children(),
+//							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+//							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeCategoryDecision)) ));
+//						analyser.addFunctionSteps(lfunc);
+//						// relation process
+//						lfunc = (Collection<FunctionNode>) get(proc,children(),
+//							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+//							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeOtherState)) ));
+//						analyser.addFunctionSteps(lfunc);
+//						lfunc = (Collection<FunctionNode>) get(proc,children(),
+//							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+//							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.MaintainRelationDecision)) ));
+//						analyser.addFunctionSteps(lfunc);
+//						lfunc = (Collection<FunctionNode>) get(proc,children(),
+//							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+//							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.ChangeRelationState)) ));
+//						analyser.addFunctionSteps(lfunc);
+//						// search process
+//						lfunc = (Collection<FunctionNode>) get(proc,children(),
+//							selectZeroOrMany( andQuery(hasTheLabel(N_FUNCTION.label()),
+//							hasProperty(P_FUNCTIONTYPE.key(),TwFunctionTypes.RelateToDecision)) ));
+//						analyser.addFunctionSteps(lfunc);
+//						// get all data trackers of a process
+//						Collection<DataTrackerNode> ldt = (Collection<DataTrackerNode>) get(proc,
+//							children(),
+//							selectZeroOrMany(hasTheLabel(N_DATATRACKER.label())));
+//						for (DataTrackerNode dt:ldt)
+//							analyser.addNewStep(dt, 
+//								ExecutionLevel.dataTracker, 
+//								LoopingMode.parallel, 
+//								null,
+//								ldt.size()==1);
+//					}
+//				}
+//			}
+//		}
+//		
+//		return analyser.executionFlow;
+//	}
 	
 	// helper for getExecutionFlow(...)
 	private void addNewStep(TreeGraphDataNode node, 

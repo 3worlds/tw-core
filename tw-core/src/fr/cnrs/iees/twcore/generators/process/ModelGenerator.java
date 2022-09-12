@@ -113,7 +113,7 @@ import fr.ens.biologie.generic.utils.Logging;
  */
 public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 
-	private static Logger log = Logging.getLogger(ModelGenerator.class);
+	private static final Logger log = Logging.getLogger(ModelGenerator.class);
 	// the simple name of the generated class
 	private final String className;
 	private final String modelName;
@@ -132,16 +132,16 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	// all the methods to add to this code
 	private Map<String, ModelMethodGenerator> methods = new HashMap<>();
 	// method scope
-	private static String methodScope = "public static";
+	private static final String methodScope = "public static";
 	// set to make sure there are no two fields with the same name
 	private final Set<String> replicateNames;
 	// store all the generated data class matchings to categories
-	private Map<Set<Category>, generatedData> dataClassNames = new HashMap<>();
-	private Map<String, List<String>> snippets = new HashMap<>();
+	private final Map<Set<Category>, generatedData> dataClassNames;
+	private final Map<String, List<String>> snippets;
 	// if applies to a relation type, its name
-	private String relationType = null;
+	private String relationType;
 	// the categories of the arena component
-	private Map<TreeGraphDataNode, SortedSet<Category>> elementTypeCategories = new HashMap<>();
+	private final Map<TreeGraphDataNode, SortedSet<Category>> elementTypeCategories;
 	protected boolean hasSpace = false;
 	// the organisation level to which the currently generated method applies
 	private String focalLevel = Category.component; // defaults to component
@@ -151,15 +151,15 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	private Map<String, TreeGraphDataNode> functions = new HashMap<>();
 	
 	// execution order of methods
-	private List<ExecutionStep> executionOrder = null;
+	private List<ExecutionStep> executionOrder;
 
 	// some arguments in generated methods are excluded according to the organisation level
-	private static Map<String,EnumSet<TwFunctionArguments>> excludedFocalArguments = new HashMap<>();
-	private static Map<String,EnumSet<TwFunctionArguments>> excludedOtherArguments = new HashMap<>();
+	private static final Map<String,EnumSet<TwFunctionArguments>> excludedFocalArguments = new HashMap<>();
+	private static final Map<String,EnumSet<TwFunctionArguments>> excludedOtherArguments = new HashMap<>();
 	// access strings to dataGroups of CategorizedComponents (excl. nextState)
-	static EnumMap<ConfigurationEdgeLabels, String> dataAccessors = new EnumMap<>(ConfigurationEdgeLabels.class);
+	private static final EnumMap<ConfigurationEdgeLabels, String> dataAccessors = new EnumMap<>(ConfigurationEdgeLabels.class);
 	// prefixes when making inner classes and variables for data groups (drivers etc.)
-	static Map<String, String> dataGroupPrefixes = new HashMap<>();
+	static final  Map<String, String> dataGroupPrefixes = new HashMap<>();
 	static {
 		excludedFocalArguments.put(Category.arena,EnumSet.of(arena,lifeCycle,group));
 		excludedFocalArguments.put(Category.lifeCycle,EnumSet.of(lifeCycle,group));
@@ -193,11 +193,13 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 	public ModelGenerator(TreeGraphDataNode root3w, TreeGraphDataNode systemNode) {
 		super(null);
 		excludedFocalArguments.size(); // this to trigger call to the static block prior to use the fields
+		elementTypeCategories = new HashMap<>();
 		generatedImports = new HashSet<>();
 		userImports = new HashSet<>();
 		replicateNames = new HashSet<>();
+		snippets = new HashMap<>();
+		dataClassNames = new HashMap<>();
 		className = validJavaName(wordUpperCaseName(initialUpperCase(root3w.id())));
-//		modelName = modelDir;
 		modelName = systemNode.id();
 		packageName = Project.CODE.replace(File.separator, ".") + "." + systemNode.id();
 		generatedClassName = packageName + "." + className;
@@ -223,10 +225,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		// get all nodes susceptible to require generated data:
 		// system/arena, lifecycle, group, component, space
 		// NB these nodes may also have setInitialState functions
-		/** must eventually deal with the fact that System is [1..*]? -IDD */
-//		TreeGraphDataNode systemNode = (TreeGraphDataNode) get(root3w,
-//			children(),
-//			selectOne(hasTheLabel(N_SYSTEM.label())));
+		// NB For THIS system only.
 		List<TreeGraphDataNode> cpt = new ArrayList<>();
 		cpt.addAll((List<TreeGraphDataNode>) get(systemNode.subTree(),
 			selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label()))));
@@ -289,7 +288,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		}
 		// get the execution flowchart to generate methods in proper order
 		// This only handles one system. SHould be outside this loop.
-		executionOrder = TwConfigurationAnalyser.getExecutionFlow(root3w,systemNode);
+		executionOrder = TwConfigurationAnalyser.getSystemExecutionFlow(systemNode);
 		// debugging
 		UMLGenerator uml = new UMLGenerator();
 		uml.activityDiagram(executionOrder);

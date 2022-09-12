@@ -70,7 +70,7 @@ public class DiagramGenerator {
 	 * @param configRoot the 3Worlds configuration root node (labelled 3Worlds)
 	 * @return a String of svg instructions for later use, eg as a file.
 	 */
-	public static String flowChart(TreeGraphDataNode configRoot) {
+	public static String flowChart(TreeGraphDataNode system) {
 //		List<TreeGraphDataNode> systems = (List<TreeGraphDataNode>) get(configRoot,
 //				children(),
 //				selectOneOrMany(hasTheLabel(N_SYSTEM.label())));
@@ -98,7 +98,7 @@ public class DiagramGenerator {
 //		return result;
 		
 		UMLGenerator umlg = new UMLGenerator();
-		umlg.activityDiagram(TwConfigurationAnalyser.getExecutionFlow(configRoot,null));
+		umlg.activityDiagram(TwConfigurationAnalyser.getSystemExecutionFlow(system));
 		String diag = umlg.umlString();
 		SourceStringReader reader = new SourceStringReader(diag);
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();

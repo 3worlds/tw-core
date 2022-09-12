@@ -504,8 +504,9 @@ public class DataTrackerNode extends InitialisableNode
 		DescribedContainer<? extends CategorizedComponent> samplingPool = null;
 		boolean permanent = true;
 		// get the arena to search for containers.
-		TreeNode root = World.getRoot(this);
-		ArenaType anode = (ArenaType) get(root,children(),selectOne(hasTheLabel(N_SYSTEM.label())));
+//		TreeNode root = World.getRoot(this);
+//		ArenaType anode = (ArenaType) get(root,children(),selectOne(hasTheLabel(N_SYSTEM.label())));
+		ArenaType anode = (ArenaType)World.getSystemRoot(this);
 		ArenaComponent arena = anode.getInstance(index).getInstance();
 		// NB trackedComponents now contains a list of trackComponent Edges to ElementType objects.
 		for (Edge etrack:trackedComponents) {
