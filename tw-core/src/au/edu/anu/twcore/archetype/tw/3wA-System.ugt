@@ -6,8 +6,8 @@ tree
 hasNode systemSpec
 	isOfClass = String("system")
 	hasParent = StringTable(([1]"3worlds:"))
-	// not sure how many systems will work out? - IDD
-	multiplicity = IntegerRange("1..*")
+	// Tested for 2 systems. Works but ODD and Linked java projects will need work (IDD 13/09/22)
+	multiplicity = IntegerRange("1..1")
 	// TODO: check this category is not used by Systems, ie lifeCycle categories and system
 	// categories should be completely separate
 	hasEdge systemCategoryBelongsToSpec

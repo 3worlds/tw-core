@@ -47,7 +47,7 @@ public class LabelValuePairData extends OutputData {
 	public LabelValuePairData(SimulatorStatus status, 
 			int senderId,
 			int metaDataType) {
-		super(status, senderId,metaDataType);
+		super(status,senderId,metaDataType);
 	}
 		
 	/**

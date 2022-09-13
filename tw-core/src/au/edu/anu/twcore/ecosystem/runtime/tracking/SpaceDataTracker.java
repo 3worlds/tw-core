@@ -78,7 +78,7 @@ public class SpaceDataTracker extends AbstractDataTracker<SpaceData, Metadata> {
 	private SimulatorStatus currentStatus = null;
 
 	public SpaceDataTracker(int simId, ReadOnlyPropertyList meta) {
-		super(DataMessageTypes.SPACE, simId);
+		super(DataMessageTypes.SPACE,simId);
 		metadata = new Metadata(simId, meta);
 		setInitialTime();
 //		setSender(simId);

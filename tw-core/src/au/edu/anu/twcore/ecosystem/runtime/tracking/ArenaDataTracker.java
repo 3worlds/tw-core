@@ -64,20 +64,23 @@ public class ArenaDataTracker extends AbstractDataTracker<RuntimeGraphData, Meta
 	}
 
 	public void setInitialTime() {
-		DateTimeType dtt = (DateTimeType) metadata.properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
-		currentTime = dtt.getDateTime();
+		if (metadata.properties().hasProperty(P_TIMELINE_TIMEORIGIN.key())) {
+			DateTimeType dtt = (DateTimeType) metadata.properties().getPropertyValue(P_TIMELINE_TIMEORIGIN.key());
+			currentTime = dtt.getDateTime();
+		} else
+			currentTime = 0l;
 	}
 
 	@Override
 	public void openTimeRecord(SimulatorStatus status, long time) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void closeTimeRecord() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

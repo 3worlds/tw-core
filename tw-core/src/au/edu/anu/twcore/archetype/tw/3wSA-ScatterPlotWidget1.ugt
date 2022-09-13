@@ -15,14 +15,7 @@ archetype 3wSA-ScatterPlotWidget1
 		mustSatisfyQuery ScatterPlotWidget1SenderInRangeQuery
 			className = String("au.edu.anu.twcore.archetype.tw.SenderInRangeQuery")
 			
-		hasProperty ScatterPlotWidget1FirstSenderProperty
-			hasName = String("leastSimId")
-			type = String("Integer")
-			multiplicity = IntegerRange("0..1")
-			mustSatisfyQuery ScatterPlotWidget1firstSenderInRangeQuery1
-				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
-				interval = IntTable(([2]0,2147483647))
-				
+	
 		hasProperty ScatterPlotWidget1NSenderProperty
 			hasName = String("nSims")
 			type = String("Integer")

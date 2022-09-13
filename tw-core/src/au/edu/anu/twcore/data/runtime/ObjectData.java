@@ -39,7 +39,7 @@ public class ObjectData extends TimeData {
 	// private DataLabel label = null;
 	private Object value;
 
-	public ObjectData(SimulatorStatus status, int senderId, int metaDataType) {
+	public ObjectData(SimulatorStatus status,int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
 	}
 

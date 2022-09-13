@@ -13,14 +13,6 @@ archetype 3wSA-TableWidget1
 		hasParent = StringTable(([4]"top:","bottom:","tab:","container:"))
 		multiplicity = IntegerRange("0..*")
 
-		hasProperty TableWidget1FirstSenderProperty
-			hasName = String("leastSimId")
-			type = String("Integer")
-			multiplicity = IntegerRange("0..1")
-			mustSatisfyQuery TableWidget1firstSenderInRangeQuery1
-				className = String("au.edu.anu.twcore.archetype.tw.IsInRangeQuery")
-				interval = IntTable(([2]0,2147483647))
-
 		hasProperty TableWidget1NSendersProperty
 			hasName = String("nSims")
 			type = String("Integer")

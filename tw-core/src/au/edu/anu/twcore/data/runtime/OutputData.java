@@ -33,16 +33,16 @@ import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
  * An ancestor class for data being sent from DataTrackers to DataReceivers. This class holds the
- * simulator id, the simulator current status, and the metadata type.
+ * id of the simulator node, simulator id, the simulator current status, and the metadata type.
  * 
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
 public abstract class OutputData {
 	
-	private SimulatorStatus status = null;
-	private int senderId = -1;
-	private int metadataType = -1;
+	private final SimulatorStatus status;
+	private final int senderId;
+	private final int metadataType;
 
 	public OutputData(SimulatorStatus status,int senderId,int metadataType) {
 		super();
@@ -58,7 +58,7 @@ public abstract class OutputData {
 	public final int sender() {
 		return senderId;
 	}
-
+	
 	/**
 	 * 
 	 * @return the metadata type matching this data record

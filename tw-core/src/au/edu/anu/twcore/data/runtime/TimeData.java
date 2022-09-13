@@ -42,7 +42,7 @@ public class TimeData extends OutputData {
 //	private ComponentContainer community;
 //	private Collection<? extends Space<?>> spaces;
 
-	public TimeData(SimulatorStatus status, int senderId, int metaDataType) {
+	public TimeData(SimulatorStatus status,int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
 	}
 

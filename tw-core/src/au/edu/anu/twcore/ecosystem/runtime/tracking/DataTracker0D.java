@@ -122,7 +122,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 			if (isAggregating()) {
 				// read all data into a (dummy) message because finding the precise data in 
 				// the TwData hierarchy is difficult otherwise
-				Output0DData tmp = new Output0DData(currentStatus, senderId, metadataType, metadata);
+				Output0DData tmp = new Output0DData(currentStatus,senderId, metadataType, metadata);
 				for (TwData data:props)
 					if (data!=null) {
 						for (DataLabel lab : metadata.intNames())
@@ -155,7 +155,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 				}
 			}
 			else {
-				Output0DData tsd = new Output0DData(currentStatus, senderId, metadataType, metadata);
+				Output0DData tsd = new Output0DData(currentStatus,senderId, metadataType, metadata);
 				tsd.setTime(currentTime);
 				for (TwData data:props)
 					if (data!=null) {
