@@ -36,7 +36,7 @@ import java.util.Collection;
  *
  * @author Jacques Gignoux - 24 janv. 2020
  *
- * @param <T>
+ * @param <T> Item
  */
 public interface DynamicContainer<T> extends Container {
 

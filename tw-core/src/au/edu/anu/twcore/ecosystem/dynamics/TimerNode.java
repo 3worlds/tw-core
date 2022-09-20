@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.ecosystem.dynamics;
 
 import au.edu.anu.twcore.InitialisableNode;
-import au.edu.anu.twcore.archetype.TwArchetypeConstants;
+import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
@@ -56,7 +56,7 @@ import java.util.Map;
  */
 public class TimerNode
 		extends InitialisableNode
-		implements LimitedEdition<Timer>, Sealable, Resettable,TwArchetypeConstants {
+		implements LimitedEdition<Timer>, Sealable, Resettable{
 
 	private boolean sealed = false;
 
@@ -87,17 +87,17 @@ public class TimerNode
 	private Timer makeTimer() {
 		Timer timer = null;
 		// Clock timer
-		if (properties().getPropertyValue(twaSubclass)
+		if (properties().getPropertyValue(TWA.SUBCLASS)
 				.equals(ClockTimer.class.getName())) {
 			timer = new ClockTimer(this);
 		}
 		// event-driven timer
-		else if (properties().getPropertyValue(twaSubclass)
+		else if (properties().getPropertyValue(TWA.SUBCLASS)
 				.equals(EventTimer.class.getName())) {
 			timer = new EventTimer(this);
 		}
 		// scenario timer
-		else if (properties().getPropertyValue(twaSubclass)
+		else if (properties().getPropertyValue(TWA.SUBCLASS)
 				.equals(ScenarioTimer.class.getName())) {
 //			timer = new ScenarioTimer(this);
 		}

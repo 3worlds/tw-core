@@ -38,7 +38,7 @@ public class GraphState {
 	private GraphState() {
 	};
 
-	public static void initialise(IGraphState impl) {
+	public static void setImplementation(IGraphState impl) {
 		if (impl == null)
 			GraphState.impl = new SimpleGraphStateImpl();
 		else

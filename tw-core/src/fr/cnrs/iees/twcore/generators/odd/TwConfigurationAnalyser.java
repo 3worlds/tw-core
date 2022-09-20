@@ -140,7 +140,7 @@ public class TwConfigurationAnalyser {
 	 * 								for each data tracker
 	 * 									record data
 	 * </pre>
-	 * @param configRoot the root node of a 3Worlds configuration graph
+	 * @param system A system node - the root of a configuration model.
 	 */
 	public static List<ExecutionStep> getSystemExecutionFlow(TreeGraphDataNode system) {
 		TwConfigurationAnalyser analyser = new TwConfigurationAnalyser();

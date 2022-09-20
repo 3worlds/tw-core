@@ -65,6 +65,7 @@ import com.google.common.io.Files;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.runtime.timer.ClockTimer;
 import au.edu.anu.twcore.ecosystem.runtime.timer.EventTimer;
@@ -88,7 +89,6 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Interval;
 
-import static au.edu.anu.twcore.archetype.TwArchetypeConstants.*;
 import org.odftoolkit.simple.style.StyleTypeDefinitions;
 
 /**
@@ -300,14 +300,14 @@ public class DocoGenerator {
 			} else if (n.classId().equals(N_TIMELINE.label())) {
 				timeline = n;
 			} else if (n.classId().equals(N_STOPPINGCONDITION.label())) {
-				String sn = getSimpleName((String) n.properties().getPropertyValue(twaSubclass));
+				String sn = getSimpleName((String) n.properties().getPropertyValue(TWA.SUBCLASS));
 				// TODO: later use these as root a sc tree. All these are implicitly "OR".
 				if (n.getParent().classId().equals(N_DYNAMICS.label()))
 					rootStoppingConditions.add(n);
 				scDesc.put(n, n.id() + formatClassifier(sn));
 			} else if (n.classId().equals(N_DATATRACKER.label())) {
 				trackerTypes.add(n);
-				String sn = getSimpleName((String) n.properties().getPropertyValue(twaSubclass));
+				String sn = getSimpleName((String) n.properties().getPropertyValue(TWA.SUBCLASS));
 				dtDesc.put(n, n.id() + formatClassifier(sn));
 			} else if (n.classId().equals(N_FUNCTION.label()) || n.classId().equals(N_INITFUNCTION.label())) {
 				snippetNodes.add(n);
@@ -348,10 +348,10 @@ public class DocoGenerator {
 		timersScenario = new ArrayList<>();
 		for (TreeGraphDataNode timer : (List<TreeGraphDataNode>) get(timeline.getChildren(),
 				selectOneOrMany(hasTheLabel(N_TIMER.label())))) {
-			if (timer.properties().getPropertyValue(twaSubclass).equals(ClockTimer.class.getName())) {
+			if (timer.properties().getPropertyValue(TWA.SUBCLASS).equals(ClockTimer.class.getName())) {
 				timersClock.add(timer);
 				timerDesc.put(timer, timer.id() + formatClassifier(ClockTimer.class.getSimpleName()));
-			} else if (timer.properties().getPropertyValue(twaSubclass).equals(EventTimer.class.getName())) {
+			} else if (timer.properties().getPropertyValue(TWA.SUBCLASS).equals(EventTimer.class.getName())) {
 				timersEvent.add(timer);
 				timerDesc.put(timer, timer.id() + formatClassifier(EventTimer.class.getSimpleName()));
 			} else {
@@ -1067,7 +1067,7 @@ public class DocoGenerator {
 			StringBuilder sb = new StringBuilder();
 			String[] keys = t.properties().getKeysAsArray();
 			for (int i = 0; i < keys.length; i++) {
-				if (!keys[i].equals(twaSubclass))
+				if (!keys[i].equals(TWA.SUBCLASS))
 					sb.append(keys[i]).append("=").append(t.properties().getPropertyValue(keys[i])).append("\n");
 			}
 			String c2 = sb.toString();
@@ -1326,7 +1326,7 @@ public class DocoGenerator {
 			String c1 = scDesc.get(sc);
 			for (String key : sc.properties().getKeysAsArray()) {
 				Object value = sc.properties().getPropertyValue(key);
-				if (!key.equals(twaSubclass)) {
+				if (!key.equals(TWA.SUBCLASS)) {
 					entries.add(new StringBuilder().append(c1).append(sep).append(key).append("=").append(value)
 							.toString());
 					c1 = "";

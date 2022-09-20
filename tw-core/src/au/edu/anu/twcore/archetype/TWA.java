@@ -48,6 +48,51 @@ import fr.ens.biologie.generic.utils.Logging;
  */
 public class TWA {
 
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code subclass}.
+	 */
+	public final static String SUBCLASS = "subclass";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code values}.
+	 */
+	public final static String VALUES = "values";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code parameters}.
+	 */
+	public final static String PARAMETERS = "parameters";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code nodeLabel1}.
+	 */
+	public final static String NODE_LABEL_1 = "nodeLabel1";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code nodeLabel2}.
+	 */
+	public final static String NODE_LABEL_2 = "nodeLabel2";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code edgeLabel1}.
+	 */
+	public final static String EDGE_LABEL_1 = "edgeLabel1";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code edgeLabel2}.
+	 */
+	public final static String EDGE_LABEL_2 = "edgeLabel2";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code conditions}.
+	 */
+	public final static String CONDITIONS = "conditions";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code propname}.
+	 */
+	public final static String PROP_NAME = "propname";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code proplist}.
+	 */
+	public final static String PROP_LIST = "proplist";
+	/**
+	 * Keyword for 3Worlds archetype - matches {@code edge_prop}.
+	 */
+	public final static String EDGE_PROP = "edge_prop";
+
 	/** the 3Worlds archetype (= "The Instance") */
 	private static Tree<? extends TreeNode> threeWorldsArchetype;
 

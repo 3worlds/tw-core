@@ -67,36 +67,10 @@ public class DiagramGenerator {
 	 * <p>Produce a svg flowchart from the 3worlds root node.</p>
 	 * <p>Code copied from <a href="https://plantuml.com/fr/api">here</a>.</p>
 	 * 
-	 * @param configRoot the 3Worlds configuration root node (labelled 3Worlds)
+	 * @param system - the root node of a configuration model.
 	 * @return a String of svg instructions for later use, eg as a file.
 	 */
 	public static String flowChart(TreeGraphDataNode system) {
-//		List<TreeGraphDataNode> systems = (List<TreeGraphDataNode>) get(configRoot,
-//				children(),
-//				selectOneOrMany(hasTheLabel(N_SYSTEM.label())));
-//		Map<String,String> result = new HashMap<>();
-//		for (TreeGraphDataNode system:systems) {
-//			UMLGenerator umlg = new UMLGenerator();
-//			umlg.activityDiagram(TwConfigurationAnalyser.getExecutionFlow(configRoot,system));
-//			String diag = umlg.umlString();
-//			SourceStringReader reader = new SourceStringReader(diag);
-//			final ByteArrayOutputStream os = new ByteArrayOutputStream();
-//			// Write the first image to "os"
-//			try {			
-////				String desc = reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
-//				reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
-//				os.close();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			// The UML is stored into svg
-//			final String svg = new String(os.toByteArray(),Charset.forName("UTF-8"));
-//			result.put(system.id(),svg);
-//
-//		}
-//		return result;
-		
 		UMLGenerator umlg = new UMLGenerator();
 		umlg.activityDiagram(TwConfigurationAnalyser.getSystemExecutionFlow(system));
 		String diag = umlg.umlString();

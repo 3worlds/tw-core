@@ -36,7 +36,7 @@ import java.util.List;
 import au.edu.anu.rscs.aot.queries.QueryAdaptor;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
-import au.edu.anu.twcore.archetype.TwArchetypeConstants;
+import au.edu.anu.twcore.archetype.TWA;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
@@ -54,7 +54,7 @@ public class UIStateMachineControllerQuery extends QueryAdaptor {
 			getWidgets(child, widgets, containers);
 		List<String> ctrlNames = new ArrayList<>();
 		for (TreeGraphDataNode widgetNode : widgets) {
-			String kstr = (String) widgetNode.properties().getPropertyValue(TwArchetypeConstants.twaSubclass);
+			String kstr = (String) widgetNode.properties().getPropertyValue(TWA.SUBCLASS);
 			try {
 				Class<?> widgetClass = Class.forName(kstr);
 				if (smcClass.isAssignableFrom(widgetClass)) {

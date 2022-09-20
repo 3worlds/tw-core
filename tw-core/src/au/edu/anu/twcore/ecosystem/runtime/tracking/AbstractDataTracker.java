@@ -56,7 +56,8 @@ import fr.ens.biologie.generic.utils.Logging;
  *
  * @author Jacques Gignoux - 3 sept. 2019
  *
- * @param <T>
+ * @param <T> The data type
+ *  @param <M> The meta-data type
  */
 public abstract class AbstractDataTracker<T, M>
 		extends AbstractGridNode
