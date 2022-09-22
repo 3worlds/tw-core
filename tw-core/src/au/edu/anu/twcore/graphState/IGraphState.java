@@ -34,7 +34,7 @@ package au.edu.anu.twcore.graphState;
  * (restructuring of the graph nodes and edges or changes to property values or
  * their addition or removal). A controller, managing a particular UI
  * implementation (e.g javafx) will listen to an implementation of this
- * interface by implemention {@link IGraphStateListener}.
+ * interface by implementing {@link IGraphStateListener}.
  * 
  * @author Ian Davies - May 6, 2019
  */
