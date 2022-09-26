@@ -29,14 +29,13 @@
 
 package au.edu.anu.twcore.ui.runtime;
 
-import au.edu.anu.omhtk.preferences.Preferences;
-
+import au.edu.anu.omhtk.preferences.Preferenceable;
 /**
  * Implemented by widgets with a graphic user interface.
  * 
  * @author Ian Davies - 2 Sep 2019
  */
-public interface WidgetGUI extends Widget {
+public interface WidgetGUI extends Widget, Preferenceable {
 
 	/**
 	 * Method in which implementations create GUI controls.
@@ -51,15 +50,5 @@ public interface WidgetGUI extends Widget {
 	 * @return root object containing any menu items for this widget (can be null).
 	 */
 	public Object getMenuContainer();
-
-	/**
-	 * Put the widget's control settings in the {@link Preferences} system.
-	 */
-	public void putUserPreferences();
-
-	/**
-	 * Get the widget's control settings from the {@link Preferences} system.
-	 */
-	public void getUserPreferences();
 
 }
