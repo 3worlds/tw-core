@@ -57,7 +57,7 @@ public class TwConfigFactory extends TreeGraphFactory implements EditableFactory
 
 	private static Map<String,String> twLabels = new HashMap<>();
 	
-	// Sorry - but how else to i clean up when edition graphs?
+	// Sorry - but how else to i clean up when editing graphs?
 	public void removeEdgeId(Edge edge) {
 		this.scope.removeId(edge.id());
 	}
