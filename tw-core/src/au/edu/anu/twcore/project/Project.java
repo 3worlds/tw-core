@@ -90,14 +90,14 @@ public class Project {
 	 * User's home directory name.
 	 */
 	public static final String USER_ROOT/*       */ = System.getProperty("user.home");
-	/**
-	 * 3Worlds project root directory name
-	 */
-	public static final String TW /*             */ = "3w";
+//	/**
+//	 * 3Worlds project root directory name
+//	 */
+//	public static final String TW /*             */ = "3w";
 	/**
 	 * 3Worlds project directory name in the user's home.
 	 */
-	public static final String USER_ROOT_TW_ROOT /*        */ = USER_ROOT + File.separator + TW;
+	public static final String TW_HOME /*        */ = get3wHome();
 	/**
 	 * The OS specific 3Worlds jar file.
 	 */
@@ -192,7 +192,7 @@ public class Project {
 		String creationDateTime = createDateTime();
 
 		projectDirectory = new File(
-				USER_ROOT_TW_ROOT + File.separator + PROJECT_DIR_PREFIX + sep + name + sep + creationDateTime);
+				TW_HOME + File.separator + PROJECT_DIR_PREFIX + sep + name + sep + creationDateTime);
 		if (projectDirectory.exists()) {
 			File f = projectDirectory;
 			close();
@@ -331,7 +331,7 @@ public class Project {
 	 * @return array of all valid 3Worlds projects
 	 */
 	public static File[] getAllProjectPaths() {
-		String repos = USER_ROOT_TW_ROOT;
+		String repos = TW_HOME;
 		File folder = new File(repos);
 		if (!folder.exists())
 			folder.mkdirs();
@@ -469,6 +469,26 @@ public class Project {
 		if (os.contains("win"))
 			return "tw-win.jar";
 		return "tw-linux.jar";
+
+	}
+
+	private static String get3wHome() {
+		// sudo -H gedit /etc/environment
+		// TW_HOME="/home/<name>/3w" or whatever you like including other drive.
+		String result = System.getenv().get("TW_HOME");
+		if (result == null) {
+			result = System.getProperty("user.home") + File.separator + "3w";
+			File f = new File(result);
+			if (!f.exists())
+				f.mkdirs();
+		} else {
+			File f = new File(result);
+			if (!f.exists())
+				if (!f.mkdirs())
+					throw new IllegalStateException("Could not create 3Worlds home directory: " + f + "\n"
+							+ "Check that the environment path for 'TW_HOME' is a valid path name with R/W access.");
+		}
+		return result;
 
 	}
 }
