@@ -42,14 +42,14 @@ import java.util.List;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 /**
- * Check that either child nodes of a given label or out-edges of another label are present,
- * but not both.
+ * Check that either child nodes of a given label or out-edges of another label
+ * are present, but not both.
  * 
  * @author Jacques Gignoux - 16 déc. 2021
  *
  */
 public class ChildXorOutEdgeQuery extends QueryAdaptor {
-	
+
 	private final String childLabel;
 	private final String outEdgeLabel;
 
@@ -60,20 +60,17 @@ public class ChildXorOutEdgeQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Queryable submit(Object input) { 
+	public Queryable submit(Object input) {
 		initInput(input);
 		if (input instanceof TreeGraphNode) {
 			TreeGraphNode localItem = (TreeGraphNode) input;
 			List<TreeGraphNode> children = (List<TreeGraphNode>) get(localItem.getChildren(),
-				selectZeroOrMany(hasTheLabel(childLabel)));
+					selectZeroOrMany(hasTheLabel(childLabel)));
 			boolean childPresent = !children.isEmpty();
-			List<Edge> outNodes = (List<Edge>) get(localItem,
-				outEdges(), 
-				selectZeroOrMany(hasTheLabel(outEdgeLabel)));
+			List<Edge> outNodes = (List<Edge>) get(localItem, outEdges(), selectZeroOrMany(hasTheLabel(outEdgeLabel)));
 			boolean outNodePresent = !outNodes.isEmpty();
 			if (!(childPresent ^ outNodePresent)) {
-				String[] msgs = TextTranslations.getChildXorOutEdgeQuery(localItem.toShortString(),
-					childLabel,outEdgeLabel);
+				String[] msgs = TextTranslations.getChildXorOutEdgeQuery(childLabel, outEdgeLabel);
 				actionMsg = msgs[0];
 				errorMsg = msgs[1];
 			}

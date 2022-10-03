@@ -32,7 +32,9 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 
 public enum SpaceType {
 
-// continuousFlatSurface: a flat plan with continuous coordinates
+	/**
+	 *  A flat plan with continuous coordinates
+	 */
 	continuousFlatSurface ("a flat plan with continuous coordinates",
 		"au.edu.anu.twcore.ecosystem.runtime.space.FlatSurface",
 		2),

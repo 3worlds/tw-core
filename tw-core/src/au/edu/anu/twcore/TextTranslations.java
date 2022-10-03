@@ -41,23 +41,50 @@ import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.ens.biologie.generic.utils.Interval;
+import au.edu.anu.twcore.archetype.tw.*;
+import au.edu.anu.twcore.errorMessaging.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
+ * Natural language translations for any message in this project (twcore).
+ * <p>
+ * Currently, only French and English are supported. These messages are all
+ * related to the query system through this need not be the case. By convention,
+ * query translation methods are named after the relevant query. Query messages
+ * have two forms:
+ * <li>am: the Action message - action to take to address the problem e.g Do
+ * this...</li>
+ * <li>cm: the Compliance message - the condition that caused the message e.g
+ * Expected this but found this...</li>
+ * </p>
+ * <p>
+ * Ensure default response is English otherwise unhandled languages will not
+ * produce a message.
+ * 
  * @author Ian Davies - 14 Mar. 2021
  * 
- *       Ensure default is English otherwise unhandled languages will not
- *       produce a message.
  */
 public class TextTranslations {
+	private TextTranslations() {
+	};
 
 	// -------------------- ModelBuildErrorMsg ----
+	/**
+	 * Message on {@link ModelBuildErrors#MODEL_FILE_BACKUP}.
+	 * <p>
+	 * This is really a warning rather than an error. Note that, if
+	 * {@link ConfgurationPropertyNames#P_FUNCTIONSNIPPET} are kept up-to-date, the
+	 * newly generated file will contain any snippet contents.
+	 * 
+	 * @return action and compliance message.
+	 */
 	public static String[] getMODEL_FILE_BACKUP() {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Mettre à jour le code dans le fichier Java nouvellement généré.";
 			cm = "La configuration a changé et nécessite la création d'un nouveau fichier Java. Le fichier précédent a été sauvegardé et renommé en fichier texte numéroté (* .txt)";
-		} else {// make sure default is English!
+		} else {
 			am = "Update code in newly generated java file.";
 			cm = "Configuration has changed requiring creation of a new Java file. The previous file has been backed up and renamed to a numbered text file (*.txt)";
 		}
@@ -65,7 +92,17 @@ public class TextTranslations {
 		return result;
 	};
 
+	/**
+	 * Errors reported on {@link ModelBuildErrors#COMPILER_ERROR}.
+	 * 
+	 * @param compileResult The error string returned by javac. This string is
+	 *                      returned to the compliance item in the error message.
+	 * @param snippets      List of code snippet function names.
+	 * 
+	 * @return action and compliance message.
+	 */
 	public static String[] getCOMPILER_ERROR(String compileResult, List<String> snippets) {
+		// Note: is it possible to identify the list of snippets containing the error?
 		String am;
 		String cm;
 		if (Language.French()) {
@@ -81,7 +118,7 @@ public class TextTranslations {
 			if (compileResult == null)
 				compileResult = "inconnu.";
 			cm = compileResult;
-		} else {// make sure default is English!
+		} else {
 			if (UserProjectLink.haveUserProject()) {
 				am = "Correct coding errors in java project '" + UserProjectLink.projectRoot().getName() + "'";
 				if (!snippets.isEmpty())
@@ -99,13 +136,18 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Message on {@link ModelBuildErrors#COMPILER_MISSING}.
+	 * 
+	 * @return action and compliance message.
+	 */
 	public static String[] getCOMPILER_MISSING() {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Installer le 'Java Development Kit' (JDK).";
 			cm = "Aucun compilateur Java n'a été trouvé.";
-		} else {// make sure default is English!
+		} else {
 			am = "Install Java Development Kit (JDK).";
 			cm = "Expected Java compiler but none found.";
 		}
@@ -113,13 +155,19 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Message on {@link ModelBuildErrors#DEPLOY_CLASS_MISSING}.
+	 * 
+	 * @param srcName The java source file
+	 * @return action and compliance message.
+	 */
 	public static String[] getDEPLOY_CLASS_MISSING(String srcName) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Un fichier compilé Java (.class) est manquant.";
 			cm = "Fichier compilé attendu pour " + Language.oq + srcName + Language.cq + " mais aucun n'a été trouvé.";
-		} else {// make sure default is English!
+		} else {
 			am = "A Java class file is missing.";
 			cm = "Expected class file for '" + srcName + "' but none found.";
 		}
@@ -127,13 +175,18 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Message on {@link ModelBuildErrors#DEPLOY_CLASS_OUTOFDATE}.
+	 * 
+	 * @return action and compliance message.
+	 */
 	public static String[] getDEPLOY_CLASS_OUTOFDATE() {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Actualiser le projet Java.";
 			cm = "Un fichier compilé java (.class) est plus ancien que le fichier source Java.";
-		} else {// make sure default is English!
+		} else {
 			am = "Refresh Java project.";
 			cm = "Compiled class file is older than Java source file.";
 		}
@@ -141,13 +194,18 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Message on {@link ModelBuildErrors#DEPLOY_PROJECT_UNSAVED}.
+	 * 
+	 * @return action and compliance message.
+	 */
 	public static String[] getDEPLOY_PROJECT_UNSAVED() {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Appuyez sur [Ctrl+s] pour enregistrer la configuration.";
 			cm = "La configuration doit être enregistrée pour permettre le lancement des simulations.";
-		} else {// make sure default is English!
+		} else {
 			am = "Press [Ctrl+s] to save configuration.";
 			cm = "Configuration must be saved to allowed deployment.";
 		}
@@ -155,6 +213,13 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Message on {@link ModelBuildErrors#DEPLOY_RESOURCE_MISSING}.
+	 * 
+	 * @param resourceName The resource name.
+	 * @param location     The expected location of the resource.
+	 * @return action and compliance message.
+	 */
 	public static String[] getDEPLOY_RESOURCE_MISSING(String resourceName, String location) {
 		String am;
 		String cm;
@@ -162,7 +227,7 @@ public class TextTranslations {
 			am = "Ajoutez <<" + Language.oq + resourceName + Language.cq + " à " + Language.oq + location + Language.cq
 					+ ".";
 			cm = "La ressource doit être présente pour le lancement des simulations.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add '" + resourceName + "' to '" + location + "'.";
 			cm = "Resource must be present for deployment";
 		}
@@ -170,13 +235,20 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Message on {@link ModelBuildErrors#DEPLOY_EXCEPTION}. The exception message
+	 * is returned in the compliance part of the return message.
+	 * 
+	 * @param e The exception return from ProcessBuilder.
+	 * @return action and compliance message.
+	 */
 	public static String[] getDEPLOY_EXCEPTION(Exception e) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Échec du lancement de ModelRunner.";
 			cm = e.getMessage();
-		} else {// make sure default is English!
+		} else {
 			am = "Failed to launch ModelRunner.";
 			cm = e.getMessage();
 		}
@@ -187,15 +259,19 @@ public class TextTranslations {
 	// -------------------- Twcore queries ----
 
 	// NB: name static function exactly after the relevant query
+	/**
+	 * Fail message for {@link EdgeToOneChildOfQuery}.
+	 * 
+	 * @param nodeRef Reference to the end node.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getEdgeToOneChildOfQuery(String nodeRef) {
-		// NB: the node to which the out edge is added is prepended later. Don't add it
-		// here.
 		String am;// action message
 		String cm;// constraint message
 		if (Language.French()) {
 			am = "Ajouter un lien vers un noeud fils de " + Language.oq + nodeRef + Language.cq + ".";
 			cm = "Lien attendu vers un noeud fils de " + Language.oq + nodeRef + Language.cq + ", mais aucun trouvé.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add edge to one child of '" + nodeRef + "'";
 			cm = "Expected edge to one child of '" + nodeRef + "' but found none.";
 		}
@@ -203,17 +279,25 @@ public class TextTranslations {
 		return result;
 	};
 
-	public static String[] getBaselineQuery(String shortString, String[] sys, String baselineLabel) {
+	/**
+	 * Fail message for {@link BaselineQuery}.
+	 * 
+	 * @param expRef    Reference to the experiment node.
+	 * @param systems   References to all systems in the configuration
+	 * @param edgeLabel Baseline edge label.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getBaselineQuery(String expRef, String[] systems, String edgeLabel) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajouter un lien de type '" + baselineLabel + "' vers un noeud parmi " + Arrays.deepToString(sys)
+			am = "Ajouter un lien de type '" + edgeLabel + "' vers un noeud parmi " + Arrays.deepToString(systems)
 					+ ".";
-			cm = "Lien de type '" + baselineLabel + "' vers un noeud parmi " + Arrays.deepToString(sys)
+			cm = "Lien de type '" + edgeLabel + "' vers un noeud parmi " + Arrays.deepToString(systems)
 					+ " attendu, mais aucun trouvé.";
 		} else {
-			am = "Add edge labelled '" + baselineLabel + "' to one of " + Arrays.deepToString(sys) + ".";
-			cm = "Expected an edge labelled '" + baselineLabel + "' to one of " + Arrays.deepToString(sys)
+			am = "Add edge labelled '" + edgeLabel + "' to one of " + Arrays.deepToString(systems) + ".";
+			cm = "Expected an edge labelled '" + edgeLabel + "' to one of " + Arrays.deepToString(systems)
 					+ " but found none.";
 		}
 		String[] result = { am, cm };
@@ -221,30 +305,44 @@ public class TextTranslations {
 	}
 
 	// TODO Crazy
-	public static String[] getBorderTypeValidityQuery1(SpaceType stype, int requredDim, int foundDim) {
+	/**
+	 * Fail message for {@link BorderTypeValidityQuery}.
+	 * 
+	 * @param stype    The type of space.
+	 * @param nDim     Number of dimensions in the space definition.
+	 * @param foundDim Number of dimensions that have been defined.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getBorderTypeValidityQuery1(SpaceType stype, int nDim, int foundDim) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Define " + (requredDim * 2) + " borders for space type '" + stype + "'.";
-			cm = "Expected Space of type " + stype + "' to define " + (requredDim * 2) + " borders but found "
-					+ foundDim + ".";
-		} else {// make sure default is English!
-			am = "Define " + (requredDim * 2) + " borders for space type '" + stype + "'.";
-			cm = "Expected Space of type " + stype + "' to define " + (requredDim * 2) + " borders but found "
-					+ foundDim + ".";
+			am = "Define " + (nDim * 2) + " borders for space type '" + stype + "'.";
+			cm = "Expected Space of type " + stype + "' to define " + (nDim * 2) + " borders but found " + foundDim
+					+ ".";
+		} else {
+			am = "Define " + (nDim * 2) + " borders for space type '" + stype + "'.";
+			cm = "Expected Space of type " + stype + "' to define " + (nDim * 2) + " borders but found " + foundDim
+					+ ".";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
 	// TODO Crazy
+	/**
+	 * Fail message for {@link BorderTypeValidityQuery}.
+	 * 
+	 * @param i The dimension causing the query fail.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getBorderTypeValidityQuery2(int i) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Edit borders to pair Wrap-around in dimension " + i + ".";
 			cm = "Expected Wrap-around in dimension " + i + " to be paired but was found unpaired.";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit borders to pair Wrap-around in dimension " + i + ".";
 			cm = "Expected Wrap-around in dimension " + i + " to be paired but was found unpaired.";
 		}
@@ -253,13 +351,18 @@ public class TextTranslations {
 	}
 
 	// TODO Crazy
+	/**
+	 * Fail message for {@link BorderTypeValidityQuery}.
+	 * 
+	 * @return action and compliance messages.
+	 */
 	public static String[] getBorderTypeValidityQuery3() {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Edit border property to wrap-around in the x-dimension.";
 			cm = "Tubular wrap-around is only supported in the x-dimension.";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit border property to wrap-around in the x-dimension.";
 			cm = "Tubular wrap-around is only supported in the x-dimension.";
 		}
@@ -267,24 +370,41 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getBoxInSpaceDimensionQuery(String key, String spaceName, Integer expectedDims,
+	/**
+	 * Fail message for {@link BoxInSpaceDimensionQuery}.
+	 * 
+	 * @param key          The property with incorrect dimensions.
+	 * @param spaceId      The id of the space node.
+	 * @param expectedDims The expected number of dimensions of the property.
+	 * @param foundDims    The number of dimensions found.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getBoxInSpaceDimensionQuery(String key, String spaceId, Integer expectedDims,
 			Integer foundDims) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Changer le nombre de dimensions de '" + key + "' pour " + expectedDims
-					+ ", nombre de dimensions de l'espace '" + spaceName + "' qui le contient.";
+					+ ", nombre de dimensions de l'espace '" + spaceId + "' qui le contient.";
 			cm = "'" + key + "' devrait avoir " + expectedDims + " dimension(s) au lieu de " + foundDims
 					+ " trouvée(s).";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit dimensions of '" + key + "' to have " + expectedDims
-					+ " dimensions, the same dimensions as its containing space '" + spaceName + "'.";
+					+ " dimensions, the same dimensions as its containing space '" + spaceId + "'.";
 			cm = "Expected '" + key + "' to have " + expectedDims + " dimensions but found " + foundDims + ".";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link CategoryConsistencyQuery}.
+	 * 
+	 * @param label    Label of the required edge.
+	 * @param fromCat  Reference of the relevant category node.
+	 * @param procName Reference of the relevant process node.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getCategoryConsistencyQuery(String label, String fromCat, String procName) {
 		String am;
 		String cm;
@@ -293,7 +413,7 @@ public class TextTranslations {
 			cm = "La catégorie '" + fromCat + "' (référencée par un lien 'appliesTo' du noeud '" + procName
 					+ "') doit avoir un lien vers un noeud 'Record:'; aucun n'a été trouvé."
 					+ " Toutes les catégories référencées par un noeud 'Process' doivent avoir un lien vers au moins un noeud 'Record:'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add edge '" + label + "': from '" + fromCat + "' to a 'Record:' node.";
 			cm = "Expected '" + fromCat + "' (that is 'appliesTo' by '" + procName
 					+ "') to have a link to a 'Record:' node but found none."
@@ -303,13 +423,20 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link CheckSubArchetypeQuery}.
+	 * 
+	 * @param fileName File name of the sub-archetype file.
+	 * 
+	 * @return action and compliance messages.
+	 */
 	public static String[] getCheckSubArchetypeQuery(String fileName) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Corriger les erreurs dans le sous-archétype.";
 			cm = "Le sous archétype '" + fileName + "' contient des erreurs.";
-		} else {// make sure default is English!
+		} else {
 			am = "Fix errors in sub-archetype.";
 			cm = "Errors found in sub-archetype '" + fileName + "'.";
 		}
@@ -317,40 +444,64 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getChildAtLeastOneOfOneOrTwoOfTwoQuery1(String item, String widgetLabel,
+	/**
+	 * Fail message for {@link ChildAtLeastOneOfOneOrTwoOfTwoQuery}.
+	 * 
+	 * @param parentContainer The parent container [widget|container|tab]
+	 * @param widgetLabel     A widget label
+	 * @param containerLabel  A container label
+	 * @return action and compliance messages.
+	 */
+	public static String[] getChildAtLeastOneOfOneOrTwoOfTwoQuery1(String parentContainer, String widgetLabel,
 			String containerLabel) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = " Ajouter un noeud fils de type '" + widgetLabel + "' ou '" + containerLabel + "'.";
-			cm = "Un noeud de type '" + item + "' doit avoir un noeud fils de type '" + widgetLabel + "' ou '"
-					+ containerLabel + "'.";
-		} else {// make sure default is English!
+			cm = "Un noeud de type '" + parentContainer + "' doit avoir un noeud fils de type '" + widgetLabel
+					+ "' ou '" + containerLabel + "'.";
+		} else {
 			am = " Add child node '" + widgetLabel + "' or '" + containerLabel + "'.";
-			cm = "Expected '" + item + "' must have a child node of '" + widgetLabel + "' or '" + containerLabel + "'.";
+			cm = "Expected '" + parentContainer + "' must have a child node of '" + widgetLabel + "' or '"
+					+ containerLabel + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getChildAtLeastOneOfOneOrTwoOfTwoQuery2(String item, String widgetLabel,
+	/**
+	 * Fail message for {@link ChildAtLeastOneOfOneOrTwoOfTwoQuery}.
+	 * 
+	 * @param parentContainer The parent container [widget|container|tab]
+	 * @param widgetLabel     A widget label
+	 * @param containerLabel  A container label
+	 * @return action and compliance messages.
+	 */
+	public static String[] getChildAtLeastOneOfOneOrTwoOfTwoQuery2(String parentContainer, String widgetLabel,
 			String containerLabel) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Ajouter soit un noeud fils de type '" + widgetLabel + "', soit encore un noeud fils de type '"
 					+ containerLabel + "'.";
-			cm = "Un noeud de type '" + item + "' doit avoir soit un noeud fils de type '" + widgetLabel
+			cm = "Un noeud de type '" + parentContainer + "' doit avoir soit un noeud fils de type '" + widgetLabel
 					+ "', soit un noeud fils de type '" + containerLabel + "' de plus.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add either a '" + widgetLabel + "' child or an additional '" + containerLabel + "' child.";
-			cm = "Expected '" + item + "' to have a '" + widgetLabel + "' child or an additional '" + containerLabel
-					+ "' child.";
+			cm = "Expected '" + parentContainer + "' to have a '" + widgetLabel + "' child or an additional '"
+					+ containerLabel + "' child.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link ChildXorPropertyQuery}.
+	 * 
+	 * @param propertyName Key of optional property.
+	 * @param nodeLabel    Label of optional node
+	 * @return action and compliance messages.
+	 */
 	public static String[] getChildXorPropertyQuery(String propertyName, String nodeLabel) {
 		String am;
 		String cm;
@@ -358,7 +509,7 @@ public class TextTranslations {
 			am = "Ajouter soit la propriété '" + propertyName + "', soit un noeud fils de type '" + nodeLabel + "'.";
 			cm = "Propriété '" + propertyName + "' ou noeud fils de type '" + nodeLabel
 					+ "' attendus, mais aucun des deux n'a été trouvé.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add either property '" + propertyName + "' or child node '" + nodeLabel + "'.";
 			cm = "Expected either the property '" + propertyName + "' or the child '" + nodeLabel
 					+ "' but found neither or both.";
@@ -367,63 +518,94 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getConsequenceMatchFunctionTypeQuery(String strValidTypes, String functionType,
+	/**
+	 * Fail message for {@link ConsequenceMatchFunctionTypeQuery}.
+	 * 
+	 * @param strValidTypes      Valid consequence function types.
+	 * @param parentFunctionType The parent function type.
+	 * @param foundType          The current function type.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getConsequenceMatchFunctionTypeQuery(String strValidTypes, String parentFunctionType,
 			String foundType) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "La conséquence de la fonction '" + functionType + "' doit être redéfinie avec l'un des types "
+			am = "La conséquence de la fonction '" + parentFunctionType + "' doit être redéfinie avec l'un des types "
 					+ strValidTypes + ".";
 			cm = "Conséquence de type " + strValidTypes + " attendue, mais type '" + foundType + "' trouvé.";
-		} else {// make sure default is English!
-			am = "Re-create Consequence function to have type of " + strValidTypes + " for function '" + functionType
-					+ "'.";
+		} else {
+			am = "Re-create Consequence function to have type of " + strValidTypes + " for function '"
+					+ parentFunctionType + "'.";
 			cm = "Expected type of function to be one of " + strValidTypes + " but found " + foundType + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getEdgeToSiblingNodesQuery(String label) {
+	/**
+	 * Fail message for {@link EdgeToSiblingNodesQuery}.
+	 * 
+	 * @param edgeLabel The edge label (type)
+	 * @return action and compliance messages.
+	 */
+	public static String[] getEdgeToSiblingNodesQuery(String edgeLabel) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Changer les liens de type '" + label + "' pour qu'ils pointent vers des noeuds frères.";
-			cm = "Les liens de type '" + label + "' doivent pointer vers des noeuds frères (ayant le même parent).";
-		} else {// make sure default is English!
-			am = "Change '" + label + "' edges to connect to sibling nodes.";
-			cm = "Expected '" + label + "' edges to refer to sibling nodes.";
+			am = "Changer les liens de type '" + edgeLabel + "' pour qu'ils pointent vers des noeuds frères.";
+			cm = "Les liens de type '" + edgeLabel + "' doivent pointer vers des noeuds frères (ayant le même parent).";
+		} else {
+			am = "Change '" + edgeLabel + "' edges to connect to sibling nodes.";
+			cm = "Expected '" + edgeLabel + "' edges to refer to sibling nodes.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getEdgeXorPropertyQuery(String item, String key, String label) {
+	/**
+	 * Fail message for {@link EdgeToSiblingNodesQuery}.
+	 * 
+	 * @param propertyKey The property key.
+	 * @param edgeLabel   The edge label.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getEdgeXorPropertyQuery(String propertyKey, String edgeLabel) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajouter soit la propriété '" + key + "', soit un lien de type '" + label + "', mais pas les deux.";
-			cm = "Propriété '" + key + "' ou lien de type '" + label
+			am = "Ajouter soit la propriété '" + propertyKey + "', soit un lien de type '" + edgeLabel
+					+ "', mais pas les deux.";
+			cm = "Propriété '" + propertyKey + "' ou lien de type '" + edgeLabel
 					+ "' attendus, mais aucun des deux ou les deux ont été trouvés.";
-		} else {// make sure default is English!
-			am = "Add either property '" + key + "' or a '" + label + "' edge.";
-			cm = "Expected either property '" + key + "' or '" + label + "' edge but found neither or both.";
+		} else {
+			am = "Add either property '" + propertyKey + "' or a '" + edgeLabel + "' edge.";
+			cm = "Expected either property '" + propertyKey + "' or '" + edgeLabel
+					+ "' edge but found neither or both.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getChildXorOutEdgeQuery(String item, String clab, String nlab) {
+	/**
+	 * Fail message for {@link ChildXorOutEdgeQuery}.
+	 * 
+	 * @param childLabel Child node type option.
+	 * @param edgeLabel  Edge type option.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getChildXorOutEdgeQuery(String childLabel, String edgeLabel) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajouter soit un ou plusieurs noeuds-enfants de type '" + clab
-					+ "', soit un un ou plusieurs liens sortants de type '" + nlab + "', mais pas les deux.";
-			cm = "Noeuds-enfants de type '" + clab + "' ou liens sortants de type '" + nlab
+			am = "Ajouter soit un ou plusieurs noeuds-enfants de type '" + childLabel
+					+ "', soit un un ou plusieurs liens sortants de type '" + edgeLabel + "', mais pas les deux.";
+			cm = "Noeuds-enfants de type '" + childLabel + "' ou liens sortants de type '" + edgeLabel
 					+ "' attendus, mais aucun des deux ou les deux ont été trouvés.";
-		} else {// make sure default is English!
-			am = "Add either '" + clab + "' child nodes or '" + nlab + "' out-edges, but do not have both.";
-			cm = "Expected either '" + clab + "' child nodes or '" + nlab + "' out-edges but found neither or both.";
+		} else {
+			am = "Add either '" + childLabel + "' child nodes or '" + edgeLabel + "' out-edges, but do not have both.";
+			cm = "Expected either '" + childLabel + "' child nodes or '" + edgeLabel
+					+ "' out-edges but found neither or both.";
 		}
 		String[] result = { am, cm };
 		return result;
@@ -435,7 +617,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Ajouter la propriété '" + key + "' au noeud terminal '" + item + "'.";
 			cm = "Le noeud terminal '" + item + "' doit avoir la propriété '" + key + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add property '" + key + "' to leaf node '" + item + "'.";
 			cm = "Expected leaf node '" + item + "' to have property '" + key + "'.";
 		}
@@ -449,7 +631,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Enlever un des liens de '" + item + "' vers une des catégories de '" + catSet + "'.";
 			cm = "'" + item + "' ne peut pointer que vers une seule des catégories de l'ensemble '" + catSet + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Remove edge from '" + item + "' to one of the categories of '" + catSet + "'.";
 			cm = "Expected '" + item + "' to have an edge to only one of the categories of '" + catSet
 					+ "' but found more.";
@@ -479,7 +661,7 @@ public class TextTranslations {
 					+ target + "' OR remove this node.";
 			cm = "Expected siblings of '" + target + "' containing the property '" + key + "' to have the value(s) "
 					+ expectedValues + "but found " + nDiffSibs + " sibling(s) with other values.";
-		} else {// make sure default is English!
+		} else {
 			am = "Either change property value of '" + key + "' to " + expectedValues + " for all sibling(s) of '"
 					+ target + "' OR remove this node.";
 			cm = "Expected siblings of '" + target + "' containing the property '" + key + "' to have the value(s) "
@@ -500,7 +682,7 @@ public class TextTranslations {
 			am = "Add edge from '" + trackName + "' to one of the categories of '" + processName + "'.";
 			cm = "Expected '" + trackName + "' to belong to one of its '" + processName
 					+ "' categories but found none.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add edge from '" + trackName + "' to one of the categories of '" + processName + "'.";
 			cm = "Expected '" + trackName + "' to belong to one of its '" + processName
 					+ "' categories but found none.";
@@ -517,7 +699,7 @@ public class TextTranslations {
 			am = "Re-create '" + functionName + "' with one of the function types " + validTypes + "'.";
 			cm = "Expected '" + functionName + "' to have type +" + validTypes + " but found '" + functionType
 					+ "'. This is incompatible with a " + processType + " process.";
-		} else {// make sure default is English!
+		} else {
 			am = "Re-create '" + functionName + "' with one of the function types " + validTypes + "'.";
 			cm = "Expected '" + functionName + "' to have type +" + validTypes + " but found '" + functionType
 					+ "'. This is incompatible with a " + processType + " process.";
@@ -535,7 +717,7 @@ public class TextTranslations {
 					+ ":' OR make it a  '" + groupOfLabel + "' of some '" + groupTypeLabel + "'.";
 			cm = "Expected inEdge '" + instanceOfLabel + "' from some '" + componentTypeLabel + ":' OR outEdge '"
 					+ groupOfLabel + "' to some '" + groupTypeLabel + "' but found neither case.";
-		} else {// make sure default is English!
+		} else {
 			am = "Make '" + groupName + "' an '" + instanceOfLabel + "' some '" + componentTypeLabel
 					+ ":' OR make it a  '" + groupOfLabel + "' of some '" + groupTypeLabel + "'.";
 			cm = "Expected inEdge '" + instanceOfLabel + "' from some '" + componentTypeLabel + ":' OR outEdge '"
@@ -552,7 +734,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Make sure that the GroupTypes define under a LifeCycleType have ComponentTypes which categories match those of the LifeCycleType CategorySet.";
 			cm = "All categories of a LifeCycleType category set must be present in its GroupType's ComponentTypes";
-		} else {// make sure default is English!
+		} else {
 			am = "Make sure that the GroupTypes define under a LifeCycleType have ComponentTypes which categories match those of the LifeCycleType CategorySet.";
 			cm = "All categories of a LifeCycleType category set must be present in its GroupType's ComponentTypes";
 		}
@@ -566,7 +748,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Set property value to at most half the length of the shortest side.";
 			cm = "Expected guard area width to be smaller than half the length of the shortest side but found " + width;
-		} else {// make sure default is English!
+		} else {
 			am = "Set property value to at most half the length of the shortest side.";
 			cm = "Expected guard area width to be smaller than half the length of the shortest side but found " + width;
 		}
@@ -580,7 +762,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeName + "'.";
 			cm = "Index string '" + ixs + "' out of range for table '" + nodeName + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeName + "'.";
 			cm = "Index string '" + ixs + "' out of range for table '" + nodeName + "'.";
 		}
@@ -599,7 +781,7 @@ public class TextTranslations {
 				am = "Select a file for this property.";
 				cm = "Expected file to be defined but found null.";
 			}
-		} else {// make sure default is English!
+		} else {
 			if (file != null) {
 				am = "Add file '" + file.getName() + "' to the project.";
 				cm = "Expected file '" + file.getName() + "-" + file.getParent() + "' but not found.";
@@ -618,7 +800,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Set value within the interval " + interval + ".";
 			cm = "Expected value to be within " + interval + " but found '" + value + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Set value within the interval " + interval + ".";
 			cm = "Expected value to be within " + interval + " but found '" + value + "'.";
 		}
@@ -632,7 +814,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Set interval to be bounded at both ends.";
 			cm = "Expected interval to be bounded but found '" + interval + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Set interval to be bounded at both ends.";
 			cm = "Expected interval to be bounded but found '" + interval + "'.";
 		}
@@ -646,7 +828,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Add edge '" + fromLbl + "' to a Category";
 			cm = "Expected '" + fromLbl + "' to a life cycle category but found none.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add edge '" + fromLbl + "' to a Category";
 			cm = "Expected '" + fromLbl + "' to a life cycle category but found none.";
 		}
@@ -660,7 +842,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Remove a '" + fromLbl + "' edge from a category.";
 			cm = "Expected fewer '" + fromLbl + "' for life cycle but found " + nFromCats;
-		} else {// make sure default is English!
+		} else {
 			am = "Remove a '" + fromLbl + "' edge from a category.";
 			cm = "Expected fewer '" + fromLbl + "' for life cycle but found " + nFromCats;
 		}
@@ -674,7 +856,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Add edge '" + toLbl + "' to a Category";
 			cm = "Expected '" + toLbl + "' to a life cycle category but found none.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add edge '" + toLbl + "' to a Category";
 			cm = "Expected '" + toLbl + "' to a life cycle category but found none.";
 		}
@@ -688,7 +870,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Remove a '" + toLbl + "' edge to a category.";
 			cm = "Expected fewer '" + toLbl + "' for life cycle but found " + nToCats;
-		} else {// make sure default is English!
+		} else {
 			am = "Remove a '" + toLbl + "' edge to a category.";
 			cm = "Expected fewer '" + toLbl + "' for life cycle but found " + nToCats;
 		}
@@ -705,7 +887,7 @@ public class TextTranslations {
 			else
 				am = "Set '" + key + "' to be within the range " + min + " to " + max + ".";
 			cm = "Expected '" + key + "' to be within the range [" + min + ":" + max + "] but found '" + value + "'.";
-		} else {// make sure default is English!
+		} else {
 			if (max > 100_000_000)
 				am = "Set '" + key + "' to be greater or equal to '" + min + "'.";
 			else
@@ -723,7 +905,7 @@ public class TextTranslations {
 			am = "Edit graph file with a text editor to change the property value of '" + key + " to a valid value.";
 			cm = "Expected value of '" + key + "' to be one of " + valueSet.toString() + " but found '" + foundValue
 					+ "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit graph file with a text editor to change the property value of '" + key + " to a valid value.";
 			cm = "Expected value of '" + key + "' to be one of " + valueSet.toString() + " but found '" + foundValue
 					+ "'.";
@@ -738,7 +920,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Add a '" + edgeLabel + "' edge to a '" + lifecycleLabel + "'.";
 			cm = "Expected '" + edgeLabel + "' to a '" + lifecycleLabel + "' but found none.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add a '" + edgeLabel + "' edge to a '" + lifecycleLabel + "'.";
 			cm = "Expected '" + edgeLabel + "' to a '" + lifecycleLabel + "' but found none.";
 		}
@@ -754,7 +936,7 @@ public class TextTranslations {
 			am = "Do something";
 			cm = "Expected '" + lcName + "'to be linked with '" + edgeLabel + "' to the same lifecyle as '" + gtName
 					+ "' but ...";
-		} else {// make sure default is English!
+		} else {
 			am = "Do something";
 			cm = "Expected '" + lcName + "'to be linked with '" + edgeLabel + "' to the same lifecyle as '" + gtName
 					+ "' but ...";
@@ -769,7 +951,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Reconfigure GroupType to have at least one child group belonging to each category of it's categorySet.";
 			cm = "Expected life cycle group to have at least one child group to belong to each category of it's categorySet but found none.";
-		} else {// make sure default is English!
+		} else {
 			am = "Reconfigure GroupType to have at least one child group belonging to each category of it's categorySet.";
 			cm = "Expected life cycle group to have at least one child group to belong to each category of it's categorySet but found none.";
 		}
@@ -784,7 +966,7 @@ public class TextTranslations {
 			am = "Reconfigure. '" + ctName + "' is not ephemeral but is processed by '" + fnName + "' of '" + pnName
 					+ "' that only works on ephemeral ComponentTypes.";
 			cm = "Expected '" + ctName + "' to belong to 'Category:*ephemeral*'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Reconfigure. '" + ctName + "' is not ephemeral but is processed by '" + fnName + "' of '" + pnName
 					+ "' that only works on ephemeral ComponentTypes.";
 			cm = "Expected '" + ctName + "' to belong to 'Category:*ephemeral*'.";
@@ -799,7 +981,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Edit graph with a text editor so '" + item + "' starts with an upper case character.";
 			cm = "Expected first character to be upper case but found '" + c + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit graph with a text editor so '" + item + "' starts with an upper case character.";
 			cm = "Expected first character to be upper case but found '" + c + "'.";
 		}
@@ -813,7 +995,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Ajouter un noeud à l'un des «" + labels.toString() + "».";
 			cm = "Attendu au moins un enfant intitulé «" + labels.toString() + "», mais n'en trouve aucun";
-		} else {// make sure default is English!
+		} else {
 			am = "Add node to one of '" + labels.toString() + "'.";
 			cm = "Expected at least one child labelled '" + labels.toString() + "' but found none.";
 		}
@@ -830,7 +1012,7 @@ public class TextTranslations {
 					+ expectedValues.toString() + "'.";
 			cm = "Expected property '" + propertyName + "' to  have value '" + expectedValues.toString()
 					+ "' but found '" + foundValue + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit graph with a text editor to set '" + propertyName + "' value to one of '"
 					+ expectedValues.toString() + "'.";
 			cm = "Expected property '" + propertyName + "' to  have value '" + expectedValues.toString()
@@ -849,7 +1031,7 @@ public class TextTranslations {
 					+ Arrays.toString(edgeLabel2) + " edges.";
 			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
 					+ Arrays.toString(edgeLabel2) + " but condition not met.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add at least one of " + Arrays.toString(edgeLabel1) + " edges and one of "
 					+ Arrays.toString(edgeLabel2) + " edges.";
 			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
@@ -868,7 +1050,7 @@ public class TextTranslations {
 			am = "Add at least one of " + Arrays.toString(edgeLabel1) + " edges.";
 			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
 					+ Arrays.toString(edgeLabel2) + " but condition not met.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add at least one of " + Arrays.toString(edgeLabel1) + " edges.";
 			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
 					+ Arrays.toString(edgeLabel2) + " but condition not met.";
@@ -885,7 +1067,7 @@ public class TextTranslations {
 			am = "Add edge '" + edgeLabel1 + " or " + Arrays.toString(edgeLabel2) + ".";
 			cm = "Expected at least one edge labelled either " + Arrays.toString(edgeLabel1) + " or "
 					+ Arrays.toString(edgeLabel2) + " but none found.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add edge '" + edgeLabel1 + " or " + Arrays.toString(edgeLabel2) + ".";
 			cm = "Expected at least one edge labelled either " + Arrays.toString(edgeLabel1) + " or "
 					+ Arrays.toString(edgeLabel2) + " but none found.";
@@ -901,7 +1083,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Add edge to a node labelled either '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":' but not both.";
 			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add edge to a node labelled either '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":' but not both.";
 			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "'.";
 		}
@@ -915,7 +1097,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Set parent to one of " + klasses + ".";
 			cm = "Expected parent to be one of " + klasses + " but found '" + foundParent + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Set parent to one of " + klasses + ".";
 			cm = "Expected parent to be one of " + klasses + " but found '" + foundParent + "'.";
 		}
@@ -931,7 +1113,7 @@ public class TextTranslations {
 			am = "Change property value of '" + propertyName + "' to one of " + expectedValues + ".";
 			cm = "Expected '" + propertyName + "' value to be one of '" + expectedValues.toString() + "' but found '"
 					+ foundValue + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Change property value of '" + propertyName + "' to one of " + expectedValues + ".";
 			cm = "Expected '" + propertyName + "' value to be one of '" + expectedValues.toString() + "' but found '"
 					+ foundValue + "'.";
@@ -946,7 +1128,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Change parent to be one of '" + labels + "'.";
 			cm = "Expected parent to be on of '" + labels + "' but found '" + foundParent + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Change parent to be one of '" + labels + "'.";
 			cm = "Expected parent to be on of '" + labels + "' but found '" + foundParent + "'.";
 		}
@@ -960,7 +1142,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Edit graph file with text editor to remove one of the properties '" + name1 + "' or '" + name2 + "'.";
 			cm = "Expected property named either '" + name1 + "' or '" + name2 + "' but not both.";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit graph file with text editor to remove one of the properties '" + name1 + "' or '" + name2 + "'.";
 			cm = "Expected property named either '" + name1 + "' or '" + name2 + "' but not both.";
 		}
@@ -976,7 +1158,7 @@ public class TextTranslations {
 			am = "Edit '" + propName + "' values for nodes [" + elementList + "] to unique values.";
 			cm = "Expected '" + propName + "' values for children of '" + nodeName + "' to be unique but found values ["
 					+ numberList + ".";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit '" + propName + "' values for nodes [" + elementList + "] to unique values.";
 			cm = "Expected '" + propName + "' values for children of '" + nodeName + "' to be unique but found values ["
 					+ numberList + ".";
@@ -992,7 +1174,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Edit '" + propName + "' values for elements [" + elementList + "] to unique values.";
 			cm = "Expected '" + propName + "' values of '" + edgeLabel + "' to be unique but found " + numberList + ".";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit '" + propName + "' values for elements [" + elementList + "] to unique values.";
 			cm = "Expected '" + propName + "' values of '" + edgeLabel + "' to be unique but found " + numberList + ".";
 		}
@@ -1013,7 +1195,7 @@ public class TextTranslations {
 			} else
 				am = "Remove all but one in edge from a Category to '" + target + "'.";
 			cm = "Expected 1 in-edge to '" + target + "' but found " + nEdges + ".";
-		} else {// make sure default is English!
+		} else {
 			if (nEdges == 0) {
 				am = "Add an edge from a Category to '" + target + "'.";
 			} else
@@ -1031,7 +1213,7 @@ public class TextTranslations {
 			am = "Remove property '" + p1
 					+ "' by editing the configuration graph with a text editor. [ModelMaker programming error!].";
 			cm = "Presence of property '" + p1 + "' is incompatible with value of property '" + p2 + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Remove property '" + p1
 					+ "' by editing the configuration graph with a text editor. [ModelMaker programming error!].";
 			cm = "Presence of property '" + p1 + "' is incompatible with value of property '" + p2 + "'.";
@@ -1048,7 +1230,7 @@ public class TextTranslations {
 					+ "' have valid coordinates for '" + spaceName + "'.";
 			cm = "Expected all componentTypes processed by '" + procName + "' to have valid coordinates for '"
 					+ spaceName + "' but found associations with '" + assocList + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Reconfigure graph so that all componentTypes processed by '" + procName
 					+ "' have valid coordinates for '" + spaceName + "'.";
 			cm = "Expected all componentTypes processed by '" + procName + "' to have valid coordinates for '"
@@ -1066,7 +1248,7 @@ public class TextTranslations {
 			am = "Edit property '" + pKey + "' to receive data in the range " + simRange + ".";
 			cm = "Expected sufficent simulator(s) to send data in the range " + listenerRange + " but found only "
 					+ nReps + " simulator(s). [" + pKey + "=" + firstSender + "]";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit property '" + pKey + "' to receive data in the range " + simRange + ".";
 			cm = "Expected sufficent simulator(s) to send data in the range " + listenerRange + " but found only "
 					+ nReps + " simulator(s). [" + pKey + "=" + firstSender + "]";
@@ -1081,7 +1263,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Change coordinate fields to be numeric.";
 			cm = "Expected coordinate fields to be numeric but found '" + typeName + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Change coordinate fields to be numeric.";
 			cm = "Expected coordinate fields to be numeric but found '" + typeName + "'.";
 		}
@@ -1098,7 +1280,7 @@ public class TextTranslations {
 			else
 				am = "Remove " + dif + " '" + label + ":' edges.";
 			cm = "Expected " + dimension + " " + label + " edges but found " + (dimension + dif) + ".";
-		} else {// make sure default is English!
+		} else {
 			if (dif > 0)
 				am = "Add " + dif + " '" + label + ":' edges.";
 			else
@@ -1116,7 +1298,7 @@ public class TextTranslations {
 			am = "Set coordinate field(s) to belong to a record that is used as either a driver or constant.";
 			cm = "Expected coordinate fields '" + fieldNames
 					+ "' to belong to a record used as drivers or constants but found none.";
-		} else {// make sure default is English!
+		} else {
 			am = "Set coordinate field(s) to belong to a record that is used as either a driver or constant.";
 			cm = "Expected coordinate fields '" + fieldNames
 					+ "' to belong to a record used as drivers or constants but found none.";
@@ -1131,7 +1313,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Change '" + key + "' value to be one of " + validUnits + ".";
 			cm = "Expected value of '" + key + "' to be one of " + validUnits + " but found '" + foundValue + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Change '" + key + "' value to be one of " + validUnits + ".";
 			cm = "Expected value of '" + key + "' to be one of " + validUnits + " but found '" + foundValue + "'.";
 		}
@@ -1145,7 +1327,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Add a " + scLabel + " child to " + dynLabel + ".";
 			cm = "Expected at least one" + scLabel + "for unattended simulation but found none.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add a " + scLabel + " child to " + dynLabel + ".";
 			cm = "Expected at least one" + scLabel + "for unattended simulation but found none.";
 		}
@@ -1163,7 +1345,7 @@ public class TextTranslations {
 				am = "Remove one of " + ctrlNames + ".";
 			cm = "Expected one widget that descends from '" + klass
 					+ "' as child of [top,bottom,tab,container] but found " + ctrlNames.size() + ".";
-		} else {// make sure default is English!
+		} else {
 			if (ctrlNames.isEmpty())
 				am = "Add a control widget to either [top,bottom,tab,container].";
 			else
@@ -1181,7 +1363,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Do something";
 			cm = "'" + s + "' node fromCategories {" + cats + "} not all found in process '" + procName + "'";
-		} else {// make sure default is English!
+		} else {
 			am = "Do something";
 			cm = "'" + s + "' node fromCategories {" + cats + "} not all found in process '" + procName + "'";
 		}
@@ -1195,7 +1377,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Do something!";
 			cm = "Expected '" + requiredFunc + "' function type in process '" + procName + "' but found none.";
-		} else {// make sure default is English!
+		} else {
 			am = "Do something!";
 			cm = "Expected '" + requiredFunc + "' function type in process '" + procName + "' but found none.";
 		}
@@ -1214,7 +1396,7 @@ public class TextTranslations {
 			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName + "' to be '"
 					+ allowedMax + "' for '" + scaleKey + "' but found '" + foundShortest + "' and '" + foundLongest
 					+ "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '" + tlName + "' to '"
 					+ allowedMax + "'.";
 			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName + "' to be '"
@@ -1235,7 +1417,7 @@ public class TextTranslations {
 			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
 					+ "' must be the same for '" + scaleKey + "' but found '" + foundShortest + "' and '" + foundLongest
 					+ "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Set '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
 					+ "' to the same value.";
 			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
@@ -1254,7 +1436,7 @@ public class TextTranslations {
 			am = "Set '" + shortestKey + "' to be less than or equal to '" + longestKey + "'.";
 			cm = "Expected '" + shortestKey + "' to be <= '" + longestKey + "' for time scale type '" + scaleType
 					+ "' but found '" + foundShortest + "' and '" + foundLongest + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Set '" + shortestKey + "' to be less than or equal to '" + longestKey + "'.";
 			cm = "Expected '" + shortestKey + "' to be <= '" + longestKey + "' for time scale type '" + scaleType
 					+ "' but found '" + foundShortest + "' and '" + foundLongest + "'.";
@@ -1270,7 +1452,7 @@ public class TextTranslations {
 			am = "Set property '" + key + "' value to '" + expected
 					+ "' or change the time units of associated Timers.";
 			cm = "Expected value of '" + key + " to be " + expected + "' but found '" + found + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Set property '" + key + "' value to '" + expected
 					+ "' or change the time units of associated Timers.";
 			cm = "Expected value of '" + key + " to be " + expected + "' but found '" + found + "'.";
@@ -1302,7 +1484,7 @@ public class TextTranslations {
 					+ "'.";
 			cm = "Valeur de '" + edgeName + "#" + key + "[" + i + "]' de type , '" + dataType + "' attendue, type '"
 					+ entry + "' trouvé.";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit '" + edgeName + "#" + key + "[" + i + "]' to a '" + dataType + "' type value.";
 			cm = "Expected '" + edgeName + "#" + key + "[" + i + "]' to be of type '" + dataType + "' but found '"
 					+ entry + "'.";
@@ -1317,7 +1499,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Ajouter au moins une valeur à la variable '" + edgeName + "#" + key + "'.";
 			cm = "La variable '" + edgeName + "#" + key + "' ne contient aucune valeur utilisable.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add at least one value to '" + edgeName + "#" + key + "'.";
 			cm = "Expected '" + edgeName + "#" + key + "' to contain at least one value, but found none.";
 		}
@@ -1325,29 +1507,13 @@ public class TextTranslations {
 		return result;
 	}
 
-//	@Deprecated
-//	public static String[] getRscriptExists() {
-//		String am;
-//		String cm;
-//		if (Language.French()) {
-//			am = "Install 'R' on this computer.";
-//			cm = "Expected 'R' to be installed but not found";
-//		} else {// make sure default is English!
-//			am = "Install 'R' on this computer.";
-//			cm = "Expected 'R' to be installed but not found";
-//		}
-//		String[] result = { am, cm };
-//		return result;
-//
-//	}
-
 	public static String[] getHasValidFileNameChars(String value) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Edit '" + value + "' to a valid file name";
 			cm = "Expected valid file name but found '" + value + "'.";
-		} else {// make sure default is English!
+		} else {
 			am = "Edit '" + value + "' to a valid file name";
 			cm = "Expected valid file name but found '" + value + "'.";
 		}
@@ -1369,7 +1535,7 @@ public class TextTranslations {
 			am = "Add at least one edge to a node labelled '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":'.";
 			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "' but found " + lst
 					+ ".";
-		} else {// make sure default is English!
+		} else {
 			am = "Add at least one edge to a node labelled '" + nodeLabel1 + ":' or '" + nodeLabel2 + ":'.";
 			cm = "Expected edge to a node labelled either '" + nodeLabel1 + "' or '" + nodeLabel2 + "' but found " + lst
 					+ ".";
@@ -1384,7 +1550,7 @@ public class TextTranslations {
 		if (Language.French()) {
 			am = "Add a '" + label + "' node for '" + edt + "' experiments.";
 			cm = "Expected '" + edt + "' experiments to have one '" + label + "' node but found none.";
-		} else {// make sure default is English!
+		} else {
 			am = "Add a '" + label + "' node for '" + edt + "' experiments.";
 			cm = "Expected '" + edt + "' experiments to have one '" + label + "' node but found none.";
 		}
@@ -1399,7 +1565,7 @@ public class TextTranslations {
 			am = "Set the number of elements of the tables '" + key1 + "' and '" + key2 + "' to be the same.";
 			cm = "Expected tables '" + key1 + "' and '" + key2
 					+ "' to have identical dimensions and size but found they differ.";
-		} else {// make sure default is English!
+		} else {
 			am = "Set the number of elements of the tables '" + key1 + "' and '" + key2 + "' to be the same.";
 			cm = "Expected tables '" + key1 + "' and '" + key2
 					+ "' to have identical dimensions and size but found they differ.";
@@ -1433,7 +1599,7 @@ public class TextTranslations {
 //if (Language.French()) {
 //	am = "";
 //	cm = "";
-//} else {// make sure default is English!
+//} else {
 //	am = "";
 //	cm = "";
 //}

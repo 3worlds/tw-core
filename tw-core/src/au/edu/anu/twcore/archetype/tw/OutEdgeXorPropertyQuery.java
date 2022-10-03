@@ -70,7 +70,7 @@ public class OutEdgeXorPropertyQuery extends QueryAdaptor {
 			selectZeroOrMany(hasTheLabel(edgeLabel)));
 		boolean edgePresent = (!le.isEmpty());
 		if (!(propertyPresent ^ edgePresent)) {
-			String[] msgs = TextTranslations.getEdgeXorPropertyQuery(localItem.toShortString(),propertyName,edgeLabel);
+			String[] msgs = TextTranslations.getEdgeXorPropertyQuery(propertyName,edgeLabel);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 		}

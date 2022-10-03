@@ -45,6 +45,11 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
+ * A wrapper class for specification compilation and deployment errors.
+ * <p>
+ * This class also wraps {@link SpecificationErrorMsg}. These messages are
+ * displayed by ModelMaker.
+ * 
  * @author Ian Davies -23 Nov 2019
  */
 public class ModelBuildErrorMsg implements ErrorMessagable {
@@ -54,18 +59,19 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 	private String actionsMsg;
 	private String detailsMsg;
 	private String debugMsg;
-//	private boolean ignore;
 
+	/**
+	 * Constructor. Messages of type {@link ModelBuildErrors#SPECIFICATION} are
+	 * simply wrapped by this class.
+	 * 
+	 * @param msgType The type of message.
+	 * @param args    A variable list of objects specific to each message type.
+	 */
 	public ModelBuildErrorMsg(ModelBuildErrors msgType, Object... args) {
 		this.msgType = msgType;
 		this.args = args;
-//		this.ignore = false;
 		buildMessages();
 	}
-
-//	public boolean ignore() {
-//		return ignore;
-//	}
 
 	private void buildMessages() {
 		switch (msgType) {
@@ -251,22 +257,22 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 			debugMsg += "\nException: " + e;
 			break;
 		}
-		case DEPLOY_FAIL: {// not used
-			// Exception e = (Exception) args[0];
-			@SuppressWarnings("unchecked")
-			List<String> lines = (List<String>) args[0];
-			File project = (File) args[1];
-			actionsMsg = category() + "ModelRunner has errors.";
-			StringBuilder sb = new StringBuilder();
-			for (String line : lines)
-				sb.append(line).append("\n");
-			detailsMsg = category() + errorName() + "ModelRunner has errors.\n" + //
-					"Log=" + sb.toString() + //
-					"Project=" + project.getAbsoluteFile();
-
-			throw new UnsupportedOperationException("Message type not handled [" + msgType + "]");
-
-		}
+//		case DEPLOY_FAIL: {// not used
+//			// Exception e = (Exception) args[0];
+//			@SuppressWarnings("unchecked")
+//			List<String> lines = (List<String>) args[0];
+//			File project = (File) args[1];
+//			actionsMsg = category() + "ModelRunner has errors.";
+//			StringBuilder sb = new StringBuilder();
+//			for (String line : lines)
+//				sb.append(line).append("\n");
+//			detailsMsg = category() + errorName() + "ModelRunner has errors.\n" + //
+//					"Log=" + sb.toString() + //
+//					"Project=" + project.getAbsoluteFile();
+//
+//			throw new UnsupportedOperationException("Message type not handled [" + msgType + "]");
+//
+//		}
 		default: {
 
 			throw new UnsupportedOperationException("Message type not handled [" + msgType + "]");
@@ -274,17 +280,6 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 		}
 
 	}
-
-//	private boolean findNodeWithClassId(String classId, TreeGraph<TreeGraphDataNode, ALEdge> graph) {
-//		for (Node node : graph.nodes())
-//			if (node.classId().equals(classId))
-//				return true;
-//		return false;
-//	}
-
-//	private String refToClassId(String ref) {
-//		return ref.replace(":", "");
-//	}
 
 	@Override
 	public String toString() {
@@ -308,6 +303,11 @@ public class ModelBuildErrorMsg implements ErrorMessagable {
 		return "[" + msgType.name() + "] ";
 	}
 
+	/**
+	 * Getter for msgType.
+	 * 
+	 * @return The {@link ModelBuildErrors}
+	 */
 	public ModelBuildErrors error() {
 		return msgType;
 	}

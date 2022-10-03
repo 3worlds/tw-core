@@ -72,7 +72,7 @@ import java.util.logging.Logger;
  * by editing directory names.
  * <p>
  * 
- * @author Author Ian Davies - Date 12 Dec. 2018
+ * @author  Ian Davies - Date 12 Dec. 2018
  */
 // tested OK with version 0.1.1 on 21/5/2019
 public class Project {
@@ -90,16 +90,14 @@ public class Project {
 	 * User's home directory name.
 	 */
 	public static final String USER_ROOT/*       */ = System.getProperty("user.home");
-//	/**
-//	 * 3Worlds project root directory name
-//	 */
-//	public static final String TW /*             */ = "3w";
 	/**
-	 * 3Worlds project directory name in the user's home.
+	 * 3Worlds home directory name. The default is home/<name>/3w. To change this,
+	 * add a environment setting for the user's account using 'TW_HOME' as the
+	 * setting key.
 	 */
 	public static final String TW_HOME /*        */ = get3wHome();
 	/**
-	 * The OS specific 3Worlds jar file.
+	 * The OS specific 3Worlds jar file name.
 	 */
 	public static final String TW_DEP_JAR /*     */ = getDepJarName();
 	/**
@@ -162,8 +160,9 @@ public class Project {
 	/** Project is open if this is not null */
 	private static File projectDirectory = null;
 
+	// prevent instantiation
 	private Project() {
-	};// prevent instantiation
+	};
 
 	/**
 	 * @param name any string.

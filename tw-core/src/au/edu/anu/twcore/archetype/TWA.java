@@ -42,7 +42,7 @@ import fr.cnrs.iees.graph.io.GraphImporter;
 import fr.ens.biologie.generic.utils.Logging;
 
 /**
- * Global singleton instance of the 3Warchetype: thread safe and lazy load
+ * Global singleton instance of the 3Worlds archetype: thread safe and lazy load
  * 
  * @author Ian Davies - 20 Jul 2019
  */
