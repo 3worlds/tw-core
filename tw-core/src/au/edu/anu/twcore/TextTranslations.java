@@ -43,7 +43,8 @@ import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.ens.biologie.generic.utils.Interval;
 import au.edu.anu.twcore.archetype.tw.*;
 import au.edu.anu.twcore.errorMessaging.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+//import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**
  * Natural language translations for any message in this project (twcore).
@@ -611,30 +612,46 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getEndNodeHasPropertyQuery(String item, String key) {
+	/**
+	 * Fail message for {@link EndNodeHasPropertyQuery}.
+	 * 
+	 * @param nodeReference Reference to a leaf node.
+	 * @param propertyKey   The key of the node property.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getEndNodeHasPropertyQuery(String nodeReference, String propertyKey) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajouter la propriété '" + key + "' au noeud terminal '" + item + "'.";
-			cm = "Le noeud terminal '" + item + "' doit avoir la propriété '" + key + "'.";
+			am = "Ajouter la propriété '" + propertyKey + "' au noeud terminal '" + nodeReference + "'.";
+			cm = "Le noeud terminal '" + nodeReference + "' doit avoir la propriété '" + propertyKey + "'.";
 		} else {
-			am = "Add property '" + key + "' to leaf node '" + item + "'.";
-			cm = "Expected leaf node '" + item + "' to have property '" + key + "'.";
+			am = "Add property '" + propertyKey + "' to leaf node '" + nodeReference + "'.";
+			cm = "Expected leaf node '" + nodeReference + "' to have property '" + propertyKey + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getExclusiveCategoryQuery(String item, String catSet) {
+	/**
+	 * Fail message for {@link ExclusiveCategoryQuery}.
+	 * 
+	 * @param nodeReference
+	 * @param categorySetReference
+	 * @return action and compliance messages.
+	 */
+	public static String[] getExclusiveCategoryQuery(String nodeReference, String categorySetReference) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Enlever un des liens de '" + item + "' vers une des catégories de '" + catSet + "'.";
-			cm = "'" + item + "' ne peut pointer que vers une seule des catégories de l'ensemble '" + catSet + "'.";
+			am = "Enlever un des liens de '" + nodeReference + "' vers une des catégories de '" + categorySetReference
+					+ "'.";
+			cm = "'" + nodeReference + "' ne peut pointer que vers une seule des catégories de l'ensemble '"
+					+ categorySetReference + "'.";
 		} else {
-			am = "Remove edge from '" + item + "' to one of the categories of '" + catSet + "'.";
-			cm = "Expected '" + item + "' to have an edge to only one of the categories of '" + catSet
-					+ "' but found more.";
+			am = "Remove edge from '" + nodeReference + "' to one of the categories of '" + categorySetReference + "'.";
+			cm = "Expected '" + nodeReference + "' to have an edge to only one of the categories of '"
+					+ categorySetReference + "' but found more.";
 		}
 		String[] result = { am, cm };
 		return result;
@@ -642,15 +659,13 @@ public class TextTranslations {
 	// TODO: French done down to here
 
 	/**
-	 * Checks that if a child node with a given property value is present, then no
-	 * child with another value in the same property can be present. Can be
-	 * instantiated with a single label, or a table of compatible labels.
+	 * Fail message for {@link ExclusiveChildPropertyValueQuery}.
 	 * 
-	 * @param target         The label:name of target sibling
+	 * @param target         The reference of target sibling
 	 * @param key            Target's property key
 	 * @param expectedValues Required property values
 	 * @param nDiffSibs      Number of non-compliant siblings
-	 * @return
+	 * @return action and compliance messages.
 	 */
 	public static String[] getExclusiveChildPropertyValueQuery(String target, String key, List<Object> expectedValues,
 			int nDiffSibs) {
@@ -671,9 +686,16 @@ public class TextTranslations {
 		return result;
 	}
 
+//	/**
+//	 * A Query to check that both nodes of an edge have a common parent of a
+//	 * specified type
+//	 */
 	/**
-	 * A Query to check that both nodes of an edge have a common parent of a
-	 * specified type
+	 * Fail message for {@link FindCommonCategoryQuery}.
+	 * 
+	 * @param trackName   Subject node reference
+	 * @param processName Other node reference.
+	 * @return action and compliance messages.
 	 */
 	public static String[] getFindCommonCategoryQuery(String trackName, String processName) {
 		String am;
@@ -691,57 +713,82 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link FunctionMatchProcessTypeQuery}.
+	 * 
+	 * @param functionType String representation of {@link TwFunctionTypes} used by
+	 *                     funcRef.
+	 * @param processType  A Component or Relation.
+	 * @param validTypes   List of possible {@link TwFunctionTypes}.
+	 * @param funcRef      The function reference (Label:Name).
+	 * @return action and compliance messages.
+	 */
 	public static String[] getFunctionMatchProcessTypeQuery(String functionType, String processType,
-			List<String> validTypes, String functionName) {
+			List<String> validTypes, String funcRef) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Re-create '" + functionName + "' with one of the function types " + validTypes + "'.";
-			cm = "Expected '" + functionName + "' to have type +" + validTypes + " but found '" + functionType
+			am = "Re-create '" + funcRef + "' using one of the function types " + validTypes + "'.";
+			cm = "Expected '" + funcRef + "' to have type +" + validTypes + " but found '" + functionType
 					+ "'. This is incompatible with a " + processType + " process.";
 		} else {
-			am = "Re-create '" + functionName + "' with one of the function types " + validTypes + "'.";
-			cm = "Expected '" + functionName + "' to have type +" + validTypes + " but found '" + functionType
+			am = "Re-create '" + funcRef + "' with one of the function types " + validTypes + "'.";
+			cm = "Expected '" + funcRef + "' to have type +" + validTypes + " but found '" + functionType
 					+ "'. This is incompatible with a " + processType + " process.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getGroupComponentRequirementQuery(String groupName, String instanceOfLabel,
-			String componentTypeLabel, String groupOfLabel, String groupTypeLabel) {
-		String am;
-		String cm;
-		if (Language.French()) {
-			am = "Make '" + groupName + "' an '" + instanceOfLabel + "' some '" + componentTypeLabel
-					+ ":' OR make it a  '" + groupOfLabel + "' of some '" + groupTypeLabel + "'.";
-			cm = "Expected inEdge '" + instanceOfLabel + "' from some '" + componentTypeLabel + ":' OR outEdge '"
-					+ groupOfLabel + "' to some '" + groupTypeLabel + "' but found neither case.";
-		} else {
-			am = "Make '" + groupName + "' an '" + instanceOfLabel + "' some '" + componentTypeLabel
-					+ ":' OR make it a  '" + groupOfLabel + "' of some '" + groupTypeLabel + "'.";
-			cm = "Expected inEdge '" + instanceOfLabel + "' from some '" + componentTypeLabel + ":' OR outEdge '"
-					+ groupOfLabel + "' to some '" + groupTypeLabel + "' but found neither case.";
-		}
-		String[] result = { am, cm };
-		return result;
-	}
+//	/**
+//	 * Fail message for {@link GroupComponentRequirementQuery}.
+//	 * @param groupName
+//	 * @param instanceOfLabel
+//	 * @param componentTypeLabel
+//	 * @param groupOfLabel
+//	 * @param groupTypeLabel
+//	 * @return action and compliance messages.
+//	 */
+//	public static String[] getGroupComponentRequirementQuery(String groupName, String instanceOfLabel,
+//			String componentTypeLabel, String groupOfLabel, String groupTypeLabel) {
+//		String am;
+//		String cm;
+//		if (Language.French()) {
+//			am = "Make '" + groupName + "' an '" + instanceOfLabel + "' some '" + componentTypeLabel
+//					+ ":' OR make it a  '" + groupOfLabel + "' of some '" + groupTypeLabel + "'.";
+//			cm = "Expected inEdge '" + instanceOfLabel + "' from some '" + componentTypeLabel + ":' OR outEdge '"
+//					+ groupOfLabel + "' to some '" + groupTypeLabel + "' but found neither case.";
+//		} else {
+//			am = "Make '" + groupName + "' an '" + instanceOfLabel + "' some '" + componentTypeLabel
+//					+ ":' OR make it a  '" + groupOfLabel + "' of some '" + groupTypeLabel + "'.";
+//			cm = "Expected inEdge '" + instanceOfLabel + "' from some '" + componentTypeLabel + ":' OR outEdge '"
+//					+ groupOfLabel + "' to some '" + groupTypeLabel + "' but found neither case.";
+//		}
+//		String[] result = { am, cm };
+//		return result;
+//	}
 
-	// TODO Improve : NB lifecycle is auto prepended
-	public static String[] getGroupInstanceRequirementQuery() {
-		String am;
-		String cm;
-		if (Language.French()) {
-			am = "Make sure that the GroupTypes define under a LifeCycleType have ComponentTypes which categories match those of the LifeCycleType CategorySet.";
-			cm = "All categories of a LifeCycleType category set must be present in its GroupType's ComponentTypes";
-		} else {
-			am = "Make sure that the GroupTypes define under a LifeCycleType have ComponentTypes which categories match those of the LifeCycleType CategorySet.";
-			cm = "All categories of a LifeCycleType category set must be present in its GroupType's ComponentTypes";
-		}
-		String[] result = { am, cm };
-		return result;
-	}
+//	// TODO Improve : NB lifecycle is auto prepended
+//	public static String[] getGroupInstanceRequirementQuery() {
+//		String am;
+//		String cm;
+//		if (Language.French()) {
+//			am = "Make sure that the GroupTypes define under a LifeCycleType have ComponentTypes which categories match those of the LifeCycleType CategorySet.";
+//			cm = "All categories of a LifeCycleType category set must be present in its GroupType's ComponentTypes";
+//		} else {
+//			am = "Make sure that the GroupTypes define under a LifeCycleType have ComponentTypes which categories match those of the LifeCycleType CategorySet.";
+//			cm = "All categories of a LifeCycleType category set must be present in its GroupType's ComponentTypes";
+//		}
+//		String[] result = { am, cm };
+//		return result;
+//	}
 
+	/**
+	 * Fail message for {@link GuardAreaMaxWidthQuery}.
+	 * 
+	 * @param width Current width value.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getGuardAreaMaxWidthQuery(double width) {
 		String am;
 		String cm;

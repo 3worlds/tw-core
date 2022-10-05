@@ -43,10 +43,12 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
+ * 
  * @author Ian Davies - 24 Feb. 2021
  * 
- *       Test case for syntax for revised query system.
  */
+@Deprecated // not needed in single system configurations. May be required if this
+			// constraint changes.
 public class BaselineQuery extends QueryAdaptor {
 
 	@SuppressWarnings("unchecked")
@@ -70,7 +72,7 @@ public class BaselineQuery extends QueryAdaptor {
 			int i = 0;
 			for (TreeNode s : systems)
 				sys[i++] = s.toShortString();
-			String[] msgs = TextTranslations.getBaselineQuery(exp.toShortString(), sys,E_BASELINE.label());
+			String[] msgs = TextTranslations.getBaselineQuery(exp.toShortString(), sys, E_BASELINE.label());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 			return this;

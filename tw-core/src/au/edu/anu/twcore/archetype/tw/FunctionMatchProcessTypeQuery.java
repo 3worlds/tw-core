@@ -63,8 +63,8 @@ public class FunctionMatchProcessTypeQuery extends QueryAdaptor {
 	public Queryable submit(Object input) {
 		initInput(input);
 		FunctionNode fn = (FunctionNode) input;
-		// can't decide without a parent - yes that circumstance is possible with
-		// ModelMaker
+		// Note: Editing of graph may be in progress and a parent may not exit at this
+		// time. If so, don't apply the query.
 		if (fn.getParent() == null)
 			return this;
 

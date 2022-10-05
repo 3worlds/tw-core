@@ -53,7 +53,7 @@ import fr.cnrs.iees.graph.TreeNode;
  */
 public class FindCommonCategoryQuery extends QueryAdaptor {
 	/**
-	 * input is an edge between a datatracker (start) OR a function (relateTo) and a
+	 * Input is an edge between a datatracker (start) OR a function (relateTo) and a
 	 * field or table (end)
 	 */
 	@SuppressWarnings("unchecked")
