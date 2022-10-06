@@ -300,7 +300,7 @@ public class ModelGenerator extends TwCodeGenerator implements JavaCode {
 		if (root3w.properties().hasProperty(P_MODEL_VERSION.key()))
 			version = root3w.properties().getPropertyValue(P_MODEL_VERSION.key()).toString();
 		sb.append("<h2>Model-specific code for model <em>").append(className).append("</em></h2>\n")
-			.append("<p>version ").append(version).append(' ').append(dashSpacer).append(' ')
+			.append("<p>version ").append(version).append(' ').append(DASH_SPACER).append(' ')
 			.append(new Date().toString()).append("</p>\n");
 		if (root3w.properties().hasProperty(P_MODEL_AUTHORS.key())) {
 			StringTable auths = (StringTable) root3w.properties().getPropertyValue(P_MODEL_AUTHORS.key());

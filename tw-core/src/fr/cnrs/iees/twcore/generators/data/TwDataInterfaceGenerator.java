@@ -63,6 +63,7 @@ import static au.edu.anu.twcore.DefaultStrings.*;
  */
 public class TwDataInterfaceGenerator extends DataClassGenerator {
 	
+	
 	private static Logger log = Logging.getLogger(TwDataInterfaceGenerator.class);
 	private static Map<String,String> edgeLabels = new HashMap<>();
 	private static Map<String,String> prefixes = new HashMap<>();
@@ -163,7 +164,7 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			endNode());
 		if (recSpec!=null) {
 			newClassName = validJavaName(initialUpperCase(wordUpperCaseName(spec.id()))) 
-				+ defaultPrefix + prefixes.get(dataGroup);
+				+ DEFAULT_PREFIX + prefixes.get(dataGroup);
 			String classComment = "Data interface for "+edgeLabels.get(dataGroup)+" of category "+spec.id();
 			generateInterface(recSpec,newClassName,classComment);
 		}

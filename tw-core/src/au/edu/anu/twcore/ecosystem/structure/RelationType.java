@@ -68,7 +68,7 @@ import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;
 public class RelationType
 		extends InitialisableNode
 		implements LimitedEdition<RelationContainer>,
-			Related<CategorizedComponent>, Sealable, DefaultStrings {
+			Related<CategorizedComponent>, Sealable {
 
 	// INNER CLASSES
 	// predefined values for the type property of SystemRelation

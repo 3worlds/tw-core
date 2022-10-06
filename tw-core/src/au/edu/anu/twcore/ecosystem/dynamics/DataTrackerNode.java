@@ -134,7 +134,7 @@ import au.edu.anu.twcore.ui.runtime.DataReceiver;
  *
  */
 public class DataTrackerNode extends InitialisableNode
-		implements LimitedEdition<DataTracker<?, ? extends Metadata>>, Sealable, DefaultStrings {
+		implements LimitedEdition<DataTracker<?, ? extends Metadata>>, Sealable {
 
 	private static Logger log = Logging.getLogger(DataTrackerNode.class);
 	
