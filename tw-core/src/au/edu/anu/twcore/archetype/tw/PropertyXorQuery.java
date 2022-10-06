@@ -35,12 +35,14 @@ import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 
 /**
- * A Query to test that a node, edge or treenode has either of two properties, but not both
+ * Check that an element (node or edge) has either of two properties, but not
+ * both.
+ * 
  * @author gignoux - 22 nov. 2016
  *
  */
 public class PropertyXorQuery extends QueryAdaptor {
-	
+
 	private final String name1;
 	private final String name2;
 
@@ -60,7 +62,7 @@ public class PropertyXorQuery extends QueryAdaptor {
 		if (input instanceof ReadOnlyDataHolder) {
 			ReadOnlyDataHolder e = (ReadOnlyDataHolder) input;
 			if (!(e.properties().hasProperty(name1) ^ e.properties().hasProperty(name2))) {
-				String[] msgs = TextTranslations.getPropertyXorQuery(name1,name2);
+				String[] msgs = TextTranslations.getPropertyXorQuery(name1, name2);
 				actionMsg = msgs[0];
 				errorMsg = msgs[1];
 			}

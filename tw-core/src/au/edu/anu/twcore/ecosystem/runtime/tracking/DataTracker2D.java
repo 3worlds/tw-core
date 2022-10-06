@@ -64,7 +64,7 @@ public class DataTracker2D extends SamplerDataTracker<CategorizedComponent, Outp
 			Collection<CategorizedComponent> samplingPool, List<CategorizedComponent> trackedComponents,
 			Collection<String> track, ReadOnlyPropertyList fieldMetadata, 
 			int dim1, int dim2, DataLabel tableLabel) {
-		super(DataMessageTypes.DIM2, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
+		super(AbstractDataTracker.DIM2, simulatorId, selection, sampleSize, samplingPool, trackedComponents);
 		senderId = simulatorId;
 		metadata = new Metadata(senderId, fieldMetadata);
 		nx = dim1;

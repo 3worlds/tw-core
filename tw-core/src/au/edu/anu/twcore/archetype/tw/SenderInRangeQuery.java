@@ -106,9 +106,6 @@ public class SenderInRangeQuery extends QueryAdaptor {
 			String[] msgs = TextTranslations.getSenderInRangeQuery(pKey,simRange,listenerRange,nReps,firstSender);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
-//			actionMsg = "Edit property '" +pKey+"' to receive data in the range ["+simRange+"].";
-//			errorMsg = "Expected sufficent simulator(s) to send data in the range [" + listenerRange + "] but found only '"
-//					+ nReps + "' simulator(s). ["+pKey+"="+firstSender+"]";
 			return this;
 		}
 		return this;

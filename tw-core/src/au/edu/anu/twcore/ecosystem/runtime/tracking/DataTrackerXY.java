@@ -69,7 +69,7 @@ public class DataTrackerXY extends SamplerDataTracker<CategorizedComponent,Outpu
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
-		super(DataMessageTypes.XY,simulatorId,selection,1,trackedGroup,trackedComponents);
+		super(AbstractDataTracker.XY,simulatorId,selection,1,trackedGroup,trackedComponents);
 		senderId = simulatorId;
 		// Assuming here that fieldMetadata only contains 2 properties
 		metadata = new Metadata(senderId,fieldMetadata);

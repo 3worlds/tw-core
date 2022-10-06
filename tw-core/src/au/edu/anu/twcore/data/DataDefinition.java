@@ -37,8 +37,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
- * Class matching the "dataDefinition" node label in the 3Worlds configuration tree.
- * Has no properties.
+ * Class matching the "dataDefinition" node label in the 3Worlds configuration
+ * tree. Has no properties.
  * 
  * @author Jacques Gignoux - 27 mai 2019
  *
@@ -51,6 +51,12 @@ public class DataDefinition extends InitialisableNode {
 	}
 
 	// constructor with no properties
+	/**
+	 * Constructor with no properties.
+	 * 
+	 * @param id       Unique identity of this node.
+	 * @param gfactory The graph construction factory
+	 */
 	public DataDefinition(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}

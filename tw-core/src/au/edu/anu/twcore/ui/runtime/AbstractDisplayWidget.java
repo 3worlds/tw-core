@@ -30,7 +30,7 @@ package au.edu.anu.twcore.ui.runtime;
 
 import java.util.logging.Logger;
 
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
 import fr.cnrs.iees.rvgrid.rendezvous.RendezvousProcess;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
@@ -69,14 +69,14 @@ public abstract class AbstractDisplayWidget<T,M>
 			@SuppressWarnings("unchecked")
 			@Override
 			public void execute(RVMessage message) {
-				if (message.getMessageHeader().type()==DataMessageTypes.METADATA) {
+				if (message.getMessageHeader().type()==AbstractDataTracker.METADATA) {
 					M meta = (M) message.payload();
 					log.info(()->"received metadata message data = "+meta.toString());
 					onMetaDataMessage(meta);
 					log.info(()->"finished processing metadata");
 				}
 			}
-		},DataMessageTypes.METADATA);
+		},AbstractDataTracker.METADATA);
 
 	}
 

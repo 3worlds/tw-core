@@ -50,7 +50,6 @@ import au.edu.anu.twcore.rngFactory.RngFactory.Generator;
 
 /**
  * Class matching the "RngNode" node label in the 3Worlds configuration tree.
- * Has the "rng" property.
  * 
  * @author Ian Davies - 13 Dec 2019
  */
@@ -65,10 +64,19 @@ public class RngNode extends InitialisableNode implements LimitedEdition<Random>
 	private RngResetType reset;
 	private Integer tableIndex;
 
+	/**
+	 * @param id       Unique identity of this node.
+	 * @param props    Property list for this node.
+	 * @param gfactory The graph construction factory
+	 */
 	public RngNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
+	/**
+	 * @param id       Unique identity of this node.
+	 * @param gfactory The graph construction factory
+	 */
 	public RngNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
@@ -91,12 +99,13 @@ public class RngNode extends InitialisableNode implements LimitedEdition<Random>
 		return N_DIMENSIONER.initRank();
 	}
 
+	/**
+	 * Getter for the label (classId).
+	 * 
+	 * @return classId of this class.
+	 */
 	public String name() {
 		return classId();
-	}
-
-	public int dim() {
-		return (int) properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
 	}
 
 	@Override

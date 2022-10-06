@@ -31,25 +31,24 @@ package au.edu.anu.twcore.data.runtime;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**
- * The class for sending just a value with a label. Value can be a number or a String
+ * The class for sending just a value with a label. Value can be a number or a
+ * String
  * 
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-@Deprecated
+@Deprecated // unlikely to be used.
 public class LabelValuePairData extends OutputData {
 
 	// the label as a hierarchical name
-	private DataLabel label = null; 
+	private DataLabel label = null;
 	private Number value = null;
 	private String svalue = null;
-	
-	public LabelValuePairData(SimulatorStatus status, 
-			int senderId,
-			int metaDataType) {
-		super(status,senderId,metaDataType);
+
+	public LabelValuePairData(SimulatorStatus status, int senderId, int metaDataType) {
+		super(status, senderId, metaDataType);
 	}
-		
+
 	/**
 	 * returns the numeric value - may be null if the value is not a number
 	 * 
@@ -58,7 +57,7 @@ public class LabelValuePairData extends OutputData {
 	public Number value() {
 		return value;
 	}
-	
+
 	/**
 	 * sets a numeric value
 	 * 
@@ -67,7 +66,7 @@ public class LabelValuePairData extends OutputData {
 	public void setValue(Number n) {
 		value = n;
 	}
-	
+
 	/**
 	 * sets a string value
 	 * 
@@ -76,8 +75,8 @@ public class LabelValuePairData extends OutputData {
 	public void setValue(String s) {
 		svalue = s;
 	}
-	
-	public void setLabel(String...labelParts) {
+
+	public void setLabel(String... labelParts) {
 		label = new DataLabel(labelParts);
 	}
 
@@ -85,18 +84,18 @@ public class LabelValuePairData extends OutputData {
 		this.label = label;
 	}
 
-	
 	public DataLabel label() {
 		return label;
 	}
-	
+
 	/**
-	 * returns the numeric value as a String, or the String value if the value is not numeric
+	 * returns the numeric value as a String, or the String value if the value is
+	 * not numeric
 	 * 
 	 * @return
 	 */
 	public String asString() {
-		if (value!=null)
+		if (value != null)
 			return value.toString();
 		else
 			return svalue;
@@ -110,5 +109,5 @@ public class LabelValuePairData extends OutputData {
 		sb.append(asString());
 		return sb.toString();
 	}
-	
+
 }

@@ -38,7 +38,10 @@ import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**
- * @author Jacques Gignoux - 6/9/2016 Constraint on a node's parent label
+ * Check that the parent of a {@link TreeNode} has one of a set of allowed
+ * values.
+ * 
+ * @author Jacques Gignoux - 6/9/2016
  *
  */
 public class ParentLabelQuery extends QueryAdaptor {
@@ -77,7 +80,7 @@ public class ParentLabelQuery extends QueryAdaptor {
 				if (parent.classId().equals(label)) {
 					return this;
 				}
-			String[] msgs = TextTranslations.getParentLabelQuery(labels,localItem.toShortString());
+			String[] msgs = TextTranslations.getParentLabelQuery(labels, localItem.toShortString());
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 //			actionMsg = "Change parent to be one of '"+labels.toString()+"'.";

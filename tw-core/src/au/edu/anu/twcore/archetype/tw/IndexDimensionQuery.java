@@ -72,7 +72,7 @@ public class IndexDimensionQuery extends QueryAdaptor {
 			int i = index.size() - 1;
 			boolean ok = true;
 			String ixs = null;
-			String nodeId = null;
+			String nodeRef = null;
 
 			while (parent != null) {
 				if (parent instanceof TableNode) {
@@ -100,7 +100,7 @@ public class IndexDimensionQuery extends QueryAdaptor {
 					String ix = index.getWithFlatIndex(i--);
 					// compare them
 					ixs = ix;
-					nodeId = parent.toShortString();
+					nodeRef = parent.toShortString();
 					try {
 						IndexString.stringToIndex(ix, dd);
 						ok &= true;
@@ -112,7 +112,7 @@ public class IndexDimensionQuery extends QueryAdaptor {
 				parent = parent.getParent();
 			}
 			if (!ok) {
-				String[] msgs = TextTranslations.getIndexDimensionQuery(ixs,nodeId);
+				String[] msgs = TextTranslations.getIndexDimensionQuery(ixs,nodeRef);
 				actionMsg = msgs[0];
 				errorMsg = msgs[1];
 //				actionMsg = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeId + "'.";

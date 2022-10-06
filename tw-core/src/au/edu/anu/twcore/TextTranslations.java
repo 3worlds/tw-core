@@ -786,7 +786,7 @@ public class TextTranslations {
 	/**
 	 * Fail message for {@link GuardAreaMaxWidthQuery}.
 	 * 
-	 * @param width Current width value.
+	 * @param width Current guard area width value.
 	 * @return action and compliance messages.
 	 */
 	public static String[] getGuardAreaMaxWidthQuery(double width) {
@@ -803,20 +803,33 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getIndexDimensionQuery(String ixs, String nodeName) {
+	/**
+	 * Fail message for {@link IndexDimensionQuery}.
+	 * 
+	 * @param ixs     Index range definition string.
+	 * @param nodeRef Subject node reference (Label:name).
+	 * @return action and compliance messages.
+	 */
+	public static String[] getIndexDimensionQuery(String ixs, String nodeRef) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeName + "'.";
-			cm = "Index string '" + ixs + "' out of range for table '" + nodeName + "'.";
+			am = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeRef + "'.";
+			cm = "Index string '" + ixs + "' out of range for table '" + nodeRef + "'.";
 		} else {
-			am = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeName + "'.";
-			cm = "Index string '" + ixs + "' out of range for table '" + nodeName + "'.";
+			am = "Edit '" + ixs + "' to be within range of the dimensions for '" + nodeRef + "'.";
+			cm = "Index string '" + ixs + "' out of range for table '" + nodeRef + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link InputFileExistQuery}.
+	 * 
+	 * @param file File path to missing file.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getInputFileExistQuery(File file) {
 		String am;
 		String cm;
@@ -841,6 +854,13 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link IsInIntervalQuery}.
+	 * 
+	 * @param value    The value which is not within the interval bounds.
+	 * @param interval The bounding interval
+	 * @return action and compliance messages.
+	 */
 	public static String[] getIsInIntervalQuery(Object value, Interval interval) {
 		String am;
 		String cm;
@@ -855,6 +875,12 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link IsBoundedIntervalQuery}.
+	 * 
+	 * @param interval The interval lacking bounds.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getIsBoundedIntervalQuery(Interval interval) {
 		String am;
 		String cm;
@@ -925,6 +951,15 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link IsInRangeQuery}.
+	 * 
+	 * @param key   The property name.
+	 * @param value The value that must be within range.
+	 * @param min   Range minimum.
+	 * @param max   Range maximum.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getIsInRangeQuery(String key, Object value, double min, double max) {
 		String am;
 		String cm;
@@ -945,6 +980,14 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link IsInValueSetQuery}.
+	 * 
+	 * @param key        Property name.
+	 * @param valueSet   Table of allowed values.
+	 * @param foundValue Value found.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getIsInValueSetQuery(String key, Table valueSet, Object foundValue) {
 		String am;
 		String cm;
@@ -1022,6 +1065,13 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link NameStartsWithUpperCaseQuery}.
+	 * 
+	 * @param item Item name.
+	 * @param c    Found first character.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getNameStartsWithUpperCaseQuery(String item, char c) {
 		String am;
 		String cm;
@@ -1036,6 +1086,12 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link NodeAtLeastOneChildLabelOfQuery}.
+	 * 
+	 * @param labels Allowed labels.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getNodeAtLeastOneChildLabelOfQuery(List<String> labels) {
 		String am;
 		String cm;
@@ -1050,6 +1106,14 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link NodeHasPropertyValueQuery}.
+	 * 
+	 * @param propertyName   The subject property key.
+	 * @param expectedValues Allowed values.
+	 * @param foundValue     Value found.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getNodeHasPropertyValueQuery(String propertyName, List<Object> expectedValues,
 			Object foundValue) {
 		String am;
@@ -1069,6 +1133,13 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * First of two fail message for {@link OutEdgeXNorQuery}.
+	 * 
+	 * @param edgeLabel1 One allowed edge label.
+	 * @param edgeLabel2 Other allowed edge label.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getOutEdgeXNorQuery1(String[] edgeLabel1, String[] edgeLabel2) {
 		String am;
 		String cm;
@@ -1088,11 +1159,16 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Second of two fail message for {@link OutEdgeXNorQuery}.
+	 * 
+	 * @param edgeLabel1 One allowed edge label.
+	 * @param edgeLabel2 Other allowed edge label.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getOutEdgeXNorQuery2(String[] edgeLabel1, String[] edgeLabel2) {
 		String am;
 		String cm;
-		// TODO: msg possibly incorrect
-		// TODO: List what was found
 		if (Language.French()) {
 			am = "Add at least one of " + Arrays.toString(edgeLabel1) + " edges.";
 			cm = "Expected at least one edge labelled from " + Arrays.toString(edgeLabel1) + " and one edge labelled "
@@ -1106,6 +1182,13 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link OutEdgeXorQuery}.
+	 * 
+	 * @param edgeLabel1 One allowed edge label.
+	 * @param edgeLabel2 Other allowed edge label.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getOutEdgeXorQuery(String[] edgeLabel1, String[] edgeLabel2) {
 		// TODO: List what was found
 		String am;
@@ -1123,6 +1206,13 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link OutEdgeXorQuery}.
+	 * 
+	 * @param nodeLabel1 One allowed node label.
+	 * @param nodeLabel2 Other allowed node label.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getOutNodeXorQuery(String nodeLabel1, String nodeLabel2) {
 		// TODO: List what was found
 		String am;
@@ -1138,100 +1228,154 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getParentClassQuery(List<String> klasses, String foundParent) {
+	/**
+	 * Fail message for {@link ParentClassQuery}.
+	 * 
+	 * @param klasses       Allowed subclasses
+	 * @param foundSubclass
+	 * @return action and compliance messages.
+	 */
+	public static String[] getParentClassQuery(List<String> klasses, String foundSubclass) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Set parent to one of " + klasses + ".";
-			cm = "Expected parent to be one of " + klasses + " but found '" + foundParent + "'.";
+			cm = "Expected parent subclass to be one of " + klasses + " but found '" + foundSubclass + "'.";
 		} else {
 			am = "Set parent to one of " + klasses + ".";
-			cm = "Expected parent to be one of " + klasses + " but found '" + foundParent + "'.";
-		}
-		String[] result = { am, cm };
-		return result;
-	}
-
-	public static String[] getParentHasPropertyValue(String propertyName, Object foundValue,
-			List<Object> expectedValues) {
-		String am;
-		String cm;
-		if (Language.French()) {
-			am = "Change property value of '" + propertyName + "' to one of " + expectedValues + ".";
-			cm = "Expected '" + propertyName + "' value to be one of '" + expectedValues.toString() + "' but found '"
-					+ foundValue + "'.";
-		} else {
-			am = "Change property value of '" + propertyName + "' to one of " + expectedValues + ".";
-			cm = "Expected '" + propertyName + "' value to be one of '" + expectedValues.toString() + "' but found '"
-					+ foundValue + "'.";
-		}
-		String[] result = { am, cm };
-		return result;
-	}
-
-	public static String[] getParentLabelQuery(List<String> labels, String foundParent) {
-		String am;
-		String cm;
-		if (Language.French()) {
-			am = "Change parent to be one of '" + labels + "'.";
-			cm = "Expected parent to be on of '" + labels + "' but found '" + foundParent + "'.";
-		} else {
-			am = "Change parent to be one of '" + labels + "'.";
-			cm = "Expected parent to be on of '" + labels + "' but found '" + foundParent + "'.";
-		}
-		String[] result = { am, cm };
-		return result;
-	}
-
-	public static String[] getPropertyXorQuery(String name1, String name2) {
-		String am;
-		String cm;
-		if (Language.French()) {
-			am = "Edit graph file with text editor to remove one of the properties '" + name1 + "' or '" + name2 + "'.";
-			cm = "Expected property named either '" + name1 + "' or '" + name2 + "' but not both.";
-		} else {
-			am = "Edit graph file with text editor to remove one of the properties '" + name1 + "' or '" + name2 + "'.";
-			cm = "Expected property named either '" + name1 + "' or '" + name2 + "' but not both.";
-		}
-		String[] result = { am, cm };
-		return result;
-	}
-
-	public static String[] getRankingPropertyQuery1(String propName, String elementList, String numberList,
-			String nodeName) {
-		String am;
-		String cm;
-		if (Language.French()) {
-			am = "Edit '" + propName + "' values for nodes [" + elementList + "] to unique values.";
-			cm = "Expected '" + propName + "' values for children of '" + nodeName + "' to be unique but found values ["
-					+ numberList + ".";
-		} else {
-			am = "Edit '" + propName + "' values for nodes [" + elementList + "] to unique values.";
-			cm = "Expected '" + propName + "' values for children of '" + nodeName + "' to be unique but found values ["
-					+ numberList + ".";
-		}
-		String[] result = { am, cm };
-		return result;
-	}
-
-	public static String[] getRankingPropertyQuery2(String propName, String elementList, String numberList,
-			String edgeLabel) {
-		String am;
-		String cm;
-		if (Language.French()) {
-			am = "Edit '" + propName + "' values for elements [" + elementList + "] to unique values.";
-			cm = "Expected '" + propName + "' values of '" + edgeLabel + "' to be unique but found " + numberList + ".";
-		} else {
-			am = "Edit '" + propName + "' values for elements [" + elementList + "] to unique values.";
-			cm = "Expected '" + propName + "' values of '" + edgeLabel + "' to be unique but found " + numberList + ".";
+			cm = "Expected parent subclass to be one of " + klasses + " but found '" + foundSubclass + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
 	/**
-	 * Check that a root record is used by one and only one category {autoVar,
-	 * decorators, drivers, constants}.
+	 * Fail message for {@link ParentHasPropertyValue}.
+	 * 
+	 * @param propertyName  Property name (key).
+	 * @param foundValue    Current value.
+	 * @param allowedValues Allowed values.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getParentHasPropertyValue(String propertyName, Object foundValue,
+			List<Object> allowedValues) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Change property value of '" + propertyName + "' to one of " + allowedValues + ".";
+			cm = "Expected '" + propertyName + "' value to be one of '" + allowedValues.toString() + "' but found '"
+					+ foundValue + "'.";
+		} else {
+			am = "Change property value of '" + propertyName + "' to one of " + allowedValues + ".";
+			cm = "Expected '" + propertyName + "' value to be one of '" + allowedValues.toString() + "' but found '"
+					+ foundValue + "'.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	/**
+	 * Fail message for {@link ParentLabelQuery}.
+	 * 
+	 * @param allowedLabels List of allowable values.
+	 * @param foundParent   Reference of parent found.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getParentLabelQuery(List<String> allowedLabels, String foundParent) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Change parent to be one of '" + allowedLabels + "'.";
+			cm = "Expected parent to be on of '" + allowedLabels + "' but found '" + foundParent + "'.";
+		} else {
+			am = "Change parent to be one of '" + allowedLabels + "'.";
+			cm = "Expected parent to be on of '" + allowedLabels + "' but found '" + foundParent + "'.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	/**
+	 * Fail message for {@link PropertyXorQuery}.
+	 * 
+	 * @param propertyKey1 One property name.
+	 * @param propertyKey2 Other property name.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getPropertyXorQuery(String propertyKey1, String propertyKey2) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Edit graph file with text editor to remove one of the properties '" + propertyKey1 + "' or '"
+					+ propertyKey2 + "'.";
+			cm = "Expected property named either '" + propertyKey1 + "' or '" + propertyKey2 + "' but not both.";
+		} else {
+			am = "Edit graph file with text editor to remove one of the properties '" + propertyKey1 + "' or '"
+					+ propertyKey2 + "'.";
+			cm = "Expected property named either '" + propertyKey1 + "' or '" + propertyKey2 + "' but not both.";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	/**
+	 * Fail message for {@link RankingPropertyQuery} to test nodes.
+	 * 
+	 * @param propName      Property name (key).
+	 * @param allowedValues List of allowable property values.
+	 * @param foundValues   List of values found.
+	 * @param nodeReference Reference to the node containing the property.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getRankingPropertyQuery1(String propName, String allowedValues, String foundValues,
+			String nodeReference) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Edit '" + propName + "' values for nodes [" + allowedValues + "] to unique values.";
+			cm = "Expected '" + propName + "' values for children of '" + nodeReference
+					+ "' to be unique but found values [" + foundValues + ".";
+		} else {
+			am = "Edit '" + propName + "' values for nodes [" + allowedValues + "] to unique values.";
+			cm = "Expected '" + propName + "' values for children of '" + nodeReference
+					+ "' to be unique but found values [" + foundValues + ".";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	/**
+	 * Fail message for {@link RankingPropertyQuery} to test edges.
+	 * 
+	 * @param propName      Property name (key).
+	 * @param allowedValues List of allowable property values.
+	 * @param foundValues   List of values found.
+	 * @param edgeReference Reference to the edge containing the property.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getRankingPropertyQuery2(String propName, String allowedValues, String foundValues,
+			String edgeReference) {
+		String am;
+		String cm;
+		if (Language.French()) {
+			am = "Edit '" + propName + "' values for elements [" + allowedValues + "] to unique values.";
+			cm = "Expected '" + propName + "' values of '" + edgeReference + "' to be unique but found " + foundValues
+					+ ".";
+		} else {
+			am = "Edit '" + propName + "' values for elements [" + allowedValues + "] to unique values.";
+			cm = "Expected '" + propName + "' values of '" + edgeReference + "' to be unique but found " + foundValues
+					+ ".";
+		}
+		String[] result = { am, cm };
+		return result;
+	}
+
+	/**
+	 * Fail message for {@link RecordUsedByAtMostOneCategoryQuery}.
+	 * 
+	 * @param target End node.
+	 * @param nEdges Number of edges found.
+	 * @return action and compliance messages.
 	 */
 	public static String[] getRecordUsedByAtMostOneCategoryQuery(String target, int nEdges) {
 		String am;
@@ -1253,6 +1397,13 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link RequirePropertyQuery}.
+	 * 
+	 * @param p1 Required property.
+	 * @param p2 Found property.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getRequirePropertyQuery(String p1, String p2) {
 		String am;
 		String cm;
@@ -1269,55 +1420,88 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getSearchProcessConsistencyQuery(String procName, String spaceName, String assocList) {
+	/**
+	 * Fail message for {@link SearchProcessConsistencyQuery}.
+	 * 
+	 * @param processReference Reference to the Process node.
+	 * @param spaceReference   Reference to the Space node.
+	 * @param foundReferences  List of references of associated nodes.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getSearchProcessConsistencyQuery(String processReference, String spaceReference,
+			String foundReferences) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Reconfigure graph so that all componentTypes processed by '" + procName
-					+ "' have valid coordinates for '" + spaceName + "'.";
-			cm = "Expected all componentTypes processed by '" + procName + "' to have valid coordinates for '"
-					+ spaceName + "' but found associations with '" + assocList + "'.";
+			am = "Reconfigure graph so that all componentTypes processed by '" + processReference
+					+ "' have valid coordinates for '" + spaceReference + "'.";
+			cm = "Expected all componentTypes processed by '" + processReference + "' to have valid coordinates for '"
+					+ spaceReference + "' but found associations with '" + foundReferences + "'.";
 		} else {
-			am = "Reconfigure graph so that all componentTypes processed by '" + procName
-					+ "' have valid coordinates for '" + spaceName + "'.";
-			cm = "Expected all componentTypes processed by '" + procName + "' to have valid coordinates for '"
-					+ spaceName + "' but found associations with '" + assocList + "'.";
+			am = "Reconfigure graph so that all componentTypes processed by '" + processReference
+					+ "' have valid coordinates for '" + spaceReference + "'.";
+			cm = "Expected all componentTypes processed by '" + processReference + "' to have valid coordinates for '"
+					+ spaceReference + "' but found associations with '" + foundReferences + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getSenderInRangeQuery(String pKey, IntegerRange simRange, IntegerRange listenerRange,
-			int nReps, int firstSender) {
+	/**
+	 * Fail message for {@link SenderInRangeQuery}.
+	 * 
+	 * @param propertyName Name (key) of the property.
+	 * @param allowedRange Allowable listening range
+	 * @param foundRange   Found range of simulators.
+	 * @param nReps        Number of replicate simulations.
+	 * @param firstSender  Lowest simulator id.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getSenderInRangeQuery(String propertyName, IntegerRange allowedRange,
+			IntegerRange foundRange, int nReps, int firstSender) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Edit property '" + pKey + "' to receive data in the range " + simRange + ".";
-			cm = "Expected sufficent simulator(s) to send data in the range " + listenerRange + " but found only "
-					+ nReps + " simulator(s). [" + pKey + "=" + firstSender + "]";
+			am = "Edit property '" + propertyName + "' to receive data in the range " + allowedRange + ".";
+			cm = "Expected sufficent simulator(s) to send data in the range " + foundRange + " but found only " + nReps
+					+ " simulator(s). [" + propertyName + "=" + firstSender + "]";
 		} else {
-			am = "Edit property '" + pKey + "' to receive data in the range " + simRange + ".";
-			cm = "Expected sufficent simulator(s) to send data in the range " + listenerRange + " but found only "
-					+ nReps + " simulator(s). [" + pKey + "=" + firstSender + "]";
+			am = "Edit property '" + propertyName + "' to receive data in the range " + allowedRange + ".";
+			cm = "Expected sufficent simulator(s) to send data in the range " + foundRange + " but found only " + nReps
+					+ " simulator(s). [" + propertyName + "=" + firstSender + "]";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getSpaceCoordinateTypeQuery(String typeName) {
+	/**
+	 * Fail message for {@link SpaceCoordinateTypeQuery}.
+	 * 
+	 * @param foundType Field type found.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getSpaceCoordinateTypeQuery(String foundType) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Change coordinate fields to be numeric.";
-			cm = "Expected coordinate fields to be numeric but found '" + typeName + "'.";
+			cm = "Expected coordinate fields to be numeric but found '" + foundType + "'.";
 		} else {
 			am = "Change coordinate fields to be numeric.";
-			cm = "Expected coordinate fields to be numeric but found '" + typeName + "'.";
+			cm = "Expected coordinate fields to be numeric but found '" + foundType + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link SpaceDimensionConsistencyQuery}.
+	 * 
+	 * @param dif       difference in found and expected dimensions.
+	 * @param dimension Expected number of dimensions.
+	 * @param label     Edge type.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getSpaceDimensionConsistencyQuery(int dif, int dimension, String label) {
 		String am;
 		String cm;
@@ -1338,22 +1522,36 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getSpaceRecordTypeQuery(String fieldNames) {
+	/**
+	 * Fail message for {@link SpaceRecordTypeQuery}.
+	 * 
+	 * @param fieldNodeReferences Reference of the subject Field nodes.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getSpaceRecordTypeQuery(String fieldNodeReferences) {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Set coordinate field(s) to belong to a record that is used as either a driver or constant.";
-			cm = "Expected coordinate fields '" + fieldNames
+			cm = "Expected coordinate fields '" + fieldNodeReferences
 					+ "' to belong to a record used as drivers or constants but found none.";
 		} else {
 			am = "Set coordinate field(s) to belong to a record that is used as either a driver or constant.";
-			cm = "Expected coordinate fields '" + fieldNames
+			cm = "Expected coordinate fields '" + fieldNodeReferences
 					+ "' to belong to a record used as drivers or constants but found none.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link TimeUnitValidityQuery}.
+	 * 
+	 * @param key        Property name.
+	 * @param validUnits List of valid time units.
+	 * @param foundValue Found time unit.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getTimeUnitValidityQuery(String key, String validUnits, String foundValue) {
 		String am;
 		String cm;
@@ -1368,6 +1566,13 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link UICanStopQuery}.
+	 * 
+	 * @param scLabel  Stopping condition label.
+	 * @param dynLabel Dynamics label.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getUICanStopQuery(String scLabel, String dynLabel) {
 		String am;
 		String cm;
@@ -1382,23 +1587,30 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getUIStateMachineControllerQuery(String klass, List<String> ctrlNames) {
+	/**
+	 * Fail message for {@link UIStateMachineControllerQuery}.
+	 * 
+	 * @param klass            Base class of controllers.
+	 * @param foundControllers List of found controllers
+	 * @return action and compliance messages.
+	 */
+	public static String[] getUIStateMachineControllerQuery(String klass, List<String> foundControllers) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			if (ctrlNames.isEmpty())
+			if (foundControllers.isEmpty())
 				am = "Add a control widget to either [top,bottom,tab,container].";
 			else
-				am = "Remove one of " + ctrlNames + ".";
+				am = "Remove one of " + foundControllers + ".";
 			cm = "Expected one widget that descends from '" + klass
-					+ "' as child of [top,bottom,tab,container] but found " + ctrlNames.size() + ".";
+					+ "' as child of [top,bottom,tab,container] but found " + foundControllers.size() + ".";
 		} else {
-			if (ctrlNames.isEmpty())
+			if (foundControllers.isEmpty())
 				am = "Add a control widget to either [top,bottom,tab,container].";
 			else
-				am = "Remove one of " + ctrlNames + ".";
+				am = "Remove one of " + foundControllers + ".";
 			cm = "Expected one widget that descends from '" + klass
-					+ "' as child of [top,bottom,tab,container] but found " + ctrlNames.size() + ".";
+					+ "' as child of [top,bottom,tab,container] but found " + foundControllers.size() + ".";
 		}
 		String[] result = { am, cm };
 		return result;
@@ -1432,42 +1644,68 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * First of four fail messages for {@link TimeIntervalValidityQuery}. Reports
+	 * when time line type is arbitrary.
+	 * 
+	 * @param shortestTimeUnitKey Property name of shortest time unit.
+	 * @param longestTimeUnitKey  Property name of longest time unit.
+	 * @param timeLineRef         Reference to the Timeline node.
+	 * @param allowedMin          Allowed minimum time unit.
+	 * @param allowedMax          Allowed maximum time unit.
+	 * @param foundShortest       Found shortest time unit.
+	 * @param foundLongest        Found longest time unit.
+	 * @param scaleKey            Current time scale type property.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getTimeIntervalValidityQuery1(String shortestTimeUnitKey, String longestTimeUnitKey,
-			String tlName, String allowedMin, String allowedMax, String foundShortest, String foundLongest,
+			String timeLineRef, String allowedMin, String allowedMax, String foundShortest, String foundLongest,
 			String scaleKey) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '" + tlName + "' to '"
+			am = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '" + timeLineRef + "' to '"
 					+ allowedMax + "'.";
-			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName + "' to be '"
-					+ allowedMax + "' for '" + scaleKey + "' but found '" + foundShortest + "' and '" + foundLongest
-					+ "'.";
+			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + timeLineRef
+					+ "' to be '" + allowedMax + "' for '" + scaleKey + "' but found '" + foundShortest + "' and '"
+					+ foundLongest + "'.";
 		} else {
-			am = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '" + tlName + "' to '"
+			am = "Set '" + shortestTimeUnitKey + "' or '" + longestTimeUnitKey + "' of '" + timeLineRef + "' to '"
 					+ allowedMax + "'.";
-			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName + "' to be '"
-					+ allowedMax + "' for '" + scaleKey + "' but found '" + foundShortest + "' and '" + foundLongest
-					+ "'.";
+			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + timeLineRef
+					+ "' to be '" + allowedMax + "' for '" + scaleKey + "' but found '" + foundShortest + "' and '"
+					+ foundLongest + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
+	/**
+	 * Second of four fail messages for {@link TimeIntervalValidityQuery}. Reports
+	 * when time line type is mono.
+	 * 
+	 * @param shortestTimeUnitKey Property name of shortest time unit.
+	 * @param longestTimeUnitKey  Property name of longest time unit.
+	 * @param timelineRef         Reference to the Timeline node.
+	 * @param scaleKey            Current time scale type property.
+	 * @param foundShortest       Found shortest time unit.
+	 * @param foundLongest        Found longest time unit.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getTimeIntervalValidityQuery2(String shortestTimeUnitKey, String longestTimeUnitKey,
-			String tlName, String scaleKey, String foundShortest, String foundLongest) {
+			String timelineRef, String scaleKey, String foundShortest, String foundLongest) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Set '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
+			am = "Set '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + timelineRef
 					+ "' to the same value.";
-			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
+			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + timelineRef
 					+ "' must be the same for '" + scaleKey + "' but found '" + foundShortest + "' and '" + foundLongest
 					+ "'.";
 		} else {
-			am = "Set '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
+			am = "Set '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + timelineRef
 					+ "' to the same value.";
-			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + tlName
+			cm = "Expected '" + shortestTimeUnitKey + "' and '" + longestTimeUnitKey + "' of '" + timelineRef
 					+ "' must be the same for '" + scaleKey + "' but found '" + foundShortest + "' and '" + foundLongest
 					+ "'.";
 		}
@@ -1475,6 +1713,17 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Third of four fail messages for {@link TimeIntervalValidityQuery}. Reports
+	 * when shortest is greater then longest.
+	 * 
+	 * @param shortestKey   Property name of shortest time unit.
+	 * @param longestKey    Property name of longest time unit.
+	 * @param scaleType     Current time scale type property.
+	 * @param foundShortest Found shortest time unit.
+	 * @param foundLongest  Found longest time unit.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getTimeIntervalValidityQuery3(String shortestKey, String longestKey, String scaleType,
 			String foundShortest, String foundLongest) {
 		String am;
@@ -1492,6 +1741,15 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Forth of four fail messages for {@link TimeIntervalValidityQuery}. Reports
+	 * when the time line range is unnecessarily wide.
+	 * 
+	 * @param key      Subject property name.
+	 * @param expected Expected value.
+	 * @param found    Current value.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getTimeIntervalValidityQuery4(String key, String expected, String found) {
 		String am;
 		String cm;
@@ -1508,13 +1766,18 @@ public class TextTranslations {
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link DynamicsMustHaveAtLeastOneFunction}.
+	 * 
+	 * @return action and compliance messages.
+	 */
 	public static String[] DynamicsMustHaveAtLeastOneFunctionQuery() {
 		String am;
 		String cm;
 		if (Language.French()) {
 			am = "Add at least one 'function:' node to a process in the 'dynamics:' sub-tree.";
 			cm = "Expected at least one 'function:' node but found none.";
-		} else {// make sure default is English !
+		} else {
 			am = "Add at least one 'function:' node to a process in the 'dynamics:' sub-tree.";
 			cm = "Expected at least one 'function:' node but found none.";
 		}
@@ -1522,60 +1785,93 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getTreatmentTableQuery2(String edgeName, String key, String entry, DataElementType dataType,
-			int i) {
+	/**
+	 * Fail message for {@link TreatmentTableQuery} when there is a type mismatch.
+	 * 
+	 * @param edgeRef      Edge reference
+	 * @param key          Property name.
+	 * @param foundType    Current data type.
+	 * @param expectedType Required data type.
+	 * @param i            Index of key
+	 * @return action and compliance messages.
+	 */
+	public static String[] getTreatmentTableQuery2(String edgeRef, String key, String foundType,
+			DataElementType expectedType, int i) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Modifier la valeur de '" + edgeName + "#" + key + "[" + i + "]' pour une valeur de type '" + dataType
-					+ "'.";
-			cm = "Valeur de '" + edgeName + "#" + key + "[" + i + "]' de type , '" + dataType + "' attendue, type '"
-					+ entry + "' trouvé.";
+			am = "Modifier la valeur de '" + edgeRef + "#" + key + "[" + i + "]' pour une valeur de type '"
+					+ expectedType + "'.";
+			cm = "Valeur de '" + edgeRef + "#" + key + "[" + i + "]' de type , '" + expectedType + "' attendue, type '"
+					+ foundType + "' trouvé.";
 		} else {
-			am = "Edit '" + edgeName + "#" + key + "[" + i + "]' to a '" + dataType + "' type value.";
-			cm = "Expected '" + edgeName + "#" + key + "[" + i + "]' to be of type '" + dataType + "' but found '"
-					+ entry + "'.";
+			am = "Edit '" + edgeRef + "#" + key + "[" + i + "]' to a '" + expectedType + "' type value.";
+			cm = "Expected '" + edgeRef + "#" + key + "[" + i + "]' to be of type '" + expectedType + "' but found '"
+					+ foundType + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getTreatmentTableQuery(String edgeName, String key) {
+	/**
+	 * Fail message for {@link TreatmentTableQuery} when there are no treatments
+	 * levels set.
+	 * 
+	 * @param edgeRef Edge reference.
+	 * @param key     Property name.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getTreatmentTableQuery(String edgeRef, String key) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Ajouter au moins une valeur à la variable '" + edgeName + "#" + key + "'.";
-			cm = "La variable '" + edgeName + "#" + key + "' ne contient aucune valeur utilisable.";
+			am = "Ajouter au moins une valeur à la variable '" + edgeRef + "#" + key + "'.";
+			cm = "La variable '" + edgeRef + "#" + key + "' ne contient aucune valeur utilisable.";
 		} else {
-			am = "Add at least one value to '" + edgeName + "#" + key + "'.";
-			cm = "Expected '" + edgeName + "#" + key + "' to contain at least one value, but found none.";
+			am = "Add at least one value to '" + edgeRef + "#" + key + "'.";
+			cm = "Expected '" + edgeRef + "#" + key + "' to contain at least one value, but found none.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getHasValidFileNameChars(String value) {
+	/**
+	 * Fail message for {@link HasValidFileNameChars}.
+	 * 
+	 * @param filename Current file name.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getHasValidFileNameChars(String filename) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Edit '" + value + "' to a valid file name";
-			cm = "Expected valid file name but found '" + value + "'.";
+			am = "Edit '" + filename + "' to a valid file name";
+			cm = "Expected valid file name but found '" + filename + "'.";
 		} else {
-			am = "Edit '" + value + "' to a valid file name";
-			cm = "Expected valid file name but found '" + value + "'.";
+			am = "Edit '" + filename + "' to a valid file name";
+			cm = "Expected valid file name but found '" + filename + "'.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
-	public static String[] getOutNodeOrQuery(String nodeLabel1, String nodeLabel2, List<Node> lstNode1,
-			List<Node> lstNode2) {
+	/**
+	 * Fail message for {@link OutNodeOrQuery}.
+	 * 
+	 * @param nodeLabel1  One node label option.
+	 * @param nodeLabel2  Other node label option.
+	 * @param foundNodes1 Current list of nodes for one option.
+	 * @param foundNodes2 Current list of nodes for other option.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getOutNodeOrQuery(String nodeLabel1, String nodeLabel2, List<Node> foundNodes1,
+			List<Node> foundNodes2) {
 		String am;
 		String cm;
 		List<String> lst = new ArrayList<>();
-		for (Node n : lstNode1)
+		for (Node n : foundNodes1)
 			lst.add(n.toShortString());
-		for (Node n : lstNode2)
+		for (Node n : foundNodes2)
 			lst.add(n.toShortString());
 
 		if (Language.French()) {
@@ -1591,20 +1887,34 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getTreatmentExistsQuery(String edt, String label) {
+	/**
+	 * Fail message for {@link TreatmentExistsQuery}.
+	 * 
+	 * @param edt            Experiment type.
+	 * @param treatmentLabel The label of the required node.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getTreatmentExistsQuery(String edt, String treatmentLabel) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Add a '" + label + "' node for '" + edt + "' experiments.";
-			cm = "Expected '" + edt + "' experiments to have one '" + label + "' node but found none.";
+			am = "Add a '" + treatmentLabel + "' node for '" + edt + "' experiments.";
+			cm = "Expected '" + edt + "' experiments to have one '" + treatmentLabel + "' node but found none.";
 		} else {
-			am = "Add a '" + label + "' node for '" + edt + "' experiments.";
-			cm = "Expected '" + edt + "' experiments to have one '" + label + "' node but found none.";
+			am = "Add a '" + treatmentLabel + "' node for '" + edt + "' experiments.";
+			cm = "Expected '" + edt + "' experiments to have one '" + treatmentLabel + "' node but found none.";
 		}
 		String[] result = { am, cm };
 		return result;
 	}
 
+	/**
+	 * Fail message for {@link TableDimsMustMatch}.
+	 * 
+	 * @param key1 First property name.
+	 * @param key2 Second property name.
+	 * @return action and compliance messages.
+	 */
 	public static String[] getTableDimsMustMatch(String key1, String key2) {
 		String am;
 		String cm;
@@ -1622,16 +1932,23 @@ public class TextTranslations {
 		return result;
 	}
 
-	public static String[] getCheckConstantTrackingQuery(String edgeName, String fieldOrTable) {
+	/**
+	 * Fail message for {@link CheckConstantTrackingQuery}.
+	 * 
+	 * @param edgeRef         Reference to the subject edge.
+	 * @param fieldOrTableRef Reference to the end node.
+	 * @return action and compliance messages.
+	 */
+	public static String[] getCheckConstantTrackingQuery(String edgeRef, String fieldOrTableRef) {
 		String am;
 		String cm;
 		if (Language.French()) {
-			am = "Delete '" + edgeName + "'. Constants cannot be tracked.";
-			cm = "Expected '" + edgeName + "' to track a driver or decorator but found data '" + fieldOrTable
+			am = "Delete '" + edgeRef + "'. Constants cannot be tracked.";
+			cm = "Expected '" + edgeRef + "' to track a driver or decorator but found data '" + fieldOrTableRef
 					+ "' to be a constant.";
 		} else {// ensure default is English or unhandled languages will produce no message.
-			am = "Delete '" + edgeName + "'. Constants cannot be tracked.";
-			cm = "Expected '" + edgeName + "' to track a driver or decorator but found data '" + fieldOrTable
+			am = "Delete '" + edgeRef + "'. Constants cannot be tracked.";
+			cm = "Expected '" + edgeRef + "' to track a driver or decorator but found data '" + fieldOrTableRef
 					+ "' to be a constant.";
 		}
 		String[] result = { am, cm };
@@ -1641,12 +1958,12 @@ public class TextTranslations {
 
 // COPY AND PASTE THIS CONVENIENCE TEMPLATE
 //public static String[] getXXX() {
-//String am;
-//String cm;
+//String am; // Action message
+//String cm; // Constraint message
 //if (Language.French()) {
 //	am = "";
 //	cm = "";
-//} else {
+//} else { // default
 //	am = "";
 //	cm = "";
 //}

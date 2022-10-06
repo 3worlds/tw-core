@@ -73,7 +73,7 @@ public class DataTracker0D extends AggregatorDataTracker<Output0DData> {
 			List<CategorizedComponent> trackedComponents,
 			Collection<String> track,
 			ReadOnlyPropertyList fieldMetadata) {
-		super(DataMessageTypes.DIM0,simulatorId,selection,sampleSize,samplingPool,samplingPoolIds,
+		super(AbstractDataTracker.DIM0,simulatorId,selection,sampleSize,samplingPool,samplingPoolIds,
 			samplingPoolPermanent,trackedComponents,statistics,track,fieldMetadata);
 		metadata = new Output0DMetadata();
 		for (String s : track) {

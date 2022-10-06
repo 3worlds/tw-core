@@ -29,23 +29,27 @@
 package au.edu.anu.twcore.data.runtime;
 
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
+import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 
 /**
  * Data for time series.
  * <p>
- * Data for time series are written in arrays to messages, as doubles, longs or strings. The ranking of
- * labels to indices in the arrays is passed in this metadata message, together with all other metadata
- * (eg precision, min, max, units).
+ * Data for time series are written in arrays to messages, as doubles, longs or
+ * strings. The ranking of labels to indices in the arrays is passed in this
+ * metadata message, together with all other metadata (eg precision, min, max,
+ * units).
  * </p>
  * <p>
- * The sender has to know in which order the values should be sent - usually it will generate a
- * TimeSeriesMetadata record which maps the names to table indices </p>
+ * The sender has to know in which order the values should be sent - usually it
+ * will generate a TimeSeriesMetadata record which maps the names to table
+ * indices
+ * </p>
  * 
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
 public class Output0DData extends LabelledItemData implements OutputTwData {
-	
+
 	private Output0DMetadata meta;
 	// this tells the widget on which dispayChannel to put the data
 	private int displayChannel;
@@ -54,34 +58,37 @@ public class Output0DData extends LabelledItemData implements OutputTwData {
 	// this table is used to send float and double values
 	private double doubleValues[];
 	// this table is used to send String values
-	private String stringValues[];	
+	private String stringValues[];
 
-	public Output0DData(SimulatorStatus status, 
-			int senderId, 
-			int metadataType, 
-			Output0DMetadata metadata) {
+	/**
+	 * @param status       Current {@link SimulatorStatus}.
+	 * @param senderId     Sender id - usually the simulator id.
+	 * @param metadataType {@link AbstractDataTracker}
+	 * @param metadata     The {@link Output0DMetadata}.
+	 */
+	public Output0DData(SimulatorStatus status, int senderId, int metadataType, Output0DMetadata metadata) {
 		super(status, senderId, metadataType);
 		this.meta = metadata;
 		intValues = new long[meta.nInt()];
 		doubleValues = new double[meta.nDouble()];
 		stringValues = new String[meta.nString()];
 	}
-	
+
 	public void setValues(long... values) {
-		for (int i=0; i<values.length; i++)
+		for (int i = 0; i < values.length; i++)
 			intValues[i] = values[i];
 	}
-	
+
 	public void setValues(double... values) {
-		for (int i=0; i<values.length; i++)
+		for (int i = 0; i < values.length; i++)
 			doubleValues[i] = values[i];
 	}
-	
+
 	public void setValues(String... values) {
-		for (int i=0; i<values.length; i++)
+		for (int i = 0; i < values.length; i++)
 			stringValues[i] = values[i];
 	}
-	
+
 	@Override
 	public void setValue(DataLabel label, double value) {
 		doubleValues[meta.indexOf(label)] = value;
@@ -114,7 +121,7 @@ public class Output0DData extends LabelledItemData implements OutputTwData {
 
 	@Override
 	public void setValue(DataLabel label, boolean value) {
-		intValues[meta.indexOf(label)] = value?1:0;
+		intValues[meta.indexOf(label)] = value ? 1 : 0;
 	}
 
 	@Override
@@ -122,7 +129,8 @@ public class Output0DData extends LabelledItemData implements OutputTwData {
 		stringValues[meta.indexOf(label)] = value;
 	}
 
-	// the order of these list exactly matches the order of intNames, doubleNames and stringNames
+	// the order of these list exactly matches the order of intNames, doubleNames
+	// and stringNames
 	// in TimeSeriesMetadata
 	public long[] getIntValues() {
 		return intValues;
@@ -131,7 +139,7 @@ public class Output0DData extends LabelledItemData implements OutputTwData {
 	public double[] getDoubleValues() {
 		return doubleValues;
 	}
-	
+
 	public String[] getStringValues() {
 		return stringValues;
 	}
@@ -147,14 +155,14 @@ public class Output0DData extends LabelledItemData implements OutputTwData {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(super.toString());
-		int i=0;
-		for (DataLabel name:meta.intNames())
+		int i = 0;
+		for (DataLabel name : meta.intNames())
 			sb.append(' ').append(name.toString()).append('=').append(intValues[i++]);
-		i=0;
-		for (DataLabel name:meta.doubleNames())
+		i = 0;
+		for (DataLabel name : meta.doubleNames())
 			sb.append(' ').append(name.toString()).append('=').append(doubleValues[i++]);
-		i=0;
-		for (DataLabel name:meta.stringNames())
+		i = 0;
+		for (DataLabel name : meta.stringNames())
 			sb.append(' ').append(name.toString()).append('=').append(stringValues[i++]);
 		return sb.toString();
 	}

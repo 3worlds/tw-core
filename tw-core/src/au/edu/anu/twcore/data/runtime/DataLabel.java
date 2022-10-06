@@ -40,69 +40,102 @@ import static fr.ens.biologie.generic.SaveableAsText.*;
  * @author Jacques Gignoux - 10 sept. 2019
  *
  */
-
-/**
- * The toString() method of this class is a hotspot problem in SpatialWidget and
- * maybe elsewhere. The thing is that this class has a 'construction' phase and
- * what is effectively a read-only phase. So a simple solution would be a
- * lazyToString method that calls toString only if the a string prop is null.
- * However, for widgets this shouldn't effect sim speed as they are in a
- * different thread.
- * 
- * Will try and see
- * 
- * @author Ian Davies -19 July 2021
- */
-// 
 public class DataLabel implements Comparable<DataLabel>, Cloneable {
 	private static final int HIERARCHYix = 3;
+	/**
+	 * Hierarchy down direction character.
+	 */
 	public static final String HIERARCHY_DOWN = Character.toString(BLOCK_DELIMITERS[HIERARCHYix][BLOCK_CLOSE]);
+	/**
+	 * Hierarchy up direction character.
+	 */
 	public static final String HIERARCHY_UP = Character.toString(BLOCK_DELIMITERS[HIERARCHYix][BLOCK_OPEN]);
 	protected List<String> label = new ArrayList<String>();
 
+	/**
+	 * Default constructor
+	 */
 	public DataLabel() {
 		super();
 	}
 
+	/**
+	 * Constructor with variable parts args.
+	 * 
+	 * @param labelParts variable list of parts.
+	 */
 	public DataLabel(String... labelParts) {
 		super();
 		for (String lab : labelParts)
 			label.add(lab);
 	}
 
+	/**
+	 * Constructor from a collection of parts.
+	 * 
+	 * @param labelParts parts collection.
+	 */
 	public DataLabel(Collection<String> labelParts) {
 		super();
 		for (String lab : labelParts)
 			label.add(lab);
 	}
 
+	/**
+	 * Append a collection of parts.
+	 * 
+	 * @param labelParts parts collection.
+	 */
 	public void append(Collection<String> labelParts) {
 		label.addAll(labelParts);
 	}
 
+	/**
+	 * Append from a variable list of parts.
+	 * 
+	 * @param labelParts parts array.
+	 */
 	public void append(String... labelParts) {
 		for (String lab : labelParts)
 			label.add(lab);
 	}
 
+	/**
+	 * @return The number of label parts.
+	 */
 	public int size() {
 		return label.size();
 	}
 
+	/**
+	 * Getter for part by index.
+	 * 
+	 * @param i index of requrested part.
+	 * @return requested part of null if index is out-of-range.
+	 */
 	public String get(int i) {
 		if ((i >= 0) && (i < label.size()))
 			return label.get(i);
 		return null;
 	}
 
+	/**
+	 * Remove the last part of the list.
+	 */
 	public void stripEnd() {
 		label.remove(label.size() - 1);
 	}
 
+	/**
+	 * @return the last part of the list.
+	 */
 	public String getEnd() {
 		return label.get(label.size() - 1);
 	}
 
+	/**
+	 * @return toString() without the first part unless there is only one part.
+	 */
 	public String toStringSkipRoot() {
 		StringBuilder sb = new StringBuilder();
 		if (label.size() == 1)
@@ -144,7 +177,14 @@ public class DataLabel implements Comparable<DataLabel>, Cloneable {
 
 	private String lazyString = null;
 
-	// cf comments above
+	/**
+	 * 
+	 * The toString() can be an efficiency problem if called often without there
+	 * being any underlying change. Use this method to avoid frequent calls to
+	 * toString()
+	 * 
+	 * @return String value
+	 */
 	public String toLazyString() {
 		if (lazyString == null)
 			lazyString = toString();

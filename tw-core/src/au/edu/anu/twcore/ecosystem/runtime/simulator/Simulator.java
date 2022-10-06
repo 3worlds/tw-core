@@ -59,7 +59,6 @@ import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentData;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentContainer;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
-import au.edu.anu.twcore.ecosystem.runtime.tracking.DataMessageTypes;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.ArenaDataTracker;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SingleDataTrackerHolder;
@@ -86,7 +85,7 @@ public class Simulator implements Resettable {
 	/** a data tracker to send time data */
 	class TimeTracker extends AbstractDataTracker<TimeData, Metadata> {
 		private TimeTracker() {
-			super(DataMessageTypes.TIME, id);
+			super(AbstractDataTracker.TIME, id);
 		}
 
 		@Override

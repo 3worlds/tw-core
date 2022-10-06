@@ -48,10 +48,19 @@ import au.edu.anu.twcore.InitialisableNode;
  */
 public class FieldNode extends InitialisableNode {
 
+	/**
+	 * @param id       Unique identity of this node.
+	 * @param props    Property list for this node.
+	 * @param gfactory The graph construction factory
+	 */
 	public FieldNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
+	/**
+	 * @param id       Unique identity of this node.
+	 * @param gfactory The graph construction factory
+	 */
 	public FieldNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
@@ -66,14 +75,29 @@ public class FieldNode extends InitialisableNode {
 		return N_FIELD.initRank();
 	}
 
+	/**
+	 * Getter for the label (classId).
+	 * 
+	 * @return classId of this class.
+	 */
 	public String name() {
 		return classId();
 	}
 
+	/**
+	 * Getter for the Type of this field.
+	 * 
+	 * @return The property value.
+	 */
 	public String type() {
 		return (String) properties().getPropertyValue(P_FIELD_TYPE.key());
 	}
 
+	/**
+	 * Default instance of this Field type.
+	 * 
+	 * @return Initialised instance of field type.
+	 */
 	public Object newInstance() {
 		DataElementType dt = (DataElementType) properties().getPropertyValue(P_FIELD_TYPE.key());
 		switch (dt) {

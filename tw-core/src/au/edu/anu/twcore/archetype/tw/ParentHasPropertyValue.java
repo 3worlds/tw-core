@@ -43,13 +43,13 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
 /**
- * A query to check that a TreeNode parent has a certain property value
+ * Check that the parent of a {@link TreeNode} has a particular property value
  *
  * @author Jacques Gignoux - 9 août 2019
  *
  */
 
-public class ParentHasPropertyValue extends NodeHasPropertyValueQuery{
+public class ParentHasPropertyValue extends NodeHasPropertyValueQuery {
 	public ParentHasPropertyValue(String pname, StringTable values) {
 		super(pname, values);
 	}
@@ -121,16 +121,17 @@ public class ParentHasPropertyValue extends NodeHasPropertyValueQuery{
 	public ParentHasPropertyValue(CharTable values, String pname) {
 		super(values, pname);
 	}
-	
+
 	@Override
 	public Queryable submit(Object input) {
 		TreeNode localItem = (TreeNode) input;
 		TreeNode parent = localItem.getParent();
-		//TODO: Check this?
+		// TODO: Check this?
 		super.submit(parent);
 		if (!satisfied()) {
-			TreeGraphDataNode p = (TreeGraphDataNode)parent;
-			String[] msgs = TextTranslations.getParentHasPropertyValue(propertyName,p.properties().getPropertyValue(propertyName),expectedValues);
+			TreeGraphDataNode p = (TreeGraphDataNode) parent;
+			String[] msgs = TextTranslations.getParentHasPropertyValue(propertyName,
+					p.properties().getPropertyValue(propertyName), expectedValues);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 //			actionMsg = "Edit graph file with text editor to repair file.";
@@ -141,6 +142,5 @@ public class ParentHasPropertyValue extends NodeHasPropertyValueQuery{
 		return this;
 
 	}
-
 
 }

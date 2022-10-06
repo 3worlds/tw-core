@@ -41,7 +41,7 @@ public class ArenaDataTracker extends AbstractDataTracker<RuntimeGraphData, Meta
 	private long currentTime;
 
 	public ArenaDataTracker(int simId, ReadOnlyPropertyList meta) {
-		super(DataMessageTypes.RUNTIMEGRAPH, simId);
+		super(AbstractDataTracker.RUNTIMEGRAPH, simId);
 		metadata = new Metadata(simId, meta);
 		setInitialTime();
 	}

@@ -35,9 +35,18 @@ package fr.cnrs.iees.twcore.constants;
  *
  */
 public enum SimulatorStatus {
-	
-	Initial,  	// simulator is up but is not yet sending data
-	Active,		// simulator is up and sending data
-	Final;		// simulator is up but has finished sending data
+
+	/**
+	 * Simulator is up but is not yet sending data.
+	 */
+	Initial,
+	/**
+	 * Simulator is up and sending data.
+	 */
+	Active,
+	/**
+	 * Simulator is up but has finished sending data.
+	 */
+	Final; 
 
 }

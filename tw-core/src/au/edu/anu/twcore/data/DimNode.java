@@ -41,33 +41,40 @@ import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
- * Class matching the "dimensioner" node label in the 3Worlds configuration tree.
- * Has the "size" property.
+ * Class matching the "dimensioner" node label in the 3Worlds configuration
+ * tree. Has the "size" property.
  * 
  * @author Jacques Gignoux - 31 mai 2019
  *
  */
-public class DimNode 
-		extends InitialisableNode 
-		implements Singleton<Dimensioner>, Sealable {
+public class DimNode extends InitialisableNode implements Singleton<Dimensioner>, Sealable {
 
 	private boolean sealed = false;
 	private Dimensioner dimensioner = null;
-	
+
+	/**
+	 * @param id       Unique identity of this node.
+	 * @param props    Property list for this node.
+	 * @param gfactory The graph construction factory
+	 */
 	public DimNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
+	/**
+	 * @param id       Unique identity of this node.
+	 * @param gfactory The graph construction factory
+	 */
 	public DimNode(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
-	
+
 	@Override
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
 			sealed = false;
-			dimensioner = new Dimensioner((int)properties().getPropertyValue(P_DIMENSIONER_SIZE.key()));
+			dimensioner = new Dimensioner((int) properties().getPropertyValue(P_DIMENSIONER_SIZE.key()));
 			sealed = true;
 		}
 	}
@@ -77,12 +84,22 @@ public class DimNode
 		return N_DIMENSIONER.initRank();
 	}
 
+	/**
+	 * Getter for the label (classId).
+	 * 
+	 * @return classId of this class.
+	 */
 	public String name() {
 		return classId();
 	}
 
+	/**
+	 * Getter for the dimension size.
+	 * 
+	 * @return The property value.
+	 */
 	public int dim() {
-		return (int)properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
+		return (int) properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
 	}
 
 	@Override

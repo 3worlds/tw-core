@@ -38,6 +38,9 @@ public enum ConfigurationPropertyNames {
 	P_MODEL_PRECIS              ("precis"),
 	P_MODEL_IMPORTSNIPPET		("importSnippet"),
 	
+	/**
+	 * Integer size of a dimension.
+	 */
 	P_DIMENSIONER_SIZE 			("size"),
 	P_DIMENSIONER_RANK 			("rank"),
 	

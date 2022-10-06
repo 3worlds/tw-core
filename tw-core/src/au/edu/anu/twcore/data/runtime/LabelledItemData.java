@@ -29,30 +29,48 @@
 package au.edu.anu.twcore.data.runtime;
 
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-
+import au.edu.anu.twcore.ecosystem.runtime.tracking.AbstractDataTracker;
 /**
- * Ancestor class for data messages where the variables originate from a particular entity with
- * a unique label (e.g. a SystemComponent instance).
+ * Ancestor class for data messages where the variables originate from a
+ * particular entity with a unique label (e.g. a SystemComponent instance).
  * 
  * @author Jacques Gignoux - 16 oct. 2019
  *
  */
 public abstract class LabelledItemData extends TimeData {
-	
+
 	private DataLabel itemLabel = null;
 
+	/**
+	 * @param status       Current status of the simulator
+	 * @param senderId     Simulator unique id.
+	 * @param metaDataType {@link AbstractDataTracker}.
+	 */
 	public LabelledItemData(SimulatorStatus status, int senderId, int metaDataType) {
 		super(status, senderId, metaDataType);
 	}
-	
+
+	/**
+	 * @return The item label.
+	 */
 	public DataLabel itemLabel() {
 		return itemLabel;
 	}
-	
+
+	/**
+	 * Construct the item label from a var arg list.
+	 * 
+	 * @param labels list of label parts.
+	 */
 	public void setItemLabel(String... labels) {
 		itemLabel = new DataLabel(labels);
 	}
 
+	/**
+	 * Set the item label.
+	 * 
+	 * @param labels The item label.
+	 */
 	public void setItemLabel(DataLabel labels) {
 		itemLabel = labels;
 	}

@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"au.edu.anu.twcore.errorMessaging","l":"ModelBuildErrorMsg"},{"p":"au.edu.anu.twcore.errorMessaging","l":"ModelBuildErrors"}]
+typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"au.edu.anu.twcore.data.runtime","l":"Metadata"}];updateSearchResults();

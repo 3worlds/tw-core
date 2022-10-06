@@ -49,18 +49,30 @@ import java.util.List;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
+ * Class matching the "record" node label in the 3Worlds configuration tree.
  * 
  * @author Jacques Gignoux - 31 mai 2019
  *
  */
 public class Record extends InitialisableNode {
 
-	// default constructor
+	/**
+	 * Default constructor
+	 * 
+	 * @param id       Unique identity of this node.
+	 * @param props    Property list for this node.
+	 * @param gfactory The graph construction factory
+	 */
 	public Record(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
-	// constructor with no properties
+	/**
+	 * Donstructor with no properties
+	 * 
+	 * @param id       Unique identity of this node.
+	 * @param gfactory The graph construction factory
+	 */
 	public Record(Identity id, GraphFactory gfactory) {
 		super(id, new ExtendablePropertyListImpl(), gfactory);
 	}
@@ -75,6 +87,13 @@ public class Record extends InitialisableNode {
 		return N_RECORD.initRank();
 	}
 
+	/**
+	 * Returns a list of all leaf nodes (Fields or Tables) that are children of the
+	 * given record.
+	 * 
+	 * @param rootRecord The root record of the sub-tree.
+	 * @return List of leaf nodes.
+	 */
 	public static List<TreeGraphDataNode> getLeaves(TreeGraphDataNode rootRecord) {
 		List<TreeGraphDataNode> result = new ArrayList<>();
 		getLeaves(result, rootRecord);
@@ -98,6 +117,12 @@ public class Record extends InitialisableNode {
 
 	}
 
+	/**
+	 * Total the dimensions of a record or table in a sub-tree definition.
+	 * 
+	 * @param parent Starting node of the child search.
+	 * @return dimension index|size pair.
+	 */
 	@SuppressWarnings("unchecked")
 	public static int[][] collectDims(TreeNode parent) {
 		List<int[]> dimList = new ArrayList<>();
@@ -119,10 +144,10 @@ public class Record extends InitialisableNode {
 				int[] dd = new int[edges.size()];
 				dimList.add(dd);
 				int idx = 0;
-				for (ALDataEdge edge:edges) {
+				for (ALDataEdge edge : edges) {
 					TreeGraphDataNode dimNode = (TreeGraphDataNode) edge.endNode();
 					int size = (Integer) dimNode.properties().getPropertyValue(P_DIMENSIONER_SIZE.key());
-					dd[idx++]=size;
+					dd[idx++] = size;
 				}
 			}
 			parent = parent.getParent();

@@ -73,7 +73,7 @@ public class ParentClassQuery extends QueryAdaptor{
 					if (subclass.equals(klass))
 						return this;
 				}
-				String[] msgs = TextTranslations.getParentClassQuery(klasses,parent.toShortString());
+				String[] msgs = TextTranslations.getParentClassQuery(klasses,subclass);
 				actionMsg = msgs[0];
 				errorMsg = msgs[1];
 //				actionMsg = "Edit graph file with text editor to repair file.";

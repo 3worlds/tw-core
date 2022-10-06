@@ -135,7 +135,12 @@ public class Metadata extends OutputData {
 			properties.addProperty(p);
 	}
 
-	/** Extend the properites with a single key:value pair */
+	/**
+	 * Extend the properties with a single key:value pair
+	 * 
+	 * @param key   Unique {@linkplain Property} key to add to the metadata
+	 * @param value Property value.
+	 */
 	public void addProperty(String key, Object value) {
 		properties.addProperty(key, value);
 	}

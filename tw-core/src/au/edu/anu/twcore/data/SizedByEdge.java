@@ -43,12 +43,28 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
  */
 public class SizedByEdge extends ALDataEdge {
 
+	/**
+	 * Constructor with no properties.
+	 * 
+	 * @param id    Unique identity of this edge.
+	 * @param start The start node.
+	 * @param end   The end node.
+	 * @param graph The graph construction factory
+	 */
 	public SizedByEdge(Identity id, Node start, Node end, EdgeFactory graph) {
 		super(id, start, end, new ExtendablePropertyListImpl(), graph);
 	}
-	
-	public SizedByEdge(Identity id, Node start, Node end, 
-			SimplePropertyList props, EdgeFactory graph) {
+
+	/**
+	 * Constuctor with properties.
+	 * 
+	 * @param id    Unique identity of this edge.
+	 * @param start The start node.
+	 * @param end   The end node.
+	 * @param props Property list for this edge.
+	 * @param graph The graph construction factory
+	 */
+	public SizedByEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory graph) {
 		super(id, start, end, props, graph);
 	}
 
