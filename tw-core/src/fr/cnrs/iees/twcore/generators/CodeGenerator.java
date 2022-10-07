@@ -68,6 +68,7 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.twcore.generators.data.CategoryEnumGenerator;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.data.TwDataInterfaceGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
@@ -166,6 +167,9 @@ public class CodeGenerator {
 			for (TreeGraphDataNode cat : categories)
 				if (generateDataInterfaceCode(cat, systemNode.id()))
 					GraphState.setChanged();
+			
+			// WIP - enum for categories
+			// generateEnumCode(systemNode.id(),structure,categories);
 
 			// generate data classes
 			if (structure != null) {
@@ -415,6 +419,13 @@ public class CodeGenerator {
 			((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
 			GraphState.setChanged();
 		}
+	}
+	
+	private void generateEnumCode(String modelName,
+			TreeGraphDataNode spec,
+			Collection<TreeGraphDataNode> categories) {
+		CategoryEnumGenerator egen = new CategoryEnumGenerator(modelName,spec,categories);
+		egen.generateCode(true);
 	}
 
 	@SuppressWarnings("unchecked")
