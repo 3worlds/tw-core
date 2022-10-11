@@ -68,7 +68,7 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.twcore.generators.data.CategoryEnumGenerator;
+import fr.cnrs.iees.twcore.generators.data.TwCategoryEnumGenerator;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.data.TwDataInterfaceGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
@@ -115,9 +115,9 @@ public class CodeGenerator {
 		File localCodeRoot = Project.makeFile(Project.LOCAL_JAVA);
 		List<TreeGraphDataNode> systemNodes = (List<TreeGraphDataNode>) getChildrenLabelled(graph.root(),
 				N_SYSTEM.label());
+		
+		// manage package, directories, files for every system node
 		for (TreeGraphDataNode sys : systemNodes) {
-//			File localGeneratedFiles = Project.makeFile(Project.LOCAL_JAVA, Project.CODE, sys.id(),
-//					Project.GENERATED);
 			File localGeneratedFiles = Project.makeFile(Project.LOCAL_JAVA_CODE, sys.id(),
 					Project.GENERATED);
 			if (localGeneratedFiles.exists()) {
@@ -134,8 +134,7 @@ public class CodeGenerator {
 					try {
 						FileUtilities.deleteFileTree(remoteGeneratedFiles);
 					} catch (IOException e) {
-						System.err
-								.println("WARNING: Unable to delete '" + remoteGeneratedFiles + "'.\nException: " + e);
+						System.err.println("WARNING: Unable to delete '" + remoteGeneratedFiles + "'.\nException: " + e);
 					}
 				}
 				// import deps to local
@@ -147,7 +146,7 @@ public class CodeGenerator {
 			}
 		}
 
-		// generate code for every system node found
+		// generate code for every system node
 		for (TreeGraphDataNode systemNode : systemNodes) {
 			/**
 			 * TODO : There may be much to do if we have more than one system.
@@ -156,9 +155,9 @@ public class CodeGenerator {
 			File systemDir = Project.makeFile(Project.LOCAL_JAVA_CODE, wordUpperCaseName(systemNode.id()));
 			systemDir.mkdirs();
 			TreeGraphDataNode dynamics = (TreeGraphDataNode) get(systemNode.getChildren(),
-					selectOne(hasTheLabel(N_DYNAMICS.label())));
+				selectOne(hasTheLabel(N_DYNAMICS.label())));
 			TreeGraphDataNode structure = (TreeGraphDataNode) get(systemNode.getChildren(),
-					selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
+				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 
 			// generate data interfaces (matching categories)
 			// NB predefined categories only have auto variables, not considered here
@@ -168,8 +167,8 @@ public class CodeGenerator {
 				if (generateDataInterfaceCode(cat, systemNode.id()))
 					GraphState.setChanged();
 			
-			// WIP - enum for categories
-			// generateEnumCode(systemNode.id(),structure,categories);
+			// WIP - generate enum class for categories
+//			generateEnumCode(systemNode.id(),structure,categories);
 
 			// generate data classes
 			if (structure != null) {
@@ -424,7 +423,7 @@ public class CodeGenerator {
 	private void generateEnumCode(String modelName,
 			TreeGraphDataNode spec,
 			Collection<TreeGraphDataNode> categories) {
-		CategoryEnumGenerator egen = new CategoryEnumGenerator(modelName,spec,categories);
+		TwCategoryEnumGenerator egen = new TwCategoryEnumGenerator(modelName,spec,categories);
 		egen.generateCode(true);
 	}
 

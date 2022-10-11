@@ -211,7 +211,7 @@ public class TwFunctionGenerator extends TwCodeGenerator {
 		packageName = Project.CODE.replace(File.separator,".")+"."+ctmodel+"."+Project.GENERATED;
 		String ancestorClassName = FUNCTION_ROOT_PACKAGE + "." + type.name() + "Function";
 		String comment = comment(general, classComment(name), generatedCode(false, model, ""));
-		ClassGenerator generator = new ClassGenerator(packageName, comment, name, false, null, ancestorClassName);
+		ClassGenerator generator = new ClassGenerator(packageName, comment, name, "public", null, ancestorClassName);
 
 		// imports in the TwFunction descendant
 //		generator.setImport(Table.class.getPackageName()+".*"); // not needed anymore, I think.

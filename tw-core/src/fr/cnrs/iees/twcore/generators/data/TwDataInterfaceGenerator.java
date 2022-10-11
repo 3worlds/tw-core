@@ -32,7 +32,7 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
-import fr.ens.biologie.codeGeneration.ClassGenerator;
+import fr.ens.biologie.codeGeneration.InterfaceGenerator;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -84,7 +84,8 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 	private void generateInterface(TreeGraphDataNode recSpec, String className, String classComment) {
 		String[] comment = new String[1];
 		comment[0] = classComment;
-		ClassGenerator cg = new ClassGenerator(packageName,comment(comment),className,true,null,null);
+//		ClassGenerator cg = new ClassGenerator(packageName,comment(comment),className,true,null,null);
+		InterfaceGenerator ig = new InterfaceGenerator(packageName,comment(comment),className);
 		Collection<TreeGraphDataNode> fields = (Collection<TreeGraphDataNode>) get(recSpec.getChildren(), 
 			selectZeroOrMany(hasTheLabel(N_FIELD.label())));
 		for (TreeGraphDataNode field:fields) {
@@ -97,10 +98,10 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 				ftype = det.asPrimitive();
 			// specific getter
 			MethodGenerator m = new MethodGenerator("public",true,ftype,fname);
-			cg.setMethod("get"+fname, m);
+			ig.setMethod("get"+fname, m);
 			// the usual setter
 			m = new MethodGenerator("public",true,"void",fname,ftype);
-			cg.setMethod("set"+fname, m);
+			ig.setMethod("set"+fname, m);
 		}
 		Collection<TreeGraphDataNode> tables = (Collection<TreeGraphDataNode>) get(recSpec.getChildren(), 
 			selectZeroOrMany(hasTheLabel(N_TABLE.label())));
@@ -138,15 +139,15 @@ public class TwDataInterfaceGenerator extends DataClassGenerator {
 			}
 			// specific getter
 			MethodGenerator m = new MethodGenerator("public",true,ttype,tname);
-			cg.setMethod("get"+tname, m);
+			ig.setMethod("get"+tname, m);
 			// no setter
 			// import for the table class
 			if (!tpack.isBlank())
-				cg.setImport(tpack);
+				ig.setImport(tpack);
 		}
 		log.info("    generating file "+className+".java ...");
 		File file = new File(packagePath+File.separator+className+".java");
-		writeFile(cg,file);
+		writeFile(ig,file);
 		log.info("  ...done.");
 	}
 	

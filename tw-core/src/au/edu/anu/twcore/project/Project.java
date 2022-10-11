@@ -36,8 +36,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -89,68 +87,68 @@ public class Project {
 	/**
 	 * User's home directory name.
 	 */
-	public static final String USER_ROOT/*       */ = System.getProperty("user.home");
+	public static final String USER_ROOT 		= System.getProperty("user.home");
 	/**
 	 * 3Worlds home directory name. The default is home/<name>/3w. To change this,
 	 * add a environment setting for the user's account using 'TW_HOME' as the
 	 * setting key.
 	 */
-	public static final String TW_HOME /*        */ = get3wHome();
+	public static final String TW_HOME 			= get3wHome();
 	/**
 	 * The OS specific 3Worlds jar file name.
 	 */
-	public static final String TW_DEP_JAR /*     */ = getDepJarName();
+	public static final String TW_DEP_JAR 		= getDepJarName();
 	/**
 	 * Prefix for all 3Worlds projects.
 	 */
-	public static final String PROJECT_DIR_PREFIX /*	*/ = "project";
+	public static final String PROJECT_DIR_PREFIX = "project";
 	/**
 	 * Name of the local directory within a 3Worlds project (possibly redundant
 	 * now).
 	 */
-	public static final String LOCAL /*				*/ = "local";
-	public static final String JAVA /*				*/ = "java";
+	public static final String LOCAL 			= "local";
+	public static final String JAVA  			= "java";
 	/**
 	 * Name of the Java directory within the Local directory.
 	 */
-	public static final String LOCAL_JAVA /*			*/ = LOCAL + File.separator + JAVA;
+	public static final String LOCAL_JAVA 		= LOCAL + File.separator + JAVA;
 	/**
 	 * Package name of the Java directory within the Local directory.
 	 */
-	public static final String LOCAL_JAVA_PKG/*		*/ = LOCAL + "." + JAVA;
+	public static final String LOCAL_JAVA_PKG 	= LOCAL + "." + JAVA;
 	/**
 	 * User linked project jar files. It will be empty if there is no linked project
 	 */
-	public static String LOCAL_JAVA_LIB /*                 */ = LOCAL_JAVA + File.separator + "lib";
+	public static String LOCAL_JAVA_LIB 		= LOCAL_JAVA + File.separator + "lib";
 
 	/**
 	 * Name of root directory for Java code generation
 	 */
-	public static final String CODE/*					*/ = "code";
+	public static final String CODE 			= "code";
 
 	/**
 	 * Generated code for a project regardless of the existence of a linked user
 	 * project. The sub dir is organised as system.id() which themselves don't need
 	 * further subdirs (i.e /code
 	 */
-	public static final String LOCAL_JAVA_CODE /*                */ = LOCAL_JAVA + File.separator + CODE;
+	public static final String LOCAL_JAVA_CODE 	= LOCAL_JAVA + File.separator + CODE;
 
 	/**
 	 * Data files for a project regardless of the existence of a linked user
 	 * project.
 	 */
-	public static final String LOCAL_JAVA_RES /*                 */ = LOCAL_JAVA + File.separator + "res";
+	public static final String LOCAL_JAVA_RES 	= LOCAL_JAVA + File.separator + "res";
 
 	/**
 	 * root of runtime model. Has runtime preferences and any data files, startup
 	 * files and generated filrs
 	 */
-	public static final String RUNTIME /*             */ = LOCAL + File.separator + "runTime";
+	public static final String RUNTIME 			= LOCAL + File.separator + "runTime";
 
-	public static final String LOGS /*                  */ = LOCAL + File.separator + "logs";
+	public static final String LOGS 			= LOCAL + File.separator + "logs";
 
 	/** for generated 'glue' code, ie code the user does not edit. */
-	public static final String GENERATED = "generated";
+	public static final String GENERATED 		= "generated";
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
 	private static final String sep = "_";

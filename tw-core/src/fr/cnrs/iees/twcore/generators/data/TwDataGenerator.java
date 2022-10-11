@@ -96,21 +96,20 @@ public class TwDataGenerator
 			for (String s:ifs)
 				interfaces[i++] = s;
 			categories.clear(); // this to make sure this is done only for the root record
-			return new ClassGenerator(packageName, comment, className, false, locatedMethods, 
+			return new ClassGenerator(packageName, comment, className, "public", locatedMethods, 
 				TwData.class.getCanonicalName(),
 				interfaces);
 		}
 		else
-			return new ClassGenerator(packageName, comment, className, false, locatedMethods, 
+			return new ClassGenerator(packageName, comment, className, "public", locatedMethods, 
 				TwData.class.getCanonicalName(),
 				LocationData.class.getCanonicalName());
 	}
 
 	@Override
 	protected ClassGenerator getTableClassGenerator(String className, String contentType, String comment) {
-		return new ClassGenerator(packageName, comment, className, false, null,
+		return new ClassGenerator(packageName, comment, className, "public", null,
 			TwDataTable.class.getCanonicalName()+"<"+contentType+">");
-//			ObjectTable.class.getCanonicalName()+"<"+contentType+">");
 	}
 	public File getFile() {
 		String name = className.replace(this.packageName+".", "");
@@ -249,7 +248,7 @@ public class TwDataGenerator
 			if (!s.equals("coords"))
 				s+="\""+ff[i]+"\",";
 		if (ff.length==0)
-			System.out.println(cg.getClassName()+ " has no members!!");
+			System.out.println(cg.name()+ " has no members!!");
 		if (!ff[ff.length-1].equals("coords"))
 			s+="\""+ff[ff.length-1]+"\"";
 		cg.getMethod("getKeysAsArray").setStatement("String[] result = {"+s+"}");

@@ -6,14 +6,16 @@ import java.io.File;
 import java.util.Collection;
 
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-
+import fr.cnrs.iees.twcore.generators.Partition;
+import fr.ens.biologie.codeGeneration.EnumGenerator;
+import static fr.ens.biologie.generic.utils.NameUtils.*;
 /**
  * Generates an enum class for a model with all categories extracted from the model tree.
  * 
  * @author Jacques Gignoux - 7 oct. 2022
  *
  */
-public class CategoryEnumGenerator extends DataClassGenerator {
+public class TwCategoryEnumGenerator extends DataClassGenerator {
 
 
 	private Collection<TreeGraphDataNode> categories = null;
@@ -25,7 +27,7 @@ public class CategoryEnumGenerator extends DataClassGenerator {
 	 * @param spec
 	 * @param cats
 	 */
-	public CategoryEnumGenerator(String modelName, 
+	public TwCategoryEnumGenerator(String modelName, 
 			TreeGraphDataNode spec, 
 			Collection<TreeGraphDataNode> cats) {
 		super(modelName, spec);
@@ -34,13 +36,19 @@ public class CategoryEnumGenerator extends DataClassGenerator {
 
 	@Override
 	public boolean generateCode(boolean reportErrors) {
-		String fname = makeModelJavaName(modelName)+"CategoryLabels";
-		EnumGenerator eg = new EnumGenerator("package",
-			"comment",
+		String fname = initialUpperCase(makeModelJavaName(modelName)+"CategoryLabels");
+		EnumGenerator eg = new EnumGenerator(packageName,
+			"",
 			fname,
-			"Partition");
+			Partition.class.getCanonicalName());
+		eg.setConstant("_world_"); // a root for all category trees
 		for (TreeGraphDataNode cat:categories)
 			eg.setConstant(cat.id());
+		
+		// partition return type must be EnumSet<fname>
+		eg.getMethod("partition").setReturnType("EnumSet<"+fname+">");
+		
+		
 		File file = new File(packagePath+File.separator+fname+".java");
 		writeFile(eg,file);
 		return false;
