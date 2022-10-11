@@ -37,16 +37,34 @@ import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
+// TODO This needs looking at 
+//* If edge effect correction = 'custom' and borderType property is not
+//* provided!!!
+//- also the whole 'tubular' thing is arbitrarily constrained to x direction only!
+
 /**
- * A query to check that (1) if edge effec correction = "custom", then a
- * borderType property is provided and (2) borderType dimensions are compatible
- * with the space type and (3) borderType values are valid and (4) 'wrap'
- * borders come in pairs
+ * <p>
+ * Check on border details for a {@link SpaceNode}.
+ * </p>
+ * <dl>
+ * <dt>Expected input</dt>
+ * <dd>{@link SpaceNode}</dd>
+ * <dt>Type of result</dt>
+ * <dd>Same as input ({@code result=input})</dd>
+ * <dt>Fails if</dt>
+ * <ol>
+ * <li>The number of dimensions are not compatible with the
+ * {@link SpaceType};</li>
+ * <li>'wrap' borders are not paired.</li>
+ * <li>Wrapped in the y direction only.</li>
+ * </ol>
+ * </dt>
+ * </dl>
  * 
  * @author Jacques Gignoux - 16 sept. 2020
  *
  */
-public class BorderTypeValidityQuery extends QueryAdaptor{
+public class BorderTypeValidityQuery extends QueryAdaptor {
 
 	@Override
 	public Queryable submit(Object input) {
@@ -55,9 +73,9 @@ public class BorderTypeValidityQuery extends QueryAdaptor{
 		SpaceType stype = (SpaceType) spnode.properties().getPropertyValue(P_SPACETYPE.key());
 		int spdim = stype.dimensions();
 		BorderListType borderTypes = (BorderListType) spnode.properties().getPropertyValue(P_SPACE_BORDERTYPE.key());
-		
+
 		if (spdim != borderTypes.size() / 2) {
-			String[] msgs = TextTranslations.getBorderTypeValidityQuery1(stype,spdim,borderTypes.size() / 2);
+			String[] msgs = TextTranslations.getBorderTypeValidityQuery1(stype, spdim, borderTypes.size() / 2);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
 			return this;

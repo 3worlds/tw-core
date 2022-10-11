@@ -52,11 +52,11 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
  * Currently, only French and English are supported. These messages are all
  * related to the query system through this need not be the case. By convention,
  * query translation methods are named after the relevant query. Query messages
- * have two forms:
+ * have two parts:
  * <li>am: the Action message - action to take to address the problem e.g Do
  * this...</li>
  * <li>cm: the Compliance message - the condition that caused the message e.g
- * Expected this but found this...</li>
+ * Expected this but found that...</li>
  * </p>
  * <p>
  * Ensure default response is English otherwise unhandled languages will not

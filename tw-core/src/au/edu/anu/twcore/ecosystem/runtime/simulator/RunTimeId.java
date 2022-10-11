@@ -29,6 +29,7 @@
 
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
+
 /**
  * @author Ian Davies -21 Feb 2020
  */
@@ -41,9 +42,27 @@ public class RunTimeId {
 	/* set once from the cmd line when MR starts */
 	public static void setRunTimeId(int id) {
 		if (runTimeId != Integer.MIN_VALUE)
-			throw new IllegalStateException("Attempt to reinitialise RunTimeId.");
+			throw new IllegalStateException("Attempt to reinitialise RunTimeId [" + runTimeId + "->" + id + "].");
 		runTimeId = id;
 	}
+
+//	private static int getPID() {
+//		java.lang.management.RuntimeMXBean runtime = java.lang.management.ManagementFactory.getRuntimeMXBean();
+//		java.lang.reflect.Field jvm;
+//		try {
+//			jvm = runtime.getClass().getDeclaredField("jvm");
+//			jvm.setAccessible(true);
+//			Object mgmt =  jvm.get(runtime);
+//			java.lang.reflect.Method pid_method = mgmt.getClass().getDeclaredMethod("getProcessId");
+//			pid_method.setAccessible(true);
+//			int pid = (Integer) pid_method.invoke(mgmt);
+//			return pid;
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return 0;
+//	}
 
 	/* obtained by anything that wants to know - file i/o etc */
 	public static int runTimeId() {

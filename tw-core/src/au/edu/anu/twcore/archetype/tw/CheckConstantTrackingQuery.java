@@ -38,17 +38,28 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import au.edu.anu.twcore.ecosystem.structure.ConstantsEdge;
+import au.edu.anu.twcore.data.Record;
 
 /**
+ * <p>
+ * Check that a constant is <em>not</em> being tracked.
+ * </p>
+ * <dl>
+ * <dt>Expected input</dt>
+ * <dd>Edge between two {@link TreeNode}s</dd>
+ * <dt>Type of result</dt>
+ * <dd>Same as input ({@code result=input})</dd>
+ * <dt>Fails if</dt>
+ * <ol>
+ * <li>The end node is a {@link Record} with a {@link ConstantsEdge}</li>
+ * </ol>
+ * </dt>
+ * </dl>
+ * 
  * @author Ian Davies 19 June 2022
  */
 public class CheckConstantTrackingQuery extends QueryAdaptor {
-	/**
-	 * Prohibits tracking constant data. Why? Might be useful?
-	 * 
-	 * Input is an edge between a datatracker (start) and a field or table (end)
-	 */
-
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);

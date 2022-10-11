@@ -37,8 +37,25 @@ import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
 
+//TODO This duplicates a test in BorderTypeValid?!!
 /**
- * checks that a box property in a space has the same dimension as the space
+ * 
+ * <p>
+ * Check that a box property in a {@link SpaceNode} the same dimension as the
+ * space.
+ * </p>
+ * <dl>
+ * <dt>Expected input</dt>
+ * <dd>{@link SpaceNode}</dd>
+ * <dt>Type of result</dt>
+ * <dd>Same as input ({@code result=input})</dd>
+ * <dt>Fails if</dt>
+ * <ol>
+ * <li>The number of dimensions are not compatible with the
+ * {@link SpaceType};</li>
+ * </ol>
+ * </dt>
+ * </dl>
  * 
  * @author Jacques Gignoux - 16 sept. 2020
  *
@@ -55,21 +72,20 @@ public class BoxInSpaceDimensionQuery extends QueryAdaptor {
 	@Override
 	public Queryable submit(Object input) {
 		initInput(input);
-		if (input instanceof SpaceNode) {
-			SpaceNode spn = (SpaceNode) input;
-			SpaceType stype = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
-			// no problem if no Box property
-			if (spn.properties().hasProperty(propName)) {
-				Box prop = (Box) spn.properties().getPropertyValue(propName);
-				if (prop!=null)
-					if (prop.dim() != stype.dimensions()) {
-						String[] msgs = TextTranslations.getBoxInSpaceDimensionQuery(propName, spn.toShortString(),
-								stype.dimensions(), prop.dim());
-						actionMsg = msgs[0];
-						errorMsg = msgs[1];
+		SpaceNode spn = (SpaceNode) input;
+		SpaceType stype = (SpaceType) spn.properties().getPropertyValue(P_SPACETYPE.key());
+		// no problem if no Box property
+		if (spn.properties().hasProperty(propName)) {
+			Box prop = (Box) spn.properties().getPropertyValue(propName);
+			if (prop != null)
+				if (prop.dim() != stype.dimensions()) {
+					String[] msgs = TextTranslations.getBoxInSpaceDimensionQuery(propName, spn.toShortString(),
+							stype.dimensions(), prop.dim());
+					actionMsg = msgs[0];
+					errorMsg = msgs[1];
 				}
-			}
 		}
+
 		return this;
 	}
 
