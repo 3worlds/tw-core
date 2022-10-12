@@ -251,7 +251,7 @@ public class TwDataGenerator
 			System.out.println(cg.name()+ " has no members!!");
 		if (!ff[ff.length-1].equals("coords"))
 			s+="\""+ff[ff.length-1]+"\"";
-		cg.getMethod("getKeysAsArray").setStatement("String[] result = {"+s+"}");
+		cg.getMethod("getKeysAsArray").setStatement("String[] result = {"+s+"};");
 		cg.getMethod("getKeysAsArray").setReturnStatement("return result");
 	}
 

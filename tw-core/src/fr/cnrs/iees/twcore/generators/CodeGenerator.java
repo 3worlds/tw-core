@@ -168,7 +168,7 @@ public class CodeGenerator {
 					GraphStateFactory.setChanged();
 			
 			// WIP - generate enum class for categories
-//			generateEnumCode(systemNode.id(),structure,categories);
+			generateEnumCode(systemNode.id(),structure);
 
 			// generate data classes
 			if (structure != null) {
@@ -421,9 +421,8 @@ public class CodeGenerator {
 	}
 	
 	private void generateEnumCode(String modelName,
-			TreeGraphDataNode spec,
-			Collection<TreeGraphDataNode> categories) {
-		TwCategoryEnumGenerator egen = new TwCategoryEnumGenerator(modelName,spec,categories);
+			TreeGraphDataNode spec) {
+		TwCategoryEnumGenerator egen = new TwCategoryEnumGenerator(modelName,spec);
 		egen.generateCode(true);
 	}
 

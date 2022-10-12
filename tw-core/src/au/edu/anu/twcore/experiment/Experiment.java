@@ -56,8 +56,6 @@ import au.edu.anu.twcore.experiment.runtime.EddReadable;
 import au.edu.anu.twcore.experiment.runtime.ExperimentDesignDetails;
 import au.edu.anu.twcore.experiment.runtime.IEdd;
 import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
-import au.edu.anu.twcore.root.World;
-
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 
@@ -109,7 +107,6 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 	public void initialise() {
 		if (!sealed) {
 			super.initialise();
-			@SuppressWarnings("unchecked")
 			List<SimulatorNode> simulatorNodes=new ArrayList<>();
 			List<TreeGraphDataNode> systems = (List<TreeGraphDataNode>) get(this.getParent().getChildren(),
 					selectOneOrMany(hasTheLabel(N_SYSTEM.label())));
