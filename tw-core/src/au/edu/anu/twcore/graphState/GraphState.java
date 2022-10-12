@@ -26,39 +26,44 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
-
 package au.edu.anu.twcore.graphState;
 
 /**
- * @author Ian Davies -  May 6, 2019
+ ** 
+ * Interface to specify actions to manage changes in the configuration graph
+ * (restructuring of the graph nodes and edges or changes to property values or
+ * their addition or removal). A controller, managing a particular UI
+ * implementation (e.g javafx) will listen to an implementation of this
+ * interface by implementing {@link GraphStateListener}.
+ * 
+ * @author Ian Davies - May 6, 2019
  */
-public class GraphState {
-	private static IGraphState impl;
+public interface GraphState {
+	/**
+	 * @return true if the graph has changed since the time clear() was called.
+	 */
+	public boolean changed();
 
-	private GraphState() {
-	};
+	/**
+	 * Set the state of the graph to true.
+	 */
+	public void setChanged();
 
-	public static void setImplementation(IGraphState impl) {
-		if (impl == null)
-			GraphState.impl = new SimpleGraphStateImpl();
-		else
-			GraphState.impl = impl;
-	}
+	/**
+	 * Set changed state to false.
+	 */
+	public void clear();
 
-	public static boolean changed() {
-		return impl.changed();
-	}
+	/**
+	 * Add an {@link GraphStateListener}.
+	 * 
+	 * @param l {@link GraphStateListener}.
+	 */
+	public void addListener(GraphStateListener l);
 
-	public static void setChanged() {
-		impl.setChanged();
-	}
-	
-	public static void addListener (IGraphStateListener l) {
-		impl.addListener(l);
-	}
-	
-	public static void clear() {
-		impl.clear();
-	}
+	/**
+	 * Inform all register {@link GraphStateListener}s of a state change.
+	 */
+	public void onChange();
 
 }

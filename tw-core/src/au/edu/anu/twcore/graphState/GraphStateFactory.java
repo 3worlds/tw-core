@@ -26,12 +26,36 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
  *                                                                        *
  **************************************************************************/
+
 package au.edu.anu.twcore.graphState;
 
-
 /**
- * @author Ian Davies - 1 Aug 2019
+ * @author Ian Davies - May 6, 2019
  */
-public interface IGraphStateListener {
-	public void onStateChange(boolean state);
+public class GraphStateFactory {
+	private static GraphState impl;
+
+	private GraphStateFactory() {
+	};
+
+	public static void setImplementation(GraphState impl) {
+		GraphStateFactory.impl = impl;
+	}
+
+	public static boolean changed() {
+		return impl.changed();
+	}
+
+	public static void setChanged() {
+		impl.setChanged();
+	}
+
+	public static void addListener(GraphStateListener l) {
+		impl.addListener(l);
+	}
+
+	public static void clear() {
+		impl.clear();
+	}
+
 }

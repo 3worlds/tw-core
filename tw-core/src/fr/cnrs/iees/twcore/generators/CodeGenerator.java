@@ -61,7 +61,7 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
-import au.edu.anu.twcore.graphState.GraphState;
+import au.edu.anu.twcore.graphState.GraphStateFactory;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
@@ -165,7 +165,7 @@ public class CodeGenerator {
 					selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
 			for (TreeGraphDataNode cat : categories)
 				if (generateDataInterfaceCode(cat, systemNode.id()))
-					GraphState.setChanged();
+					GraphStateFactory.setChanged();
 			
 			// WIP - generate enum class for categories
 //			generateEnumCode(systemNode.id(),structure,categories);
@@ -299,13 +299,13 @@ public class CodeGenerator {
 				String newValue = gen.generatedClassName();
 				if (!newValue.equals(oldValue)) {
 					elementType.properties().setProperty(dataGroup, newValue);
-					GraphState.setChanged(); // Seems to be secret French business so we won't look
+					GraphStateFactory.setChanged(); // Seems to be secret French business so we won't look
 								// rhaa! it's just telling the graph the property value has changed!
 				}
 			} else {
 				// set the properties driverClass, constantClass, etc. if they didnt exist
 				((ResizeablePropertyList) elementType.properties()).addProperty(dataGroup, gen.generatedClassName());
-				GraphState.setChanged();
+				GraphStateFactory.setChanged();
 			}
 			// if the spec node itsef was generated, delete it
 			if (spec.properties().hasProperty("generated"))
@@ -318,7 +318,7 @@ public class CodeGenerator {
 			// to the former
 			// class name in the graph
 			((ResizeablePropertyList) elementType.properties()).removeProperty(dataGroup);
-			GraphState.setChanged();
+			GraphStateFactory.setChanged();
 		}
 	}
 
@@ -412,11 +412,11 @@ public class CodeGenerator {
 			String lastValue = (String) function.properties().getPropertyValue(P_FUNCTIONCLASS.key());
 			if (!lastValue.equals(genClassName)) {
 				function.properties().setProperty(P_FUNCTIONCLASS.key(), genClassName);
-				GraphState.setChanged();
+				GraphStateFactory.setChanged();
 			}
 		} else {
 			((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
-			GraphState.setChanged();
+			GraphStateFactory.setChanged();
 		}
 	}
 	

@@ -32,12 +32,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A graph state testing implementation.
+ * 
  * @author Ian Davies - 1 Aug 2019
  */
-public class SimpleGraphStateImpl implements IGraphState{
+public class SimpleGraphStateImpl implements GraphState {
 
 	private boolean changed = false;
-	private List<IGraphStateListener> listeners = new ArrayList<>();
+	private List<GraphStateListener> listeners = new ArrayList<>();
+
 	@Override
 	public boolean changed() {
 		return changed;
@@ -49,20 +52,20 @@ public class SimpleGraphStateImpl implements IGraphState{
 	}
 
 	@Override
-	public void addListener(IGraphStateListener l) {
+	public void addListener(GraphStateListener l) {
 		listeners.add(l);
 	}
 
 	@Override
 	public void onChange() {
-		for (IGraphStateListener l: listeners)
-			l.onStateChange(changed);	
+		for (GraphStateListener l : listeners)
+			l.onStateChange(changed);
 	}
 
 	@Override
 	public void clear() {
 		changed = false;
-		
+
 	}
 
 }

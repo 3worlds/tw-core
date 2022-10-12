@@ -28,42 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.graphState;
 
+
 /**
- ** 
- * Interface to specify actions to manage changes in the configuration graph
- * (restructuring of the graph nodes and edges or changes to property values or
- * their addition or removal). A controller, managing a particular UI
- * implementation (e.g javafx) will listen to an implementation of this
- * interface by implementing {@link IGraphStateListener}.
- * 
- * @author Ian Davies - May 6, 2019
+ * @author Ian Davies - 1 Aug 2019
  */
-public interface IGraphState {
-	/**
-	 * @return true if the graph has changed since the time clear() was called.
-	 */
-	public boolean changed();
-
-	/**
-	 * Set the state of the graph to true.
-	 */
-	public void setChanged();
-
-	/**
-	 * Set changed state to false.
-	 */
-	public void clear();
-
-	/**
-	 * Add an {@link IGraphStateListener}.
-	 * 
-	 * @param l {@link IGraphStateListener}.
-	 */
-	public void addListener(IGraphStateListener l);
-
-	/**
-	 * Inform all register {@link IGraphStateListener}s of a state change.
-	 */
-	public void onChange();
-
+public interface GraphStateListener {
+	public void onStateChange(boolean state);
 }
