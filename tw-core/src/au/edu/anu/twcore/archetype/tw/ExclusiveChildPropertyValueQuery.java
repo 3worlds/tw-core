@@ -39,16 +39,8 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.LinkedList;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.collections.tables.BooleanTable;
-import au.edu.anu.rscs.aot.collections.tables.ByteTable;
-import au.edu.anu.rscs.aot.collections.tables.CharTable;
-import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
-import au.edu.anu.rscs.aot.collections.tables.FloatTable;
-import au.edu.anu.rscs.aot.collections.tables.IntTable;
-import au.edu.anu.rscs.aot.collections.tables.LongTable;
-import au.edu.anu.rscs.aot.collections.tables.ShortTable;
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.rscs.aot.collections.tables.*;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;

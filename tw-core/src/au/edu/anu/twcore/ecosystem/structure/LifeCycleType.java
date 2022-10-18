@@ -31,16 +31,10 @@ package au.edu.anu.twcore.ecosystem.structure;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.ChangeState;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.SetInitialState;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 

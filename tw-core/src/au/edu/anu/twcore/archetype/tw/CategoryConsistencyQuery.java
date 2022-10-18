@@ -28,8 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_RECORD;
 
@@ -39,8 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.QueryAdaptor;
+import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;

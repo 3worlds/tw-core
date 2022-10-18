@@ -1,7 +1,7 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialValues;
 import au.edu.anu.twcore.experiment.DataSource;
 import fr.cnrs.iees.graph.Edge;
@@ -17,8 +17,8 @@ import java.util.Set;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 
 /**
  * A query to check that SampleXXX edges to data trackers have correct values for idGroup and idLifeCycle

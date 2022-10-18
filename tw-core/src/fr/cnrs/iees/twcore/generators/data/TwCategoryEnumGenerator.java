@@ -13,8 +13,8 @@ import fr.ens.biologie.codeGeneration.MethodGenerator;
 
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 
 /**
  * Generates an enum class for a model with all categories extracted from the model tree.

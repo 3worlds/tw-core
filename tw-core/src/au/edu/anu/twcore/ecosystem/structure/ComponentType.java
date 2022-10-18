@@ -34,8 +34,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;

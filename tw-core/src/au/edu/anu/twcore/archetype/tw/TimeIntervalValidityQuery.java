@@ -31,13 +31,11 @@ package au.edu.anu.twcore.archetype.tw;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.twcore.constants.TimeScaleType;
-import fr.cnrs.iees.twcore.constants.TimeUnits;
+import fr.cnrs.iees.twcore.constants.*;
 
 /**
  * A Query to check that minimum and maximum time units are consistent

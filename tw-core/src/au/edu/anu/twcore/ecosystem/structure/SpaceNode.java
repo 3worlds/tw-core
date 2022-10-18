@@ -28,11 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.structure;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
@@ -65,8 +61,8 @@ import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.utils.Interval;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;

@@ -28,13 +28,12 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_UIWIDGET;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.archetype.TWA;
 import fr.cnrs.iees.graph.TreeNode;

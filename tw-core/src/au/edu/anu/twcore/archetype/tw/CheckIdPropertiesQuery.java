@@ -1,6 +1,6 @@
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.qgraph.queries.QueryAdaptor;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;

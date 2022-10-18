@@ -28,12 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.qgraph.queries.QueryAdaptor;
 import fr.cnrs.iees.graph.Specialized;
 
 /**

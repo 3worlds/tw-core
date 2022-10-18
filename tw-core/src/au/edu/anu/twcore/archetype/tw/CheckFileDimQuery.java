@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.root.World;
@@ -43,8 +43,8 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.twcore.constants.FileType;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_TABLE;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_SIZEDBY;

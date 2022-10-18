@@ -28,22 +28,19 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
 
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_CATEGORY;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.*;
 /**
  * A Query to check that a ComponentType only belongs to one category of a given
  * category set (categories within a set are assumed exclusive)

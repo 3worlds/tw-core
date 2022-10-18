@@ -28,29 +28,13 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators.odd;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.childTree;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOne;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_SYSTEM;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import au.edu.anu.twcore.ecosystem.ArenaType;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
-
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
  * A class to generate diagrams from 3w config and code.

@@ -54,8 +54,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;

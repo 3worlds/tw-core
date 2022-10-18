@@ -30,8 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
 import fr.cnrs.iees.twcore.constants.SpaceType;

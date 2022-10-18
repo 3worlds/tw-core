@@ -1,15 +1,14 @@
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
 import fr.cnrs.iees.graph.Edge;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DATATRACKER_SUBCLASS;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 import java.util.List;

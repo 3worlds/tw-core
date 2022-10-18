@@ -28,13 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.*;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.io.parsing.impl.NodeReference;
 

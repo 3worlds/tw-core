@@ -28,10 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics.initial;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_LOADFROM;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_COMPONENT_NINST;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import java.util.List;
 import java.util.Map;
 

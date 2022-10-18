@@ -28,8 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import fr.cnrs.iees.graph.TreeNode;
 
 /**

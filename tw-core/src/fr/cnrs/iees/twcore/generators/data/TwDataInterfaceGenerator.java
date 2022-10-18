@@ -36,16 +36,14 @@ import fr.ens.biologie.codeGeneration.InterfaceGenerator;
 import fr.ens.biologie.codeGeneration.MethodGenerator;
 import fr.ens.biologie.generic.utils.Logging;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.writeFile;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.IntTable;

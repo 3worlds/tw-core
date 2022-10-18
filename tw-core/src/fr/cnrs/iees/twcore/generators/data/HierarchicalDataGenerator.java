@@ -28,8 +28,8 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators.data;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 import static fr.ens.biologie.generic.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
@@ -38,12 +38,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.Logger;
 
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;

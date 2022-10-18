@@ -29,17 +29,16 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
 
 import java.util.List;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 
 /**
  * Check that either at least one out edge or a property is present in a node, but not both. 

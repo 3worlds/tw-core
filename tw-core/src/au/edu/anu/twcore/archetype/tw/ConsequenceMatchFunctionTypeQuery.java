@@ -32,8 +32,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_FUNCTIO
 
 import java.util.Collection;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;

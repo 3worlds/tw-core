@@ -28,8 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 
 /**
  * checks that the lifecycle referred to by a group is compatible with its
@@ -39,6 +38,7 @@ import au.edu.anu.rscs.aot.queries.Queryable;
  *
  */
 
+@Deprecated
 public class LifeCycleSubGroupsQuery extends QueryAdaptor {
 
 	@Override

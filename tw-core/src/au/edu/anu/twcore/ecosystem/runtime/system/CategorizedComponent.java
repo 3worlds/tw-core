@@ -28,15 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.edgeListEndNodes;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasProperty;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIONTYPE;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;

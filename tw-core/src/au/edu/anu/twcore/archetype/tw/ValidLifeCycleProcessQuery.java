@@ -28,25 +28,18 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_APPLIESTO;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_EFFECTEDBY;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_FROMCATEGORY;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_FUNCTIONTYPE;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.List;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
-import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
-import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.ecosystem.structure.Produce;
-import au.edu.anu.twcore.ecosystem.structure.Recruit;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Node;
+import au.edu.anu.twcore.ecosystem.dynamics.*;
+import au.edu.anu.twcore.ecosystem.structure.*;
+import fr.cnrs.iees.graph.*;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 

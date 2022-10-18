@@ -40,11 +40,11 @@ import fr.ens.biologie.generic.LimitedEdition;
 import fr.ens.biologie.generic.Sealable;
 import fr.ens.biologie.generic.utils.Interval;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_STOPSYSTEM;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
 
 import java.util.HashMap;
 import java.util.LinkedList;

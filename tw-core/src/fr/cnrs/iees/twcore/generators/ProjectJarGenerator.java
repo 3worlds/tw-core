@@ -28,13 +28,10 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasTheLabel;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectOneOrMany;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_DATASOURCE;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_EXPERIMENT;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DESIGN_FILE;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.io.File;
 import java.io.IOException;

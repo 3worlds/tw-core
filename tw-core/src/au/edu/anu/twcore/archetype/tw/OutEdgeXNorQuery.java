@@ -28,15 +28,14 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
-import au.edu.anu.rscs.aot.queries.base.OrQuery;
+import au.edu.anu.qgraph.queries.*;
+import au.edu.anu.qgraph.queries.base.OrQuery;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;

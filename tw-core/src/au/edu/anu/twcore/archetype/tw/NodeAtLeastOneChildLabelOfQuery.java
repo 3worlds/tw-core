@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.TreeNode;
 

@@ -28,8 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.identity.Identity;
 
@@ -45,8 +44,6 @@ public class NameStartsWithUpperCaseQuery extends QueryAdaptor {
 			String[] msgs = TextTranslations.getNameStartsWithUpperCaseQuery(localItem,c);
 			actionMsg = msgs[0];
 			errorMsg = msgs[1];
-//			errorMsg = "Expected first character to be upper case but found '"+c+"'.";
-//			actionMsg = "Edit graph with a text editor so '" + localItem + "' starts with an upper case character.";
 		}
 		return this;
 

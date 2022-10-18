@@ -45,8 +45,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
 import au.edu.anu.rscs.aot.collections.tables.*;
 import au.edu.anu.twcore.InitialisableNode;
 

@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;
 

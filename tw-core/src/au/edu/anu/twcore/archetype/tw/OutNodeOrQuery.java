@@ -31,15 +31,14 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.rscs.aot.collections.tables.*;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.ens.biologie.generic.utils.Duple;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
 /**
  * Checks that an out node has either of two labels.
  *

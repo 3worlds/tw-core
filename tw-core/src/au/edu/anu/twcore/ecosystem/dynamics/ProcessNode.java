@@ -63,8 +63,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
 
 /**
  * Class matching the "ecosystem/dynamics/timeLine/timeModel/Process" node label in the

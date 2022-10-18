@@ -28,20 +28,17 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.E_SIZEDBY;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DIMENSIONER_RANK;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_DIMENSIONER_SIZE;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TRACKEDGE_INDEX;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.Comparator;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.IndexString;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.TableNode;
 import fr.cnrs.iees.graph.Direction;

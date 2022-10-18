@@ -56,13 +56,11 @@ import au.edu.anu.twcore.experiment.runtime.EddReadable;
 import au.edu.anu.twcore.experiment.runtime.ExperimentDesignDetails;
 import au.edu.anu.twcore.experiment.runtime.IEdd;
 import au.edu.anu.twcore.experiment.runtime.deployment.ParallelDeployer;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**

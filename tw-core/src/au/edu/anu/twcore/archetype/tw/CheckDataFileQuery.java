@@ -40,7 +40,7 @@ import java.util.LinkedList;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
-import au.edu.anu.rscs.aot.queries.QueryAdaptor;
+import au.edu.anu.qgraph.queries.QueryAdaptor;
 import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.io.CsvFileLoader;
 import au.edu.anu.twcore.experiment.runtime.io.OdfFileLoader;
