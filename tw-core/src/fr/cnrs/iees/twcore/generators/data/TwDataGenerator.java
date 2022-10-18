@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.collections.tables.*;
+import au.edu.anu.omugi.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.data.runtime.TwDataTable;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
@@ -282,7 +282,7 @@ public class TwDataGenerator
 	@Override
 	protected void tableCode(ClassGenerator cg, String ftype, String contentType, Iterable<TreeGraphDataNode> dimList) {
 		cg.setImport(packageName+"."+contentType);
-//		cg.setImport("au.edu.anu.rscs.aot.collections.tables.ObjectTable");
+//		cg.setImport("au.edu.anu.omugi.collections.tables.ObjectTable");
 		cg.setImport("au.edu.anu.twcore.data.runtime.TwDataTable");
 		cg.setImport(Dimensioner.class.getCanonicalName());
 		cg.setConstructor();

@@ -28,8 +28,8 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.omugi.collections.tables.StringTable;
+import au.edu.anu.omugi.graph.property.Property;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;

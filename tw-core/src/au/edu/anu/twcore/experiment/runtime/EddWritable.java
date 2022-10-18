@@ -31,7 +31,7 @@ package au.edu.anu.twcore.experiment.runtime;
 import java.util.List;
 import java.util.Map;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.omugi.graph.property.Property;
 import au.edu.anu.twcore.experiment.ExpFactor;
 import au.edu.anu.twcore.experiment.Experiment;
 import au.edu.anu.twcore.experiment.runtime.ExperimentDesignDetails;

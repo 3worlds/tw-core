@@ -31,7 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.collections.tables.ObjectTable;
+import au.edu.anu.omugi.collections.tables.ObjectTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.Direction;

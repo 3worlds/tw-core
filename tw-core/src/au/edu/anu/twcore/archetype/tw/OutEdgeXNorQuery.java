@@ -33,13 +33,11 @@ import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 
 import java.util.List;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.qgraph.queries.base.OrQuery;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.*;
 import fr.ens.biologie.generic.utils.Duple;
 
 /**

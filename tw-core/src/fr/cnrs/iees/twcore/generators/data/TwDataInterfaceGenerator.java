@@ -46,8 +46,8 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
-import au.edu.anu.rscs.aot.collections.tables.IntTable;
-import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.omugi.collections.tables.IntTable;
+import au.edu.anu.omugi.collections.tables.Table;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;

@@ -33,10 +33,9 @@ import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 
 import java.util.Collection;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.*;
 
 /**
  * Checks that a multiplicity is 0 if a certain condition is met, 1 otherwise.

@@ -28,10 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.Queryable;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.*;
 
 /**
  * Check that a node has at least one out edge of a given set of labels

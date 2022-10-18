@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.omugi.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.TableNode;

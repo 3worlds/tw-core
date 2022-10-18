@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import au.edu.anu.rscs.aot.collections.tables.DoubleTable;
+import au.edu.anu.omugi.collections.tables.DoubleTable;
 import fr.cnrs.iees.uit.space.Dimensioned;
 import fr.cnrs.iees.uit.space.Point;
 import fr.ens.biologie.generic.Sealable;

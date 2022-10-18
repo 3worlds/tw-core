@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.data.runtime;
 
-import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.omugi.collections.tables.Table;
 
 /**
  * An interface for data messages that get their data from the TwData hierarchy

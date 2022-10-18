@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import au.edu.anu.rscs.aot.collections.tables.IndexString;
+import au.edu.anu.omugi.collections.tables.IndexString;
 
 /**
  * A specialized data label class for items that may contain a SIMPLE index

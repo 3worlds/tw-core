@@ -56,7 +56,7 @@ import org.odftoolkit.simple.text.Paragraph;
 
 import com.google.common.io.Files;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.omugi.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.data.Record;

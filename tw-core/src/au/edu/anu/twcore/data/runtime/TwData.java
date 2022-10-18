@@ -31,7 +31,7 @@ package au.edu.anu.twcore.data.runtime;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.omugi.graph.property.Property;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimpleWriteProtectablePropertyList;
 

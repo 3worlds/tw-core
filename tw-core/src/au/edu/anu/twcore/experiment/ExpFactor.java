@@ -31,8 +31,8 @@ package au.edu.anu.twcore.experiment;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.omugi.collections.tables.StringTable;
+import au.edu.anu.omugi.graph.property.Property;
 
 /**
  * @author Ian Davies - 5 Mar 2022

@@ -41,10 +41,10 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Logger;
 
-import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
-import au.edu.anu.rscs.aot.collections.tables.IntTable;
-import au.edu.anu.rscs.aot.collections.tables.Table;
-import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.omugi.collections.tables.Dimensioner;
+import au.edu.anu.omugi.collections.tables.IntTable;
+import au.edu.anu.omugi.collections.tables.Table;
+import au.edu.anu.omugi.graph.property.Property;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;

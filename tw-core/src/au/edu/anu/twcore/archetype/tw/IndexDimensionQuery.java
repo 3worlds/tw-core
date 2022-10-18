@@ -36,17 +36,12 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import java.util.Comparator;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.collections.tables.IndexString;
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.TableNode;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.ALDataEdge;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.graph.*;
+import fr.cnrs.iees.graph.impl.*;
 
 /**
  * A Query to check that table index specifications in data trackers have

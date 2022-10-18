@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.omugi.graph.property.Property;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.TimeData;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;

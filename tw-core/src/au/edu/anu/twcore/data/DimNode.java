@@ -37,7 +37,7 @@ import fr.ens.biologie.generic.Singleton;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
+import au.edu.anu.omugi.collections.tables.Dimensioner;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**

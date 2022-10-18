@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import au.edu.anu.omhtk.Language;
-import au.edu.anu.rscs.aot.collections.tables.Table;
+import au.edu.anu.omugi.collections.tables.Table;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Node;

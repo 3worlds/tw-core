@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.omugi.graph.property.Property;
 import au.edu.anu.twcore.experiment.ExpFactor;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
 
