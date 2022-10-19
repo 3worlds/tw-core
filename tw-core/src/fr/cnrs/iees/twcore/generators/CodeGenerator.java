@@ -162,6 +162,7 @@ public class CodeGenerator {
 					GraphStateFactory.setChanged();
 			
 			// WIP - generate enum class for categories
+			//BTW Structure can be null here - IDD
 			generateEnumCode(systemNode.id(),structure);
 
 			// generate data classes
