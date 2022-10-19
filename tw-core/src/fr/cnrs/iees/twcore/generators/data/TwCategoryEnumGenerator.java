@@ -28,7 +28,7 @@ public class TwCategoryEnumGenerator extends DataClassGenerator {
 	 * This constructor assumes the category list contains the whole hierarchy of all categories 
 	 * of a model [= a multi-tree, or forest]
 	 * @param modelName
-	 * @param spec the structure node (normally)
+	 * @param spec the structure node (normally) - may be null if no structure node
 	 * @param cats
 	 */
 	public TwCategoryEnumGenerator(String modelName, 
@@ -46,48 +46,54 @@ public class TwCategoryEnumGenerator extends DataClassGenerator {
 			Partition.class.getCanonicalName());
 		eg.addInterfaceGenericParameter(Partition.class.getSimpleName(),packageName+"."+fname);
 		eg.setImport(EnumSet.class.getCanonicalName());
+		MethodGenerator mg = eg.getMethod("partition");		
+		mg.setReturnType("EnumSet<"+fname+">");		
 		
 		// make enum constants
 		eg.setConstant("_world_"); // a root for all category trees		
-		// all partition nodes
-		Collection<TreeGraphDataNode> ccs = (Collection<TreeGraphDataNode>) get(spec,
-			childTree(),
-			selectZeroOrMany(hasTheLabel(N_CATEGORYSET.label())));
-		// all category nodes
-		Collection<TreeGraphDataNode> cc = (Collection<TreeGraphDataNode>) get(spec,
+		if (spec!=null) {
+			// all partition nodes
+			Collection<TreeGraphDataNode> ccs = (Collection<TreeGraphDataNode>) get(spec,
 				childTree(),
-				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
-		for (TreeGraphDataNode p:ccs)
-			eg.setConstant(p.id());
-		for (TreeGraphDataNode cat:cc)
-			eg.setConstant(cat.id());
-		
-		// build the partition() method
-		MethodGenerator mg = eg.getMethod("partition");		
-		mg.setReturnType("EnumSet<"+fname+">");		
-		StringBuilder sb = new StringBuilder();
-		sb.append("switch (this) {\n");
-		for (TreeGraphDataNode p:ccs) {
-			Collection<TreeGraphDataNode> pcats = (Collection<TreeGraphDataNode>) get(p,
-				children(),
-				selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
-			sb.append("\t\tcase ").append(p.id()).append(":\n");
-			sb.append("\t\t\treturn EnumSet.of(");
-			int gni = 0;			
-			for (TreeGraphDataNode cat:pcats) {
-				if (gni<pcats.size()-1)
-					sb.append(cat.id()).append(',');
-				else
-					sb.append(cat.id());
-				gni++;
+				selectZeroOrMany(hasTheLabel(N_CATEGORYSET.label())));
+			// all category nodes
+			Collection<TreeGraphDataNode> cc = (Collection<TreeGraphDataNode>) get(spec,
+					childTree(),
+					selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+			for (TreeGraphDataNode p:ccs)
+				eg.setConstant(p.id());
+			for (TreeGraphDataNode cat:cc)
+				eg.setConstant(cat.id());		
+			// build the partition() method
+			StringBuilder sb = new StringBuilder();
+			sb.append("switch (this) {\n");
+			for (TreeGraphDataNode p:ccs) {
+				Collection<TreeGraphDataNode> pcats = (Collection<TreeGraphDataNode>) get(p,
+					children(),
+					selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
+				sb.append("\t\tcase ").append(p.id()).append(":\n");
+				sb.append("\t\t\treturn EnumSet.of(");
+				int gni = 0;			
+				for (TreeGraphDataNode cat:pcats) {
+					if (gni<pcats.size()-1)
+						sb.append(cat.id()).append(',');
+					else
+						sb.append(cat.id());
+					gni++;
+				}
+				sb.append(");\n");
 			}
-			sb.append(");\n");
+			// default: return empty set
+			sb.append("\t\tdefault:\n");
+			sb.append("\t\t\treturn EnumSet.noneOf(").append(fname).append(".class);\n");
+			sb.append("\t\t}"); // end switch block
+			mg.setReturnStatement(sb.toString());
 		}
-		// default: return empty set
-		sb.append("\t\tdefault:\n");
-		sb.append("\t\t\treturn EnumSet.noneOf(").append(fname).append(".class);\n");
-		sb.append("\t\t}"); // end switch block
-		mg.setReturnStatement(sb.toString());
+		else { // when there is no structure node, no partition
+			StringBuilder sb = new StringBuilder();
+			sb.append("return EnumSet.noneOf(").append(fname).append(".class)");
+			mg.setReturnStatement(sb.toString());
+		}
 		// write java code to source file
 		File file = new File(packagePath+File.separator+fname+".java");
 		writeFile(eg,file);
