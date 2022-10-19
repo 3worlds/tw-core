@@ -481,7 +481,7 @@ hasNode spaceSpec
 		multiplicity = IntegerRange("1..1")
 		mustSatisfyQuery nonNullPrecisionQuery
 			className = String("au.edu.anu.twcore.archetype.tw.IsInIntervalQuery")
-			interval = fr.ens.biologie.generic.utils.Interval(]0.0,+Inf[)
+			interval = fr.cnrs.iees.omhtk.utils.Interval(]0.0,+Inf[)
 	hasProperty spaceUnitsSpec
 		hasName = String("units")
 		type = String("String")
