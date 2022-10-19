@@ -45,7 +45,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.omhtk.jars.Jars;
-import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
+import au.edu.anu.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;

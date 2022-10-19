@@ -31,7 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
+import au.edu.anu.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.twcore.archetype.TWA;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.io.GraphImporter;

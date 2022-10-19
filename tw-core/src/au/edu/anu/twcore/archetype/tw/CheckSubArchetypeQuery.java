@@ -28,14 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import au.edu.anu.rscs.aot.archetype.Archetypes;
+import au.edu.anu.aot.archetype.Archetypes;
 import au.edu.anu.omugi.collections.tables.*;
-import au.edu.anu.qgraph.queries.QueryAdaptor;
-import au.edu.anu.qgraph.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.Tree;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.*;
 import fr.cnrs.iees.graph.impl.SimpleTree;
 import fr.cnrs.iees.graph.io.GraphImporter;
 

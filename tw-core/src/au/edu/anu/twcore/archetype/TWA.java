@@ -32,8 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import au.edu.anu.rscs.aot.archetype.Archetypes;
-import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
+import au.edu.anu.aot.archetype.Archetypes;
+import au.edu.anu.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;

@@ -1,10 +1,10 @@
 tree
 	scope =            String("3W-archetype")
-	archetype =        String("au.edu.anu.rscs.aot.archetype.ArchetypeRootSpec")
-	hasNode =          String("au.edu.anu.rscs.aot.archetype.NodeSpec")
-	hasProperty =      String("au.edu.anu.rscs.aot.archetype.PropertySpec")
-	hasEdge =          String("au.edu.anu.rscs.aot.archetype.EdgeSpec")
-	mustSatisfyQuery = String("au.edu.anu.rscs.aot.archetype.ConstraintSpec")
+	archetype =        String("au.edu.anu.aot.archetype.ArchetypeRootSpec")
+	hasNode =          String("au.edu.anu.aot.archetype.NodeSpec")
+	hasProperty =      String("au.edu.anu.aot.archetype.PropertySpec")
+	hasEdge =          String("au.edu.anu.aot.archetype.EdgeSpec")
+	mustSatisfyQuery = String("au.edu.anu.aot.archetype.ConstraintSpec")
 
 archetype 3worldsArchetype
 	exclusive = Boolean(false)
