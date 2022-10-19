@@ -31,8 +31,7 @@ package au.edu.anu.twcore.ecosystem.runtime;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
 import fr.cnrs.iees.rvgrid.observer.Observable;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
-import fr.ens.biologie.generic.Resettable;
-import fr.ens.biologie.generic.Singleton;
+import fr.cnrs.iees.omhtk.*;
 
 /**
  * <p>

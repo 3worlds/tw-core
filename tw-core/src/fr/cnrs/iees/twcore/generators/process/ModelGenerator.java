@@ -28,8 +28,8 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators.process;
 
-import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
-import static fr.ens.biologie.generic.utils.NameUtils.*;
+import static fr.cnrs.iees.omhtk.codeGeneration.CodeGenerationUtils.*;
+import static fr.cnrs.iees.omhtk.utils.NameUtils.*;
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
@@ -86,11 +86,10 @@ import fr.cnrs.iees.twcore.generators.odd.TwConfigurationAnalyser.ExecutionStep;
 import fr.cnrs.iees.twcore.generators.odd.UMLGenerator;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Distance;
-//import fr.cnrs.iees.uit.space.Distance;
 import fr.cnrs.iees.uit.space.Point;
-import fr.ens.biologie.codeGeneration.Comments;
-import fr.ens.biologie.generic.JavaCode;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.codeGeneration.Comments;
+import fr.cnrs.iees.omhtk.JavaCode;
+import fr.cnrs.iees.omhtk.utils.Logging;
 
 /**
  * A class to generate the skeleton of a user-editable model code.

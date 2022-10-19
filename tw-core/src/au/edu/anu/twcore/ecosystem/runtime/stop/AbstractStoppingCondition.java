@@ -30,7 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.stop;
 
 import au.edu.anu.twcore.ecosystem.runtime.StoppingCondition;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
-import fr.ens.biologie.generic.Sealable;
+import fr.cnrs.iees.omhtk.Sealable;
 
 /**
  * Old stuff - refactored by:

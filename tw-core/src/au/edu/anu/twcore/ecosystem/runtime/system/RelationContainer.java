@@ -42,12 +42,10 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.twcore.constants.LifespanType;
-import fr.ens.biologie.generic.Resettable;
-import fr.ens.biologie.generic.utils.Duple;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.Resettable;
+import fr.cnrs.iees.omhtk.utils.*;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATION_LIFESPAN;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATION_DIRECTIONAL;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
  * Management of relations (ie delayed addition and removal). this is NOT a container, i.e. relations

@@ -36,7 +36,7 @@ import java.util.List;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.io.parsing.CloneableProperty;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
-import fr.ens.biologie.generic.utils.Duple;
+import fr.cnrs.iees.omhtk.utils.Duple;
 
 /**
  * Author Ian Davies

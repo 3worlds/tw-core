@@ -28,10 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.process;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.runtime.Spatialized;
@@ -47,7 +44,7 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.MultipleDataTrackerHolder;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SamplerDataTracker;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
-import fr.ens.biologie.generic.Sealable;
+import fr.cnrs.iees.omhtk.Sealable;
 
 /**
  * An ancestor class for 3Worlds "Processes". The descendant Processes implement different

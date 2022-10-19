@@ -52,7 +52,7 @@ import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
-import fr.ens.biologie.codeGeneration.Comments;
+import fr.cnrs.iees.omhtk.codeGeneration.Comments;
 import static au.edu.anu.rscs.aot.util.StringUtils.ELLIPSIS;
 
 /**

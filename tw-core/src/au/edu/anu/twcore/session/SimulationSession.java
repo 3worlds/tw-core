@@ -35,7 +35,7 @@ import java.util.TreeMap;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.ens.biologie.generic.Initialisable;
+import fr.cnrs.iees.omhtk.Initialisable;
 
 /**
  * This class represents a simulation experiment session in ModelRunner.

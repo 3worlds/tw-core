@@ -28,11 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.data.runtime;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
-import static fr.ens.biologie.generic.SaveableAsText.*;
+import static fr.cnrs.iees.omhtk.SaveableAsText.*;
 
 /**
  * A class for hierarchical names

@@ -31,7 +31,7 @@ package au.edu.anu.twcore.experiment.runtime.deployment;
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
 import au.edu.anu.twcore.experiment.runtime.Deployable;
 import fr.cnrs.iees.rvgrid.rendezvous.RVMessage;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.utils.Logging;
 
 import java.util.logging.Logger;
 import static au.edu.anu.twcore.ecosystem.runtime.simulator.SimulatorEvents.*;

@@ -1,6 +1,6 @@
 package fr.cnrs.iees.twcore.generators.data;
 
-import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.writeFile;
+import static fr.cnrs.iees.omhtk.codeGeneration.CodeGenerationUtils.writeFile;
 
 import java.io.File;
 import java.util.Collection;
@@ -8,10 +8,10 @@ import java.util.EnumSet;
 
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.Partition;
-import fr.ens.biologie.codeGeneration.EnumGenerator;
-import fr.ens.biologie.codeGeneration.MethodGenerator;
+import fr.cnrs.iees.omhtk.codeGeneration.EnumGenerator;
+import fr.cnrs.iees.omhtk.codeGeneration.MethodGenerator;
 
-import static fr.ens.biologie.generic.utils.NameUtils.*;
+import static fr.cnrs.iees.omhtk.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;

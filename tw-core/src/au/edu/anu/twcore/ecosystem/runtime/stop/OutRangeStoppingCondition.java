@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.stop;
 
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.ens.biologie.generic.utils.Interval;
+import fr.cnrs.iees.omhtk.utils.Interval;
 
 /**
  * A stopping condition that stops when a variable falls outside its range

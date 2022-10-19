@@ -33,14 +33,7 @@ import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentProperty
 import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentPropertyListImpl.DECO;
 import static au.edu.anu.twcore.ecosystem.runtime.system.SystemComponentPropertyListImpl.DRIVERS;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
@@ -48,8 +41,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.ens.biologie.generic.Factory;
-import fr.ens.biologie.generic.Singleton;
+import fr.cnrs.iees.omhtk.*;
 
 /**
  * A factory for any system element type - ancestor to SystemFactory, LifeCycle

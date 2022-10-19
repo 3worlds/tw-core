@@ -28,15 +28,13 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import au.edu.anu.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Node;
-import fr.ens.biologie.generic.utils.Duple;
+import fr.cnrs.iees.graph.*;
+import fr.cnrs.iees.omhtk.utils.Duple;
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
 /**

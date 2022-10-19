@@ -30,12 +30,12 @@ package fr.cnrs.iees.twcore.generators.data;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
-import static fr.ens.biologie.generic.utils.NameUtils.*;
+import static fr.cnrs.iees.omhtk.utils.NameUtils.*;
 import static fr.cnrs.iees.twcore.generators.TwComments.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
+import static fr.cnrs.iees.omhtk.codeGeneration.CodeGenerationUtils.*;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -53,9 +53,9 @@ import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
-import fr.ens.biologie.codeGeneration.ClassGenerator;
+import fr.cnrs.iees.omhtk.codeGeneration.ClassGenerator;
 //import fr.ens.biologie.codeGeneration.JavaCompiler;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.utils.Logging;
 
 /**
  * <p>Implements the recursive generation of nested record and table data classes.

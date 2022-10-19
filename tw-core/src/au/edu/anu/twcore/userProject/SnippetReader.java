@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.ens.biologie.codeGeneration.Comments;
+import fr.cnrs.iees.omhtk.codeGeneration.Comments;
 
 /**
  * @author Ian Davies -  12 July 2021

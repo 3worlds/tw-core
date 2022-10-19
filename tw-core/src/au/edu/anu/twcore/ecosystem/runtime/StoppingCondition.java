@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime;
 
 import au.edu.anu.twcore.ecosystem.runtime.simulator.Simulator;
-import fr.ens.biologie.generic.Resettable;
+import fr.cnrs.iees.omhtk.Resettable;
 
 /**
  * 

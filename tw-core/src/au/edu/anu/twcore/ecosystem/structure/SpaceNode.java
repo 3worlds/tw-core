@@ -57,9 +57,8 @@ import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.EdgeEffectCorrection;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
-import fr.ens.biologie.generic.LimitedEdition;
-import fr.ens.biologie.generic.Sealable;
-import fr.ens.biologie.generic.utils.Interval;
+import fr.cnrs.iees.omhtk.*;
+import fr.cnrs.iees.omhtk.utils.Interval;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;

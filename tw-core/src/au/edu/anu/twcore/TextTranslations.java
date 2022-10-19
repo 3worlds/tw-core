@@ -29,21 +29,17 @@
 package au.edu.anu.twcore;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import au.edu.anu.omhtk.Language;
 import au.edu.anu.omugi.collections.tables.Table;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.twcore.constants.DataElementType;
-import fr.cnrs.iees.twcore.constants.SpaceType;
-import fr.ens.biologie.generic.utils.Interval;
+import fr.cnrs.iees.twcore.constants.*;
+import fr.cnrs.iees.omhtk.utils.Interval;
 import au.edu.anu.twcore.archetype.tw.*;
 import au.edu.anu.twcore.errorMessaging.*;
-//import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**

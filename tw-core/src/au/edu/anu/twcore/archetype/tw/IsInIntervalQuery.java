@@ -31,7 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.omugi.graph.property.Property;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.ens.biologie.generic.utils.Interval;
+import fr.cnrs.iees.omhtk.utils.Interval;
 
 /**
  * 

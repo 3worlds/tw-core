@@ -79,8 +79,7 @@ import fr.cnrs.iees.twcore.constants.TimeScaleType;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.twcore.constants.TrackerType;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
-import fr.ens.biologie.generic.utils.Duple;
-import fr.ens.biologie.generic.utils.Interval;
+import fr.cnrs.iees.omhtk.utils.*;
 
 import org.odftoolkit.simple.style.StyleTypeDefinitions;
 

@@ -42,7 +42,7 @@ import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.GraphImporter;
-import fr.ens.biologie.generic.Initialisable;
+import fr.cnrs.iees.omhtk.Initialisable;
 
 /**
  * 

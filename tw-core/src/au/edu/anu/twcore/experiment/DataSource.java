@@ -46,9 +46,8 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.FileType;
-import fr.ens.biologie.generic.Sealable;
-import fr.ens.biologie.generic.Singleton;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.*;
+import fr.cnrs.iees.omhtk.utils.Logging;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;

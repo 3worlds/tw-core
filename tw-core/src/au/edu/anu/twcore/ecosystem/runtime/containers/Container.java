@@ -33,7 +33,7 @@ import java.util.TreeMap;
 
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
-import fr.ens.biologie.generic.Resettable;
+import fr.cnrs.iees.omhtk.Resettable;
 
 /**
  * An ancestor class for any kind of SystemComponent / SystemRelation container.

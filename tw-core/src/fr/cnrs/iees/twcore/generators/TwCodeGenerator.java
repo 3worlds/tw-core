@@ -32,8 +32,8 @@ import java.io.File;
 
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.ens.biologie.generic.JavaGenerator;
-import static fr.ens.biologie.generic.utils.NameUtils.*;
+import fr.cnrs.iees.omhtk.JavaGenerator;
+import static fr.cnrs.iees.omhtk.utils.NameUtils.*;
 
 
 /**

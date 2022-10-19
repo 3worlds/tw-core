@@ -30,11 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import au.edu.anu.omugi.collections.tables.Dimensioner;
 import au.edu.anu.omugi.collections.tables.StringTable;
@@ -50,7 +46,7 @@ import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregates;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregatesSet;
-import fr.ens.biologie.generic.utils.Statistics;
+import fr.cnrs.iees.omhtk.utils.Statistics;
 
 /**
  * The ancestor of data trackers managing data aggregated with Statistics on a Sample

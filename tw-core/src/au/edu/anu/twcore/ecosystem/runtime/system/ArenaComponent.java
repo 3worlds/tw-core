@@ -36,7 +36,7 @@ import au.edu.anu.twcore.ecosystem.runtime.tracking.ArenaDataTracker;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.ens.biologie.generic.Resettable;
+import fr.cnrs.iees.omhtk.Resettable;
 
 /**
  * The component matching the whole system

@@ -42,9 +42,9 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.uit.space.Point;
-import fr.ens.biologie.codeGeneration.ClassGenerator;
-import fr.ens.biologie.codeGeneration.MethodGenerator;
-import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.*;
+import fr.cnrs.iees.omhtk.codeGeneration.ClassGenerator;
+import fr.cnrs.iees.omhtk.codeGeneration.MethodGenerator;
+import static fr.cnrs.iees.omhtk.codeGeneration.CodeGenerationUtils.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**

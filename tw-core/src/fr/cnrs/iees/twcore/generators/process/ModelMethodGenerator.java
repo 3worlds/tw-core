@@ -28,12 +28,12 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators.process;
 
-import static fr.ens.biologie.codeGeneration.Comments.*;
+import static fr.cnrs.iees.omhtk.codeGeneration.Comments.*;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import fr.ens.biologie.codeGeneration.MethodGenerator;
+import fr.cnrs.iees.omhtk.codeGeneration.MethodGenerator;
 
 /**
  * A descendant of MethodGenerator with a different formatting of methods

@@ -38,7 +38,7 @@ import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.qgraph.queries.base.OrQuery;
 import au.edu.anu.twcore.TextTranslations;
 import fr.cnrs.iees.graph.*;
-import fr.ens.biologie.generic.utils.Duple;
+import fr.cnrs.iees.omhtk.utils.Duple;
 
 /**
  * Checks that an out edge has two labels (each coming from two separate sets).

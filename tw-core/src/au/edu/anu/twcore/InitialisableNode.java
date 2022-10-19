@@ -33,8 +33,8 @@ import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.ens.biologie.generic.Initialisable;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.Initialisable;
+import fr.cnrs.iees.omhtk.utils.Logging;
 
 /**
  * An ancestor to configuration nodes - mainly here to deal with the logging

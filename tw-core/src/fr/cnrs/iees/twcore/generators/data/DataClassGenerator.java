@@ -28,8 +28,8 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators.data;
 
-import static fr.ens.biologie.generic.utils.NameUtils.validJavaName;
-import static fr.ens.biologie.generic.utils.NameUtils.wordUpperCaseName;
+import static fr.cnrs.iees.omhtk.utils.NameUtils.validJavaName;
+import static fr.cnrs.iees.omhtk.utils.NameUtils.wordUpperCaseName;
 
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;

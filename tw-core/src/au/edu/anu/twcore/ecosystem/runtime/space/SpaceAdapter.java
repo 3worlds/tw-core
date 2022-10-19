@@ -28,11 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import au.edu.anu.twcore.data.runtime.Metadata;
@@ -51,7 +47,7 @@ import fr.cnrs.iees.twcore.constants.RngSeedSourceType;
 import fr.cnrs.iees.uit.space.Box;
 import static fr.cnrs.iees.uit.space.Distance.*;
 import fr.cnrs.iees.uit.space.Point;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.utils.Logging;
 
 /**
  * The base class for all space implementations in 3Worlds.

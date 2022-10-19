@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime;
 
 import fr.cnrs.iees.twcore.constants.TimeUnits;
-import fr.ens.biologie.generic.Resettable;
+import fr.cnrs.iees.omhtk.Resettable;
 
 /**
  * The runtime counterpart of TimeModel

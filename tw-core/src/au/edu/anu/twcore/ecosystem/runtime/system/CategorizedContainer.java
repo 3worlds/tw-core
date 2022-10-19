@@ -28,13 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
@@ -46,8 +40,7 @@ import au.edu.anu.twcore.ecosystem.runtime.containers.SimpleContainer;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.ResettableLocalScope;
-import fr.ens.biologie.generic.Resettable;
-import fr.ens.biologie.generic.Sealable;
+import fr.cnrs.iees.omhtk.*;
 
 /**
  * <p>

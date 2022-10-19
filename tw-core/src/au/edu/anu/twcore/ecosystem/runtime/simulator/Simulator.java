@@ -28,13 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.simulator;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMELINE_TIMEORIGIN;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.SimulatorStatus.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 import au.edu.anu.omugi.graph.property.Property;
@@ -69,8 +66,8 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.ens.biologie.generic.Resettable;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.Resettable;
+import fr.cnrs.iees.omhtk.utils.Logging;
 
 /**
  * The class which runs a single simulation on a single parameter set

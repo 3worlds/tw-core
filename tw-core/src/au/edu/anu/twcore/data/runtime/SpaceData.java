@@ -28,14 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.data.runtime;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.ens.biologie.generic.utils.Tuple;
+import fr.cnrs.iees.omhtk.utils.Tuple;
 
 /**
  * This class is used to send spatial information to widgets. It contains the

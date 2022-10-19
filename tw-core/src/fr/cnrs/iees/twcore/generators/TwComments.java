@@ -28,7 +28,7 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators;
 
-import fr.ens.biologie.codeGeneration.Comments;
+import fr.cnrs.iees.omhtk.codeGeneration.Comments;
 
 /**
  * 3Worlds-specific comments for code generation

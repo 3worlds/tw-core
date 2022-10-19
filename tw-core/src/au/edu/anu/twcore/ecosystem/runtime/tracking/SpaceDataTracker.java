@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.tracking;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_TIMELINE_TIMEORIGIN;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.logging.Logger;
 
@@ -38,7 +38,7 @@ import au.edu.anu.twcore.data.runtime.SpaceData;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.utils.Logging;
 import au.edu.anu.twcore.ui.runtime.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
 import au.edu.anu.twcore.ecosystem.dynamics.*;

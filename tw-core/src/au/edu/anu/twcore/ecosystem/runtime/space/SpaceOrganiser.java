@@ -28,14 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import au.edu.anu.omugi.collections.tables.DoubleTable;
 import fr.cnrs.iees.uit.space.Dimensioned;
 import fr.cnrs.iees.uit.space.Point;
-import fr.ens.biologie.generic.Sealable;
+import fr.cnrs.iees.omhtk.Sealable;
 
 /**
  * The class that knows how spaces are positioned relative to each other (equivalent for Spaces of the

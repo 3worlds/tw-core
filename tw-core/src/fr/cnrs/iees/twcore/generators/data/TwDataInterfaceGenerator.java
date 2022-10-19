@@ -32,15 +32,15 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
-import fr.ens.biologie.codeGeneration.InterfaceGenerator;
-import fr.ens.biologie.codeGeneration.MethodGenerator;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.codeGeneration.InterfaceGenerator;
+import fr.cnrs.iees.omhtk.codeGeneration.MethodGenerator;
+import fr.cnrs.iees.omhtk.utils.Logging;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import static fr.ens.biologie.codeGeneration.CodeGenerationUtils.writeFile;
-import static fr.ens.biologie.generic.utils.NameUtils.*;
+import static fr.cnrs.iees.omhtk.codeGeneration.CodeGenerationUtils.writeFile;
+import static fr.cnrs.iees.omhtk.utils.NameUtils.*;
 
 import java.io.File;
 import java.util.*;

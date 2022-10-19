@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.ecosystem.dynamics.Timeline;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
 import au.edu.anu.twcore.ecosystem.runtime.Timer;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.utils.Logging;
 
 public abstract class AbstractTimer implements Timer {
 

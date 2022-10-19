@@ -33,7 +33,7 @@ import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.ens.biologie.generic.utils.NameUtils.*;
+import static fr.cnrs.iees.omhtk.utils.NameUtils.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +67,7 @@ import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.data.TwDataInterfaceGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
-import fr.ens.biologie.generic.utils.Logging;
+import fr.cnrs.iees.omhtk.utils.Logging;
 import fr.cnrs.iees.properties.ResizeablePropertyList;
 
 /**
