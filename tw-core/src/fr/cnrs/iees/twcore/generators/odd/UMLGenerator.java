@@ -45,7 +45,7 @@ import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
-import static au.edu.anu.rscs.aot.util.StringUtils.*;
+import static au.edu.anu.omhtk.util.StringUtils.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 

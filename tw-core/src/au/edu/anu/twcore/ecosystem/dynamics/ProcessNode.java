@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
-import au.edu.anu.rscs.aot.collections.DynamicList;
+import au.edu.anu.omhtk.collections.DynamicList;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.ecosystem.ArenaType;

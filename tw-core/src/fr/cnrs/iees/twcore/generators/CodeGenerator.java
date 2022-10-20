@@ -48,7 +48,7 @@ import javax.tools.ToolProvider;
 import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.aot.errorMessaging.ErrorMessageManager;
-import au.edu.anu.rscs.aot.util.FileUtilities;
+import au.edu.anu.omhtk.util.FileUtilities;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;

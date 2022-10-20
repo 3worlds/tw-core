@@ -30,7 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.*;
 
-import au.edu.anu.rscs.aot.collections.QuickListOfLists;
+import au.edu.anu.omhtk.collections.QuickListOfLists;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;

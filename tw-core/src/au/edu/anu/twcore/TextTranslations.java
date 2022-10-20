@@ -33,7 +33,7 @@ import java.util.*;
 
 import au.edu.anu.omhtk.Language;
 import au.edu.anu.omugi.collections.tables.Table;
-import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.omhtk.util.IntegerRange;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.twcore.constants.*;

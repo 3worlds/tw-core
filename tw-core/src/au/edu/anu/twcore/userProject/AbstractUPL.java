@@ -45,7 +45,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import au.edu.anu.aot.errorMessaging.ErrorMessageManager;
-import au.edu.anu.rscs.aot.util.FileUtilities;
+import au.edu.anu.omhtk.util.FileUtilities;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.project.Project;
@@ -53,7 +53,7 @@ import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import fr.cnrs.iees.omhtk.codeGeneration.Comments;
-import static au.edu.anu.rscs.aot.util.StringUtils.ELLIPSIS;
+import static au.edu.anu.omhtk.util.StringUtils.ELLIPSIS;
 
 /**
  * @author Ian Davies - 29 Sep 2019

@@ -34,7 +34,6 @@ import fr.cnrs.iees.properties.*;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import au.edu.anu.twcore.ecosystem.runtime.*;
 import au.edu.anu.twcore.ui.runtime.*;
-import fr.ens.biologie.generic.*;
 
 /**
  * <p>

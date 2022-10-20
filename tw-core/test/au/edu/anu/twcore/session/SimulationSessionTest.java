@@ -35,8 +35,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import au.edu.anu.rscs.aot.init.InitialiseMessage;
-import au.edu.anu.rscs.aot.init.Initialiser;
+import au.edu.anu.omhtk.init.InitialiseMessage;
+import au.edu.anu.omhtk.init.Initialiser;
 import au.edu.anu.twcore.archetype.TWA;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
