@@ -1,5 +1,5 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-core> version 0.6.5 (Thu Oct 20 13:44:44 CEST 2022)
+ ant and ivy scripts for project <tw-core> version 0.6.4 (Wed Aug 24 14:57:09 CEST 2022)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -13,7 +13,7 @@
 
 	<info	organisation="fr.cnrs.iees.tw-core"
 			module="tw-core"
-			revision="0.6.5"
+			revision="0.6.4"
 			status="integration">
 		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
 		<description>This module brings together all components required for 3Worlds including archetype</description>
@@ -30,12 +30,12 @@
 	</publications>
 
 	<dependencies>
-		<dependency org="fr.cnrs.iees.omhtk" name="generics" rev="[0.5.0,)"/>
-		<dependency org="fr.cnrs.iees.omugi" name="omugi" rev="[0.6.0,)"/>
-		<dependency org="au.edu.anu.qgraph" name="qgraph" rev="[0.3.0,)"/>
-		<dependency org="au.edu.anu.aot" name="aot" rev="[0.2.1,)"/>
-		<dependency org="fr.cnrs.iees.rvgrid" name="rvgrid" rev="[0.1.1,)"/>
-		<dependency org="fr.cnrs.iees.uit" name="uit" rev="[0.4.2,)"/>
+		<dependency org="fr.cnrs.iees.omhtk" name="generics" rev="[0.4.0,)"/>
+		<dependency org="fr.cnrs.iees.omugi" name="omugi" rev="[0.5.0,)"/>
+		<dependency org="au.edu.anu.qgraph" name="qgraph" rev="[0.2.0,)"/>
+		<dependency org="au.edu.anu.aot" name="aot" rev="[0.2.0,)"/>
+		<dependency org="fr.cnrs.iees.rvgrid" name="rvgrid" rev="[0.1.0,)"/>
+		<dependency org="fr.cnrs.iees.uit" name="uit" rev="[0.4.1,)"/>
 		<dependency org="org.apache.commons" name="commons-text" rev="[1,)"/>
 		<dependency org="org.apache.odftoolkit" name="simple-odf" rev="0.8.2-incubating"/>
 		<dependency org="com.hp.hpl.jena" name="jena" rev="2.6.4"/>

@@ -82,12 +82,12 @@ public class VersionSettings {
 	 *
 	 */
 	protected static String[][] DEPS = {
-			{"fr.cnrs.iees.omhtk", "generics", "[0.4.0,)", null},
-			{"fr.cnrs.iees.omugi", "omugi", "[0.5.0,)", null},
-			{"au.edu.anu.qgraph", "qgraph", "[0.2.0,)", null},
-			{"au.edu.anu.aot", "aot", "[0.2.0,)", null},
-			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.1.0,)", null},
-			{"fr.cnrs.iees.uit", "uit", "[0.4.1,)", null},
+			{"fr.cnrs.iees.omhtk", "generics", "[0.5.0,)", null},
+			{"fr.cnrs.iees.omugi", "omugi", "[0.6.0,)", null},
+			{"au.edu.anu.qgraph", "qgraph", "[0.3.0,)", null},
+			{"au.edu.anu.aot", "aot", "[0.2.1,)", null},
+			{"fr.cnrs.iees.rvgrid", "rvgrid", "[0.1.1,)", null},
+			{"fr.cnrs.iees.uit", "uit", "[0.4.2,)", null},
 			{"org.apache.commons", "commons-text", "[1,)", null},
 			{"org.apache.odftoolkit","simple-odf","0.8.2-incubating", null},
 			{"com.hp.hpl.jena","jena","2.6.4", null},
