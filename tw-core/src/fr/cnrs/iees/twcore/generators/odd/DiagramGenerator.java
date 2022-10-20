@@ -31,7 +31,7 @@ package fr.cnrs.iees.twcore.generators.odd;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;

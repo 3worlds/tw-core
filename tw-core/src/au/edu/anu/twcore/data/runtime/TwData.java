@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Set;
 
 import fr.cnrs.iees.omugi.graph.property.Property;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.SimpleWriteProtectablePropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.SimpleWriteProtectablePropertyList;
 
 /**
  * an ancestor class for 3Worlds data structures, meant to be used as a PropertyList in some 

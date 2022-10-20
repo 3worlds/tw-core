@@ -35,10 +35,10 @@ import java.util.logging.Logger;
 import au.edu.anu.aot.archetype.Archetypes;
 import au.edu.anu.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
-import fr.cnrs.iees.graph.Tree;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.cnrs.iees.omugi.graph.Tree;
+import fr.cnrs.iees.omugi.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.io.GraphImporter;
 import fr.cnrs.iees.omhtk.utils.Logging;
 
 /**

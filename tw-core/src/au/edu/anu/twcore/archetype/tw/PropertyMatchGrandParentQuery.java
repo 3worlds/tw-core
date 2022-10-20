@@ -30,8 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.*;
 
 /**
  * Check the presence of a certain property depending on parent' parent type.

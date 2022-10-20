@@ -28,13 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.session;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import java.util.*;
+
+import fr.cnrs.iees.omugi.graph.impl.*;
 import fr.cnrs.iees.omhtk.Initialisable;
 
 /**

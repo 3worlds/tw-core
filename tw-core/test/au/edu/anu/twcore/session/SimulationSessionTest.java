@@ -38,10 +38,10 @@ import org.junit.jupiter.api.Test;
 import au.edu.anu.omhtk.init.InitialiseMessage;
 import au.edu.anu.omhtk.init.Initialiser;
 import au.edu.anu.twcore.archetype.TWA;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.cnrs.iees.omugi.graph.impl.ALEdge;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.io.GraphImporter;
 import fr.cnrs.iees.omhtk.Initialisable;
 
 /**

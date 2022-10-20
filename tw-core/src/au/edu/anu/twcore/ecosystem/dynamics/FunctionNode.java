@@ -38,13 +38,11 @@ import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.Recruit;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
 import au.edu.anu.twcore.root.World;
-import fr.cnrs.iees.OmugiClassLoader;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.OmugiClassLoader;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.omhtk.*;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;

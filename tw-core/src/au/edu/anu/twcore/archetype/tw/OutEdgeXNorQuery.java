@@ -37,7 +37,7 @@ import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.qgraph.queries.base.OrQuery;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.*;
+import fr.cnrs.iees.omugi.graph.*;
 import fr.cnrs.iees.omhtk.utils.Duple;
 
 /**

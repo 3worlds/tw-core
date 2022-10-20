@@ -34,7 +34,7 @@ import java.util.List;
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.TreeNode;
 
 /**
  * Check that the parent of a {@link TreeNode} has one of a set of allowed

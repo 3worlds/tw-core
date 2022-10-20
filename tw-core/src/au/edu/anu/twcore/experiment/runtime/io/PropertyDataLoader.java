@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.twcore.experiment.runtime.DataLoader;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 import fr.cnrs.iees.omhtk.utils.Logging;
 import au.edu.anu.twcore.data.runtime.*; 
 

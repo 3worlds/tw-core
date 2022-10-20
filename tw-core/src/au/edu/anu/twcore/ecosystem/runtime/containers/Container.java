@@ -31,8 +31,8 @@ package au.edu.anu.twcore.ecosystem.runtime.containers;
 import java.util.Map;
 import java.util.TreeMap;
 
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.identity.impl.ResettableLocalScope;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.identity.impl.ResettableLocalScope;
 import fr.cnrs.iees.omhtk.Resettable;
 
 /**

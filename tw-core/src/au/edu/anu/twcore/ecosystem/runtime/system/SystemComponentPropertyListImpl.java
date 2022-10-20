@@ -34,8 +34,8 @@ import java.util.Map;
 import java.util.Set;
 
 import au.edu.anu.twcore.data.runtime.TwData;
-import fr.cnrs.iees.properties.PropertyListSetters;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.PropertyListSetters;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 /**
  * <p>

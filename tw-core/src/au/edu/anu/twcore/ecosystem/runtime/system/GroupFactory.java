@@ -32,7 +32,7 @@ import java.util.Set;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 /**
  * A factory to instantiate {@code GroupComponent}s, ie the variables and constants attached to a group.

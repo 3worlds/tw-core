@@ -28,8 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment.runtime;
 
-import fr.cnrs.iees.properties.SimplePropertyList;
-import au.edu.anu.twcore.data.runtime.*;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 
 

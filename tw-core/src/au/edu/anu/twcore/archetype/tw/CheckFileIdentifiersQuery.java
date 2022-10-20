@@ -34,10 +34,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.N_INITIALVALUES;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import au.edu.anu.qgraph.queries.QueryAdaptor;
 import au.edu.anu.qgraph.queries.Queryable;
@@ -46,9 +43,8 @@ import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.omugi.graph.impl.*;
 
 /**
  * Check that data sources and initialValues nodes have the proper ids as required by the component

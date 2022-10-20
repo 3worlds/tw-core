@@ -36,7 +36,7 @@ import au.edu.anu.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.aot.errorMessaging.impl.SpecificationErrorMsg;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.userProject.UserProjectLink;
-import fr.cnrs.iees.graph.impl.*;
+import fr.cnrs.iees.omugi.graph.impl.*;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 

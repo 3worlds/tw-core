@@ -33,9 +33,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import au.edu.anu.twcore.experiment.runtime.*;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.omhtk.DataContainer;
 import fr.cnrs.iees.omhtk.utils.Logging;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;

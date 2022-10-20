@@ -38,7 +38,7 @@ import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import fr.cnrs.iees.graph.*;
+import fr.cnrs.iees.omugi.graph.*;
 
 /**
  * A Query to check that both nodes of an edge have a common parent of a

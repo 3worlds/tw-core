@@ -31,7 +31,7 @@ package fr.cnrs.iees.twcore.constants;
 
 import java.time.LocalDateTime;
 
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.omugi.io.parsing.ValidPropertyTypes;
 
 /*
  * Class with a  long value representing a DateTime for use with dsls and for use

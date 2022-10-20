@@ -32,7 +32,7 @@ import java.util.*;
 
 import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.QueryAdaptor;
-import fr.cnrs.iees.graph.Specialized;
+import fr.cnrs.iees.omugi.graph.Specialized;
 
 /**
  * Check that only one string out of many is found in some list

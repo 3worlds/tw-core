@@ -41,8 +41,8 @@ import java.util.*;
 import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.*;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 
 public class ExclusiveChildPropertyValueQuery extends NodeHasPropertyValueQuery {
 	public ExclusiveChildPropertyValueQuery(BooleanTable values, String pname) {

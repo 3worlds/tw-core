@@ -28,15 +28,14 @@
  **************************************************************************/
 package au.edu.anu.twcore.archetype.tw;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.Record;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.omugi.graph.Direction;
+import fr.cnrs.iees.omugi.graph.impl.ALEdge;
 
 /**
  * Check that a root record is used by at most one category and for at most one usage among

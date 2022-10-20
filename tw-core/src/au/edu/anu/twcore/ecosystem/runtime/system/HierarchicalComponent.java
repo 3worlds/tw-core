@@ -34,10 +34,10 @@ import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Containing;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.graph.GraphFactory;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 /**
  * A class to represent containers as system components. These are TreeGraphDataNodes, ie

@@ -36,7 +36,7 @@ import java.util.Map;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemRelation;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
-import fr.cnrs.iees.graph.Graph;
+import fr.cnrs.iees.omugi.graph.Graph;
 import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.indexing.ExpandingLimitedPrecisionIndexingTree;

@@ -37,10 +37,10 @@ import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
 import au.edu.anu.twcore.ecosystem.runtime.space.Locatable;
 import au.edu.anu.twcore.ecosystem.runtime.space.LocationData;
 import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.ALDataNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.graph.GraphFactory;
+import fr.cnrs.iees.omugi.graph.impl.ALDataNode;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 /**
  * The main runtime object in 3worlds, representing "individuals" or "agents" or "system

@@ -33,7 +33,7 @@ import java.util.*;
 import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.*;
+import fr.cnrs.iees.omugi.graph.*;
 import fr.cnrs.iees.omhtk.utils.Duple;
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;

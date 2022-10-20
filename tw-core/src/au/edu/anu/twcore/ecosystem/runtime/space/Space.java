@@ -29,9 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.Collection;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Graph;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.omugi.graph.*;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;

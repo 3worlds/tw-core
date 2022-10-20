@@ -37,7 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import au.edu.anu.omhtk.util.FileUtilities;
-import fr.cnrs.iees.io.GraphFileFormats;
+import fr.cnrs.iees.omugi.io.GraphFileFormats;
 import fr.cnrs.iees.omhtk.utils.Logging;
 
 import java.util.logging.Logger;

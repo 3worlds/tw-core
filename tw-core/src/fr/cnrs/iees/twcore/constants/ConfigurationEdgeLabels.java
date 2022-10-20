@@ -56,7 +56,7 @@ import au.edu.anu.twcore.ecosystem.dynamics.initial.LoadFromEdge;
 
 import au.edu.anu.twcore.ui.TrackTimeEdge;
 import au.edu.anu.twcore.ui.TrackTimeSeriesEdge;
-import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.omugi.graph.Edge;
 import au.edu.anu.twcore.ui.TrackFieldEdge;
 import au.edu.anu.twcore.ui.TrackTableEdge;
 import au.edu.anu.twcore.ui.SampleComponentEdge;

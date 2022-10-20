@@ -39,8 +39,8 @@ import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;

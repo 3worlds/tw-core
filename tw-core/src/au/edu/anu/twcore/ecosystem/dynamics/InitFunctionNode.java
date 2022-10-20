@@ -31,12 +31,11 @@ package au.edu.anu.twcore.ecosystem.dynamics;
 import au.edu.anu.twcore.ecosystem.runtime.TwFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.root.World;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.TimeUnits;
 import fr.cnrs.iees.omhtk.*;
 

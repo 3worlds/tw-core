@@ -39,7 +39,7 @@ import au.edu.anu.twcore.data.runtime.Output0DData;
 import au.edu.anu.twcore.data.runtime.Output0DMetadata;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.twcore.constants.StatisticalAggregates;
 import fr.cnrs.iees.twcore.constants.SamplingMode;

@@ -1,12 +1,10 @@
 package au.edu.anu.twcore.archetype.tw;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
-import fr.cnrs.iees.graph.Element;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.omugi.graph.*;
 
 /**
  * Checks that a Dataholder has at least one of a series of properties

@@ -32,8 +32,8 @@ import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.QueryAdaptor;
 import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.Edge;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 

@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import au.edu.anu.twcore.data.runtime.TwData;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 /**
  * A Data object to contain automatic SystemComponent variables, i.e. those variables which
  * are common to any SystemComponent.

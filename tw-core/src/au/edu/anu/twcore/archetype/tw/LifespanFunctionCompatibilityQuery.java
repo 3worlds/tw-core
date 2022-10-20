@@ -41,8 +41,7 @@ import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
 import au.edu.anu.twcore.root.World;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.*;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**

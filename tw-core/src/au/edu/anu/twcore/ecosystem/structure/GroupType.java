@@ -34,9 +34,9 @@ import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupComponent;
 import au.edu.anu.twcore.ecosystem.runtime.system.GroupFactory;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.graph.GraphFactory;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**

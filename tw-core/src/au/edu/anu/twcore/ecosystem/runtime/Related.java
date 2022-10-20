@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime;
 
-import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.omugi.identity.Identity;
 
 /**
  * To be associated to relation instances

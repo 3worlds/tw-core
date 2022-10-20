@@ -38,9 +38,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 
@@ -52,9 +50,7 @@ import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.userProject.AbstractUPL;
 import au.edu.anu.twcore.userProject.UserProjectLink;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.impl.*;
 import fr.cnrs.iees.twcore.constants.FileType;
 
 public class ProjectJarGenerator {

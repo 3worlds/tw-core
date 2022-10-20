@@ -28,12 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
-import fr.cnrs.iees.graph.*;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.twcore.constants.SamplingMode;

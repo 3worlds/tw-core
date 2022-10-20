@@ -40,13 +40,10 @@ import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 
 /**
  * Load initial data in a node based on the presence of datasource nodes or initialValue nodes

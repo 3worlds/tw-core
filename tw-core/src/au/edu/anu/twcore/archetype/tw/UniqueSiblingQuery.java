@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.qgraph.queries.*;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.TreeNode;
 
 /**
  * Checks that a node is the only one of its kind in its parent's children for a particular

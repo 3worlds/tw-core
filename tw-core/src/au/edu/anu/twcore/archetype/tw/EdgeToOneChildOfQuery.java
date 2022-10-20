@@ -30,9 +30,9 @@ package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.*;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.io.parsing.impl.NodeReference;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.io.parsing.impl.NodeReference;
 
 /**
  * Checks that an out edge points to one and only one child of a given node

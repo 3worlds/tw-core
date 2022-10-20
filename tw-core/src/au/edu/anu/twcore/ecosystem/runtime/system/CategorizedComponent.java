@@ -38,9 +38,8 @@ import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.runtime.DynamicSystem;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.properties.impl.SharedPropertyListImpl;
 
 /**
  * The base class for system components and hierarchical components.

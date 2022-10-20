@@ -29,8 +29,8 @@
 package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.qgraph.queries.*;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.Edge;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 

@@ -29,8 +29,8 @@
 package au.edu.anu.twcore.data.runtime;
 
 import fr.cnrs.iees.omugi.graph.property.Property;
-import fr.cnrs.iees.properties.*;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import au.edu.anu.twcore.ecosystem.runtime.*;
 import au.edu.anu.twcore.ui.runtime.*;
 

@@ -38,9 +38,7 @@ import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.root.World;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.*;
 import fr.cnrs.iees.twcore.constants.FileType;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;

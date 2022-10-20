@@ -37,9 +37,8 @@ import java.util.List;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.SpaceNode;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 
 /**
  * A Query to make sure that fields used as space coordinates are either in a

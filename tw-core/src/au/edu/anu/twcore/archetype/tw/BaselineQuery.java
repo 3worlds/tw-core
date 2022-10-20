@@ -39,8 +39,7 @@ import au.edu.anu.twcore.TextTranslations;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.*;
 
 /**
  * 

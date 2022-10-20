@@ -30,7 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.omugi.graph.ReadOnlyDataHolder;
 
 /**
  * A Query to test that a node, edge or treenode doest not have two properties together

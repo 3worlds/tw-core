@@ -43,7 +43,7 @@ import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
-import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.omugi.graph.Direction;
 
 /**
  * Checks that a lifeCycleType has exactly one GroupType matching each of its appliesTo CategorySet

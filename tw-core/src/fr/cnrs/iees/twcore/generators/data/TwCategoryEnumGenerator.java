@@ -6,7 +6,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.EnumSet;
 
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.Partition;
 import fr.cnrs.iees.omhtk.codeGeneration.EnumGenerator;
 import fr.cnrs.iees.omhtk.codeGeneration.MethodGenerator;

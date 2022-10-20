@@ -30,7 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.Queryable;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.TreeNode;
 
 /**
  * Checks that a node has exactly one child with one of the labels specified in the constructor

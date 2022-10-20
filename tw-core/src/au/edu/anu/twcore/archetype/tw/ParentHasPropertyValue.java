@@ -31,8 +31,8 @@ package au.edu.anu.twcore.archetype.tw;
 import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 
 /**
  * Check that the parent of a {@link TreeNode} has a particular property value

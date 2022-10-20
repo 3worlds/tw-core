@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
-import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.omugi.identity.Identity;
 
 /**
  * Interface for objects which have a shape

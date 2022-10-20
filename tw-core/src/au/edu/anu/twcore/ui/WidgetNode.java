@@ -28,13 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.ui;
 
-import fr.cnrs.iees.OmugiClassLoader;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.OmugiClassLoader;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineController;
 import fr.cnrs.iees.rvgrid.statemachine.StateMachineEngine;
 import fr.cnrs.iees.omhtk.*;

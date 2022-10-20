@@ -35,7 +35,7 @@ import java.util.Collection;
 
 import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
-import fr.cnrs.iees.graph.*;
+import fr.cnrs.iees.omugi.graph.*;
 
 /**
  * Checks that a multiplicity is 0 if a certain condition is met, 1 otherwise.

@@ -37,9 +37,8 @@ import java.util.*;
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.DataHolder;
-import fr.cnrs.iees.graph.Element;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 
 /**
  * Check that a series of Edges or Nodes which have a common number property

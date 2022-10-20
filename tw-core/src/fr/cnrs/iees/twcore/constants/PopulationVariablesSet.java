@@ -15,7 +15,7 @@ package fr.cnrs.iees.twcore.constants;
 
 import java.util.Collection;
 import java.util.EnumSet;
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.omugi.io.parsing.ValidPropertyTypes;
 
 public class PopulationVariablesSet {
 

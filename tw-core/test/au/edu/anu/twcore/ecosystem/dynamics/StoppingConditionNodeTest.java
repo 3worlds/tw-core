@@ -34,11 +34,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import au.edu.anu.twcore.InitialisableNode;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.cnrs.iees.omugi.graph.impl.ALEdge;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.io.GraphImporter;
 
 /**
  * 

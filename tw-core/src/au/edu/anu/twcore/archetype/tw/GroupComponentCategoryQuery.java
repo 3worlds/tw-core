@@ -38,7 +38,7 @@ import java.util.List;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.omugi.graph.Node;
 
 /**
  * Checks that a GroupType can instantiate its groups with proper ComponentType categories

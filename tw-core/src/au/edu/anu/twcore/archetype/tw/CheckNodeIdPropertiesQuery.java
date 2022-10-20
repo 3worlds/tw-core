@@ -3,7 +3,7 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialValues;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 
 /**
  * A (very specialised) query to check that an Element has idGroup or idLifeCycle properties

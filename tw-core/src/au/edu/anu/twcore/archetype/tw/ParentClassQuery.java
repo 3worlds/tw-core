@@ -35,10 +35,9 @@ import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.archetype.TWA;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.SimpleDataTreeNode;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 /**
  * @author Jacques Gignoux - 6/9/2016 Constraint on a node's parent class

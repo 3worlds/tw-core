@@ -32,7 +32,7 @@ import java.util.*;
 
 import au.edu.anu.twcore.ecosystem.runtime.system.SystemComponent;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.SpaceDataTracker;
-import fr.cnrs.iees.graph.*;
+import fr.cnrs.iees.omugi.graph.*;
 import fr.cnrs.iees.twcore.constants.BorderType;
 import fr.cnrs.iees.twcore.constants.SpaceType;
 import fr.cnrs.iees.uit.space.Box;

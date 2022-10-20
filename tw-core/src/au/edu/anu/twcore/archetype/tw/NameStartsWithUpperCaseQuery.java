@@ -30,7 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.omugi.identity.Identity;
 
 public class NameStartsWithUpperCaseQuery extends QueryAdaptor {
 

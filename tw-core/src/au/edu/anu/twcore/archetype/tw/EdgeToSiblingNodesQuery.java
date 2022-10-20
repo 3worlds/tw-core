@@ -35,7 +35,7 @@ import java.util.List;
 
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 
 /**
  * A Query to check that edges to/from a particular node having the same label
@@ -50,7 +50,7 @@ public class EdgeToSiblingNodesQuery extends QueryAdaptor{
 
 	/**
 	 * Constructor for use in archetype <strong>.ugt</strong> files.
-	 * @param label the label (as returned by {@linkplain fr.cnrs.iees.graph.Edge#classId})
+	 * @param label the label (as returned by {@linkplain fr.cnrs.iees.omugi.graph.Edge#classId})
 	 * of the edges that are to be tested
 	 */
 	public EdgeToSiblingNodesQuery(String label) {

@@ -32,11 +32,10 @@ import fr.cnrs.iees.omugi.graph.property.PropertyKeys;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.P_RELATIONTYPE;
 import au.edu.anu.twcore.ecosystem.runtime.Related;
 import au.edu.anu.twcore.ecosystem.runtime.containers.Contained;
-import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALDataEdge;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.ALDataEdge;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 /**
  * The second main runtime object, representing relations between System components.

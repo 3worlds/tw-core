@@ -28,11 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.structure;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
@@ -43,14 +39,11 @@ import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
 import au.edu.anu.twcore.ecosystem.runtime.system.ComponentFactory;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**

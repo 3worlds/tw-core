@@ -28,8 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import fr.cnrs.iees.graph.DataHolder;
-import fr.cnrs.iees.graph.Element;
+import fr.cnrs.iees.omugi.graph.*;
 
 /**
  * ancestor Interface for SystemRelation and SystemComponent

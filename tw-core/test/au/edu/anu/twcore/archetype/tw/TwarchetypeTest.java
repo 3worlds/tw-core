@@ -33,9 +33,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import au.edu.anu.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.twcore.archetype.TWA;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.io.GraphImporter;
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.io.GraphImporter;
+import fr.cnrs.iees.omugi.io.parsing.ValidPropertyTypes;
 
 /**
  * 

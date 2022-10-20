@@ -32,17 +32,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.cnrs.iees.omugi.graph.property.Property;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.cnrs.iees.properties.PropertyListFactory;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
-import fr.cnrs.iees.properties.impl.ReadOnlyPropertyListImpl;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.*;
+import fr.cnrs.iees.omugi.properties.ExtendablePropertyList;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.*;
 import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 

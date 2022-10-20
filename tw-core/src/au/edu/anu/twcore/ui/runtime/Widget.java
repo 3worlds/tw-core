@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ui.runtime;
 
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 import au.edu.anu.twcore.ui.*;
 
 /**

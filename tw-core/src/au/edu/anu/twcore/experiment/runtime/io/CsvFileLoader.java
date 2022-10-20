@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 import au.edu.anu.twcore.data.runtime.TwData;
 
 /**

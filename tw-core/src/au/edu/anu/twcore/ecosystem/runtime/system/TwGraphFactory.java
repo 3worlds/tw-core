@@ -30,13 +30,12 @@ package au.edu.anu.twcore.ecosystem.runtime.system;
 
 import java.util.Map;
 
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALGraphFactory;
-import fr.cnrs.iees.identity.IdentityScope;
-import fr.cnrs.iees.identity.impl.IntegerScope;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.ALGraphFactory;
+import fr.cnrs.iees.omugi.identity.IdentityScope;
+import fr.cnrs.iees.omugi.identity.impl.IntegerScope;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 /**
  * The specific factory of 3Worlds for SystemComponents and SystemRelations

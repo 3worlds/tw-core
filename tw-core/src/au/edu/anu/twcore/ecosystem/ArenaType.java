@@ -39,15 +39,10 @@ import au.edu.anu.twcore.ecosystem.structure.ElementType;
 import au.edu.anu.twcore.experiment.DataSource;
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.rvgrid.rendezvous.GridNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
@@ -57,10 +52,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.TwFunctionTypes.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Replacement for ecosystem node - maps to system This class always makes one

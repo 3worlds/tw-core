@@ -40,8 +40,8 @@ import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.Direction;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 
 /**
  * A Query to check that a categorized object's categories belong to a

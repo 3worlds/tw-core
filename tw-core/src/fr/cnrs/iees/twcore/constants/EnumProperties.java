@@ -28,10 +28,8 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.constants;
 
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
-import fr.cnrs.iees.uit.space.Box;
-import fr.cnrs.iees.uit.space.Point;
-import fr.cnrs.iees.uit.space.Sphere;
+import fr.cnrs.iees.omugi.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.uit.space.*;
 
 /**
  * A class to initialize user-defined properties - must be called before any use

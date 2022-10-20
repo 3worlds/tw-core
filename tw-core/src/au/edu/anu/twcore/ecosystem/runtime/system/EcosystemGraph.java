@@ -32,11 +32,7 @@ import java.util.*;
 
 import au.edu.anu.omhtk.collections.QuickListOfLists;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.Graph;
-import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.omugi.graph.*;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.omhtk.Resettable;
 /**

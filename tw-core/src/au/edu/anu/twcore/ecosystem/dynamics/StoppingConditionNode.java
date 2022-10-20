@@ -28,13 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.omhtk.*;
 import fr.cnrs.iees.omhtk.utils.Interval;

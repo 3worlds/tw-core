@@ -37,7 +37,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.ChangeCategoryDecisionFunctio
 import au.edu.anu.twcore.ecosystem.runtime.biology.CreateOtherDecisionFunction;
 import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.structure.Category;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 import fr.cnrs.iees.omhtk.utils.Duple;
 
 /**

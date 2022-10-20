@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.SpaceData;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.DateTimeType;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 import fr.cnrs.iees.omhtk.utils.Logging;

@@ -28,10 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.dynamics;
 
-import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.ALEdge;
+import fr.cnrs.iees.omugi.identity.Identity;
 
 /**
  * Edge for linking a MultipleStoppingCondition to its component stopping conditionss

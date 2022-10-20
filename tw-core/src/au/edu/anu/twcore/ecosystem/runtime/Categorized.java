@@ -48,16 +48,12 @@ import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
-import fr.cnrs.iees.OmugiClassLoader;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.NodeFactory;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
+import fr.cnrs.iees.omugi.OmugiClassLoader;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.omhtk.SaveableAsText;
 
 /**

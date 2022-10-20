@@ -30,12 +30,10 @@
 package fr.cnrs.iees.twcore.constants;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import au.edu.anu.twcore.project.Project;
-import fr.cnrs.iees.io.parsing.CloneableProperty;
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.omugi.io.parsing.*;
 import fr.cnrs.iees.omhtk.utils.Duple;
 
 /**

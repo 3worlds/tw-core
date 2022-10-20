@@ -29,23 +29,14 @@
 package fr.cnrs.iees.twcore.generators.odd;
 
 import java.util.*;
-import au.edu.anu.twcore.ecosystem.ArenaType;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.InitFunctionNode;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessNode;
 import au.edu.anu.twcore.ecosystem.dynamics.SimulatorNode;
 import au.edu.anu.twcore.ecosystem.dynamics.TimerNode;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Graph;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.ALGraph;
-import fr.cnrs.iees.graph.impl.ALGraphFactory;
-import fr.cnrs.iees.graph.impl.ALNode;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.*;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;

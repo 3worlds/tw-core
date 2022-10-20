@@ -30,9 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Element;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
+import fr.cnrs.iees.omugi.graph.*;
 
 /**
  * Checks that an end node has a specific property with a non null value

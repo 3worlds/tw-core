@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.data.runtime;
 
 import fr.cnrs.iees.omugi.collections.tables.*;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 
 /**
  * A specialized descendant of {@link ObjectTable} for 3Worlds generated data structures. All user-defined

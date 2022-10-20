@@ -32,7 +32,7 @@ import java.util.Map;
 
 import au.edu.anu.twcore.experiment.runtime.DataIdentifier;
 import au.edu.anu.twcore.experiment.runtime.MultipleDataLoader;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 public class BOMWeatherLoader implements MultipleDataLoader<SimplePropertyList> {
 

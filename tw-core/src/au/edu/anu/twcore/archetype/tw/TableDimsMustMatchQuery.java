@@ -31,7 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.DataHolder;
+import fr.cnrs.iees.omugi.graph.DataHolder;
 
 /**
  * @author Ian Davies - 7 Mar 2022

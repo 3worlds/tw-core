@@ -30,7 +30,7 @@
 package fr.cnrs.iees.twcore.constants;
 
 import fr.cnrs.iees.omugi.collections.tables.*;
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.omugi.io.parsing.ValidPropertyTypes;
 
 /**
  * @author Ian Davies - 12 Oct 2019

@@ -28,9 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.graph.GraphFactory;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 /**
  *

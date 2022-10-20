@@ -31,7 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.impl.*;
+import fr.cnrs.iees.omugi.graph.impl.*;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;

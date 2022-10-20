@@ -4,10 +4,9 @@ import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.ecosystem.dynamics.initial.InitialValues;
 import au.edu.anu.twcore.experiment.DataSource;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.ReadOnlyDataHolder;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 

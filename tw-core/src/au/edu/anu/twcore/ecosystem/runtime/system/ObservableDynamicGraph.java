@@ -28,8 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.omugi.graph.*;
 import fr.cnrs.iees.rvgrid.observer.Observable;
 
 /**

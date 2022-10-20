@@ -32,7 +32,7 @@ import static fr.cnrs.iees.omhtk.utils.NameUtils.validJavaName;
 import static fr.cnrs.iees.omhtk.utils.NameUtils.wordUpperCaseName;
 
 import au.edu.anu.twcore.project.Project;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.TwCodeGenerator;
 
 /**

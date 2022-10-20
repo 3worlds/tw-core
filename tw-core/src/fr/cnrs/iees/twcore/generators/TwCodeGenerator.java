@@ -31,7 +31,7 @@ package fr.cnrs.iees.twcore.generators;
 import java.io.File;
 
 import au.edu.anu.twcore.project.Project;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.omhtk.JavaGenerator;
 import static fr.cnrs.iees.omhtk.utils.NameUtils.*;
 

@@ -44,8 +44,7 @@ import au.edu.anu.twcore.ecosystem.runtime.process.AbstractRelationProcess;
 import au.edu.anu.twcore.ecosystem.runtime.process.ComponentProcess;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.omugi.graph.*;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**

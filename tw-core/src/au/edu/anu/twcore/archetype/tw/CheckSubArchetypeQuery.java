@@ -32,9 +32,9 @@ import au.edu.anu.aot.archetype.Archetypes;
 import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.*;
-import fr.cnrs.iees.graph.impl.SimpleTree;
-import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.SimpleTree;
+import fr.cnrs.iees.omugi.graph.io.GraphImporter;
 
 /**
  * A Query to be processed while in an archetype - use it to check whole

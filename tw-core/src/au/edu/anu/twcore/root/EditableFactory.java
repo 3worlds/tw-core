@@ -28,8 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.root;
 
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.omugi.graph.*;
 
 /**
  * This interface provides a means to completely remove element ids when edition

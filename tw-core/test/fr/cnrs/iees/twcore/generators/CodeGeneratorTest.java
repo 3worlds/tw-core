@@ -34,10 +34,10 @@ import org.junit.jupiter.api.Test;
 
 import au.edu.anu.twcore.graphState.*;
 import au.edu.anu.twcore.project.Project;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.io.GraphImporter;
+import fr.cnrs.iees.omugi.graph.impl.ALEdge;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.io.GraphImporter;
 
 /**
  * Testing code generation for 3Worlds

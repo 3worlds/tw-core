@@ -28,7 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.stop;
 
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.omhtk.utils.Interval;
 
 /**

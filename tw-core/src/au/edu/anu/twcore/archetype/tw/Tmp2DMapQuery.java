@@ -4,7 +4,7 @@ import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.ecosystem.dynamics.DataTrackerNode;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.DataTracker2D;
-import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.omugi.graph.Edge;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;

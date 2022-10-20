@@ -31,9 +31,8 @@ package au.edu.anu.twcore.archetype.tw;
 import au.edu.anu.qgraph.queries.*;
 
 import au.edu.anu.twcore.ecosystem.dynamics.FunctionNode;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 

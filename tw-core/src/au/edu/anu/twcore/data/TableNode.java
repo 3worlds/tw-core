@@ -28,12 +28,10 @@
  **************************************************************************/
 package au.edu.anu.twcore.data;
 
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.omhtk.Sealable;
 

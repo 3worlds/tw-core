@@ -28,10 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.ecosystem.runtime.system;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import au.edu.anu.twcore.ecosystem.runtime.space.ObserverDynamicSpace;
 

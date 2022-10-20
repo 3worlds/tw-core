@@ -40,7 +40,7 @@ import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
-import fr.cnrs.iees.graph.*;
+import fr.cnrs.iees.omugi.graph.*;
 /**
  * A Query to check that a ComponentType only belongs to one category of a given
  * category set (categories within a set are assumed exclusive)

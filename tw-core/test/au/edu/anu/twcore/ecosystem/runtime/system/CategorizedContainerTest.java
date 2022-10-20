@@ -43,10 +43,10 @@ import org.junit.jupiter.api.Test;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ecosystem.structure.CategorySet;
-import fr.cnrs.iees.graph.impl.TreeGraphFactory;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.identity.IdentityScope;
-import fr.cnrs.iees.identity.impl.LocalScope;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphFactory;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.identity.IdentityScope;
+import fr.cnrs.iees.omugi.identity.impl.LocalScope;
 
 /**
  *

@@ -58,17 +58,15 @@ import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphStateFactory;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.userProject.UserProjectLink;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.Direction;
+import fr.cnrs.iees.omugi.graph.impl.*;
 import fr.cnrs.iees.twcore.generators.data.TwCategoryEnumGenerator;
 import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
 import fr.cnrs.iees.twcore.generators.data.TwDataInterfaceGenerator;
 import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
 import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
 import fr.cnrs.iees.omhtk.utils.Logging;
-import fr.cnrs.iees.properties.ResizeablePropertyList;
+import fr.cnrs.iees.omugi.properties.ResizeablePropertyList;
 
 /**
  * @author Ian Davies - 27 Dec. 2017

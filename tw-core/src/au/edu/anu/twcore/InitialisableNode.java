@@ -29,10 +29,10 @@
 package au.edu.anu.twcore;
 
 import java.util.logging.Logger;
-import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.graph.GraphFactory;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 import fr.cnrs.iees.omhtk.Initialisable;
 import fr.cnrs.iees.omhtk.utils.Logging;
 

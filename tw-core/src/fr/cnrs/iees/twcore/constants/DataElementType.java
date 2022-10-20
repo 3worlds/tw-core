@@ -25,10 +25,9 @@
 */
 package fr.cnrs.iees.twcore.constants;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import java.util.*;
+
+import fr.cnrs.iees.omugi.io.parsing.ValidPropertyTypes;
 
 public enum DataElementType {
 

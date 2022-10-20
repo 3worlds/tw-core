@@ -31,7 +31,7 @@ package au.edu.anu.twcore.ecosystem.runtime.tracking;
 import au.edu.anu.twcore.data.runtime.Output2DData;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.runtime.system.CategorizedComponent;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.twcore.constants.SamplingMode;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 

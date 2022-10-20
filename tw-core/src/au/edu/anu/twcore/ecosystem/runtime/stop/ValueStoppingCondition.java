@@ -30,7 +30,7 @@ package au.edu.anu.twcore.ecosystem.runtime.stop;
 
 import org.apache.commons.math3.util.Precision;
 
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 
 /**
  * A Stopping condition that stops when a given property equals a particular value

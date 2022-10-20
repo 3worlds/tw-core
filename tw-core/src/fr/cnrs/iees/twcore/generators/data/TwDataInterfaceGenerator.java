@@ -28,9 +28,9 @@
  **************************************************************************/
 package fr.cnrs.iees.twcore.generators.data;
 
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
+import fr.cnrs.iees.omugi.graph.Direction;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.properties.ExtendablePropertyList;
 import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.cnrs.iees.omhtk.codeGeneration.InterfaceGenerator;
 import fr.cnrs.iees.omhtk.codeGeneration.MethodGenerator;

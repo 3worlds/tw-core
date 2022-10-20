@@ -39,8 +39,8 @@ import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.ecosystem.dynamics.*;
 import au.edu.anu.twcore.ecosystem.structure.*;
-import fr.cnrs.iees.graph.*;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 
 /**

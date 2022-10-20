@@ -35,7 +35,7 @@ import au.edu.anu.omhtk.Language;
 import fr.cnrs.iees.omugi.collections.tables.Table;
 import au.edu.anu.omhtk.util.IntegerRange;
 import au.edu.anu.twcore.userProject.UserProjectLink;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.omugi.graph.Node;
 import fr.cnrs.iees.twcore.constants.*;
 import fr.cnrs.iees.omhtk.utils.Interval;
 import au.edu.anu.twcore.archetype.tw.*;

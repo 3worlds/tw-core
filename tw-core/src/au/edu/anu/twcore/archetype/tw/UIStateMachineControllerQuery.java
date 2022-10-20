@@ -36,8 +36,8 @@ import java.util.List;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.archetype.TWA;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.TreeNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 
 public class UIStateMachineControllerQuery extends QueryAdaptor {
 

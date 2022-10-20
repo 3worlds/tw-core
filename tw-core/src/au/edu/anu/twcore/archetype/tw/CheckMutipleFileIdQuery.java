@@ -35,7 +35,7 @@ import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
 import au.edu.anu.twcore.experiment.DataSource;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;

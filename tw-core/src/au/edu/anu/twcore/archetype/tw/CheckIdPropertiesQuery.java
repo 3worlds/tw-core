@@ -4,7 +4,7 @@ import au.edu.anu.qgraph.queries.QueryAdaptor;
 import au.edu.anu.twcore.ecosystem.structure.ComponentType;
 import au.edu.anu.twcore.ecosystem.structure.GroupType;
 import au.edu.anu.twcore.ecosystem.structure.LifeCycleType;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.omugi.properties.ReadOnlyPropertyList;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.ArrayList;

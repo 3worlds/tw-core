@@ -37,7 +37,7 @@ import au.edu.anu.twcore.ecosystem.runtime.biology.SetInitialStateFunction;
 import au.edu.anu.twcore.ecosystem.runtime.tracking.ArenaDataTracker;
 import au.edu.anu.twcore.ecosystem.structure.Category;
 import au.edu.anu.twcore.ui.runtime.DataReceiver;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 
 /**
  * The class building the op container, ie the system arena. This is a singleton

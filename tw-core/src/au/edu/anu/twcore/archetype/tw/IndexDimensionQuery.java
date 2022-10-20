@@ -40,8 +40,8 @@ import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.TableNode;
-import fr.cnrs.iees.graph.*;
-import fr.cnrs.iees.graph.impl.*;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.*;
 
 /**
  * A Query to check that table index specifications in data trackers have

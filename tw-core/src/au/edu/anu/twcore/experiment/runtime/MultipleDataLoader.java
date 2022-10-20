@@ -30,7 +30,7 @@ package au.edu.anu.twcore.experiment.runtime;
 
 import java.util.Map;
 
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.experiment.runtime.io.*;
 
