@@ -282,7 +282,7 @@ public class TwDataGenerator
 	@Override
 	protected void tableCode(ClassGenerator cg, String ftype, String contentType, Iterable<TreeGraphDataNode> dimList) {
 		cg.setImport(packageName+"."+contentType);
-//		cg.setImport("au.edu.anu.omugi.collections.tables.ObjectTable");
+//		cg.setImport("fr.cnrs.iees.omugi.collections.tables.ObjectTable");
 		cg.setImport("au.edu.anu.twcore.data.runtime.TwDataTable");
 		cg.setImport(Dimensioner.class.getCanonicalName());
 		cg.setConstructor();
