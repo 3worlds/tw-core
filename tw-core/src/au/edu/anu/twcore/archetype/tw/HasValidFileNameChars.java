@@ -30,7 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import java.util.Arrays;
 
-import au.edu.anu.omugi.graph.property.Property;
+import fr.cnrs.iees.omugi.graph.property.Property;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 

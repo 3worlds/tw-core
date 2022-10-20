@@ -36,7 +36,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import java.util.Comparator;
 import java.util.List;
 
-import au.edu.anu.omugi.collections.tables.*;
+import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.data.TableNode;

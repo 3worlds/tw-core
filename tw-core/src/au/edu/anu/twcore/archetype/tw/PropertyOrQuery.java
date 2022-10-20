@@ -3,7 +3,7 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.omugi.collections.tables.StringTable;
+import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.ReadOnlyDataHolder;

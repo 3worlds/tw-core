@@ -30,7 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import java.util.*;
 
-import au.edu.anu.omugi.collections.tables.*;
+import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.QueryAdaptor;
 import fr.cnrs.iees.graph.Specialized;
 

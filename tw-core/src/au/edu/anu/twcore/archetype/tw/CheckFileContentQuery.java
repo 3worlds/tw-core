@@ -30,7 +30,7 @@ package au.edu.anu.twcore.archetype.tw;
 
 import java.io.File;
 import org.assertj.core.util.Arrays;
-import au.edu.anu.omugi.collections.tables.*;
+import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.experiment.DataSource;
 import fr.cnrs.iees.twcore.constants.FileType;

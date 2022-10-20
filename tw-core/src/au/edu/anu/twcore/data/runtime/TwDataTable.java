@@ -28,9 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.data.runtime;
 
-import au.edu.anu.omugi.collections.tables.Dimensioner;
-import au.edu.anu.omugi.collections.tables.ObjectTable;
-import au.edu.anu.omugi.collections.tables.Table;
+import fr.cnrs.iees.omugi.collections.tables.*;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 
 /**

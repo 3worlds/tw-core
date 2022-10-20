@@ -33,7 +33,7 @@ import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 
 import java.util.Collection;
 
-import au.edu.anu.omugi.collections.tables.*;
+import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.*;
 import fr.cnrs.iees.graph.*;
 

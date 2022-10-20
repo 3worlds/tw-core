@@ -41,7 +41,7 @@ import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
 
 import java.util.*;
 
-import au.edu.anu.omugi.collections.tables.DoubleTable;
+import fr.cnrs.iees.omugi.collections.tables.DoubleTable;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.ecosystem.runtime.space.SpaceOrganiser;
 import au.edu.anu.twcore.ecosystem.runtime.system.RelationContainer;

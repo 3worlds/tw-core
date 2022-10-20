@@ -28,13 +28,9 @@
  **************************************************************************/
 package au.edu.anu.twcore.data.runtime;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import au.edu.anu.omugi.collections.tables.IndexString;
+import fr.cnrs.iees.omugi.collections.tables.IndexString;
 
 /**
  * A specialized data label class for items that may contain a SIMPLE index

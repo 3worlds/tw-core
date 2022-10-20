@@ -28,13 +28,11 @@
  **************************************************************************/
 package au.edu.anu.twcore.experiment.runtime;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import au.edu.anu.omugi.graph.property.Property;
+import fr.cnrs.iees.omugi.graph.property.Property;
 import au.edu.anu.twcore.experiment.ExpFactor;
 import fr.cnrs.iees.twcore.constants.ExperimentDesignType;
-import au.edu.anu.twcore.experiment.runtime.ExperimentDesignDetails;
 
 /**
  * Readable (immutable) interface for {@link ExperimentDesignDetails}. This is

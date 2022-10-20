@@ -32,8 +32,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 import java.util.*;
 
-import au.edu.anu.omugi.collections.tables.Dimensioner;
-import au.edu.anu.omugi.collections.tables.StringTable;
+import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.twcore.data.runtime.DataLabel;
 import au.edu.anu.twcore.data.runtime.Metadata;
 import au.edu.anu.twcore.data.runtime.Output0DMetadata;

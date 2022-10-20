@@ -31,7 +31,7 @@ package au.edu.anu.twcore.archetype.tw;
 import java.util.LinkedList;
 import java.util.List;
 
-import au.edu.anu.omugi.collections.tables.StringTable;
+import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.archetype.TWA;

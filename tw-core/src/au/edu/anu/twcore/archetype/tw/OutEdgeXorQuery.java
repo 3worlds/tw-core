@@ -30,12 +30,10 @@ package au.edu.anu.twcore.archetype.tw;
 
 import java.util.List;
 
-import au.edu.anu.omugi.collections.tables.StringTable;
+import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.twcore.TextTranslations;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.*;
 import fr.cnrs.iees.omhtk.utils.Duple;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;

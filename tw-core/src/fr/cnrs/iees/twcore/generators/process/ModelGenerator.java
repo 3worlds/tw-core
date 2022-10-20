@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
-import au.edu.anu.omugi.collections.tables.StringTable;
+import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.TableNode;

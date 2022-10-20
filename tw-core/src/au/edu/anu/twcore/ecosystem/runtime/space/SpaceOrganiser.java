@@ -29,7 +29,7 @@
 package au.edu.anu.twcore.ecosystem.runtime.space;
 
 import java.util.*;
-import au.edu.anu.omugi.collections.tables.DoubleTable;
+import fr.cnrs.iees.omugi.collections.tables.DoubleTable;
 import fr.cnrs.iees.uit.space.Dimensioned;
 import fr.cnrs.iees.uit.space.Point;
 import fr.cnrs.iees.omhtk.Sealable;

@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import au.edu.anu.omugi.collections.tables.*;
+import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.twcore.data.TableNode;
 import au.edu.anu.twcore.experiment.DataSource;

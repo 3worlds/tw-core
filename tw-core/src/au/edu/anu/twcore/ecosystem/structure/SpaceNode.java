@@ -30,7 +30,7 @@ package au.edu.anu.twcore.ecosystem.structure;
 
 import java.util.*;
 
-import au.edu.anu.omugi.collections.tables.StringTable;
+import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.data.RngNode;
 import au.edu.anu.twcore.data.runtime.Metadata;

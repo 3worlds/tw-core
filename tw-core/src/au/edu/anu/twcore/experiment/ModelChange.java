@@ -35,7 +35,7 @@ import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
-import au.edu.anu.omugi.collections.tables.DoubleTable;
+import fr.cnrs.iees.omugi.collections.tables.DoubleTable;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**

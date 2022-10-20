@@ -31,7 +31,7 @@ package au.edu.anu.twcore.root;
 import java.util.HashMap;
 import java.util.Map;
 
-import au.edu.anu.omugi.graph.property.Property;
+import fr.cnrs.iees.omugi.graph.property.Property;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALEdge;

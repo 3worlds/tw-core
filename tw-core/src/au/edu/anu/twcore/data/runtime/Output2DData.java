@@ -28,15 +28,7 @@
  **************************************************************************/
 package au.edu.anu.twcore.data.runtime;
 
-import au.edu.anu.omugi.collections.tables.BooleanTable;
-import au.edu.anu.omugi.collections.tables.ByteTable;
-import au.edu.anu.omugi.collections.tables.DoubleTable;
-import au.edu.anu.omugi.collections.tables.FloatTable;
-import au.edu.anu.omugi.collections.tables.IntTable;
-import au.edu.anu.omugi.collections.tables.LongTable;
-import au.edu.anu.omugi.collections.tables.ShortTable;
-import au.edu.anu.omugi.collections.tables.StringTable;
-import au.edu.anu.omugi.collections.tables.Table;
+import fr.cnrs.iees.omugi.collections.tables.*;
 import fr.cnrs.iees.twcore.constants.SimulatorStatus;
 
 /**

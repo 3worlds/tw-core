@@ -43,7 +43,7 @@ import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import au.edu.anu.omhtk.collections.DynamicList;
-import au.edu.anu.omugi.graph.property.Property;
+import fr.cnrs.iees.omugi.graph.property.Property;
 import au.edu.anu.twcore.data.Record;
 import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.ecosystem.structure.Category;

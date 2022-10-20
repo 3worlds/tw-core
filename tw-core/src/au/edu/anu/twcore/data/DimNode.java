@@ -36,7 +36,7 @@ import fr.cnrs.iees.omhtk.*;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
-import au.edu.anu.omugi.collections.tables.Dimensioner;
+import fr.cnrs.iees.omugi.collections.tables.Dimensioner;
 import au.edu.anu.twcore.InitialisableNode;
 
 /**
