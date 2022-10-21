@@ -129,6 +129,7 @@ public class TwConfigurationAnalyser {
 	 * </pre>
 	 * @param system A system node - the root of a configuration model.
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<ExecutionStep> getSystemExecutionFlow(TreeGraphDataNode system) {
 		TwConfigurationAnalyser analyser = new TwConfigurationAnalyser();
 		InitFunctionNode iFunc = (InitFunctionNode) get(system.getChildren(),
@@ -139,7 +140,6 @@ public class TwConfigurationAnalyser {
 				selectZeroOrOne(hasTheLabel(N_STRUCTURE.label())));
 		if (struc!=null) {
 			// life cycle types
-			@SuppressWarnings("unchecked")
 			Collection<TreeGraphDataNode> llct = (Collection<TreeGraphDataNode>) get(struc,
 				children(),selectZeroOrMany(hasTheLabel(N_LIFECYCLETYPE.label())));
 			for (TreeGraphDataNode lct:llct) {
@@ -149,7 +149,6 @@ public class TwConfigurationAnalyser {
 					analyser.addNewStep(iFunc,ExecutionLevel.init,LoopingMode.parallel,
 						lct,llct.size()==1);
 				// group types under life cycle types
-				@SuppressWarnings("unchecked")
 				Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(lct,
 					children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
 				for (TreeGraphDataNode gt:lgt) {
@@ -171,7 +170,6 @@ public class TwConfigurationAnalyser {
 				}
 			}
 			// group types under arena type
-			@SuppressWarnings("unchecked")
 			Collection<TreeGraphDataNode> lgt = (Collection<TreeGraphDataNode>) get(struc,
 				children(),selectZeroOrMany(hasTheLabel(N_GROUPTYPE.label())));
 			for (TreeGraphDataNode gt:lgt) {
@@ -181,7 +179,6 @@ public class TwConfigurationAnalyser {
 					analyser.addNewStep(iFunc,ExecutionLevel.init,LoopingMode.parallel,
 						gt,lgt.size()==1);
 				// component types under group types
-				@SuppressWarnings("unchecked")
 				Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(gt,
 					children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 				for (TreeGraphDataNode cpt:lcpt) {
@@ -193,7 +190,6 @@ public class TwConfigurationAnalyser {
 				}
 			}
 			// component types under arena
-			@SuppressWarnings("unchecked")
 			Collection<TreeGraphDataNode> lcpt = (Collection<TreeGraphDataNode>) get(struc,
 				children(),selectZeroOrMany(hasTheLabel(N_COMPONENTTYPE.label())));
 			for (TreeGraphDataNode cpt:lcpt) {

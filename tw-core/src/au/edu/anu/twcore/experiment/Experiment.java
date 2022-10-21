@@ -103,6 +103,7 @@ public class Experiment extends InitialisableNode implements Singleton<StateMach
 		if (!sealed) {
 			super.initialise();
 			List<SimulatorNode> simulatorNodes=new ArrayList<>();
+			@SuppressWarnings("unchecked")
 			List<TreeGraphDataNode> systems = (List<TreeGraphDataNode>) get(this.getParent().getChildren(),
 					selectOneOrMany(hasTheLabel(N_SYSTEM.label())));
 			for (TreeGraphDataNode system:systems) {
