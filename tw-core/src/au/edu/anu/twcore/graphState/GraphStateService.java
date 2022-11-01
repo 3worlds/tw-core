@@ -30,32 +30,23 @@
 package au.edu.anu.twcore.graphState;
 
 /**
+ * Singleton container for a GraphState implementation.
+ * 
  * @author Ian Davies - May 6, 2019
  */
-public class GraphStateFactory {
+public class GraphStateService {
 	private static GraphState impl;
 
-	private GraphStateFactory() {
+	private GraphStateService() {
 	};
 
 	public static void setImplementation(GraphState impl) {
-		GraphStateFactory.impl = impl;
+		if (GraphStateService.impl != null)
+			GraphStateService.impl = impl;
 	}
 
-	public static boolean changed() {
-		return impl.changed();
-	}
-
-	public static void setChanged() {
-		impl.setChanged();
-	}
-
-	public static void addListener(GraphStateListener l) {
-		impl.addListener(l);
-	}
-
-	public static void clear() {
-		impl.clear();
+	public static GraphState getImplementation() {
+		return impl;
 	}
 
 }

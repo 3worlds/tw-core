@@ -51,7 +51,7 @@ class CodeGeneratorTest {
 	@Test
 	final void testGenerate1() {
 		//TODO update *.utg files
-		GraphStateFactory.setImplementation(new SimpleGraphStateImpl());
+		GraphStateService.setImplementation(new SimpleGraphStateImpl());
 		Project.create("test1");
 		//This won't crash because of changes in THIS utg file cf below.
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
@@ -66,7 +66,7 @@ class CodeGeneratorTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	final void testGenerate2() {
-		GraphStateFactory.setImplementation(new SimpleGraphStateImpl());
+		GraphStateService.setImplementation(new SimpleGraphStateImpl());
 		Project.create("test2");
 		// this will crash on typecasting of "type" as ElementDataType because i've uncommented some code
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
@@ -80,7 +80,7 @@ class CodeGeneratorTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	final void testGenerate3() {
-		GraphStateFactory.setImplementation(new SimpleGraphStateImpl());
+		GraphStateService.setImplementation(new SimpleGraphStateImpl());
 		Project.create("test3");
 		TreeGraph<TreeGraphDataNode,ALEdge> specs = (TreeGraph<TreeGraphDataNode,ALEdge>) 
 			GraphImporter.importGraph("generateFunction.utg",this.getClass());

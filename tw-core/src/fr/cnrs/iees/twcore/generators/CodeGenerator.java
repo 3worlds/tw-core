@@ -51,20 +51,15 @@ import au.edu.anu.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.omhtk.util.FileUtilities;
 import au.edu.anu.twcore.ecosystem.dynamics.ProcessSpaceEdge;
 import au.edu.anu.twcore.ecosystem.runtime.Categorized;
-import au.edu.anu.twcore.ecosystem.structure.Category;
-import au.edu.anu.twcore.ecosystem.structure.RelationType;
-import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
-import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
-import au.edu.anu.twcore.graphState.GraphStateFactory;
+import au.edu.anu.twcore.ecosystem.structure.*;
+import au.edu.anu.twcore.errorMessaging.*;
+import au.edu.anu.twcore.graphState.*;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.omugi.graph.Direction;
 import fr.cnrs.iees.omugi.graph.impl.*;
-import fr.cnrs.iees.twcore.generators.data.TwCategoryEnumGenerator;
-import fr.cnrs.iees.twcore.generators.data.TwDataGenerator;
-import fr.cnrs.iees.twcore.generators.data.TwDataInterfaceGenerator;
-import fr.cnrs.iees.twcore.generators.process.ModelGenerator;
-import fr.cnrs.iees.twcore.generators.process.TwFunctionGenerator;
+import fr.cnrs.iees.twcore.generators.data.*;
+import fr.cnrs.iees.twcore.generators.process.*;
 import fr.cnrs.iees.omhtk.utils.Logging;
 import fr.cnrs.iees.omugi.properties.ResizeablePropertyList;
 
@@ -157,7 +152,7 @@ public class CodeGenerator {
 					selectZeroOrMany(hasTheLabel(N_CATEGORY.label())));
 			for (TreeGraphDataNode cat : categories)
 				if (generateDataInterfaceCode(cat, systemNode.id()))
-					GraphStateFactory.setChanged();
+					GraphStateService.getImplementation().setChanged();
 			
 			// WIP - generate enum class for categories
 			//BTW Structure can be null here - IDD
@@ -292,13 +287,13 @@ public class CodeGenerator {
 				String newValue = gen.generatedClassName();
 				if (!newValue.equals(oldValue)) {
 					elementType.properties().setProperty(dataGroup, newValue);
-					GraphStateFactory.setChanged(); // Seems to be secret French business so we won't look
+					GraphStateService.getImplementation().setChanged(); // Seems to be secret French business so we won't look
 								// rhaa! it's just telling the graph the property value has changed!
 				}
 			} else {
 				// set the properties driverClass, constantClass, etc. if they didnt exist
 				((ResizeablePropertyList) elementType.properties()).addProperty(dataGroup, gen.generatedClassName());
-				GraphStateFactory.setChanged();
+				GraphStateService.getImplementation().setChanged();
 			}
 			// if the spec node itsef was generated, delete it
 			if (spec.properties().hasProperty("generated"))
@@ -311,7 +306,7 @@ public class CodeGenerator {
 			// to the former
 			// class name in the graph
 			((ResizeablePropertyList) elementType.properties()).removeProperty(dataGroup);
-			GraphStateFactory.setChanged();
+			GraphStateService.getImplementation().setChanged();
 		}
 	}
 
@@ -405,11 +400,11 @@ public class CodeGenerator {
 			String lastValue = (String) function.properties().getPropertyValue(P_FUNCTIONCLASS.key());
 			if (!lastValue.equals(genClassName)) {
 				function.properties().setProperty(P_FUNCTIONCLASS.key(), genClassName);
-				GraphStateFactory.setChanged();
+				GraphStateService.getImplementation().setChanged();
 			}
 		} else {
 			((ResizeablePropertyList) function.properties()).addProperty(P_FUNCTIONCLASS.key(), genClassName);
-			GraphStateFactory.setChanged();
+			GraphStateService.getImplementation().setChanged();
 		}
 	}
 	
