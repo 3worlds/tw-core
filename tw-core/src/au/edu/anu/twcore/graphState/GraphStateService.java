@@ -41,7 +41,7 @@ public class GraphStateService {
 	};
 
 	public static void setImplementation(GraphState impl) {
-		if (GraphStateService.impl != null)
+		if (GraphStateService.impl == null)
 			GraphStateService.impl = impl;
 	}
 
