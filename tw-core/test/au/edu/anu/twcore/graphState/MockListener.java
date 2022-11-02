@@ -4,7 +4,7 @@ public class MockListener implements GraphStateListener{
 
 	@Override
 	public void onStateChange(boolean state) {
-		System.out.println(state);
+//		System.out.println(state);
 		
 	}
 

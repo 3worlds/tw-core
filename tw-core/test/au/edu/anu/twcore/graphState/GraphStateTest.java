@@ -9,9 +9,12 @@ class GraphStateTest {
 	@Test
 	void test() {
 		GraphStateService.setImplementation(new SimpleGraphStateImpl());
-		GraphStateService.getImplementation().addListener(new MockListener());
-		GraphStateService.getImplementation().setChanged();
-		
+		GraphState gs = GraphStateService.getImplementation();
+		gs.addListener(new MockListener());
+		gs.setChanged();
+		assertTrue(gs.changed());
+		gs.clear();
+		assertFalse(gs.changed());
 	}
 
 }
