@@ -58,6 +58,10 @@ public class ExpFactor {
 		return valueNames.get(values.indexOf(p));
 	}
 
+	public String getValueName(int i) {
+		return valueNames.get(i);
+	}
+
 	public int getValueLevel(String level) {
 		return valueNames.indexOf(level);
 	}
