@@ -97,19 +97,21 @@ public class TwDataGenerator
 				interfaces[i++] = s;
 			categories.clear(); // this to make sure this is done only for the root record
 			return new ClassGenerator(packageName, comment, className, "public", locatedMethods, 
-				TwData.class.getCanonicalName(),
+				TwData.class.getCanonicalName(),null,
 				interfaces);
 		}
 		else
 			return new ClassGenerator(packageName, comment, className, "public", locatedMethods, 
-				TwData.class.getCanonicalName(),
+				TwData.class.getCanonicalName(),null,
 				LocationData.class.getCanonicalName());
 	}
 
 	@Override
 	protected ClassGenerator getTableClassGenerator(String className, String contentType, String comment) {
+		List<String> generics = new ArrayList<>();
+		generics.add(contentType);
 		return new ClassGenerator(packageName, comment, className, "public", null,
-			TwDataTable.class.getCanonicalName()+"<"+contentType+">");
+			TwDataTable.class.getCanonicalName(),generics);
 	}
 	public File getFile() {
 		String name = className.replace(this.packageName+".", "");
